@@ -31,14 +31,14 @@ function DoctorsSection() {
         <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
           {/* slider controls */}
           <div id="controls" className="flex items-center justify-start row-span-1 row-start-1 space-x-4">
-            <button 
+            <button
               className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
               onClick={toggleSwitchDoctor}
             >
               <ArrowLeftIcon className="w-5 h-5" />
             </button>
             <span>0{!switchDoctor ? index : index + 1} - 02</span>
-            <button 
+            <button
               className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
               onClick={toggleSwitchDoctor}
             >
@@ -47,13 +47,13 @@ function DoctorsSection() {
           </div>
           <div className="row-span-1 row-start-2">
             {/* doctor bio */}
-            {switchDoctor ? 
+            {switchDoctor ?
               <p>
-                Dr. Daniel Frey graduated from high school in 2005. He then pursued his pre-dental requisites at the University of Pittsburgh, majoring in Biology. Dr. Frey excelled in his studies and was admitted to Temple University's dental school, graduating at the top of his class with the prestigious Summa Cum Laude designation. Continuing his education, Dr. Frey was admitted to the esteemed orthodontic residency program at the University of the Pacific in San Francisco where he worked with students and faculty from around the world and utilized cutting-edge orthodontic techniques. During his time in San Francisco, he conducted research in three-dimensional craniofacial analysis and earned his Master of Science degree. Dr. Frey is a member of the American Association of Orthodontists and the American Dental Association. In his leisure time, he enjoys staying active outdoors, camping, playing music, and spending time with loved ones.
-              </p> 
-            : 
+                Dr. Daniel Frey graduated from high school in 2005. He then pursued his pre-dental requisites at the University of Pittsburgh, majoring in Biology. Dr. Frey excelled in his studies and was admitted to Temple University&apos;s dental school, graduating at the top of his class with the prestigious Summa Cum Laude designation. Continuing his education, Dr. Frey was admitted to the esteemed orthodontic residency program at the University of the Pacific in San Francisco where he worked with students and faculty from around the world and utilized cutting-edge orthodontic techniques. During his time in San Francisco, he conducted research in three-dimensional craniofacial analysis and earned his Master of Science degree. Dr. Frey is a member of the American Association of Orthodontists and the American Dental Association. In his leisure time, he enjoys staying active outdoors, camping, playing music, and spending time with loved ones.
+              </p>
+            :
               <p>
-                Dr. Gregg Frey is an orthodontist based in Pennsylvania, who graduated from Temple University School of Dentistry with honors and served in the U.S. Navy Dental Corps before establishing his practice in the Lehigh Valley. He is a Diplomat of the American Board of Orthodontics and has received numerous distinctions, accreditations, and honors, including being named one of America's Top Orthodontists by the Consumer Review Council of America. This distinction is held by fewer than 25% of orthodontists nationwide. ABO certification represents the culmination of 5-10 years of written and oral examinations and independent expert review of actual treated patients. Recently Dr. Frey voluntarily re-certified. Dr. Frey enjoys coaching soccer, vintage car racing, and playing the drums.
+                Dr. Gregg Frey is an orthodontist based in Pennsylvania, who graduated from Temple University School of Dentistry with honors and served in the U.S. Navy Dental Corps before establishing his practice in the Lehigh Valley. He is a Diplomat of the American Board of Orthodontics and has received numerous distinctions, accreditations, and honors, including being named one of America&apos;s Top Orthodontists by the Consumer Review Council of America. This distinction is held by fewer than 25% of orthodontists nationwide. ABO certification represents the culmination of 5-10 years of written and oral examinations and independent expert review of actual treated patients. Recently Dr. Frey voluntarily re-certified. Dr. Frey enjoys coaching soccer, vintage car racing, and playing the drums.
               </p>
             }
           </div>
@@ -81,7 +81,7 @@ function DoctorsSection() {
           </figcaption>
         </div>
         <div className="col-span-5 lg:col-span-2 lg:col-start-11">
-          <figure 
+          <figure
             className="grayscale h-max w-full aspect-[3/4] overflow-hidden flex items-start hover:cursor-pointer"
             onClick={toggleSwitchDoctor}
           >
