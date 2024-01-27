@@ -7,6 +7,10 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import SwiperCore from 'swiper/core'
 import { Mousewheel, Pagination } from 'swiper/modules'
+// gsap
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap-trial/ScrollTrigger'
+import { ScrollSmoother } from 'gsap-trial/ScrollSmoother'
 // framer motion
 import { motion, stagger, useAnimate, useInView } from 'framer-motion'
 // headless ui
@@ -18,6 +22,8 @@ import ChevronRightIcon from './_components/ui/ChevronRightIcon'
 import MapPin from './_components/ui/MapPin'
 import Shape01 from './_components/shapes/shape01'
 
+import useIsomorphicLayoutEffect from '@/_helpers/isomorphicEffect'
+
 SwiperCore.use([Mousewheel, Pagination])
 
 export default function Home() {
@@ -25,7 +31,8 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <Carousel />
+      {/* <Carousel /> */}
+      <Features />
       <Locations />
       <GiftCards />
     </>
@@ -73,6 +80,37 @@ function Hero() {
         }} />
       </section>
     </div>
+  )
+}
+
+function Features() {
+  useIsomorphicLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
+
+    const smoother = ScrollSmoother.create({
+      smooth: 1,
+      normalizeScroll: true,
+      ignoreMobileResize: true,
+      effects: true,
+      //preventDefault: true,
+      //ease: 'power4.out',
+      //smoothTouch: 0.1, 
+    })
+
+  }, [])
+  
+  return (
+    <section className="container px-0 mx-auto h-[50vh] bg-white rounded-lg md:flex md:items-center md:space-x-28 bg-opacity-5 my-44">		
+      <div className="relative py-12 pl-6 space-y-6 border-l-4 border-pink-500 md:py-0">
+        <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
+        <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4>
+      </div>
+      <div className="relative w-full h-full rounded-lg overflow-show"> 
+        {/* <img className="absolute bottom-0 mx-auto h-auto object-cover w-[100%]" data-speed="auto" src="/../../../images/blobpurple.png" alt="purple blob" /> */}
+        <img className="absolute -bottom-1/2 mx-auto h-auto object-cover w-[150%]" data-speed="auto" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+        <img className="absolute -bottom-1/4 left-1/4 mx-auto h-auto object-cover w-[75%]" data-speed="auto" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+      </div>
+    </section>
   )
 }
 
