@@ -23,36 +23,42 @@ export default function WhyChooseUs() {
 
 function HeadingAnimation() {
   return (
-    <section className="flex flex-col gap-4 mx-auto my-16 text-center md:h-12 md:text-left md:flex-row w-max">
-      <p className="text-2xl md:text-4xl text-[#5f6368] py-1">Experts in</p>
-      <div className="h-12 overflow-hidden">
-        <ul
-          style={{
-            animation: "scroll-text-up 5s infinite",
-          }}
-        >
-          <li className="text-[#ea4335] py-1">
-            <p className="text-2xl md:text-4xl">Invisalign</p>
-          </li>
-          <li className="text-[#4285f4] py-1">
-            <p className="text-2xl md:text-4xl">Damon Braces</p>
-          </li>
-          <li className="text-[#34a853] py-1">
-            <p className="text-2xl md:text-4xl">
-              Accelerated Orthodontic Treatment
-            </p>
-          </li>
-          <li className="text-[#fbbc04] py-1">
-            <p className="text-2xl md:text-4xl">
-              low-dose 3D Digital Radiographs
-            </p>
-          </li>
-          <li className="text-[#ea4335] py-1">
-            <p className="text-2xl md:text-4xl">Invisalign</p>
-          </li>
-        </ul>
-      </div>
-    </section>
+    <div className="w-full h-[100vh] flex flex-col justify-center items-center relative">
+      <video autoPlay loop className="absolute inset-0 object-cover object-center w-full h-full -z-10">
+        <source src="/../../videos/production_id_4779866.mp4" type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 m-4 bg-gray-400 border border-gray-100 rounded-xl -z-10 backdrop-filter bg-clip-padding backdrop-blur-md bg-opacity-30" />
+      <section className="flex flex-col gap-4 mx-auto my-16 text-center md:h-16 md:text-left md:flex-row w-max">
+        <h1 className="py-1 text-zinc-800 font-helvetica-now-thin">Experts in</h1> {/* text-[#5f6368] */}
+        <div className="h-full overflow-hidden">
+          <ul
+            style={{
+              animation: "scroll-text-up 5s infinite",
+            }}
+          >
+            <li className="text-[#ea4335] py-1">
+              <h1 className="font-helvetica-now-thin">Invisalign</h1>
+            </li>
+            <li className="text-[#4285f4] py-1">
+              <h1 className="font-helvetica-now-thin">Damon Braces</h1>
+            </li>
+            <li className="text-[#34a853] py-1">
+              <h1 className="font-helvetica-now-thin">
+                Accelerated Orthodontic Treatment
+              </h1>
+            </li>
+            <li className="text-[#fbbc04] py-1">
+              <h1 className="font-helvetica-now-thin">
+                low-dose 3D Digital Radiographs
+              </h1>
+            </li>
+            <li className="text-[#ea4335] py-1">
+              <h1 className="font-helvetica-now-thin">Invisalign</h1>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
   )
 }
 
@@ -173,9 +179,9 @@ function AnimateTextScroll() {
     <section className="w-full px-10 mx-auto max-w-7xl">
       <div className="flex flex-col-reverse md:flex-row md:justify-between">
         <div className="w-full min-h-screen px-8 py-12 md:w-1/2 md:px-0">
-          <TextReveal body={text} className="relative mx-auto h-[200vh] w-full max-w-lg">
+          <TextReveal body={text} className="relative mx-auto h-[100vh] w-full max-w-lg">
             {(tokens) => (
-              <div className="sticky top-0 left-0 flex items-center text-2xl font-medium leading-tight text-primary-50 h-1/2">
+              <div className="sticky top-0 left-0 flex items-center h-full text-2xl font-medium leading-tight text-primary-50">
                 <div>
                   {tokens.map((token, index) => (
                     <TextReveal.Token key={index} index={index}>
@@ -211,7 +217,7 @@ function AnimateTextScroll() {
 
 function CTA() {
   return (
-    <section className="flex flex-col mx-auto md:flex-row md:justify-between md:gap-8 lg:gap-16 max-w-7xl sm:mb-32">
+    <section className="flex flex-col px-12 mx-auto md:flex-row md:justify-between md:gap-8 lg:gap-16 max-w-7xl sm:mb-32">
       <div className="flex flex-col justify-center space-y-8 md:w-1/2">
         <h4>If you know someone who could benefit from this gift, please visit the website for details on how to nominate a candidate.</h4>
         <Link href="https://morethansmiles.org/" className="block px-6 py-2 font-medium bg-indigo-500 text-white w-fit transition-all shadow-[6px_6px_0px_rgb(39,_39,_42)] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">Learn More</Link>
