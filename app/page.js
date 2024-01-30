@@ -12,12 +12,11 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger'
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother'
 // framer motion
-import { motion, stagger, useAnimate, useInView } from 'framer-motion'
+import { motion, stagger, useAnimate, useInView, useScroll, useTransform } from 'framer-motion'
 // headless ui
 import { Disclosure, Transition } from '@headlessui/react'
 // components
 import ArrowRightIcon from './_components/ui/ArrowRightIcon'
-import ChevronDownIcon from './_components/ui/ChevronDownIcon'
 import ChevronRightIcon from './_components/ui/ChevronRightIcon'
 import MapPin from './_components/ui/MapPin'
 import Shape01 from './_components/shapes/shape01'
@@ -32,7 +31,8 @@ export default function Home() {
     <>
       <Hero />
       {/* <Carousel /> */}
-      <Features />
+      {/* <Features /> */}
+      <Test />
       <Locations />
       <GiftCards />
     </>
@@ -45,11 +45,8 @@ function Hero() {
     <div className="relative">
       <div className="-z-10 absolute w-[100vw] h-full bg-rose-100" />
       <header className="pt-16 m-auto w-max">
-        {/* #fec49b */}
-        {/* #FEBA76 */}
-        {/* #fdba74 orange-300 */}
-        {/* #fda4af rose-300 */}
-        {/*  #FDBA74, #FDB67E, #FDB388, #FDAF92, #FDAB9B, #FDA8A5, #FDA4AF */}
+        {/* #fec49b */}{/* #FEBA76 */}{/* #fdba74 orange-300 */}
+        {/* #fda4af rose-300 */}{/*  #FDBA74, #FDB67E, #FDB388, #FDAF92, #FDAB9B, #FDA8A5, #FDA4AF */}
         <div className="bg-[#FDBA74]/80 rounded-full shadow-[0px_0px_0px_8px_rgba(253,_186,_116,_0.4),_0px_0px_0px_16px_rgba(253,_181,_131,_0.3),_0px_0px_0px_24px_rgba(253,_175,_146,_0.2),_0px_0px_0px_32px_rgba(253,_170,_160,_0.1),_0px_0px_0px_40px_rgba(253,_164,_175,_0.05)]">
           <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
         </div>
@@ -83,6 +80,27 @@ function Hero() {
   )
 }
 
+function Test() {
+  const { scrollYProgress } = useScroll()
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.6])
+  const translateText = useTransform(scrollYProgress, [0, 1], [0, 300])
+  const translateCase = useTransform(scrollYProgress, [0, 1], [0, -300])
+  const translateRetainer = useTransform(scrollYProgress, [0, 1], [0, 250])
+
+  return (
+    <section className="container px-0 mx-auto h-[50vh] bg-white rounded-lg md:flex md:items-center md:space-x-28 bg-opacity-5 my-44 relative">
+      <motion.div style={{ translateY: translateText }} className="absolute inset-0 top-0 left-0 w-1/2 py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 md:py-0 h-max">
+        <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
+        <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4>
+      </motion.div>
+      <div className="absolute top-0 right-0 w-1/2 h-full rounded-lg overflow-show"> 
+        <motion.img style={{ translateY: translateCase, scale }} className="absolute bottom-0 mx-auto h-auto object-cover w-[150%]" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+        <motion.img style={{ translateY: translateRetainer, scale }} className="absolute top-0 left-1/4 mx-auto h-auto object-cover w-[75%]" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+      </div>
+    </section>
+  )
+}
+
 function Features() {
   useIsomorphicLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
@@ -100,15 +118,15 @@ function Features() {
   }, [])
   
   return (
-    <section className="container px-0 mx-auto h-[50vh] bg-white rounded-lg md:flex md:items-center md:space-x-28 bg-opacity-5 my-44">		
-      <div className="relative py-12 pl-6 space-y-6 border-l-4 border-pink-500 md:py-0">
+    <section className="container px-0 mx-auto h-[50vh] bg-white rounded-lg md:flex md:items-center md:space-x-28 bg-opacity-5 my-44 relative">		
+      <div className="absolute inset-0 left-0 w-1/2 py-12 pl-6 space-y-6 border-l-4 border-pink-500 top-1/2 md:py-0 h-max" data-speed="0.6">
         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
         <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4>
       </div>
-      <div className="relative w-full h-full rounded-lg overflow-show"> 
+      <div className="absolute top-0 right-0 w-1/2 h-full rounded-lg overflow-show"> 
         {/* <img className="absolute bottom-0 mx-auto h-auto object-cover w-[100%]" data-speed="auto" src="/../../../images/blobpurple.png" alt="purple blob" /> */}
-        <img className="absolute -bottom-1/2 mx-auto h-auto object-cover w-[150%]" data-speed="auto" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
-        <img className="absolute -bottom-1/4 left-1/4 mx-auto h-auto object-cover w-[75%]" data-speed="auto" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+        <img className="absolute -bottom-1/2 mx-auto h-auto object-cover w-[150%]" data-speed="0.6" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+        <img className="absolute -bottom-1/4 left-1/4 mx-auto h-auto object-cover w-[75%]" data-speed="0.6" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
       </div>
     </section>
   )
