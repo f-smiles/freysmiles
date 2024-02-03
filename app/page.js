@@ -12,7 +12,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger'
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother'
 // framer motion
-import { motion, stagger, useAnimate, useInView, useScroll, useTransform } from 'framer-motion'
+import { motion, stagger, useAnimate, useInView, useScroll, useSpring, useTransform } from 'framer-motion'
 // headless ui
 import { Disclosure, Transition } from '@headlessui/react'
 // components
@@ -30,9 +30,7 @@ export default function Home() {
   return (
     <>
       <Hero />
-      {/* <Carousel /> */}
-      {/* <Features /> */}
-      <Test />
+      <Invisalign />
       <Locations />
       <GiftCards />
     </>
@@ -80,185 +78,33 @@ function Hero() {
   )
 }
 
-function Test() {
-  const { scrollYProgress } = useScroll()
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.6])
-  const translateText = useTransform(scrollYProgress, [0, 1], [0, 300])
-  const translateCase = useTransform(scrollYProgress, [0, 1], [0, -300])
-  const translateRetainer = useTransform(scrollYProgress, [0, 1], [0, 250])
+function Invisalign() {
+  const sectionRef = useRef()
+  const { scrollYProgress } = useScroll({ 
+    target: sectionRef, 
+    offset: ["end end", "center center"],
+  })
+  const springScroll = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  })
+  const scale = useTransform(springScroll, [0, 1], [1.2, 0.9])
+  const transformText = useTransform(springScroll, [0, 1], ["-100%", "0%"])
+  const transformCase = useTransform(springScroll, [0, 1], ["50%", "20%"])
+  const transformRetainer = useTransform(springScroll, [0, 1], ["-150%", "-65%"])
 
   return (
-    <section className="container px-0 mx-auto h-[50vh] bg-white rounded-lg md:flex md:items-center md:space-x-28 bg-opacity-5 my-44 relative">
-      <motion.div style={{ translateY: translateText }} className="absolute inset-0 top-0 left-0 w-1/2 py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 md:py-0 h-max">
+    <section ref={sectionRef} className="mx-auto container lg:h-[60dvh] lg:flex lg:items-center lg:my-24">
+      <motion.div style={{ translateY: transformText }} className="py-12 pl-6 ml-12 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
         <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4>
       </motion.div>
-      <div className="absolute top-0 right-0 w-1/2 h-full rounded-lg overflow-show"> 
-        <motion.img style={{ translateY: translateCase, scale }} className="absolute bottom-0 mx-auto h-auto object-cover w-[150%]" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
-        <motion.img style={{ translateY: translateRetainer, scale }} className="absolute top-0 left-1/4 mx-auto h-auto object-cover w-[75%]" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+      <div className="h-full lg:w-1/2">
+        <motion.img style={{ translateY: transformCase }} className="object-cover object-center w-[150%] h-auto mx-auto" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+        <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover object-center w-3/4 h-auto ml-32" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
       </div>
     </section>
-  )
-}
-
-function Features() {
-  useIsomorphicLayoutEffect(() => {
-    gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
-
-    const smoother = ScrollSmoother.create({
-      smooth: 1,
-      normalizeScroll: true,
-      ignoreMobileResize: true,
-      effects: true,
-      //preventDefault: true,
-      //ease: 'power4.out',
-      //smoothTouch: 0.1, 
-    })
-
-  }, [])
-  
-  return (
-    <section className="container px-0 mx-auto h-[50vh] bg-white rounded-lg md:flex md:items-center md:space-x-28 bg-opacity-5 my-44 relative">		
-      <div className="absolute inset-0 left-0 w-1/2 py-12 pl-6 space-y-6 border-l-4 border-pink-500 top-1/2 md:py-0 h-max" data-speed="0.6">
-        <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
-        <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4>
-      </div>
-      <div className="absolute top-0 right-0 w-1/2 h-full rounded-lg overflow-show"> 
-        {/* <img className="absolute bottom-0 mx-auto h-auto object-cover w-[100%]" data-speed="auto" src="/../../../images/blobpurple.png" alt="purple blob" /> */}
-        <img className="absolute -bottom-1/2 mx-auto h-auto object-cover w-[150%]" data-speed="0.6" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
-        <img className="absolute -bottom-1/4 left-1/4 mx-auto h-auto object-cover w-[75%]" data-speed="0.6" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
-      </div>
-    </section>
-  )
-}
-
-function Carousel() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true })
-  const [activeIndex, setActiveIndex] = useState(0)
-
-  const urls = [
-    "url('/../../images/_mesh_gradients/39. Prelude.jpg')",
-    "url('/../../images/_mesh_gradients/14. Prim.jpg')",
-    "url('/../../images/_mesh_gradients/65. Prim.jpg')",
-  ]
-
-  const handleBackgroundChange = (index) => {
-    setActiveIndex(index)
-  }
-
-  return (
-    <div ref={ref} style={{
-      width: "100vw",
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      background: `center / cover no-repeat ${isInView ? urls[activeIndex] : ""}`,
-      opacity: isInView ? 1 : 0,
-      transition: isInView ? "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s" : "",
-    }}>
-      <Swiper
-        direction={'vertical'}
-        slidesPerView={1}
-        spaceBetween={30}
-        mousewheel={true}
-        pagination={{
-          clickable: true,
-        }}
-        modules={[Mousewheel, Pagination]}
-        className="mySwiper"
-        style={{
-          maxWidth: '80vw',
-          maxHeight: '80vh',
-          '--swiper-pagination-color': '#ad79e3', // primary-60
-          transform: isInView ? "translateY(0px)" : "translateY(200px)",
-          transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
-          opacity: isInView ? 1 : 0,
-        }}
-        onSlideChange={(swiper) => handleBackgroundChange(swiper.activeIndex)}
-      >
-        <SwiperSlide>
-          <div className="flex items-center justify-between h-full mx-auto max-w-7xl">
-            <figure className="w-1/3">
-              <img
-                className="object-contain object-left w-full h-full"
-                src="/../../images/aligner.png"
-                alt="invisalign"
-              />
-            </figure>
-            <span className="flex flex-col-reverse items-center justify-center w-1/3 h-full text-primary-40">
-              <p className="[writing-mode:vertical-lr] rotate-180 font-altero text-6xl [font-size:_clamp(2rem,5vw,6rem)]">Invis</p>
-              <p className="[writing-mode:vertical-lr] rotate-180 font-altero-outline [font-size:_clamp(2rem,5vw,6rem)]">align</p>
-            </span>
-            <div className="flex flex-col items-center w-1/3 px-8 mr-16 space-y-4 lg:px-0 text-zinc-800">
-              <p className="text-center lg:text-2xl">As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</p>
-              <Link
-                href="/invisalign"
-                className="lg:text-xl inline-block px-6 py-2 ease-linear border rounded-full w-max border-[#7781d9] hover:bg-[#7781d9] hover:border-0 hover:text-white"
-              >
-                Start Your Journey
-              </Link>
-            </div>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="flex items-center justify-between h-full mx-auto max-w-7xl">
-            <figure className="w-1/3">
-              <img
-                className="object-contain object-left w-full h-full"
-                src="/../../images/damonfull.png"
-                alt="damon braces on teeth"
-              />
-              <img
-                className="object-contain object-left w-1/2 h-auto mx-auto"
-                src="/../../images/damontech.png"
-                alt="damon bracket"
-              />
-            </figure>
-            <span className="flex justify-center w-1/3 h-full text-center text-primary-40">
-              <p className="[writing-mode:vertical-lr] font-altero mt-48 [font-size:_clamp(1rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)] rotate-180">Damon</p>
-              <p className="[writing-mode:vertical-lr] font-altero-outline [font-size:_clamp(1rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)] rotate-180">Bracket</p>
-            </span>
-            <div className="flex flex-col items-center w-2/6 px-8 mr-16 space-y-4 text-zinc-800">
-              <p className="text-center lg:text-2xl">Combining self-ligating braces with advanced archwires clinically proven to move teeth quickly and comfortably.</p>
-              <Link
-                href="/braces"
-                className="lg:text-xl inline-block px-6 py-2 ease-linear border rounded-full w-max border-[#e67fb4] hover:bg-[#e67fb4] hover:border-0 hover:text-white"
-              >
-                Damon System
-              </Link>
-            </div>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="flex items-center justify-between h-full mx-auto max-w-7xl">
-            <figure className="w-1/3">
-              <img
-                className="object-contain object-left w-2/3 h-auto mx-auto"
-                src="/../../images/itero2.png"
-                alt="itero2"
-              />
-            </figure>
-            <span className="flex justify-center w-1/3 h-full text-center text-primary-40">
-              <p className="[writing-mode:vertical-lr] rotate-180 font-altero mt-48 [font-size:_clamp(2rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)]">Advanced</p>
-              <p className="[writing-mode:vertical-lr] rotate-180 font-altero-outline [font-size:_clamp(2rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)]">Technology</p>
-            </span>
-            <div className="flex flex-col items-center w-1/3 px-8 mr-16 space-y-4 text-zinc-800">
-              <p className="text-center lg:text-2xl">
-                We offer Invisalign without Impressions. Say goodbye to goopy impressions with our iTero digital scanner.
-              </p>
-              <Link
-                href="/"
-                className="lg:text-xl inline-block px-6 py-2 ease-linear border rounded-full w-max border-[#f2ab79] hover:bg-[#f2ab79] hover:border-0 hover:text-white"
-              >
-                Learn More
-              </Link>
-            </div>
-          </div>
-        </SwiperSlide>
-      </Swiper>
-    </div>
   )
 }
 
@@ -475,5 +321,191 @@ function GiftCards() {
         <img src="../../images/giftcards/gift_cards_mockup.jpg" alt="gift cards mockup" />
       </Link>
     </section>
+  )
+}
+
+function TestInvisalign() {
+  const ref = useRef()
+  const isInView = useInView(ref)
+  const { scrollYProgress } = useScroll()
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.8])
+  const translateText = useTransform(scrollYProgress, [0, 1], ["0%", "500%"])
+  const translateCase = useTransform(scrollYProgress, [0, 1], ["0%", "-50%"])
+  const translateRetainer = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
+
+  return (
+    <section ref={ref} className="container relative px-0 mx-auto h-[60dvh] min-h-1/2 md:flex md:items-center md:space-x-28 bg-opacity-5 my-44">
+      <div className="relative w-1/2 h-full">
+        <motion.div style={{ translateY: isInView ? translateText : "none" }} className="absolute top-0 w-full h-auto py-12 pl-6 mx-auto ml-12 space-y-6 border-l-4 border-pink-500 md:py-0">
+          <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
+          <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4>
+        </motion.div>
+      </div>
+      <div className="relative w-1/2 h-full"> 
+        <motion.img style={{ translateY: isInView ? translateCase : "none", scale }} className="absolute bottom-0 object-cover w-[150%] h-auto mx-auto" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+        <motion.img style={{ translateY: isInView ? translateRetainer : "none", scale }} className="absolute top-0 object-cover w-3/4 h-auto mx-auto left-1/4" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+      </div>
+    </section>
+  )
+}
+
+function Features() {
+  useIsomorphicLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
+
+    const smoother = ScrollSmoother.create({
+      smooth: 1,
+      normalizeScroll: true,
+      ignoreMobileResize: true,
+      effects: true,
+      //preventDefault: true,
+      //ease: 'power4.out',
+      //smoothTouch: 0.1, 
+    })
+
+  }, [])
+  
+  return (
+    <section className="container px-0 mx-auto h-[50vh] bg-white rounded-lg md:flex md:items-center md:space-x-28 bg-opacity-5 my-44 relative">		
+      <div className="absolute inset-0 left-0 w-1/2 py-12 pl-6 space-y-6 border-l-4 border-pink-500 top-1/2 md:py-0 h-max" data-speed="0.6">
+        <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
+        <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4>
+      </div>
+      <div className="absolute top-0 right-0 w-1/2 h-full rounded-lg overflow-show"> 
+        {/* <img className="absolute bottom-0 mx-auto h-auto object-cover w-[100%]" data-speed="auto" src="/../../../images/blobpurple.png" alt="purple blob" /> */}
+        <img className="absolute -bottom-1/2 mx-auto h-auto object-cover w-[150%]" data-speed="0.6" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+        <img className="absolute -bottom-1/4 left-1/4 mx-auto h-auto object-cover w-[75%]" data-speed="0.6" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+      </div>
+    </section>
+  )
+}
+
+function Carousel() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true })
+  const [activeIndex, setActiveIndex] = useState(0)
+
+  const urls = [
+    "url('/../../images/_mesh_gradients/39. Prelude.jpg')",
+    "url('/../../images/_mesh_gradients/14. Prim.jpg')",
+    "url('/../../images/_mesh_gradients/65. Prim.jpg')",
+  ]
+
+  const handleBackgroundChange = (index) => {
+    setActiveIndex(index)
+  }
+
+  return (
+    <div ref={ref} style={{
+      width: "100vw",
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      background: `center / cover no-repeat ${isInView ? urls[activeIndex] : ""}`,
+      opacity: isInView ? 1 : 0,
+      transition: isInView ? "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s" : "",
+    }}>
+      <Swiper
+        direction={'vertical'}
+        slidesPerView={1}
+        spaceBetween={30}
+        mousewheel={true}
+        pagination={{
+          clickable: true,
+        }}
+        modules={[Mousewheel, Pagination]}
+        className="mySwiper"
+        style={{
+          maxWidth: '80vw',
+          maxHeight: '80vh',
+          '--swiper-pagination-color': '#ad79e3', // primary-60
+          transform: isInView ? "translateY(0px)" : "translateY(200px)",
+          transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+          opacity: isInView ? 1 : 0,
+        }}
+        onSlideChange={(swiper) => handleBackgroundChange(swiper.activeIndex)}
+      >
+        <SwiperSlide>
+          <div className="flex items-center justify-between h-full mx-auto max-w-7xl">
+            <figure className="w-1/3">
+              <img
+                className="object-contain object-left w-full h-full"
+                src="/../../images/aligner.png"
+                alt="invisalign"
+              />
+            </figure>
+            <span className="flex flex-col-reverse items-center justify-center w-1/3 h-full text-primary-40">
+              <p className="[writing-mode:vertical-lr] rotate-180 font-altero text-6xl [font-size:_clamp(2rem,5vw,6rem)]">Invis</p>
+              <p className="[writing-mode:vertical-lr] rotate-180 font-altero-outline [font-size:_clamp(2rem,5vw,6rem)]">align</p>
+            </span>
+            <div className="flex flex-col items-center w-1/3 px-8 mr-16 space-y-4 lg:px-0 text-zinc-800">
+              <p className="text-center lg:text-2xl">As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</p>
+              <Link
+                href="/invisalign"
+                className="lg:text-xl inline-block px-6 py-2 ease-linear border rounded-full w-max border-[#7781d9] hover:bg-[#7781d9] hover:border-0 hover:text-white"
+              >
+                Start Your Journey
+              </Link>
+            </div>
+          </div>
+        </SwiperSlide>
+        <SwiperSlide>
+          <div className="flex items-center justify-between h-full mx-auto max-w-7xl">
+            <figure className="w-1/3">
+              <img
+                className="object-contain object-left w-full h-full"
+                src="/../../images/damonfull.png"
+                alt="damon braces on teeth"
+              />
+              <img
+                className="object-contain object-left w-1/2 h-auto mx-auto"
+                src="/../../images/damontech.png"
+                alt="damon bracket"
+              />
+            </figure>
+            <span className="flex justify-center w-1/3 h-full text-center text-primary-40">
+              <p className="[writing-mode:vertical-lr] font-altero mt-48 [font-size:_clamp(1rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)] rotate-180">Damon</p>
+              <p className="[writing-mode:vertical-lr] font-altero-outline [font-size:_clamp(1rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)] rotate-180">Bracket</p>
+            </span>
+            <div className="flex flex-col items-center w-2/6 px-8 mr-16 space-y-4 text-zinc-800">
+              <p className="text-center lg:text-2xl">Combining self-ligating braces with advanced archwires clinically proven to move teeth quickly and comfortably.</p>
+              <Link
+                href="/braces"
+                className="lg:text-xl inline-block px-6 py-2 ease-linear border rounded-full w-max border-[#e67fb4] hover:bg-[#e67fb4] hover:border-0 hover:text-white"
+              >
+                Damon System
+              </Link>
+            </div>
+          </div>
+        </SwiperSlide>
+        <SwiperSlide>
+          <div className="flex items-center justify-between h-full mx-auto max-w-7xl">
+            <figure className="w-1/3">
+              <img
+                className="object-contain object-left w-2/3 h-auto mx-auto"
+                src="/../../images/itero2.png"
+                alt="itero2"
+              />
+            </figure>
+            <span className="flex justify-center w-1/3 h-full text-center text-primary-40">
+              <p className="[writing-mode:vertical-lr] rotate-180 font-altero mt-48 [font-size:_clamp(2rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)]">Advanced</p>
+              <p className="[writing-mode:vertical-lr] rotate-180 font-altero-outline [font-size:_clamp(2rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)]">Technology</p>
+            </span>
+            <div className="flex flex-col items-center w-1/3 px-8 mr-16 space-y-4 text-zinc-800">
+              <p className="text-center lg:text-2xl">
+                We offer Invisalign without Impressions. Say goodbye to goopy impressions with our iTero digital scanner.
+              </p>
+              <Link
+                href="/"
+                className="lg:text-xl inline-block px-6 py-2 ease-linear border rounded-full w-max border-[#f2ab79] hover:bg-[#f2ab79] hover:border-0 hover:text-white"
+              >
+                Learn More
+              </Link>
+            </div>
+          </div>
+        </SwiperSlide>
+      </Swiper>
+    </div>
   )
 }
