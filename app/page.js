@@ -38,43 +38,80 @@ export default function Home() {
 }
 
 function Hero() {
-
+  const mobileRef = useRef(null)
+  const isInView = useInView(mobileRef)
+  
   return (
-    <div className="relative">
-      <div className="-z-10 absolute w-[100vw] h-full bg-rose-100" />
-      <header className="pt-16 m-auto w-max">
-        {/* #fec49b */}{/* #FEBA76 */}{/* #fdba74 orange-300 */}
-        {/* #fda4af rose-300 */}{/*  #FDBA74, #FDB67E, #FDB388, #FDAF92, #FDAB9B, #FDA8A5, #FDA4AF */}
-        <div className="bg-[#FDBA74]/80 rounded-full shadow-[0px_0px_0px_8px_rgba(253,_186,_116,_0.4),_0px_0px_0px_16px_rgba(253,_181,_131,_0.3),_0px_0px_0px_24px_rgba(253,_175,_146,_0.2),_0px_0px_0px_32px_rgba(253,_170,_160,_0.1),_0px_0px_0px_40px_rgba(253,_164,_175,_0.05)]">
-          <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
-        </div>
-      </header>
-      <section className="px-8 xl:px-0 flex flex-col-reverse justify-center md:gap-8 md:flex-row md:h-[100vh] mx-auto max-w-7xl py-16">
-        <div className="relative flex items-center justify-center md:w-1/2">
-          <Shape01 className="w-full" />
-          <div className="absolute left-0 right-0 w-3/4 mx-auto space-y-6 text-white">
-            <h2 className="capitalize text-primary-50">Because every smile is unique</h2>
-            {/* <h2 className="capitalize text-primary-50">Oral health.<br/>Our passion.<br/>Our pride.</h2> */}
-            <span className="flex items-center gap-4">
-              <Link href="/book-now" className="flex items-center gap-2 p-4 transition-colors duration-300 ease-in-out rounded-md text-zinc-100 bg-primary-50 hover:bg-primary-30 group">
+    <section>
+      {/* DESKTOP VIEW */}
+      <div className="relative hidden lg:block">
+        <div className="-z-10 absolute w-[100vw] h-full bg-rose-100" />
+        <header className="pt-16 m-auto w-max">
+          {/* #fec49b */}{/* #FEBA76 */}{/* #fdba74 orange-300 */}
+          {/* #fda4af rose-300 */}{/*  #FDBA74, #FDB67E, #FDB388, #FDAF92, #FDAB9B, #FDA8A5, #FDA4AF */}
+          <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
+            <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
+          </div>
+        </header>
+        <section className="px-8 xl:px-0 flex flex-col-reverse justify-center md:gap-8 md:flex-row md:h-[100vh] mx-auto max-w-7xl py-16">
+          <div className="relative flex items-center justify-center md:w-1/2">
+            <Shape01 className="w-full" />
+            <div className="absolute left-0 right-0 w-3/4 mx-auto space-y-6 text-white">
+              <h2 className="capitalize text-primary-50">Because every smile is unique</h2>
+              {/* <h2 className="capitalize text-primary-50">Oral health.<br/>Our passion.<br/>Our pride.</h2> */}
+              <span className="flex items-center gap-4">
+                <Link href="/book-now" className="flex items-center gap-2 p-4 transition-colors duration-300 ease-in-out rounded-md text-zinc-100 bg-primary-50 hover:bg-primary-30 group">
+                  Book Now
+                  {/* <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" /> */}
+                </Link>
+                <Link href="/our-team" className="p-4 rounded-md text-primary-30 group">
+                  <span className="flex items-center gap-2">
+                    Our Team <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" />
+                  </span>
+                  <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-primary-50 ease-in-out" />
+                </Link>
+              </span>
+            </div>
+          </div>
+          <div className="bg-center bg-no-repeat bg-cover rounded-full md:w-1/2" style={{
+            backgroundImage: "url(/../../images/mainsectionimage.jpg)",
+            minHeight: "80vh",
+          }} />
+        </section>
+      </div>
+      {/* MOBILE VIEW */}
+      <div className="relative overflow-hidden lg:hidden w-dvw h-dvh">
+        <header className="z-0 pt-16 m-auto w-max">
+          <div className="bg-[rgba(230,_123,_142,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(230,_123,_142,_0.8),_0px_0px_0px_16px_rgba(234,_144,_160,_0.6),_0px_0px_0px_24px_rgba(238,_166,_179,_0.4),_0px_0px_0px_32px_rgba(238,_166,_179,_0.2),_0px_0px_0px_40px_rgba(246,_208,_215,_0.05)]">
+            <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
+          </div>
+        </header>
+        <img className="absolute inset-0 object-cover w-full h-full mx-auto -z-10" src="/../../images/mainsectionimage_glass.jpg" />
+        <div ref={mobileRef} style={{ 
+            transform: isInView ? "none" : "translateX(200px)",
+            opacity: isInView ? 1 : 0,
+            transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"  
+          }}
+          className="max-w-md absolute right-12 bg-gray-400 border border-gray-200 top-[60vh] rounded-full aspect-square backdrop-filter bg-clip-padding backdrop-blur-md bg-opacity-30 flex justify-center items-center"
+        >
+          <div className="px-16 ml-6">
+            <h2 className="text-transparent capitalize font-helvetica-now-thin bg-clip-text bg-gradient-to-br from-primary-70 to-primary-100">Because every smile is unique</h2>
+            <span className="flex items-center gap-4 mt-8">
+              <Link href="/book-now" className="flex items-center gap-2 p-4 transition-colors duration-300 ease-in-out rounded-md text-zinc-100 bg-primary-40 hover:bg-primary-50 group">
                 Book Now
                 {/* <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" /> */}
               </Link>
-              <Link href="/our-team" className="p-4 rounded-md text-primary-30 group">
+              <Link href="/our-team" className="p-4 rounded-md text-primary-50 group">
                 <span className="flex items-center gap-2">
-                  Our Team <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" />
+                  Our Team <ArrowRightIcon className="w-4 h-4" />
                 </span>
                 <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-primary-50 ease-in-out" />
               </Link>
             </span>
           </div>
         </div>
-        <div className="bg-center bg-no-repeat bg-cover rounded-full md:w-1/2" style={{
-          backgroundImage: "url(/../../images/mainsectionimage.jpg)",
-          minHeight: "80vh",
-        }} />
-      </section>
-    </div>
+      </div>
+    </section>
   )
 }
 
@@ -95,14 +132,14 @@ function Invisalign() {
   const transformRetainer = useTransform(springScroll, [0, 1], ["-150%", "-65%"])
 
   return (
-    <section ref={sectionRef} className="mx-auto container lg:h-[60dvh] lg:flex lg:items-center lg:my-24">
+    <section ref={sectionRef} className="mx-auto container lg:h-[60dvh] flex flex-col-reverse lg:flex-row lg:items-center my-24 py-24">
       <motion.div style={{ translateY: transformText }} className="py-12 pl-6 ml-12 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
         <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4>
       </motion.div>
-      <div className="h-full lg:w-1/2">
-        <motion.img style={{ translateY: transformCase }} className="object-cover object-center w-[150%] h-auto mx-auto" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
-        <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover object-center w-3/4 h-auto ml-32" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+      <div className="lg:w-1/2">
+        <motion.img style={{ translateY: transformCase }} className="object-cover object-center w-full h-auto mx-auto" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+        <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover object-center w-3/4 h-auto ml-36 lg:ml-24 xl:ml-36" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
       </div>
     </section>
   )
@@ -309,17 +346,17 @@ function GiftCards() {
   const isInView = useInView(ref)
 
   return (
-    <section ref={ref} className="relative max-w-screen-lg mx-auto my-24 group" style={{
+    <section ref={ref} className="h-[60vh] relative my-24 group overflow-hidden" style={{
       transform: isInView ? "none" : "translateY(100px)",
       opacity: isInView ? 1 : 0,
       transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"    
     }}>
-      <Link href={`${process.env.REACT_APP_SQUARE_GIFT_CARDS_URL}`} target='_blank'>
-        <div className="absolute inset-0 w-full h-full bg-primary-30 bg-opacity-80 text-white motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(35%_at_0%_0%)] group-hover:[clip-path:circle(75%_at_0%_0%)] group-hover:bg-opacity-100 flex justify-start items-start">
-          <span className='block my-[12%] mx-[6%] md:mx-[10%] md:my-[16%] lg:my-[8%] lg:mx-[3%] lg:px-12 lg:py-8 group-hover:mx-20 group-hover:my-32 transition-all group-hover:duration-[1s] ease-in-out md:group-hover:my-[20%] md:group-hover:mx-[16%]'>Send a Gift Card</span>
+      <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank'>
+        <div className="absolute inset-0 w-full h-full bg-primary-30 bg-opacity-80 text-white motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(25%_at_0%_0%)] group-hover:[clip-path:circle(50%_at_0%_0%)] group-hover:bg-opacity-100 flex justify-start items-start">
+          <span className='block my-[25%] mx-[16%] group-hover:mx-20 group-hover:my-32 transition-all group-hover:duration-[1s] ease-in-out md:group-hover:my-[20%] md:group-hover:mx-[16%]'>Send a Gift Card</span>
         </div>
-        <img src="../../images/giftcards/gift_cards_mockup.jpg" alt="gift cards mockup" />
       </Link>
+      <img src="/../../images/giftcards/gift_cards_mockup.jpg" alt="gift cards mockup" className="absolute inset-0 object-cover object-center w-full h-full -z-10" />
     </section>
   )
 }
