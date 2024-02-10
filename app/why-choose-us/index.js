@@ -24,7 +24,7 @@ export default function WhyChooseUs() {
 function HeadingAnimation() {
   return (
     <div className="w-full h-[100vh] flex flex-col justify-center items-center relative">
-      <video autoPlay loop className="absolute inset-0 object-cover object-center w-full h-full -z-10">
+      <video autoPlay loop muted preLoad className="absolute inset-0 object-cover object-center w-full h-full -z-10">
         {/* undulating waves */}
         {/* <source src="/../../videos/production_id_4779866.mp4" type="video/mp4" /> */}
         {/* sharp waves */}
