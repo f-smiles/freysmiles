@@ -125,8 +125,8 @@ export default function Navbar() {
     };
   }, []);
 
-  const cursorSize = hoverEffect ? 'w-16 h-16' : 'w-4 h-4';
-  const cursorColor = hoverEffect ? 'bg-black' : 'bg-black';
+  const cursorSize = hoverEffect ? 'w-12 h-12' : 'w-4 h-4';
+  const cursorColor = hoverEffect ? 'bg-black bg-opacity-40' : 'bg-black';
   const cursorClasses = `z-50 fixed top-0 left-0 flex items-center justify-center ${cursorSize} rounded-full ${cursorColor} text-white text-sm font-bold transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-linear`;
   return (
     <>
@@ -139,14 +139,14 @@ export default function Navbar() {
 
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md cursor-pointer hover:bg-primary-50/60 active:bg-primary-50/80">
-              <Link href="/" className="inline-block p-4">
+            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out cursor-pointer active:bg-primary-50/80">
+              <Link href="/" className="custom-cursor-target inline-block p-4">
      
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link> 
           </li>
             <li onClick={handleToggleAbout}>
-              <p className="custom-cursor-target font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="custom-cursor-target hover:text-white font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 About
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -403,30 +403,30 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute  hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
               <Link
                 href="https://my.orthoblink.com/bLink/Login"
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
+                className="inline-block relative transition-all duration-500 before:content-[''] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p>Patient Login</p>
+                <p className="custom-cursor-target">Patient Login</p>
               </Link>
             </li>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
               <Link
                 href="/#locations"
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
+                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p>Our Locations</p>
+                <p className="custom-cursor-target">Our Locations</p>
               </Link>
             </li>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute  before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
               <Link
                 href="/products"
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
+                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p>Shop</p>
+                <p className="custom-cursor-target">Shop</p>
               </Link>
             </li>
 
@@ -550,7 +550,7 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-						<li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out rounded-full shadow-sm cursor-pointer shadow-primary-30 text-primary-95 bg-primary-30 hover:bg-secondary-50/60 hover:text-secondary-95 active:bg-secondary-50/80">
+						<li className="custom-cursor-target flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out rounded-full cursor-pointer shadow-primary-30  hover:text-secondary-95 ">
               <Link href="/book-now" className="inline-block px-6 py-3">
                 Book Now
               </Link>
