@@ -90,23 +90,65 @@ export default function Navbar() {
     setShow(!show)
   }
   const scope = useMobileNavAnimation(show)
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [hoverEffect, setHoverEffect] = useState(false);
+  const [cursorText, setCursorText] = useState('');
 
+  useEffect(() => {
+    const updateCursor = e => {
+      setPosition({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseEnter = (e) => {
+      setHoverEffect(true);
+      setCursorText(e.target.getAttribute('data-cursor-text') || '');
+    };
+
+    const handleMouseLeave = () => {
+      setHoverEffect(false);
+      setCursorText('');
+    };
+
+    window.addEventListener('mousemove', updateCursor);
+
+    document.querySelectorAll('.custom-cursor-target').forEach(el => {
+      el.addEventListener('mouseenter', handleMouseEnter);
+      el.addEventListener('mouseleave', handleMouseLeave);
+    });
+
+    return () => {
+      window.removeEventListener('mousemove', updateCursor);
+      document.querySelectorAll('.custom-cursor-target').forEach(el => {
+        el.removeEventListener('mouseenter', handleMouseEnter);
+        el.removeEventListener('mouseleave', handleMouseLeave);
+      });
+    };
+  }, []);
+
+  const cursorSize = hoverEffect ? 'w-16 h-16' : 'w-4 h-4';
+  const cursorColor = hoverEffect ? 'bg-black' : 'bg-black';
+  const cursorClasses = `z-50 fixed top-0 left-0 flex items-center justify-center ${cursorSize} rounded-full ${cursorColor} text-white text-sm font-bold transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-linear`;
   return (
     <>
       {/* DESKTOP NAVBAR */}
-      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-20 hidden w-full mb-[4vh] lg:block">
-        <div className="p-2 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
+      <nav id="desktop-nav" className="fixed bottom-10 left-0 right-0 z-20 hidden w-full mb-[4vh] lg:block">
+      <div
+      style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
+      className={cursorClasses}
+    ></div>
+
+        <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 justify-evenly">
             <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md cursor-pointer hover:bg-primary-50/60 active:bg-primary-50/80">
               <Link href="/" className="inline-block p-4">
-                {/* <HomeIcon className="w-4 h-4" /> */}
+     
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
-              </Link>
-            </li>
+              </Link> 
+          </li>
             <li onClick={handleToggleAbout}>
-              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="custom-cursor-target font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 About
-                <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
+                <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
             </li>
             {/* ABOUT PANEL */}
@@ -190,9 +232,9 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleTogglePatient}>
-              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="custom-cursor-target font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 Patient
-                <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
+                <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
             </li>
             {/* PATIENT PANEL */}
@@ -276,9 +318,9 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleToggleTreatments}>
-              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="custom-cursor-target font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 Treatments
-                <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
+                <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
             </li>
             {/* TREATMENTS PANEL */}
