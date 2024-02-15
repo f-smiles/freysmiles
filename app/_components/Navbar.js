@@ -3,10 +3,9 @@ import Link from 'next/link'
 import axios from 'axios'
 import { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { stagger, useAnimate } from 'framer-motion'
+import { motion, stagger, useAnimate, useMotionValue, useSpring } from 'framer-motion'
 import { Dialog, Transition } from '@headlessui/react'
 import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
-import HomeIcon from './ui/HomeIcon'
 import BagIcon from './ui/BagIcon'
 import Bars2Icon from './ui/Bars2Icon'
 import ChevronDownIcon from './ui/ChevronDownIcon'
@@ -91,19 +90,66 @@ export default function Navbar() {
   }
   const scope = useMobileNavAnimation(show)
 
+  /* mouse cursor */
+  const cursorX = useMotionValue(-100)
+  const cursorY = useMotionValue(-100)
+  const springConfig = { damping: 25, stiffness: 200 }
+  const cursorXSpring = useSpring(cursorX, springConfig)
+  const cursorYSpring = useSpring(cursorY, springConfig)
+  const [cursorVariant, setCursorVariant] = useState("default")
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      cursorX.set(e.clientX - 16)
+      cursorY.set(e.clientY - 16)
+    }
+    window.addEventListener("mousemove", moveCursor)
+
+    return () => {
+      window.removeEventListener("mousemove", moveCursor)
+    }
+  }, [])
+
+  const variants = {
+    default: {
+      width: 32,
+      height: 32,
+      backgroundColor: "#333",
+    },
+    hover: {
+      width: 64,
+      height: 64,
+      backgroundColor: "white",
+      opacity: 0.8,
+      mixBlendMode: "difference",
+    }
+  }
+
+  const hoverEnter = () => setCursorVariant("hover")
+  const hoverLeave = () => setCursorVariant("default")
+
   return (
     <>
       {/* DESKTOP NAVBAR */}
-      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-20 hidden w-full mb-[4vh] lg:block">
-        <div className="p-2 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
+      <motion.div
+        className="cursor"
+        variants={variants}
+        animate={cursorVariant}
+        style={{
+          x: cursorXSpring,
+          y: cursorYSpring,
+        }}
+      />
+      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-20 hidden w-full mb-[6vh] lg:block">
+        <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md cursor-pointer hover:bg-primary-50/60 active:bg-primary-50/80">
+            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md cursor-pointer hover:bg-primary-50/60 active:bg-primary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link href="/" className="inline-block p-4">
                 {/* <HomeIcon className="w-4 h-4" /> */}
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
-            <li onClick={handleToggleAbout}>
+            <li onClick={handleToggleAbout} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 About
                 <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
@@ -189,7 +235,7 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li onClick={handleTogglePatient}>
+            <li onClick={handleTogglePatient} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 Patient
                 <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
@@ -275,7 +321,7 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li onClick={handleToggleTreatments}>
+            <li onClick={handleToggleTreatments} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 Treatments
                 <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
@@ -361,7 +407,7 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="https://my.orthoblink.com/bLink/Login"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
@@ -370,7 +416,7 @@ export default function Navbar() {
               </Link>
             </li>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="/#locations"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
@@ -379,7 +425,7 @@ export default function Navbar() {
               </Link>
             </li>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="/products"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
@@ -391,7 +437,7 @@ export default function Navbar() {
 						{bag.length > 0 && (
               <li
                 onClick={handleToggleBagPanel}
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:right-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out"
+                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:right-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
           		>
           		  <span className="flex items-center relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:left-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50">
                   <BagIcon className="w-6 h-6 ml-1" />
@@ -508,7 +554,7 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-						<li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out rounded-full shadow-sm cursor-pointer shadow-primary-30 text-primary-95 bg-primary-30 hover:bg-secondary-50/60 hover:text-secondary-95 active:bg-secondary-50/80">
+						<li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out rounded-full shadow-sm cursor-pointer shadow-primary-30 text-primary-95 bg-primary-30 hover:bg-secondary-50/60 hover:text-secondary-95 active:bg-secondary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link href="/book-now" className="inline-block px-6 py-3">
                 Book Now
               </Link>
