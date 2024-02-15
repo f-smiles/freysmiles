@@ -9,7 +9,7 @@ import { gsap } from 'gsap-trial'
 import { ScrollTrigger } from 'gsap-trial/ScrollTrigger'
 import { ScrollSmoother } from 'gsap-trial/ScrollSmoother'
 
-import useIsomorphicLayoutEffect from '@/_helpers/isomorphicEffect'
+import useIsomorphicLayoutEffect from '@/_helpers/useIsomorphicLayoutEffect'
 import Navbar from './_components/Navbar'
 import Footer from './_components/Footer'
 
