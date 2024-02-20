@@ -1,32 +1,31 @@
-export default function Shape03(props) {
+export default function Shape05(props) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 200 200"
       fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <g clipPath="url(#clip0_105_672)">
+      <g clipPath="url(#clip0_231_793)">
         <path
           fillRule="evenodd"
           clipRule="evenodd"
-          d="M18.4046 100.422C8.31777 102.425 0.714259 111.325 0.714259 122L0.714256 178C0.714256 190.15 10.564 200 22.7143 200L78.7143 200C89.6402 200 98.7058 192.035 100.422 181.595C102.425 191.682 111.325 199.286 122 199.286H178C190.15 199.286 200 189.436 200 177.286V121.286C200 110.36 192.035 101.294 181.596 99.578C191.682 97.5746 199.286 88.6752 199.286 78V22C199.286 9.84974 189.436 2.97894e-06 177.286 2.44784e-06L121.286 0C110.36 -4.77585e-07 101.294 7.96461 99.5781 18.4046C97.5747 8.31778 88.6753 0.71428 78 0.71428H22C9.84974 0.71428 0 10.564 0 22.7143V78.7143C0 89.6401 7.96462 98.7058 18.4046 100.422Z"
-          fill="url(#paint0_linear_105_672)"
+          d="M50 0H200V50V150L150 200L150 50H0L50 0ZM0 165.067V100L65.067 100L0 165.067ZM100 200H35.7777L100 135.778L100 200Z"
+          fill="url(#paint0_linear_231_793)"
         />
       </g>
       <defs>
         <linearGradient
-          id="paint0_linear_105_672"
-          x1="157.5"
-          y1="32"
-          x2="44"
-          y2="147.5"
+          id="paint0_linear_231_793"
+          x1="177"
+          y1="-9.23648e-06"
+          x2="39.5"
+          y2="152.5"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.0509862" stopColor="#FFB6E1" />
-          <stop offset="1" stopColor="#FBE3EA" />
+          <stop stopColor="#B0B9FF" /> <stop offset="1" stopColor="#E7E9FF" />
         </linearGradient>
-        <clipPath id="clip0_105_672">
+        <clipPath id="clip0_231_793">
           <rect width="200" height="200" fill="white" />
         </clipPath>
       </defs>
