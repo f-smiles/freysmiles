@@ -114,14 +114,10 @@ export default function Navbar() {
     default: {
       width: 32,
       height: 32,
-      backgroundColor: "#333",
     },
     hover: {
       width: 64,
       height: 64,
-      backgroundColor: "white",
-      opacity: 0.8,
-      mixBlendMode: "difference",
     }
   }
 
