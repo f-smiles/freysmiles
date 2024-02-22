@@ -12,6 +12,7 @@
     "@headlessui/react": "^1.7.18",
     "@headlessui/tailwindcss": "^0.2.0",
     "@reduxjs/toolkit": "^1.9.7",
+    "@studio-freight/lenis": "^1.0.36",
     "axios": "^1.5.1",
     "clsx": "^2.0.0",
     "framer": "^2.4.1",

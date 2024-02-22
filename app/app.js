@@ -14,6 +14,7 @@ import Navbar from './_components/Navbar'
 import Footer from './_components/Footer'
 
 export default function App({ children }) {
+  
   const smoother = useRef()
   const ctx = useRef()
   const pathname = usePathname()
