@@ -6,7 +6,7 @@ import 'swiper/css/pagination'
 import { Mousewheel, Pagination } from 'swiper/modules'
 import clsx from "clsx"
 import Shape02 from "../_components/shapes/shape02"
-import Shape05 from "../_components/shapes/shape05"
+import Shape03 from "../_components/shapes/shape03"
 import { TextReveal } from "../_components/TextReveal"
 
 export default function WhyChooseUs() {
@@ -227,7 +227,7 @@ function CTA() {
         <h4>If you know someone who could benefit from this gift, please visit the website for details on how to nominate a candidate.</h4>
         <Link href="https://morethansmiles.org/" className="block px-6 py-2 font-medium bg-indigo-500 text-white w-fit transition-all shadow-[6px_6px_0px_rgb(39,_39,_42)] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">Learn More</Link>
       </div>
-      <Shape05 className="md:w-1/2" />
+      <Shape03 className="md:w-1/2" />
     </section>
   )
 }
