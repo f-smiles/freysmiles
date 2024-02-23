@@ -115,7 +115,7 @@ function DoctorsSection() {
           overflow: "hidden",
         }}
       >
-        <PurpleOrange
+        {/* <PurpleOrange
           className="headline-section"
           style={{
             position: "absolute",
@@ -128,12 +128,12 @@ function DoctorsSection() {
             backgroundRepeat: "no-repeat",
             transform: "rotate(90deg)",
           }}
-        />
+        /> */}
         <h1
           className="font-novela-regular headline"
           style={{
             textAlign: "center",
-            fontSize: "3rem",
+            fontSize: "4rem",
             textTransform: "uppercase",
           }}
         >
@@ -303,42 +303,61 @@ function MembersSection() {
       <div>
       <div className="cards" ref={cardsRef}>
 
-  <div
-    ref={block1Ref}
-    id="block-1"
-    className="block absolute text-center text-3xl rounded-full bg-pink-300"
-    style={{ width: "200px", height: "200px",}}
-  >
-Our members are X-ray certified
-  </div>
+      <div
+  ref={block1Ref}
+  id="block-1"
+  className="block absolute text-center text-xl text-white rounded-full"
+  style={{
+    width: "250px", 
+
+    height: "250px", 
+    display: "flex", 
+    alignItems: "center", 
+    justifyContent: "center", 
+    background: "radial-gradient(at 100% 100%, rgba(129,104,206,1) 20%, rgba(156,171,207,1) 100%)",
+    boxShadow: "4px 4px 20px 4px rgba(156, 171, 207, 0.5)"
+  }}
+>
+  Our members are X-ray certified
+</div>
 
  
   <div
     ref={block2Ref}
     id="block-2"
-    className="block absolute text-center text-3xl rounded-full bg-blue-300"
-    style={{ width: "300px", height: "300px",  }}
+    className="block absolute text-center text-xl rounded-full text-white"
+    style={{    display: "flex",  width: "300px", height: "300px",     alignItems: "center", 
+    justifyContent: "center",  background: "radial-gradient(at 100% 100%, rgb(177,161,225) 20%, rgba(156,171,207,1) 100%)",  }}
   >
 Trained in CPR and first aid
   </div>
 
 
   <div
-    ref={block3Ref}
-    id="block-3"
-    className="block absolute text-center text-3xl rounded-full bg-orange-400"
-    style={{ width: "400px", height: "400px"}}
-  >
-Designated by AAO as Specialized Orthodontic Assistant{" "}
-          <Link
-            href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/"
-            className="underline transition duration-200 underline-offset-4 text-secondary-40 hover:text-secondary-50"
-          >
-            (SOA)
-          </Link>
-          -a voluntary certification program to recognize those in the profession for
-          their knowledge and experience.
-  </div>
+  ref={block3Ref}
+  id="block-3"
+  className="block absolute text-center text-white text-xl rounded-full"
+  style={{
+    display: "flex", 
+    width: "400px", 
+    height: "400px", 
+    alignItems: "center", 
+    justifyContent: "center", 
+    background: "radial-gradient(at 100% 100%, rgb(188,161,225, 1) 20%, rgba(156,171,207,1) 100%)"
+  }}
+>
+  <span>
+    Recognized by the AAO as a 
+    <Link
+      href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/"
+      className=" transition duration-200 text-secondary-40 hover:text-secondary-50"
+    >
+      Specialized Orthodontic Assistant
+    </Link>
+
+  </span>
+</div>
+
 </div>
 
       </div>

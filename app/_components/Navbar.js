@@ -139,14 +139,14 @@ export default function Navbar() {
 
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out cursor-pointer active:bg-primary-50/80">
+            <li className="flex items-center text-sm tracking-wider uppercase transition duration-300 ease-in-out cursor-pointer active:bg-primary-50/80">
               <Link href="/" className="custom-cursor-target inline-block p-4">
      
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link> 
           </li>
             <li onClick={handleToggleAbout}>
-              <p className="custom-cursor-target hover:text-white font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="custom-cursor-target hover:text-white text-sm transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 About
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -232,7 +232,7 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleTogglePatient}>
-              <p className="custom-cursor-target font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="custom-cursor-target text-sm transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 Patient
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -318,7 +318,7 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleToggleTreatments}>
-              <p className="custom-cursor-target font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="custom-cursor-target text-sm transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 Treatments
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -408,7 +408,7 @@ export default function Navbar() {
                 href="https://my.orthoblink.com/bLink/Login"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p className="custom-cursor-target">Patient Login</p>
+                <p className="text-sm custom-cursor-target">Patient Login</p>
               </Link>
             </li>
 
@@ -417,7 +417,7 @@ export default function Navbar() {
                 href="/#locations"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p className="custom-cursor-target">Our Locations</p>
+                <p className="custom-cursor-target text-sm">Our Locations</p>
               </Link>
             </li>
 
@@ -426,7 +426,7 @@ export default function Navbar() {
                 href="/products"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p className="custom-cursor-target">Shop</p>
+                <p className="custom-cursor-target text-sm">Shop</p>
               </Link>
             </li>
 
@@ -591,7 +591,7 @@ export default function Navbar() {
                   className="py-2 border-b border-secondary-50/30"
                   onClick={() => setAbout(!about)}
                 >
-                  <span className="flex items-center gap-2 uppercase">
+                  <span className="flex items-center gap-2 ">
                     About <ChevronDownIcon className="w-4 h-4" />
                   </span>
                   {about && (
