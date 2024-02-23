@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import PurpleOrange from "../_components/shapes/PurpleOrange.js";
 
 import { useRef, useState, useEffect } from "react";
 import { gsap } from "gsap-trial";
@@ -24,13 +25,17 @@ export default function OurTeam() {
 }
 
 function DoctorsSection() {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   const [index, setIndex] = useState(1);
   const [switchDoctor, setSwitchDoctor] = useState(false);
 
   const toggleSwitchDoctor = () => {
     setSwitchDoctor(!switchDoctor);
   };
-
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -92,10 +97,16 @@ function DoctorsSection() {
 
   return (
     <section>
+      <div></div>
+
       <div
         className="headline-section"
         style={{
           backgroundColor: "#1B1B1E",
+          // backgroundImage: '../_components/shapes/PurpleOrange.js',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
           color: "#FBFFFE",
           display: "flex",
           justifyContent: "center",
@@ -104,11 +115,25 @@ function DoctorsSection() {
           overflow: "hidden",
         }}
       >
+        <PurpleOrange
+          className="headline-section"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100vh",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            transform: "rotate(90deg)",
+          }}
+        />
         <h1
-          className="headline"
+          className="font-novela-regular headline"
           style={{
             textAlign: "center",
-            fontSize: "4.5rem",
+            fontSize: "3rem",
             textTransform: "uppercase",
           }}
         >
@@ -245,83 +270,79 @@ function DoctorsSection() {
 }
 
 function MembersSection() {
-  const pathname = usePathname();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  let memberCardRef = useRef(null);
-
-  // let { scrollYProgress } = useScroll({
-  //   target: memberCardRef,
-  //   offset: ["start start", "end start"],
-  // });
-
-  // let y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-
-  // const gridRef = useRef(null);
-
-  // useEffect(() => {
-  //   const gridContainer = gridRef.current;
-
-  //   const gridItems = gridContainer.querySelectorAll('.grid__item');
-  //   gridItems.forEach(item => {
-  //     const image = item.querySelector('.grid__item-img');
-
-  //     gsap.to(image, {
-  //       scale: 0.5,
-  //       borderRadius: '50%',
-  //       scrollTrigger: {
-  //         trigger: item,
-  //         start: 'top 40%',
-  //         end: 'top top',
-  //         scrub: true
-  //       }
-  //     });
-  //   });
-  // }, []);
   const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
-
-  const checkIfVisible = () => {
-    if (!sectionRef.current) return;
-
-    const rect = sectionRef.current.getBoundingClientRect();
-    if (rect.top <= window.innerHeight && rect.bottom >= 0) {
-      setIsVisible(true);
-
-      window.removeEventListener('scroll', checkIfVisible);
-    }
-  };
-
+  const cardsRef = useRef(null);
+  const block1Ref = useRef(null);
+  const block2Ref = useRef(null);
+  const block3Ref = useRef(null);
   useEffect(() => {
-    window.addEventListener('scroll', checkIfVisible);
-    checkIfVisible(); 
+    const handleScroll = () => {
+      const scrollY = window.scrollY - cardsRef.current.offsetTop;
 
-    return () => {
-      window.removeEventListener('scroll', checkIfVisible);
+      const block1X = scrollY * 0.6;
+      const block1Y = scrollY * 0.4;
+      block1Ref.current.style.transform = `translate(${block1X}px, ${block1Y}px)`;
+
+      const block2X = scrollY * 0.2;
+      const block2Y = -scrollY * 0.5;
+      block2Ref.current.style.transform = `translate(${block2X}px, ${block2Y}px)`;
+
+      const block3X = -scrollY * 0.8;
+      const block3Y = scrollY * 0.3;
+      block3Ref.current.style.transform = `translate(${block3X}px, ${block3Y}px)`;
     };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-   const handleMouseover = (e) => {
-
-    document.querySelectorAll(".active").forEach(el => el.classList.remove("active"));
-
-    e.target.closest(".card").classList.add("active");
-  };
-
-
-useEffect(() => {
-    document.querySelectorAll(".card").forEach(card => card.addEventListener("mouseover", handleMouseover));
-
-    return () => {
-      document.querySelectorAll(".card").forEach(card => card.removeEventListener("mouseover", handleMouseover));
-    };
-  }, []); 
 
   return (
     <>
-          <div className="container">
+      <div>
+      <div className="cards" ref={cardsRef}>
+
+  <div
+    ref={block1Ref}
+    id="block-1"
+    className="block absolute text-center text-3xl rounded-full bg-pink-300"
+    style={{ width: "200px", height: "200px",}}
+  >
+Our members are X-ray certified
+  </div>
+
+ 
+  <div
+    ref={block2Ref}
+    id="block-2"
+    className="block absolute text-center text-3xl rounded-full bg-blue-300"
+    style={{ width: "300px", height: "300px",  }}
+  >
+Trained in CPR and first aid
+  </div>
+
+
+  <div
+    ref={block3Ref}
+    id="block-3"
+    className="block absolute text-center text-3xl rounded-full bg-orange-400"
+    style={{ width: "400px", height: "400px"}}
+  >
+Designated by AAO as Specialized Orthodontic Assistant{" "}
+          <Link
+            href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/"
+            className="underline transition duration-200 underline-offset-4 text-secondary-40 hover:text-secondary-50"
+          >
+            (SOA)
+          </Link>
+          -a voluntary certification program to recognize those in the profession for
+          their knowledge and experience.
+  </div>
+</div>
+
+      </div>
+      {/* <div className="container">
  
 
  <div className="card ">
@@ -377,7 +398,7 @@ useEffect(() => {
 
    <div className="top-section">
    <div className="circular-border" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100px', height: '100px', borderRadius: '50%'}}>
-     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-12 h-12">
+     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-24 h-auto">
   <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
 </svg>
 
@@ -395,9 +416,9 @@ useEffect(() => {
           their knowledge and experience.</p>
 
  </div>
-</div>
-      <section className="mt-20"  ref={sectionRef}>
-         {/* <h2 className="mb-6 text-center capitalize md:mb-8 text-primary-30">Our Members</h2>
+</div> */}
+      <section className="mt-20">
+        {/* <h2 className="mb-6 text-center capitalize md:mb-8 text-primary-30">Our Members</h2>
         <p className="sm:text-left md:text-center">
           Our members are X-ray certified, trained in CPR and first aid and most
           of them have received the designation of Specialized Orthodontic
@@ -413,9 +434,7 @@ useEffect(() => {
           their knowledge and experience.
         </p> */}
 
-        
-      <div className={`users-color-container ${isVisible ? 'animate' : ''}`}>
-
+        <div className={`users-color-container ${isVisible ? "animate" : ""}`}>
           <img
             className={`item ${isVisible ? "animate" : ""}`}
             src="/../../images/team_members/kayli-Photoroom.png"
@@ -423,13 +442,12 @@ useEffect(() => {
             alt=""
           />
           <img
-          className="item"
+            className="item"
             src="/../../images/team_members/alyssa-Photoroom.png"
             style={{ "--i": 2 }}
             alt=""
           />
           <img
-
             className="item"
             src="/../../images/team_members/nicolle-Photoroom.png"
             style={{ "--i": 3 }}
@@ -477,8 +495,10 @@ useEffect(() => {
         </div>
       </section>
 
-    <style jsx>{`
-        * { box-sizing: border-box; }
+      <style jsx>{`
+        * {
+          box-sizing: border-box;
+        }
 
         body {
           font-family: sans-serif;
@@ -497,7 +517,7 @@ useEffect(() => {
           display: inline-block;
           border-radius: 10px;
           width: 250px;
-          height: 300px; 
+          height: 300px;
           padding: 20px;
           overflow: hidden;
           cursor: pointer;
@@ -513,14 +533,14 @@ useEffect(() => {
         }
 
         .blob {
-          transform: translate(23%,3%) scale(0.65);
-          fill: rgb(217,197,180);
+          transform: translate(23%, 3%) scale(0.65);
+          fill: rgb(217, 197, 180);
           transition: 0.4s;
         }
 
         .card.active .blob {
-          fill: #d9c5b4; 
-          transform: translate(23%,3%) scale(3.75);
+          fill: #d9c5b4;
+          transform: translate(23%, 3%) scale(3.75);
         }
 
         .card.active .bg-overlay {
@@ -531,7 +551,7 @@ useEffect(() => {
           width: 100px;
           height: 100px;
           border-radius: 50%;
-          background-color: 	rgb(200,180,214);
+          background-color: rgb(200, 180, 214);
           position: relative;
         }
 
@@ -803,21 +823,21 @@ useEffect(() => {
     // </main>
     // <section className="flex flex-col items-center justify-center w-full px-0 py-24 md:px-14 xl:px-8">
     //   <div className="max-w-screen-lg">
-        // <h2 className="mb-6 text-center capitalize md:mb-8 text-primary-30">Our Members</h2>
-        // <p className="sm:text-left md:text-center">
-        //   Our members are X-ray certified, trained in CPR and first aid and most
-        //   of them have received the designation of Specialized Orthodontic
-        //   Assistant{" "}
-        //   <Link
-        //     href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/"
-        //     className="underline transition duration-200 underline-offset-4 text-secondary-40 hover:text-secondary-50"
-        //   >
-        //     (SOA)
-        //   </Link>
-        //   . This is a voluntary certification program started by the American
-        //   Association of Orthodontists to recognize those in the profession for
-        //   their knowledge and experience.
-        // </p>
+    // <h2 className="mb-6 text-center capitalize md:mb-8 text-primary-30">Our Members</h2>
+    // <p className="sm:text-left md:text-center">
+    //   Our members are X-ray certified, trained in CPR and first aid and most
+    //   of them have received the designation of Specialized Orthodontic
+    //   Assistant{" "}
+    //   <Link
+    //     href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/"
+    //     className="underline transition duration-200 underline-offset-4 text-secondary-40 hover:text-secondary-50"
+    //   >
+    //     (SOA)
+    //   </Link>
+    //   . This is a voluntary certification program started by the American
+    //   Association of Orthodontists to recognize those in the profession for
+    //   their knowledge and experience.
+    // </p>
     //   </div>
     //   <div className="relative flex items-center justify-center px-12 mt-8 xl:mt-14 md:px-10 2xl:px-14">
     //     <div className="relative z-10 flex flex-col items-center justify-center w-full space-y-4 sm:space-y-6 xl:space-y-0 xl:flex-row xl:space-x-6">
