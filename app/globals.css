@@ -443,3 +443,38 @@ padding:10px;
 .second {
   animation: marqueeTwo 40s linear infinite;
 }
+
+@keyframes smile {
+  50% {
+      stroke-dasharray: 20, 5.1327;
+  }
+}
+
+@keyframes eyes {
+  70% {
+      stroke-dasharray: 1, 0, 0.5, 23.6327;
+  }
+}
+
+.smiley:hover {
+  animation: rotate 1.2s cubic-bezier(0.65, 0, 0.75, 1);
+}
+
+.smiley:hover .smile {
+  animation: smile 1s cubic-bezier(0.2, 0, 0.8, 1);
+}
+
+.smiley:hover .eyes {
+  animation: eyes 1s cubic-bezier(.7, 0, 0.4, 1);
+}
+
+
+@keyframes initial-rotate {
+  to {
+      transform: rotateZ(360deg);
+  }
+}
+
+.initial-rotate {
+  animation: initial-rotate 1.2s cubic-bezier(0.65, 0, 0.75, 1);
+}

@@ -830,11 +830,12 @@ export default function Features() {
       <div style={{ backgroundColor }}>
         <div style={{ backgroundColor, position: "relative" }}>
           <div className="absolute pl-20 pt-10">
-            <img
-              src="/images/logo_icon.png"
-              alt="logo"
-              className="w-16 h-16 z-10"
-            />
+          <header className=" m-auto w-max">
+
+          <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
+            <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
+          </div>
+        </header>
           </div>
 
           <div className="flex items-center justify-center text-5xl">
