@@ -478,3 +478,46 @@ padding:10px;
 .initial-rotate {
   animation: initial-rotate 1.2s cubic-bezier(0.65, 0, 0.75, 1);
 }
+
+.layered-text {
+  position: absolute;
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-size: 10rem;
+  font-family: 'wild_worldbold', sans-serif;
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+}
+.solid-text {
+  color: white; 
+  -webkit-text-stroke: 0; 
+  z-index: 999; 
+  opacity: 1;
+}
+
+.outlined-text {
+  color: transparent; 
+  -webkit-text-stroke: 1px white; 
+  opacity: 0; 
+}
+
+.dot-hover {
+  width: 500px;
+  height: 500px;
+  position: absolute;
+  background-image: url('/images/collagebeforeafter.png');
+  background-attachment: fixed;
+  background-position: bottom;
+  background-size: cover;
+  border-radius: 50%;
+
+}
+
+.overlay {
+  /* background-color: rgba(255, 255, 255, 0.439); */
+  height: 100%;
+  border-radius: 50%;
+}

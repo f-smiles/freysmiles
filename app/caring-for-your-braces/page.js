@@ -1,7 +1,7 @@
 import CaringForYourBraces from "."
 
 export const metadata = {
-  title: "Book Now",
+  title: "Caring For Your Braces",
 }
 
 export default function Page() {
