@@ -276,4 +276,131 @@ header h1 {
 }
 
 
+*,body{
+  margin:0;
+  padding:0;
+  position:relative;
+}
+body::before{
+  content:"";
+  position:absolute;
+  display:block;
+  height:100%;
+  width:60%;
+  top:0;
+  left:20%;
+  border:1px solid #eee;
+  z-index:-1;
+}
+body::after{
+  content:"";
+  position:absolute;
+  display:block;
+  height:100%;
+  width:90%;
+  top:0;
+  left:5%;
+  border:1px solid #eee;
+}
 
+
+.fa-bars{
+  background-color:white;
+  padding:20px;
+  border-radius:50%;
+}
+.logo{
+padding:10px;
+  background-color:white
+}
+.headerFirst{
+  background-color:white;
+  display:flex;
+  justify-content:center;
+    flex-direction:column;
+}
+.header h1{
+  color:white;
+  z-index:9;
+  font-size:38px;
+}
+.scroll{
+  display:flex;
+  margin-top:50px;
+  color:white;
+}
+section{
+  height:100vh;
+  max-width:100%;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  z-index:2;
+}
+
+.header-reveal{
+  background-color:red;
+  min-width:100%;
+  height:100%;
+  position:absolute;
+  background-color: black;
+  /* background-image: url(https://images.unsplash.com/photo-1614247262098-76459e80e152?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1539&q=80); */
+  transform:scale(0.75);
+}
+.art-wrapper{
+  padding:20px 0;
+  margin:200px 0;
+}
+.art-wrapper::before{
+  content:"";
+  position:absolute;
+  width:80%;
+  height:60%;
+   background-color:#FFF;
+    border:1px solid #eee;
+
+}
+.container{
+  max-width:1200px;
+  margin:0 auto;
+  height:100%;
+  display:flex;
+  justify-content:space-between
+}
+.collumn{
+  display:inline-block;
+  height:100%;
+  Display:flex;
+}
+.collumn:first-child,
+.collumn:last-child{
+  width:20%; 
+}
+.collumn:nth-child(2){
+  width:40%;
+}
+.collumn img{
+  object-fit:contain;
+  width:100%;
+  height:auto;
+}
+.collumn:nth-child(2) img{
+  object-fit:cover;
+}
+.titel{
+  position:absolute;
+  color:white; 
+  font-size:60px;
+
+}
+.scroll,
+.titel span {
+    display: block;
+    font-size: 18px;
+    font-family: sans-serif;
+   text-align: center;
+  margin-top:30px;
+}
+.titel span .fa-chevron-right{
+  font-size:12px;
+}

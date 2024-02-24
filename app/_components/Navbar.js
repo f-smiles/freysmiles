@@ -232,7 +232,7 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleTogglePatient}>
-              <p className="custom-cursor-target text-sm transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="custom-cursor-target text-sm -transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 Patient
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
