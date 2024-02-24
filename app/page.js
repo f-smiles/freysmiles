@@ -1,423 +1,1022 @@
 'use client'
-import Link from 'next/link'
-import { useRef, useEffect, useState } from 'react'
-// Swiper.js
-import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/css'
-import 'swiper/css/pagination'
-import SwiperCore from 'swiper/core'
-import { Mousewheel, Pagination } from 'swiper/modules'
-// framer motion
-import { motion, stagger, useAnimate, useInView } from 'framer-motion'
-// headless ui
-import { Disclosure, Transition } from '@headlessui/react'
-// components
-import ArrowRightIcon from './_components/ui/ArrowRightIcon'
-import ChevronDownIcon from './_components/ui/ChevronDownIcon'
-import ChevronRightIcon from './_components/ui/ChevronRightIcon'
-import MapPin from './_components/ui/MapPin'
-import Shape01 from './_components/shapes/shape01'
+import React, { useRef, useEffect, useLayoutEffect, useState } from "react";
+// import LandingTestimonials from "../svg/LandingTestimonials.js";
+import { useInView } from "framer-motion";
+// import Logo from "../svg/Logo.js";
+// import Arc from "../svg/Arc";
+import { motion, useScroll, useTransform, useAnimation } from "framer-motion";
+import { gsap } from "gsap-trial";
+import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Link from "next/link";
+import SplitText from "gsap-trial/SplitText";
+// import { useNavigate } from "react-router-dom";
+// import { shuffle } from "lodash";
 
-SwiperCore.use([Mousewheel, Pagination])
-
-export default function Home() {
-
-  return (
-    <>
-      <Hero />
-      <Carousel />
-      <Locations />
-      <GiftCards />
-    </>
-  )
-}
-
+gsap.registerPlugin(SplitText);
+gsap.registerPlugin(ScrollSmoother, ScrollTrigger, SplitText);
 function Hero() {
+  const containerRef = useRef(null);
+  const div1Ref = useRef(null);
+  const div2Ref = useRef(null);
+  const div3Ref = useRef(null);
+  const div4Ref = useRef(null);
+  const listItemsRef = useRef(null);
 
-  return (
-    <div className="relative">
-      <div className="-z-10 absolute w-[100vw] h-full bg-rose-100" />
-      <header className="pt-16 m-auto w-max">
-        {/* #fec49b */}
-        {/* #FEBA76 */}
-        {/* #fdba74 orange-300 */}
-        {/* #fda4af rose-300 */}
-        {/*  #FDBA74, #FDB67E, #FDB388, #FDAF92, #FDAB9B, #FDA8A5, #FDA4AF */}
-        <div className="bg-[#FDBA74]/80 rounded-full shadow-[0px_0px_0px_8px_rgba(253,_186,_116,_0.4),_0px_0px_0px_16px_rgba(253,_181,_131,_0.3),_0px_0px_0px_24px_rgba(253,_175,_146,_0.2),_0px_0px_0px_32px_rgba(253,_170,_160,_0.1),_0px_0px_0px_40px_rgba(253,_164,_175,_0.05)]">
-          <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
-        </div>
-      </header>
-      <section className="px-8 xl:px-0 flex flex-col-reverse justify-center md:gap-8 md:flex-row md:h-[100vh] mx-auto max-w-7xl py-16">
-        <div className="relative flex items-center justify-center md:w-1/2">
-          <Shape01 className="w-full" />
-          <div className="absolute left-0 right-0 w-3/4 mx-auto space-y-6 text-white">
-            <h2 className="capitalize text-primary-50">Because every smile is unique</h2>
-            {/* <h2 className="capitalize text-primary-50">Oral health.<br/>Our passion.<br/>Our pride.</h2> */}
-            <span className="flex items-center gap-4">
-              <Link href="/book-now" className="flex items-center gap-2 p-4 transition-colors duration-300 ease-in-out rounded-md text-zinc-100 bg-primary-50 hover:bg-primary-30 group">
-                Book Now
-                {/* <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" /> */}
-              </Link>
-              <Link href="/our-team" className="p-4 rounded-md text-primary-30 group">
-                <span className="flex items-center gap-2">
-                  Our Team <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" />
-                </span>
-                <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-primary-50 ease-in-out" />
-              </Link>
-            </span>
-          </div>
-        </div>
-        <div className="bg-center bg-no-repeat bg-cover rounded-full md:w-1/2" style={{
-          backgroundImage: "url(/../../images/mainsectionimage.jpg)",
-          minHeight: "80vh",
-        }} />
-      </section>
-    </div>
-  )
-}
-
-function Carousel() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true })
-  const [activeIndex, setActiveIndex] = useState(0)
-
-  const urls = [
-    "url('/../../images/_mesh_gradients/39. Prelude.jpg')",
-    "url('/../../images/_mesh_gradients/14. Prim.jpg')",
-    "url('/../../images/_mesh_gradients/65. Prim.jpg')",
-  ]
-
-  const handleBackgroundChange = (index) => {
-    setActiveIndex(index)
-  }
-
-  return (
-    <div ref={ref} style={{
-      width: "100vw",
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      background: `center / cover no-repeat ${isInView ? urls[activeIndex] : ""}`,
-      opacity: isInView ? 1 : 0,
-      transition: isInView ? "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s" : "",
-    }}>
-      <Swiper
-        direction={'vertical'}
-        slidesPerView={1}
-        spaceBetween={30}
-        mousewheel={true}
-        pagination={{
-          clickable: true,
-        }}
-        modules={[Mousewheel, Pagination]}
-        className="mySwiper"
-        style={{
-          maxWidth: '80vw',
-          maxHeight: '80vh',
-          '--swiper-pagination-color': '#ad79e3', // primary-60
-          transform: isInView ? "translateY(0px)" : "translateY(200px)",
-          transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
-          opacity: isInView ? 1 : 0,
-        }}
-        onSlideChange={(swiper) => handleBackgroundChange(swiper.activeIndex)}
-      >
-        <SwiperSlide>
-          <div className="flex items-center justify-between h-full mx-auto max-w-7xl">
-            <figure className="w-1/3">
-              <img
-                className="object-contain object-left w-full h-full"
-                src="/../../images/aligner.png"
-                alt="invisalign"
-              />
-            </figure>
-            <span className="flex flex-col-reverse items-center justify-center w-1/3 h-full text-primary-40">
-              <p className="[writing-mode:vertical-lr] rotate-180 font-altero text-6xl [font-size:_clamp(2rem,5vw,6rem)]">Invis</p>
-              <p className="[writing-mode:vertical-lr] rotate-180 font-altero-outline [font-size:_clamp(2rem,5vw,6rem)]">align</p>
-            </span>
-            <div className="flex flex-col items-center w-1/3 px-8 mr-16 space-y-4 lg:px-0 text-zinc-800">
-              <p className="text-center lg:text-2xl">As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</p>
-              <Link
-                href="/invisalign"
-                className="lg:text-xl inline-block px-6 py-2 ease-linear border rounded-full w-max border-[#7781d9] hover:bg-[#7781d9] hover:border-0 hover:text-white"
-              >
-                Start Your Journey
-              </Link>
-            </div>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="flex items-center justify-between h-full mx-auto max-w-7xl">
-            <figure className="w-1/3">
-              <img
-                className="object-contain object-left w-full h-full"
-                src="/../../images/damonfull.png"
-                alt="damon braces on teeth"
-              />
-              <img
-                className="object-contain object-left w-1/2 h-auto mx-auto"
-                src="/../../images/damontech.png"
-                alt="damon bracket"
-              />
-            </figure>
-            <span className="flex justify-center w-1/3 h-full text-center text-primary-40">
-              <p className="[writing-mode:vertical-lr] font-altero mt-48 [font-size:_clamp(1rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)] rotate-180">Damon</p>
-              <p className="[writing-mode:vertical-lr] font-altero-outline [font-size:_clamp(1rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)] rotate-180">Bracket</p>
-            </span>
-            <div className="flex flex-col items-center w-2/6 px-8 mr-16 space-y-4 text-zinc-800">
-              <p className="text-center lg:text-2xl">Combining self-ligating braces with advanced archwires clinically proven to move teeth quickly and comfortably.</p>
-              <Link
-                href="/braces"
-                className="lg:text-xl inline-block px-6 py-2 ease-linear border rounded-full w-max border-[#e67fb4] hover:bg-[#e67fb4] hover:border-0 hover:text-white"
-              >
-                Damon System
-              </Link>
-            </div>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="flex items-center justify-between h-full mx-auto max-w-7xl">
-            <figure className="w-1/3">
-              <img
-                className="object-contain object-left w-2/3 h-auto mx-auto"
-                src="/../../images/itero2.png"
-                alt="itero2"
-              />
-            </figure>
-            <span className="flex justify-center w-1/3 h-full text-center text-primary-40">
-              <p className="[writing-mode:vertical-lr] rotate-180 font-altero mt-48 [font-size:_clamp(2rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)]">Advanced</p>
-              <p className="[writing-mode:vertical-lr] rotate-180 font-altero-outline [font-size:_clamp(2rem,5vw,4rem)] [line-height:_clamp(2rem,5vw,4rem)]">Technology</p>
-            </span>
-            <div className="flex flex-col items-center w-1/3 px-8 mr-16 space-y-4 text-zinc-800">
-              <p className="text-center lg:text-2xl">
-                We offer Invisalign without Impressions. Say goodbye to goopy impressions with our iTero digital scanner.
-              </p>
-              <Link
-                href="/"
-                className="lg:text-xl inline-block px-6 py-2 ease-linear border rounded-full w-max border-[#f2ab79] hover:bg-[#f2ab79] hover:border-0 hover:text-white"
-              >
-                Learn More
-              </Link>
-            </div>
-          </div>
-        </SwiperSlide>
-      </Swiper>
-    </div>
-  )
-}
-
-function Locations() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: false})
-  const [scope, animate] = useAnimate()
-  const [selectedLocation, setSelectedLocation] = useState("All")
-  const [activeDisclosurePanel, setActiveDisclosurePanel] = useState(null)
-
-  function toggleDisclosurePanels(newPanel) {
-    if (activeDisclosurePanel) {
-      if (activeDisclosurePanel.key !== newPanel.key && activeDisclosurePanel.open) {
-        activeDisclosurePanel.close()
-      }
-    }
-    setActiveDisclosurePanel({
-      ...newPanel,
-      open: !newPanel.open
-    })
-  }
-
-  const locations = [
-    {
-      location: "Allentown",
-      addressLine1: "1251 S Cedar Crest Blvd",
-      addressLine2: "Suite 210 Allentown, PA 18103",
-      mapbox_map_title: "FreySmiles Allentown [w/ Colors]",
-      mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALLENTOWN,
-      hours: [
-        { "Mon": "11:00 AM - 7:00 PM" },
-        { "Tue": "11:00 AM - 7:00 PM" },
-        { "Wed": "8:00 AM - 5:30 PM" },
-        { "Thu": "7:00 AM - 4:30 PM" },
-      ]
-    },
-    {
-      location: "Bethlehem",
-      addressLine1: "2901 Emrick Boulevard",
-      addressLine2: "Bethlehem, PA 18020",
-      mapbox_map_title: "FreySmiles Bethlehem [w/ Colors]",
-      mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_BETHLEHEM,
-      hours: [
-        { "Tue": "11:00 AM - 7:00 PM" },
-        { "Thu": "7:00 AM - 4:30 PM" },
-      ]
-    },
-    {
-      location: "Schnecksville",
-      addressLine1: "4155 Independence Drive",
-      addressLine2: "Schnecksville, PA 18078",
-      mapbox_map_title: "FreySmiles Schnecksville [w/ Colors]",
-      mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_SCHNECKSVILLE,
-      hours: [
-        { "Mon": "11:00 AM - 7:00 PM" },
-        { "Tue": "11:00 AM - 7:00 PM" },
-        { "Thu": "7:00 AM - 4:30 PM" },
-      ]
-    },
-    {
-      location: "Lehighton",
-      addressLine1: "1080 Blakeslee Blvd Dr E",
-      addressLine2: "Lehighton, PA 18235",
-      mapbox_map_title: "FreySmiles Lehighton [w/ Colors]",
-      mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_LEHIGHTON,
-      hours: [
-        { "Mon": "11:00 AM - 7:00 PM" },
-        { "Thu": "7:00 AM - 4:30 PM" },
-      ]
-    }
-  ]
+  ScrollTrigger.create({
+    trigger: listItemsRef.current,
+    start: "top top",
+    end: "+=100%",
+    pin: true,
+    pinSpacing: false,
+  });
 
   useEffect(() => {
-    animate("div", isInView 
-      ? { opacity: 1, transform: "translateX(0px)", scale: 1, 
-      } // filter: "blur(0px)" 
-      : { opacity: 0, transform: "translateX(-50px)", scale: 0.3, 
-      }, // filter: "blur(20px)" 
-      {
-        duration: 0.2,
-        delay: isInView ? stagger(0.1, { startDelay: 0.15 }) : 0,
-      }
-    )
-  }, [isInView])
+    gsap.set(div1Ref.current, { x: -100, y: -100 });
+    gsap.set(div2Ref.current, { x: 100, y: -100 });
+    gsap.set(div3Ref.current, { x: -100, y: 100 });
+    gsap.set(div4Ref.current, { x: 100, y: 100 });
+    gsap.to(div1Ref.current, {
+      x: 0,
+      y: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top bottom",
+        end: "center center",
+        scrub: true,
+      },
+    });
+
+    gsap.to(div2Ref.current, {
+      x: 0,
+      y: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top bottom",
+        end: "center center",
+        scrub: true,
+      },
+    });
+
+    gsap.to(div3Ref.current, {
+      x: 0,
+      y: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top bottom",
+        end: "center center",
+        scrub: true,
+      },
+    });
+    gsap.to(div4Ref.current, {
+      x: 0,
+      y: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top bottom",
+        end: "center center",
+        scrub: true,
+      },
+    });
+  }, []);
+
+  const heroContentRef = useRef(null);
+  const bookButtonRef = useRef(null);
+
+  const { scrollYProgress } = useScroll();
+  const scale = useTransform(scrollYProgress, [0.5, 1], [10, 40]);
+  function animateHeroContent() {
+    if (!heroContentRef.current) return;
+    const lines = heroContentRef.current.querySelectorAll(".hero-content-line");
+    lines.forEach((line, index) => {
+      gsap.fromTo(
+        line,
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1.5,
+          ease: "power3.out",
+          delay: index * 0.2,
+        }
+      );
+    });
+  }
+
+  function animateBookButton() {
+    if (!bookButtonRef.current) return;
+
+    gsap.fromTo(
+      bookButtonRef.current,
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" }
+    );
+  }
+
+  useLayoutEffect(() => {
+    animateHeroContent();
+    animateBookButton();
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateElement(entry.target);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    if (heroContentRef.current) {
+      observer.observe(heroContentRef.current);
+    }
+
+    if (bookButtonRef.current) {
+      observer.observe(bookButtonRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  function animateElement(element) {
+    if (element === heroContentRef.current) {
+      const lines =
+        heroContentRef.current.querySelectorAll(".hero-content-line");
+      lines.forEach((line, index) => {
+        gsap.fromTo(
+          line,
+          { y: 64, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+            delay: index * 0.2,
+          }
+        );
+      });
+    } else if (element === bookButtonRef.current) {
+      const button = bookButtonRef.current.querySelector(".book-button");
+      const arrowIcon = bookButtonRef.current.querySelector(".arrow-icon");
+
+      gsap.fromTo(
+        button,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
+      );
+
+      gsap.fromTo(
+        arrowIcon,
+        { scale: 0 },
+        { scale: 1, duration: 1, ease: "power3.out" }
+      );
+    }
+  }
+
+  //   const signs = document.querySelectorAll(".neon");
+
+  //   const randomIn = (min, max) =>
+  //     Math.floor(Math.random() * (max - min + 1) + min);
+
+  //   const mixupInterval = (el) => {
+  //     const ms = randomIn(2000, 4000);
+  //     el.style.setProperty("--interval", `${ms}ms`);
+  //   };
+
+  //   signs.forEach((el) => {
+  //     mixupInterval(el);
+  //     el.addEventListener("webkitAnimationIteration", () => {
+  //       mixupInterval(el);
+  //     });
+  //   });
+  // }, []);
+
+  const [isScaled, setIsScaled] = useState(false);
+  const [showBookNow, setShowBookNow] = useState(false);
+
+  const handleClick = () => {
+    setIsScaled(true);
+
+    setTimeout(() => {
+      setShowBookNow(true);
+    }, 3500);
+  };
+
+  const itemRefs = useRef([]);
+  itemRefs.current = [];
+  const setMultipleRefs = (element) => {
+    if (typeof listItemsRef === "function") {
+      listItemsRef(element);
+    } else if (listItemsRef) {
+      listItemsRef.current = element;
+    }
+
+    if (typeof addToRefs === "function") {
+      addToRefs(element);
+    } else if (addToRefs) {
+      addToRefs.current = element;
+    }
+  };
+
+  const addToRefs = (el) => {
+    if (el && !itemRefs.current.includes(el)) {
+      itemRefs.current.push(el);
+    }
+  };
+
+  const listRef = useRef(null);
+
+  const imageItems = [
+    {
+      imgSrc: "/images/happypatient.png",
+      text: "25k+ Patients",
+    },
+    {
+      imgSrc: "/images/lehighvalley.jpg",
+      text: "4 Bespoke Locations",
+    },
+    {
+      imgSrc: "/images/topsortho.png",
+      text: "50+ Years Experience",
+    },
+  ];
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const items = listRef.current.querySelectorAll(".list__item");
+
+    items.forEach((item) => {
+      const itemTitle = item.querySelector(".list__item__title");
+      const itemTitleOutline = item.querySelector(".list__item__titleOutline");
+      const itemImg = item.querySelector("img");
+
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: "0% 75%",
+            end: "25% 50%",
+            scrub: 3,
+          },
+        })
+        .fromTo(
+          [itemTitle, itemTitleOutline],
+          { scale: 2, y: "100%" },
+          { scale: 1, y: "0%", ease: "power2.inOut" }
+        );
+
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: "50% 100%",
+            end: "100% 50%",
+            scrub: 3,
+            onEnter: () =>
+              gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
+            onLeave: () =>
+              gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
+            onEnterBack: () =>
+              gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
+            onLeaveBack: () =>
+              gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
+          },
+        })
+        .fromTo(
+          itemImg,
+          { x: "60vw", y: "60vh", rotate: -30 },
+          {
+            x: "-60vw",
+            y: "-60vh",
+            rotate: 30,
+            ease: "none",
+          }
+        );
+    });
+  }, []);
 
   return (
-    <section ref={ref} id="locations" className="flex flex-col justify-center w-full mx-auto my-32 lg:flex-row max-w-7xl">
-      {/* LEFT */}
-        <div className="lg:w-1/2 lg:py-0">
-          <motion.div
-            className="p-6 space-y-10 overflow-auto"
-            style={{
-              transform: isInView ? "none" : "translateY(-50px)",
-              opacity: isInView ? 1 : 0,
-              transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"    
-            }}
-          >
-            <span className="flex items-baseline mt-4">
-              <h1 className="tracking-tight uppercase font-helvetica-now-thin text-primary-50">Our Locations</h1>
-              <MapPin className="ml-2 transition-all duration-300 hover:animate-bounce hover:cursor-pointer" />
-            </span>
-            <p>We have 4 incredible offices for your ultimate convenience. Our orthodontists and FreySmiles Team are excited to serve families in the Allentown, Bethlehem, Easton, Schnecksville and Lehighton communities.</p>
-            <Link
-              href="/book-now"
-              className="inline-block px-6 py-4 text-white transition duration-300 ease-linear rounded-full underline-offset-8 bg-primary-50 hover:bg-secondary-50 group"
-            >
-              Schedule an evaluation today
-              <span className="block h-[1px] transition-all duration-300 ease-linear bg-white rounded-full max-w-0 group-hover:max-w-full"></span>
-            </Link>
-          </motion.div>
+    <main
+      className="relative"
+      // style={{
+      //   background:
+      //     "linear-gradient(45deg, rgba(170,212,192,1) 0%, rgba(232,232,230,1) 100%)",
+      // }}
+    >
+      <div className="px-8 isolate  lg:px-8">
+        <div className="relative grid rounded-lg  max-w-screen-xl grid-cols-1 mx-auto sm:py-10 place-items-center lg:grid-cols-2">
+          <div className="absolute inset-0 flex justify-center items-center">
+            <svg>
+              <defs>
+                <clipPath
+                  id="myClipPath"
+                  clipPathUnits="objectBoundingBox"
+                  transform="scale(0.0004 0.0007)"
+                >
+                  <path d="M1746.43,38.94C849.17-212.65-120.14,825.24,12.19,1135.81c101.84,239,679.67,189.43,1132.31,162.51,448.32-26.66,958.25,402.35,1298.59-122.64C2733.65,727.5,2258.09,182.41,1746.43,38.94Z" />
+                </clipPath>
+              </defs>
+            </svg>
 
-          {/* LOCATIONS LIST */}
-          <motion.div className="flex flex-col space-y-4" style={{
-            transform: isInView ? "none" : "translateX(-50px)",
-            opacity: isInView ? 1 : 0,
-            transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
-          }}>
-            <button
-              className={`${
-                selectedLocation === "All" ? "text-secondary-50 underline" : ""
-              } self-end transition-all duration-300 ease-linear w-max text-primary-20 hover:text-secondary-50 mr-6`}
-              onClick={() => setSelectedLocation("All")}
+            {/* <img
+              src="/images/texturedpanel2.jpg"
+              alt="Description"
+              style={{
+                width: "800px",
+                height: "600px",
+                clipPath: "url(#myClipPath)",
+              }}
+            /> */}
+          </div>
+
+          <div className="relative z-10 mx-auto lg:mt-0">
+            <div className="flex items-center justify-center flex-wrap">
+              <div className="relative">
+                <div className="hero">
+                  <div className="hero-content  " ref={heroContentRef}>
+                    <div className=" marquee_features ">
+                      <div className="marquee__inner first">
+                        <span>Because</span>
+                        <span>Every</span>
+                        <span>Smile</span>
+                        <span>Is</span>
+                        <span>Unique</span>
+                      </div>
+                      <div className="marquee__inner second">
+                        <span>Because</span>
+                        <span>Every</span>
+                        <span>Smile</span>
+                        <span>Is</span>
+                        <span>Unique</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="relative flex justify-center items-center">
+            <div
+              className={`absolute z-20 inline-block ${
+                isScaled ? "scale-up" : "scale-100"
+              }`}
+              onClick={handleClick}
+              style={{ top: "10%", left: "-20%" }}
             >
-              {selectedLocation === "All" ? "Showing All Locations" : "Show All Locations"}
-            </button>
-            <dl ref={scope} className="divide-y divide-primary-70">
-              {locations.map((l, i) => (
-                <Disclosure as="div" key={l.location} className={`${selectedLocation === l.location ? "bg-primary-30 text-primary-95" : ""} px-4 py-6 transition-all duration-300 ease-linear cursor-pointer hover:bg-primary-50 hover:text-white group text-primary-20`}>
-                  {(panel) => {
-                    const { open, close } = panel
-                    return (<>
-                      <Disclosure.Button className="grid w-full grid-cols-12 text-left sm:px-0" onClick={() => {
-                        if (!open) close()
-                        toggleDisclosurePanels({...panel, key: i})
-                        setSelectedLocation(l.location)
-                      }}>
-                        <dt className="col-span-5 uppercase">
-                          <h6>{l.location}</h6>
-                        </dt>
-                        <dd className="col-span-7">
-                          <span className="flex items-center justify-between">
-                            <p>
-                              {l.addressLine1}
-                              <br />
-                              {l.addressLine2}
-                            </p>
-                            <ChevronRightIcon className="w-4 h-4 ui-open:rotate-90 ui-open:transform" />
-                          </span>
-                        </dd>
-                      </Disclosure.Button>
-                      <Transition
-                        enter="transition duration-100 ease-out"
-                        enterFrom="transform scale-95 opacity-0"
-                        enterTo="transform scale-100 opacity-100"
-                        leave="transition duration-75 ease-out"
-                        leaveFrom="transform scale-100 opacity-100"
-                        leaveTo="transform scale-95 opacity-0"
-                      >
-                        <Disclosure.Panel as="div" className="grid grid-cols-12 mt-6">
-                          <ul className="col-span-7 col-start-6 text-left">
-                            <h6 className="mb-2 font-medium uppercase">Office Hours:</h6>
-                            {l.hours.map((hour, index) => (
-                              <li key={index}>{Object.keys(hour)[0]}: {Object.values(hour)[0]}</li>
-                            ))}
-                          </ul>
-                        </Disclosure.Panel>
-                      </Transition>
-                    </>)
-                  }}
-                </Disclosure>
-              ))}
-            </dl>
-          </motion.div>
+        <Link href="/book-now" className="inline-flex justify-center items-center">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" className="w-48 h-48">
+    <path fill="#C8A2C8">
+      <animate attributeName="d" values="
+          M20,248c0,57.7,21.4,114.4,56.8,154.6C118.6,450,181.8,476,250,476c63,0,122-23.5,163.2-64.8
+          C454.5,370,480,315,480,252c0-68.1-29.9-133.3-77.2-175c-40.2-35.5-97-57-154.8-57C167.1,20,96,66.2,55.5,129.7
+          C33,165,20,203,20,248z;
+          M24,248c0,57.7,19.4,112.4,54.8,152.6C120.6,448,183.8,478,252,478c63,0,118-27.5,159.2-68.8
+          C452.5,368,482,317,482,254c0-68.1-29.9-137.3-77.2-179c-40.2-35.5-101-53-158.8-53C165.1,22,94,64.2,53.5,127.7
+          C31,163,24,203,24,248z;
+          M20,248c0,57.7,25.4,110.4,60.8,150.6C122.6,446,185.8,480,254,480c63,0,114-31.5,155.2-72.8
+          C450.5,366,484,319,484,256c0-68.1-29.9-139.3-77.2-181c-40.2-35.5-105-55-162.8-55C163.1,20,92,62.2,51.5,125.7
+          C29,161,20,203,20,248z;
+          M20,248c6.7,58.1,19.2,116.9,60.8,150.6c53.4,43.3,105.5,73,173.2,81.4c64,8,109.2-36.8,155.2-72.8
+          C453,373,494.2,318.1,484,256c-11-67-21.5-151.4-77.2-181C358,49,301.5,14.4,244,20C162,28,85.6,58.5,51.5,125.7
+          C31.2,165.9,14.8,203.3,20,248z;
+          M20,248c0,57.7,21.4,114.4,56.8,154.6C118.6,450,181.8,476,250,476c63,0,122-23.5,163.2-64.8
+          C454.5,370,480,315,480,252c0-68.1-29.9-133.3-77.2-175c-40.2-35.5-97-57-154.8-57C167.1,20,96,66.2,55.5,129.7
+          C33,165,20,203,20,248z"
+          dur="1.5s"
+          repeatCount="indefinite"
+      />
+    </path>
+  </svg>
+  <span className="font-HelveticaNowPro font-thin tracking-tight absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-white">
+    Book
+    <br />
+    Now
+  </span>
+</Link>
+            </div>
+
+            <img
+              className="rounded-full max-w-md z-10"
+              src="../../images/mainsectionimage.jpg"
+              alt="girl smiling"
+            />
+          </div>
         </div>
+      </div>
+      <div>
+        <section
+          ref={listRef}
+          className="flex flex-col items-center justify-center"
+        >
+          {imageItems && imageItems.map((item, index) => (
+            <div
+              key={index}
+              className="list__item relative w-full h-screen flex items-end pb-10"
+            >
+              <img
+                src={item.imgSrc}
+                alt={`Description ${index + 1}`}
+                className="absolute z-20 object-cover"
+                style={{
+                  top: "50%",
+                  left: "50%",
+                  width: "33%",
+                  height: "auto",
+                  aspectRatio: "9 / 14",
+                  transform: "translate(-50%, -50%)",
+                }}
+              />
+              <div
+                className="list__item__title absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold z-10"
+                style={{
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  fontSize: "12vw",
+                  fontFamily: '"Playfair Display"',
+                  lineHeight: "80%",
+                  color: "#221608",
+                }}
+              >
+                {item.text}
+              </div>
+              <div
+                className="list__item__titleOutline absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold z-30"
+                style={{
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  fontSize: "12vw",
+                  fontFamily: '"Playfair Display"',
+                  lineHeight: "80%",
+                  color: "transparent",
+                  WebkitTextStroke: "2px #221608",
+                }}
+              >
+                {item.text}
+              </div>
+            </div>
+          ))}
+        </section>
+      </div>
+      {/* <div className="rounded-full  mt-20 flex" 
+ 
+      >
+        <div className="flex flex-col w-1/3">
+     
+          <div className="text-container">
+            <span className="rotate-text neon subtitle font-Yellowtail-Regular font-thin">
+              Why Patients Choose Us
+            </span>
+     
+          </div>
+          <div className="h-64 "></div>
 
-      {/* RIGHT */}
-        <motion.div className="h-screen min-h-max lg:w-1/2 lg:h-auto" style={{
-          opacity: isInView ? 1 : 0,
-          filter: isInView ? "blur(0px)" : "blur(16px)",
-          transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"    
-        }}>
-          <iframe width="100%" height="100%"
-            src={
-              selectedLocation === "All"
-              ? process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALL_LOCATIONS
-              : locations.find((l) => l.location === selectedLocation).mapbox_iframe_url
-            }
-            title={
-              selectedLocation === "All"
-              ? "FreySmiles All Locations [w/ Colors]"
-              : locations.find((l) => l.location === selectedLocation).mapbox_map_title
-            }
-            style={{ border: "none" }}
-          />
-        </motion.div>
-    </section>
-  )
+          <button className="text-3xl font-HelveticaNowPro font-thin tracking-tight inline-flex items-center justify-center">
+            <Link
+              to="/why-choose-us"
+              className="circle-wipe-button  text-2xl rounded-full border border-white text-white p-4 mt-10 font-normal leading-6 transition-colors duration-300 ease-linear text-primary50 hover:text-primary30"
+              style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+            >
+              <span aria-hidden="true circle-wipe-text"></span>
+            </Link>
+          </button>
+        </div>
+        <div ref={containerRef} className="flex h-full">
+          <div className="flex flex-col w-1/3 ml-60">
+            <div
+              ref={div1Ref}
+              className="justify text-center border border-white py-20 mx-10 h-64 w-96"
+            >
+              <span className="text-7xl font-HelveticaNowPro font-thin">
+                50+
+              </span>{" "}
+              <span className="text-4xl font-HelveticaNowPro font-thin">
+                Years of Experience
+              </span>
+            </div>
+            <div
+              ref={div3Ref}
+              className="justify text-center border border-white py-20 mx-10 h-64 w-96 mt-6"
+            >
+              <span className="text-7xl font-HelveticaNowPro font-thin">
+                25k+
+              </span>
+              <span className="text-4xl font-HelveticaNowPro font-thin">
+                Patients
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col w-1/3 mr-20">
+            <div
+              ref={div2Ref}
+              className="justify text-center border border-white py-20 mx-10 h-64 w-96"
+            >
+              <span className="text-7xl font-HelveticaNowPro font-thin">
+                20+
+              </span>{" "}
+              <span className="text-4xl font-HelveticaNowPro font-thin">
+                Years of Education
+              </span>
+            </div>
+            <div
+              ref={div4Ref}
+              className="justify text-center border border-white py-20 mx-10 h-64 w-96 mt-6 font-HelveticaNowPro font-thin"
+            >
+              4 Bespoke Locations
+            </div>
+          </div>
+        </div>
+      </div> */}
+
+      {/* <Logo />
+      <LandingTestimonials /> */}
+    </main>
+  );
 }
 
-function GiftCards() {
-  const ref = useRef()
-  const isInView = useInView(ref)
+function Section({ children, color, zIndex, position }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, {
+    amount: 0.1,
+  });
 
   return (
-    <section ref={ref} className="relative max-w-screen-lg mx-auto my-24 group" style={{
-      transform: isInView ? "none" : "translateY(100px)",
-      opacity: isInView ? 1 : 0,
-      transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"    
-    }}>
-      <Link href={`${process.env.REACT_APP_SQUARE_GIFT_CARDS_URL}`} target='_blank'>
-        <div className="absolute inset-0 w-full h-full bg-primary-30 bg-opacity-80 text-white motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(35%_at_0%_0%)] group-hover:[clip-path:circle(75%_at_0%_0%)] group-hover:bg-opacity-100 flex justify-start items-start">
-          <span className='block my-[12%] mx-[6%] md:mx-[10%] md:my-[16%] lg:my-[8%] lg:mx-[3%] lg:px-12 lg:py-8 group-hover:mx-20 group-hover:my-32 transition-all group-hover:duration-[1s] ease-in-out md:group-hover:my-[20%] md:group-hover:mx-[16%]'>Send a Gift Card</span>
+    <div
+      ref={ref}
+      className="relative flex flex-col items-center justify-center min-h-screen text-primary95"
+      style={{
+        backgroundColor: color,
+        transform: isInView ? "translateY(-10)" : "translateY(100px)",
+        transition: "transform 0.5s ease-in-out",
+        zIndex: zIndex,
+        position: position,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+export default function Features() {
+  const damonImageRef = useRef(null);
+
+  useEffect(() => {
+    gsap.fromTo(
+      damonImageRef.current,
+      { y: () => -window.innerHeight * 0.2 },
+      {
+        y: () => window.innerHeight * 0.1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: damonImageRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      }
+    );
+  }, []);
+  const spring = {
+    type: "spring",
+    damping: 20,
+    stiffness: 300,
+  };
+
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    setIsPlaying(true);
+  }, []);
+
+  const arcContainerRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    if (arcContainerRef.current) {
+      gsap.fromTo(
+        arcContainerRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          scrollTrigger: {
+            trigger: arcContainerRef.current,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    }
+  }, []);
+
+  const [scrollY, setScrollY] = useState(0);
+
+  const [startArcAnimation, setStartArcAnimation] = useState(false);
+  const invisalignRef = useRef(null);
+
+  const damonRef = useRef(null);
+  const advancedTechRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      setIsVisible(entry.isIntersecting);
+    });
+
+    if (damonRef.current) {
+      observer.observe(damonRef.current);
+    }
+
+    return () => {
+      if (damonRef.current) {
+        observer.unobserve(damonRef.current);
+      }
+    };
+  }, [damonRef]);
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger, SplitText);
+
+    let tl = gsap.timeline();
+    tl.from(invisalignRef.current, {});
+
+    let shrinkTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: damonRef.current,
+        start: "top bottom",
+        end: "top top",
+        scrub: true,
+      },
+    });
+
+    shrinkTimeline.to(invisalignRef.current, {
+      scale: 0.5,
+      ease: "none",
+    });
+
+    let damonTitle = new SplitText(".damon-title", {
+      type: "lines, chars",
+      linesClass: "line",
+      charsClass: "char",
+    });
+    damonTitle.chars.forEach((char) => {
+      gsap.from(char, {
+        scrollTrigger: {
+          trigger: damonRef.current,
+          start: "top center",
+          toggleActions: "play none none none",
+        },
+        opacity: 0,
+        y: 20,
+        duration: 0.6,
+        ease: "power2.out",
+        stagger: 0.05,
+      });
+    });
+
+    // ScrollTrigger for pinning sections
+    // ScrollTrigger.create({
+    //   trigger: invisalignRef.current,
+    //   start: "top top",
+    //   end: "+=100%",
+    //   pin: true,
+    //   pinSpacing: false,
+    // });
+
+    // [damonRef, advancedTechRef].forEach((ref) => {
+    //   ScrollTrigger.create({
+    //     trigger: ref.current,
+    //     start: "top top",
+    //     end: "+=100%",
+    //     pin: true,
+    //     pinSpacing: false,
+    //   });
+    // });
+
+    ScrollTrigger.create({
+      trigger: damonRef.current,
+      start: "top center",
+      onEnter: () => setStartArcAnimation(true),
+      onLeaveBack: () => setStartArcAnimation(false),
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, []);
+
+  // const sectionHeight = window.innerHeight;
+
+  // const invisalignStyle = {
+  //   position: "relative",
+  //   zIndex: 1,
+  //   top: 0,
+  // };
+
+  // const damonStartScroll = sectionHeight * 1.4;
+  // const advancedTechStartScroll = damonStartScroll + sectionHeight;
+
+  // const damonStyle = {
+  //   position: "relative",
+  //   zIndex: 2,
+  //   top:
+  //     scrollY >= damonStartScroll
+  //       ? `${-(scrollY - damonStartScroll)}px`
+  //       : `${sectionHeight}px`,
+  // };
+
+  // const advancedTechStyle = {
+  //   position: "relative",
+  //   zIndex: 3,
+  //   top:
+  //     scrollY >= advancedTechStartScroll
+  //       ? `${-(scrollY - advancedTechStartScroll)}px`
+  //       : `${sectionHeight}px`,
+  // };
+
+
+  const [backgroundColor, setBackgroundColor] = useState("transparent");
+  useEffect(() => {
+    setBackgroundColor("rgb(234,222,219)");
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const transitionStart = 40;
+      const transitionEnd =
+        document.documentElement.scrollHeight - window.innerHeight;
+
+      const colorTransitions = [
+        {
+          start: transitionStart,
+          end: transitionEnd * 0.25,
+          colorStart: [234,222,219],
+          colorEnd: [227, 217, 225],
+        },
+        {
+          start: transitionEnd * 0.25,
+          end: transitionEnd * 0.5,
+          colorStart: [227, 217, 225],
+          colorEnd: [221, 220, 220],
+        },
+        {
+          start: transitionEnd * 0.5,
+          end: transitionEnd * 0.75,
+          colorStart: [221, 220, 220],
+          colorEnd: [175, 167, 181],
+        },
+        {
+          start: transitionEnd * 0.75,
+          end: transitionEnd,
+          colorStart: [175, 167, 181],
+          colorEnd: [209, 188, 204],
+        },
+      ];
+
+      const currentTransition = colorTransitions.find((transition) => {
+        return (
+          scrollPosition >= transition.start && scrollPosition < transition.end
+        );
+      });
+
+      if (currentTransition) {
+        const progress =
+          (scrollPosition - currentTransition.start) /
+          (currentTransition.end - currentTransition.start);
+        const scrollPercentage = Math.min(1, Math.max(0, progress));
+
+        const interpolatedColor = currentTransition.colorStart.map(
+          (start, i) => {
+            const end = currentTransition.colorEnd[i];
+            return Math.round(start + (end - start) * scrollPercentage);
+          }
+        );
+
+        setBackgroundColor(`rgb(${interpolatedColor.join(",")})`);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const { scrollYProgress } = useScroll();
+  const scale = useTransform(scrollYProgress, [0, 1], ["600%", "40%"]);
+  const translateY = useTransform(scrollYProgress, [0, 1], ["-50%", "0%"]);
+
+  const arcStyle = {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    width: "100%",
+    height: "100%",
+    border: "45px solid white",
+    borderTop: "none",
+    borderBottomLeftRadius: "175px",
+    borderBottomRightRadius: "175px",
+    transformOrigin: "50% 0",
+    animation: "rotate-arc .4s linear forwards",
+  };
+  return (
+    <>
+      <div style={{ backgroundColor }}>
+        <div style={{ backgroundColor, position: "relative" }}>
+          <div className="absolute pl-20 pt-10">
+            <img
+              src="/images/logo_icon.png"
+              alt="logo"
+              className="w-16 h-16 z-10"
+            />
+          </div>
+
+          <div className="flex items-center justify-center text-5xl">
+            <Hero />
+          </div>
         </div>
-        <img src="../../images/giftcards/gift_cards_mockup.jpg" alt="gift cards mockup" />
-      </Link>
-    </section>
-  )
+
+        <div ref={invisalignRef} className="section ">
+          <div className="text-2xl w-screen h-screen relative">
+            <div className="absolute inset-0 flex justify-center items-center">
+              <div className="flex w-full">
+                <div
+                  style={{
+                    backgroundImage: `url(${process.env.PUBLIC_URL}/images/blobpurple.png)`,
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                  className="min-h-screen w-1/2 flex flex-col justify-center items-center text-black text-center relative"
+                >
+                  <div className="relative">
+                    <img
+                      src="../images/ellipse.svg"
+                      alt="Ellipse"
+                      className="md:h-40"
+                      style={{
+                        filter: "invert(100%)",
+                        transform: "rotate(250deg)",
+                        position: "relative",
+                        zIndex: 1,
+                      }}
+                    />
+
+                    <h1
+                      className="text-violet-700 -mt-60 text-5xl font-thin mx-auto leading-tight"
+                      style={{
+                        width: "200px",
+                        position: "relative",
+                        zIndex: 2,
+                      }}
+                    >
+                      Top 1% of Invisalign providers.
+                      <br />
+                      Experience matters.
+                    </h1>
+                  </div>
+                  {/* <img
+          className="absolute  left-1/2 transform -translate-x-1/2 w-64 h-auto"
+          src="../images/invisalign-tray.png"
+          alt="clear aligner"
+        /> */}
+                </div>
+
+                <div className="relative w-1/2 flex justify-center items-center"></div>
+                <button className="text-3xl font-HelveticaNowPro font-thin tracking-tight inline-flex items-center justify-center">
+                <Link href="/invisalign">
+  <div
+    className="circle-wipe-button text-xl rounded-full border border-white text-white p-4 mt-10 font-normal leading-6 transition-colors duration-300 ease-linear text-primary50 hover:text-primary30"
+    style={{
+      width: "120px",
+      height: "120px",
+      borderRadius: "50%",
+    }}
+  >
+    <span aria-hidden="true" className="circle-wipe-text">Learn More</span>
+  </div>
+</Link>
+
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div ref={damonRef} className="rounded-3xl section bg-a3bba3 ">
+          <div class="w-screen  h-screen  ">
+            <div className="flex items-center justify-center max-w-screen-xl mx-auto lg:flex-row">
+              <div className="w-1/2 flex flex-col justify-center items-center">
+                <div className="flex items-center justify-center h-screen">
+                  <figure className="relative m-[75vh_0] w-[24rem] h-[32rem] overflow-hidden">
+                    <img
+                      ref={damonImageRef}
+                      src="/images/monse.jpg"
+                      alt="Description"
+                      className=" absolute top-[-10rem] left-0 h-[calc(100%_+_20rem)] w-full object-cover"
+                    />
+                  </figure>
+                </div>
+                <div className="absolute  z-10 flex justify-center items-center">
+                  {/* <Arc triggerRef={damonRef} /> */}
+                </div>
+                <div className=" p-4 "></div>
+              </div>
+
+              <figure className="flex flex-col items-center justify-center w-1/2 relative">
+                <h1
+                  className="text-3xl font-thin w-64 text-center mx-auto "
+                  style={{}}
+                >
+                  Damon Bracket: less appointments faster treatment time
+                  {/* Combining self-ligating braces with advanced archwires
+                clinically proven to move teeth quickly and comfortably. */}
+                </h1>
+
+                <div className="playing">
+                  <div className="mt-4 flex justify-center">
+
+                  <Link href="/braces">
+  <div
+    className={`flex items-center justify-center px-6 py-4 transition-colors duration-300 ease-linear border rounded-full border-[#7781d9] hover:bg-gray-800 hover:border-0 hover:text-white ${isVisible ? "ball-animation" : ""}`}
+    style={{
+      width: "120px",
+      height: "120px",
+      borderRadius: "50%",
+      display: "inline-block", 
+      textAlign: "center", 
+      lineHeight: "120px", 
+    }}
+  >
+    Explore
+  </div>
+</Link>
+
+
+                  </div>
+                </div>
+              </figure>
+            </div>
+          </div>
+        </div>
+
+        <div ref={advancedTechRef} className="h-[100vh] relative">
+          <motion.div
+            style={{ scale }}
+            className="absolute top-0 right-0 w-full h-full -translate-y-1/2"
+          >
+            <svg viewBox="0 0 256 256" className="w-full h-full">
+              <g>
+                <path
+                  fill="#a3bba3"
+                  d="M10,71.6c0,17.2,4.5,36.1,12.3,52c17,34.7,49.9,58.6,88.4,64.6c8.9,1.4,25.9,1.4,34.5,0c28.3-4.4,53.7-18.4,71.8-39.4c13.2-15.4,22.2-33.4,26.2-52.4c1.7-8,2.8-18.3,2.8-25.2v-4.5H128H10V71.6z"
+                />
+              </g>
+            </svg>
+          </motion.div>
+          <div className="tech-background flex flex-col items-center justify-center max-w-screen-xl mx-auto lg:flex-row">
+            <div className="flex items-center justify-center relative w-1/2 flex-col">
+              <figure className="flex items-center justify-center ">
+                {/* <img src="../images/circletdot.svg" alt="dot" /> */}
+              </figure>
+            </div>
+
+            <div className="flex items-center justify-center h-screen relative w-1/3 flex-col">
+              <img
+                src="../images/dotcircle.png"
+                alt="invis"
+                className="relative w-96 h-auto"
+                style={{
+                  zIndex: 1,
+                  top: "30%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                }}
+              />
+              <p className="text-3xl pb-4 absolute" style={{ zIndex: 2 }}>
+                Our doctor have been pioneering the most comfortable appliances
+                for your treatment since 2005
+              </p>
+              <Link href="/invisalign">
+  <div
+    className="inline-block px-6 py-4 transition-colors duration-300 ease-linear border rounded-full border-[#f2ab79] hover:bg-gray-800 hover:border-0 hover:border-secondary50 hover:text-white"
+    style={{ zIndex: 1 }}
+  >
+    Learn More
+  </div>
+</Link>
+
+            </div>
+
+            <div></div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }

@@ -1,25 +1,24 @@
-'use client'
-import React, {useEffect, useState} from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+"use client";
+import React, { useEffect, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
 const MuseumOfClassicalArt = () => {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    
+
     const headerRevealAnimation = gsap.to(".header-reveal", {
-      scale:1,
+      scale: 1,
       ease: "none",
       scrollTrigger: {
         trigger: ".headerFirst",
-        scrub: 1, 
-        pin:true,
-        end: "+=1000",
+        start: "top top",
+
+        scrub: 1,
+        pin: true,
+        end: "+=2000",
       },
-
-
-  
     });
     gsap.fromTo(
       ".headline",
@@ -44,7 +43,7 @@ const MuseumOfClassicalArt = () => {
         scrub: 1,
       },
     });
-  
+
     gsap.to(".right-img", {
       yPercent: -10,
       ease: "none",
@@ -53,7 +52,7 @@ const MuseumOfClassicalArt = () => {
         scrub: 1,
       },
     });
-  
+
     gsap.to(".titel", {
       yPercent: -0,
       ease: "none",
@@ -63,102 +62,98 @@ const MuseumOfClassicalArt = () => {
         end: "100px",
       },
     });
-  
-    gsap.to(".left-scroll", {
-      xPercent: -100,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".artist",
-        scrub: 1,
-        start: "-50%",
-        pin: true,
-        end: "+=1000",
-      },
-    });
-  
-    gsap.to(".right-scroll", {
-      xPercent: 100,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".artist",
-        scrub: 1,
-        pin: true,
-        start: "-50%",
-        end: "+=1000",
-      },
-    });
-  
+
     return () => {
       headerRevealAnimation.kill();
     };
   }, []);
-  
-  
-  
+
   return (
-    <>
-    
+<>
+  <section className="headerFirst" style={{ height: "100vh", maxWidth: "100%", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 2 }}>
+    <div className="header-reveal  text-8xl"></div>
+    <h1
+      className="font-novela-regular headline text-white"
+      style={{
+        textAlign: "center",
+        fontSize: "4rem",
+        textTransform: "uppercase",
+        zIndex: 10,
+      }}
+    >
+      MEET OUR TEAM
+    </h1>
+  </section>
 
-
-      <section className="headerFirst">
-        <div className="header-reveal  text-8xl"></div>
-        <h1
-          className="font-novela-regular headline text-white"
-          style={{
-            textAlign: "center",
-            fontSize: "4rem",
-            textTransform: "uppercase",
-            zIndex: 10
-          }}
-        >
-          MEET OUR TEAM
-        </h1>
-  
-      </section>
-
-      <section id="art" className="art-wrapper">
-        <div className="container">
-          <div className="collumn">
-            <img className="left-img" src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=704&q=80" alt="" />
-          </div>
-          <div className="collumn">
-            <img className="mid-img" src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=986&q=80" alt="" />
-          </div>
-          <div className="collumn">
-            <img className="right-img" src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=983&q=80" alt="" />
-          </div>
-        </div>
-        <div className="titel">
+  <section className="text-wrapper" style={{ height: "100vh", maxWidth: "100%", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 2 }}>
+    <div className="imageContainer">
+      <div className="collumn">
+        <img
+          className="left-img"
+          src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=704&q=80"
+          alt=""
+        />
+      </div>
+      <div className="collumn">
+        <img
+          className="mid-img"
+          src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=986&q=80"
+          alt=""
+        />
+      </div>
+      <div className="collumn">
+        <img
+          className="right-img"
+          src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=983&q=80"
+          alt=""
+        />
+      </div>
+    </div>
+    <div className="titel">
       Our Doctors
-          <span>::<i className="fas fa-chevron-right"></i></span>
-        </div>
-      </section>
+      <span>
+        ::<i className="fas fa-chevron-right"></i>
+      </span>
+    </div>
+  </section>
 
-      <section id="art" className="art-wrapper">
-        <div className="container">
-          <div className="collumn">
-            <img className="right-img" src="https://images.unsplash.com/photo-1574184180347-527304c53004?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=989&q=80" alt="" />
-          </div>
-          <div className="collumn">
-            <img className="mid-img" src="https://images.unsplash.com/photo-1583934555852-537536e49071?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1015&q=80" alt="" />
-          </div>
-          <div className="collumn">
-            <img className="left-img" src="https://images.unsplash.com/photo-1576503918400-0b982e6a98bf?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1007&q=80" alt="" />
-          </div>
-        </div>
-        <div className="titel">
-         YOUR TEAM
-          <span>View More <i className="fas fa-chevron-right"></i></span>
-        </div>
-      </section>
+  <section id="art" className="text-wrapper" style={{ height: "100vh", maxWidth: "100%", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 2 }}>
+    <div className="imageContainer">
+      <div className="collumn">
+        <img
+          className="right-img"
+          src="https://images.unsplash.com/photo-1574184180347-527304c53004?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=989&q=80"
+          alt=""
+        />
+      </div>
+      <div className="collumn">
+        <img
+          className="mid-img"
+          src="https://images.unsplash.com/photo-1583934555852-537536e49071?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1015&q=80"
+          alt=""
+        />
+      </div>
+      <div className="collumn">
+        <img
+          className="left-img"
+          src="https://images.unsplash.com/photo-1576503918400-0b982e6a98bf?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1007&q=80"
+          alt=""
+        />
+      </div>
+    </div>
+    <div className="titel">
+      YOUR TEAM
+      <span>
+        View More <i className="fas fa-chevron-right"></i>
+      </span>
+    </div>
+  </section>
+</>
 
-    </>
   );
 };
 
 export default MuseumOfClassicalArt;
-
-
 
 // 'use client'
 // import Link from "next/link"
@@ -383,7 +378,8 @@ export default MuseumOfClassicalArt;
 //   )
 // }
 
-{/* <div className="relative self-center w-full md:w-1/2">
+{
+  /* <div className="relative self-center w-full md:w-1/2">
           <img
             className="w-full"
             src="/../../images/smilescholarship.jpg"
@@ -394,4 +390,5 @@ export default MuseumOfClassicalArt;
               <h3 className="font-helvetica-now-thin">Giving Back</h3>
             </div>
           </div>
-        </div> */}
+        </div> */
+}
