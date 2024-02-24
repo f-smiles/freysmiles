@@ -521,3 +521,40 @@ padding:10px;
   height: 100%;
   border-radius: 50%;
 }
+
+
+
+@-webkit-keyframes marqueeTestimonial {
+  0% {
+    transform: translate3d(25%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-25%, 0, 0);
+  }
+}
+
+@keyframes marqueeTestimonial {
+  0% {
+    transform: translate3d(25%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-25%, 0, 0);
+  }
+}
+
+.heroTestimonial .groupTestimonial .row span {
+  font-family: serif;
+  font-weight: 600;
+  line-height: 1em;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+
+  color: #111;
+  font-size: 320px;
+  margin: 0 90px;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: #333;
+}
+
+
+
