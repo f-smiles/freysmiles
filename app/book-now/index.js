@@ -201,7 +201,7 @@ const BookNow = () => {
       <div className=" mt-10 text-center text-5xl mb-20" style={{letterSpacing:"px"}}>
                SAY HELLO
               </div>
-              <div className="text-center">We can't wait to meet you</div>
+              <div className="text-center">We cant wait to meet you</div>
 
               <div className="text-center">
       <a className="underline" href="mailto:info@freysmiles.com">info@freysmiles.com</a>
