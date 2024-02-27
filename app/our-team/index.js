@@ -16,10 +16,11 @@ import useIsomorphicLayoutEffect from "@/_helpers/isomorphicEffect";
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger, SplitText);
 
 export default function OurTeam() {
+  
   return (
     <>
       <DoctorsSection />
-      <MembersSection />
+      {/* <MembersSection /> */}
     </>
   );
 }
@@ -219,7 +220,7 @@ function DoctorsSection() {
             </div>
           </div>
           <div className="col-span-7 lg:col-span-4 lg:col-start-7">
-            <figure className="w-full aspect-[3/4] h-max overflow-hidden flex items-start">
+          <figure className="w-full aspect-[3/4] h-max overflow-hidden flex items-start">
               <img
                 className={`${
                   switchDoctor ? "right" : "switch-right"
@@ -278,6 +279,7 @@ function MembersSection() {
   const block3Ref = useRef(null);
   useEffect(() => {
     const handleScroll = () => {
+      if (!cardsRef.current) return;
       const scrollY = window.scrollY - cardsRef.current.offsetTop;
 
       const block1X = scrollY * 0.6;
