@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+
 import {
   motion,
   stagger,
@@ -140,7 +141,19 @@ export default function Testimonials() {
 
   return (
     <>
-      <section className="w-full">
+
+{/* <svg class="svg-blob" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 650">
+    <path fill="#0F9381" fill-opacity=".9" d="M0,64L20,106.7C40,149,80,235,120,256C160,277,200,235,240,229.3C280,224,320,256,360,240C400,224,440,160,480,112C520,64,560,32,600,48C640,64,680,128,720,128C760,128,800,64,840,48C880,32,920,64,960,96C1000,128,1040,160,1080,165.3C1120,171,1160,149,1200,128C1240,107,1280,85,1320,74.7C1360,64,1400,64,1420,64L1440,64L1440,0L1420,0C1400,0,1360,0,1320,0C1280,0,1240,0,1200,0C1160,0,1120,0,1080,0C1040,0,1000,0,960,0C920,0,880,0,840,0C800,0,760,0,720,0C680,0,640,0,600,0C560,0,520,0,480,0C440,0,400,0,360,0C320,0,280,0,240,0C200,0,160,0,120,0C80,0,40,0,20,0L0,0Z"></path>
+</svg> */}
+
+<div className="-mt-80">
+<svg class="svg-blob2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 650">
+    <path fill="#0F9381" fill-opacity=".9" d="M0,128L20,160C40,192,80,256,120,245.3C160,235,200,149,240,117.3C280,85,320,107,360,106.7C400,107,440,85,480,101.3C520,117,560,171,600,181.3C640,192,680,160,720,176C760,192,800,256,840,282.7C880,309,920,299,960,288C1000,277,1040,267,1080,245.3C1120,224,1160,192,1200,186.7C1240,181,1280,203,1320,192C1360,181,1400,139,1420,117.3L1440,96L1440,320L1420,320C1400,320,1360,320,1320,320C1280,320,1240,320,1200,320C1160,320,1120,320,1080,320C1040,320,1000,320,960,320C920,320,880,320,840,320C800,320,760,320,720,320C680,320,640,320,600,320C560,320,520,320,480,320C440,320,400,320,360,320C320,320,280,320,240,320C200,320,160,320,120,320C80,320,40,320,20,320L0,320Z"></path>
+</svg>
+</div>
+<section className="w-full">
+      <div className="MainContainer">
+      <div className="font-cera-bold ParallaxContainer">
         <section
           className="heroTestimonial"
           style={{
@@ -150,7 +163,8 @@ export default function Testimonials() {
             width: "100%",
             height: "135vh",
             textAlign: "center",
-            backgroundColor: "#000",
+            backgroundColor: "#fffff",
+       
           }}
         >
           <div
@@ -170,7 +184,7 @@ export default function Testimonials() {
             <div
               className="row"
               style={{
-                width: "800vw",
+                width: "260vw",
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "flex-start",
@@ -199,7 +213,7 @@ export default function Testimonials() {
             <div
               className="row"
               style={{
-                width: "800vw",
+                width: "280vw",
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "flex-start",
@@ -217,8 +231,8 @@ export default function Testimonials() {
                 animationDirection: "reverse",
               }}
             >
-              <span style={{ fontStyle: "italic" }}>Why</span>
-              <span style={{ fontStyle: "italic" }}>Our</span>
+              <span style={{ fontStyle: "italic" }}>Love</span>
+              <span style={{ fontStyle: "italic" }}>Us</span>
               <span style={{ fontStyle: "italic" }}>Patients</span>
               <span style={{ fontStyle: "italic" }}>Love</span>
               <span style={{ fontStyle: "italic" }}>Us</span>
@@ -229,7 +243,7 @@ export default function Testimonials() {
             <div
               className="row"
               style={{
-                width: "800vw",
+                width: "300vw",
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "flex-start",
@@ -257,7 +271,8 @@ export default function Testimonials() {
             </div>
           </div>
         </section>
-
+</div>
+<div className="border rounded-2xl ContentContainer">
         <div className="relative isolate">
           <svg
             className="absolute inset-x-0 top-0 -z-10 h-[64rem] w-full stroke-gray-200 [mask-image:radial-gradient(32rem_32rem_at_center,white,transparent)]"
@@ -444,7 +459,12 @@ export default function Testimonials() {
             </div>
           </div>
         </div>
+        </div>
+        </div>
       </section>
+
+
+
 
       <section className="mb-32 sm:pb-32">
         <div className="relative mt-32 isolate sm:mt-56 sm:pt-32">
@@ -505,9 +525,7 @@ export default function Testimonials() {
 
             <div className="px-6 mx-auto max-w-7xl lg:px-8">
               <div className="max-w-xl mx-auto sm:text-center">
-                <h2 className="text-lg font-semibold leading-8 text-primary-50">
-                  Testimonials
-                </h2>
+        
                 <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                   Here&apos;s what others had to say about us
                 </p>

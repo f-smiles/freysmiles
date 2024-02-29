@@ -38,8 +38,12 @@ export default function App({ children }) {
       <PersistGate loading={null} persistor={persistor}>
         <Navbar />
         <main>
-          <div id="smooth-wrapper">
-            <div id="smooth-content">
+          <div 
+          // id="smooth-wrapper"
+          >
+            <div 
+            // id="smooth-content"
+            >
               {children}
               <Footer />
             </div>

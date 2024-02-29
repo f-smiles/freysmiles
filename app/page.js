@@ -1,5 +1,7 @@
-'use client'
+"use client";
 import React, { useRef, useEffect, useLayoutEffect, useState } from "react";
+import { Application, Sprite, Assets, Container, WRAP_MODES, DisplacementFilter } from 'pixi.js'
+import { TweenMax, Power0, Power1, Power3 } from 'gsap';
 // import LandingTestimonials from "../svg/LandingTestimonials.js";
 import { useInView } from "framer-motion";
 // import Logo from "../svg/Logo.js";
@@ -299,6 +301,144 @@ function Hero() {
     });
   }, []);
 
+  const titleRef = useRef(null);
+
+  useEffect(() => {
+    if (!titleRef.current) return;
+
+    const titleSpans = titleRef.current.querySelectorAll("h1 > span");
+    const titleSpansAfters = titleRef.current.querySelectorAll("h1 .after");
+
+    const animSpanFrom = {
+      "will-change": "opacity, transform",
+      opacity: 0,
+    };
+    const animSpanTo = {
+      duration: 0.62,
+      opacity: 1,
+      rotationX: 0,
+      yPercent: 0,
+      ease: "power1.inOut",
+      stagger: {
+        each: 0.1,
+      },
+    };
+
+    gsap
+      .timeline()
+      .fromTo(
+        titleSpans[0],
+        { ...animSpanFrom, rotationX: 90, yPercent: -50 },
+        animSpanTo
+      )
+      .fromTo(
+        titleSpans[1],
+        { ...animSpanFrom, rotationX: -90, yPercent: 50 },
+        animSpanTo,
+        "<"
+      )
+      .fromTo(
+        titleSpansAfters,
+        { width: "100%" },
+        { duration: 0.72, ease: "expo.inOut", width: "0%" },
+        "end"
+      );
+  }, []);
+  const marqueeRef = useRef(null);
+
+  useEffect(() => {
+    if (!marqueeRef.current) return;
+
+    const marqueeSpans = marqueeRef.current.querySelectorAll(
+      ".marquee__inner > span"
+    );
+
+    marqueeSpans.forEach((span, index) => {
+      gsap.fromTo(
+        span,
+        {
+          "will-change": "opacity, transform",
+          opacity: 0,
+          x: -50,
+        },
+        {
+          duration: 0.62,
+          opacity: 1,
+          x: 0,
+          ease: "power1.inOut",
+          stagger: 0.1,
+          delay: index * 0.1,
+        }
+      );
+    });
+  }, []);
+
+  const pixiContainerRef = useRef();
+
+  // useEffect(() => {
+  //   let app;
+
+  //   const initPIXI = async () => {
+  //     if (app) {
+  //       return;
+  //     }
+
+  //     app = new Application({
+  //       width: 400,
+  //       height: 713,
+  //       transparent: true
+  //     });
+
+  //     pixiContainerRef.current.appendChild(app.view);
+
+  //     const container = new Container();
+  //     app.stage.addChild(container);
+
+  //     const bgTexture = await Assets.load('../../images/mainsectionimage.jpg');
+  //     const displacementTexture = await Assets.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1600187/waterTemp.jpg');
+
+  //     if (app && app.renderer) {
+  //       const bg = Sprite.from(bgTexture);
+  //       bg.anchor.set(0.5);
+  //       bg.position.set(app.renderer.width / 2, app.renderer.height / 2);
+  //       bg.width = app.renderer.width;
+  //       bg.height = app.renderer.height;
+  //       container.addChild(bg);
+
+  //       const displacementSprite = Sprite.from(displacementTexture);
+  //       displacementSprite.texture.baseTexture.wrapMode = WRAP_MODES.REPEAT;
+
+  //       const displacementFilter = new DisplacementFilter(displacementSprite);
+  //       displacementFilter.scale.x = 200;
+  //       displacementFilter.scale.y = 1500;
+  //       container.filters = [displacementFilter];
+
+  //       gsap.to(displacementFilter.scale, {
+  //         x: 0,
+  //         y: 0,
+  //         duration: 1,
+  //         ease: "power1.out",
+  //         onComplete: () => {
+  //           container.filters = null;
+  //         }
+  //       });
+  //     }
+
+  //     return () => {
+  //       if (app) app.destroy(true, { children: true });
+  //     };
+  //   };
+
+  //   initPIXI();
+
+  //   return () => {
+  //     if (app && app.renderer) {
+  //       app.destroy(true, { children: true });
+  //     }
+  //   };
+  // }, []);
+
+
   return (
     <main
       className="relative"
@@ -307,6 +447,33 @@ function Hero() {
       //     "linear-gradient(45deg, rgba(170,212,192,1) 0%, rgba(232,232,230,1) 100%)",
       // }}
     >
+{/* <div className="flex items-center justify-center h-screen">
+  <div ref={titleRef} className="title">
+    <h1 className="">
+      <span className="relative block">
+        <div className="marquee__inner first marquee_features">
+          <span>Because</span>
+          <span>Every</span>
+          <span>Smile</span>
+          <span>Is</span>
+          <span>Unique</span>
+        </div>
+        <span className="after absolute bottom-0 left-0 w-0 h-full bg-black"></span>
+      </span>
+      <span className="relative block">
+        <div className="marquee__inner second marquee_features ">
+          <span>Because</span>
+          <span>Every</span>
+          <span>Smile</span>
+          <span>Is</span>
+          <span>Unique</span>
+        </div>
+        <span className="after absolute bottom-0 right-0 w-0 h-full bg-black"></span>
+      </span>
+    </h1>
+  </div>
+</div> */}
+<div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate  lg:px-8">
         <div className="relative grid rounded-lg  max-w-screen-xl grid-cols-1 mx-auto sm:py-10 place-items-center lg:grid-cols-2">
           <div className="absolute inset-0 flex justify-center items-center">
@@ -367,10 +534,19 @@ function Hero() {
               onClick={handleClick}
               style={{ top: "10%", left: "-20%" }}
             >
-        <Link href="/book-now" className="inline-flex justify-center items-center">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" className="w-48 h-48">
-    <path fill="#C8A2C8">
-      <animate attributeName="d" values="
+              <Link
+                href="/book-now"
+                className="inline-flex justify-center items-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 480 480"
+                  className="w-48 h-48"
+                >
+                  <path fill="#C8A2C8">
+                    <animate
+                      attributeName="d"
+                      values="
           M20,248c0,57.7,21.4,114.4,56.8,154.6C118.6,450,181.8,476,250,476c63,0,122-23.5,163.2-64.8
           C454.5,370,480,315,480,252c0-68.1-29.9-133.3-77.2-175c-40.2-35.5-97-57-154.8-57C167.1,20,96,66.2,55.5,129.7
           C33,165,20,203,20,248z;
@@ -386,17 +562,17 @@ function Hero() {
           M20,248c0,57.7,21.4,114.4,56.8,154.6C118.6,450,181.8,476,250,476c63,0,122-23.5,163.2-64.8
           C454.5,370,480,315,480,252c0-68.1-29.9-133.3-77.2-175c-40.2-35.5-97-57-154.8-57C167.1,20,96,66.2,55.5,129.7
           C33,165,20,203,20,248z"
-          dur="1.5s"
-          repeatCount="indefinite"
-      />
-    </path>
-  </svg>
-  <span className="font-HelveticaNowPro font-thin tracking-tight absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-white">
-    Book
-    <br />
-    Now
-  </span>
-</Link>
+                      dur="1.5s"
+                      repeatCount="indefinite"
+                    />
+                  </path>
+                </svg>
+                <span className="font-HelveticaNowPro font-thin tracking-tight absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-white">
+                  Book
+                  <br />
+                  Now
+                </span>
+              </Link>
             </div>
 
             <img
@@ -412,55 +588,56 @@ function Hero() {
           ref={listRef}
           className="flex flex-col items-center justify-center"
         >
-          {imageItems && imageItems.map((item, index) => (
-            <div
-              key={index}
-              className="list__item relative w-full h-screen flex items-end pb-10"
-            >
-              <img
-                src={item.imgSrc}
-                alt={`Description ${index + 1}`}
-                className="absolute z-20 object-cover"
-                style={{
-                  top: "50%",
-                  left: "50%",
-                  width: "33%",
-                  height: "auto",
-                  aspectRatio: "9 / 14",
-                  transform: "translate(-50%, -50%)",
-                }}
-              />
+          {imageItems &&
+            imageItems.map((item, index) => (
               <div
-                className="list__item__title absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold z-10"
-                style={{
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  fontSize: "12vw",
-                  fontFamily: '"Playfair Display"',
-                  lineHeight: "80%",
-                  color: "#221608",
-                }}
+                key={index}
+                className="list__item relative w-full h-screen flex items-end pb-10"
               >
-                {item.text}
+                <img
+                  src={item.imgSrc}
+                  alt={`Description ${index + 1}`}
+                  className="absolute z-20 object-cover"
+                  style={{
+                    top: "50%",
+                    left: "50%",
+                    width: "33%",
+                    height: "auto",
+                    aspectRatio: "9 / 14",
+                    transform: "translate(-50%, -50%)",
+                  }}
+                />
+                <div
+                  className="list__item__title absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold z-10"
+                  style={{
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "12vw",
+                    fontFamily: '"Playfair Display"',
+                    lineHeight: "80%",
+                    color: "#221608",
+                  }}
+                >
+                  {item.text}
+                </div>
+                <div
+                  className="list__item__titleOutline absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold z-30"
+                  style={{
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "12vw",
+                    fontFamily: '"Playfair Display"',
+                    lineHeight: "80%",
+                    color: "transparent",
+                    WebkitTextStroke: "2px #221608",
+                  }}
+                >
+                  {item.text}
+                </div>
               </div>
-              <div
-                className="list__item__titleOutline absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold z-30"
-                style={{
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  fontSize: "12vw",
-                  fontFamily: '"Playfair Display"',
-                  lineHeight: "80%",
-                  color: "transparent",
-                  WebkitTextStroke: "2px #221608",
-                }}
-              >
-                {item.text}
-              </div>
-            </div>
-          ))}
+            ))}
         </section>
       </div>
       {/* <div className="rounded-full  mt-20 flex" 
@@ -741,7 +918,6 @@ export default function Features() {
   //       : `${sectionHeight}px`,
   // };
 
-
   const [backgroundColor, setBackgroundColor] = useState("transparent");
   useEffect(() => {
     setBackgroundColor("rgb(234,222,219)");
@@ -755,7 +931,7 @@ export default function Features() {
         {
           start: transitionStart,
           end: transitionEnd * 0.25,
-          colorStart: [234,222,219],
+          colorStart: [234, 222, 219],
           colorEnd: [227, 217, 225],
         },
         {
@@ -825,17 +1001,26 @@ export default function Features() {
     transformOrigin: "50% 0",
     animation: "rotate-arc .4s linear forwards",
   };
+
   return (
     <>
       <div style={{ backgroundColor }}>
         <div style={{ backgroundColor, position: "relative" }}>
           <div className="absolute pl-20 pt-10">
-          <header className=" m-auto w-max">
-
-          <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
-            <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
-          </div>
-        </header>
+            <header className=" m-auto w-max">
+              {/* #fec49b */}
+              {/* #FEBA76 */}
+              {/* #fdba74 orange-300 */}
+              {/* #fda4af rose-300 */}
+              {/*  #FDBA74, #FDB67E, #FDB388, #FDAF92, #FDAB9B, #FDA8A5, #FDA4AF */}
+              <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
+                <img
+                  className="w-16 h-16 p-4"
+                  src="/../../logo_icon.png"
+                  alt="FreySmiles Orthodontists"
+                />
+              </div>
+            </header>
           </div>
 
           <div className="flex items-center justify-center text-5xl">
@@ -891,19 +1076,20 @@ export default function Features() {
 
                 <div className="relative w-1/2 flex justify-center items-center"></div>
                 <button className="text-3xl font-HelveticaNowPro font-thin tracking-tight inline-flex items-center justify-center">
-                <Link href="/invisalign">
-  <div
-    className="circle-wipe-button text-xl rounded-full border border-white text-white p-4 mt-10 font-normal leading-6 transition-colors duration-300 ease-linear text-primary50 hover:text-primary30"
-    style={{
-      width: "120px",
-      height: "120px",
-      borderRadius: "50%",
-    }}
-  >
-    <span aria-hidden="true" className="circle-wipe-text">Learn More</span>
-  </div>
-</Link>
-
+                  <Link href="/invisalign">
+                    <div
+                      className="circle-wipe-button text-xl rounded-full border border-white text-white p-4 mt-10 font-normal leading-6 transition-colors duration-300 ease-linear text-primary50 hover:text-primary30"
+                      style={{
+                        width: "120px",
+                        height: "120px",
+                        borderRadius: "50%",
+                      }}
+                    >
+                      <span aria-hidden="true" className="circle-wipe-text">
+                        Learn More
+                      </span>
+                    </div>
+                  </Link>
                 </button>
               </div>
             </div>
@@ -941,24 +1127,23 @@ export default function Features() {
 
                 <div className="playing">
                   <div className="mt-4 flex justify-center">
-
-                  <Link href="/braces">
-  <div
-    className={`flex items-center justify-center px-6 py-4 transition-colors duration-300 ease-linear border rounded-full border-[#7781d9] hover:bg-gray-800 hover:border-0 hover:text-white ${isVisible ? "ball-animation" : ""}`}
-    style={{
-      width: "120px",
-      height: "120px",
-      borderRadius: "50%",
-      display: "inline-block", 
-      textAlign: "center", 
-      lineHeight: "120px", 
-    }}
-  >
-    Explore
-  </div>
-</Link>
-
-
+                    <Link href="/braces">
+                      <div
+                        className={`flex items-center justify-center px-6 py-4 transition-colors duration-300 ease-linear border rounded-full border-[#7781d9] hover:bg-gray-800 hover:border-0 hover:text-white ${
+                          isVisible ? "ball-animation" : ""
+                        }`}
+                        style={{
+                          width: "120px",
+                          height: "120px",
+                          borderRadius: "50%",
+                          display: "inline-block",
+                          textAlign: "center",
+                          lineHeight: "120px",
+                        }}
+                      >
+                        Explore
+                      </div>
+                    </Link>
                   </div>
                 </div>
               </figure>
@@ -1004,14 +1189,13 @@ export default function Features() {
                 for your treatment since 2005
               </p>
               <Link href="/invisalign">
-  <div
-    className="inline-block px-6 py-4 transition-colors duration-300 ease-linear border rounded-full border-[#f2ab79] hover:bg-gray-800 hover:border-0 hover:border-secondary50 hover:text-white"
-    style={{ zIndex: 1 }}
-  >
-    Learn More
-  </div>
-</Link>
-
+                <div
+                  className="inline-block px-6 py-4 transition-colors duration-300 ease-linear border rounded-full border-[#f2ab79] hover:bg-gray-800 hover:border-0 hover:border-secondary50 hover:text-white"
+                  style={{ zIndex: 1 }}
+                >
+                  Learn More
+                </div>
+              </Link>
             </div>
 
             <div></div>

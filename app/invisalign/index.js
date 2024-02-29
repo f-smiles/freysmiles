@@ -294,6 +294,7 @@ const Invisalign = () => {
       sectionHeight: sectionRect.height,
     });
   }, 10);
+  
 
   return (
     <main >
