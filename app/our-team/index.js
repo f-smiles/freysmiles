@@ -1,18 +1,16 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { motion, useScroll } from 'framer-motion';
+import { motion, useScroll } from "framer-motion";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
 const OurTeam = () => {
-  
+  gsap.registerPlugin(ScrollTrigger);
   const [isVisible, setIsVisible] = useState(false);
- 
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
 
+  useEffect(() => {
     const headerRevealAnimation = gsap.to(".header-reveal", {
       scale: 1,
       ease: "none",
@@ -105,70 +103,72 @@ const OurTeam = () => {
       },
     });
   }, []);
-  const nameRef = useRef(null);
-  const pRef = useRef(null);
 
+
+  const teamRef = useRef(null);
+  const doctorRef = useRef(null);
 
   useEffect(() => {
-    if (!CSS.supports('animation-timeline: scroll()')) {
+    if (!CSS.supports("animation-timeline: scroll()")) {
       gsap.registerPlugin(ScrollTrigger);
       const scrub = 0.2;
 
-      if (nameRef.current) {
-        const name = nameRef.current;
+      if (teamRef.current) {
+        const team = teamRef.current;
 
-        gsap.timeline({
-          scrollTrigger: {
-            invalidateOnRefresh: true,
-            trigger: name.parentNode,
-            scrub: scrub,
-            start: "top top",
-            end: "bottom top-=25%"
-          }
-        })
-        .to(name, { opacity: 1 })
-        .to(name, {
-          scrollTrigger: {
-            invalidateOnRefresh: true,
-            trigger: name.parentNode,
-            scrub: scrub,
-            start: "top top",
-            end: "bottom top"
-          },
-          keyframes: {
-            "0%": { background: "transparent" },
-            "95%": { background: "transparent" },
-            "100%": { z: "99vh", background: "black" }
-          }
-        }, 0);
+        gsap
+          .timeline({
+            scrollTrigger: {
+              invalidateOnRefresh: true,
+              trigger: team.parentNode,
+              scrub: scrub,
+              start: "top top",
+              end: "bottom top-=25%",
+            },
+          })
+          .to(team, { opacity: 1 })
+          .to(
+            team,
+            {
+              scrollTrigger: {
+                invalidateOnRefresh: true,
+                trigger: team.parentNode,
+                scrub: scrub,
+                start: "top top",
+                end: "bottom top",
+              },
+              
+            },
+     
+          );
       }
 
-      if (pRef.current) {
-        const p = pRef.current;
+      if (doctorRef.current) {
+        const doctor = doctorRef.current;
 
-        gsap.timeline()
-          .to(p, {
+        gsap
+          .timeline()
+          .to(doctor, {
             opacity: 1,
             immediateRender: false,
             scrollTrigger: {
-              trigger: p.parentNode.parentNode,
+              trigger: doctor.parentNode.parentNode,
               scrub: scrub,
               start: "top bottom",
-              end: "top 50%"
-            }
+              end: "top 50%",
+            },
           })
-          .to(p, {
+          .to(doctor, {
             opacity: 0,
             immediateRender: false,
             scrollTrigger: {
-              trigger: p.parentNode.parentNode,
+              trigger: doctor.parentNode.parentNode,
               scrub: scrub,
               start: "bottom bottom",
-              end: "bottom 50%"
-            }
+              end: "bottom 50%",
+            },
           });
       }
-
     }
   }, []);
 
@@ -201,29 +201,30 @@ const OurTeam = () => {
           MEET OUR TEAM
         </h1>
       </section> */}
-<section className="main-section">
-  
-  <div className="section__content">
-    
-    <svg ref={nameRef}>
+      <section className="main-section">
+        <div className="section__content">
+          <svg ref={teamRef}>
+            <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle">
+              Meet Our Team
+            </text>
+          </svg>
+        </div>
+      </section>
 
-      <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle">
-        Meet Our Team
-      </text>
-    </svg>
-  </div>
-</section>
-
-<section className="main-section">
-  <div className="section__content">
-    <p ref={pRef}>
-    <div className="text-white font-didot flex justify-center items-center">
-    <h2 className="text-[100px] m-0 text-center leading-[0.9] vertical-text">Our</h2>
-    <h2 className="text-[100px] m-0 text-center leading-[0.9] normal-text">Doctors</h2>
-  </div>
-    </p>
-  </div>
-</section>
+      <section className="main-section">
+        <div className="section__content">
+          <p ref={doctorRef}>
+            <div className="text-white font-didot flex justify-center items-center">
+              <h2 className="text-[100px] m-0 text-center leading-[0.9] vertical-text">
+                Our
+              </h2>
+              <h2 className="text-[100px] m-0 text-center leading-[0.9] normal-text">
+                Doctors
+              </h2>
+            </div>
+          </p>
+        </div>
+      </section>
       <section
         className="text-wrapper"
         style={{
@@ -235,7 +236,6 @@ const OurTeam = () => {
           justifyContent: "center",
           alignItems: "center",
           zIndex: 2,
-
         }}
       >
         <div className="imageContainer art-wrapper">
@@ -384,7 +384,6 @@ const OurTeam = () => {
             </figure>
           </div>
         </div>
-       
       </section>
       <>
         <div className="horizontalContainer">
@@ -410,20 +409,21 @@ const OurTeam = () => {
                   </a>
                 </div>
                 <div className="horizontalItem horizontalFilled">
-                  <p>
-            ...and first aid 
-                  </p>
+                  <p>...and first aid</p>
                 </div>
                 <div className="horizontalItem horizontalBig">
-                  <p>This office is on 🔥! The orthodontists as well as every single staff member. Keary Riddick</p>
+                  <p>
+                    This office is on 🔥! The orthodontists as well as every
+                    single staff member. Keary Riddick
+                  </p>
                   <a
-  href="https://g.co/kgs/Sds93Ha"
-  className="horizontalItemLink"
->
-  <span className="link-text" data-text="Check it out">
-    Check it out
-  </span>
-</a>
+                    href="https://g.co/kgs/Sds93Ha"
+                    className="horizontalItemLink"
+                  >
+                    <span className="link-text" data-text="Check it out">
+                      Check it out
+                    </span>
+                  </a>
                 </div>
               </div>
               <div className="horizontalRow">
@@ -432,22 +432,24 @@ const OurTeam = () => {
                 </div>
                 <div className="horizontalItem horizontalFilled">
                   <p>
-                 5 stars Had a wonderful experience at FreySmiles.
-Everyone is extremely professional, polite, timely. Would highly recommend! -TK
+                    5 stars Had a wonderful experience at FreySmiles. Everyone
+                    is extremely professional, polite, timely. Would highly
+                    recommend! -TK
                   </p>
                   <a
-  href="https://g.co/kgs/YkknjNg"
-  className="horizontalItemLink"
->
-  <span className="link-text" data-text="Check it out">
-    Check it out
-  </span>
-</a>
-
+                    href="https://g.co/kgs/YkknjNg"
+                    className="horizontalItemLink"
+                  >
+                    <span className="link-text" data-text="Check it out">
+                      Check it out
+                    </span>
+                  </a>
                 </div>
                 <div className="horizontalItem horizontalFilled">
                   <p>
-                    Fun fact 2:Our team is made up of former FreySmiles patients, something we think is important, because we have all experienced treatment and can help guide you through it. 
+                    Fun fact 2:Our team is made up of former FreySmiles
+                    patients, something we think is important, because we have
+                    all experienced treatment and can help guide you through it.
                   </p>
                 </div>
                 <div className="horizontalItem horizontalFilled">
@@ -463,10 +465,7 @@ Everyone is extremely professional, polite, timely. Would highly recommend! -TK
           </div>
         </div>
 
-
-        <section >
-
-
+        <section>
           <div
             className={`users-color-container ${isVisible ? "animate" : ""}`}
           >

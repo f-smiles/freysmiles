@@ -111,7 +111,7 @@ const YourCare = () => {
     <>
     <main data-scroll-container id="js-scroll">
   <section className="section-0" data-scroll-section>
-    <h2 data-scroll data-scroll-speed="-2">Parallax is awesome</h2>
+    <h2 data-scroll data-scroll-speed="-2">Damon Brackets</h2>
     <div className="section-0__img-wrapper" data-scroll data-scroll-speed="-2" data-scroll-direction="horizontal">
       <img src="https://picsum.photos/id/581/1600/1600" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
     </div>
@@ -121,8 +121,8 @@ const YourCare = () => {
     <div className="section-1__text section-1__text--top" data-scroll data-scroll-speed="2" data-scroll-direction="horizontal" data-scroll-delay="0.5">
       {Array(8).fill(null).map((_, i) => (
         <React.Fragment key={i}>
-          <span>parallax</span>
-          <span>scroll</span>
+          <span>learn</span>
+          <span>more</span>
         </React.Fragment>
       ))}
     </div>

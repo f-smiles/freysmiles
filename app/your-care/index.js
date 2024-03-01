@@ -195,20 +195,42 @@ const YourCare = () => {
     "../images/youngboy.jpg",
   ];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  const [fadeImages, setFadeImages] = useState(false);
+  const [showNewImage, setShowNewImage] = useState(false);
+  const triggerRef = useRef(null);
+  
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [images]);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setFadeImages(true);
+          setTimeout(() => setShowNewImage(true), 1000); // Delay matches fade-out duration
+        } else {
+          setFadeImages(false);
+          setShowNewImage(false);
+        }
+      });
+    }, { threshold: 0.5 });
+  
+    if (triggerRef.current) {
+      observer.observe(triggerRef.current);
+    }
+  
+    return () => {
+      if (triggerRef.current) {
+        observer.unobserve(triggerRef.current);
+      }
+    };
+  }, []);
+  
+  
+  
   return (
     <>
       <div
         className="shutter-container "
         style={{
-          height: "100vh",
+
           "--color-foreground": "#dcdce8",
           "--delay": 10,
         }}
@@ -221,11 +243,10 @@ const YourCare = () => {
         <section id="About" className="about min-h-screen flex">
           <div className="about-title w-1/2">
             <section className="flex  h-full justify-center items-center">
-              <div className="md:w-1/2 flex justify-center items-center">
-                <div
-                  className="relative mx-2"
-                  style={{ width: "300px", height: "240px" }}
-                >
+
+              <div className=" md:w-1/2 flex justify-center items-center">
+                
+              <div className={`relative mx-2 ${fadeImages ? 'top' : ''}`} style={{ width: "300px", height: "240px" }}>
                   <img
                     className="rounded-full opacity-90 w-full h-full object-cover"
                     src="../../images/carepatient1.png"
@@ -234,7 +255,7 @@ const YourCare = () => {
                   />
                 </div>
                 <div
-                  className="relative mx-2"
+            className={`relative mx-2 ${fadeImages ? 'top' : ''}`} 
                   style={{ width: "300px", height: "300px" }}
                 >
                   <img
@@ -246,7 +267,7 @@ const YourCare = () => {
                 </div>
 
                 <div
-                  className="relative mx-2"
+              className={`relative mx-2 ${fadeImages ? 'top' : ''}`} 
                   style={{ width: "300px", height: "340px" }}
                 >
                   <img
@@ -256,7 +277,7 @@ const YourCare = () => {
                   />
                 </div>
                 <div
-                  className="relative mx-2"
+   className={`relative mx-2 ${fadeImages ? 'top' : ''}`} 
                   style={{ width: "330px", height: "400px" }}
                 >
                   <img
@@ -267,7 +288,7 @@ const YourCare = () => {
                   />
                 </div>
                 <div
-                  className="relative mx-2"
+className={`relative mx-2 ${fadeImages ? 'top' : ''}`} 
                   style={{ width: "300px", height: "480px" }}
                 >
                   <img
@@ -276,9 +297,17 @@ const YourCare = () => {
                     alt="patient"
                   />
                 </div>
+                
               </div>
+              {fadeImages && (
+  <div className={`new-image-container absolute inset-0 flex justify-center items-center ${fadeImages ? 'visible' : 'hidden'}`}>
+
+      <img src="https://fastly.picsum.photos/id/29/4000/2670.jpg?hmac=rCbRAl24FzrSzwlR5tL-Aqzyu5tX_PA95VJtnUXegGU" alt="New Image" className=" opacity-90 w-64 h-auto object-cover"/>
+    </div>
+  )}
             </section>
           </div>
+         
           <div className="about-pages w-1/2 bg-[#121212] ">
             <div>
               <section className="flex w-1/2 h-full justify-center items-center ">
@@ -314,6 +343,22 @@ const YourCare = () => {
               </section>
             </div>
 
+            <div className="flex flex-col items-center mx-4" ref={triggerRef}>
+              <h3
+                className="border border-[#d2fec9]   text-center text-xl text-[#d2fec9] mb-2 rounded-full px-4 py-2"
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  lineHeight: "60px",
+                }}
+              >
+                1
+              </h3>
+              <p className="text-white text-2xl px-20 text-center justify-center">
+                Book a personalized consultation with one of our doctors, either
+                virtually or in person.
+              </p>
+            </div>
             <div className="flex flex-col items-center mx-4">
               <h3
                 className="border border-gray-300   text-center text-xl text-lime-900 mb-2 rounded-full px-4 py-2"
@@ -323,25 +368,9 @@ const YourCare = () => {
                   lineHeight: "60px",
                 }}
               >
-                1
-              </h3>
-              <p className="text-white">
-                Book a personalized consultation with one of our doctors, either
-                virtually or in person.
-              </p>
-            </div>
-            <div className="flex flex-col items-center mx-4">
-              <h3
-                className="border border-gray-300 text-center text-xl text-lime-900 mb-2 rounded-full px-4 py-2"
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  lineHeight: "60px",
-                }}
-              >
                 2
               </h3>
-              <p className="text-white">
+              <p className="text-white text-2xl px-20 text-center justify-center">
                 Your first appointment will consist of a thorough orthodontic
                 examination including photos and a digital radiograph of your
                 teeth.
@@ -350,7 +379,7 @@ const YourCare = () => {
           
               <div className="flex flex-col items-center mx-auto">
                 <h3
-                  className="border border-gray-300 text-center text-xl text-lime-900 mb-2 rounded-full px-4 py-2"
+                className="border border-gray-300   text-center text-xl text-lime-900 mb-2 rounded-full px-4 py-2"
                   style={{
                     width: "80px",
                     height: "80px",
@@ -359,7 +388,7 @@ const YourCare = () => {
                 >
                   3
                 </h3>
-                <p className="text-white">
+                <p className="text-white text-2xl px-20 text-center justify-center">
                   Discover the ideal solution for your needs, free from any
                   financial obligations or commitments.
                 </p>
