@@ -198,39 +198,95 @@ const YourCare = () => {
   const [fadeImages, setFadeImages] = useState(false);
   const [showNewImage, setShowNewImage] = useState(false);
   const triggerRef = useRef(null);
-  
+
+
+
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setFadeImages(true);
-          setTimeout(() => setShowNewImage(true), 1000); // Delay matches fade-out duration
-        } else {
-          setFadeImages(false);
-          setShowNewImage(false);
-        }
-      });
-    }, { threshold: 0.5 });
-  
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setFadeImages(true);
+            setTimeout(() => setShowNewImage(true), 1000);
+          } else {
+            setFadeImages(false);
+            setShowNewImage(false);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
     if (triggerRef.current) {
       observer.observe(triggerRef.current);
     }
-  
+
     return () => {
       if (triggerRef.current) {
         observer.unobserve(triggerRef.current);
       }
     };
   }, []);
-  
-  
-  
+
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const aboutSectionRef = useRef(null);
+  const lasth3Ref = useRef(null);
+  const progressPath = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollPosition(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleMouseMove = (e) => {
+    setCursorPosition({ x: e.clientX, y: e.clientY });
+  };
+  useEffect(() => {
+    const pathLength = progressPath.current.getTotalLength();
+    progressPath.current.style.strokeDasharray = `${pathLength} ${pathLength}`;
+    progressPath.current.style.strokeDashoffset = pathLength;
+
+    const updateProgress = () => {
+        if (!aboutSectionRef.current || !lasth3Ref.current) return;
+
+        const sectionTop = aboutSectionRef.current.offsetTop;
+        const h3Bottom = lasth3Ref.current.offsetTop + lasth3Ref.current.offsetHeight;
+        const scrollTop = window.scrollY;  
+        const viewportHeight = window.innerHeight;
+
+        let progress;
+        if (scrollTop + viewportHeight > sectionTop && scrollTop < h3Bottom) {
+
+            progress = Math.min((scrollTop - sectionTop) / (h3Bottom - sectionTop - viewportHeight), 1);
+        } else {
+            progress = 0;
+        }
+
+        progress = Math.max(0, progress);
+        progressPath.current.style.strokeDashoffset = pathLength - progress * pathLength;
+    };
+
+    window.addEventListener("scroll", updateProgress);
+    return () => window.removeEventListener("scroll", updateProgress);
+}, []);
+
+
+
+  const parallaxStyle = {
+    top: scrollPosition / 2.8,
+    opacity: 1 - scrollPosition / 600,
+  };
+
+
   return (
     <>
       <div
         className="shutter-container "
         style={{
-
           "--color-foreground": "#dcdce8",
           "--delay": 10,
         }}
@@ -240,13 +296,47 @@ const YourCare = () => {
             <li key={i} className="c-shutter__slat"></li>
           ))}
         </ul>
-        <section id="About" className="about min-h-screen flex">
+
+        <section
+          ref={aboutSectionRef}
+          id="About"
+          className="min-h-screen flex"
+          onMouseMove={handleMouseMove}
+        >
+          {" "}
+          <div className="parallax-fade-top" style={parallaxStyle}></div>
+          <div
+            id="cursor"
+            style={{ left: cursorPosition.x, top: cursorPosition.y }}
+          />
+          <div
+            id="cursor2"
+            style={{ left: cursorPosition.x, top: cursorPosition.y }}
+          />
+          <div
+            id="cursor3"
+            style={{ left: cursorPosition.x, top: cursorPosition.y }}
+          />
+          <div className="progress-wrap fixed bottom-10 left-10">
+            <svg
+              className="progress-circle"
+              width="100%"
+              height="100%"
+              viewBox="-1 -1 102 102"
+            >
+              <path
+                ref={progressPath}
+                d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
+              />
+            </svg>
+          </div>
           <div className="about-title w-1/2">
             <section className="flex  h-full justify-center items-center">
-
               <div className=" md:w-1/2 flex justify-center items-center">
-                
-              <div className={`relative mx-2 ${fadeImages ? 'top' : ''}`} style={{ width: "300px", height: "240px" }}>
+                <div
+                  className={`relative mx-2 ${fadeImages ? "top" : ""}`}
+                  style={{ width: "300px", height: "240px" }}
+                >
                   <img
                     className="rounded-full opacity-90 w-full h-full object-cover"
                     src="../../images/carepatient1.png"
@@ -255,7 +345,7 @@ const YourCare = () => {
                   />
                 </div>
                 <div
-            className={`relative mx-2 ${fadeImages ? 'top' : ''}`} 
+                  className={`relative mx-2 ${fadeImages ? "top" : ""}`}
                   style={{ width: "300px", height: "300px" }}
                 >
                   <img
@@ -267,7 +357,7 @@ const YourCare = () => {
                 </div>
 
                 <div
-              className={`relative mx-2 ${fadeImages ? 'top' : ''}`} 
+                  className={`relative mx-2 ${fadeImages ? "top" : ""}`}
                   style={{ width: "300px", height: "340px" }}
                 >
                   <img
@@ -277,7 +367,7 @@ const YourCare = () => {
                   />
                 </div>
                 <div
-   className={`relative mx-2 ${fadeImages ? 'top' : ''}`} 
+                  className={`relative mx-2 ${fadeImages ? "top" : ""}`}
                   style={{ width: "330px", height: "400px" }}
                 >
                   <img
@@ -288,7 +378,7 @@ const YourCare = () => {
                   />
                 </div>
                 <div
-className={`relative mx-2 ${fadeImages ? 'top' : ''}`} 
+                  className={`relative mx-2 ${fadeImages ? "top" : ""}`}
                   style={{ width: "300px", height: "480px" }}
                 >
                   <img
@@ -297,17 +387,22 @@ className={`relative mx-2 ${fadeImages ? 'top' : ''}`}
                     alt="patient"
                   />
                 </div>
-                
               </div>
               {fadeImages && (
-  <div className={`new-image-container absolute inset-0 flex justify-center items-center ${fadeImages ? 'visible' : 'hidden'}`}>
-
-      <img src="https://fastly.picsum.photos/id/29/4000/2670.jpg?hmac=rCbRAl24FzrSzwlR5tL-Aqzyu5tX_PA95VJtnUXegGU" alt="New Image" className=" opacity-90 w-64 h-auto object-cover"/>
-    </div>
-  )}
+                <div
+                  className={`new-image-container absolute inset-0 flex justify-center items-center ${
+                    fadeImages ? "visible" : "hidden"
+                  }`}
+                >
+                  <img
+                    src="https://fastly.picsum.photos/id/29/4000/2670.jpg?hmac=rCbRAl24FzrSzwlR5tL-Aqzyu5tX_PA95VJtnUXegGU"
+                    alt="New Image"
+                    className=" opacity-90 w-64 h-auto object-cover"
+                  />
+                </div>
+              )}
             </section>
           </div>
-         
           <div className="about-pages w-1/2 bg-[#121212] ">
             <div>
               <section className="flex w-1/2 h-full justify-center items-center ">
@@ -376,185 +471,176 @@ className={`relative mx-2 ${fadeImages ? 'top' : ''}`}
                 teeth.
               </p>
             </div>
-          
-              <div className="flex flex-col items-center mx-auto">
-                <h3
+
+           <div          ref={lasth3Ref} className="flex flex-col items-center mx-auto"> 
+              <h3
+       
                 className="border border-gray-300   text-center text-xl text-lime-900 mb-2 rounded-full px-4 py-2"
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    lineHeight: "60px",
-                  }}
-                >
-                  3
-                </h3>
-                <p className="text-white text-2xl px-20 text-center justify-center">
-                  Discover the ideal solution for your needs, free from any
-                  financial obligations or commitments.
-                </p>
-              </div>
-           
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  lineHeight: "60px",
+                }}
+              >
+                3
+              </h3>
+              <p className="text-white text-2xl px-20 text-center justify-center">
+                Discover the ideal solution for your needs, free from any
+                financial obligations or commitments.
+              </p>
+            </div>
           </div>
         </section>
 
         <div className="md:w-1/2 flex items-center relative">
-<div className="rounded-full overflow-hidden flex-shrink-0">
-  <div
-    className="object-cover w-full h-full"
-    style={getTransitionStyle()}
-  ></div>
-</div>
-<div ref={boyImageRef} className="hero-image boy">
-    <div className="ml-6">
-  <h3 className="font-HelveticaNowVar font-thin text-5xl mb-14 mt-20">
-    Growth and Guidance
-  </h3>
-  <div className="paragraph-with-background">
-  <p>
-  The American Association of Orthodontists (AAO) recommends
-  an orthodontic evaluation by age 7 to assess potential
-  treatment needs. If immediate treatment isn&apos;t necessary,
-  you&apos;ll be enrolled in our FreySmiles Club, where you&apos;ll
-  receive biannual and annual check-ins to monitor your
-  progress. Early intervention can simplify or eliminate the
-  need for extensive treatment later on. Our collaboration
-  with your family dentist ensures comprehensive care
-  throughout your treatment.
-</p>
-
-  </div>
-</div>
-    </div>
-</div>
-
-
-
-
-
-<div className="">
-<>
-  <h3 className="font-HelveticaNowVar font-thin text-5xl text-center mb-10">
-    Pricing
-  </h3>
-  <p>
-    Since treatment plans and payment options may be discussed, we
-    ask that a parent or guardian be present for the first visit.
-    Including everyone who will be making this important decision
-    helps us communicate thoroughly. We want our patients to leave
-    the office with a clear understanding of their specific
-    treatment plan, so don’t hesitate to ask questions.
-  </p>
-  <table style={{ width: "100%", borderCollapse: "collapse" }}>
-    <colgroup>
-      <col style={{ width: "33%" }} />
-      <col style={{ width: "33%" }} />
-      <col style={{ width: "33%" }} />
-    </colgroup>
-    <tr>
-      <td
-        style={{
-          border: "1px solid #B3B3B5",
-          padding: "8px",
-          fontSize: "18px",
-          textAlign: "center",
-        }}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="icon icon-tabler icon-tabler-shield-plus"
-          width="48"
-          height="48"
-          viewBox="0 0 24 24"
-          strokeWidth=".5"
-          stroke="currentColor"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ display: "block", margin: "0 auto" }}
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M12.462 20.87c-.153 .047 -.307 .09 -.462 .13a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 .11 6.37" />
-          <path d="M16 19h6" />
-          <path d="M19 16v6" />
-        </svg>
-        <div style={{ paddingTop: "10px" }}>
-          Please bring your insurance card if you have orthodontic
-          coverage
+          <div className="rounded-full overflow-hidden flex-shrink-0">
+            <div
+              className="object-cover w-full h-full"
+              style={getTransitionStyle()}
+            ></div>
+          </div>
+          <div ref={boyImageRef} className="hero-image boy">
+            <div className="ml-6">
+              <h3 className="font-HelveticaNowVar font-thin text-5xl mb-14 mt-20">
+                Growth and Guidance
+              </h3>
+              <div className="paragraph-with-background">
+                <p>
+                  The American Association of Orthodontists (AAO) recommends an
+                  orthodontic evaluation by age 7 to assess potential treatment
+                  needs. If immediate treatment isn&apos;t necessary,
+                  you&apos;ll be enrolled in our FreySmiles Club, where
+                  you&apos;ll receive biannual and annual check-ins to monitor
+                  your progress. Early intervention can simplify or eliminate
+                  the need for extensive treatment later on. Our collaboration
+                  with your family dentist ensures comprehensive care throughout
+                  your treatment.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </td>
-      <td
-        style={{
-          border: "1px solid #B3B3B5",
-          padding: "8px",
-          fontSize: "18px",
-          textAlign: "center",
-        }}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="icon icon-tabler icon-tabler-discount-check"
-          width="48"
-          height="48"
-          viewBox="0 0 24 24"
-          strokeWidth=".5"
-          stroke="currentColor"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ display: "block", margin: "0 auto" }}
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M5 7.2a2.2 2.2 0 0 1 2.2 -2.2h1a2.2 2.2 0 0 0 1.55 -.64l.7 -.7a2.2 2.2 0 0 1 3.12 0l.7 .7c.412 .41 .97 .64 1.55 .64h1a2.2 2.2 0 0 1 2.2 2.2v1c0 .58 .23 1.138 .64 1.55l.7 .7a2.2 2.2 0 0 1 0 3.12l-.7 .7a2.2 2.2 0 0 0 -.64 1.55v1a2.2 2.2 0 0 1 -2.2 2.2h-1a2.2 2.2 0 0 0 -1.55 .64l-.7 .7a2.2 2.2 0 0 1 -3.12 0l-.7 -.7a2.2 2.2 0 0 0 -1.55 -.64h-1a2.2 2.2 0 0 1 -2.2 -2.2v-1a2.2 2.2 0 0 0 -.64 -1.55l-.7 -.7a2.2 2.2 0 0 1 0 -3.12l.7 -.7a2.2 2.2 0 0 0 .64 -1.55v-1" />
-          <path d="M9 12l2 2l4 -4" />
-        </svg>
-        FSA/HSA dollars are accepted
-      </td>
 
-      <td
-        style={{
-          border: "1px solid #B3B3B5",
-          padding: "8px",
-          fontSize: "18px",
-          textAlign: "center",
-        }}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="option check"
-          width="48"
-          height="48"
-          viewBox="0 0 24 24"
-          strokeWidth=".5"
-          stroke="currentColor"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ display: "block", margin: "0 auto" }}
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M3.5 5.5l1.5 1.5l2.5 -2.5" />
-          <path d="M3.5 11.5l1.5 1.5l2.5 -2.5" />
-          <path d="M3.5 17.5l1.5 1.5l2.5 -2.5" />
-          <path d="M11 6l9 0" />
-          <path d="M11 12l9 0" />
-          <path d="M11 18l9 0" />
-        </svg>
-        <div style={{ marginTop: "5px" }}>Payment Plans</div>
-      </td>
-    </tr>
-  </table>
-</>
-</div>
+        <div className="">
+          <>
+            <h3 className="font-HelveticaNowVar font-thin text-5xl text-center mb-10">
+              Pricing
+            </h3>
+            <p>
+              Since treatment plans and payment options may be discussed, we ask
+              that a parent or guardian be present for the first visit.
+              Including everyone who will be making this important decision
+              helps us communicate thoroughly. We want our patients to leave the
+              office with a clear understanding of their specific treatment
+              plan, so don’t hesitate to ask questions.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <colgroup>
+                <col style={{ width: "33%" }} />
+                <col style={{ width: "33%" }} />
+                <col style={{ width: "33%" }} />
+              </colgroup>
+              <tr>
+                <td
+                  style={{
+                    border: "1px solid #B3B3B5",
+                    padding: "8px",
+                    fontSize: "18px",
+                    textAlign: "center",
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon icon-tabler icon-tabler-shield-plus"
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    strokeWidth=".5"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ display: "block", margin: "0 auto" }}
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12.462 20.87c-.153 .047 -.307 .09 -.462 .13a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 .11 6.37" />
+                    <path d="M16 19h6" />
+                    <path d="M19 16v6" />
+                  </svg>
+                  <div style={{ paddingTop: "10px" }}>
+                    Please bring your insurance card if you have orthodontic
+                    coverage
+                  </div>
+                </td>
+                <td
+                  style={{
+                    border: "1px solid #B3B3B5",
+                    padding: "8px",
+                    fontSize: "18px",
+                    textAlign: "center",
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="icon icon-tabler icon-tabler-discount-check"
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    strokeWidth=".5"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ display: "block", margin: "0 auto" }}
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M5 7.2a2.2 2.2 0 0 1 2.2 -2.2h1a2.2 2.2 0 0 0 1.55 -.64l.7 -.7a2.2 2.2 0 0 1 3.12 0l.7 .7c.412 .41 .97 .64 1.55 .64h1a2.2 2.2 0 0 1 2.2 2.2v1c0 .58 .23 1.138 .64 1.55l.7 .7a2.2 2.2 0 0 1 0 3.12l-.7 .7a2.2 2.2 0 0 0 -.64 1.55v1a2.2 2.2 0 0 1 -2.2 2.2h-1a2.2 2.2 0 0 0 -1.55 .64l-.7 .7a2.2 2.2 0 0 1 -3.12 0l-.7 -.7a2.2 2.2 0 0 0 -1.55 -.64h-1a2.2 2.2 0 0 1 -2.2 -2.2v-1a2.2 2.2 0 0 0 -.64 -1.55l-.7 -.7a2.2 2.2 0 0 1 0 -3.12l.7 -.7a2.2 2.2 0 0 0 .64 -1.55v-1" />
+                    <path d="M9 12l2 2l4 -4" />
+                  </svg>
+                  FSA/HSA dollars are accepted
+                </td>
 
-
+                <td
+                  style={{
+                    border: "1px solid #B3B3B5",
+                    padding: "8px",
+                    fontSize: "18px",
+                    textAlign: "center",
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="option check"
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    strokeWidth=".5"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ display: "block", margin: "0 auto" }}
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3.5 5.5l1.5 1.5l2.5 -2.5" />
+                    <path d="M3.5 11.5l1.5 1.5l2.5 -2.5" />
+                    <path d="M3.5 17.5l1.5 1.5l2.5 -2.5" />
+                    <path d="M11 6l9 0" />
+                    <path d="M11 12l9 0" />
+                    <path d="M11 18l9 0" />
+                  </svg>
+                  <div style={{ marginTop: "5px" }}>Payment Plans</div>
+                </td>
+              </tr>
+            </table>
+          </>
+        </div>
       </div>
     </>
   );
 };
 
 export default YourCare;
-
-
 
 // const YourCare = () => {
 //   const [activeAccordion, setActiveAccordion] = useState([
@@ -740,6 +826,3 @@ export default YourCare;
 // };
 
 // export default YourCare;
-
-
-

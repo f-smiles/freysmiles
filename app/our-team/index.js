@@ -172,6 +172,46 @@ const OurTeam = () => {
     }
   }, []);
 
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+
+    if (teamRef.current) {
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: teamRef.current,
+          start: "top top", 
+          end: "bottom top",
+          scrub: true,
+        }
+      })
+      .to(teamRef.current, {
+        scale: 10,
+        ease: "none"
+      })
+      .to(teamRef.current.parentNode, {
+        backgroundColor: 'black',
+        ease: "none"
+      }, 0); 
+    }
+    console.log('Doctor Ref:', doctorRef.current); 
+    if (doctorRef.current) {
+      gsap.fromTo(doctorRef.current, 
+        { opacity: 0 }, 
+        {
+          opacity: 1, 
+          ease: "none",
+          scrollTrigger: {
+            trigger: doctorRef.current,
+            start: "top center", 
+            end: "center center",
+            scrub: true,
+          }
+        }
+      );
+    }
+  }, []);
+
   return (
     <>
       {/* <section
@@ -201,7 +241,7 @@ const OurTeam = () => {
           MEET OUR TEAM
         </h1>
       </section> */}
-      <section className="main-section">
+<section className="main-section">
         <div className="section__content">
           <svg ref={teamRef}>
             <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle">
@@ -224,7 +264,7 @@ const OurTeam = () => {
             </div>
           </p>
         </div>
-      </section>
+      </section> 
       <section
         className="text-wrapper"
         style={{

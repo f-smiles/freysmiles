@@ -920,7 +920,7 @@ export default function Features() {
 
   const [backgroundColor, setBackgroundColor] = useState("transparent");
   useEffect(() => {
-    setBackgroundColor("rgb(234,222,219)");
+    setBackgroundColor("rgb(206, 186, 202)");
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const transitionStart = 40;
@@ -931,7 +931,7 @@ export default function Features() {
         {
           start: transitionStart,
           end: transitionEnd * 0.25,
-          colorStart: [234, 222, 219],
+          colorStart: [206, 186, 202],
           colorEnd: [227, 217, 225],
         },
         {
