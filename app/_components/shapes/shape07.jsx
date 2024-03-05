@@ -23,7 +23,10 @@ export default function Shape07(props) {
           y2="152.5"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#B0B9FF" /> <stop offset="1" stopColor="#E7E9FF" />
+          {/* <stop stopColor="#B0B9FF" /> <stop offset="1" stopColor="#E7E9FF" /> */}
+          {/* <stop stopColor="#DF99F7"/> <stop offset="1" stopColor="#FFDBB0"/> */}
+          {/* <stop stopColor="#FFD9A0"/> <stop offset="1" stopColor="#FFF5F1"/> */}
+          <stop offset="0.0509862" stopColor="#FFB6E1"/> <stop offset="1" stopColor="#FBE3EA"/>
         </linearGradient>
         <clipPath id="clip0_238_1184">
           <rect width="200" height="200" fill="white" />
