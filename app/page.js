@@ -108,31 +108,10 @@ function Hero() {
 }
 
 function ParallaxScroll() {
-  // useIsomorphicLayoutEffect(() => {
-  //   gsap.registerPlugin(ScrollTrigger)
-
-  //   let sections = gsap.utils.toArray(".panel")
-
-  //   const ctx = gsap.context(() => {
-  //     sections.forEach((section, i) => {
-  //       ScrollTrigger.create({
-  //         trigger: section,
-  //         start: () => section.offsetHeight < window.innerHeight ? "top top" : "bottom bottom",
-  //         pin: true,
-  //         pinSpacing: false,
-  //       })
-  //     })
-
-  //   }, sections)
-
-  //   return () => ctx.revert()
-  // }, [])
-
   const main = useRef()
 
   useGSAP(() => {
     const sections = gsap.utils.toArray(".panel")
-    // biome-ignore lint/complexity/noForEach: <explanation>
     sections.forEach((section) => {
       gsap.to(section, {
         scrollTrigger: {
@@ -146,19 +125,17 @@ function ParallaxScroll() {
   })}, { scope: main })
 
   return (
-    <>
-      <div ref={main}>
-        <div className="panel h-[100dvh] bg-[#a3bba3]">
-          <Invisalign />
-        </div>
-        <div className="panel h-[100dvh] bg-[#a3bba3] border-t border-zinc-700 rounded-t-3xl">
-          <DamonBraces />
-        </div>
-        <div className="panel h-[100dvh] bg-white border-t border-zinc-700 rounded-t-3xl overflow-hidden">
-          <AdvancedTech />
-        </div>
+    <div ref={main}>
+      <div className="panel h-[100dvh] bg-[#a3bba3]">
+        <Invisalign />
       </div>
-    </>
+      <div className="panel h-[100dvh] bg-[#a3bba3] border-t-2 border-zinc-700 rounded-t-3xl">
+        <DamonBraces />
+      </div>
+      <div className="panel h-[100dvh] bg-white border-t-2 border-zinc-700 rounded-t-3xl overflow-hidden">
+        <AdvancedTech />
+      </div>
+    </div>
   )
 }
 
@@ -192,8 +169,8 @@ function Invisalign() {
         </Link>
       </motion.div>
       <div className="lg:w-1/2">
-        <motion.img style={{ translateY: transformCase }} className="object-cover object-center w-full h-auto mx-auto" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
-        <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover object-center w-3/4 h-auto ml-36 lg:ml-24 xl:ml-36" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+        <motion.img style={{ translateY: transformCase }} className="object-cover w-full h-auto mx-auto object-start" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+        <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover w-3/4 h-auto object-start ml-36 lg:ml-24 xl:ml-36" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
       </div>
     </section>
   )
@@ -203,7 +180,7 @@ function DamonBraces() {
   return (
     <section className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-center">
       <div className="h-auto lg:w-1/2">
-        <img className="object-cover object-center w-full h-full mx-auto"  src="/../../../images/faster_treatment_time.gif" alt="faster treatment time" />
+        {/* <img className="object-cover object-center w-full h-full mx-auto"  src="/../../../images/faster_treatment_time.gif" alt="faster treatment time" /> */}
       </div>
       <div className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Damon Bracket</h1>
@@ -234,7 +211,7 @@ function AdvancedTech() {
             <span>Learn More</span>
           </div>
         </Link>
-        <img className="absolute bottom-0 right-0 z-0 w-3/4 h-auto translate-x-1/2 translate-y-1/2" src="/../../images/dotcircle.png" alt="" />
+        <motion.img  className="absolute bottom-0 right-0 z-0 w-3/4 h-auto translate-x-1/2 translate-y-1/2" src="/../../images/dotcircle.png" alt="" />
       </div>
       <motion.div style={{ scale }} className="absolute inset-0 top-0 left-0 w-full h-full -z-10">
         <svg viewBox="0 0 256 256" className="w-full h-full">
@@ -456,10 +433,6 @@ function GiftCards() {
       opacity: isInView ? 1 : 0,
       transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
     }}>
-      {/* <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank' className="absolute inset-0 w-full h-full transition-all duration-300 ease-linear bg-gray-900 opacity-20 backdrop-filter hover:bg-none hover:opacity-0" />
-      <div className="border border-red-500 rounded-br-full w-max aspect-square lg:w-1/5">
-        <h3 className="font-helvetica-now-thin">Send a Gift Card</h3>
-      </div> */}
       <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-primary-30 bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
       <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank' className="absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white">Send a Gift Card</Link>
       <img src="/../../images/giftcards/gift_cards_mockup.jpg" alt="gift cards mockup" className="absolute inset-0 object-cover object-center w-full h-full -z-10" />
