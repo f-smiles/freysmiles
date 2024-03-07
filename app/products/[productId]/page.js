@@ -1,6 +1,8 @@
-import SingleProductComponent from "."
+import { Suspense } from "react"
+import ProductComponent from "."
+import Loading from "../loading"
 
-export const generateMetadata = async ({ params, searchParams }) => {
+export const generateMetadata = async ({ params }) => {
   const { productId } = params
   const product = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products/${productId}`)
     .then((res) => res.json())
@@ -11,8 +13,22 @@ export const generateMetadata = async ({ params, searchParams }) => {
   }
 }
 
-export default function Page({ params, searchParams }) {
+async function getProduct(productId) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products/${productId}`)
+    return res.json()
+  } catch(error) {
+    throw new Error(error.message)
+  }
+}
+
+export default async function Page({ params }) {
+  const { productId } = params
+  const product = await getProduct(productId)
+
   return (
-    <SingleProductComponent params={params} />
+    <Suspense fallback={<Loading />}>
+      <ProductComponent product={product} />
+    </Suspense>
   )
 }
