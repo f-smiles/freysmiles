@@ -104,111 +104,33 @@ const OurTeam = () => {
     });
   }, []);
 
-
   const teamRef = useRef(null);
   const doctorRef = useRef(null);
 
   useEffect(() => {
-    if (!CSS.supports("animation-timeline: scroll()")) {
-      gsap.registerPlugin(ScrollTrigger);
-      const scrub = 0.2;
-
-      if (teamRef.current) {
-        const team = teamRef.current;
-
-        gsap
-          .timeline({
-            scrollTrigger: {
-              invalidateOnRefresh: true,
-              trigger: team.parentNode,
-              scrub: scrub,
-              start: "top top",
-              end: "bottom top-=25%",
-            },
-          })
-          .to(team, { opacity: 1 })
-          .to(
-            team,
-            {
-              scrollTrigger: {
-                invalidateOnRefresh: true,
-                trigger: team.parentNode,
-                scrub: scrub,
-                start: "top top",
-                end: "bottom top",
-              },
-              
-            },
-     
-          );
-      }
-
-      if (doctorRef.current) {
-        const doctor = doctorRef.current;
-
-        gsap
-          .timeline()
-          .to(doctor, {
-            opacity: 1,
-            immediateRender: false,
-            scrollTrigger: {
-              trigger: doctor.parentNode.parentNode,
-              scrub: scrub,
-              start: "top bottom",
-              end: "top 50%",
-            },
-          })
-          .to(doctor, {
-            opacity: 0,
-            immediateRender: false,
-            scrollTrigger: {
-              trigger: doctor.parentNode.parentNode,
-              scrub: scrub,
-              start: "bottom bottom",
-              end: "bottom 50%",
-            },
-          });
-      }
-    }
-  }, []);
-
-  useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
+    if (teamRef.current && doctorRef.current) {
+      const team = teamRef.current;
+      const doctor = doctorRef.current;
 
-    if (teamRef.current) {
-      gsap.timeline({
+      gsap.set(doctor, { opacity: 0 });
+
+      const teamTimeline = gsap.timeline({
         scrollTrigger: {
-          trigger: teamRef.current,
-          start: "top top", 
+          trigger: team,
+          start: "top top",
           end: "bottom top",
           scrub: true,
-        }
-      })
-      .to(teamRef.current, {
-        scale: 10,
-        ease: "none"
-      })
-      .to(teamRef.current.parentNode, {
-        backgroundColor: 'black',
-        ease: "none"
-      }, 0); 
-    }
-    console.log('Doctor Ref:', doctorRef.current); 
-    if (doctorRef.current) {
-      gsap.fromTo(doctorRef.current, 
-        { opacity: 0 }, 
-        {
-          opacity: 1, 
-          ease: "none",
-          scrollTrigger: {
-            trigger: doctorRef.current,
-            start: "top center", 
-            end: "center center",
-            scrub: true,
-          }
-        }
-      );
+        },
+        onComplete: () => {
+          gsap.to(doctor, { opacity: 1, duration: 0.5 });
+        },
+      });
+
+      teamTimeline
+        .to(team, { scale: 10, ease: "none" })
+        .to(team.parentNode, { backgroundColor: "black", ease: "none" }, 0);
     }
   }, []);
 
@@ -240,8 +162,10 @@ const OurTeam = () => {
         >
           MEET OUR TEAM
         </h1>
+
       </section> */}
-<section className="main-section">
+
+      <section className="main-section">
         <div className="section__content">
           <svg ref={teamRef}>
             <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle">
@@ -264,7 +188,8 @@ const OurTeam = () => {
             </div>
           </p>
         </div>
-      </section> 
+      </section>
+
       <section
         className="text-wrapper"
         style={{
@@ -426,7 +351,7 @@ const OurTeam = () => {
         </div>
       </section>
       <>
-        <div className="horizontalContainer">
+        <div style={{ backgroundImage: 'url("../images/purplegradientwithoutstar.png")', backgroundSize: '100% auto' }} className=" horizontalContainer">
           <div className="horizontalWrapper">
             <div className="horizontalScroller">
               <div className="horizontalRow">
@@ -505,141 +430,21 @@ const OurTeam = () => {
           </div>
         </div>
 
-        <section>
-          <div
-            className={`users-color-container ${isVisible ? "animate" : ""}`}
-          >
-            <img
-              className={`item ${isVisible ? "animate" : ""}`}
-              src="/../../images/team_members/kayli-Photoroom.png"
-              style={{ "--i": 1 }}
-              alt=""
-            />
-            <img
-              className="item"
-              src="/../../images/team_members/alyssa-Photoroom.png"
-              style={{ "--i": 2 }}
-              alt=""
-            />
-            <img
-              className="item"
-              src="/../../images/team_members/nicolle-Photoroom.jpg"
-              style={{ "--i": 3 }}
-              alt=""
-            />
-            <img
-              className="item"
-              src="/../../images/team_members/adriana-photoroom.png"
-              style={{ "--i": 4 }}
-              alt=""
-            />
-            <img
-              className="item"
-              src="/../../images/team_members/grace-Photoroom.jpg"
-              style={{ "--i": 5 }}
-              alt=""
-            />
-            <img
-              className="item"
-              src="/../../images/team_members/lexi-photoroom.jpg"
-              style={{ "--i": 10 }}
-              alt=""
-            />
-            <span className="item" style={{ "--i": 11 }}></span>
-            <img
-              className="item"
-              src="/../../images/team_members/elizabeth-photoroom.png"
-              style={{ "--i": 12 }}
-              alt=""
-            />
-            <span className="item" style={{ "--i": 9 }}></span>
-            <img
-              className="item"
-              src="/../../images/team_members/dana-photoroom.png"
-              style={{ "--i": 8 }}
-              alt=""
-            />
-            <span className="item" style={{ "--i": 7 }}></span>
-            <img
-              className="item"
-              src="/../../images/team_members/lizzie-photoroom.png"
-              style={{ "--i": 6 }}
-              alt=""
-            />
-          </div>
-        </section>
+        <section className="bg-white grid grid-cols-3 gap-4" >
+  <img className="w-full h-full object-cover" src="/../../images/team_members/kayli.png" style={{ "--i": 1 }} alt="" />
+  <img className="w-full h-full object-cover" src="/../../images/team_members/elizabeth2.png" alt="" />
+  <img className="w-full h-full object-cover" src="/../../images/team_members/nicolle.png" alt="" />
+  <img className="w-full h-full object-cover" src="/../../images/team_members/adrianacapsule.png" alt="" />
+  <img className="w-full h-full object-cover" src="/../../images/team_members/grace.png" alt="" />
+  <img className="w-full h-full object-cover" src="/../../images/team_members/lexi.png" alt="" />
+  <img className="w-full h-full object-cover" src="/../../images/team_members/alyssa.png" alt="" />
+  <img className="w-full h-full object-cover" src="/../../images/team_members/dana.png" style={{ "--i": 8 }} alt="" />
+  <img className="w-full h-full object-cover" src="/../../images/team_members/lizzie.png" alt="" />
+</section>
 
-        <style jsx>{`
-          .users-color-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 20px;
-          }
 
-          .item {
-            max-width: 200px;
-            aspect-ratio: 1/1;
-            box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1),
-              inset 0px 2px 2px rgba(255, 255, 255, 0.2);
-            opacity: 0;
-            transform: scale(0);
-            animation: fadeIn 0.5s linear forwards;
-            animation-delay: calc(0.2s * var(--i));
-          }
 
-          .item:nth-child(1) {
-            border-radius: 50% 50% 0 50%;
-          }
-          .item:nth-child(2) {
-            border-radius: 50% 50% 0 0;
-          }
-          .item:nth-child(3) {
-            background-color: #6cc164;
-            border-radius: 50%;
-          }
-          .item:nth-child(4) {
-            border-radius: 0 0 0 50%;
-          }
-          .item:nth-child(5) {
-            border-radius: 0 50% 50% 0;
-          }
-          .item:nth-child(6) {
-            border-radius: 0 50% 50% 50%;
-          }
-          .item:nth-child(7) {
-            background-color: #b2a597;
-            border-radius: 50% 50% 0 50%;
-          }
-          .item:nth-child(8) {
-            border-radius: 50% 0 0 50%;
-          }
-          .item:nth-child(9) {
-            background-color: #aa98a9;
-            border-radius: 0 50% 50% 0;
-          }
-          .item:nth-child(10) {
-            border-radius: 50%;
-          }
-          .item:nth-child(11) {
-            background-color: #977173;
-            border-radius: 50% 0 50% 50%;
-          }
-          .item:nth-child(12) {
-            border-radius: 50% 0 0 0;
-          }
-
-          @keyframes fadeIn {
-            0% {
-              opacity: 0;
-              transform: scale(0);
-            }
-            100% {
-              opacity: 1;
-              transform: scale(1);
-            }
-          }
-        `}</style>
+ 
       </>
     </>
   );

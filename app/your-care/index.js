@@ -195,38 +195,36 @@ const YourCare = () => {
     "../images/youngboy.jpg",
   ];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [fadeImages, setFadeImages] = useState(false);
+
   const [showNewImage, setShowNewImage] = useState(false);
   const triggerRef = useRef(null);
 
-
+  const [collectiveOpacity, setCollectiveOpacity] = useState(1); 
+  const [picsumImageOpacity, setPicsumImageOpacity] = useState(0); 
+  const [gifOpacity, setGifOpacity] = useState(0);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setFadeImages(true);
-            setTimeout(() => setShowNewImage(true), 1000);
-          } else {
-            setFadeImages(false);
-            setShowNewImage(false);
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    if (triggerRef.current) {
-      observer.observe(triggerRef.current);
-    }
-
-    return () => {
-      if (triggerRef.current) {
-        observer.unobserve(triggerRef.current);
-      }
+    const handleScroll = () => {
+      const scrollFadeStartForPicsum = 100;
+      const scrollFadeEndForPicsum = 500;
+      const scrollFadeStartForGif = 500; 
+      const scrollFadeEndForGif = 900;  
+  
+      const scrollPosition = window.scrollY;
+      const fadeAmountForPicsum = Math.min(Math.max((scrollPosition - scrollFadeStartForPicsum) / (scrollFadeEndForPicsum - scrollFadeStartForPicsum), 0), 1);
+      const fadeAmountForGif = Math.min(Math.max((scrollPosition - scrollFadeStartForGif) / (scrollFadeEndForGif - scrollFadeStartForGif), 0), 1);
+  
+      setCollectiveOpacity(1 - fadeAmountForPicsum);
+      setPicsumImageOpacity(fadeAmountForPicsum);
+      setGifOpacity(fadeAmountForGif);
     };
+  
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  
+  
+
 
   const [scrollPosition, setScrollPosition] = useState(0);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
@@ -282,6 +280,9 @@ const YourCare = () => {
   };
 
 
+  
+
+
   return (
     <>
       <div
@@ -300,8 +301,9 @@ const YourCare = () => {
         <section
           ref={aboutSectionRef}
           id="About"
-          className="min-h-screen flex"
+          className="large-section min-h-screen flex"
           onMouseMove={handleMouseMove}
+          style={{ backgroundAttachment: 'fixed', backgroundSize: 'cover' }}
         >
           {" "}
           <div className="parallax-fade-top" style={parallaxStyle}></div>
@@ -332,9 +334,9 @@ const YourCare = () => {
           </div>
           <div className="about-title w-1/2">
             <section className="flex  h-full justify-center items-center">
-              <div className=" md:w-1/2 flex justify-center items-center">
+              <div className=" md:w-1/2 flex justify-center items-center"  style={{ opacity: collectiveOpacity }}>
                 <div
-                  className={`relative mx-2 ${fadeImages ? "top" : ""}`}
+                className="relative mx-2 "
                   style={{ width: "300px", height: "240px" }}
                 >
                   <img
@@ -345,7 +347,7 @@ const YourCare = () => {
                   />
                 </div>
                 <div
-                  className={`relative mx-2 ${fadeImages ? "top" : ""}`}
+               className="relative mx-2 "
                   style={{ width: "300px", height: "300px" }}
                 >
                   <img
@@ -357,7 +359,7 @@ const YourCare = () => {
                 </div>
 
                 <div
-                  className={`relative mx-2 ${fadeImages ? "top" : ""}`}
+                            className="relative mx-2 "
                   style={{ width: "300px", height: "340px" }}
                 >
                   <img
@@ -367,7 +369,7 @@ const YourCare = () => {
                   />
                 </div>
                 <div
-                  className={`relative mx-2 ${fadeImages ? "top" : ""}`}
+                               className="relative mx-2 "
                   style={{ width: "330px", height: "400px" }}
                 >
                   <img
@@ -378,7 +380,7 @@ const YourCare = () => {
                   />
                 </div>
                 <div
-                  className={`relative mx-2 ${fadeImages ? "top" : ""}`}
+               className="relative mx-2 "
                   style={{ width: "300px", height: "480px" }}
                 >
                   <img
@@ -388,19 +390,27 @@ const YourCare = () => {
                   />
                 </div>
               </div>
-              {fadeImages && (
-                <div
-                  className={`new-image-container absolute inset-0 flex justify-center items-center ${
-                    fadeImages ? "visible" : "hidden"
-                  }`}
-                >
-                  <img
-                    src="https://fastly.picsum.photos/id/29/4000/2670.jpg?hmac=rCbRAl24FzrSzwlR5tL-Aqzyu5tX_PA95VJtnUXegGU"
-                    alt="New Image"
-                    className=" opacity-90 w-64 h-auto object-cover"
-                  />
-                </div>
-              )}
+              <div
+    className="absolute inset-0 flex justify-center items-center"
+    style={{ opacity: picsumImageOpacity }}
+  >
+    <img
+      src="../images/booknow.png"
+      alt="scan_gif"
+      className="opacity-90 object-contain"
+    />
+  </div>
+  <div
+  className="absolute inset-0 flex justify-center items-center"
+  style={{ opacity: gifOpacity }}
+>
+  <img
+    src="../images/freysmiles_insta.gif" 
+    alt="gif_description"
+    className="object-contain"
+  />
+</div>
+
             </section>
           </div>
           <div className="about-pages w-1/2 bg-[#121212] ">
@@ -492,18 +502,18 @@ const YourCare = () => {
           </div>
         </section>
 
-        <div className="md:w-1/2 flex items-center relative">
-          <div className="rounded-full overflow-hidden flex-shrink-0">
+        <div className="bg-red-100 border rounded-[30px] section-style flex items-center z-10 relative">
+
             <div
               className="object-cover w-full h-full"
               style={getTransitionStyle()}
             ></div>
-          </div>
+   
           <div ref={boyImageRef} className="hero-image boy">
-            <div className="ml-6">
               <h3 className="font-HelveticaNowVar font-thin text-5xl mb-14 mt-20">
                 Growth and Guidance
               </h3>
+              <img className="w-1/2 h-1/2" src="../images/venn.svg" ></img>
               <div className="paragraph-with-background">
                 <p>
                   The American Association of Orthodontists (AAO) recommends an
@@ -517,7 +527,7 @@ const YourCare = () => {
                   your treatment.
                 </p>
               </div>
-            </div>
+     
           </div>
         </div>
 

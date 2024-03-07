@@ -6,7 +6,7 @@ import { motion, useInView } from "framer-motion"
 export default function EarlyAdultOrthodontics() {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <EarlyOrthodontics />
       <hr />
       <AdultOrthodontics />

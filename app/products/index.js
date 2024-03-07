@@ -182,7 +182,7 @@ function Banner() {
           }}
         />
       </div>
-      <p className="flex items-center gap-2 text-sm leading-6 text-gray-900">
+      <p className="text-purple-400 flex items-center gap-2 text-sm leading-6 text-gray-900">
         Unwrap Smiles, Gift Oral Wellness!
         <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} className="font-semibold whitespace-nowrap" target='_blank'>
           <span className="flex items-center gap-1">

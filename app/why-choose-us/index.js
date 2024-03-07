@@ -1,6 +1,8 @@
 
 
 'use client'
+
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link"
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
@@ -11,9 +13,16 @@ import Shape02 from "../_components/shapes/shape02"
 import Shape05 from "../_components/shapes/shape05"
 import { TextReveal } from "../_components/TextReveal"
 
+
 export default function WhyChooseUs() {
+
+
+
   return (
+    
     <>
+
+    
       <HeadingAnimation />
       <TextContentOne />
       <TextContentTwo />
