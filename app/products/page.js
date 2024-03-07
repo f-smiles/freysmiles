@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import ProductsComponent from "."
-import Loading from "./loading"
+import LoadingAllProducts from "./loading"
 
 export const metadata = {
   title: "Products",
@@ -29,7 +29,7 @@ export default async function Page() {
   const prices = await getPrices()
 
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<LoadingAllProducts />}>
       <ProductsComponent products={products} prices={prices} />
     </Suspense>
   )
