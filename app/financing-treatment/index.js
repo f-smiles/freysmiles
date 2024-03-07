@@ -3,7 +3,10 @@ import { useRef } from 'react'
 import { motion, useScroll, useSpring, useTransform, useInView } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import useIsomorphicLayoutEffect from '@/_helpers/isomorphicEffect'
+import { useGSAP } from '@gsap/react'
+// import useIsomorphicLayoutEffect from '@/_helpers/useIsomorphicLayoutEffect'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const details = [
   {
@@ -138,12 +141,31 @@ function Detail({ children }) {
 function Images() {
   const panelsRef = useRef(null)
 
-  useIsomorphicLayoutEffect(() => {
-    gsap.registerPlugin(ScrollTrigger)
-    let panels = gsap.utils.toArray(".panel")
+  // useIsomorphicLayoutEffect(() => {
+  //   gsap.registerPlugin(ScrollTrigger)
+  //   let panels = gsap.utils.toArray(".panel")
 
-    const ctx = gsap.context(() => {
-      gsap.to(panels, {
+  //   const ctx = gsap.context(() => {
+  //     gsap.to(panels, {
+  //       yPercent: 0,
+  //       ease: "none",
+  //       scrollTrigger: {
+  //         trigger: ".wrapper",
+  //         pin: true,
+  //         scrub: true,
+  //         snap: 1 / (panels.length - 1),
+  //         start: "top top",
+  //         end: "bottom bottom",
+  //       }
+  //     })
+  //   }, panelsRef)
+  //   return () => ctx.revert()
+  // }, [])
+
+  useGSAP(() => {
+    const panels = gsap.utils.toArray(".panel")
+    panels.forEach((panel) => {
+      gsap.to(panel, {
         yPercent: 0,
         ease: "none",
         scrollTrigger: {
@@ -155,9 +177,8 @@ function Images() {
           end: "bottom bottom",
         }
       })
-    }, panelsRef)
-    return () => ctx.revert()
-  }, [])
+    })
+  }, { scope: panelsRef })
 
   return (
     <div ref={panelsRef} className="hidden h-full md:block wrapper">

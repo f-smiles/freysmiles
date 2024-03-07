@@ -3,10 +3,9 @@ import Link from 'next/link'
 import axios from 'axios'
 import { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { stagger, useAnimate } from 'framer-motion'
+import { motion, stagger, useAnimate, useMotionValue, useSpring } from 'framer-motion'
 import { Dialog, Transition } from '@headlessui/react'
 import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
-import HomeIcon from './ui/HomeIcon'
 import BagIcon from './ui/BagIcon'
 import Bars2Icon from './ui/Bars2Icon'
 import ChevronDownIcon from './ui/ChevronDownIcon'
@@ -87,24 +86,69 @@ export default function Navbar() {
   /* mobile nav */
   const [show, setShow] = useState(null)
   const handleToggleMobileNav = () => {
+    // setShow((prevState) => !prevState)
     setShow(!show)
   }
-  const scope = useMobileNavAnimation(show)
+  // const scope = useMobileNavAnimation(show)
+
+  /* mouse cursor */
+  const cursorX = useMotionValue(-100)
+  const cursorY = useMotionValue(-100)
+  const springConfig = { damping: 25, stiffness: 200 }
+  const cursorXSpring = useSpring(cursorX, springConfig)
+  const cursorYSpring = useSpring(cursorY, springConfig)
+  const [cursorVariant, setCursorVariant] = useState("default")
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      cursorX.set(e.clientX - 16)
+      cursorY.set(e.clientY - 16)
+    }
+    window.addEventListener("mousemove", moveCursor)
+
+    return () => {
+      window.removeEventListener("mousemove", moveCursor)
+    }
+  }, [])
+
+  const variants = {
+    default: {
+      width: 32,
+      height: 32,
+    },
+    hover: {
+      width: 64,
+      height: 64,
+    }
+  }
+
+  const hoverEnter = () => setCursorVariant("hover")
+  const hoverLeave = () => setCursorVariant("default")
 
   return (
-    <>
+    <header>
+      <motion.div
+        className="hidden lg:block cursor"
+        variants={variants}
+        animate={cursorVariant}
+        style={{
+          x: cursorXSpring,
+          y: cursorYSpring,
+        }}
+      />
+
       {/* DESKTOP NAVBAR */}
-      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-20 hidden w-full mb-[4vh] lg:block">
-        <div className="p-2 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
+      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-20 hidden w-full mb-[6vh] lg:block">
+        <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md cursor-pointer hover:bg-primary-50/60 active:bg-primary-50/80">
+            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md hover:bg-primary-50/60 active:bg-primary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link href="/" className="inline-block p-4">
                 {/* <HomeIcon className="w-4 h-4" /> */}
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
-            <li onClick={handleToggleAbout}>
-              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+            <li onClick={handleToggleAbout} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
                 About
                 <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -178,7 +222,7 @@ export default function Navbar() {
                                   </li>
                                 ))}
                               </ul>
-                              <Sphere />
+                              {/* <Sphere /> */}
                             </div>
                           </div>
                         </Dialog.Panel>
@@ -189,8 +233,8 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li onClick={handleTogglePatient}>
-              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+            <li onClick={handleTogglePatient} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
                 Patient
                 <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -264,7 +308,7 @@ export default function Navbar() {
                                   </li>
                                 ))}
                               </ul>
-                              <Sphere />
+                              {/* <Sphere /> */}
                             </div>
                           </div>
                         </Dialog.Panel>
@@ -275,8 +319,8 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li onClick={handleToggleTreatments}>
-              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+            <li onClick={handleToggleTreatments} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
                 Treatments
                 <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -350,7 +394,7 @@ export default function Navbar() {
                                   </li>
                                 ))}
                               </ul>
-                              <Sphere />
+                              {/* <Sphere /> */}
                             </div>
                           </div>
                         </Dialog.Panel>
@@ -361,7 +405,7 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="https://my.orthoblink.com/bLink/Login"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
@@ -370,7 +414,7 @@ export default function Navbar() {
               </Link>
             </li>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="/#locations"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
@@ -379,7 +423,7 @@ export default function Navbar() {
               </Link>
             </li>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out">
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="/products"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
@@ -391,7 +435,7 @@ export default function Navbar() {
 						{bag.length > 0 && (
               <li
                 onClick={handleToggleBagPanel}
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:right-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out"
+                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:right-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
           		>
           		  <span className="flex items-center relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:left-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50">
                   <BagIcon className="w-6 h-6 ml-1" />
@@ -508,7 +552,7 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-						<li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out rounded-full shadow-sm cursor-pointer shadow-primary-30 text-primary-95 bg-primary-30 hover:bg-secondary-50/60 hover:text-secondary-95 active:bg-secondary-50/80">
+						<li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out rounded-full shadow-sm cursor-pointer shadow-primary-30 text-primary-95 bg-primary-30 hover:bg-secondary-50/60 hover:text-secondary-95 active:bg-secondary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link href="/book-now" className="inline-block px-6 py-3">
                 Book Now
               </Link>
@@ -520,7 +564,7 @@ export default function Navbar() {
       {/* MOBILE NAVBAR */}
       <nav id="mobile-nav" className={`${show ? "top-0 flex flex-col-reverse gap-6 justify-between h-full bg-white" : "bottom-0 max-w-[75vw] rounded-full bg-gray-100/60"} fixed left-0 right-0 mb-[4vh] p-4 w-full mx-auto text-gray-600 backdrop-blur-md shadow-md z-50 lg:hidden`}>
         <section className={`${show ? "px-4 py-6" : ""} flex items-center justify-between`}>
-          <Link href="/" onClick={handleToggleMobileNav}>
+          <Link href="/">
             <img
               src="/../../../logo_full.png"
               alt="FreySmiles Orthodontics logo"
@@ -538,21 +582,19 @@ export default function Navbar() {
             )}
           </div>
         </section>
-        <section ref={scope} className="overflow-y-scroll">
+        {/* <section ref={scope} className="overflow-y-scroll"> */}
+        <section className="overflow-y-scroll">
           {show && (
             <ul className="relative text-2xl">
               <div className="px-4 mt-10 cursor-pointer group text-primary-40">
-                <li className="py-2 uppercase border-b border-secondary-50/30" onClick={handleToggleMobileNav}>
+                {/* <li className="py-2 uppercase border-b border-secondary-50/30">
                   <Link href="/">Home</Link>
-                </li>
-                <li
-                  className="py-2 border-b border-secondary-50/30"
-                  onClick={() => setAbout(!about)}
-                >
-                  <span className="flex items-center gap-2 uppercase">
-                    About <ChevronDownIcon className="w-4 h-4" />
-                  </span>
-                  {about && (
+                </li> */}
+                <li className="py-2 border-b border-secondary-50/30">
+                {/* <li className="py-2 border-b border-secondary-50/30" onClick={() => setAbout(!about)}> */}
+                  <span className="flex items-center gap-2 uppercase">About</span>
+                  {/* About <ChevronDownIcon className="w-4 h-4" /> */}
+                  {/* {about && ( */}
                     <div className="flex flex-col w-full my-4 space-y-1 capitalize">
                       {about_us_links &&
                         about_us_links.map((link) => (
@@ -566,16 +608,11 @@ export default function Navbar() {
                           </Link>
                         ))}
                     </div>
-                  )}
+                  {/* )} */}
                 </li>
-                <li
-                  className="py-2 border-b border-secondary-50/30"
-                  onClick={() => setPatient(!patient)}
-                >
-                  <span className="flex items-center gap-2 uppercase">
-                    Patient <ChevronDownIcon className="w-4 h-4" />
-                  </span>
-                  {patient && (
+                <li className="py-2 border-b border-secondary-50/30">
+                  <span className="flex items-center gap-2 uppercase">Patient</span>
+                  {/* {patient && ( */}
                     <div className="flex flex-col w-full my-4 space-y-1 capitalize">
                       {patient_links &&
                         patient_links.map((link) => (
@@ -589,16 +626,11 @@ export default function Navbar() {
                           </Link>
                         ))}
                     </div>
-                  )}
+                  {/* )} */}
                 </li>
-                <li
-                  className="py-2 border-b border-secondary-50/30"
-                  onClick={() => setTreatments(!treatments)}
-                >
-                  <span className="flex items-center gap-2 uppercase">
-                    Treatments <ChevronDownIcon className="w-4 h-4" />
-                  </span>
-                  {treatments && (
+                <li className="py-2 border-b border-secondary-50/30">
+                  <span className="flex items-center gap-2 uppercase">Treatments</span>
+                  {/* {treatments && ( */}
                     <div className="flex flex-col w-full my-4 space-y-1 capitalize">
                       {treatments_links &&
                         treatments_links.map((link) => (
@@ -612,7 +644,7 @@ export default function Navbar() {
                           </Link>
                         ))}
                     </div>
-                  )}
+                  {/* )} */}
                 </li>
               </div>
               <div className="px-4 mt-10 space-y-2 cursor-pointer"
@@ -663,47 +695,47 @@ export default function Navbar() {
           )}
         </section>
       </nav>
-    </>
+    </header>
   )
 }
 
-function useMobileNavAnimation(show) {
-  const [scope, animate] = useAnimate()
+// function useMobileNavAnimation(show) {
+//   const [scope, animate] = useAnimate()
 
-  useEffect(() => {
-    const mobileNavAnimations = show
-      ? [
-          [
-            "ul",
-            { transform: "translateX(0%)" },
-            { ease: [0.08, 0.65, 0.53, 0.96], duration: 0.6 },
-          ],
-          [
-            "li",
-            { transform: "scale(1)", opacity: 1, filter: "blur(0px)" },
-            { delay: stagger(0.05), at: "-0.5" },
-          ],
-          [
-            "a",
-            { transform: "scale(1)", opacity: 1, filter: "blur(0px)" },
-            { delay: stagger(0.05), at: "-0.5" },
-          ],
-        ]
-      : [
-          [
-            "li",
-            { transform: "scale(0.5)", opacity: 0, filter: "blur(10px)" },
-            { delay: stagger(0.05, { from: "last" }) },
-          ],
-          [
-            "a",
-            { transform: "scale(0.5)", opacity: 0, filter: "blur(10px)" },
-            { delay: stagger(0.05, { from: "last" }) },
-          ],
-          ["ul", { transform: "translateX(-100%)" }, { at: "-0.1" }],
-        ]
-    animate([...mobileNavAnimations])
-  }, [show, animate])
+//   useEffect(() => {
+//     const mobileNavAnimations = show
+//       ? [
+//           [
+//             "ul",
+//             { transform: "translateX(0%)" },
+//             { ease: [0.08, 0.65, 0.53, 0.96], duration: 0.6 },
+//           ],
+//           [
+//             "li",
+//             { transform: "scale(1)", opacity: 1, filter: "blur(0px)" },
+//             { delay: stagger(0.05), at: "-0.5" },
+//           ],
+//           [
+//             "a",
+//             { transform: "scale(1)", opacity: 1, filter: "blur(0px)" },
+//             { delay: stagger(0.05), at: "-0.5" },
+//           ],
+//         ]
+//       : [
+//           [
+//             "li",
+//             { transform: "scale(0.5)", opacity: 0, filter: "blur(10px)" },
+//             { delay: stagger(0.05, { from: "last" }) },
+//           ],
+//           [
+//             "a",
+//             { transform: "scale(0.5)", opacity: 0, filter: "blur(10px)" },
+//             { delay: stagger(0.05, { from: "last" }) },
+//           ],
+//           ["ul", { transform: "translateX(-100%)" }, { at: "-0.1" }],
+//         ]
+//     animate([...mobileNavAnimations])
+//   }, [show, animate])
 
-  return scope
-}
+//   return scope
+// }
