@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import ProductComponent from "."
-import Loading from "../loading"
+import LoadingSingleProduct from "./loading"
 
 export const generateMetadata = async ({ params }) => {
   const { productId } = params
@@ -27,7 +27,7 @@ export default async function Page({ params }) {
   const product = await getProduct(productId)
 
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<LoadingSingleProduct />}>
       <ProductComponent product={product} />
     </Suspense>
   )

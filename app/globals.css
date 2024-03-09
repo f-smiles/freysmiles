@@ -77,23 +77,6 @@
   }
 }
 
-@media only screen and (min-width: 1024px) {
-  * {
-    cursor: none;
-  }
-  .cursor {
-    display: block;
-    border-radius: 50%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 999;
-    background-color: #222;
-    mix-blend-mode: difference;
-  }
-}
-
 
 /* Footer 'Book Now' Button START */
 .box {
@@ -185,3 +168,30 @@
  }
 }
 /* Why Choose Us Page Roller Text END */
+
+
+
+
+/* custom mouse cursor START */
+.cursor {
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 999;
+  background-color: #222;
+  mix-blend-mode: difference;
+}
+@media only screen and (max-width: 1023px) {
+  .cursor {
+    background-color: transparent;
+    mix-blend-mode: normal;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  * {
+    cursor: none;
+  }
+}
+/* custom mouse cursor END */

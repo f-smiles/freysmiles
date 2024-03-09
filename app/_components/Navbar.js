@@ -128,7 +128,7 @@ export default function Navbar() {
   return (
     <header>
       <motion.div
-        className="hidden lg:block cursor"
+        className="cursor"
         variants={variants}
         animate={cursorVariant}
         style={{
