@@ -91,6 +91,49 @@ function SingleProductCarousel({ product }) {
   )
 }
 
+function Breadcrumb({ product }) {
+  const pages = [
+    { name: 'Products', href: '/products', current: false },
+    { name: product.name, href: `/products/${product.id}`, current: true },
+  ]
+
+  return (
+    <nav className="container flex w-full mx-10 mb-10" aria-label="Breadcrumb">
+      <ol role="list" className="flex items-center space-x-4">
+        <li>
+          <div>
+            <Link href="/" className="text-gray-400 transition duration-300 ease-in-out hover:text-primary-50">
+              <HomeIcon className="flex-shrink-0 w-5 h-5" aria-hidden="true" />
+              <span className="sr-only">Home</span>
+            </Link>
+          </div>
+        </li>
+        {pages.map((page) => (
+          <li key={page.name}>
+            <div className="flex items-center">
+              <svg
+                className="flex-shrink-0 w-5 h-5 text-gray-300"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                aria-hidden="true"
+              >
+                <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
+              </svg>
+              <Link
+                href={page.href}
+                className="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"
+                aria-current={page.current ? 'page' : undefined}
+              >
+                {page.name}
+              </Link>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
 export default function ProductComponent({ product }) {
   const [quantity, setQuantity] = useState(1)
 
@@ -110,46 +153,9 @@ export default function ProductComponent({ product }) {
     await dispatch(addToBag({ product, quantity}))
   }
 
-  const pages = [
-    { name: 'Products', href: '/products', current: false },
-    { name: product.name, href: `/products/${product.id}`, current: true },
-  ]
-
   return (
     <div className="max-w-2xl py-24 mx-auto lg:max-w-7xl">
-      <nav className="flex w-full mb-10" aria-label="Breadcrumb">
-        <ol role="list" className="flex items-center space-x-4">
-          <li>
-            <div>
-              <Link href="/" className="text-gray-400 transition duration-300 ease-in-out hover:text-primary-50">
-                <HomeIcon className="flex-shrink-0 w-5 h-5" aria-hidden="true" />
-                <span className="sr-only">Home</span>
-              </Link>
-            </div>
-          </li>
-          {pages.map((page) => (
-            <li key={page.name}>
-              <div className="flex items-center">
-                <svg
-                  className="flex-shrink-0 w-5 h-5 text-gray-300"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  aria-hidden="true"
-                >
-                  <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                </svg>
-                <Link
-                  href={page.href}
-                  className="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"
-                  aria-current={page.current ? 'page' : undefined}
-                >
-                  {page.name}
-                </Link>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </nav>
+      <Breadcrumb product={product} />
       <div className="grid w-full grid-cols-1 px-10 space-y-10 md:space-y-0 md:px-0 md:grid-cols-2 md:gap-12 lg:px-6">
         <section id="product" className="md:order-last">
           <div id="product-details" className="space-y-2">
