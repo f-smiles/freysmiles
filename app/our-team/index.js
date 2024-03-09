@@ -475,14 +475,28 @@ const OurTeam = () => {
         />
       </div>
 
-      <img ref={addToRefs} className="w-full h-full object-cover" src="/../../images/team_members/lexi.png" alt="" />
+<div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
+  <img className="members-style" src="/../../images/team_members/lexi.png" alt="Lexi" />
+  <img
+    className="w-96"
+    src="/../../images/lexi_tag.png" 
+    alt="Elizabeth Tag" 
+    style={{ position: 'absolute', left: '50%', top: '70%', transform: 'translate(-50%, -50%)' }}
+  />
+</div>
+
       <div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
         <img className="members-style" src="/../../images/team_members/elizabeth2.png" alt="Elizabeth" />
         <img
            className="w-96"
-          src="../images/elizabethtag.png" 
+          src="../images/elizabeth_tag.png" 
           alt="Elizabeth Tag" 
-          style={{ position: 'absolute', left: '40%', top: '70%', transform: 'translate(-50%, -50%)' }}
+          style={{ 
+            position: 'absolute',
+            left: '70%', 
+            top: '55%', 
+            transform: 'translate(-50%, -50%)' 
+          }}
         />
       </div>
       <div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
@@ -494,19 +508,62 @@ const OurTeam = () => {
           style={{ 
             position: 'absolute',
             left: '70%', 
-            top: '70%', 
+            top: '55%', 
             transform: 'translate(-50%, -50%)' 
           }}
         />
       </div>
-      <img ref={addToRefs} className="w-full h-full object-cover" src="/../../images/team_members/grace.png" alt="" />
-  <img ref={addToRefs}className="w-full h-full object-cover" src="/../../images/team_members/adrianacapsule.png" alt="" />
+      <div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
+  <img className="w-full h-full object-cover" src="/../../images/team_members/grace.png" alt="Grace" />
+  <img
+    className="w-96"
+    src="/../../images/gracetag.png" 
+    alt="Grace Tag" 
+    style={{ position: 'absolute', left: '65%', top: '60%', transform: 'translate(-50%, -50%)' }}
+  />
+</div>
+
+<div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
+  <img className="w-full h-full object-cover" src="/../../images/team_members/adrianacapsule.png" alt="Adriana" />
+  <img
+    className="w-96"
+    src="/../../images/adrianatag.png" 
+    alt="Elizabeth Tag" 
+    style={{ position: 'absolute', left: '40%', top: '70%', transform: 'translate(-50%, -50%)' }}
+  />
+</div>
 
 
+<div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
+  <img className="w-full h-full object-cover" src="/../../images/team_members/dana.png" alt="Dana" />
+  <img
+    className="w-96"
+    src="/../../images/danatag.png" 
+    alt="Elizabeth Tag" 
+    style={{ position: 'absolute', left: '40%', top: '70%', transform: 'translate(-50%, -50%)' }}
+  />
+</div>
 
-  <img ref={addToRefs} className="w-full h-full object-cover" src="/../../images/team_members/dana.png" style={{ "--i": 8 }} alt="" />
-  <img ref={addToRefs} className="w-full h-full object-cover" src="/../../images/team_members/alyssa.png" alt="" />
-  <img ref={addToRefs} className="w-full h-full object-cover" src="/../../images/team_members/lizzie.png" alt="" />
+<div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
+  <img className="w-full h-full object-cover" src="/../../images/team_members/alyssa.png" alt="Alyssa" />
+  <img
+    className="w-96"
+    src="/../../images/alyssatag.png" 
+    alt="Elizabeth Tag" 
+    style={{ position: 'absolute', left: '40%', top: '70%', transform: 'translate(-50%, -50%)' }}
+  />
+</div>
+
+<div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
+  <img className="w-full h-full object-cover" src="/../../images/team_members/lizzie.png" alt="Lizzie" />
+  <img
+    className="w-96"
+    src="/../../images/lizzietag.png" 
+    alt="Lizzie Tag" 
+    style={{ position: 'absolute', left: '40%', top: '70%', transform: 'translate(-50%, -50%)' }}
+  />
+</div>
+
 
 </section>
 

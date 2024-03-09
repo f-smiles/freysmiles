@@ -87,33 +87,50 @@ import LocomotiveScroll from 'locomotive-scroll';
 import { gsap, Power3 } from "gsap-trial";
 
 const YourCare = () => {
+  const colors = [
+    "hsl(36° , 38% , 73%)",  
+    "hsl(39, 5%, 78%)", 
+    "hsl(260, 3%, 80%)" 
+];
 
-  useEffect(() => {
-        const scrollContainer = document.querySelector("main");
+useEffect(() => {
+  const scrollContainer = document.querySelector("main");
 
-        const scroll = new LocomotiveScroll({
-            el: scrollContainer,
-            smooth: true,
-            lerp: 0.03
-        });
+  const scroll = new LocomotiveScroll({
+    el: scrollContainer,
+    smooth: true,
+    lerp: 0.03
+  });
 
-        scroll.on("scroll", (e) => {
-            scrollContainer.style.backgroundColor = 
-                `hsl(100, ${e.scroll.y / 5}%, 30%)`;
-        });
+  scroll.on("scroll", (e) => {
+    // Calculate the color index based on the scroll position
+    const index = Math.floor(e.scroll.y / window.innerHeight) % colors.length;
+
+    // Calculate the progress of scrolling within a section
+    const sectionProgress = (e.scroll.y % window.innerHeight) / window.innerHeight;
+
+    const currentColor = colors[index];
+    const nextColor = colors[(index + 1) % colors.length];
+    const interpolatedColor = gsap.utils.interpolate(currentColor, nextColor, sectionProgress);
+
+    scrollContainer.style.backgroundColor = interpolatedColor;
+  });
+
+  return () => {
+    scroll.destroy();
+
+    scrollContainer.style.backgroundColor = "";
+  };
+}, []);
 
 
-        return () => {
-            scroll.destroy();
-        };
-    }, []);
   return (
     <>
     <main data-scroll-container id="js-scroll">
   <section className="section-0" data-scroll-section>
     <h2 data-scroll data-scroll-speed="-2">Damon Brackets</h2>
     <div className="section-0__img-wrapper" data-scroll data-scroll-speed="-2" data-scroll-direction="horizontal">
-      <img src="https://picsum.photos/id/581/1600/1600" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
+      <img src="../images/grid.png" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
     </div>
   </section>
 
@@ -129,7 +146,7 @@ const YourCare = () => {
   </section>
 
   <section className="section-0" data-scroll-section>
-    <h2 data-scroll data-scroll-speed="-2">keep on scrolling</h2>
+    <h2 data-scroll data-scroll-speed="-2">Best results in less time</h2>
     <div className="section-0__img-wrapper" data-scroll data-scroll-speed="-2" data-scroll-direction="horizontal" data-scroll-call="bg">
       <img src="https://picsum.photos/id/1032/1600/1600" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
     </div>
@@ -139,15 +156,15 @@ const YourCare = () => {
     <div className="section-1__text section-1__text--top" data-scroll data-scroll-speed="2" data-scroll-direction="horizontal" data-scroll-delay="0.5">
       {Array(8).fill(null).map((_, i) => (
         <React.Fragment key={i}>
-          <span>parallax</span>
-          <span>scroll</span>
+          <span>faster</span>
+          <span>results</span>
         </React.Fragment>
       ))}
     </div>
   </section>
 
   <section className="section-0" data-scroll-section>
-    <h2 data-scroll data-scroll-speed="-2">you like <br/> to scroll</h2>
+    <h2 data-scroll data-scroll-speed="-2">Precise and effective </h2>
     <div className="section-0__img-wrapper" data-scroll data-scroll-speed="-2" data-scroll-direction="horizontal" data-scroll-call="bg1">
       <img src="https://picsum.photos/id/684/1600/1600" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
     </div>
@@ -165,7 +182,7 @@ const YourCare = () => {
   </section>
 
   <section className="section-0" data-scroll-section>
-    <h2 data-scroll data-scroll-speed="-2">Parallax is awesome</h2>
+    <h2 data-scroll data-scroll-speed="-2">Self-ligating braces</h2>
     <div className="section-0__img-wrapper" data-scroll data-scroll-speed="-2" data-scroll-direction="horizontal" data-scroll-call="bg2">
       <img src="https://picsum.photos/id/208/1600/1600" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
     </div>
