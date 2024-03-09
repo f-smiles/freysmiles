@@ -233,11 +233,11 @@ function Hero() {
 
   const imageItems = [
     {
-      imgSrc: "/images/happypatient.png",
+      imgSrc: "/images/patient25k.png",
       text: "25k+ Patients",
     },
     {
-      imgSrc: "/images/lehighvalley.jpg",
+      imgSrc: "/images/lehigh.png",
       text: "4 Bespoke Locations",
     },
     {
@@ -603,7 +603,7 @@ function Hero() {
                     left: "50%",
                     width: "33%",
                     height: "auto",
-                    aspectRatio: "9 / 14",
+                    aspectRatio: "10 / 14",
                     transform: "translate(-50%, -50%)",
                   }}
                 />

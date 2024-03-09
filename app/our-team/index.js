@@ -134,6 +134,34 @@ const OurTeam = () => {
     }
   }, []);
 
+  const imagesRef = useRef([]);
+  imagesRef.current = [];
+
+  const addToRefs = el => {
+    if (el && !imagesRef.current.includes(el)) {
+      imagesRef.current.push(el);
+    }
+  };
+
+  useEffect(() => {
+    imagesRef.current.forEach((img, index) => {
+      gsap.fromTo(img, 
+        { y: 100, opacity: 0 }, 
+        {
+          y: 0, 
+          opacity: 1, 
+          scrollTrigger: {
+            trigger: img,
+            start: "top bottom-=100",
+            toggleActions: "play none none reverse",
+            ease: "power3.out",
+          }
+        }
+      );
+    });
+  }, []);
+
+
   return (
     <>
       {/* <section
@@ -374,7 +402,7 @@ const OurTeam = () => {
                   </a>
                 </div>
                 <div className="horizontalItem horizontalFilled">
-                  <p>...and first aid</p>
+                  <p className="text-3xl">...and first aid</p>
                 </div>
                 <div className="horizontalItem horizontalBig">
                   <p>
@@ -431,15 +459,55 @@ const OurTeam = () => {
         </div>
 
         <section className="bg-white grid grid-cols-3 gap-4" >
-  <img className="w-full h-full object-cover" src="/../../images/team_members/kayli.png" style={{ "--i": 1 }} alt="" />
-  <img className="w-full h-full object-cover" src="/../../images/team_members/elizabeth2.png" alt="" />
-  <img className="w-full h-full object-cover" src="/../../images/team_members/nicolle.png" alt="" />
-  <img className="w-full h-full object-cover" src="/../../images/team_members/adrianacapsule.png" alt="" />
-  <img className="w-full h-full object-cover" src="/../../images/team_members/grace.png" alt="" />
-  <img className="w-full h-full object-cover" src="/../../images/team_members/lexi.png" alt="" />
-  <img className="w-full h-full object-cover" src="/../../images/team_members/alyssa.png" alt="" />
-  <img className="w-full h-full object-cover" src="/../../images/team_members/dana.png" style={{ "--i": 8 }} alt="" />
-  <img className="w-full h-full object-cover" src="/../../images/team_members/lizzie.png" alt="" />
+
+        <div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
+        <img className="members-style" src="/../../images/team_members/kayli.png" alt="Kayli" />
+        <img
+          src="../images/kaylitag.png" 
+          className="w-96"
+          alt="Tag" 
+          style={{ 
+            position: 'absolute',
+            left: '70%', 
+            top: '55%', 
+            transform: 'translate(-50%, -50%)' 
+          }}
+        />
+      </div>
+
+      <img ref={addToRefs} className="w-full h-full object-cover" src="/../../images/team_members/lexi.png" alt="" />
+      <div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
+        <img className="members-style" src="/../../images/team_members/elizabeth2.png" alt="Elizabeth" />
+        <img
+           className="w-96"
+          src="../images/elizabethtag.png" 
+          alt="Elizabeth Tag" 
+          style={{ position: 'absolute', left: '40%', top: '70%', transform: 'translate(-50%, -50%)' }}
+        />
+      </div>
+      <div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
+        <img className="w-full h-full object-cover" src="/../../images/team_members/nicolle.png" alt="Nicolle" />
+        <img
+          src="../images/nicolletag.png" 
+          className="w-96"
+          alt="Nicolle Tag"
+          style={{ 
+            position: 'absolute',
+            left: '70%', 
+            top: '70%', 
+            transform: 'translate(-50%, -50%)' 
+          }}
+        />
+      </div>
+      <img ref={addToRefs} className="w-full h-full object-cover" src="/../../images/team_members/grace.png" alt="" />
+  <img ref={addToRefs}className="w-full h-full object-cover" src="/../../images/team_members/adrianacapsule.png" alt="" />
+
+
+
+  <img ref={addToRefs} className="w-full h-full object-cover" src="/../../images/team_members/dana.png" style={{ "--i": 8 }} alt="" />
+  <img ref={addToRefs} className="w-full h-full object-cover" src="/../../images/team_members/alyssa.png" alt="" />
+  <img ref={addToRefs} className="w-full h-full object-cover" src="/../../images/team_members/lizzie.png" alt="" />
+
 </section>
 
 

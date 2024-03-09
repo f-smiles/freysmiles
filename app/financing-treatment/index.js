@@ -10,21 +10,21 @@ const details = [
     number: "1.",
     heading: "Complimentary consultation",
     body: "Initial consultations are always free of charge.",
-    img: "/../../images/firstmeeting.jpg",
+    img: "/../../images/patientcare.png",
     alt: "FreySmiles team member warmly greeting a FreySmiles patient and shaking their hand",
   },
   {
     number: "2.",
     heading: "Payment plans are available",
     body:"We offer a variety of payment plans at no interest.",
-    img: "/../../images/drawkit_treatment_plan.jpg",
+    img: "/../../images/payments.png",
     alt: "Scene of a girl sitting on top of bags holding a percent sign representing no interest payment at FreySmiles",
   },
   {
     number: "3.",
-    heading: "No hidden costs",
-    body: "Fees for diagnostic records, treatment visits, appliances.",
-    img: "/../../images/financing_cost.jpg",
+    heading: "No hidden fees",
+    body: "Comprehensive treatment plans include retainers and supervision",
+    img: "/../../images/",
     alt: "No hidden fees",
   },
   {
@@ -51,40 +51,40 @@ export default function FinancingTreatment() {
 
   return (
     <>
-    <div className="relative w-full mx-auto max-w-7xl">
-      <section id="main-container" className="md:flex md:justify-between md:gap-x-6">
+    <div className="z-[-1] bg-[#DBDBDB] relative w-full mx-auto max-w-7xl">
+      <section id="main-container" className=" md:flex md:justify-between md:gap-x-6">
         {/* LEFT HALF DESKTOP SECTION */}
         <div ref={lineRef} id="left" className="hidden md:block md:w-1/3 md:pl-12">
           <Detail>
-            <span className="absolute p-5 rounded-full bg-primary-60 -left-12">
+            <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
               <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">1.</p>
             </span>
-            <h4 className="capitalize text-primary-50">Complimentary Consultation</h4>
-            <p>Initial consultations are always free of charge.</p>
+            <div className="font-HelveticaNowVar font-thin flex text-6xl  text-center">Complimentary Consultation</div>
+            <p className="flex text-xl text-center">Initial consultations are always free of charge.</p>
           </Detail>
           <Detail>
-            <span className="absolute p-5 rounded-full bg-primary-60 -left-12">
+            <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
               <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">2.</p>
             </span>
-            <h4 className="capitalize text-primary-50">Payment plans are available</h4>
-            <p>We offer a variety of payment plans at no interest.</p>
+            <h4 className="flex text-6xl  text-center capitalize">Payment plans are available</h4>
+            <p className="flex text-xl text-center">We offer a variety of payment plans at no interest.</p>
           </Detail>
           <Detail>
-            <span className="absolute p-5 rounded-full bg-primary-60 -left-12">
+            <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
               <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">3.</p>
             </span>
-            <h4 className="capitalize text-primary-50">No hidden costs</h4>
-            <p>Fees for diagnostic records, treatment visits, appliances.</p>
+            <h4 className="flex text-6xl  text-center capitalize">Pay it forward </h4>
+            <p className="flex text-xl text-center">Successive family members always receive the same excellent care. Ask about our family courtesies</p>
           </Detail>
           <Detail>
-            <span className="absolute p-5 rounded-full bg-primary-60 -left-12">
+            <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
               <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">4.</p>
             </span>
-            <h4 className="capitalize text-primary-50">One year post-treatment follow up</h4>
-            <p>Retainers and retention visits for one year post-treatment included.</p>
+            <h4 className="flex text-6xl  text-center capitalize">One year post-treatment follow up</h4>
+            <p className="flex text-xl text-center">  Retainers and retention visits for one year post-treatment included.</p>
           </Detail>
           <motion.div
-            className="absolute top-0 hidden w-[2px] h-full left-[22px] md:block bg-primary-60 -z-10"
+            className="absolute top-0 hidden w-[2px] h-full left-[22px] md:block bg-[#355e3b] -z-10"
             style={{ height }}
           />
         </div>
