@@ -1,4 +1,8 @@
+
+
 'use client'
+
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link"
 import { useRef } from "react"
 // swiper
@@ -17,8 +21,10 @@ import Shape06 from "../_components/shapes/shape06"
 import Shape07 from "../_components/shapes/shape07"
 import { TextReveal } from "../_components/TextReveal"
 
+
 export default function WhyChooseUs() {
   return (
+    
     <>
       <Hero />
       <StackCards />
@@ -125,32 +131,6 @@ function StackCards() {
   )
 }
 
-function GradientText() {
-  return (
-    <section className="flex flex-col-reverse items-center justify-between gap-16 px-8 mx-auto my-16 max-w-7xl md:gap-8 md:flex-row bg-[#e0e1d1]">
-      <div className="px-4 md:w-1/2">
-        <p className="text-2xl font-helvetica-now-thin">
-          Our office holds the distinction of being the{" "}
-          <span className="text-4xl text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
-            longest-standing, active board-certified orthodontic office in the
-            area
-          </span>
-          . With four offices in the Lehigh Valley, we have been providing
-          unparalleled orthodontic care for over four decades.
-        </p>
-      </div>
-      <div className="relative h-full md:w-1/2">
-        <Shape02 className="absolute inset-0 m-auto text-white border border-white" />
-        <img
-          className="object-fill object-center"
-          src="/../../images/drfreyperfecting.jpg"
-          alt="Dr. Gregg Frey attending a FreySmiles patient"
-        />
-      </div>
-    </section>
-  )
-}
-
 function CTA() {
   return (
     <section className="flex flex-col gap-8 px-12 mx-auto mb-32 md:flex-row md:justify-between lg:gap-16 max-w-7xl">
@@ -162,6 +142,7 @@ function CTA() {
     </section>
   )
 }
+
 function ScrollTextReveal() {
   const text = "Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it."
 
@@ -241,90 +222,6 @@ function DragTable() {
   )
 }
 
-function SwiperCarousel() {
-  return (
-    <section className="flex flex-col items-center justify-between w-full gap-8 px-8 mx-auto mb-32 md:flex-row md:items-center max-w-7xl">
-      <div className="overflow-hidden rounded-full">
-        <img
-          src="/../../images/freysmilepatient.jpg"
-          alt="frey smiles patient"
-          className="w-full aspect-square"
-        />
-      </div>
-      <Swiper
-        style={{
-          width: "100%",
-          height: "80vh",
-          position: "relative",
-          "--swiper-pagination-color": "#ad79e3", // primary-60
-        }}
-        // loop={true}
-        pagination={true}
-        mousewheel={true}
-        direction={"vertical"}
-        modules={[Pagination, Mousewheel]}
-        className="mySwiper"
-      >
-        <SwiperSlide
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <div className="px-8 space-y-4">
-            <h3>Uncompromising quality</h3>
-            <h4>
-              We strive to attain finished results consistent with the{" "}
-              <span>American Board of Orthodontics (ABO)</span> qualitative
-              standards. Our doctors place great priority on the certification
-              and recertification process, ensuring that all diagnostic
-              records adhere to ABO standards.
-            </h4>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <div className="px-8">
-            <h4>
-              Currently, Dr. Gregg Frey is a certified orthodontist, and is
-              preparing cases for recertification. Dr. Daniel Frey is in the
-              final stages of obtaining his initial certification.
-            </h4>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            gap: "1rem",
-          }}
-        >
-          <div className="px-8">
-            <h4>
-              To complement our use of cutting-edge diagnostic technology, we
-              uphold the highest standards for our records, ensuring accuracy
-              and precision throughout the treatment process.
-            </h4>
-          </div>
-        </SwiperSlide>
-      </Swiper>
-    </section>
-  )
-}
-
       // <motion.div ref={constraintsRef} className="grid grid-cols-5 col-span-1 gap-4 p-8 prose border-2 border-blue-300 border-dashed rounded-full place-items-end place-content-end aspect-w-1 aspect-h-1 lg:prose-xl">
       //   <motion.div className="flex col-span-1 p-8 text-center border border-pink-300 rounded-full aspect-square item place-content-center place-items-center" drag dragConstraints={constraintsRef}>
       //     <p><span className="text-2xl">4</span> Convenient Locations</p>
@@ -343,15 +240,16 @@ function SwiperCarousel() {
       //   </motion.div>
       // </motion.div>
 
-{/* <div className="relative self-center w-full md:w-1/2">
-          <img
-            className="w-full"
-            src="/../../images/smilescholarship.jpg"
-            alt="Frey Smiles patient receiving FreySmile scholarship"
-          />
-          <div className="absolute bottom-0 right-0 w-1/2 -translate-y-1/2 -translate-x-1/3">
-            <div className="flex flex-col overflow-hidden shadow-[5px_5px_rgba(0,_98,_90,_0.4),_10px_10px_rgba(0,_98,_90,_0.3),_15px_15px_rgba(0,_98,_90,_0.2),_20px_20px_rgba(0,_98,_90,_0.1),_25px_25px_rgba(0,_98,_90,_0.05)] text-center bg-white p-8">
-              <h3 className="font-helvetica-now-thin">Giving Back</h3>
-            </div>
-          </div>
-        </div> */}
+
+//  <div className="relative self-center w-full md:w-1/2">
+//           <img
+//             className="w-full"
+//             src="/../../images/smilescholarship.jpg"
+//             alt="Frey Smiles patient receiving FreySmile scholarship"
+//           />
+//           <div className="absolute bottom-0 right-0 w-1/2 -translate-y-1/2 -translate-x-1/3">
+//             <div className="flex flex-col overflow-hidden shadow-[5px_5px_rgba(0,_98,_90,_0.4),_10px_10px_rgba(0,_98,_90,_0.3),_15px_15px_rgba(0,_98,_90,_0.2),_20px_20px_rgba(0,_98,_90,_0.1),_25px_25px_rgba(0,_98,_90,_0.05)] text-center bg-white p-8">
+//               <h3 className="font-helvetica-now-thin">Giving Back</h3>
+//             </div>
+//           </div>
+//         </div> 

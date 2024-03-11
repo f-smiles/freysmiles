@@ -1,113 +1,550 @@
-'use client'
+"use client"
 import Link from 'next/link'
-import { useRef, useEffect, useState } from 'react'
-// import gsap
-import { gsap } from 'gsap'
+import { useRef, useEffect, useLayoutEffect, useState } from 'react'
+// gsap
+import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 // framer motion
 import { motion, stagger, useAnimate, useInView, useScroll, useSpring, useTransform } from 'framer-motion'
 // headless ui
 import { Disclosure, Transition } from '@headlessui/react'
-// components
-import ArrowRightIcon from './_components/ui/ArrowRightIcon'
 import ChevronRightIcon from './_components/ui/ChevronRightIcon'
 import MapPin from './_components/ui/MapPin'
-import Shape01 from './_components/shapes/shape01'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export default function Home() {
-
+export default function LandingComponent() {
   return (
     <>
+      <LogoHeader />
       <Hero />
-      <ParallaxScroll />
+      <GSAPAnimateScrollSections />
+      <ParallaxInvisalignDamonBracesAdvancedTech />
       <Locations />
       <GiftCards />
     </>
   )
 }
 
+function LogoHeader() {
+  return (
+    <header className="pt-16 m-auto w-max">
+      <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
+        <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
+      </div>
+  </header>
+  )
+}
+
 function Hero() {
-  const mobileRef = useRef(null)
-  const isInView = useInView(mobileRef)
+  const containerRef = useRef(null);
+  const div1Ref = useRef(null);
+  const div2Ref = useRef(null);
+  const div3Ref = useRef(null);
+  const div4Ref = useRef(null);
+  const listItemsRef = useRef(null);
+
+  ScrollTrigger.create({
+    trigger: listItemsRef.current,
+    start: "top top",
+    end: "+=100%",
+    pin: true,
+    pinSpacing: false,
+  });
+
+  useEffect(() => {
+    gsap.set(div1Ref.current, { x: -100, y: -100 });
+    gsap.set(div2Ref.current, { x: 100, y: -100 });
+    gsap.set(div3Ref.current, { x: -100, y: 100 });
+    gsap.set(div4Ref.current, { x: 100, y: 100 });
+    gsap.to(div1Ref.current, {
+      x: 0,
+      y: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top bottom",
+        end: "center center",
+        scrub: true,
+      },
+    });
+
+    gsap.to(div2Ref.current, {
+      x: 0,
+      y: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top bottom",
+        end: "center center",
+        scrub: true,
+      },
+    });
+
+    gsap.to(div3Ref.current, {
+      x: 0,
+      y: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top bottom",
+        end: "center center",
+        scrub: true,
+      },
+    });
+    gsap.to(div4Ref.current, {
+      x: 0,
+      y: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top bottom",
+        end: "center center",
+        scrub: true,
+      },
+    });
+  }, []);
+
+  const heroContentRef = useRef(null);
+  const bookButtonRef = useRef(null);
+
+  function animateHeroContent() {
+    if (!heroContentRef.current) return;
+    const lines = heroContentRef.current.querySelectorAll(".hero-content-line");
+    lines.forEach((line, index) => {
+      gsap.fromTo(
+        line,
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1.5,
+          ease: "power3.out",
+          delay: index * 0.2,
+        }
+      );
+    });
+  }
+
+  function animateBookButton() {
+    if (!bookButtonRef.current) return;
+
+    gsap.fromTo(
+      bookButtonRef.current,
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" }
+    );
+  }
+
+  useLayoutEffect(() => {
+    animateHeroContent();
+    animateBookButton();
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateElement(entry.target);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    if (heroContentRef.current) {
+      observer.observe(heroContentRef.current);
+    }
+
+    if (bookButtonRef.current) {
+      observer.observe(bookButtonRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  function animateElement(element) {
+    if (element === heroContentRef.current) {
+      const lines =
+        heroContentRef.current.querySelectorAll(".hero-content-line");
+      lines.forEach((line, index) => {
+        gsap.fromTo(
+          line,
+          { y: 64, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out",
+            delay: index * 0.2,
+          }
+        );
+      });
+    } else if (element === bookButtonRef.current) {
+      const button = bookButtonRef.current.querySelector(".book-button");
+      const arrowIcon = bookButtonRef.current.querySelector(".arrow-icon");
+
+      gsap.fromTo(
+        button,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
+      );
+
+      gsap.fromTo(
+        arrowIcon,
+        { scale: 0 },
+        { scale: 1, duration: 1, ease: "power3.out" }
+      );
+    }
+  }
+
+  const [isScaled, setIsScaled] = useState(false);
+  const [showBookNow, setShowBookNow] = useState(false);
+
+  const handleClick = () => {
+    setIsScaled(true);
+
+    setTimeout(() => {
+      setShowBookNow(true);
+    }, 3500);
+  };
+
+  const itemRefs = useRef([]);
+  itemRefs.current = [];
+  const setMultipleRefs = (element) => {
+    if (typeof listItemsRef === "function") {
+      listItemsRef(element);
+    } else if (listItemsRef) {
+      listItemsRef.current = element;
+    }
+
+    if (typeof addToRefs === "function") {
+      addToRefs(element);
+    } else if (addToRefs) {
+      addToRefs.current = element;
+    }
+  };
+
+  const addToRefs = (el) => {
+    if (el && !itemRefs.current.includes(el)) {
+      itemRefs.current.push(el);
+    }
+  };
+
+
+  const titleRef = useRef(null);
+
+  useEffect(() => {
+    if (!titleRef.current) return;
+
+    const titleSpans = titleRef.current.querySelectorAll("h1 > span");
+    const titleSpansAfters = titleRef.current.querySelectorAll("h1 .after");
+
+    const animSpanFrom = {
+      "will-change": "opacity, transform",
+      opacity: 0,
+    };
+    const animSpanTo = {
+      duration: 0.62,
+      opacity: 1,
+      rotationX: 0,
+      yPercent: 0,
+      ease: "power1.inOut",
+      stagger: {
+        each: 0.1,
+      },
+    };
+
+    gsap
+      .timeline()
+      .fromTo(
+        titleSpans[0],
+        { ...animSpanFrom, rotationX: 90, yPercent: -50 },
+        animSpanTo
+      )
+      .fromTo(
+        titleSpans[1],
+        { ...animSpanFrom, rotationX: -90, yPercent: 50 },
+        animSpanTo,
+        "<"
+      )
+      .fromTo(
+        titleSpansAfters,
+        { width: "100%" },
+        { duration: 0.72, ease: "expo.inOut", width: "0%" },
+        "end"
+      );
+  }, []);
+
+  const marqueeRef = useRef(null);
+
+  useEffect(() => {
+    if (!marqueeRef.current) return;
+
+    const marqueeSpans = marqueeRef.current.querySelectorAll(
+      ".marquee__inner > span"
+    );
+
+    marqueeSpans.forEach((span, index) => {
+      gsap.fromTo(
+        span,
+        {
+          "will-change": "opacity, transform",
+          opacity: 0,
+          x: -50,
+        },
+        {
+          duration: 0.62,
+          opacity: 1,
+          x: 0,
+          ease: "power1.inOut",
+          stagger: 0.1,
+          delay: index * 0.1,
+        }
+      );
+    });
+  }, []);
+
+  const pixiContainerRef = useRef();
 
   return (
-    <section>
-      {/* DESKTOP VIEW */}
-      <div className="relative hidden lg:block">
-        <div className="-z-10 absolute w-[100dvw] h-full bg-rose-100" />
-        <header className="pt-16 m-auto w-max">
-          {/* #fec49b */}{/* #FEBA76 */}{/* #fdba74 orange-300 */}
-          {/* #fda4af rose-300 */}{/*  #FDBA74, #FDB67E, #FDB388, #FDAF92, #FDAB9B, #FDA8A5, #FDA4AF */}
-          <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
-            <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
+    <section className="relative">
+      <div ref={pixiContainerRef} id="pixi-container"></div>
+      <div className="px-8 isolate lg:px-8">
+        <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <svg>
+              <defs>
+                <clipPath
+                  id="myClipPath"
+                  clipPathUnits="objectBoundingBox"
+                  transform="scale(0.0004 0.0007)"
+                >
+                  <path d="M1746.43,38.94C849.17-212.65-120.14,825.24,12.19,1135.81c101.84,239,679.67,189.43,1132.31,162.51,448.32-26.66,958.25,402.35,1298.59-122.64C2733.65,727.5,2258.09,182.41,1746.43,38.94Z" />
+                </clipPath>
+              </defs>
+            </svg>
           </div>
-        </header>
-        <section className="px-8 xl:px-0 flex flex-col-reverse justify-center md:gap-8 md:flex-row md:h-[100vh] mx-auto max-w-7xl py-16">
-          <div className="relative flex items-center justify-center md:w-[25dvw] lg:w-[40dvw] xl:w-[25dvw]">
-            <Shape01 className="w-full" />
-            <div className="absolute left-0 right-0 w-3/4 mx-auto space-y-6 text-white">
-              <h2 className="capitalize text-primary-50">Because every smile is unique</h2>
-              {/* <h2 className="capitalize text-primary-50">Oral health.<br/>Our passion.<br/>Our pride.</h2> */}
-              <span className="flex items-center gap-4">
-                <Link href="/book-now" className="flex items-center gap-2 p-4 transition-colors duration-300 ease-in-out rounded-md text-zinc-100 bg-primary-50 hover:bg-primary-30 group">
-                  Book Now
-                  {/* <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" /> */}
-                </Link>
-                <Link href="/our-team" className="p-4 rounded-md text-primary-30 group">
-                  <span className="flex items-center gap-2">
-                    Our Team <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" />
-                  </span>
-                  <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-primary-50 ease-in-out" />
-                </Link>
-              </span>
+
+          <div className="relative z-10 mx-auto lg:mt-0">
+            <div className="flex flex-wrap items-center justify-center">
+              <div className="relative">
+                <div className="hero">
+                  <div className="hero-content " ref={heroContentRef}>
+                    <div className=" marquee_features">
+                      <div className="marquee__inner first">
+                        <span>Because</span>
+                        <span>Every</span>
+                        <span>Smile</span>
+                        <span>Is</span>
+                        <span>Unique</span>
+                      </div>
+                      <div className="marquee__inner second">
+                        <span>Because</span>
+                        <span>Every</span>
+                        <span>Smile</span>
+                        <span>Is</span>
+                        <span>Unique</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="bg-center bg-no-repeat bg-cover rounded-full w-[20dvw]" style={{
-            backgroundImage: "url(/../../images/mainsectionimage.jpg)",
-            minHeight: "80vh",
-          }} />
-        </section>
-      </div>
-      {/* MOBILE VIEW */}
-      <div className="relative overflow-hidden lg:hidden w-dvw h-dvh">
-        <header className="z-0 pt-16 m-auto w-max">
-          <div className="bg-[rgba(230,_123,_142,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(230,_123,_142,_0.8),_0px_0px_0px_16px_rgba(234,_144,_160,_0.6),_0px_0px_0px_24px_rgba(238,_166,_179,_0.4),_0px_0px_0px_32px_rgba(238,_166,_179,_0.2),_0px_0px_0px_40px_rgba(246,_208,_215,_0.05)]">
-            <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
-          </div>
-        </header>
-        <img className="absolute inset-0 object-cover w-full h-full mx-auto -z-10" src="/../../images/mainsectionimage_glass.jpg" />
-        <div ref={mobileRef} style={{
-            transform: isInView ? "none" : "translateX(200px)",
-            opacity: isInView ? 1 : 0,
-            transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
-          }}
-          className="absolute right-4 flex flex-col items-center justify-center  bg-gray-400 border border-gray-200 rounded-full bottom-[8vh] w-[85dvw] md:w-[50dvw] aspect-square backdrop-filter bg-clip-padding backdrop-blur-md bg-opacity-30"
-        >
-          <div className="flex flex-col items-start justify-center w-2/3 ml-4 rounded-full aspect-square">
-            <h2 className="text-transparent capitalize font-helvetica-now-thin bg-clip-text bg-gradient-to-br from-primary-70 to-primary-100">Because every smile is unique</h2>
-            <span className="flex items-center justify-between gap-4 mt-8">
-              <Link href="/book-now" className="flex items-center gap-2 p-4 transition-colors duration-300 ease-in-out rounded-md text-zinc-100 bg-primary-40 hover:bg-primary-50 group">
-                Book Now
-                {/* <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" /> */}
-              </Link>
-              <Link href="/our-team" className="p-4 rounded-md text-primary-50 group">
-                <span className="flex items-center gap-2">
-                  Our Team <ArrowRightIcon className="w-4 h-4" />
+          <div className="relative flex items-center justify-center">
+            <div
+              className={`absolute z-20 inline-block ${
+                isScaled ? "scale-up" : "scale-100"
+              }`}
+              onClick={handleClick}
+              style={{ top: "10%", left: "-20%" }}
+            >
+              <Link
+                href="/book-now"
+                className="inline-flex items-center justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 480 480"
+                  className="w-48 h-48"
+                >
+                  <path fill="#C8A2C8">
+                    <animate
+                      attributeName="d"
+                      values="M20,248c0,57.7,21.4,114.4,56.8,154.6C118.6,450,181.8,476,250,476c63,0,122-23.5,163.2-64.8
+                      C454.5,370,480,315,480,252c0-68.1-29.9-133.3-77.2-175c-40.2-35.5-97-57-154.8-57C167.1,20,96,66.2,55.5,129.7
+                      C33,165,20,203,20,248z;
+                      M24,248c0,57.7,19.4,112.4,54.8,152.6C120.6,448,183.8,478,252,478c63,0,118-27.5,159.2-68.8
+                      C452.5,368,482,317,482,254c0-68.1-29.9-137.3-77.2-179c-40.2-35.5-101-53-158.8-53C165.1,22,94,64.2,53.5,127.7
+                      C31,163,24,203,24,248z;
+                      M20,248c0,57.7,25.4,110.4,60.8,150.6C122.6,446,185.8,480,254,480c63,0,114-31.5,155.2-72.8
+                      C450.5,366,484,319,484,256c0-68.1-29.9-139.3-77.2-181c-40.2-35.5-105-55-162.8-55C163.1,20,92,62.2,51.5,125.7
+                      C29,161,20,203,20,248z;
+                      M20,248c6.7,58.1,19.2,116.9,60.8,150.6c53.4,43.3,105.5,73,173.2,81.4c64,8,109.2-36.8,155.2-72.8
+                      C453,373,494.2,318.1,484,256c-11-67-21.5-151.4-77.2-181C358,49,301.5,14.4,244,20C162,28,85.6,58.5,51.5,125.7
+                      C31.2,165.9,14.8,203.3,20,248z;
+                      M20,248c0,57.7,21.4,114.4,56.8,154.6C118.6,450,181.8,476,250,476c63,0,122-23.5,163.2-64.8
+                      C454.5,370,480,315,480,252c0-68.1-29.9-133.3-77.2-175c-40.2-35.5-97-57-154.8-57C167.1,20,96,66.2,55.5,129.7
+                      C33,165,20,203,20,248z"
+                      dur="1.5s"
+                      repeatCount="indefinite"
+                    />
+                  </path>
+                </svg>
+                <span className="absolute text-3xl font-thin tracking-tight text-white transform -translate-x-1/2 -translate-y-1/2 font-HelveticaNowPro top-1/2 left-1/2">
+                  Book
+                  <br />
+                  Now
                 </span>
-                <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-primary-50 ease-in-out" />
               </Link>
-            </span>
+            </div>
+
+            <img
+              className="z-10 max-w-md rounded-full"
+              src="../../images/mainsectionimage.jpg"
+              alt="girl smiling"
+            />
           </div>
         </div>
       </div>
+      <div>
+      </div>
+    </section>
+  );
+}
+
+function GSAPAnimateScrollSections() {
+  const listRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const items = listRef.current.querySelectorAll(".list__item");
+
+    items.forEach((item) => {
+      const itemTitle = item.querySelector(".list__item__title");
+      const itemTitleOutline = item.querySelector(".list__item__titleOutline");
+      const itemImg = item.querySelector("img");
+
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: "0% 75%",
+            end: "25% 50%",
+            scrub: 3,
+          },
+        })
+        .fromTo(
+          [itemTitle, itemTitleOutline],
+          { scale: 2, y: "100%" },
+          { scale: 1, y: "0%", ease: "power2.inOut" }
+        );
+
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: "50% 100%",
+            end: "100% 50%",
+            scrub: 3,
+            onEnter: () =>
+              gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
+            onLeave: () =>
+              gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
+            onEnterBack: () =>
+              gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
+            onLeaveBack: () =>
+              gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
+          },
+        })
+        .fromTo(
+          itemImg,
+          { x: "60vw", y: "60vh", rotate: -30 },
+          {
+            x: "-60vw",
+            y: "-60vh",
+            rotate: 30,
+            ease: "none",
+          }
+        );
+    });
+  }, []);
+
+  const imageItems = [
+    {
+      imgSrc: "/images/patient25k.png",
+      text: "25k+ Patients",
+    },
+    {
+      imgSrc: "/images/lehigh.png",
+      text: "4 Bespoke Locations",
+    },
+    {
+      imgSrc: "/images/topsortho.png",
+      text: "50+ Years Experience",
+    },
+  ];
+
+  return (
+    <section
+      ref={listRef}
+      className="flex flex-col items-center justify-center"
+    >
+      {imageItems &&
+        imageItems.map((item, index) => (
+          <div
+            key={index}
+            className="relative flex items-end w-full h-screen pb-10 list__item"
+          >
+            <img
+              src={item.imgSrc}
+              alt={`Description ${index + 1}`}
+              className="absolute z-20 object-cover"
+              style={{
+                top: "50%",
+                left: "50%",
+                width: "33%",
+                height: "auto",
+                aspectRatio: "10 / 14",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+            <div
+              className="absolute z-10 font-bold transform -translate-x-1/2 -translate-y-1/2 list__item__title top-1/2 left-1/2 text-8xl"
+              style={{
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                fontSize: "12vw",
+                fontFamily: '"Playfair Display"',
+                lineHeight: "80%",
+                color: "#221608",
+              }}
+            >
+              {item.text}
+            </div>
+            <div
+              className="absolute z-30 font-bold transform -translate-x-1/2 -translate-y-1/2 list__item__titleOutline top-1/2 left-1/2 text-8xl"
+              style={{
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                fontSize: "12vw",
+                fontFamily: '"Playfair Display"',
+                lineHeight: "80%",
+                color: "transparent",
+                WebkitTextStroke: "2px #221608",
+              }}
+            >
+              {item.text}
+            </div>
+          </div>
+        ))}
     </section>
   )
 }
 
-function ParallaxScroll() {
+function ParallaxInvisalignDamonBracesAdvancedTech() {
   const main = useRef()
 
   useGSAP(() => {
