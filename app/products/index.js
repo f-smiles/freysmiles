@@ -1,158 +1,13 @@
-'use client'
-import Link from 'next/link'
-import Image from 'next/image'
-import axios from 'axios'
-import { Fragment, useEffect, useState } from 'react'
+"use client"
+import Link from "next/link"
+import Image from "next/image"
+import { Fragment, useState } from "react"
 import { Menu, Transition } from '@headlessui/react'
-import ArrowLongRight from '../_components/ui/ArrowLongRight'
-import ChevronDownIcon from '../_components/ui/ChevronDownIcon'
-import XCircleIcon from '../_components/ui/XCircleIcon'
+import ArrowLongRight from "../_components/ui/ArrowLongRight"
+import ChevronDownIcon from "../_components/ui/ChevronDownIcon"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
-}
-
-export default function ProductsComponent() {
-  const [loading, setLoading] = useState(true)
-  const [products, setProducts] = useState([])
-  const [prices, setPrices] = useState([])
-  const [selectedSortOption, setSelectedSortOption] = useState(null)
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const { data } = await axios.get('/api/products')
-      return data
-    }
-
-    const fetchPrices = async () => {
-      const { data } = await axios.get('/api/prices')
-      return data
-    }
-
-    const fetchData = async () => {
-      try {
-        const productsData = await fetchProducts()
-        const pricesData = await fetchPrices()
-        setProducts(productsData)
-        setPrices(pricesData)
-      } catch (error) {
-        console.log('Error fetching data: ', error.response);
-      }
-      setLoading(false)
-    }
-    fetchData()
-  }, [])
-
-  const sortOptions = [
-    { name: 'Price: Low to High', current: false },
-    { name: 'Price: High to Low', current: false },
-  ]
-
-  const sortProducts = (option) => {
-    if (option === "Price: Low to High") {
-      return [...products].sort((a, b) => {
-        const lowestPriceA = Math.min(...prices.filter((price) => price.product === a.id).map((productPrice) => productPrice.unit_amount))
-        const lowestPriceB = Math.min(...prices.filter((price) => price.product === b.id).map((productPrice) => productPrice.unit_amount))
-        return lowestPriceA - lowestPriceB
-      })
-    } else if (option === "Price: High to Low") {
-      return [...products].sort((a, b) => {
-        const highestPriceA = Math.max(...prices.filter((price) => price.product === a.id).map((productPrice) => productPrice.unit_amount))
-        const highestPriceB = Math.max(...prices.filter((price) => price.product === b.id).map((productPrice) => productPrice.unit_amount))
-        return highestPriceB - highestPriceA
-      })
-    }
-    return products
-  }
-
-  const sortedProducts = selectedSortOption ? sortProducts(selectedSortOption) : products
-
-  return (
-    <>
-      {!loading && (
-        <div>
-          <Banner />
-          <section className="max-w-2xl px-10 mx-auto my-16 mb-32 lg:max-w-7xl">
-            <div className="flex items-baseline justify-between w-full pb-4 border-b-2 border-gray-100">
-              <h4 className="tracking-tight capitalize font-cera text-primary-30">Products</h4>
-              <Menu as="div" className="relative inline-block text-left">
-                <div>
-                  <Menu.Button className="inline-flex items-center justify-center text-sm font-medium text-gray-700 group hover:text-gray-900">
-                    Sort by
-                    <ChevronDownIcon
-                      className="flex-shrink-0 w-5 h-5 ml-1 -mr-1 text-gray-400 group-hover:text-gray-500"
-                      aria-hidden="true"
-                    />
-                  </Menu.Button>
-                </div>
-
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items className="absolute right-0 z-10 w-40 mt-2 origin-top-right bg-white rounded-md shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="py-1">
-                      {sortOptions.map((option) => (
-                        <Menu.Item key={option.name}>
-                          {({ active }) => (
-                            <p
-                              className={classNames(
-                                option.current ? 'font-medium text-gray-900' : 'text-gray-500',
-                                active ? 'bg-gray-100' : '',
-                                'block px-4 py-2 text-sm'
-                              )}
-                              onClick={() => setSelectedSortOption(option.name)}
-                            >
-                              {option.name}
-                            </p>
-                          )}
-                        </Menu.Item>
-                      ))}
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
-            </div>
-
-            <div className="grid grid-cols-1 mt-6 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-              {sortedProducts.map((product) => (
-                <div key={product.id} className="relative group">
-                  <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none group-hover:opacity-75 lg:h-80">
-                    <Image
-                      className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full"
-                      src={product.images[0]}
-                      width="0"
-                      height="0"
-                      sizes="100vw"
-                      alt={product.name}
-                    />
-                  </div>
-                  <div className="flex justify-between mt-4">
-                    <Link href={`/products/${product.id}`}>
-                      <p className="tracking-tight text-gray-700 capitalize">
-                        <span aria-hidden="true" className="absolute inset-0" />
-                        {product.name}
-                      </p>
-                    </Link>
-                    {prices.filter((price) => price.product === product.id).map((productPrice) => (
-                      <p key={productPrice.id}>
-                        ${productPrice.unit_amount / 100}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      )}
-    </>
-  )
 }
 
 function Banner() {
@@ -193,3 +48,115 @@ function Banner() {
     </div>
   )
 }
+
+export default function ProductsComponent({ products, prices }) {
+  const [selectedSortOption, setSelectedSortOption] = useState(null)
+
+  const sortOptions = [
+    { name: 'Price: Low to High', current: false },
+    { name: 'Price: High to Low', current: false },
+  ]
+
+  const sortProducts = (option) => {
+    if (option === "Price: Low to High") {
+      return [...products].sort((a, b) => {
+        const lowestPriceA = Math.min(...prices.filter((price) => price.product === a.id).map((productPrice) => productPrice.unit_amount))
+        const lowestPriceB = Math.min(...prices.filter((price) => price.product === b.id).map((productPrice) => productPrice.unit_amount))
+        return lowestPriceA - lowestPriceB
+      })
+    } else if (option === "Price: High to Low") {
+      return [...products].sort((a, b) => {
+        const highestPriceA = Math.max(...prices.filter((price) => price.product === a.id).map((productPrice) => productPrice.unit_amount))
+        const highestPriceB = Math.max(...prices.filter((price) => price.product === b.id).map((productPrice) => productPrice.unit_amount))
+        return highestPriceB - highestPriceA
+      })
+    }
+    return products
+  }
+
+  const sortedProducts = selectedSortOption ? sortProducts(selectedSortOption) : products
+
+  return (
+    <div>
+      <Banner />
+      <section className="max-w-2xl px-10 mx-auto my-16 mb-32 lg:max-w-7xl">
+        <div className="flex items-baseline justify-between w-full pb-4 border-b-2 border-gray-100">
+          <h4 className="tracking-tight capitalize font-cera text-primary-30">Products</h4>
+          <Menu as="div" className="relative inline-block text-left">
+            <div>
+              <Menu.Button className="inline-flex items-center justify-center text-sm font-medium text-gray-700 group hover:text-gray-900">
+                Sort by
+                <ChevronDownIcon
+                  className="flex-shrink-0 w-5 h-5 ml-1 -mr-1 text-gray-400 group-hover:text-gray-500"
+                  aria-hidden="true"
+                />
+              </Menu.Button>
+            </div>
+
+            <Transition
+              as={Fragment}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-95"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-95"
+            >
+              <Menu.Items className="absolute right-0 z-10 w-40 mt-2 origin-top-right bg-white rounded-md shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div className="py-1">
+                  {sortOptions.map((option) => (
+                    <Menu.Item key={option.name}>
+                      {({ active }) => (
+                        <p
+                          className={classNames(
+                            option.current ? 'font-medium text-gray-900' : 'text-gray-500',
+                            active ? 'bg-gray-100' : '',
+                            'block px-4 py-2 text-sm'
+                          )}
+                          onClick={() => setSelectedSortOption(option.name)}
+                        >
+                          {option.name}
+                        </p>
+                      )}
+                    </Menu.Item>
+                  ))}
+                </div>
+              </Menu.Items>
+            </Transition>
+          </Menu>
+        </div>
+
+        <div className="grid grid-cols-1 mt-6 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+          {sortedProducts.map((product) => (
+            <div key={product.id} className="relative group">
+              <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none group-hover:opacity-75 lg:h-80">
+                <Image
+                  className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full"
+                  src={product.images[0]}
+                  width="0"
+                  height="0"
+                  sizes="100vw"
+                  alt={product.name}
+                />
+              </div>
+              <div className="flex justify-between mt-4">
+                <Link href={`/products/${product.id}`}>
+                  <p className="tracking-tight text-gray-700 capitalize">
+                    <span aria-hidden="true" className="absolute inset-0" />
+                    {product.name}
+                  </p>
+                </Link>
+                {prices.filter((price) => price.product === product.id).map((productPrice) => (
+                  <p key={productPrice.id}>
+                    ${productPrice.unit_amount / 100}
+                  </p>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}
+
