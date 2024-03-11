@@ -1,10 +1,6 @@
-
-
 'use client'
-
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link"
-import { useRef } from "react"
 // swiper
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
@@ -24,7 +20,7 @@ import { TextReveal } from "../_components/TextReveal"
 
 export default function WhyChooseUs() {
   return (
-    
+
     <>
       <Hero />
       <StackCards />
@@ -252,4 +248,4 @@ function DragTable() {
 //               <h3 className="font-helvetica-now-thin">Giving Back</h3>
 //             </div>
 //           </div>
-//         </div> 
+//         </div>
