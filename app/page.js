@@ -1,22 +1,36 @@
-"use client";
+'use client'
+import Link from 'next/link'
 import React, { useRef, useEffect, useLayoutEffect, useState } from "react";
 import { Application, Sprite, Assets, Container, WRAP_MODES, DisplacementFilter } from 'pixi.js'
 import { TweenMax, Power0, Power1, Power3 } from 'gsap';
-// import LandingTestimonials from "../svg/LandingTestimonials.js";
-import { useInView } from "framer-motion";
-// import Logo from "../svg/Logo.js";
-// import Arc from "../svg/Arc";
-import { motion, useScroll, useTransform, useAnimation } from "framer-motion";
-import { gsap } from "gsap-trial";
-import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Link from "next/link";
-import SplitText from "gsap-trial/SplitText";
-// import { useNavigate } from "react-router-dom";
-// import { shuffle } from "lodash";
+// import gsap
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
+// framer motion
+import { motion, stagger, useAnimate, useAnimation, useInView, useScroll, useSpring, useTransform } from 'framer-motion'
+// headless ui
+import { Disclosure, Transition } from '@headlessui/react'
+// components
+import ArrowRightIcon from './_components/ui/ArrowRightIcon'
+import ChevronRightIcon from './_components/ui/ChevronRightIcon'
+import MapPin from './_components/ui/MapPin'
+import Shape01 from './_components/shapes/shape01'
 
-gsap.registerPlugin(SplitText);
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger, SplitText);
+
+export default function Home() {
+
+  return (
+    <>
+      <Hero />
+      <ParallaxScroll />
+      <Locations />
+      <GiftCards />
+    </>
+  )
+}
+
 function Hero() {
   const containerRef = useRef(null);
   const div1Ref = useRef(null);
@@ -87,6 +101,7 @@ function Hero() {
 
   const { scrollYProgress } = useScroll();
   const scale = useTransform(scrollYProgress, [0.5, 1], [10, 40]);
+  
   function animateHeroContent() {
     if (!heroContentRef.current) return;
     const lines = heroContentRef.current.querySelectorAll(".hero-content-line");
@@ -104,7 +119,7 @@ function Hero() {
       );
     });
   }
-
+  +
   function animateBookButton() {
     if (!bookButtonRef.current) return;
 
@@ -177,24 +192,6 @@ function Hero() {
       );
     }
   }
-
-  //   const signs = document.querySelectorAll(".neon");
-
-  //   const randomIn = (min, max) =>
-  //     Math.floor(Math.random() * (max - min + 1) + min);
-
-  //   const mixupInterval = (el) => {
-  //     const ms = randomIn(2000, 4000);
-  //     el.style.setProperty("--interval", `${ms}ms`);
-  //   };
-
-  //   signs.forEach((el) => {
-  //     mixupInterval(el);
-  //     el.addEventListener("webkitAnimationIteration", () => {
-  //       mixupInterval(el);
-  //     });
-  //   });
-  // }, []);
 
   const [isScaled, setIsScaled] = useState(false);
   const [showBookNow, setShowBookNow] = useState(false);
@@ -375,104 +372,118 @@ function Hero() {
 
   const pixiContainerRef = useRef();
 
-  // useEffect(() => {
-  //   let app;
-
-  //   const initPIXI = async () => {
-  //     if (app) {
-  //       return;
-  //     }
-
-  //     app = new Application({
-  //       width: 400,
-  //       height: 713,
-  //       transparent: true
-  //     });
-
-  //     pixiContainerRef.current.appendChild(app.view);
-
-  //     const container = new Container();
-  //     app.stage.addChild(container);
-
-  //     const bgTexture = await Assets.load('../../images/mainsectionimage.jpg');
-  //     const displacementTexture = await Assets.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1600187/waterTemp.jpg');
-
-  //     if (app && app.renderer) {
-  //       const bg = Sprite.from(bgTexture);
-  //       bg.anchor.set(0.5);
-  //       bg.position.set(app.renderer.width / 2, app.renderer.height / 2);
-  //       bg.width = app.renderer.width;
-  //       bg.height = app.renderer.height;
-  //       container.addChild(bg);
-
-  //       const displacementSprite = Sprite.from(displacementTexture);
-  //       displacementSprite.texture.baseTexture.wrapMode = WRAP_MODES.REPEAT;
-
-  //       const displacementFilter = new DisplacementFilter(displacementSprite);
-  //       displacementFilter.scale.x = 200;
-  //       displacementFilter.scale.y = 1500;
-  //       container.filters = [displacementFilter];
-
-  //       gsap.to(displacementFilter.scale, {
-  //         x: 0,
-  //         y: 0,
-  //         duration: 1,
-  //         ease: "power1.out",
-  //         onComplete: () => {
-  //           container.filters = null;
-  //         }
-  //       });
-  //     }
-
-  //     return () => {
-  //       if (app) app.destroy(true, { children: true });
-  //     };
-  //   };
-
-  //   initPIXI();
-
-  //   return () => {
-  //     if (app && app.renderer) {
-  //       app.destroy(true, { children: true });
-  //     }
-  //   };
-  // }, []);
-
+  const mobileRef = useRef(null)
+  const isInView = useInView(mobileRef)
 
   return (
-    <main
-      className="relative"
-      // style={{
-      //   background:
-      //     "linear-gradient(45deg, rgba(170,212,192,1) 0%, rgba(232,232,230,1) 100%)",
-      // }}
-    >
-{/* <div className="flex items-center justify-center h-screen">
-  <div ref={titleRef} className="title">
-    <h1 className="">
-      <span className="relative block">
-        <div className="marquee__inner first marquee_features">
-          <span>Because</span>
-          <span>Every</span>
-          <span>Smile</span>
-          <span>Is</span>
-          <span>Unique</span>
+    <section>
+      {/* DESKTOP VIEW */}
+      <div className="relative hidden lg:block">
+        <div className="-z-10 absolute w-[100dvw] h-full bg-rose-100" />
+        <header className="pt-16 m-auto w-max">
+          {/* #fec49b */}{/* #FEBA76 */}{/* #fdba74 orange-300 */}
+          {/* #fda4af rose-300 */}{/*  #FDBA74, #FDB67E, #FDB388, #FDAF92, #FDAB9B, #FDA8A5, #FDA4AF */}
+          <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
+            <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
+          </div>
+        </header>
+        <section className="px-8 xl:px-0 flex flex-col-reverse justify-center md:gap-8 md:flex-row md:h-[100vh] mx-auto max-w-7xl py-16">
+          <div className="relative flex items-center justify-center md:w-[25dvw] lg:w-[40dvw] xl:w-[25dvw]">
+            <Shape01 className="w-full" />
+            <div className="absolute left-0 right-0 w-3/4 mx-auto space-y-6 text-white">
+              <h2 className="capitalize text-primary-50">Because every smile is unique</h2>
+              {/* <h2 className="capitalize text-primary-50">Oral health.<br/>Our passion.<br/>Our pride.</h2> */}
+              <span className="flex items-center gap-4">
+                <Link href="/book-now" className="flex items-center gap-2 p-4 transition-colors duration-300 ease-in-out rounded-md text-zinc-100 bg-primary-50 hover:bg-primary-30 group">
+                  Book Now
+                  {/* <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" /> */}
+                </Link>
+                <Link href="/our-team" className="p-4 rounded-md text-primary-30 group">
+                  <span className="flex items-center gap-2">
+                    Our Team <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" />
+                  </span>
+                  <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-primary-50 ease-in-out" />
+                </Link>
+              </span>
+            </div>
+          </div>
+          <div className="bg-center bg-no-repeat bg-cover rounded-full w-[20dvw]" style={{
+            backgroundImage: "url(/../../images/mainsectionimage.jpg)",
+            minHeight: "80vh",
+          }} />
+        </section>
+      </div>
+      {/* MOBILE VIEW */}
+      <div className="relative overflow-hidden lg:hidden w-dvw h-dvh">
+        <header className="z-0 pt-16 m-auto w-max">
+          <div className="bg-[rgba(230,_123,_142,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(230,_123,_142,_0.8),_0px_0px_0px_16px_rgba(234,_144,_160,_0.6),_0px_0px_0px_24px_rgba(238,_166,_179,_0.4),_0px_0px_0px_32px_rgba(238,_166,_179,_0.2),_0px_0px_0px_40px_rgba(246,_208,_215,_0.05)]">
+            <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
+          </div>
+        </header>
+        <img className="absolute inset-0 object-cover w-full h-full mx-auto -z-10" src="/../../images/mainsectionimage_glass.jpg" />
+        <div ref={mobileRef} style={{
+            transform: isInView ? "none" : "translateX(200px)",
+            opacity: isInView ? 1 : 0,
+            transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+          }}
+          className="absolute right-4 flex flex-col items-center justify-center  bg-gray-400 border border-gray-200 rounded-full bottom-[8vh] w-[85dvw] md:w-[50dvw] aspect-square backdrop-filter bg-clip-padding backdrop-blur-md bg-opacity-30"
+        >
+          <div className="flex flex-col items-start justify-center w-2/3 ml-4 rounded-full aspect-square">
+            <h2 className="text-transparent capitalize font-helvetica-now-thin bg-clip-text bg-gradient-to-br from-primary-70 to-primary-100">Because every smile is unique</h2>
+            <span className="flex items-center justify-between gap-4 mt-8">
+              <Link href="/book-now" className="flex items-center gap-2 p-4 transition-colors duration-300 ease-in-out rounded-md text-zinc-100 bg-primary-40 hover:bg-primary-50 group">
+                Book Now
+                {/* <ArrowRightIcon className="hidden w-4 h-4 group-hover:block" /> */}
+              </Link>
+              <Link href="/our-team" className="p-4 rounded-md text-primary-50 group">
+                <span className="flex items-center gap-2">
+                  Our Team <ArrowRightIcon className="w-4 h-4" />
+                </span>
+                <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-primary-50 ease-in-out" />
+              </Link>
+            </span>
+          </div>
         </div>
-        <span className="after absolute bottom-0 left-0 w-0 h-full bg-black"></span>
-      </span>
-      <span className="relative block">
-        <div className="marquee__inner second marquee_features ">
-          <span>Because</span>
-          <span>Every</span>
-          <span>Smile</span>
-          <span>Is</span>
-          <span>Unique</span>
-        </div>
-        <span className="after absolute bottom-0 right-0 w-0 h-full bg-black"></span>
-      </span>
-    </h1>
-  </div>
-</div> */}
+      </div>
+    </section>
+  )
+}
+
+function ParallaxScroll() {
+  const main = useRef()
+
+  useGSAP(() => {
+    const sections = gsap.utils.toArray(".panel")
+    sections.forEach((section) => {
+      gsap.to(section, {
+        scrollTrigger: {
+          trigger: section,
+          start: () => section.offsetHeight < window.innerHeight ? "top top" : "bottom bottom",
+          pin: true,
+          pinSpacing: false,
+          scrub: true,
+        },
+      })
+  })}, { scope: main })
+
+  return (
+    <div ref={main}>
+      <div className="panel h-[100dvh] bg-[#a3bba3]">
+        <Invisalign />
+      </div>
+      <div className="panel h-[100dvh] bg-[#a3bba3] border-t-2 border-zinc-700 rounded-t-3xl">
+        <DamonBraces />
+      </div>
+      <div className="panel h-[100dvh] bg-white border-t-2 border-zinc-700 rounded-t-3xl overflow-hidden">
+        <AdvancedTech />
+      </div>
+    </div>
+  )
+}
+
+  return (
+    <main className="relative">
+
 <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate  lg:px-8">
         <div className="relative grid rounded-lg  max-w-screen-xl grid-cols-1 mx-auto sm:py-10 place-items-center lg:grid-cols-2">
@@ -716,27 +727,46 @@ function Hero() {
   );
 }
 
-function Section({ children, color, zIndex, position }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, {
-    amount: 0.1,
-  });
+  function Section({ children, color, zIndex, position }) {
+    const ref = useRef(null);
+    const isInView = useInView(ref, {
+      amount: 0.1,
+    });
 
-  return (
-    <div
-      ref={ref}
-      className="relative flex flex-col items-center justify-center min-h-screen text-primary95"
-      style={{
-        backgroundColor: color,
-        transform: isInView ? "translateY(-10)" : "translateY(100px)",
-        transition: "transform 0.5s ease-in-out",
-        zIndex: zIndex,
-        position: position,
-      }}
-    >
-      {children}
-    </div>
-  );
+    return (
+      <div
+        ref={ref}
+        className="relative flex flex-col items-center justify-center min-h-screen text-primary95"
+        style={{
+          backgroundColor: color,
+          transform: isInView ? "translateY(-10)" : "translateY(100px)",
+          transition: "transform 0.5s ease-in-out",
+          zIndex: zIndex,
+          position: position,
+        }}
+      >
+        {children}
+      </div>
+    );
+      <section ref={sectionRef} className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-start">
+        <motion.div style={{ translateY: transformText }} className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
+          <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
+          <h4>Top 1% Invisalign providers</h4>
+          {/* <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4> */}
+          <Link href="/invisalign" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
+            <span>Learn More</span>
+            <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
+              <span>Learn More</span>
+            </div>
+          </Link>
+        </motion.div>
+        <div className="lg:w-1/2">
+          <motion.img style={{ translateY: transformCase }} className="object-cover w-full h-auto mx-auto object-start" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+          <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover w-3/4 h-auto object-start ml-36 lg:ml-24 xl:ml-36" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+        </div>
+      </section>
+    )
+  }
 }
 
 export default function Features() {
@@ -793,187 +823,16 @@ export default function Features() {
     }
   }, []);
 
-  const [scrollY, setScrollY] = useState(0);
-
-  const [startArcAnimation, setStartArcAnimation] = useState(false);
-  const invisalignRef = useRef(null);
-
-  const damonRef = useRef(null);
-  const advancedTechRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
-
+  
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      const [entry] = entries;
-      setIsVisible(entry.isIntersecting);
-    });
-
-    if (damonRef.current) {
-      observer.observe(damonRef.current);
-    }
-
-    return () => {
-      if (damonRef.current) {
-        observer.unobserve(damonRef.current);
-      }
-    };
-  }, [damonRef]);
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger, SplitText);
-
-    let tl = gsap.timeline();
-    tl.from(invisalignRef.current, {});
-
-    let shrinkTimeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: damonRef.current,
-        start: "top bottom",
-        end: "top top",
-        scrub: true,
-      },
-    });
-
-    shrinkTimeline.to(invisalignRef.current, {
-      scale: 0.5,
-      ease: "none",
-    });
-
-    let damonTitle = new SplitText(".damon-title", {
-      type: "lines, chars",
-      linesClass: "line",
-      charsClass: "char",
-    });
-    damonTitle.chars.forEach((char) => {
-      gsap.from(char, {
-        scrollTrigger: {
-          trigger: damonRef.current,
-          start: "top center",
-          toggleActions: "play none none none",
-        },
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
-        ease: "power2.out",
-        stagger: 0.05,
-      });
-    });
-
-    // ScrollTrigger for pinning sections
-    // ScrollTrigger.create({
-    //   trigger: invisalignRef.current,
-    //   start: "top top",
-    //   end: "+=100%",
-    //   pin: true,
-    //   pinSpacing: false,
-    // });
-
-    // [damonRef, advancedTechRef].forEach((ref) => {
-    //   ScrollTrigger.create({
-    //     trigger: ref.current,
-    //     start: "top top",
-    //     end: "+=100%",
-    //     pin: true,
-    //     pinSpacing: false,
-    //   });
-    // });
-
-    ScrollTrigger.create({
-      trigger: damonRef.current,
-      start: "top center",
-      onEnter: () => setStartArcAnimation(true),
-      onLeaveBack: () => setStartArcAnimation(false),
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
-  }, []);
-
-  // const sectionHeight = window.innerHeight;
-
-  // const invisalignStyle = {
-  //   position: "relative",
-  //   zIndex: 1,
-  //   top: 0,
-  // };
-
-  // const damonStartScroll = sectionHeight * 1.4;
-  // const advancedTechStartScroll = damonStartScroll + sectionHeight;
-
-  // const damonStyle = {
-  //   position: "relative",
-  //   zIndex: 2,
-  //   top:
-  //     scrollY >= damonStartScroll
-  //       ? `${-(scrollY - damonStartScroll)}px`
-  //       : `${sectionHeight}px`,
-  // };
-
-  // const advancedTechStyle = {
-  //   position: "relative",
-  //   zIndex: 3,
-  //   top:
-  //     scrollY >= advancedTechStartScroll
-  //       ? `${-(scrollY - advancedTechStartScroll)}px`
-  //       : `${sectionHeight}px`,
-  // };
-
-  const [backgroundColor, setBackgroundColor] = useState("transparent");
-  useEffect(() => {
-    setBackgroundColor("rgb(206, 186, 202)");
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const transitionStart = 40;
-      const transitionEnd =
-        document.documentElement.scrollHeight - window.innerHeight;
-
-      const colorTransitions = [
-        {
-          start: transitionStart,
-          end: transitionEnd * 0.25,
-          colorStart: [206, 186, 202],
-          colorEnd: [227, 217, 225],
-        },
-        {
-          start: transitionEnd * 0.25,
-          end: transitionEnd * 0.5,
-          colorStart: [227, 217, 225],
-          colorEnd: [221, 220, 220],
-        },
-        {
-          start: transitionEnd * 0.5,
-          end: transitionEnd * 0.75,
-          colorStart: [221, 220, 220],
-          colorEnd: [175, 167, 181],
-        },
-        {
-          start: transitionEnd * 0.75,
-          end: transitionEnd,
-          colorStart: [175, 167, 181],
-          colorEnd: [209, 188, 204],
-        },
-      ];
-
-      const currentTransition = colorTransitions.find((transition) => {
-        return (
-          scrollPosition >= transition.start && scrollPosition < transition.end
-        );
-      });
-
-      if (currentTransition) {
-        const progress =
-          (scrollPosition - currentTransition.start) /
-          (currentTransition.end - currentTransition.start);
-        const scrollPercentage = Math.min(1, Math.max(0, progress));
-
-        const interpolatedColor = currentTransition.colorStart.map(
-          (start, i) => {
-            const end = currentTransition.colorEnd[i];
-            return Math.round(start + (end - start) * scrollPercentage);
-          }
-        );
-
-        setBackgroundColor(`rgb(${interpolatedColor.join(",")})`);
+    animate("div", isInView
+      ? { opacity: 1, transform: "translateX(0px)", scale: 1,
+      } // filter: "blur(0px)"
+      : { opacity: 0, transform: "translateX(-50px)", scale: 0.3,
+      }, // filter: "blur(20px)"
+      {
+        duration: 0.2,
+        delay: isInView ? stagger(0.1, { startDelay: 0.15 }) : 0,
       }
     };
 
@@ -1022,6 +881,30 @@ export default function Features() {
               </div>
             </header>
           </div>
+    <section ref={ref} id="locations" className="mt-[100vh] flex flex-col justify-center w-full mx-auto my-32 lg:flex-row max-w-7xl">
+      {/* LEFT */}
+        <div className="z-10 lg:w-1/2 lg:py-0">
+          <motion.div
+            className="p-6 space-y-10"
+            style={{
+              transform: isInView ? "none" : "translateY(-50px)",
+              opacity: isInView ? 1 : 0,
+              transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
+            }}
+          >
+            <span className="flex items-baseline mt-4">
+              <h1 className="tracking-tight uppercase font-helvetica-now-thin text-primary-50">Our Locations</h1>
+              <MapPin className="ml-2 transition-all duration-300 hover:animate-bounce hover:cursor-pointer" />
+            </span>
+            <p>We have 4 incredible offices for your ultimate convenience. Our orthodontists and FreySmiles Team are excited to serve families in the Allentown, Bethlehem, Easton, Schnecksville and Lehighton communities.</p>
+            <Link
+              href="/book-now"
+              className="inline-block px-6 py-4 text-white transition duration-300 ease-linear rounded-full underline-offset-8 bg-primary-50 hover:bg-secondary-50 group"
+            >
+              Schedule an evaluation today
+              <span className="block h-[1px] transition-all duration-300 ease-linear bg-white rounded-full max-w-0 group-hover:max-w-full"></span>
+            </Link>
+          </motion.div>
 
           <div className="flex items-center justify-center text-5xl">
             <Hero />
@@ -1124,6 +1007,29 @@ export default function Features() {
                   {/* Combining self-ligating braces with advanced archwires
                 clinically proven to move teeth quickly and comfortably. */}
                 </h1>
+      {/* RIGHT */}
+        <motion.div className="h-screen min-h-max lg:w-1/2 lg:h-auto" style={{
+          opacity: isInView ? 1 : 0,
+          filter: isInView ? "blur(0px)" : "blur(16px)",
+          transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
+        }}>
+          <iframe width="100%" height="100%"
+            src={
+              selectedLocation === "All"
+              ? process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALL_LOCATIONS
+              : locations.find((l) => l.location === selectedLocation).mapbox_iframe_url
+            }
+            title={
+              selectedLocation === "All"
+              ? "FreySmiles All Locations [w/ Colors]"
+              : locations.find((l) => l.location === selectedLocation).mapbox_map_title
+            }
+            style={{ border: "none" }}
+          />
+        </motion.div>
+    </section>
+  )
+}
 
                 <div className="playing">
                   <div className="mt-4 flex justify-center">
@@ -1151,57 +1057,17 @@ export default function Features() {
           </div>
         </div>
 
-        <div ref={advancedTechRef} className="h-[100vh] relative">
-          <motion.div
-            style={{ scale }}
-            className="absolute top-0 right-0 w-full h-full -translate-y-1/2"
-          >
-            <svg viewBox="0 0 256 256" className="w-full h-full">
-              <g>
-                <path
-                  fill="#a3bba3"
-                  d="M10,71.6c0,17.2,4.5,36.1,12.3,52c17,34.7,49.9,58.6,88.4,64.6c8.9,1.4,25.9,1.4,34.5,0c28.3-4.4,53.7-18.4,71.8-39.4c13.2-15.4,22.2-33.4,26.2-52.4c1.7-8,2.8-18.3,2.8-25.2v-4.5H128H10V71.6z"
-                />
-              </g>
-            </svg>
-          </motion.div>
-          <div className="tech-background flex flex-col items-center justify-center max-w-screen-xl mx-auto lg:flex-row">
-            <div className="flex items-center justify-center relative w-1/2 flex-col">
-              <figure className="flex items-center justify-center ">
-                {/* <img src="../images/circletdot.svg" alt="dot" /> */}
-              </figure>
-            </div>
 
-            <div className="flex items-center justify-center h-screen relative w-1/3 flex-col">
-              <img
-                src="../images/dotcircle.png"
-                alt="invis"
-                className="relative w-96 h-auto"
-                style={{
-                  zIndex: 1,
-                  top: "30%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                }}
-              />
-              <p className="text-3xl pb-4 absolute" style={{ zIndex: 2 }}>
-                Our doctor have been pioneering the most comfortable appliances
-                for your treatment since 2005
-              </p>
-              <Link href="/invisalign">
-                <div
-                  className="inline-block px-6 py-4 transition-colors duration-300 ease-linear border rounded-full border-[#f2ab79] hover:bg-gray-800 hover:border-0 hover:border-secondary50 hover:text-white"
-                  style={{ zIndex: 1 }}
-                >
-                  Learn More
-                </div>
-              </Link>
-            </div>
-
-            <div></div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+  return (
+    <section ref={ref} className="z-10 h-[60dvh] relative my-24 group overflow-hidden hover:cursor-pointer" style={{
+      transform: isInView ? "none" : "translateY(100px)",
+      opacity: isInView ? 1 : 0,
+      transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
+    }}>
+      <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-primary-30 bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
+      <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank' className="absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white">Send a Gift Card</Link>
+      <img src="/../../images/giftcards/gift_cards_mockup.jpg" alt="gift cards mockup" className="absolute inset-0 object-cover object-center w-full h-full -z-10" />
+    </section>
+  )
 }
+
