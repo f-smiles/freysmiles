@@ -138,6 +138,7 @@ export default function Navbar() {
       />
 
       {/* DESKTOP NAVBAR */}
+
       <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-20 hidden w-full mb-[6vh] lg:block">
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 justify-evenly">
@@ -150,7 +151,7 @@ export default function Navbar() {
             <li onClick={handleToggleAbout} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
                 About
-                <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
+                <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
             </li>
             {/* ABOUT PANEL */}
@@ -236,7 +237,7 @@ export default function Navbar() {
             <li onClick={handleTogglePatient} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
                 Patient
-                <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
+                <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
             </li>
             {/* PATIENT PANEL */}
@@ -322,7 +323,7 @@ export default function Navbar() {
             <li onClick={handleToggleTreatments} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
                 Treatments
-                <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
+                <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
             </li>
             {/* TREATMENTS PANEL */}
@@ -408,27 +409,27 @@ export default function Navbar() {
             <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="https://my.orthoblink.com/bLink/Login"
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
+                className="inline-block relative transition-all duration-500 before:content-[''] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p>Patient Login</p>
+                <p className="text-sm custom-cursor-target">Patient Login</p>
               </Link>
             </li>
 
             <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="/#locations"
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
+                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p>Our Locations</p>
+                <p className="custom-cursor-target text-sm">Our Locations</p>
               </Link>
             </li>
 
             <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="/products"
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
+                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p>Shop</p>
+                <p className="custom-cursor-target text-sm">Shop</p>
               </Link>
             </li>
 

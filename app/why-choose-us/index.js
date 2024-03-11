@@ -1,4 +1,8 @@
+
+
 'use client'
+
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link"
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
@@ -9,9 +13,16 @@ import Shape02 from "../_components/shapes/shape02"
 import Shape03 from "../_components/shapes/shape03"
 import { TextReveal } from "../_components/TextReveal"
 
+
 export default function WhyChooseUs() {
+
+
+
   return (
+    
     <>
+
+    
       <HeadingAnimation />
       <TextContentOne />
       <TextContentTwo />
@@ -232,7 +243,8 @@ function CTA() {
   )
 }
 
-{/* <div className="relative self-center w-full md:w-1/2">
+
+ <div className="relative self-center w-full md:w-1/2">
           <img
             className="w-full"
             src="/../../images/smilescholarship.jpg"
@@ -243,4 +255,4 @@ function CTA() {
               <h3 className="font-helvetica-now-thin">Giving Back</h3>
             </div>
           </div>
-        </div> */}
+        </div> 

@@ -8,6 +8,10 @@ module.exports = {
   theme: {
     fontFamily: {
       'cera': "CeraProRegular",
+      'didot': "Didot",
+      'geomanist':"Geomanist-Regular",
+      'Chaney-Ultra':"Chaney-Ultra",
+      'novela-regular': "NovelaRegular",
       'cera-bold': "CeraProBold",
       'neue-montreal': "NeueMontrealBook",
       'neue-montreal-medium': "NeueMontrealMedium",
