@@ -3,14 +3,12 @@ import Link from 'next/link'
 import axios from 'axios'
 import { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { motion, stagger, useAnimate, useMotionValue, useSpring } from 'framer-motion'
+import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { Dialog, Transition } from '@headlessui/react'
 import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
 import BagIcon from './ui/BagIcon'
 import Bars2Icon from './ui/Bars2Icon'
-import ChevronDownIcon from './ui/ChevronDownIcon'
 import XIcon from './ui/XIcon'
-import Sphere from './Sphere'
 
 export default function Navbar() {
   const dispatch = useDispatch()
@@ -139,7 +137,7 @@ export default function Navbar() {
 
       {/* DESKTOP NAVBAR */}
 
-      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-20 hidden w-full mb-[6vh] lg:block">
+      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-50 hidden w-full mb-[6vh] lg:block">
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 justify-evenly">
             <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md hover:bg-primary-50/60 active:bg-primary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
@@ -420,7 +418,7 @@ export default function Navbar() {
                 href="/#locations"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p className="custom-cursor-target text-sm">Our Locations</p>
+                <p className="text-sm custom-cursor-target">Our Locations</p>
               </Link>
             </li>
 
@@ -429,7 +427,7 @@ export default function Navbar() {
                 href="/products"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p className="custom-cursor-target text-sm">Shop</p>
+                <p className="text-sm custom-cursor-target">Shop</p>
               </Link>
             </li>
 
