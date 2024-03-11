@@ -28,7 +28,7 @@ const treatments_links = [
 export default function Footer() {
   return (
     <>
-    <footer className="w-full p-8 mx-auto mb-32 sm:pb-16">
+    <footer style={{ backgroundColor: 'transparent' }}className="w-full p-8 mx-auto mb-32 sm:pb-16">
       <div className="flex flex-col justify-center gap-4 lg:flex-row lg:flex-wrap">
         <section className="flex items-stretch justify-between space-y-4 bg-center bg-no-repeat bg-cover rounded-xl overflow-clip" style={{
           backgroundImage: `url("/../../../images/_mesh_gradients/06. Wisteria.jpg")`,
@@ -102,7 +102,7 @@ export default function Footer() {
 				</section>
       </div>
     </footer>
-    <footer className="hidden max-w-screen-xl p-8 mx-auto mb-32 space-y-4">
+    <footer style={{ backgroundColor: 'transparent' }}className="hidden max-w-screen-xl p-8 mx-auto mb-32 space-y-4">
       <div className="flex flex-col items-stretch gap-4 lg:flex-row">
         <section className="flex items-stretch justify-between w-full space-y-4 bg-center bg-no-repeat bg-cover rounded-xl overflow-clip lg:w-1/3" style={{
           backgroundImage: `url("/../../../images/_mesh_gradients/06. Wisteria.jpg")`,
