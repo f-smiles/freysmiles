@@ -1,9 +1,10 @@
 'use client'
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { motion, useScroll, useSpring, useTransform, useInView } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
+import { SplitText } from "gsap-trial/all";
 // import useIsomorphicLayoutEffect from '@/_helpers/useIsomorphicLayoutEffect'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -13,33 +14,34 @@ const details = [
     number: "1.",
     heading: "Complimentary consultation",
     body: "Initial consultations are always free of charge.",
-    img: "/../../images/patientcare.png",
+    img: "/../../images/firstmeetingedit.png",
     alt: "FreySmiles team member warmly greeting a FreySmiles patient and shaking their hand",
   },
   {
     number: "2.",
     heading: "Payment plans are available",
     body:"We offer a variety of payment plans at no interest.",
-    img: "/../../images/payments.png",
+    img: "/../../images/pinkpayment.jpeg",
     alt: "Scene of a girl sitting on top of bags holding a percent sign representing no interest payment at FreySmiles",
   },
   {
     number: "3.",
     heading: "No hidden fees",
     body: "Comprehensive treatment plans include retainers and supervision",
-    img: "/../../images/",
+    img: "/../../images/quote.png",
     alt: "No hidden fees",
   },
   {
     number: "4.",
     heading: "One year post-treatment follow up",
     body: "Retainers and retention visits for one year post-treatment included.",
-    img: "/../../images/undraw_booking_secondary.png",
+    img: "/../../images/followup.png",
     alt: "Booking future appointments",
   }
 ]
 
 export default function FinancingTreatment() {
+  
   const lineRef = useRef(null)
   const { scrollYProgress } = useScroll({
     target: lineRef,
@@ -51,40 +53,83 @@ export default function FinancingTreatment() {
     restDelta: 0.001
   })
   let height = useTransform(spring, [0, 1], ["0%", "100%"])
+  const textRef1 = useRef(null);
+  const textRef2 = useRef(null);
+  const textRef3 = useRef(null);
 
+  const backgroundColors = ['#bcb8ad', '#eacbd1', '#b19bb0']; 
+
+
+  const inputRange = backgroundColors.map((_, i, arr) => i / (arr.length - 1));
+
+
+  const backgroundColor = useTransform(scrollYProgress, inputRange, backgroundColors);
+  useEffect(() => {
+    gsap.registerPlugin(SplitText);
+
+    [textRef1, textRef2, textRef3].forEach(ref => {
+      const split = new SplitText(ref.current, { type: 'lines' });
+      gsap.from(split.lines, {
+        duration: 1.5,
+        y: '100%',
+        stagger: 0.15,
+        ease: 'power4.out'
+      });
+    });
+  }, []);
+  
   return (
     <>
-    <div className="z-[-1] bg-[#DBDBDB] relative w-full mx-auto max-w-7xl">
+    <motion.div  style={{ backgroundColor }} className="z-[-1] bg-[#DBDBDB] relative w-full mx-auto ">
       <section id="main-container" className=" md:flex md:justify-between md:gap-x-6">
+  
         {/* LEFT HALF DESKTOP SECTION */}
         <div ref={lineRef} id="left" className="hidden md:block md:w-1/3 md:pl-12">
-          <Detail>
-            <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
-              <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">1.</p>
-            </span>
-            <div className="font-HelveticaNowVar font-thin flex text-6xl  text-center">Complimentary Consultation</div>
-            <p className="flex text-xl text-center">Initial consultations are always free of charge.</p>
-          </Detail>
+        <Detail>
+  <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
+    <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">1.</p>
+  </span>
+
+  <img 
+    src="../images/complimentary.png" 
+    alt="Complimentary Consultation"
+    className="w-full -mt-40 h-auto object-cover" 
+  />
+  <p className="flex text-xl text-center -mt-40">Initial consultations are always free of charge.</p>
+</Detail>
+
           <Detail>
             <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
               <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">2.</p>
             </span>
-            <h4 className="flex text-6xl  text-center capitalize">Payment plans are available</h4>
-            <p className="flex text-xl text-center">We offer a variety of payment plans at no interest.</p>
+            <img 
+    src="../images/paymentplans.png" 
+    alt="Complimentary Consultation"
+    className="w-full h-auto object-cover" 
+  />
+            <p className="flex text-xl text-center -mt-40">We offer a variety of payment plans at no interest.</p>
           </Detail>
           <Detail>
             <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
               <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">3.</p>
             </span>
-            <h4 className="flex text-6xl  text-center capitalize">Pay it forward </h4>
-            <p className="flex text-xl text-center">Successive family members always receive the same excellent care. Ask about our family courtesies</p>
+            <img 
+    src="../images/keepitfam.png" 
+    alt="Complimentary Consultation"
+    className="w-full h-auto object-cover" 
+  />
+            <p className="flex text-xl text-center -mt-40">Successive family members always receive the same excellent care. Ask about our family courtesies</p>
           </Detail>
           <Detail>
             <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
               <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">4.</p>
             </span>
-            <h4 className="flex text-6xl  text-center capitalize">One year post-treatment follow up</h4>
-            <p className="flex text-xl text-center">  Retainers and retention visits for one year post-treatment included.</p>
+            <img 
+    src="../images/onyear.png" 
+    alt="Complimentary Consultation"
+    className="w-full h-auto object-cover" 
+  />
+
           </Detail>
           <motion.div
             className="absolute top-0 hidden w-[2px] h-full left-[22px] md:block bg-[#355e3b] -z-10"
@@ -113,7 +158,7 @@ export default function FinancingTreatment() {
           <Images />
         </div>
       </section>
-    </div>
+    </motion.div>
     </>
   )
 }
@@ -126,7 +171,7 @@ function Detail({ children }) {
     <div
       ref={isInViewRef}
       id="text-content"
-      className="relative flex flex-col justify-center w-full h-screen pl-4 space-y-4"
+      className="relative flex flex-col justify-center w-full h-screen pl-4 "
       style={{
         transform: isInView ? "translateY(0px)" : "translateY(200px)",
         opacity: isInView ? 1 : 0,

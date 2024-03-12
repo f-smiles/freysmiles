@@ -138,16 +138,16 @@ export default function Navbar() {
       {/* DESKTOP NAVBAR */}
 
       <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-50 hidden w-full mb-[6vh] lg:block">
-        <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
+        <div className="p-4 mx-auto transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md hover:bg-primary-50/60 active:bg-primary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+            <li className="flex items-center tracking-wider transition duration-300 ease-in-out bg-white rounded-full shadow-md hover:bg-primary-50/60 active:bg-primary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link href="/" className="inline-block p-4">
                 {/* <HomeIcon className="w-4 h-4" /> */}
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
             <li onClick={handleToggleAbout} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
-              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
+              <p className="text-sm transition-all duration-500 ease-linear rounded-full hover:text-primary-40 ">
                 About
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -233,7 +233,7 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleTogglePatient} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
-              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
+              <p className="text-sm transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
                 Patient
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -319,7 +319,7 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleToggleTreatments} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
-              <p className="font-medium uppercase transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
+              <p className="transition-all text-sm duration-500 ease-linear rounded-full hover:text-white group">
                 Treatments
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -551,7 +551,7 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-						<li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out rounded-full shadow-sm cursor-pointer shadow-primary-30 text-primary-95 bg-primary-30 hover:bg-secondary-50/60 hover:text-secondary-95 active:bg-secondary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+						<li className="flex items-center tracking-wider uppercase transition duration-300 ease-in-out rounded-full shadow-sm cursor-pointer   hover:bg-secondary-50/60 hover:text-secondary-95 active:bg-secondary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link href="/book-now" className="inline-block px-6 py-3">
                 Book Now
               </Link>
