@@ -103,10 +103,10 @@ useEffect(() => {
   });
 
   scroll.on("scroll", (e) => {
-    // Calculate the color index based on the scroll position
+
     const index = Math.floor(e.scroll.y / window.innerHeight) % colors.length;
 
-    // Calculate the progress of scrolling within a section
+
     const sectionProgress = (e.scroll.y % window.innerHeight) / window.innerHeight;
 
     const currentColor = colors[index];

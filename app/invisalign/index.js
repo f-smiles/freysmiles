@@ -12,6 +12,7 @@ import { SplitText } from "gsap-trial/all";
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
 const Invisalign = () => {
+
   const sectionRef = useRef(null);
   const dotRef = useRef(null);
   const dotTextRef = useRef(null);
@@ -61,47 +62,6 @@ const Invisalign = () => {
 
   const wrapperRef = useRef();
   const contentRef = useRef();
-  const textLayerRefs = useRef([]);
-
-  useEffect(() => {
-    const smoother = ScrollSmoother.create({
-      wrapper: wrapperRef.current,
-      content: contentRef.current,
-      smooth: 1,
-      normalizeScroll: true,
-      ignoreMobileResize: true,
-      effects: true,
-      preventDefault: true,
-    });
-
-    textLayerRefs.current.forEach((layer, i) => {
-      gsap.set(layer, {
-        opacity: i === 0 ? 1 : 0,
-      });
-    });
-
-    textLayerRefs.current.forEach((layer, i) => {
-      if (i === 0) return;
-
-      gsap.to(layer, {
-        opacity: 1,
-        ease: "none",
-        scrollTrigger: {
-          trigger: layer,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-    });
-
-    return () => {
-      smoother.kill();
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, []);
-
-  const textRef = useRef([]);
   const aligner1Ref = useRef(null);
   const aligner2Ref = useRef(null);
   const aligner3Ref = useRef(null);
@@ -294,10 +254,47 @@ const Invisalign = () => {
       sectionHeight: sectionRect.height,
     });
   }, 10);
-  
+  const textContainerRef = useRef(null);
+  const textRef1 = useRef(null);
+  const textRef2 = useRef(null);
+  const textRef3 = useRef(null);
 
+  useEffect(() => {
+    const onEntry = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          gsap.registerPlugin(SplitText);
+
+          [textRef1, textRef2, textRef3].forEach(ref => {
+            const split = new SplitText(ref.current, { type: 'lines' });
+            gsap.from(split.lines, {
+              duration: 1.5,
+              y: '100%',
+              stagger: 0.15,
+              ease: 'power4.out'
+            });
+          });
+
+          observer.disconnect();
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(onEntry, {
+      threshold: 1 
+    });
+
+    if (textContainerRef.current) {
+      observer.observe(textContainerRef.current);
+    }
+
+    return () => {
+      observer.disconnect(); 
+    };
+  }, []);
   return (
     <main >
+
       <div style={{ 
     display: 'flex', 
     justifyContent: 'center', 
@@ -317,6 +314,7 @@ const Invisalign = () => {
           margin: 'auto',
         }}
       >
+     
         <div className="flex h-full">
           <div className="flex-1"></div>
           <div className="flex-1 flex justify-end items-center pr-20">
@@ -327,39 +325,7 @@ const Invisalign = () => {
             />
           </div>
         </div>
-        <div ref={wrapperRef}>
-          <section ref={contentRef}>
-            <div
-              className="heading text-white text-5xl py-44"
-              aria-hidden="true"
-            ></div>
-
-     <div className="h-screen relative w-full text-center mt-10">
-  {Array.from({ length: 7 }, (_, index) => (
-    <p
-      key={index}
-      ref={(el) => (textLayerRefs.current[index] = el)}
-      className={`layered-text ${index === 0 ? "solid-text" : "outlined-text"}`}
-      data-speed={1 - index * 0.05}
-      style={{
-        top: "0%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        fontSize: "5rem", 
-        whiteSpace: "nowrap",
-      }}
-    >
-      INVISALIGN
-    </p>
-  ))}
-</div>
-
-
-            <section className="container">
-              <div></div>
-            </section>
-          </section>
-        </div>
+    
       </section>
 </div>
       <div>
@@ -440,7 +406,17 @@ const Invisalign = () => {
                   borderLeft: "8px dotted black",
                 }}
               ></div>
-
+ <div className="text-container" ref={textContainerRef}>
+      <div className="line-container" ref={textRef1}>
+        <h1 className="hidden-text">Completely invisible -</h1>
+      </div>
+      <div className="line-container" ref={textRef2}>
+        <h1 className="hidden-text">Comfortable to wear</h1>
+      </div>
+      <div className="line-container" ref={textRef3}>
+        <h1 className="hidden-text">Customized</h1>
+      </div>
+    </div>
               <div className="flex flex-col justify-center items-start float-right w-[40%] h-screen">
                 <p>
                   Invisalign uses a series of customized, clear aligners to

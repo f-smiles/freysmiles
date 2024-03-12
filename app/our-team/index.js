@@ -84,7 +84,7 @@ const OurTeam = () => {
   };
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+
 
     const container = document.querySelector(".horizontalScroller");
     const containerWidth =
@@ -160,6 +160,67 @@ const OurTeam = () => {
       );
     });
   }, []);
+  const imgRef = useRef(null);
+  const svgRef = useRef(null);
+  const circleRef = useRef(null);
+  const whiteLayerRef = useRef(null);
+
+  
+  useEffect(() => {
+    const img = imgRef.current;
+    const circle = circleRef.current;
+  
+    if (!circle || !img) {
+      console.error("Elements are not available");
+      return;
+    }
+  
+    const calculateMaxRadius = () => {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      return Math.sqrt(screenWidth ** 2 + screenHeight ** 2) / 2;
+    };
+
+    let initialRadius = 60; 
+    gsap.set(circle, { attr: { r: initialRadius } });
+  
+    const circleTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: circle,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 3
+      }
+    });
+  
+    circleTl.to(circle, { attr: { r: calculateMaxRadius() }, duration: 3 });
+  
+
+    gsap.set(img, { autoAlpha: 0 }); 
+    ScrollTrigger.create({
+      trigger: circle,
+      start: 'top center', 
+      end: 'bottom bottom',
+      onEnter: () => gsap.to(img, { autoAlpha: 1, duration: 3 }),
+      scrub: true
+    });
+  
+    return () => {
+      ScrollTrigger.getAll().forEach(st => st.kill());
+      gsap.killTweensOf(circle);
+      gsap.killTweensOf(img);
+    };
+  }, []);
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
 
 
   return (
@@ -192,8 +253,29 @@ const OurTeam = () => {
         </h1>
 
       </section> */}
-
-      <section className="main-section">
+ <div className="relative">
+      <img 
+        ref={imgRef}
+        src="../images/ourdoctors.png" 
+        className="fixed w-1/2 " 
+        alt="Animated" 
+      />
+      <svg 
+        ref={svgRef}
+        className="fixed top-0 left-0 w-full h-screen"
+      >
+        <defs>
+          <mask id="mask">
+            <rect width="100%" height="100%" fill="white"></rect>
+            <circle ref={circleRef} cx="50%" cy="50%" r="1" fill="black"></circle>
+          </mask>
+        </defs>
+        <rect ref={whiteLayerRef} width="100%" height="100%" fill="white"></rect>
+        <rect width="100%" height="100%" fill="black" mask="url(#mask)"></rect>
+      </svg>
+      <div className="h-[2500px]"></div>
+    </div>
+      {/* <section className="main-section">
         <div className="section__content">
           <svg ref={teamRef}>
             <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle">
@@ -201,9 +283,9 @@ const OurTeam = () => {
             </text>
           </svg>
         </div>
-      </section>
+      </section> */}
 
-      <section className="main-section">
+      {/* <section className="main-section">
         <div className="section__content">
           <p ref={doctorRef}>
             <div className="text-white font-didot flex justify-center items-center">
@@ -216,7 +298,7 @@ const OurTeam = () => {
             </div>
           </p>
         </div>
-      </section>
+      </section> */}
 
       <section
         className="text-wrapper"
