@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useRef, useEffect, useLayoutEffect, useState } from 'react'
+import LocomotiveScroll from 'locomotive-scroll'
 // gsap
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -11,18 +12,90 @@ import { motion, stagger, useAnimate, useInView, useScroll, useSpring, useTransf
 import { Disclosure, Transition } from '@headlessui/react'
 import ChevronRightIcon from './_components/ui/ChevronRightIcon'
 import MapPin from './_components/ui/MapPin'
-
+import { SplitText } from "gsap-trial/all";
 gsap.registerPlugin(ScrollTrigger)
 
 export default function LandingComponent() {
+
+  const [backgroundColor, setBackgroundColor] = useState("transparent");
+  useEffect(() => {
+    setBackgroundColor("rgb(206, 186, 202)");
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const transitionStart = 40;
+      const transitionEnd =
+        document.documentElement.scrollHeight - window.innerHeight;
+
+      const colorTransitions = [
+        {
+          start: transitionStart,
+          end: transitionEnd * 0.25,
+          colorStart: [206, 186, 202],
+          colorEnd: [227, 217, 225],
+        },
+        {
+          start: transitionEnd * 0.25,
+          end: transitionEnd * 0.5,
+          colorStart: [227, 217, 225],
+          colorEnd: [221, 220, 220],
+        },
+        {
+          start: transitionEnd * 0.5,
+          end: transitionEnd * 0.75,
+          colorStart: [221, 220, 220],
+          colorEnd: [175, 167, 181],
+        },
+        {
+          start: transitionEnd * 0.75,
+          end: transitionEnd,
+          colorStart: [175, 167, 181],
+          colorEnd: [	255, 244, 226],
+        },
+      ];
+
+      const currentTransition = colorTransitions.find((transition) => {
+        return (
+          scrollPosition >= transition.start && scrollPosition < transition.end
+        );
+      });
+
+      if (currentTransition) {
+        const progress =
+          (scrollPosition - currentTransition.start) /
+          (currentTransition.end - currentTransition.start);
+        const scrollPercentage = Math.min(1, Math.max(0, progress));
+
+        const interpolatedColor = currentTransition.colorStart.map(
+          (start, i) => {
+            const end = currentTransition.colorEnd[i];
+            return Math.round(start + (end - start) * scrollPercentage);
+          }
+        );
+
+        setBackgroundColor(`rgb(${interpolatedColor.join(",")})`);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const { scrollYProgress } = useScroll();
+ 
   return (
     <>
+      <div style={{ backgroundColor }}>
       <LogoHeader />
       <Hero />
       <GSAPAnimateScrollSections />
+      <ImageGrid />
       <ParallaxInvisalignDamonBracesAdvancedTech />
       <Locations />
       <GiftCards />
+      </div>
     </>
   )
 }
@@ -476,7 +549,7 @@ function GSAPAnimateScrollSections() {
       text: "25k+ Patients",
     },
     {
-      imgSrc: "/images/lehigh.png",
+      imgSrc: "/images/lehighvalley.jpg",
       text: "4 Bespoke Locations",
     },
     {
@@ -544,6 +617,112 @@ function GSAPAnimateScrollSections() {
   )
 }
 
+
+const ImageGrid = () => {
+  const bodyRef = useRef(null);
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(SplitText);
+
+    if (headerRef.current) {
+      const tl = gsap.timeline();
+      gsap.set(bodyRef.current, { autoAlpha: 1 });
+
+      const pageHeading = headerRef.current.querySelector("h1");
+      const pageBody = headerRef.current.querySelector("p");
+      const separator = headerRef.current.querySelector("hr");
+      const imageCards = gsap.utils.toArray(".image-card");
+
+      gsap.set(imageCards, { autoAlpha: 0 });
+
+      const childLines = new SplitText(pageHeading, { type: "lines", linesClass: "heading-line" });
+      const parentLines = new SplitText(pageHeading, { type: "lines", linesClass: "heading-line-wrapper" });
+
+      tl.from(childLines.lines, {
+        duration: 1,
+        y: 200,
+        stagger: 0.25,
+        delay: 1,
+        ease: 'power4.out'
+      })
+      .from(pageBody, {
+        duration: 0.5,
+        opacity: 0,
+        x: -20,
+      }, '-=0.5')
+      .from(separator, {
+        duration: 2,
+        scale: 0,
+        ease: 'expo.inOut'
+      }, '-=1.1')
+      .to(imageCards, {
+        duration: 0.75,
+        autoAlpha: 1,
+        y: -50,
+        stagger: 0.5,
+        ease: 'power4.out'
+      }, '-=0.75');
+
+      // Initialize Locomotive Scroll
+      const scroll = new LocomotiveScroll({
+        el: bodyRef.current,
+        smooth: true
+      });
+
+      // Update Locomotive Scroll after animations
+      setTimeout(() => { scroll.update(); }, 1000);
+    }
+  }, []);
+
+  const images = [
+    { 
+      title: "TOP 1% OF PROVIDERS", 
+      src: "../images/invis.png", 
+      className: "image-portrait",
+      buttonText: "Learn More",
+      url: "/invisalign"
+    },
+    { 
+      title: "Less appointments. Faster treatment time", 
+      src: "../images/damon1.png", 
+      className: "image-landscape",
+      buttonText: "View Details",
+      url: "/braces"
+    },
+    {
+      title: "Pioneering the most comfortable appliances since 2005", 
+      src: "../images/mountain.png", 
+      className: "image-landscape",
+      buttonText: "Read More",
+      url: "/advanced-tech"
+    },
+  
+  ];
+  
+  
+
+  return (
+<div ref={bodyRef} className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white font-oswald">
+  <div className="flex flex-wrap justify-center items-center p-0 min-h-screen">
+    {images.map((image, index) => (
+      <div key={index} className={`group image-card relative flex items-center justify-center mb-20 ${image.className === "image-portrait" ? 'mx-4 w-[27vw] h-[37vw]' : 'mx-4 w-[37vw] h-[27vw]'}`}>
+        <h2 className="image-header absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 text-8vw uppercase leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+          {image.title}
+        </h2>
+        <img src={image.src} className="block w-full h-full object-cover" />
+        <a href={image.url} className="absolute bottom-0 mb-4 px-4 py-2 border border-black text-black rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out">
+          {image.buttonText}
+        </a>
+      </div>
+    ))}
+  </div>
+</div>
+
+
+  );
+};
+
 function ParallaxInvisalignDamonBracesAdvancedTech() {
   const main = useRef()
 
@@ -563,7 +742,12 @@ function ParallaxInvisalignDamonBracesAdvancedTech() {
 
   return (
     <div ref={main}>
-      <div className="panel h-[100dvh] bg-[#a3bba3]">
+      <div  style={{ 
+    backgroundImage: "url('../images/pinkgradient.png')", 
+    backgroundSize: 'cover',     
+    backgroundPosition: 'center', 
+    backgroundRepeat: 'no-repeat' 
+  }}className="panel h-[100dvh] bg-[#a3bba3]">
         <Invisalign />
       </div>
       <div className="panel h-[100dvh] bg-[#a3bba3] border-t-2 border-zinc-700 rounded-t-3xl">
@@ -648,7 +832,7 @@ function AdvancedTech() {
             <span>Learn More</span>
           </div>
         </Link>
-        <motion.img  className="absolute bottom-0 right-0 z-0 w-3/4 h-auto translate-x-1/2 translate-y-1/2" src="/../../images/dotcircle.png" alt="" />
+        <motion.img  className="absolute bottom-0 right-0 z-0 w-full h-auto translate-x-1/2 translate-y-1/2" src="/../../images/lime_worm.svg" alt="" />
       </div>
       <motion.div style={{ scale }} className="absolute inset-0 top-0 left-0 w-full h-full -z-10">
         <svg viewBox="0 0 256 256" className="w-full h-full">
@@ -746,30 +930,51 @@ function Locations() {
     )
   }, [isInView])
 
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+
+    if (isHovering) {
+      window.addEventListener('mousemove', moveCursor);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+    };
+  }, [isHovering]);
+
   return (
-    <section ref={ref} id="locations" className="mt-[100vh] flex flex-col justify-center w-full mx-auto my-32 lg:flex-row max-w-7xl">
+    <section ref={ref} id="locations" className="mt-[100vh] flex flex-col justify-center w-full mx-auto  lg:flex-row max-w-7xl">
       {/* LEFT */}
         <div className="z-10 lg:w-1/2 lg:py-0">
           <motion.div
-            className="p-6 space-y-10"
+            className="p-6 "
             style={{
               transform: isInView ? "none" : "translateY(-50px)",
               opacity: isInView ? 1 : 0,
               transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
             }}
           >
-            <span className="flex items-baseline mt-4">
-              <h1 className="tracking-tight uppercase font-helvetica-now-thin text-primary-50">Our Locations</h1>
-              <MapPin className="ml-2 transition-all duration-300 hover:animate-bounce hover:cursor-pointer" />
-            </span>
-            <p>We have 4 incredible offices for your ultimate convenience. Our orthodontists and FreySmiles Team are excited to serve families in the Allentown, Bethlehem, Easton, Schnecksville and Lehighton communities.</p>
-            <Link
+          <span className="flex items-baseline ">
+  <div className="">
+    <div className="font-Poppins font-bold font-weight-800 flex justify-center text-[8rem] uppercase text-[#c2776a]">OUR</div>
+    <div className="flex font-Poppins font-bold font-weight-800 text-[6rem] justify-center uppercase text-[#c2776a]">LOCATIONS</div>
+  </div>
+  <img className="w-80 " src="../images/mappin.png" alt="Map Pin"></img>
+  {/* <MapPin className="ml-2 transition-all duration-300 hover:animate-bounce hover:cursor-pointer" /> */}
+</span>
+
+            {/* <Link
               href="/book-now"
               className="inline-block px-6 py-4 text-white transition duration-300 ease-linear rounded-full underline-offset-8 bg-primary-50 hover:bg-secondary-50 group"
             >
               Schedule an evaluation today
               <span className="block h-[1px] transition-all duration-300 ease-linear bg-white rounded-full max-w-0 group-hover:max-w-full"></span>
-            </Link>
+            </Link> */}
           </motion.div>
 
           {/* LOCATIONS LIST */}
@@ -780,15 +985,22 @@ function Locations() {
           }}>
             <button
               className={`${
-                selectedLocation === "All" ? "text-secondary-50 underline" : ""
-              } self-end transition-all duration-300 ease-linear w-max text-primary-20 hover:text-secondary-50 mr-6`}
+                selectedLocation === "All" ? "text-[#c2776a]underline" : ""
+              } self-end transition-all duration-300 ease-linear w-max  hover:text-secondary-50 mr-6`}
               onClick={() => setSelectedLocation("All")}
             >
               {selectedLocation === "All" ? "Showing All Locations" : "Show All Locations"}
             </button>
+            <div 
+        className={`custom-cursor ${isHovering ? 'rotate' : ''}`} 
+        style={{ left: `${cursorPos.x}px`, top: `${cursorPos.y}px`, opacity: isHovering ? 1 : 0 }}
+      >
+        <p >MORE </p>
+        <p>INFO</p>
+      </div>
             <dl ref={scope} className="divide-y divide-primary-70">
               {locations.map((l, i) => (
-                <Disclosure as="div" key={l.location} className={`${selectedLocation === l.location ? "bg-primary-30 text-primary-95" : ""} px-4 py-6 transition-all duration-300 ease-linear cursor-pointer hover:bg-primary-50 hover:text-white group text-primary-20`}>
+                <Disclosure as="div" key={l.location} className={`${selectedLocation === l.location ? "bg-primary-30 text-primary-95" : ""} px-4 py-6 transition-all duration-300 ease-linear cursor-pointer  hover:text-white group text-primary-20`}>
                   {(panel) => {
                     const { open, close } = panel
                     return (<>
@@ -796,9 +1008,11 @@ function Locations() {
                         if (!open) close()
                         toggleDisclosurePanels({...panel, key: i})
                         setSelectedLocation(l.location)
-                      }}>
-                        <dt className="col-span-5 uppercase">
-                          <h6>{l.location}</h6>
+                      }}
+                      onMouseEnter={() => setIsHovering(true)}
+                      onMouseLeave={() => setIsHovering(false)}>
+                        <dt className="col-span-5 ">
+                          <h6 className="text-3xl">{l.location}</h6>
                         </dt>
                         <dd className="col-span-7">
                           <span className="flex items-center justify-between">

@@ -260,6 +260,21 @@ const OurTeam = () => {
         className="fixed w-1/2 " 
         alt="Animated" 
       />
+  <div className="z-10 flex justify-center items-center h-screen"> 
+      <div className="svg">
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 620 620">
+          <defs>
+            <path id="text_0_path" fill="none" d="M236.551,300.935c0-38.395,31.125-69.519,69.519-69.519s69.519,31.125,69.519,69.519"/>
+          </defs>
+          <use xlinkHref="#text_0_path" stroke="none" fill="none"/>
+          <text fontFamily="Arial" fontSize="18" textAnchor="start" fill="white">
+            <textPath xlinkHref="#text_0_path" startOffset="2%">
+              <tspan>MEET OUR TEAM</tspan>
+            </textPath>
+          </text>
+        </svg>
+      </div>
+    </div>
       <svg 
         ref={svgRef}
         className="fixed top-0 left-0 w-full h-screen"
@@ -271,7 +286,7 @@ const OurTeam = () => {
           </mask>
         </defs>
         <rect ref={whiteLayerRef} width="100%" height="100%" fill="white"></rect>
-        <rect width="100%" height="100%" fill="black" mask="url(#mask)"></rect>
+        <rect width="100%" height="100%" fill="green" mask="url(#mask)"></rect>
       </svg>
       <div className="h-[2500px]"></div>
     </div>
