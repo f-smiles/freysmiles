@@ -92,7 +92,7 @@ export default function LandingComponent() {
       <Hero />
       <GSAPAnimateScrollSections />
       <ImageGrid />
-      <ParallaxInvisalignDamonBracesAdvancedTech />
+      {/* <ParallaxInvisalignDamonBracesAdvancedTech /> */}
       <Locations />
       <GiftCards />
       </div>
@@ -553,7 +553,7 @@ function GSAPAnimateScrollSections() {
       text: "4 Bespoke Locations",
     },
     {
-      imgSrc: "/images/topsortho.png",
+      imgSrc: "/images/experiencedoctor.png",
       text: "50+ Years Experience",
     },
   ];
@@ -621,7 +621,22 @@ function GSAPAnimateScrollSections() {
 const ImageGrid = () => {
   const bodyRef = useRef(null);
   const headerRef = useRef(null);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
 
+  useEffect(() => {
+    const moveCursor = (e) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+
+    if (isHovering) {
+      window.addEventListener('mousemove', moveCursor);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+    };
+  }, [isHovering]);
   useEffect(() => {
     gsap.registerPlugin(SplitText);
 
@@ -680,22 +695,22 @@ const ImageGrid = () => {
       title: "TOP 1% OF PROVIDERS", 
       src: "../images/invis.png", 
       className: "image-portrait",
-      buttonText: "Learn More",
+    
       url: "/invisalign"
     },
     { 
       title: "Less appointments. Faster treatment time", 
       src: "../images/damon1.png", 
       className: "image-landscape",
-      buttonText: "View Details",
+
       url: "/braces"
     },
     {
       title: "Pioneering the most comfortable appliances since 2005", 
       src: "../images/mountain.png", 
       className: "image-landscape",
-      buttonText: "Read More",
-      url: "/advanced-tech"
+
+      url: "/why-choose-us"
     },
   
   ];
@@ -704,149 +719,162 @@ const ImageGrid = () => {
 
   return (
 <div ref={bodyRef} className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white font-oswald">
-  <div className="flex flex-wrap justify-center items-center p-0 min-h-screen">
-    {images.map((image, index) => (
-      <div key={index} className={`group image-card relative flex items-center justify-center mb-20 ${image.className === "image-portrait" ? 'mx-4 w-[27vw] h-[37vw]' : 'mx-4 w-[37vw] h-[27vw]'}`}>
-        <h2 className="image-header absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 text-8vw uppercase leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
-          {image.title}
-        </h2>
-        <img src={image.src} className="block w-full h-full object-cover" />
-        <a href={image.url} className="absolute bottom-0 mb-4 px-4 py-2 border border-black text-black rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out">
-          {image.buttonText}
-        </a>
+<div 
+        className={`custom-cursor ${isHovering ? 'rotate' : ''}`} 
+        style={{ left: `${cursorPos.x}px`, top: `${cursorPos.y}px`, opacity: isHovering ? 1 : 0 }}
+      >
+        <p >CHECK </p>
+        <p>IT OUT</p>
       </div>
-    ))}
-  </div>
+      <div className="flex flex-wrap justify-center items-center p-0 min-h-screen">
+  {images.map((image, index) => (
+    <a 
+      key={index} 
+      href={image.url}
+      className={`group image-card relative flex items-center justify-center mb-20 ${image.className === "image-portrait" ? 'mx-4 w-[27vw] h-[37vw]' : 'mx-4 w-[37vw] h-[27vw]'}`}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <h2 className="image-header absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 text-8vw uppercase leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+        {image.title}
+      </h2>
+      <img src={image.src} className="block w-full h-full object-cover" />
+ 
+    </a>
+  ))}
+</div>
+
+
 </div>
 
 
   );
 };
 
-function ParallaxInvisalignDamonBracesAdvancedTech() {
-  const main = useRef()
+// function ParallaxInvisalignDamonBracesAdvancedTech() {
+//   const main = useRef()
 
-  useGSAP(() => {
-    const sections = gsap.utils.toArray(".panel")
-    sections.forEach((section) => {
-      gsap.to(section, {
-        scrollTrigger: {
-          trigger: section,
-          start: () => section.offsetHeight < window.innerHeight ? "top top" : "bottom bottom",
-          pin: true,
-          pinSpacing: false,
-          scrub: true,
-        },
-      })
-  })}, { scope: main })
+//   useGSAP(() => {
+//     const sections = gsap.utils.toArray(".panel")
+//     sections.forEach((section) => {
+//       gsap.to(section, {
+//         scrollTrigger: {
+//           trigger: section,
+//           start: () => section.offsetHeight < window.innerHeight ? "top top" : "bottom bottom",
+//           pin: true,
+//           pinSpacing: false,
+//           scrub: true,
+//         },
+//       })
+//   })}, { scope: main })
 
-  return (
-    <div ref={main}>
-      <div  style={{ 
-    backgroundImage: "url('../images/pinkgradient.png')", 
-    backgroundSize: 'cover',     
-    backgroundPosition: 'center', 
-    backgroundRepeat: 'no-repeat' 
-  }}className="panel h-[100dvh] bg-[#a3bba3]">
-        <Invisalign />
-      </div>
-      <div className="panel h-[100dvh] bg-[#a3bba3] border-t-2 border-zinc-700 rounded-t-3xl">
-        <DamonBraces />
-      </div>
-      <div className="panel h-[100dvh] bg-white border-t-2 border-zinc-700 rounded-t-3xl overflow-hidden">
-        <AdvancedTech />
-      </div>
-    </div>
-  )
-}
+//   return (
+//     <div ref={main}>
+//       <div  style={{ 
+//     backgroundImage: "url('../images/pinkgradient.png')", 
+//     backgroundSize: 'cover',     
+//     backgroundPosition: 'center', 
+//     backgroundRepeat: 'no-repeat' 
+//   }}className="panel h-[100dvh] bg-[#a3bba3]">
+//         <Invisalign />
+//       </div>
+//       <div className="panel h-[100dvh] bg-[#a3bba3] border-t-2 border-zinc-700 rounded-t-3xl">
+//         <DamonBraces />
+//       </div>
+//       <div className="panel h-[100dvh] bg-white border-t-2 border-zinc-700 rounded-t-3xl overflow-hidden">
+//         <AdvancedTech />
+//       </div>
+//     </div>
+//   )
+// }
 
-function Invisalign() {
-  const sectionRef = useRef()
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["end end", "center center"],
-  })
-  const springScroll = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  })
-  const scale = useTransform(springScroll, [0, 1], [1.2, 0.9])
-  const transformText = useTransform(springScroll, [0, 1], ["0%", "150%"])
-  const transformCase = useTransform(springScroll, [0, 1], ["150%", "0%"])
-  const transformRetainer = useTransform(springScroll, [0, 1], ["-150%", "-100%"])
+// function Invisalign() {
+//   const sectionRef = useRef()
+//   const { scrollYProgress } = useScroll({
+//     target: sectionRef,
+//     offset: ["end end", "center center"],
+//   })
+//   const springScroll = useSpring(scrollYProgress, {
+//     stiffness: 100,
+//     damping: 30,
+//     restDelta: 0.001
+//   })
+//   const scale = useTransform(springScroll, [0, 1], [1.2, 0.9])
+//   const transformText = useTransform(springScroll, [0, 1], ["0%", "150%"])
+//   const transformCase = useTransform(springScroll, [0, 1], ["150%", "0%"])
+//   const transformRetainer = useTransform(springScroll, [0, 1], ["-150%", "-100%"])
 
-  return (
-    <section ref={sectionRef} className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-start">
-      <motion.div style={{ translateY: transformText }} className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
-        <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
-        <h4>Top 1% Invisalign providers</h4>
-        {/* <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4> */}
-        <Link href="/invisalign" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
-          <span>Learn More</span>
-          <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
-            <span>Learn More</span>
-          </div>
-        </Link>
-      </motion.div>
-      <div className="lg:w-1/2">
-        <motion.img style={{ translateY: transformCase }} className="object-cover w-full h-auto mx-auto object-start" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
-        <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover w-3/4 h-auto object-start ml-36 lg:ml-24 xl:ml-36" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
-      </div>
-    </section>
-  )
-}
+//   return (
+//     <section ref={sectionRef} className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-start">
+//       <motion.div style={{ translateY: transformText }} className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
+//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
+//         <h4>Top 1% Invisalign providers</h4>
+//         {/* <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4> */}
+//         <Link href="/invisalign" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
+//           <span>Learn More</span>
+//           <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
+//             <span>Learn More</span>
+//           </div>
+//         </Link>
+//       </motion.div>
+//       <div className="lg:w-1/2">
+//         <motion.img style={{ translateY: transformCase }} className="object-cover w-full h-auto mx-auto object-start" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+//         <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover w-3/4 h-auto object-start ml-36 lg:ml-24 xl:ml-36" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+//       </div>
+//     </section>
+//   )
+// }
 
-function DamonBraces() {
-  return (
-    <section className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-center">
-      <div className="h-auto lg:w-1/2">
-        {/* <img className="object-cover object-center w-full h-full mx-auto"  src="/../../../images/faster_treatment_time.gif" alt="faster treatment time" /> */}
-      </div>
-      <div className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
-        <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Damon Bracket</h1>
-        <h4>Less appointments. Faster treatment time</h4>
-        <Link href="/braces" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
-          <span>Explore</span>
-          <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
-            <span>Explore</span>
-          </div>
-        </Link>
-      </div>
-    </section>
-  )
-}
+// function DamonBraces() {
+//   return (
+//     <section className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-center">
+//       <div className="h-auto lg:w-1/2">
+//         {/* <img className="object-cover object-center w-full h-full mx-auto"  src="/../../../images/faster_treatment_time.gif" alt="faster treatment time" /> */}
+//       </div>
+//       <div className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
+//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Damon Bracket</h1>
+//         <h4>Less appointments. Faster treatment time</h4>
+//         <Link href="/braces" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
+//           <span>Explore</span>
+//           <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
+//             <span>Explore</span>
+//           </div>
+//         </Link>
+//       </div>
+//     </section>
+//   )
+// }
 
-function AdvancedTech() {
-  const { scrollYProgress } = useScroll()
-  const scale = useTransform(scrollYProgress, [0, 1], ["500%", "-100%"])
+// function AdvancedTech() {
+//   const { scrollYProgress } = useScroll()
+//   const scale = useTransform(scrollYProgress, [0, 1], ["500%", "-100%"])
 
-  return (
-    <section className="relative flex flex-col py-24 mx-auto overflow-hidden lg:justify-center lg:flex-row lg:items-center h-[100dvh]">
-      <div className="relative max-w-2xl py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max md:py-0">
-        <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Advanced Technology</h1>
-        <h4>Our doctors have been pioneering the most comfortable appliances for your treatment since 2005</h4>
-        <Link href="/invisalign" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
-          <span>Learn More</span>
-          <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
-            <span>Learn More</span>
-          </div>
-        </Link>
-        <motion.img  className="absolute bottom-0 right-0 z-0 w-full h-auto translate-x-1/2 translate-y-1/2" src="/../../images/lime_worm.svg" alt="" />
-      </div>
-      <motion.div style={{ scale }} className="absolute inset-0 top-0 left-0 w-full h-full -z-10">
-        <svg viewBox="0 0 256 256" className="w-full h-full">
-          <g>
-            <path
-              fill="#a3bba3"
-              d="M10,71.6c0,17.2,4.5,36.1,12.3,52c17,34.7,49.9,58.6,88.4,64.6c8.9,1.4,25.9,1.4,34.5,0c28.3-4.4,53.7-18.4,71.8-39.4c13.2-15.4,22.2-33.4,26.2-52.4c1.7-8,2.8-18.3,2.8-25.2v-4.5H128H10V71.6z"
-            />
-          </g>
-        </svg>
-      </motion.div>
-    </section>
-  )
-}
+//   return (
+//     <section className="relative flex flex-col py-24 mx-auto overflow-hidden lg:justify-center lg:flex-row lg:items-center h-[100dvh]">
+//       <div className="relative max-w-2xl py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max md:py-0">
+//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Advanced Technology</h1>
+//         <h4>Our doctors have been pioneering the most comfortable appliances for your treatment since 2005</h4>
+//         <Link href="/invisalign" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
+//           <span>Learn More</span>
+//           <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
+//             <span>Learn More</span>
+//           </div>
+//         </Link>
+//         <motion.img  className="absolute bottom-0 right-0 z-0 w-full h-auto translate-x-1/2 translate-y-1/2" src="/../../images/lime_worm.svg" alt="" />
+//       </div>
+//       <motion.div style={{ scale }} className="absolute inset-0 top-0 left-0 w-full h-full -z-10">
+//         <svg viewBox="0 0 256 256" className="w-full h-full">
+//           <g>
+//             <path
+//               fill="#a3bba3"
+//               d="M10,71.6c0,17.2,4.5,36.1,12.3,52c17,34.7,49.9,58.6,88.4,64.6c8.9,1.4,25.9,1.4,34.5,0c28.3-4.4,53.7-18.4,71.8-39.4c13.2-15.4,22.2-33.4,26.2-52.4c1.7-8,2.8-18.3,2.8-25.2v-4.5H128H10V71.6z"
+//             />
+//           </g>
+//         </svg>
+//       </motion.div>
+//     </section>
+//   )
+// }
 
 function Locations() {
   const ref = useRef(null)
