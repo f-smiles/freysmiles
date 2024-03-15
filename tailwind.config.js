@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     fontFamily: {
       'cera': "CeraProRegular",
+      'poppins':"Poppins",
       'didot': "Didot",
       'geomanist':"Geomanist-Regular",
       'Chaney-Ultra':"Chaney-Ultra",

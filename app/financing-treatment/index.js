@@ -14,7 +14,7 @@ const details = [
     number: "1.",
     heading: "Complimentary consultation",
     body: "Initial consultations are always free of charge.",
-    img: "/../../images/firstmeetingedit.png",
+    img: "/../../images/initialconsult.png",
     alt: "FreySmiles team member warmly greeting a FreySmiles patient and shaking their hand",
   },
   {
@@ -28,7 +28,7 @@ const details = [
     number: "3.",
     heading: "No hidden fees",
     body: "Comprehensive treatment plans include retainers and supervision",
-    img: "/../../images/quote.png",
+    img: "/../../images/familymembers.png",
     alt: "No hidden fees",
   },
   {
@@ -89,25 +89,32 @@ export default function FinancingTreatment() {
   <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
     <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">1.</p>
   </span>
+  <div className="flex flex-col justify-center items-center text-[#5062a6] text-5xl font-altero">
+  <div>Complimentary</div>
+  <div className="font-altero uppercase stroke-text py-5">Consultation</div>
+</div>
+<p className="flex text-xl text-center font-helvetica-now-thin ">Initial consultations are always free of charge.</p>
 
-  <img 
+
+  {/* <img 
     src="../images/complimentary.png" 
     alt="Complimentary Consultation"
     className="w-full -mt-40 h-auto object-cover" 
-  />
-  <p className="flex text-xl text-center -mt-40">Initial consultations are always free of charge.</p>
+  /> */}
+
 </Detail>
 
           <Detail>
             <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
               <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">2.</p>
             </span>
-            <img 
-    src="../images/paymentplans.png" 
-    alt="Complimentary Consultation"
-    className="w-full h-auto object-cover" 
-  />
-            <p className="flex text-xl text-center -mt-40">We offer a variety of payment plans at no interest.</p>
+            <div className="text-[#5062a6] text-5xl font-altero">
+  <span className="block stroke-text py-5 text-center">PAYMENT PLANS</span>
+  <span className="block font-altero uppercase py-2">ARE AVAILABLE</span>
+</div>
+
+
+            <p className="flex text-xl text-center font-helvetica-now-thin">We offer a variety of payment plans at no interest.</p>
           </Detail>
           <Detail>
             <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
@@ -118,17 +125,24 @@ export default function FinancingTreatment() {
     alt="Complimentary Consultation"
     className="w-full h-auto object-cover" 
   />
-            <p className="flex text-xl text-center -mt-40">Successive family members always receive the same excellent care. Ask about our family courtesies</p>
+            <p className="flex text-xl text-center -mt-40 font-helvetica-now-thin">Successive family members always receive the same excellent care. Ask about our family courtesies</p>
           </Detail>
           <Detail>
             <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
               <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">4.</p>
             </span>
-            <img 
+            <div className="flex flex-col items-center justify-center h-screen text-[#5062a6] text-5xl font-altero">
+  <span className="text-3xl mb-2">One year</span>
+  <span className="stroke-text font-altero uppercase mb-2">FOLLOW UP</span>
+  <span className="text-3xl">INCLUDED</span>
+</div>
+
+
+            {/* <img 
     src="../images/onyear.png" 
     alt="Complimentary Consultation"
     className="w-full h-auto object-cover" 
-  />
+  /> */}
 
           </Detail>
           <motion.div
@@ -228,16 +242,21 @@ function Images() {
   return (
     <div ref={panelsRef} className="hidden h-full md:block wrapper">
       {details.map((detail, index) => (
-        <figure
-          key={index}
-          className="flex flex-col items-center justify-center w-4/5 h-screen mx-auto overflow-hidden panel"
-          >
-          <img
-            src={detail.img}
-            alt={detail.alt}
-            className="w-full h-auto rounded-xl"
-          />
-        </figure>
+             <figure
+             key={index}
+             className="flex flex-col items-center justify-center w-4/5 h-screen mx-auto overflow-hidden panel"
+           >
+             <img
+               src={detail.img}
+               alt={detail.alt}
+               style={{
+                 width: index === 2 ? '70%' : '100%', 
+                 margin: index === 2 ? 'auto' : '',    
+                 borderRadius: '1rem',
+                 height: 'auto'
+               }}
+             />
+           </figure>
       ))}
     </div>
   )

@@ -7,6 +7,11 @@
   font-family: "NovelaRegular";
   src: url('/fonts/novela_regular-webfont.woff2') format('woff'), url('/fonts/novel__regular-webfont.woff') format('woff');
 }
+
+@font-face {
+  font-family: "Poppins";
+  src: url('/fonts/poppins-extrabold.ttf') format('ttf'), url('/fonts/poppins-extrabold.ttf') format('ttf');
+}
 @font-face {
   font-family: "Geomanist-Regular";
   src: url('/fonts/geomanist-regular-webfont.woff2') format('woff'), url('/fonts/geomanist-regular-webfont.wof2') format('woff');
@@ -1027,3 +1032,108 @@ padding:10px;
 }
 
 
+.stroke-text {
+  -webkit-text-stroke: 1px #5062a6;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+
+@keyframes giftCardMarquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+.animate-giftCardMarquee {
+  display: flex;
+  animation: giftCardMarquee 20.5s infinite linear;
+}
+
+
+.custom-cursor {
+  position: fixed;
+  pointer-events: none; 
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgb(183, 124, 124);
+  font-weight: bold;
+  color:white;
+  flex-direction: column;
+text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+}
+
+.rotate {
+  animation: rotate 3.5s linear infinite;
+}
+
+
+@keyframes rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+
+/* .svg {
+  animation: spin 3s ease infinite;
+  transform-origin: center center;
+  width: 100%;
+}
+
+@keyframes spin {
+  from {
+    opacity: 0;
+    transform: rotate(-100deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(260deg);
+  }
+} */
+
+.ml-10vw {
+  margin-left: 10vw;
+}
+.w-30vw {
+  width: 30vw;
+}
+.h-40vw {
+  height: 40vw;
+}
+.w-40vw {
+  width: 40vw;
+}
+.h-30vw {
+  height: 30vw;
+}
+
+.image-card {
+  transition: border-radius 0.75s cubic-bezier(0.65, 0, 0.35, 1);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.image-card:hover {
+  border-radius: 15rem;
+}
+
+.image-card:hover .image-header {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  transition: all 0.85s cubic-bezier(0.65, 0, 0.35, 1);
+}
