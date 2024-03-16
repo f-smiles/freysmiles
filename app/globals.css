@@ -50,6 +50,16 @@
   src: url("/fonts/helvetica_now_thin.woff") format("woff"), url("/fonts/helvetica_now_thin.woff2") format("woff2");
 }
 
+@font-face {
+  font-family: "Larken";
+  src: url("/fonts/LarkenVariable.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Larken Italic";
+  src: url("/fonts/LarkenVariableItalic.ttf") format("truetype");
+}
+
 
 @layer base {
   html {
@@ -200,11 +210,11 @@
     mix-blend-mode: normal;
   }
 }
-@media only screen and (min-width: 1024px) {
+/* @media only screen and (min-width: 1024px) {
   * {
     cursor: none;
   }
-}
+} */
 /* custom mouse cursor END */
 
 
