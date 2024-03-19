@@ -21,7 +21,7 @@ const details = [
     number: "2.",
     heading: "Payment plans are available",
     body:"We offer a variety of payment plans at no interest.",
-    img: "/../../images/pinkpayment.jpeg",
+    img: "/../../images/orangecylinder.svg",
     alt: "Scene of a girl sitting on top of bags holding a percent sign representing no interest payment at FreySmiles",
   },
   {

@@ -877,6 +877,27 @@ const ImageGrid = () => {
 // }
 
 function Locations() {
+
+  const [isVisible, setIsVisible] = useState(false);
+  const footerRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      setIsVisible(entry.isIntersecting);
+    }, { threshold: 0.5 });
+
+    if (footerRef.current) {
+      observer.observe(footerRef.current);
+    }
+
+    return () => {
+      if (footerRef.current) {
+        observer.unobserve(footerRef.current);
+      }
+    };
+  }, []);
+
   const ref = useRef(null)
   const isInView = useInView(ref, { once: false})
   const [scope, animate] = useAnimate()
@@ -975,8 +996,31 @@ function Locations() {
     };
   }, [isHovering]);
 
+  
   return (
-    <section ref={ref} id="locations" className="mt-[100vh] flex flex-col justify-center w-full mx-auto  lg:flex-row max-w-7xl">
+    <> 
+     <footer ref={footerRef} className="overflow-hidden py-20">
+  <h2 className="m-0 font-Poppins flex justify-center text-white text-[180px] font-extrabold" style={{ fontStretch: '150%', fontVariationSettings: '"wdth" 150' }}>
+    {['O', 'u', 'r', ' ', 'L', 'o', 'c', 'a', 't', 'i', 'o', 'n', 's'].map((letter, index) => (
+      <span 
+        key={index} 
+        className="inline-block" 
+        style={{ 
+          transform: `translateY(${index * -40}px)`, 
+          animation: isVisible ? `moveLetter 2s forwards` : 'none',
+          whiteSpace: letter === ' ' ? 'pre' : 'normal' 
+        }}>
+        {letter === ' ' ? '\u00A0' : letter} 
+      </span>
+    ))}
+  </h2>
+</footer>
+
+      <img className="w-80 " src="../images/mappin.png" alt="Map Pin"></img>
+  <section ref={ref} id="locations" className=" flex flex-col justify-center w-full mx-auto  lg:flex-row max-w-7xl">
+       <div>
+    
+    </div>
       {/* LEFT */}
         <div className="z-10 lg:w-1/2 lg:py-0">
           <motion.div
@@ -988,11 +1032,8 @@ function Locations() {
             }}
           >
           <span className="flex items-baseline ">
-  <div className="">
-    <div className="font-Poppins font-bold font-weight-800 flex justify-center text-[8rem] uppercase text-[#c2776a]">OUR</div>
-    <div className="flex font-Poppins font-bold font-weight-800 text-[6rem] justify-center uppercase text-[#c2776a]">LOCATIONS</div>
-  </div>
-  <img className="w-80 " src="../images/mappin.png" alt="Map Pin"></img>
+
+
   {/* <MapPin className="ml-2 transition-all duration-300 hover:animate-bounce hover:cursor-pointer" /> */}
 </span>
 
@@ -1099,6 +1140,8 @@ function Locations() {
           />
         </motion.div>
     </section>
+  </>
+ 
   )
 }
 

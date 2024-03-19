@@ -7,6 +7,10 @@
   font-family: "NovelaRegular";
   src: url('/fonts/novela_regular-webfont.woff2') format('woff'), url('/fonts/novel__regular-webfont.woff') format('woff');
 }
+@font-face {
+  font-family: "iCiel-Gotham-Ultra";
+  src: url('/fonts/iCiel-Gotham-Ultra.woff') format('woff'), url('/fonts/iCiel-Gotham-Ultra.woff') format('woff');
+}
 
 @font-face {
   font-family: "Poppins";
@@ -269,7 +273,7 @@ padding:10px;
   height:100%;
   position:absolute;
   /* bottom: 0px; */
-  background-color: black;
+  /* background-color: black; */
 
   transform:scale(0.75);
 }
@@ -1136,4 +1140,85 @@ text-transform: uppercase;
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
   transition: all 0.85s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@keyframes moveLetter {
+  to {
+    transform: translateY(0);
+  }
+}
+
+.layer {
+  clip-path: circle(0% at 50% 50%);
+}
+
+.gradient-green {
+  background-image: url('/images/radialgradient.png'); 
+  background-size: cover;  
+  background-position: center; 
+}
+
+
+.appointmentButton {
+  position: relative;
+  overflow: hidden;
+  width: 176px;
+  height: 56px;
+  padding: 8px 24px;
+  border-radius: 0.5rem;
+  border: 1px solid black;
+  cursor: pointer;
+  transition: background-color 0.4s, color 0.4s;
+}
+
+
+
+.appointmentButton.clicked {
+  background-color: black;
+  color: white;
+}
+
+.appointmentButton .appointmentBtnBg {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background-color: black;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+  z-index: 0;
+}
+
+.appointmentButton:hover .appointmentBtnBg {
+  width: 200px;
+  height: 200px;
+}
+
+
+
+
+@keyframes marquee {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+.appointmentMarquee .animate-marquee {
+  display: inline-block;
+  animation: marquee 10s linear infinite;
+}
+
+.appointmentMarquee span:before {
+  display: inline-block;
+  content: "";
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  position: relative;
+  top: -1px;
+  vertical-align: baseline;
+  background-color: inherit; 
+  margin-right: 16px;
 }

@@ -6,6 +6,12 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
+
+  
+const Layer = ({ colorClass }) => {
+  return <div className={`absolute top-0 left-0 right-0 h-full w-full ${colorClass}`}></div>;
+};
+
 const OurTeam = () => {
   gsap.registerPlugin(ScrollTrigger);
   const [isVisible, setIsVisible] = useState(false);
@@ -78,10 +84,21 @@ const OurTeam = () => {
   }, []);
   const [index, setIndex] = useState(1);
   const [switchDoctor, setSwitchDoctor] = useState(false);
+  const [showParagraph, setShowParagraph] = useState(false);
 
   const toggleSwitchDoctor = () => {
+    console.log(" clicked");
     setSwitchDoctor(!switchDoctor);
+    setShowParagraph(false);
   };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowParagraph(true);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [switchDoctor]);
 
   useEffect(() => {
 
@@ -214,9 +231,21 @@ const OurTeam = () => {
   
 
   
+  useEffect(() => {
+    const layer = document.querySelector(".layer");
   
+    const tl = gsap.timeline();
   
-  
+    tl.to(layer, {
+      clipPath: "circle(71% at 50% 50%)",
+      duration: 1,
+      ease: "power1.inOut"
+    }).to(layer, {
+      clipPath: "circle(0% at 50% 50%)",
+      duration: 1,
+      ease: "power1.inOut"
+    });
+  }, []);
   
   
   
@@ -225,42 +254,35 @@ const OurTeam = () => {
 
   return (
     <>
-      {/* <section
-        className="headerFirst"
-        style={{
-          height: "100vh",
-          maxWidth: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 2,
-          paddingTop: "10vh"
-     
-        }}
-      >
-        <div className="header-reveal  text-8xl"
-        ></div>
-        <h1
-          className="font-novela-regular headline text-white"
-          style={{
-            textAlign: "center",
-            fontSize: "4rem",
-            textTransform: "uppercase",
-            zIndex: 10,
-          }}
-        >
-          MEET OUR TEAM
-        </h1>
-
-      </section> */}
- <div className="relative">
-      <img 
+     <div className="relative h-screen w-full">
+      <Layer colorClass="layer gradient-green" />
+         <section className="main-section">
+        <div className="section__content">
+        <p ref={doctorRef} className="w-full">
+  <div className="text-black font-didot flex justify-start items-center w-full">
+  <img 
         ref={imgRef}
-        src="../images/ourdoctors.png" 
+        src="../images/wireframedoctor.png" 
         className="fixed w-1/2 " 
         alt="Animated" 
       />
-  <div className="z-10 flex justify-center items-center h-screen"> 
+    <h2 className="text-[100px] m-0 leading-[0.9] vertical-text text-left">
+      Our
+    </h2>
+    <h2 className="text-[100px] m-0 leading-[0.9] normal-text text-left">
+      Doctors
+    </h2>
+  </div>
+</p>
+
+
+        </div>
+      </section>
+    </div>
+
+ <div className="relative">
+
+  {/* <div className="z-10 flex justify-center items-center h-screen"> 
       <div className="svg">
         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 620 620">
           <defs>
@@ -287,196 +309,91 @@ const OurTeam = () => {
         </defs>
         <rect ref={whiteLayerRef} width="100%" height="100%" fill="white"></rect>
         <rect width="100%" height="100%" fill="green" mask="url(#mask)"></rect>
-      </svg>
-      <div className="h-[2500px]"></div>
+      </svg> */}
+
     </div>
-      {/* <section className="main-section">
-        <div className="section__content">
-          <svg ref={teamRef}>
-            <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle">
-              Meet Our Team
-            </text>
-          </svg>
-        </div>
-      </section> */}
-
-      {/* <section className="main-section">
-        <div className="section__content">
-          <p ref={doctorRef}>
-            <div className="text-white font-didot flex justify-center items-center">
-              <h2 className="text-[100px] m-0 text-center leading-[0.9] vertical-text">
-                Our
-              </h2>
-              <h2 className="text-[100px] m-0 text-center leading-[0.9] normal-text">
-                Doctors
-              </h2>
-            </div>
-          </p>
-        </div>
-      </section> */}
-
-      <section
-        className="text-wrapper"
-        style={{
-          height: "100vh",
-          // paddingTop:"-10rem",
-          maxWidth: "100%",
-          flexDirection: "column",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 2,
-        }}
-      >
-        <div className="imageContainer art-wrapper">
-          <div
-            className="collumn"
-            style={{ position: "relative", display: "inline-block" }}
-          >
-            <img
-              src="../../images/bannerright.svg"
-              alt=""
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "80%",
-                height: "80%",
-                objectFit: "contain",
-              }}
-            />
-
-            <div
-              id="controls"
-              style={{
-                position: "absolute",
-                top: "10%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                zIndex: 10,
-              }}
-            >
-              <button
-                className="border-white z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
-                onClick={toggleSwitchDoctor}
-              >
-                <ArrowLeftIcon className="w-5 h-5" style={{ color: "white" }} />
-              </button>
-              <span className="text-white">
-                0{!switchDoctor ? index : index + 1} - 02
-              </span>
-              <button
-                className="border-white z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
-                onClick={toggleSwitchDoctor}
-              >
-                <ArrowRightIcon
-                  className="w-5 h-5"
-                  style={{ color: "white" }}
-                />
-              </button>
-            </div>
-
-            <div
-              style={{
-                position: "absolute",
-                bottom: "10%",
-                left: "10%",
-                zIndex: 10,
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                borderRadius: "10px",
-                backdropFilter: "blur(10px)",
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                padding: "20px",
-                maxWidth: "80%",
-              }}
-            >
-              <div className="text-white row-span-1 row-start-2">
-                {/* doctor bio */}
-                {switchDoctor ? (
-                  <p>
-                    Dr. Daniel Frey graduated from high school in 2005. He then
-                    pursued his pre-dental requisites at the University of
-                    Pittsburgh, majoring in Biology. Dr. Frey excelled in his
-                    studies and was admitted to Temple University&apos;s dental
-                    school, graduating at the top of his class with the
-                    prestigious Summa Cum Laude designation. Continuing his
-                    education, Dr. Frey was admitted to the esteemed orthodontic
-                    residency program at the University of the Pacific in San
-                    Francisco where he worked with students and faculty from
-                    around the world and utilized cutting-edge orthodontic
-                    techniques. During his time in San Francisco, he conducted
-                    research in three-dimensional craniofacial analysis and
-                    earned his Master of Science degree. Dr. Frey is a member of
-                    the American Association of Orthodontists and the American
-                    Dental Association. In his leisure time, he enjoys staying
-                    active outdoors, camping, playing music, and spending time
-                    with loved ones.
-                  </p>
-                ) : (
-                  <p>
-                    Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
-                    graduated from Temple University School of Dentistry with
-                    honors and served in the U.S. Navy Dental Corps before
-                    establishing his practice in the Lehigh Valley. He is a
-                    Diplomat of the American Board of Orthodontics and has
-                    received numerous distinctions, accreditations, and honors,
-                    including being named one of America&apos;s Top
-                    Orthodontists by the Consumer Review Council of America.
-                    This distinction is held by fewer than 25% of orthodontists
-                    nationwide. ABO certification represents the culmination of
-                    5-10 years of written and oral examinations and independent
-                    expert review of actual treated patients. Recently Dr. Frey
-                    voluntarily re-certified. Dr. Frey enjoys coaching soccer,
-                    vintage car racing, and playing the drums.
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="collumn">
-            <figure className="w-full aspect-[3/4] h-max overflow-hidden flex items-start">
-              <img
-                className={`${
-                  switchDoctor ? "right" : "switch-right"
-                } mid-image object-contain w-full transition-all duration-2000`}
-                src="../../images/team_members/GreggFrey.jpg"
-                alt="Dr. Gregg Frey"
-              />
-              <img
-                className={`${
-                  switchDoctor ? "left" : "switch-left"
-                } mid-image object-contain w-full transition-all duration-2000`}
-                src="../../images/team_members/DanFrey.jpg"
-                alt="Dr. Daniel Frey"
-              />
-            </figure>
-          </div>
-          <div className="collumn">
-            <figure
-              className="grayscale h-max w-full aspect-[3/4] overflow-hidden flex items-start hover:cursor-pointer"
+    <section className="py-24 bg-white sm:py-32">
+      <div className="w-full px-6 mx-auto mb-12 lg:px-8 max-w-7xl">
+        <h1 className="tracking-tight uppercase font-helvetica-now-thin ">Our Doctors</h1>
+      </div>
+      <div className="grid grid-cols-12 gap-8 px-6 mx-auto max-w-7xl lg:px-8">
+        <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
+          {/* slider controls */}
+          <div id="controls" className="flex items-center justify-start row-span-1 row-start-1 space-x-4">
+            <button
+              className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
               onClick={toggleSwitchDoctor}
             >
-              <img
-                className={`${
-                  switchDoctor ? "right" : "switch-right"
-                } right-image object-contain w-full transition-all duration-2000`}
-                src="../../images/team_members/DanFrey.jpg"
-                alt="Dr. Daniel Frey"
-              />
-              <img
-                className={`${
-                  switchDoctor ? "left" : "switch-left"
-                } right-image object-contain w-full transition-all duration-2000`}
-                src="../../images/team_members/GreggFrey.jpg"
-                alt="Dr. Gregg Frey"
-              />
-            </figure>
+              <ArrowLeftIcon className="w-5 h-5" />
+            </button>
+            <span>0{!switchDoctor ? index : index + 1} - 02</span>
+            <button
+              className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
+              onClick={toggleSwitchDoctor}
+            >
+              <ArrowRightIcon className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="row-span-1 row-start-2">
+            {/* doctor bio */}
+            {switchDoctor ?
+              <p>
+                Dr. Daniel Frey graduated from high school in 2005. He then pursued his pre-dental requisites at the University of Pittsburgh, majoring in Biology. Dr. Frey excelled in his studies and was admitted to Temple University&apos;s dental school, graduating at the top of his class with the prestigious Summa Cum Laude designation. Continuing his education, Dr. Frey was admitted to the esteemed orthodontic residency program at the University of the Pacific in San Francisco where he worked with students and faculty from around the world and utilized cutting-edge orthodontic techniques. During his time in San Francisco, he conducted research in three-dimensional craniofacial analysis and earned his Master of Science degree. Dr. Frey is a member of the American Association of Orthodontists and the American Dental Association. In his leisure time, he enjoys staying active outdoors, camping, playing music, and spending time with loved ones.
+              </p>
+            :
+              <p>
+                Dr. Gregg Frey is an orthodontist based in Pennsylvania, who graduated from Temple University School of Dentistry with honors and served in the U.S. Navy Dental Corps before establishing his practice in the Lehigh Valley. He is a Diplomat of the American Board of Orthodontics and has received numerous distinctions, accreditations, and honors, including being named one of America&apos;s Top Orthodontists by the Consumer Review Council of America. This distinction is held by fewer than 25% of orthodontists nationwide. ABO certification represents the culmination of 5-10 years of written and oral examinations and independent expert review of actual treated patients. Recently Dr. Frey voluntarily re-certified. Dr. Frey enjoys coaching soccer, vintage car racing, and playing the drums.
+              </p>
+            }
           </div>
         </div>
-      </section>
+        <div className="col-span-7 lg:col-span-4 lg:col-start-7">
+          <figure className="w-full aspect-[3/4] h-max overflow-hidden flex items-start">
+            <img
+              className={`${
+                switchDoctor ? "right" : "switch-right"
+              } object-contain w-full transition-all duration-2000`}
+              src="../../images/team_members/GreggFrey.jpg"
+              alt="Dr. Gregg Frey"
+            />
+            <img
+              className={`${
+                switchDoctor ? "left" : "switch-left"
+              } object-contain w-full transition-all duration-2000`}
+              src="../../images/team_members/DanFrey.jpg"
+              alt="Dr. Daniel Frey"
+            />
+          </figure>
+          <figcaption>
+            <h4>{!switchDoctor ? "Dr. Gregg Frey" : "Dr. Daniel Frey"}</h4>
+            <p>{!switchDoctor ? "DDS" : "DMD, MSD"}</p>
+          </figcaption>
+        </div>
+        <div className="col-span-5 lg:col-span-2 lg:col-start-11">
+          <figure
+            className="grayscale h-max w-full aspect-[3/4] overflow-hidden flex items-start hover:cursor-pointer"
+            onClick={toggleSwitchDoctor}
+          >
+            <img
+              className={`${
+                switchDoctor ? "right" : "switch-right"
+              } object-contain w-full transition-all duration-2000`}
+              src="../../images/team_members/DanFrey.jpg"
+              alt="Dr. Daniel Frey"
+            />
+            <img
+              className={`${
+                switchDoctor ? "left" : "switch-left"
+              } object-contain w-full transition-all duration-2000`}
+              src="../../images/team_members/GreggFrey.jpg"
+              alt="Dr. Gregg Frey"
+            />
+          </figure>
+        </div>
+      </div>
+    </section>
       <>
-        <div style={{ backgroundImage: 'url("../images/purplegradientwithoutstar.png")', backgroundSize: '100% auto' }} className=" horizontalContainer">
+        <div style={{ backgroundImage: 'url("../images/pinkyellow.png")', backgroundSize: '100% auto' }} className=" horizontalContainer">
           <div className="horizontalWrapper">
             <div className="horizontalScroller">
               <div className="horizontalRow">
@@ -499,7 +416,7 @@ const OurTeam = () => {
                   </a>
                 </div>
                 <div className="horizontalItem horizontalFilled">
-                  <p className="text-3xl">...and first aid</p>
+                  <p className="text-6xl">...and first aid</p>
                 </div>
                 <div className="horizontalItem horizontalBig">
                   <p>
