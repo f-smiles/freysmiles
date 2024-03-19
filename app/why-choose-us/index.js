@@ -1,14 +1,10 @@
 'use client'
-import React, { useEffect, useState, useRef } from "react";
+import React, { useRef } from "react";
 import Link from "next/link"
-// swiper
-import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/css'
-import 'swiper/css/pagination'
-import { Mousewheel, Pagination } from 'swiper/modules'
 // framer motion
 import { motion } from "framer-motion"
 import clsx from "clsx"
+import GalaxyShape from "../_components/shapes/galaxy";
 import Shape02 from "../_components/shapes/shape02"
 import Shape03 from "../_components/shapes/shape03"
 import Shape04 from "../_components/shapes/shape04"
@@ -27,6 +23,7 @@ export default function WhyChooseUs() {
       <ScrollTextReveal />
       <CTA />
       <DragTable />
+      <BentoGrid />
     </>
   )
 }
@@ -76,7 +73,7 @@ function Hero() {
 function StackCards() {
   return (
     <section className="py-32 bg-[#f5f5eb]">
-      <div className="relative pb-24 container mx-auto border border-[#51733f]">
+      <div className="relative container mx-auto border border-[#51733f]">
         <div className="flex items-center gap-6 -translate-x-10 -translate-y-10 w-max">
           <img
             src="/../../images/freysmilepatient.jpg"
@@ -111,8 +108,19 @@ function StackCards() {
             </div>
           </div>
         </div>
-
-        <div className="absolute bottom-0 right-0 overflow-hidden translate-x-10 translate-y-10 rounded-full">
+        <div className="flex -mb-8 place-content-end">
+          <div className="overflow-hidden border border-black rounded-full w-max">
+            <span className="relative">
+              <Shape02 className="absolute inset-0 left-0 right-0 z-10 object-fill object-center scale-110 top-1/2 text-zinc-100/80 h-96 w-96" />
+              <img
+                className="object-cover object-center h-96 w-96"
+                src="/../../images/drfreyperfecting.jpg"
+                alt="Dr. Gregg Frey attending a FreySmiles patient"
+              />
+            </span>
+          </div>
+        </div>
+        {/* <div className="absolute bottom-0 right-0 overflow-hidden translate-x-10 translate-y-10 rounded-full">
           <span className="relative">
             <Shape02 className="absolute inset-0 left-0 right-0 z-10 object-fill object-center scale-110 top-1/2 text-zinc-100/80 h-96 w-96" />
             <img
@@ -121,7 +129,7 @@ function StackCards() {
               alt="Dr. Gregg Frey attending a FreySmiles patient"
             />
           </span>
-        </div>
+        </div> */}
       </div>
     </section>
   )
@@ -213,6 +221,58 @@ function DragTable() {
             <p>Financial options</p>
           </motion.div>
         </motion.div>
+      </div>
+    </section>
+  )
+}
+
+function BentoGrid() {
+  return (
+    <section className="space-y-8">
+      <div className="grid grid-cols-8">
+        <div className="relative col-span-5 place-content-center">
+          <GalaxyShape className="absolute inset-0 object-cover object-center -translate-x-1/2 -translate-y-1/2 opacity-70 top-1/2 left-1/2 fill-primary-70" />
+          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)]">We have <br/> <span className="inline-block uppercase">50+ years</span> <br/> of experience.</p>
+        </div>
+        <div className="col-span-3 overflow-hidden">
+          <img className="object-cover object-center" src="/../../images/pexels-cedric-fauntleroy-4269276_1920x2880.jpg" />
+        </div>
+        {/* <div className="relative flex flex-col items-center justify-center w-2/3">
+          <GalaxyShape className="absolute inset-0 object-cover object-center w-1/2 -translate-x-1/2 -translate-y-1/2 opacity-70 top-1/2 left-1/2 fill-primary-70" />
+          <p className="text-5xl leading-snug text-center text-stone-500 font-extralight font-larken">We have <br/> <span className="inline-block mt-3 uppercase text-7xl">50+ years</span> <br/> of experience.</p>
+        </div>
+        <div className="w-1/3">
+          <img className="object-cover object-center" src="/../../images/pexels-cedric-fauntleroy-4269276_1920x2880.jpg" />
+        </div> */}
+      </div>
+      <div className="grid grid-cols-6 grid-rows-6">
+        <div className="col-span-3 row-span-2 lg:col-span-2 place-content-center">
+          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] uppercase">25K+ <br/> Patients</p>
+        </div>
+        <div className="col-span-3 row-span-2 lg:col-span-2">
+          <img className="object-cover object-center" src="/../../images/aurela-redenica-VuN-RYI4XU4-unsplash_2400x3600.jpg" />
+        </div>
+        <div className="col-span-3 row-span-2 lg:col-span-2 place-content-center">
+          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] uppercase">ABO <br/> Certified</p>
+        </div>
+        <div className="relative col-span-3 row-span-2 lg:col-span-2">
+          <img className="object-cover object-right-bottom w-full h-full" src="/../../images/goby-D0ApR8XZgLI-unsplash_2400x1467.jpg" alt="hand reaching towards another hand offering pink toothbrush" />
+        </div>
+        <div className="col-span-3 row-span-2 place-content-center lg:col-span-2">
+          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] uppercase">10+ <br/> Members</p>
+        </div>
+        <div className="col-span-3 row-span-2 lg:col-span-2">
+          <img className="object-cover object-center" src="/../../images/pexels-cedric-fauntleroy-4269491_1920x2880.jpg" alt="dental equipment" />
+        </div>
+        <div className="col-span-3 row-span-2 place-content-center lg:col-span-2">
+          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] uppercase">4 <br/> Locations</p>
+        </div>
+        <div className="col-span-3 row-span-2 lg:col-span-2">
+          <img className="object-cover object-center" src="/../../images/tony-litvyak-glPVwPr1FKo-unsplash_2400x3600.jpg" alt="smile" />
+        </div>
+        <div className="col-span-6 row-span-2 py-8 lg:col-span-2 place-content-center">
+          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] uppercase">We Use <br/> Modern Technology</p>
+        </div>
       </div>
     </section>
   )
