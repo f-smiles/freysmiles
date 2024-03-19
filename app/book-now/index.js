@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 // import emailjs from "@emailjs/browser";
-// import "tw-elements";
-// import { Datepicker, Input, initTE } from "tw-elements";
+import "tw-elements";
+import { Datepicker, Input, initTE } from "tw-elements";
 // import { init } from "emailjs-com";
 import { Disclosure } from "@headlessui/react";
 
@@ -43,9 +43,9 @@ const BookNow = () => {
   ]);
 
   const [appointmentType, setAppointmentType] = useState([
-    { type: "Missed Appointment", clicked: false },
-    { type: "Request Consultation", clicked: false },
-    { type: "Need Elastics", clicked: false },
+    { type: "Reschedule", clicked: false },
+    { type: "Consultation", clicked: false },
+    { type: "Elastics", clicked: false },
     { type: "Emergency", clicked: false },
   ]);
 
@@ -114,9 +114,9 @@ const BookNow = () => {
     setPreferredTime(selectedTimes);
   };
 
-  //   useEffect(() => {
-  //     initTE({ Datepicker, Input });
-  //   }, []);
+    useEffect(() => {
+      initTE({ Datepicker, Input });
+    }, []);
 
   const handleSubmit = () => {
     const emailRegex = /\S+@\S+\.\S+/;
@@ -182,7 +182,11 @@ const BookNow = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  const [typeOfAppointment, setTypeOfAppointment] = useState(null);
+
   return (
+
     <main className="">
       <motion.div
         initial={{ clipPath: `circle(0% at 50% 50%)` }}
@@ -197,18 +201,43 @@ const BookNow = () => {
       >
         <div className="flex">
           <div className="items-start w-1/2">
-            <img
-              src="../images/sayhello.png"
-              className="object-contain"
-            />
-            {/* <div className=" mt-10 text-center text-5xl mb-20" style={{letterSpacing:"px"}}>
+          
+            <div className="font-iCiel-Gotham-Ultra text-[200px] mt-10 text-center text-8xl mb-20" style={{letterSpacing:"px"}}>
                SAY HELLO
               </div>
-              <div className="text-center">We cant wait to meet you</div>
+             
+              <table className="w-full border-collapse border-t border-r border-black">
+      <tbody>
+        <tr>
+          <td className="font-helvetica-now-thin border border-black py-2 border-b-0 text-xl text-center ">     <a className="hover:text-purple-500" href="mailto:info@freysmiles.com">INFO@FREYSMILES.COM</a></td>
+          <td className="font-helvetica-now-thin border border-black py-2 text-center border-b-0 text-lg">
+  <a href="facetime://6104374748" className="hover:text-purple-500">(610) 437-4748</a>
+</td>
 
-              <div className="text-center">
-      <a className="underline" href="mailto:info@freysmiles.com">info@freysmiles.com</a>
+          <td className="border border-black py-2 text-center border-b-0 text-xl">
+            
+          <div className="appointmentMarquee bg-body-bg text-blog-bg py-1.5  overflow-hidden whitespace-nowrap">
+      <div className="animate-marquee">
+      <span className="font-helvetica-now-thin mx-4"> NOW BOOKING</span>
+
+
+
+      </div>
     </div>
+    </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div className="grid grid-cols-2 gap-4">
+    <div className="display grid grid-cols-2 gap-4">
+   
+    </div>
+    </div>
+              <div className="text-center">
+ 
+    </div>
+
     <div className="flex justify-center items-center h-screen ">
 
 
@@ -231,7 +260,7 @@ const BookNow = () => {
                 </svg>
 
             </div>
-        </div> */}
+        </div>
           </div>
           <div className="w-1/2">
             <div id="contact-form">
@@ -246,75 +275,49 @@ const BookNow = () => {
                 >
                   <div className="flex flex-col items-center">
                     <div className="flex w-full gap-2">
-                      <div className="relative flex-1 w-1/2">
-                        <input
-                          type="text"
-                          id="floating_filled"
-                          style={{
-                            borderRadius: "0",
-                            borderBottom: "1px solid black",
-                          }}
-                          className="block px-2.5 pb-2.5 pt-5 w-full text-sm  bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer"
-                          placeholder=" "
-                        />
-                        <label
-                          for="floating_filled"
-                          className="absolute -mt-1 ml-4 px-2 text-sm dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
-                        >
-                          First Name
-                        </label>
-                      </div>
-                      <div className="relative flex-1 w-1/2">
-                        <input
-                          type="text"
-                          id="floating_filled"
-                          style={{
-                            borderRadius: "0",
-                            borderBottom: "1px solid black",
-                          }}
-                          className="block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer"
-                          placeholder=" "
-                        />
-                        <label
-                          for="floating_second"
-                          className="absolute -mt-1 ml-4 px-2 text-sm  dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
-                        >
-                          Last Name
-                        </label>
-                      </div>
+                    <div className="relative flex-1 w-1/2">
+  <input
+    type="text"
+    id="floating_filled"
+    className="block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md" 
+    placeholder=" "
+  />
+  <label
+    htmlFor="floating_filled" 
+    className="absolute -mt-1 ml-4 px-2 text-sm dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
+  >
+    Your Name
+  </label>
+</div>
+
+                    
                     </div>
 
-                    <div className="relative mt-2  w-full">
-                      <input
-                        type="text"
-                        id="floating_filled"
-                        style={{
-                          borderRadius: "0",
-                          borderBottom: "1px solid black",
-                        }}
-                        className="block px-2.5 pb-2.5 pt-5 w-full text-sm  bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer"
-                        placeholder=" "
-                      />
-                      <label
-                        for="guardian"
-                        className="absolute mt-2  ml-4 px-2 text-sm  duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                      >
-                        Guardian
-                      </label>
-                    </div>
+                    <div className="relative mt-2 w-full">
+  <input
+    type="text"
+    id="floating_filled"
+    className="block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md" 
+    placeholder=" "
+  />
+  <label
+    htmlFor="guardian" 
+    className="absolute mt-2 ml-4 px-2 text-sm duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+  >
+    Guardian (*if applicable)
+  </label>
+</div>
+
 
                     <div className="w-full flex gap-2">
                       <div className="w-1/2 relative flex-1 py-4">
-                        <input
-                          type="text"
-                          id="floating_filled"
-                          style={{
-                            borderRadius: "0",
-                            borderBottom: "1px solid black",
-                          }}
-                          className="block px-2.5 pb-2.5 pt-5 w-full text-sm  bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer"
-                          placeholder=" "
-                        />
+                      <input
+  type="text"
+  id="floating_filled"
+  className="block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
+  placeholder=" "
+/>
+
                         <label
                           for="phone"
                           className="absolute mt-4 ml-4  px-2 text-sm  dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
@@ -324,16 +327,12 @@ const BookNow = () => {
                       </div>
 
                       <div className="w-1/2 relative flex-1 py-4">
-                        <input
-                          type="text"
-                          id="floating_filled"
-                          style={{
-                            borderRadius: "0",
-                            borderBottom: "1px solid black",
-                          }}
-                          className="block px-2.5 pb-2.5 pt-5 w-full text-sm  bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer"
-                          placeholder=" "
-                        />
+                      <input
+  type="text"
+  id="floating_filled"
+  className="block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
+  placeholder=" "
+/>
                         <label
                           for="email"
                           className="absolute mt-4 ml-4 px-2 text-sm  dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
@@ -363,23 +362,27 @@ const BookNow = () => {
                       Date of Birth*
                     </label>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    {appointmentType.map((button, index) => (
-                      <button
-                        className={`w-44 h-14 px-6 py-2 rounded-lg ${
-                          button.clicked
-                            ? "border  bg-black text-white"
-                            : "border border-black text-black"
-                        } mx-auto`}
-                        key={button.type}
-                        type="button"
-                        onClick={() => handleAppointmentClick(index)}
-                      >
-                        {button.type}
-                      </button>
-                    ))}
-                  </div>
-
+                  <div className="flex justify-center space-x-4">
+      <button
+        className={`w-44 h-14 px-6 py-2 border border-black rounded-lg relative ${
+          typeOfAppointment === 'virtual' ? 'bg-black text-white' : 'text-black'
+        } appointmentButton`}
+        onClick={() => setTypeOfAppointment('virtual')}
+      >
+        Virtual Consultation
+        <span className="appointmentBtnBg"></span>
+      </button>
+      <button
+        className={`w-44 h-14 px-6 py-2 border border-black rounded-lg relative ${
+          typeOfAppointment === 'inPerson' ? 'bg-black text-white' : 'text-black'
+        } appointmentButton`}
+        onClick={() => setTypeOfAppointment('inPerson')}
+      >
+        In-Person
+        <span className="appointmentBtnBg"></span>
+      </button>
+    </div>
+      {typeOfAppointment === 'inPerson' && (
                   <div>
                     <div className="flex w-full justify-between rounded-lg px-4 py-2 text-left text-md font-medium focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
                       <span>Choose Location</span>
@@ -494,6 +497,23 @@ const BookNow = () => {
                       ))}
                     </div>
                   </div>
+      )}
+                  <div className="grid grid-cols-2 gap-4">
+                  {appointmentType.map((button, index) => (
+  <button
+    className={`w-44 h-14 px-6 py-2 rounded-lg ${
+      button.clicked ? "bg-black text-white" : "border border-black text-black"
+    } mx-auto relative overflow-hidden appointmentButton`} 
+    key={button.type}
+    onClick={() => handleAppointmentClick(index)}
+  >
+    {button.type}
+    <span className="appointmentBtnBg absolute top-0 left-0 w-0 h-0 bg-blue-600 rounded-full z-0 transition-all duration-400"></span> {/* Updated class name */}
+  </button>
+))}
+
+                  </div>
+
 
                   <div className=" flex justify-center flex-col">
                     Preferred Day(s):
@@ -537,7 +557,7 @@ const BookNow = () => {
                   <div className="border-2 border-black h-32 flex flex-col">
                     <label className="flex flex-col h-full">
                       <textarea
-                        placeholder="Your message"
+                        placeholder="Please include as much detail as possible"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         className="h-full bg-transparent italic text-blue-600"
