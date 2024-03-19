@@ -9,6 +9,43 @@ import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import { ScrollTrigger } from "gsap-trial/ScrollTrigger";
 import { SplitText } from "gsap-trial/all";
 
+
+// function Invisalign() {
+//   const sectionRef = useRef()
+//   const { scrollYProgress } = useScroll({
+//     target: sectionRef,
+//     offset: ["end end", "center center"],
+//   })
+//   const springScroll = useSpring(scrollYProgress, {
+//     stiffness: 100,
+//     damping: 30,
+//     restDelta: 0.001
+//   })
+//   const scale = useTransform(springScroll, [0, 1], [1.2, 0.9])
+//   const transformText = useTransform(springScroll, [0, 1], ["0%", "150%"])
+//   const transformCase = useTransform(springScroll, [0, 1], ["150%", "0%"])
+//   const transformRetainer = useTransform(springScroll, [0, 1], ["-150%", "-100%"])
+
+//   return (
+//     <section ref={sectionRef} className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-start">
+//       <motion.div style={{ translateY: transformText }} className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
+//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
+//         <h4>Top 1% Invisalign providers</h4>
+//         {/* <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4> */}
+//         <Link href="/invisalign" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
+//           <span>Learn More</span>
+//           <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
+//             <span>Learn More</span>
+//           </div>
+//         </Link>
+//       </motion.div>
+//       <div className="lg:w-1/2">
+//         <motion.img style={{ translateY: transformCase }} className="object-cover w-full h-auto mx-auto object-start" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
+//         <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover w-3/4 h-auto object-start ml-36 lg:ml-24 xl:ml-36" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+//       </div>
+//     </section>
+//   )
+// }
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
 const Invisalign = () => {
@@ -59,9 +96,6 @@ const Invisalign = () => {
     }, "<"); 
   }, []);
   
-
-  const wrapperRef = useRef();
-  const contentRef = useRef();
   const aligner1Ref = useRef(null);
   const aligner2Ref = useRef(null);
   const aligner3Ref = useRef(null);
@@ -301,19 +335,7 @@ const Invisalign = () => {
     alignItems: 'center', 
     height: '100vh' 
 }}>
-      <section
-        className="w-full  relative "
-        style={{
-            backgroundColor: "black",
-        //   backgroundImage: `url('/images/liquid.jpg')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          width: '80%',    
-          height: '80vh',  
-          margin: 'auto',
-        }}
-      >
+      
      
         <div className="flex h-full">
           <div className="flex-1"></div>
@@ -326,7 +348,7 @@ const Invisalign = () => {
           </div>
         </div>
     
-      </section>
+
 </div>
       <div>
         <section
@@ -408,7 +430,7 @@ const Invisalign = () => {
               ></div>
  <div className="text-container" ref={textContainerRef}>
       <div className="line-container" ref={textRef1}>
-        <h1 className="hidden-text">Completely invisible -</h1>
+        <h1 className="hidden-text  font-iCiel-Gotham-Ultra uppercase font-bold">Completely invisible -</h1>
       </div>
       <div className="line-container" ref={textRef2}>
         <h1 className="hidden-text">Comfortable to wear</h1>
