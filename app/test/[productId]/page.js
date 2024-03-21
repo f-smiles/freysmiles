@@ -1,0 +1,34 @@
+import { Suspense } from "react"
+import ProductComponent from "."
+import Loading from "../loading"
+
+export const generateMetadata = async ({ params }) => {
+  const { productId } = params
+  const product = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products/${productId}`)
+    .then((res) => res.json())
+
+  return {
+    title: `TEST ${product.name}`,
+    description: `${product.description}`
+  }
+}
+
+async function getProduct(productId) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products/${productId}`)
+    return res.json()
+  } catch(error) {
+    throw new Error(error.message)
+  }
+}
+
+export default async function Page({ params }) {
+  const { productId } = params
+  const product = await getProduct(productId)
+
+  return (
+    <Suspense fallback={<Loading />}>
+      <ProductComponent product={product} />
+    </Suspense>
+  )
+}
