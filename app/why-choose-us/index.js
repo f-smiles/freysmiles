@@ -74,7 +74,7 @@ function StackCards() {
   return (
     <section className="py-32 bg-[#f5f5eb]">
       <div className="relative container mx-auto border border-[#51733f]">
-        <div className="flex items-center gap-6 -translate-x-10 -translate-y-10 w-max">
+        <div className="flex flex-col items-center gap-6 mx-auto -translate-y-10 lg:mx-0 lg:-translate-x-10 lg:flex-row w-max">
           <img
             src="/../../images/freysmilepatient.jpg"
             alt="frey smiles patient"
@@ -89,7 +89,7 @@ function StackCards() {
               <Shape07 />
             </div>
           </div>
-          <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#51733f] transition-all duration-150 ease-linear hover:scale-105 bg-[#f5f5eb]">
+          <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#51733f] transition-all duration-150 ease-linear hover:scale-105 bg-[#f5f5eb] rotate-2">
             <h4>Currently, Dr. Gregg Frey is a certified orthodontist, and is preparing cases for recertification. Dr. Daniel Frey is in the final stages of obtaining his initial certification.</h4>
             <div className="absolute bottom-0 left-0 w-48 h-48 -translate-x-1/4 -z-10">
               <Shape06 />
@@ -101,14 +101,14 @@ function StackCards() {
               <Shape05 />
             </div>
           </div>
-          <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#51733f] -rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105 bg-[#f5f5eb]">
+          <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#51733f] rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105 bg-[#f5f5eb]">
             <h4>Our office holds the distinction of being the <span className="text-4xl text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 font-helvetica-now-thin">longest-standing, active board-certified orthodontic office in the area</span>. With four offices in the Lehigh Valley, we have been providing unparalleled orthodontic care for over four decades.</h4>
             <div className="absolute bottom-0 left-0 w-40 h-40 -translate-x-1/2 -translate-y-6 -z-10">
               <Shape04 />
             </div>
           </div>
         </div>
-        <div className="flex -mb-8 place-content-end">
+        <div className="flex translate-x-10 translate-y-10 place-content-end">
           <div className="overflow-hidden border border-black rounded-full w-max">
             <span className="relative">
               <Shape02 className="absolute inset-0 left-0 right-0 z-10 object-fill object-center scale-110 top-1/2 text-zinc-100/80 h-96 w-96" />
@@ -120,29 +120,7 @@ function StackCards() {
             </span>
           </div>
         </div>
-        {/* <div className="absolute bottom-0 right-0 overflow-hidden translate-x-10 translate-y-10 rounded-full">
-          <span className="relative">
-            <Shape02 className="absolute inset-0 left-0 right-0 z-10 object-fill object-center scale-110 top-1/2 text-zinc-100/80 h-96 w-96" />
-            <img
-              className="object-cover object-center h-96 w-96"
-              src="/../../images/drfreyperfecting.jpg"
-              alt="Dr. Gregg Frey attending a FreySmiles patient"
-            />
-          </span>
-        </div> */}
       </div>
-    </section>
-  )
-}
-
-function CTA() {
-  return (
-    <section className="flex flex-col gap-8 px-12 mx-auto mb-32 md:flex-row md:justify-between lg:gap-16 max-w-7xl">
-      <div className="flex flex-col justify-center space-y-8 md:w-1/2">
-        <h4 className="font-neue-montreal">If you know someone who could benefit from this gift, please visit the website for details on how to nominate a candidate.</h4>
-        <Link href="https://morethansmiles.org/" className="block px-6 py-2 font-medium bg-indigo-500 text-white w-fit transition-all shadow-[6px_6px_0px_rgb(39,_39,_42)] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]">Learn More</Link>
-      </div>
-      <Shape03 className="md:w-1/2" />
     </section>
   )
 }
@@ -151,12 +129,12 @@ function ScrollTextReveal() {
   const text = "Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it."
 
   return (
-    <section className="w-full px-10 mx-auto max-w-7xl">
-      <div className="flex flex-col-reverse md:flex-row md:justify-between">
+    <section className="w-full px-10 bg-[#d2d3c3]">
+      <div className="container flex flex-col-reverse mx-auto md:flex-row md:justify-between">
         <div className="w-full min-h-screen px-8 py-12 md:w-1/2 md:px-0">
           <TextReveal body={text} className="relative mx-auto h-[100vh] w-full max-w-lg">
             {(tokens) => (
-              <div className="sticky top-0 left-0 flex items-center h-full text-2xl font-medium leading-tight text-primary-50">
+              <div className="sticky top-0 left-0 flex items-center h-full text-primary-50 font-larken font-extralight text-[clamp(1.125rem,_0.4688rem_+_2.9167vw,_2rem)] leading-[clamp(1.125rem,_0.4688rem_+_2.9167vw,_2rem)]">
                 <div>
                   {tokens.map((token, index) => (
                     <TextReveal.Token key={index} index={index}>
@@ -190,6 +168,20 @@ function ScrollTextReveal() {
   )
 }
 
+function CTA() {
+  return (
+    <section className="sm:py-32 bg-[#b1c0a0]">
+      <div className="container flex flex-col gap-8 mx-auto md:flex-row md:justify-between lg:gap-16">
+        <div className="flex flex-col justify-center space-y-8 md:w-1/2">
+          <h4 className="font-neue-montreal">If you know someone who could benefit from this gift, please visit the website for details on how to nominate a candidate.</h4>
+          <Link href="https://morethansmiles.org/" className="block px-6 py-2 w-fit transition-all shadow-[6px_6px_0px_rgba(39,_39,_42,_0.9)] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] font-larken font-light tracking-wide bg-indigo-500 text-white">Learn More</Link>
+        </div>
+        <Shape03 className="md:w-1/2" />
+      </div>
+    </section>
+  )
+}
+
 function DragTable() {
   const freySmilesRef = useRef()
   const othersRef = useRef()
@@ -197,8 +189,8 @@ function DragTable() {
   return (
     <section className="hidden lg:block bg-[#d2d3c3] py-24">
       <div className="container grid-cols-12 grid-rows-6 mx-auto mb-32 lg:grid place-content-stretch font-neue-montreal">
-        <div className="flex col-span-6 col-start-1 row-start-1 mb-12 text-center place-content-center place-items-end"><h2>FreySmiles Orthodontics</h2></div>
-        <div className="flex col-span-6 col-start-7 row-start-1 mb-12 text-center place-content-center place-items-end"><h2>Others</h2></div>
+        <div className="flex col-span-6 col-start-1 row-start-1 mb-12 text-center font-extralight place-content-center place-items-end font-larken text-zinc-800"><h1>FreySmiles Orthodontics</h1></div>
+        <div className="flex col-span-6 col-start-7 row-start-1 mb-12 text-center place-content-center place-items-end font-larken text-zinc-800 font-extralight"><h1>Others</h1></div>
         <motion.div ref={freySmilesRef} className="relative col-span-6 col-start-1 row-span-5 row-start-2 translate-x-8 border-2 rounded-full aspect-square border-[#51733f]">
           <motion.div className="absolute left-0 flex w-48 h-48 text-center rotate-45 rounded-full top-1/2 -translate-y-1/3 bg-[#9dbb81] place-content-center place-items-center text-zinc-800" drag dragConstraints={freySmilesRef}>
             <p className="text-2xl leading-6"><span className="text-4xl">4</span><br/> convenient<br/> locations</p>
@@ -228,7 +220,7 @@ function DragTable() {
 
 function BentoGrid() {
   return (
-    <section className="space-y-8">
+    <section className="sm:my-32">
       <div className="grid grid-cols-8">
         <div className="relative col-span-5 place-content-center">
           <GalaxyShape className="absolute inset-0 object-cover object-center -translate-x-1/2 -translate-y-1/2 opacity-70 top-1/2 left-1/2 fill-primary-70" />
