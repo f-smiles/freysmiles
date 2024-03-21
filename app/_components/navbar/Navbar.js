@@ -4,11 +4,11 @@ import axios from 'axios'
 import { Fragment, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Dialog, Transition } from '@headlessui/react'
-import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
-import CustomMouse from './CustomMouse'
-import BagIcon from './ui/BagIcon'
-import Bars2Icon from './ui/Bars2Icon'
-import XIcon from './ui/XIcon'
+import { selectBag, removeFromBag } from '../../_store/reducers/bagReducer'
+import CustomCursor from './CustomCursor'
+import BagIcon from '../ui/BagIcon'
+import Bars2Icon from '../ui/Bars2Icon'
+import XIcon from '../ui/XIcon'
 
 export default function Navbar() {
   const dispatch = useDispatch()
@@ -90,26 +90,25 @@ export default function Navbar() {
 
   return (
     <header>
-      <CustomMouse />
+      <CustomCursor />
 
       {/* DESKTOP NAVBAR */}
-
-      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-50 hidden w-full mb-[6vh] lg:block">
+      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-40 hidden w-full mb-[6vh] lg:block">
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md shadow-zinc-300 hover:bg-primary-50/60 active:bg-primary-50/80 target-link">
+            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md shadow-zinc-300 hover:bg-primary-50/60 active:bg-primary-50/80">
               <Link href="/" className="inline-block p-4">
                 {/* <HomeIcon className="w-4 h-4" /> */}
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
-            <li className="target-link" onClick={handleToggleAbout}>
+            <li onClick={handleToggleAbout}>
               <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">About</p>
               {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
             </li>
             {/* ABOUT PANEL */}
             <Transition.Root show={about} as={Fragment}>
-              <Dialog as="div" className="relative z-20" onClose={setAbout}>
+              <Dialog as="div" className="relative z-50" onClose={setAbout}>
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-500"
@@ -187,13 +186,13 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li className="target-link">
+            <li onClick={handleTogglePatient}>
               <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Patient</p>
               {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
             </li>
             {/* PATIENT PANEL */}
             <Transition.Root show={patient} as={Fragment}>
-              <Dialog as="div" className="relative z-20" onClose={setPatient}>
+              <Dialog as="div" className="relative z-50" onClose={setPatient}>
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-500"
@@ -271,13 +270,13 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li className="target-link">
+            <li onClick={handleToggleTreatments}>
               <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Treatments</p>
               {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
             </li>
             {/* TREATMENTS PANEL */}
             <Transition.Root show={treatments} as={Fragment}>
-              <Dialog as="div" className="relative z-20" onClose={setTreatments}>
+              <Dialog as="div" className="relative z-50" onClose={setTreatments}>
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-500"
@@ -356,7 +355,6 @@ export default function Navbar() {
             </Transition.Root>
 
             <li
-              className="target-link"
               // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out target-link"
               // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
             >
@@ -369,7 +367,6 @@ export default function Navbar() {
             </li>
 
             <li
-              className="target-link"
               // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out target-link"
               // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
             >
@@ -382,7 +379,6 @@ export default function Navbar() {
             </li>
 
             <li
-              className="target-link"
               // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out target-link"
               // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
             >
@@ -397,7 +393,6 @@ export default function Navbar() {
 						{bag.length > 0 && (
               <li
                 onClick={handleToggleBagPanel}
-                className="target-link"
                 // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:right-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out target-link"
                   // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
           		>
@@ -520,13 +515,13 @@ export default function Navbar() {
             </Transition.Root>
 
 						<li
-              className="flex items-center px-6 py-3 font-medium tracking-wider uppercase transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-500 text-primary-95 bg-primary-30 hover:bg-secondary-50/60 hover:text-secondary-95 active:bg-secondary-50/80 target-link"
+              className="px-6 py-3 transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-500 bg-primary-30 hover:bg-secondary-50/60 active:bg-secondary-50/80"
               // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
             >
               <Link href="/book-now"
                 className="inline-block"
               >
-                <p className="text-sm text-center">Book Now</p>
+                <p className="text-sm font-medium tracking-wider text-center uppercase text-primary-95 hover:text-secondary-95">Book Now</p>
                 {/* Book Now */}
               </Link>
             </li>
