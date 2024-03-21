@@ -194,7 +194,49 @@
 
 
 /* custom mouse cursor START */
-.cursor {
+.cursor-outline,
+.cursor-dot {
+  opacity: 0;
+}
+
+.cursor-outline {
+  border-radius: 50px;
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border: solid 1px #5f2b92;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: 60;
+  z-index: 9999;
+}
+
+.cursor-dot {
+  mix-blend-mode: difference;
+  border-radius: 50px;
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  /* background-color: #5f2b92; */
+  background-color: #222;
+  border: solid 1px #222;
+  pointer-events: none;
+  z-index: 60;
+  z-index: 9999;
+}
+
+.cursor-outline,
+.cursor-dot {
+  top: 50%;
+  left: 10%;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-transform: translate(-50%, -50%) rotate(0deg);
+  transform: translate(-50%, -50%) rotate(0deg);
+  z-index: 9999;
+}
+
+/* .cursor {
   border-radius: 50%;
   position: fixed;
   top: 0;
@@ -209,7 +251,7 @@
     background-color: transparent;
     mix-blend-mode: normal;
   }
-}
+} */
 /* @media only screen and (min-width: 1024px) {
   * {
     cursor: none;
