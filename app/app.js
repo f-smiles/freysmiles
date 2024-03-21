@@ -2,7 +2,7 @@
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { store, persistor } from './_store/config'
-import Navbar from './_components/navbar/Navbar'
+import Navbar from './_components/Navbar'
 import Footer from './_components/Footer'
 
 export default function App({ children }) {

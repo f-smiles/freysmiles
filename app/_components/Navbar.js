@@ -4,11 +4,11 @@ import axios from 'axios'
 import { Fragment, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Dialog, Transition } from '@headlessui/react'
-import { selectBag, removeFromBag } from '../../_store/reducers/bagReducer'
+import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
 import CustomCursor from './CustomCursor'
-import BagIcon from '../ui/BagIcon'
-import Bars2Icon from '../ui/Bars2Icon'
-import XIcon from '../ui/XIcon'
+import BagIcon from './ui/BagIcon'
+import Bars2Icon from './ui/Bars2Icon'
+import XIcon from './ui/XIcon'
 
 export default function Navbar() {
   const dispatch = useDispatch()
