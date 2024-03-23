@@ -456,7 +456,7 @@ export default function Navbar() {
                           <div className="flex flex-col h-full py-6 overflow-y-scroll bg-white shadow-xl">
                             <div className="px-4 sm:px-6">
                               <Dialog.Title className="pb-4 text-gray-900 border-b border-gray-200">
-                                <h4>Shopping Bag</h4>
+                                Shopping Bag
                               </Dialog.Title>
                             </div>
                             <div className="relative flex-1 px-4 mt-6 sm:px-6">
