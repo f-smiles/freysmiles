@@ -32,11 +32,11 @@ export default function LoadingAllProducts() {
         </div>
         <p className="flex items-center gap-2 text-sm leading-6 text-gray-900">
           Unwrap Smiles, Gift Oral Wellness!
-          <p className="font-semibold whitespace-nowrap" target='_blank'>
+          <span className="font-semibold whitespace-nowrap" target='_blank'>
             <span className="flex items-center gap-1">
               Shop Gift Cards <ArrowLongRight className="w-4" />
             </span>
-          </p>
+          </span>
         </p>
       </section>
       <section className="max-w-2xl px-10 mx-auto my-16 mb-32 lg:max-w-7xl">
