@@ -85,6 +85,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import LocomotiveScroll from 'locomotive-scroll';
 import { gsap, Power3 } from "gsap-trial";
+import Lenis from '@studio-freight/lenis';
 
 const YourCare = () => {
   const colors = [
@@ -92,6 +93,62 @@ const YourCare = () => {
     "hsl(39, 5%, 78%)", 
     "hsl(260, 3%, 80%)" 
 ];
+const containerRef = useRef(null);
+const imageRef = useRef(null);
+
+useEffect(() => {
+  if (!containerRef.current) return;
+
+  const container = containerRef.current;
+  const image = imageRef.current;
+  const bounds = image.getBoundingClientRect();
+
+  const handleMouseMove = (e) => {
+    const target = e.target.closest('.slide-item'); // Adjust the class to match your slide item
+    const imageSrc = target ? target.getAttribute('data-image') : null;
+
+    if (imageSrc) {
+      image.src = imageSrc;
+
+      const xMovement = Math.min(Math.max(parseInt(e.movementX), -20), 20);
+      const yMovement = Math.min(Math.max(parseInt(e.movementY), -20), 20);
+
+      gsap.to(image, {
+        autoAlpha: 1,
+        x: e.clientX - bounds.left,
+        y: e.clientY - bounds.top - bounds.height / 2,
+        transformOrigin: "center",
+        rotation: xMovement,
+        skewX: xMovement,
+        skewY: yMovement,
+        ease: "power1.out", 
+        force3D: true
+      });
+    } else {
+      gsap.set(image, { autoAlpha: 0 });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    gsap.to(image, {
+      autoAlpha: 0,
+      duration: 0.5, 
+      ease: "power2.inOut"
+    });
+  };
+
+  container.addEventListener("mousemove", handleMouseMove);
+  container.addEventListener("mouseleave", handleMouseLeave);
+
+
+  return () => {
+    container.removeEventListener("mousemove", handleMouseMove);
+    container.removeEventListener("mouseleave", handleMouseLeave);
+  };
+}, []);
+
+
+
 
 useEffect(() => {
   const scrollContainer = document.querySelector("main");
@@ -117,7 +174,7 @@ useEffect(() => {
   });
 
   return () => {
-    scroll.destroy();
+
 
     scrollContainer.style.backgroundColor = "";
   };
@@ -126,7 +183,7 @@ useEffect(() => {
 
   return (
     <>
-    <main data-scroll-container id="js-scroll">
+    <main data-scroll-container >
   <section className="section-0" data-scroll-section>
     <h2 data-scroll data-scroll-speed="-2">Damon Brackets</h2>
     <div className="section-0__img-wrapper" data-scroll data-scroll-speed="-2" data-scroll-direction="horizontal">
@@ -181,12 +238,59 @@ useEffect(() => {
     </div>
   </section>
 
-  <section className="section-0" data-scroll-section>
+  <section className="border border-black section-0" data-scroll-section>
     <h2 data-scroll data-scroll-speed="-2">Self-ligating braces</h2>
     <div className="section-0__img-wrapper" data-scroll data-scroll-speed="-2" data-scroll-direction="horizontal" data-scroll-call="bg2">
       <img src="https://picsum.photos/id/208/1600/1600" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
     </div>
   </section>
+  <div ref={containerRef} className="border border-black max-w-7xl mx-auto px-20">
+      <div className="relative">
+  
+        {[
+          {
+            title: "Brush and Floss",
+            imageUrl: "../images/purplefloss.jpeg"
+          },
+          {
+            title: "General Soreness",
+            imageUrl: "../images/soreness.jpg"
+          },
+          {
+            title: "Loose teeth",
+            imageUrl: "https://i.postimg.cc/T35Lymsn/597b0f5fc5aa015c0ca280ebd1e4293b.jpg"
+          },
+          {
+            title: "Loose wire'/band",
+            imageUrl: "https://i.postimg.cc/NMB5Pnjx/62f64bc801260984785ff729f001a120.gif"
+          },
+          {
+            title: "Rubberbands",
+            imageUrl: "https://i.postimg.cc/ncP9cT3H/6f30097484d54efa7566cf40c2378352.jpg"
+          },
+          {
+            title: "Athletics",
+            imageUrl: "https://i.postimg.cc/g09w3j9Q/e21673ee1426e49ea1cd7bc5b895cbec.jpg"
+          },
+          {
+            title: "How long will I be in braces?",
+            imageUrl: "https://i.postimg.cc/T35Lymsn/597b0f5fc5aa015c0ca280ebd1e4293b.jpg"
+          },
+          {
+            title: "Eating with braces",
+            imageUrl: "https://i.postimg.cc/NMB5Pnjx/62f64bc801260984785ff729f001a120.gif"
+          },
+        ].map((slide, index) => (
+          <div key={index} className="relative py-16 border-b border-gray-200 cursor-pointer slide-item" data-image={slide.imageUrl}>
+            <h2 className="font-poppins text-7xl leading-tight text-black transition-colors duration-200 hover:text-purple-600">
+              {slide.title}
+            </h2>
+          </div>
+        ))}
+      </div>
+      <img ref={imageRef} className="blend-mode-class opacity-0 invisible fixed object-cover h-40 w-auto rounded-lg pointer-events-none will-change-transform md:w-80 md:h-64 sm:w-64 sm:h-40" alt="" />
+    </div>
+ 
 </main>
 
     </>
