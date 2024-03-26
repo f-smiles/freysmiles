@@ -250,6 +250,30 @@ const OurTeam = () => {
   
   
   
+  const containerStyle = {
+    position: 'relative',
+    width: '100%',
+    height: '100%'
+  };
+  
+  const imageStyle = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    transition: 'transform 1s ease',
+    width: '100%',
+    objectFit: 'contain'
+  };
+  
+  const leftImageStyle = {
+    ...imageStyle,
+    transform: switchDoctor ? 'translateX(-100%)' : 'translateX(0)'
+  };
+  
+  const rightImageStyle = {
+    ...imageStyle,
+    transform: switchDoctor ? 'translateX(100%)' : 'translateX(0)'
+  };
   
 
 
@@ -257,7 +281,7 @@ const OurTeam = () => {
     <>
      <div className="relative h-screen w-full">
       <Layer colorClass="layer gradient-green" />
-         <section className="main-section">
+         {/* <section className="main-section">
         <div className="section__content">
         <p ref={doctorRef} className="w-full">
   <div className="text-black font-didot flex justify-start items-center w-full">
@@ -278,7 +302,7 @@ const OurTeam = () => {
 
 
         </div>
-      </section>
+      </section> */}
     </div>
 
  <div className="relative">
@@ -349,48 +373,58 @@ const OurTeam = () => {
           </div>
         </div>
         <div className="col-span-7 lg:col-span-4 lg:col-start-7">
-          <figure className="w-full aspect-[3/4] h-max overflow-hidden flex items-start">
-            <img
-              className={`${
-                switchDoctor ? "right" : "switch-right"
-              } object-contain w-full transition-all duration-2000`}
-              src="../../images/team_members/GreggFrey.jpg"
-              alt="Dr. Gregg Frey"
-            />
-            <img
-              className={`${
-                switchDoctor ? "left" : "switch-left"
-              } object-contain w-full transition-all duration-2000`}
-              src="../../images/team_members/DanFrey.jpg"
-              alt="Dr. Daniel Frey"
-            />
-          </figure>
-          <figcaption>
-            <h4>{!switchDoctor ? "Dr. Gregg Frey" : "Dr. Daniel Frey"}</h4>
-            <p>{!switchDoctor ? "DDS" : "DMD, MSD"}</p>
-          </figcaption>
-        </div>
-        <div className="col-span-5 lg:col-span-2 lg:col-start-11">
-          <figure
-            className="grayscale h-max w-full aspect-[3/4] overflow-hidden flex items-start hover:cursor-pointer"
-            onClick={toggleSwitchDoctor}
-          >
-            <img
-              className={`${
-                switchDoctor ? "right" : "switch-right"
-              } object-contain w-full transition-all duration-2000`}
-              src="../../images/team_members/DanFrey.jpg"
-              alt="Dr. Daniel Frey"
-            />
-            <img
-              className={`${
-                switchDoctor ? "left" : "switch-left"
-              } object-contain w-full transition-all duration-2000`}
-              src="../../images/team_members/GreggFrey.jpg"
-              alt="Dr. Gregg Frey"
-            />
-          </figure>
-        </div>
+  <figure className="relative w-full aspect-[3/4] overflow-hidden">
+    <img
+      style={{
+        position: 'absolute',
+        width: '100%',
+        transition: 'transform 1s',
+        transform: switchDoctor ? 'translateX(100%)' : 'translateX(0)',
+      }}
+      src="../../images/team_members/GreggFrey.jpg"
+      alt="Dr. Gregg Frey"
+    />
+    <img
+      style={{
+        position: 'absolute',
+        width: '100%',
+        transition: 'transform 1s',
+        transform: switchDoctor ? 'translateX(0)' : 'translateX(-100%)',
+      }}
+      src="../../images/team_members/DanFrey.jpg"
+      alt="Dr. Daniel Frey"
+    />
+  </figure>
+  <figcaption>
+    <h4>{!switchDoctor ? "Dr. Gregg Frey" : "Dr. Daniel Frey"}</h4>
+    <p>{!switchDoctor ? "DDS" : "DMD, MSD"}</p>
+  </figcaption>
+</div>
+<div className="col-span-5 lg:col-span-2 lg:col-start-11">
+  <figure className="relative grayscale w-full aspect-[3/4] overflow-hidden cursor-pointer" onClick={toggleSwitchDoctor}>
+    <img
+      style={{
+        position: 'absolute',
+        width: '100%',
+        transition: 'transform 1s',
+        transform: switchDoctor ? 'translateX(0)' : 'translateX(-100%)',
+      }}
+      src="../../images/team_members/GreggFrey.jpg"
+      alt="Dr. Daniel Frey"
+    />
+    <img
+      style={{
+        position: 'absolute',
+        width: '100%',
+        transition: 'transform 1s',
+        transform: switchDoctor ? 'translateX(100%)' : 'translateX(0)',
+      }}
+      src="../../images/team_members/DanFrey.jpg"
+      alt="Dr. Gregg Frey"
+    />
+  </figure>
+</div>
+
       </div>
     </section>
       <>
