@@ -92,7 +92,9 @@ export default function LandingComponent() {
       <Hero />
       <GSAPAnimateScrollSections />
       <ImageGrid />
+      <ParallaxOutline />
       {/* <ParallaxInvisalignDamonBracesAdvancedTech /> */}
+      <LogoGrid />
       <Locations />
       <GiftCards />
       </div>
@@ -403,7 +405,7 @@ function Hero() {
                 <div className="hero">
                   <div className="hero-content " ref={heroContentRef}>
                     <div className=" marquee_features">
-                      <div className="marquee__inner first">
+                      <div className="marquee__inner first ">
                         <span>Because</span>
                         <span>Every</span>
                         <span>Smile</span>
@@ -486,134 +488,481 @@ function Hero() {
 }
 
 function GSAPAnimateScrollSections() {
-  const listRef = useRef(null);
+  // const listRef = useRef(null);
 
+  // useEffect(() => {
+  //   gsap.registerPlugin(ScrollTrigger);
+
+  //   const items = listRef.current.querySelectorAll(".list__item");
+
+  //   items.forEach((item) => {
+  //     const itemTitle = item.querySelector(".list__item__title");
+  //     const itemTitleOutline = item.querySelector(".list__item__titleOutline");
+  //     const itemImg = item.querySelector("img");
+
+  //     gsap
+  //       .timeline({
+  //         scrollTrigger: {
+  //           trigger: item,
+  //           start: "0% 75%",
+  //           end: "25% 50%",
+  //           scrub: 3,
+  //         },
+  //       })
+  //       .fromTo(
+  //         [itemTitle, itemTitleOutline],
+  //         { scale: 2, y: "100%" },
+  //         { scale: 1, y: "0%", ease: "power2.inOut" }
+  //       );
+
+  //     gsap
+  //       .timeline({
+  //         scrollTrigger: {
+  //           trigger: item,
+  //           start: "50% 100%",
+  //           end: "100% 50%",
+  //           scrub: 3,
+  //           onEnter: () =>
+  //             gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
+  //           onLeave: () =>
+  //             gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
+  //           onEnterBack: () =>
+  //             gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
+  //           onLeaveBack: () =>
+  //             gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
+  //         },
+  //       })
+  //       .fromTo(
+  //         itemImg,
+  //         { x: "60vw", y: "60vh", rotate: -30 },
+  //         {
+  //           x: "-60vw",
+  //           y: "-60vh",
+  //           rotate: 30,
+  //           ease: "none",
+  //         }
+  //       );
+  //   });
+  // }, []);
+
+  // const imageItems = [
+  //   {
+  //     imgSrc: "/images/patient25k.png",
+  //     text: "25k+ Patients",
+  //   },
+  //   {
+  //     imgSrc: "/images/lehighvalley.jpg",
+  //     text: "4 Bespoke Locations",
+  //   },
+  //   {
+  //     imgSrc: "/images/experiencedoctor.png",
+  //     text: "50+ Years Experience",
+  //   },
+  // ];
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    const items = listRef.current.querySelectorAll(".list__item");
+    const viewHeight = window.innerHeight;
 
-    items.forEach((item) => {
-      const itemTitle = item.querySelector(".list__item__title");
-      const itemTitleOutline = item.querySelector(".list__item__titleOutline");
-      const itemImg = item.querySelector("img");
+    document.querySelectorAll('.text-container').forEach((element) => {
+      const top = element.getBoundingClientRect().top;
+      const start = viewHeight - top;
 
-      gsap
-        .timeline({
-          scrollTrigger: {
-            trigger: item,
-            start: "0% 75%",
-            end: "25% 50%",
-            scrub: 3,
-          },
-        })
-        .fromTo(
-          [itemTitle, itemTitleOutline],
-          { scale: 2, y: "100%" },
-          { scale: 1, y: "0%", ease: "power2.inOut" }
-        );
+      const firstText = element.querySelector('.parallax-text:first-child');
+      const secondText = element.querySelector('.parallax-text:last-child');
 
-      gsap
-        .timeline({
-          scrollTrigger: {
-            trigger: item,
-            start: "50% 100%",
-            end: "100% 50%",
-            scrub: 3,
-            onEnter: () =>
-              gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
-            onLeave: () =>
-              gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
-            onEnterBack: () =>
-              gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
-            onLeaveBack: () =>
-              gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
-          },
-        })
-        .fromTo(
-          itemImg,
-          { x: "60vw", y: "60vh", rotate: -30 },
-          {
-            x: "-60vw",
-            y: "-60vh",
-            rotate: 30,
-            ease: "none",
-          }
-        );
+      gsap.to(firstText, {
+        scrollTrigger: {
+          trigger: element,
+          scrub: true,
+          start: start + "px bottom",
+          end: "bottom top"
+        },
+        x: '-54vw',
+        ease: "none"
+      });
+
+      gsap.to(secondText, {
+        scrollTrigger: {
+          trigger: element,
+          scrub: true,
+          start: start + "px bottom",
+          end: "bottom top"
+        },
+        x: '32vw',
+        ease: "none"
+      });
     });
   }, []);
+  const textItems = [
+    { title1: "50+ Years of ", title2: " Experience" },
+    { title1: "4 Bespoke Locations", title2: "4 Bespoke Locations" },
+    { title1: "25k Patients", title2: "25k Patients" },
 
-  const imageItems = [
-    {
-      imgSrc: "/images/patient25k.png",
-      text: "25k+ Patients",
-    },
-    {
-      imgSrc: "/images/lehighvalley.jpg",
-      text: "4 Bespoke Locations",
-    },
-    {
-      imgSrc: "/images/experiencedoctor.png",
-      text: "50+ Years Experience",
-    },
+
+  ];
+  const imageStyles = [
+    { width: '32vw', height: '48vw' },
+    { width: '70vw', height: 'auto' }, 
+    { width: '32vw', height: '48vw' },
   ];
 
-  return (
-    <section
-      ref={listRef}
-      className="flex flex-col items-center justify-center"
-    >
-      {imageItems &&
-        imageItems.map((item, index) => (
-          <div
-            key={index}
-            className="relative flex items-end w-full h-screen pb-10 list__item"
-          >
-            <img
-              src={item.imgSrc}
-              alt={`Description ${index + 1}`}
-              className="absolute z-20 object-cover"
-              style={{
-                top: "50%",
-                left: "50%",
-                width: "33%",
-                height: "auto",
-                aspectRatio: "10 / 14",
-                transform: "translate(-50%, -50%)",
-              }}
-            />
-            <div
-              className="absolute z-10 font-bold transform -translate-x-1/2 -translate-y-1/2 list__item__title top-1/2 left-1/2 text-8xl"
-              style={{
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                fontSize: "12vw",
-                fontFamily: '"Playfair Display"',
-                lineHeight: "80%",
-                color: "#221608",
-              }}
-            >
-              {item.text}
-            </div>
-            <div
-              className="absolute z-30 font-bold transform -translate-x-1/2 -translate-y-1/2 list__item__titleOutline top-1/2 left-1/2 text-8xl"
-              style={{
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                fontSize: "12vw",
-                fontFamily: '"Playfair Display"',
-                lineHeight: "80%",
-                color: "transparent",
-                WebkitTextStroke: "2px #221608",
-              }}
-            >
-              {item.text}
-            </div>
-          </div>
+  useEffect(() => {
+    gsap.defaults({ ease: "none" });
+
+
+    const main = gsap.timeline();
+
+
+    const sphereAnimation = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".home-main",
+        start: "top 0",
+        end: "bottom 100%",
+        scrub: 1,
+      }
+    });
+
+    sphereAnimation
+      .to(".home-hero", {
+        opacity: "0",
+        duration: 2.4,
+      })
+
+      .to("#middle-circle", {
+        scale: 1,
+        boxShadow: "rgb(255, 255, 255) 0px 3px 47px inset",
+        transform: "translate(-50%, -50%) translate3d(0px, 0px, 0px)",
+        duration: 2,
+        transformOrigin: "50% 50%"
+      }, 0)
+      .to("#first-circle", {
+        transform: "translate(-50%, -50%) translate(-130%, 0px)",
+        opacity: "1",
+        filter: "blur(0px)",
+        duration: 4,
+        transformOrigin: "50% 50%"
+      }, 3)
+      .to("#last-circle", {
+        transform: "translate(-50%, -50%) translate(130%, 0px)",
+        opacity: "1",
+        filter: "blur(0px)",
+        duration: 4,
+        transformOrigin: "50% 50%"
+      }, 3)
+      .to("#figure2", {
+        scale: 1,
+        filter: "blur(0)",
+        opacity: '1',
+        duration: 4
+      }, 0)
+      .to(".home-main__content-sphere-desc", {
+        scale: 1,
+        transform: "translate(0px, 0px)",
+        opacity: '1',
+        duration: 4
+      });
+
+
+
+    return () => {
+
+      ScrollTrigger.getAll().forEach(t => t.kill());
+      gsap.killTweensOf(".home-hero, .home-main__content-atom, #middle-circle, #first-circle, #last-circle, #figure2, .home-main__content-sphere-desc");
+    };
+  }, []);
+
+  const headingRef = useRef(null);
+  useEffect(() => {
+    const chars = headingRef.current.querySelectorAll('.char');
+    const middleIndex = chars.length / 2;
+  
+    chars.forEach((char, index) => {
+      const distanceFromMiddle = Math.abs(index - middleIndex);
+      // Shorter delay for characters further from the middle
+      const staggerDelay = (middleIndex - distanceFromMiddle) * 0.06;
+  
+      gsap.set(char, { perspective: 2000 });
+  
+      gsap.fromTo(char, {
+        'will-change': 'opacity, transform',
+        opacity: 0,
+        y: -40 * distanceFromMiddle,
+        z: gsap.utils.random(-1500, -600),
+        rotationX: gsap.utils.random(-500, -200)
+      }, {
+        ease: 'power1.inOut',
+        opacity: 1,
+        y: 0,
+        z: 0,
+        rotationX: 0,
+        delay: staggerDelay, // Apply the calculated delay
+        scrollTrigger: {
+          trigger: char,
+          start: 'top bottom',
+          end: 'top top+=15%',
+          scrub: true,
+        }
+      });
+    });
+  }, []);
+  
+
+
+  const splitText = (text) => {
+    return text.split(" ").map((word, index) => (
+      <div key={index} className="word" style={{ display: 'block' }}> 
+        {word.split("").map((char, charIndex) => (
+          <span key={charIndex} className="char" style={{ display: 'inline-block' }}>
+            {char}
+          </span>
         ))}
-    </section>
+      </div>
+    ));
+  };
+  
+  return (
+    <>
+    <header className="header-section">
+    <div className="flex items-center justify-between">
+      <div className="w-1/3">
+
+      </div>
+    </div>
+  </header>
+  <section className="home-hero">
+    <div className="home-hero__content">
+   <div className="container">
+      <h1 className="text-[160px]" ref={headingRef}>
+        {splitText("The highest standards")}
+      </h1>
+    </div>
+    </div>
+  </section>
+
+  <section className="home-main">
+    <div className="home-main__content">
+      <div >
+        <div className="container">
+   
+        </div>
+      </div>
+      <div className="home-main__content-sphere">
+        <div className="container">
+      
+          <ul>
+            <li id="first-circle" style={{ opacity: 0, filter: 'blur(10px)' }}>
+              <figure>
+                <h3>50+</h3>
+                <p>years of experience</p>
+              </figure>
+            </li>
+            <li id="middle-circle" style={{ boxShadow: 'inset 0 0 300px #fff' }}>
+              <figure id="figure2" style={{ opacity: 0, filter: 'blur(10px)' }}>
+                <h3>25k</h3>
+                <p>Patients</p>
+              </figure>
+            </li>
+            <li id="last-circle" style={{ opacity: 0, filter: 'blur(10px)' }}>
+              <figure>
+                <h3>4</h3>
+                <p>Unique Locations</p>
+              </figure>
+            </li>
+          </ul>
+          <div className="home-main__content-sphere-desc" style={{ transform: 'translate(0, 137px)', opacity: 0 }}>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+        {`
+          body {
+            overflow: visible;
+            overflow-x: hidden;
+          }
+
+          .flex {
+            display: flex;
+          }
+          .items-center {
+            align-items: center;
+          }
+          .justify-between {
+            justify-content: space-between;
+          }
+
+          .inline-flex {
+            display: inline-flex;
+          }
+          .justify-end {
+            justify-content: flex-end;
+          }
+
+          @media (min-width: 768px) {
+            .home-fly {
+
+              height: 100vh;
+              left: 0;
+              position: fixed;
+              top: 0;
+              width: 100vw;
+            }
+            .home-hero {
+              overflow: unset;
+              position: relative;
+              z-index: 1;
+            }
+            .home-hero__content {
+              align-items: center;
+              display: flex;
+              height: 100vh;
+              left: 0;
+              position: absolute;
+              text-align: center;
+              top: 0;
+              width: 100%;
+            }
+
+            .home-main {
+              min-height: 250vh;
+              overflow: unset;
+              padding-bottom: 100px;
+            }
+            .home-main__content {
+              align-items: center;
+              display: flex;
+              height: 100vh;
+              overflow: unset;
+              position: sticky;
+              top: 0;
+            }
+
+            .container {
+              margin: 0 auto;
+              width: 100%;
+            }
+
+            .home-main__content-sphere {
+              align-items: center;
+              color: #fff;
+              display: flex;
+              height: 100%;
+              left: 0;
+              position: absolute;
+              top: 0;
+              width: 100%;
+            }
+
+            .home-main__content-sphere ul {
+              position: relative;
+            }
+            .home-main__content-sphere ul li:first-child, 
+            .home-main__content-sphere ul li:nth-child(3) {
+              border: 1px solid #fff;
+              filter: blur(10px);
+              height: 363px;
+              opacity: 0;
+              width: 363px;
+            }
+            .home-main__content-sphere ul li {
+              align-items: center;
+              border-radius: 50%;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              left: 50%;
+              position: absolute;
+              text-align: center;
+              top: 50%;
+              transform: translate(-50%,-50%);
+            }
+            .home-main__content-sphere ul li figure h3 {
+              font-size: 100px;
+              font-weight: 500;
+              margin-bottom: 15px;
+            }
+            .home-main__content-sphere ul li figure p {
+              font-size: 20px;
+              line-height: 24px;
+              max-width: 277px;
+            }
+            .home-main__content-sphere ul li:nth-child(2) {
+              box-shadow: inset 0 0 300px #fff;
+              height: 518px;
+              transform: translate(-50%,-50%) scale(.0579150579);
+              width: 518px;
+              z-index: 1;
+            }
+            .home-main__content-sphere-desc p {
+              display: block;
+              font-size: 20px;
+              line-height: 30px;
+              margin: 0 auto 27px;
+              max-width: 724px;
+            }
+          }
+        `}
+      </style>
+  </>
+    // <section
+    //   ref={listRef}
+    //   className="flex flex-col items-center justify-center"
+    // >
+    //   {imageItems &&
+    //     imageItems.map((item, index) => (
+    //       <div
+    //         key={index}
+    //         className="relative flex items-end w-full h-screen pb-10 list__item"
+    //       >
+    //         <img
+    //           src={item.imgSrc}
+    //           alt={`Description ${index + 1}`}
+    //           className="absolute z-20 object-cover"
+    //           style={{
+    //             top: "50%",
+    //             left: "50%",
+    //             width: "33%",
+    //             height: "auto",
+    //             aspectRatio: "10 / 14",
+    //             transform: "translate(-50%, -50%)",
+    //           }}
+    //         />
+    //         <div
+    //           className="absolute z-10 font-bold transform -translate-x-1/2 -translate-y-1/2 list__item__title top-1/2 left-1/2 text-8xl"
+    //           style={{
+    //             top: "50%",
+    //             left: "50%",
+    //             transform: "translate(-50%, -50%)",
+    //             fontSize: "12vw",
+    //             fontFamily: '"Playfair Display"',
+    //             lineHeight: "80%",
+    //             color: "#221608",
+    //           }}
+    //         >
+    //           {item.text}
+    //         </div>
+    //         <div
+    //           className="absolute z-30 font-bold transform -translate-x-1/2 -translate-y-1/2 list__item__titleOutline top-1/2 left-1/2 text-8xl"
+    //           style={{
+    //             top: "50%",
+    //             left: "50%",
+    //             transform: "translate(-50%, -50%)",
+    //             fontSize: "12vw",
+    //             fontFamily: '"Playfair Display"',
+    //             lineHeight: "80%",
+    //             color: "transparent",
+    //             WebkitTextStroke: "2px #221608",
+    //           }}
+    //         >
+    //           {item.text}
+    //         </div>
+    //       </div>
+    //     ))}
+    // </section>
   )
 }
 
@@ -748,6 +1097,108 @@ const ImageGrid = () => {
 </div>
 
 
+  );
+};
+const ParallaxOutline = () => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const ref = useRef(null);
+
+  const onMouseDown = (e) => {
+    setIsDragging(true);
+    ref.current.style.cursor = 'grabbing';
+    ref.current.style.userSelect = 'none';
+    setPosition({
+      x: e.clientX - ref.current.getBoundingClientRect().left,
+      y: e.clientY - ref.current.getBoundingClientRect().top,
+    });
+  };
+
+  const onMouseMove = (e) => {
+    if (isDragging) {
+      const left = e.clientX - position.x;
+      const top = e.clientY - position.y;
+      ref.current.style.left = `${left}px`;
+      ref.current.style.top = `${top}px`;
+    }
+  };
+
+  const onMouseUp = () => {
+    setIsDragging(false);
+    ref.current.style.cursor = 'grab';
+    ref.current.style.userSelect = 'auto';
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen ">
+    <span className="absolute text-white font-serif text-[10vw] custom-text" data-text="Happy Patients">
+ Happy Patients
+    </span>
+    <div className="w-full overflow-hidden custom-marquee">
+    <div className="flex w-max animate-marquee" style={{ '--offset': '20vw' }}>
+  {[...Array(4)].map((_, i) => (
+  <div key={i} className="flex">
+  <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] bg-gray-300">
+    <p className="text-center">You will receive top notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!</p>
+    <p className="text-center">Lisa Moyer</p>
+  </div>
+  <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] bg-gray-300">
+    <p className="text-center">My experience at FreySmiles has been amazing! I recently just completed my Invisalign and my teeth look perfect! Dr. Frey truly cares about his patients and the staff are always friendly, as well as always accommodating to my schedule. They're the best around!</p>
+    <p className="text-center">Kailee</p>
+  </div>
+  <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] bg-gray-300">
+    <p className="text-center">Text Block 1</p>
+    <p className="text-center">Text Block 2</p>
+  </div>
+</div>
+
+  ))}
+</div>
+
+    </div>
+  </div>
+  );
+};
+
+const LogoGrid = () => {
+
+  const logos = [
+    ['../../images/movingbannerfiles/damonlogo_invert.png', '../../images/movingbannerfiles/invis-logo_invert.png', '../../images/movingbannerfiles/readers.png'], 
+    ['../../images/movingbannerfiles/topDentist_logo.png', '../../images/movingbannerfiles/aao_invert.png', 'l../../images/movingbannerfiles/invisalign_invert.png'], 
+    ['../../images/movingbannerfiles/ABO.png', '../../images/movingbannerfiles/damonlogo_invert.png', '../../images/movingbannerfiles/valley.png'], 
+    ['../../images/movingbannerfiles/readers.png', '../../images/movingbannerfiles/top-Dentist.png', './../images/movingbannerfiles/invis-logo_invert.png'] 
+  ];
+  const [activeLogos, setActiveLogos] = useState(logos.map(() => 0));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveLogos(currentActive =>
+        currentActive.map((active, idx) => (active + 1) % logos[idx].length)
+      );
+    }, 2000); 
+
+    return () => clearInterval(interval);
+  }, []);
+
+
+  return (
+   <div className=" mx-auto">
+    <div className=" logo-grid grid grid-cols-4">
+    {logos.map((columnLogos, columnIndex) => (
+      <div key={columnIndex} className="column">
+        {columnLogos.map((logo, logoIndex) => (
+          <div 
+            key={logoIndex} 
+            className={`grid-logo-wrapper ${activeLogos[columnIndex] === logoIndex ? 'active' : ''}`}
+          >
+            <img src={logo} alt={`Logo ${logoIndex + 1}`} />
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+  </div> 
+  
   );
 };
 
@@ -1156,7 +1607,7 @@ function GiftCards() {
       transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
     }}>
       <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-primary-30 bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
-      <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank' className="absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white">Send a Gift Card</Link>
+      <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank' className="text-2xl absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white">Send a Gift Card</Link>
       <img src="/../../images/giftcards/gift_cards_mockup.jpg" alt="gift cards mockup" className="absolute inset-0 object-cover object-center w-full h-full -z-10" />
     </section>
   )

@@ -89,7 +89,7 @@ export default function FinancingTreatment() {
   <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
     <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">1.</p>
   </span>
-  <div className="flex flex-col justify-center items-center text-[#5062a6] text-5xl font-altero">
+  <div className="flex flex-col justify-center items-center text-[#7D4459] text-6xl uppercase font-altero">
   <div>Complimentary</div>
   <div className="font-altero uppercase stroke-text py-5">Consultation</div>
 </div>

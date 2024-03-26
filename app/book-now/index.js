@@ -8,6 +8,7 @@ import { Disclosure } from "@headlessui/react";
 
 // import classNames from 'classnames';
 import { motion, useAnimation } from "framer-motion";
+
 // import Circle from "./svg/Circle"
 
 // init(process.env.REACT_APP_PUBLIC_KEY);
@@ -187,7 +188,7 @@ const BookNow = () => {
 
   return (
 
-    <main className="">
+    <main className="bg-center bg-cover" style={{ backgroundImage: "url('../images/lime_circle_bg.svg')" }}>
       <motion.div
         initial={{ clipPath: `circle(0% at 50% 50%)` }}
         animate={controls}
@@ -195,7 +196,8 @@ const BookNow = () => {
         style={{
           width: "100%",
           // height: "200vh",
-          background: "#EAE0D4",
+          // background: "#F1EBE8",
+
           overflow: "hidden",
         }}
       >

@@ -6,7 +6,83 @@ import Link from "next/link";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { gsap, Power3 } from "gsap-trial";
 
+
 const YourCare = () => {
+  const [isBlotterLoaded, setIsBlotterLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadScript = (src, callback) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = callback;
+      document.body.appendChild(script);
+    };
+
+    if (!window.Blotter) {
+      loadScript('/blotter.min.js', () => {
+        console.log('Blotter loaded');
+
+        loadScript('/liquidDistortMaterial.js', () => {
+          console.log('LiquidDistortMaterial loaded');
+          setIsBlotterLoaded(true);
+        });
+      });
+    } else {
+      setIsBlotterLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isBlotterLoaded) {
+      let materials = []; 
+  
+      const lines = ["DISCOVER", "WHAT MAKES", "US UNIQUE"];
+      let container = document.getElementById('blotter-target');
+  
+      if (container) {
+        lines.forEach((line, index) => {
+
+          let lineDiv = document.createElement('div');
+          lineDiv.id = `blotter-line-${index + 1}`;
+          container.appendChild(lineDiv);
+  
+          const text = new window.Blotter.Text(line, {
+            // family: "",
+            size: 100, 
+          });
+  
+          let material = new window.Blotter.LiquidDistortMaterial();
+          material.uniforms.uSpeed.value = 0.1;
+          material.uniforms.uVolatility.value = 0.1;
+          material.uniforms.uSeed.value = 0.1;
+  
+          let blotter = new window.Blotter(material, { texts: text });
+          let scope = blotter.forText(text);
+          scope.appendTo(lineDiv);
+  
+          materials.push(material); 
+        });
+  
+        const handleMouseMove = (e) => {
+          const formula = ((e.pageX * e.pageY) / 200000) / 1.5;
+          materials.forEach(material => {
+            material.uniforms.uVolatility.value = formula;
+            material.uniforms.uSeed.value = formula;
+          });
+        };
+  
+        document.body.addEventListener('mousemove', handleMouseMove);
+  
+        return () => {
+          document.body.removeEventListener('mousemove', handleMouseMove);
+        };
+      }
+    }
+  }, [isBlotterLoaded]);
+  
+  
+  
+
   const [isOpen, setIsOpen] = useState(true);
   const shutterRef = useRef(null);
 
@@ -28,23 +104,7 @@ const YourCare = () => {
     return () => clearTimeout(initialTimer);
   }, []);
 
-  const sections = [
-    {
-      title: "Brush and floss",
-      content:
-        "Brushing and flossing during orthodontic treatment is more important than ever. Orthodontic appliances such as clear aligners, brackets, and wires interfere with normal self-cleansing mechanisms of the mouth. Research shows that only 10% of patients brush and floss consistently during active treatment. We're here to ensure you don't just get lost in the statistics.",
-    },
-    {
-      title: "Loosening of Teeth",
-      content:
-        "This is to be expected throughout treatment. The teeth must loosen first so they can move. The teeth will settle into the bone and soft tissue in their desired position after treatment is completed if retainers are worn correctly.",
-    },
-    {
-      title: "Loose Wire or Band",
-      content:
-        "When crowding and/or significant dental rotations is the case initially, a new wire placed at the office may eventually slide longer than the last bracket. In this case, depending on the orientation of the last tooth, it may poke into your cheek or gums. If irritation to the lips or You  can place orthodontic wax on the wire to reduce prevent stabbing. If the wire doesn't settle in on its own, it will benefit from being clipped within two weeks. Call our office to schedule an appointment.",
-    },
-  ];
+
 
   const scrollContainerRef = useRef(null);
   useEffect(() => {
@@ -97,11 +157,7 @@ const YourCare = () => {
       transition: "background-image 1s ease-in-out",
     };
   };
-  const images = [
-    "../images/patient-charlotte.jpeg",
-    "../images/landon.jpeg",
-    "../images/youngboy.jpg",
-  ];
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const [showNewImage, setShowNewImage] = useState(false);
@@ -162,38 +218,41 @@ const YourCare = () => {
   const handleMouseMove = (e) => {
     setCursorPosition({ x: e.clientX, y: e.clientY });
   };
-  useEffect(() => {
-    const pathLength = progressPath.current.getTotalLength();
-    progressPath.current.style.strokeDasharray = `${pathLength} ${pathLength}`;
-    progressPath.current.style.strokeDashoffset = pathLength;
 
-    const updateProgress = () => {
-      if (!aboutSectionRef.current || !lasth3Ref.current) return;
 
-      const sectionTop = aboutSectionRef.current.offsetTop;
-      const h3Bottom =
-        lasth3Ref.current.offsetTop + lasth3Ref.current.offsetHeight;
-      const scrollTop = window.scrollY;
-      const viewportHeight = window.innerHeight;
 
-      let progress;
-      if (scrollTop + viewportHeight > sectionTop && scrollTop < h3Bottom) {
-        progress = Math.min(
-          (scrollTop - sectionTop) / (h3Bottom - sectionTop - viewportHeight),
-          1
-        );
-      } else {
-        progress = 0;
-      }
+  // useEffect(() => {
+  //   const pathLength = progressPath.current.getTotalLength();
+  //   progressPath.current.style.strokeDasharray = `${pathLength} ${pathLength}`;
+  //   progressPath.current.style.strokeDashoffset = pathLength;
 
-      progress = Math.max(0, progress);
-      progressPath.current.style.strokeDashoffset =
-        pathLength - progress * pathLength;
-    };
+  //   const updateProgress = () => {
+  //     if (!aboutSectionRef.current || !lasth3Ref.current) return;
 
-    window.addEventListener("scroll", updateProgress);
-    return () => window.removeEventListener("scroll", updateProgress);
-  }, []);
+  //     const sectionTop = aboutSectionRef.current.offsetTop;
+  //     const h3Bottom =
+  //       lasth3Ref.current.offsetTop + lasth3Ref.current.offsetHeight;
+  //     const scrollTop = window.scrollY;
+  //     const viewportHeight = window.innerHeight;
+
+  //     let progress;
+  //     if (scrollTop + viewportHeight > sectionTop && scrollTop < h3Bottom) {
+  //       progress = Math.min(
+  //         (scrollTop - sectionTop) / (h3Bottom - sectionTop - viewportHeight),
+  //         1
+  //       );
+  //     } else {
+  //       progress = 0;
+  //     }
+
+  //     progress = Math.max(0, progress);
+  //     progressPath.current.style.strokeDashoffset =
+  //       pathLength - progress * pathLength;
+  //   };
+
+  //   window.addEventListener("scroll", updateProgress);
+  //   return () => window.removeEventListener("scroll", updateProgress);
+  // }, []);
 
   const parallaxStyle = {
     top: scrollPosition / 2.8,
@@ -256,6 +315,58 @@ const YourCare = () => {
       observer.disconnect(); 
     };
   }, []);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+  
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.album',
+        start: 'top top',
+        end: '+=4000',
+        scrub: true,
+        pin: true,
+      }
+    });
+
+    tl.to('.p1', { x: '-=700', duration: 1 }, 0)
+      .to('.p2', { x: '-=1400', duration: 1 }, 0.5) 
+      .to('.p3', { x: '-=1300', duration: 1 }, 1)
+      .to('.p4', { x: '-=1200', duration: 1 }, 1.5);
+  }, []);
+
+useEffect(() => {
+  gsap.timeline({
+    scrollTrigger: {
+      trigger: '.bottom',
+      scrub: true,
+      pin: true,
+      start: 'top top',
+      end: '+=3000',
+    },
+  })
+  .to('.stripe', { stagger: 0.3, height: '100vh' })
+  .to('.stripe', { stagger: 0.3, height: 0 })
+  .to('.thats-all', { opacity: 1, scale: 1 });
+}, []);
+
+useEffect(() => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  gsap.to('.img', {
+    y: -700, 
+    stagger: 0.3, 
+    ease: 'none', 
+    scrollTrigger: {
+      trigger: '.img',
+      start: 'top bottom',
+      end: 'bottom center',
+      scrub: true
+    },
+  });
+
+}, []);
+
   return (
     <>
       <Layout>
@@ -271,8 +382,72 @@ const YourCare = () => {
               <li key={i} className="c-shutter__slat"></li>
             ))}
           </ul>
+          <div className="relative h-screen">
+      
+          <div className=" h-screen" id="blotter-target"></div>
+        
+          </div>
+          <section className="gallery" style={{position:'relative', height: '200vh' }}>
 
-          <section
+
+          {/* <div className="flex justify-center items-center text-center h-screen">
+          <div className="flex flex-col justify-center items-center text-center h-screen">
+  <div className=" font-bold text-8xl">
+    <div className="mb-4">DISCOVER WHAT</div>
+    <div className="flex justify-center items-baseline relative">
+      <img style={{ bottom: '-10%', left: '20%', transform: 'translateX(-50%)' }} className="w-32 h-32 absolute bottom-0" src="../images/whitedots.svg" alt="Green Squiggle" />
+      <span>MAKES</span>
+      <img className="w-[6em] absolute bottom-0" src="../images/pinksquiggle.svg" alt="Green Squiggle" style={{ bottom: '-320%', left: '80%', transform: 'translateX(-50%)' }} />
+    </div>
+    <div className="mt-4">US UNIQUE</div>
+  </div>
+</div>
+
+</div> */}
+  <div>
+
+  <section className="grid grid-cols-3">
+  {[
+    "../images/nowbooking.png",
+    "../images/freysmiles_insta.gif",
+    "../images/firstappointment.svg",
+    "../images/nocost.png",
+    "../images/scan.mp4",
+    "../images/checkeredpatient.svg"
+  ].map((src, i) => {
+    const isVideo = src.endsWith('.mp4');
+
+    return (
+      <div key={i} className="img relative w-full overflow-hidden">
+        {isVideo ? (
+          <video autoPlay loop muted className="object-cover w-full h-full">
+            <source src={src} type="video/mp4" />
+          </video>
+        ) : (
+          <img src={src} alt={`Image ${i + 1}`} className="object-cover w-full h-full" />
+        )}
+        <div className="absolute top-0 left-0 w-full h-screen z-10"></div>
+      </div>
+    );
+  })}
+</section>
+
+
+    </div>
+
+</section>
+
+       
+          {/* <footer className="bottom h-screen bg-[#F5F4F5] flex justify-start items-end flex-wrap m-0 p-0">
+
+  <div className="stripe st1 flex-grow h-0 bg-[#1B1B1E]"></div>
+  <div className="stripe st2 flex-grow h-0 bg-[#FAA916]"></div>
+  <div className="stripe st3 flex-grow h-0 bg-[#FBFFFE]"></div>
+  <div className="stripe st4 flex-grow h-0 bg-[#6D676E]"></div>
+  
+</footer> */}
+
+          {/* <section
             ref={aboutSectionRef}
             id="About"
             className="large-section min-h-screen flex"
@@ -401,7 +576,7 @@ const YourCare = () => {
                     href="#"
                     className="font-helvetica-now-thin text-white text-opacity-60 font-light text-4xl leading-7 transition-all ease-in-out flex items-center"
                   >
-                    Getting Started
+              Start the process
                     <span
                       className="ml-6 inline-flex items-center justify-center w-12 h-12 rounded-full "
                       style={{
@@ -483,18 +658,111 @@ const YourCare = () => {
                 </p>
               </div>
             </div>
-          </section>
+          </section> */}
 
           <div
-            className="bg-[#ebded4] border rounded-[30px] section-style flex items-center z-10 relative"
+            // className="bg-[#ebded4] border rounded-[30px] section-style flex items-center z-10 relative"
+            // style={{
+            //   position: "sticky",
+            //   top: 0,
+            //   backgroundAttachment: "fixed",
+            //   backgroundSize: "cover",
+            // }}
+          >
+             <section className="album h-screen overflow-hidden relative">
+      <picture className="absolute w-[700px] h-[500px] transform translate-x-[calc(50vw-350px)] translate-y-[calc(50vh-250px)]">
+        <img src="../images/pinkblur1.svg" alt="greendot" className="picture p1 object-cover object-cover w-full h-fulll" />
+        
+      </picture>
+      <picture className="absolute w-[700px] h-[500px] transform translate-x-[100vw] translate-y-[calc(50vh-250px)]">
+      <img src="../images/pinkblur2.svg" alt="greendot" className="picture p2 object-cover object-cover w-full h-fulll" />
+      </picture>
+      <picture className="absolute w-[700px] h-[500px] transform translate-x-[100vw] translate-y-[calc(50vh-250px)]">
+      <img src="../images/pinkblur3.svg" alt="greendot" className="picture p3 object-cover object-cover w-full h-fulll" />
+      </picture>
+      <picture className="absolute w-[700px] h-[500px] transform translate-x-[100vw] translate-y-[calc(50vh-250px)]">
+      <img src="../images/pinkblur4.svg" alt="greendot" className="picture p4 object-cover object-cover w-full h-fulll" />
+      </picture>
+    </section>
+          </div>
+          <div
             style={{
               position: "sticky",
               top: 0,
+      
               backgroundAttachment: "fixed",
               backgroundSize: "cover",
             }}
+            className=" border rounded-[30px] section-style flex items-center z-10 relative"
           >
-            <div
+            <>
+              <div className="">
+               
+                <div className="flex">
+                <div className="mt-10 font-helvetica-now-thin flex-1  container">
+                <div className="relative p-[100px]">
+                  
+                <div className="text-container" ref={textContainerRef}>
+      <div className="line-container" ref={textRef1}>
+        <h1 className="hidden-text text-2xl">Taking the first step towards treatment can sometimes feel overwhelming , especially when it comes to discussing personalized </h1>
+      </div>
+      <div className="line-container" ref={textRef2}>
+        <h1 className="text-2xl hidden-text"> plans and navigating payment options. That's why we kindly request that all decision-makers be present during the initial visit. </h1>
+      </div>
+      <div className="line-container" ref={textRef3}>
+        <h1 className="hidden-text text-2xl">Our goal is for every patient to walk out of our office fully informed with answers to all their questions in their treatment path.
+</h1>
+      </div>
+    </div>
+        </div>
+
+</div>
+
+
+
+                <div className="mt-20 flex-1 flex items-center justify-center">
+    <svg width="100" height="100" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ verticalAlign: "middle" }}>
+        <g clip-path="url(#clip0_105_560)">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M200 100.671L100 0L0 100.671H98.6668L0 200H200L101.333 100.671H200Z" fill="url(#paint0_linear_105_560)"/>
+        </g>
+        <defs>
+            <linearGradient id="paint0_linear_105_560" x1="20.5" y1="16" x2="100" y2="200" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#ACAAFF"/>
+                <stop offset="1" stop-color="#C0E8FF"/>
+            </linearGradient>
+            <clipPath id="clip0_105_560">
+                <rect width="200" height="200" fill="white"/>
+            </clipPath>
+        </defs>
+    </svg>
+    <p className="font-altero text-center text-8xl">Pricing</p>
+</div>
+
+                </div>
+                <div className="flex flex-col items-center justify-center space-y-[-2rem] mt-[-4rem] mb-[-4rem] py-8 h-screen">
+                  {stackItems.map((item, index) => (
+                    <div
+                      key={index}
+                      className={`bg-[#e5d6F6] text-black text-center px-6 py-4 shadow-xl border-2 border-black rounded-3xl transform ${item.rotation} ${item.zIndex}`}
+                      style={{ width: "1000px", height: "150px" }}
+                    >
+                      <p className="text-5xl font-semibold">{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          </div>
+        </div>
+      </Layout>
+    </>
+  );
+};
+
+export default YourCare;
+
+
+        {/* <div
               className="absolute top-[calc(50%-60.5px)] left-0 w-full h-[1px] bg-black"
               style={{ zIndex: 5 }}
             ></div>
@@ -590,85 +858,7 @@ const YourCare = () => {
                   treatment.
                 </p>
               </div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              position: "sticky",
-              top: 0,
-              backgroundImage: "url('../images/purplegrey.png')",
-              backgroundAttachment: "fixed",
-              backgroundSize: "cover",
-            }}
-            className=" border rounded-[30px] section-style flex items-center z-10 relative"
-          >
-            <>
-              <div className="">
-               
-                <div className="flex">
-                <div className="mt-10 font-helvetica-now-thin flex-1  container">
-                <div className="relative p-[100px]">
-                  
-                <div className="text-container" ref={textContainerRef}>
-      <div className="line-container" ref={textRef1}>
-        <h1 className="hidden-text text-2xl">Taking the first step towards treatment can sometimes feel overwhelming , especially when it comes to discussing personalized </h1>
-      </div>
-      <div className="line-container" ref={textRef2}>
-        <h1 className="text-2xl hidden-text"> plans and navigating payment options. That's why we kindly request that all decision-makers be present during the initial visit. </h1>
-      </div>
-      <div className="line-container" ref={textRef3}>
-        <h1 className="hidden-text text-2xl">Our goal is for every patient to walk out of our office fully informed with answers to all their questions in their treatment path.
-</h1>
-      </div>
-    </div>
-        </div>
-
-</div>
-
-
-
-                <div className="mt-20 flex-1 flex items-center justify-center">
-    <svg width="100" height="100" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ verticalAlign: "middle" }}>
-        <g clip-path="url(#clip0_105_560)">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M200 100.671L100 0L0 100.671H98.6668L0 200H200L101.333 100.671H200Z" fill="url(#paint0_linear_105_560)"/>
-        </g>
-        <defs>
-            <linearGradient id="paint0_linear_105_560" x1="20.5" y1="16" x2="100" y2="200" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#ACAAFF"/>
-                <stop offset="1" stop-color="#C0E8FF"/>
-            </linearGradient>
-            <clipPath id="clip0_105_560">
-                <rect width="200" height="200" fill="white"/>
-            </clipPath>
-        </defs>
-    </svg>
-    <p className="font-altero text-center text-8xl">Pricing</p>
-</div>
-
-                </div>
-                <div className="flex flex-col items-center justify-center space-y-[-2rem] mt-[-4rem] mb-[-4rem] py-8 h-screen">
-                  {stackItems.map((item, index) => (
-                    <div
-                      key={index}
-                      className={`bg-[#e5d6F6] text-black text-center px-6 py-4 shadow-xl border-2 border-black rounded-3xl transform ${item.rotation} ${item.zIndex}`}
-                      style={{ width: "1000px", height: "150px" }}
-                    >
-                      <p className="text-5xl font-semibold">{item.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          </div>
-        </div>
-      </Layout>
-    </>
-  );
-};
-
-export default YourCare;
-
+            </div> */}
 // const YourCare = () => {
 //   const [activeAccordion, setActiveAccordion] = useState([
 //     false,
