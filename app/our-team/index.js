@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
+
 import { motion, useScroll } from "framer-motion";
 import Link from "next/link";
 import { gsap } from "gsap";
@@ -180,7 +181,7 @@ const OurTeam = () => {
   const imgRef = useRef(null);
   const svgRef = useRef(null);
   const circleRef = useRef(null);
-  const whiteLayerRef = useRef(null);
+
 
   
   useEffect(() => {
