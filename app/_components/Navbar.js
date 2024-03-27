@@ -9,10 +9,8 @@ import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
 import BagIcon from './ui/BagIcon'
 import Bars2Icon from './ui/Bars2Icon'
 import XIcon from './ui/XIcon'
-import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
-  const router = useRouter()
   const dispatch = useDispatch()
 
   const bag = useSelector(selectBag)
@@ -31,7 +29,7 @@ export default function Navbar() {
   const patient_links = [
     { name: "Your Care", href: "/your-care" },
     { name: "Financing Treatment", href: "/financing-treatment" },
-  
+
   ]
 
   const treatments_links = [
@@ -91,66 +89,51 @@ export default function Navbar() {
   // const scope = useMobileNavAnimation(show)
 
   /* mouse cursor */
-  const cursorSize = 50;
-  const [pointer, setPointer] = useState({ x: 0, y: 0 });
-  const [isHover, setIsHover] = useState(false);
+  const cursorX = useMotionValue(-100)
+  const cursorY = useMotionValue(-100)
+  const springConfig = { damping: 25, stiffness: 200 }
+  const cursorXSpring = useSpring(cursorX, springConfig)
+  const cursorYSpring = useSpring(cursorY, springConfig)
+  const [cursorVariant, setCursorVariant] = useState("default")
 
-  const handleMove = (event) => {
-    const x = event.pageX;
-    const y = event.pageY;
-    setPointer({ x, y });
-  };
-  
-  const handleMouseEnter = () => {
-    setIsHover(true);
-};
-
-const handleMouseLeave = () => {
-    setIsHover(false);
-};
-
-useEffect(() => {
-
-    document.body.addEventListener('mousemove', handleMove);
-
-    const links = document.querySelectorAll('.navbar-link');
-    links.forEach(link => {
-        link.addEventListener('mouseenter', handleMouseEnter);
-        link.addEventListener('mouseleave', handleMouseLeave);
-    });
+  useEffect(() => {
+    const moveCursor = (e) => {
+      cursorX.set(e.clientX - 16)
+      cursorY.set(e.clientY - 16)
+    }
+    window.addEventListener("mousemove", moveCursor)
 
     return () => {
-        document.body.removeEventListener('mousemove', handleMove);
-        links.forEach(link => {
-            link.removeEventListener('mouseenter', handleMouseEnter);
-            link.removeEventListener('mouseleave', handleMouseLeave);
-        });
-    };
-}, []);
+      window.removeEventListener("mousemove", moveCursor)
+    }
+  }, [])
 
+  const variants = {
+    default: {
+      width: 32,
+      height: 32,
+    },
+    hover: {
+      width: 64,
+      height: 64,
+    }
+  }
+
+  const hoverEnter = () => setCursorVariant("hover")
+  const hoverLeave = () => setCursorVariant("default")
 
   
-  const circleStyles = {
-    boxSizing: 'border-box',
-    position: 'fixed',
-    top: pointer.y - cursorSize / 2,
-    left: pointer.x - cursorSize / 2,
-    zIndex: 2147483647,
-    width: isHover ? `${cursorSize * 1.5}px` : `${cursorSize}px`,
-    height: isHover ? `${cursorSize * 1.5}px` : `${cursorSize}px`,
-    backgroundColor: '#fff0',
-    borderRadius: '50%',
-    transition: 'width 500ms, height 500ms, transform 100ms',
-    userSelect: 'none',
-    pointerEvents: 'none',
-    backdropFilter: 'invert(0.85) grayscale(1)'
-  };
 
   return (
     <header>
-           <div style={circleStyles} className="circle"></div>
       <motion.div
-
+        className="cursor"
+        variants={variants}
+        animate={cursorVariant}
+        style={{
+          x: cursorXSpring,
+          y: cursorYSpring,
+        }}
       />
 
       {/* DESKTOP NAVBAR */}
@@ -158,17 +141,13 @@ useEffect(() => {
       <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-50 hidden w-full mb-[6vh] lg:block">
         <div className="p-4 mx-auto transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 justify-evenly">
-            <li  className="curzr-hover"
-  onMouseEnter={() => setIsHover(true)}
-  onMouseLeave={() => setIsHover(false)}>
+            <li className="flex items-center tracking-wider transition duration-300 ease-in-out bg-white rounded-full shadow-md hover:bg-primary-50/60 active:bg-primary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link href="/" className="inline-block p-4">
                 {/* <HomeIcon className="w-4 h-4" /> */}
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
-            <li onClick={handleToggleAbout}  className="curzr-hover"
-  onMouseEnter={() => setIsHover(true)}
-  onMouseLeave={() => setIsHover(false)}>
+            <li onClick={handleToggleAbout} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <p className="text-sm transition-all duration-500 ease-linear rounded-full hover:text-primary-40 ">
                 About
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
@@ -254,9 +233,7 @@ useEffect(() => {
               </Dialog>
             </Transition.Root>
 
-            <li onClick={handleTogglePatient}  className="curzr-hover"
-  onMouseEnter={() => setIsHover(true)}
-  onMouseLeave={() => setIsHover(false)}>
+            <li onClick={handleTogglePatient} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <p className="text-sm transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
                 Patient
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
@@ -342,10 +319,8 @@ useEffect(() => {
               </Dialog>
             </Transition.Root>
 
-            <li onClick={handleToggleTreatments}  className="curzr-hover"
-  onMouseEnter={() => setIsHover(true)}
-  onMouseLeave={() => setIsHover(false)}>
-              <p className="text-sm transition-all duration-500 ease-linear rounded-full hover:text-primary-40 ">
+            <li onClick={handleToggleTreatments} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+              <p className="transition-all text-sm duration-500 ease-linear rounded-full hover:text-primary-40 group">
                 Treatments
                 <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
               </p>
@@ -430,43 +405,37 @@ useEffect(() => {
               </Dialog>
             </Transition.Root>
 
-  <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out curzr-hover" 
-  onMouseEnter={() => setIsHover(true)}
-  onMouseLeave={() => setIsHover(false)}>
-  <Link href="https://my.orthoblink.com/bLink/Login" className="inline-block relative transition-all duration-500 before:content-[''] before:opacity-0 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50">
-    <p className="text-sm custom-cursor-target">Patient Login</p>
-  </Link>
-</li>
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+              <Link
+                href="https://my.orthoblink.com/bLink/Login"
+                className="inline-block relative transition-all duration-500 before:content-[''] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
+              >
+                <p className="text-sm custom-cursor-target">Patient Login</p>
+              </Link>
+            </li>
 
-
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out curzr-hover"  
-  onMouseEnter={() => setIsHover(true)}
-  onMouseLeave={() => setIsHover(false)}>
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="/#locations"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p className="text-sm custom-cursor-target"> Locations</p>
+                <p className="text-sm custom-cursor-target">Our Locations</p>
               </Link>
             </li>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out curzr-hover"  
-  onMouseEnter={() => setIsHover(true)}
-  onMouseLeave={() => setIsHover(false)}>
+            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
               <Link
                 href="/products"
                 className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
               >
-                <p className="text-sm ">Shop</p>
+                <p className="text-sm custom-cursor-target">Shop</p>
               </Link>
             </li>
 
 						{bag.length > 0 && (
               <li
                 onClick={handleToggleBagPanel}
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:right-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out curzr-hover"  
-                onMouseEnter={() => setIsHover(true)}
-                onMouseLeave={() => setIsHover(false)}
+                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:right-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
           		>
           		  <span className="flex items-center relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:left-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50">
                   <BagIcon className="w-6 h-6 ml-1" />
@@ -583,11 +552,9 @@ useEffect(() => {
               </Dialog>
             </Transition.Root>
 
-						<li className="flex items-center duration-300 ease-in-out cursor-pointer      curzr-hover"  
-  onMouseEnter={() => setIsHover(true)}
-  onMouseLeave={() => setIsHover(false)}>
-              <Link href="/book-now" className=" inline-block px-6 py-3">
-                Book
+						<li className="flex items-center tracking-wider uppercase transition duration-300 ease-in-out rounded-full shadow-sm cursor-pointer   hover:bg-secondary-50/60 hover:text-secondary-95 active:bg-secondary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+              <Link href="/book-now" className="inline-block px-6 py-3">
+                Book Now
               </Link>
             </li>
           </ul>

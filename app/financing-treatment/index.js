@@ -87,7 +87,7 @@ export default function FinancingTreatment() {
         <div ref={lineRef} id="left" className="hidden md:block md:w-1/3 md:pl-12">
         <Detail>
   <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
-    <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">1.</p>
+    <p className="absolute text-white -translate-x-2/4 -translate-y-2/4"></p>
   </span>
   <div className="flex flex-col justify-center items-center text-[#7D4459] text-6xl uppercase font-altero">
   <div>Complimentary</div>
@@ -106,7 +106,7 @@ export default function FinancingTreatment() {
 
           <Detail>
             <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
-              <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">2.</p>
+              <p className="absolute text-white -translate-x-2/4 -translate-y-2/4"></p>
             </span>
             <div className="text-[#5062a6] text-5xl font-altero">
   <span className="block stroke-text py-5 text-center">PAYMENT PLANS</span>
@@ -118,7 +118,7 @@ export default function FinancingTreatment() {
           </Detail>
           <Detail>
             <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
-              <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">3.</p>
+              <p className="absolute text-white -translate-x-2/4 -translate-y-2/4"></p>
             </span>
             <img 
     src="../images/keepitfam.png" 
@@ -129,7 +129,7 @@ export default function FinancingTreatment() {
           </Detail>
           <Detail>
             <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
-              <p className="absolute text-white -translate-x-2/4 -translate-y-2/4">4.</p>
+              <p className="absolute text-white -translate-x-2/4 -translate-y-2/4"></p>
             </span>
             <div className="flex flex-col items-center justify-center h-screen text-[#5062a6] text-5xl font-altero">
   <span className="text-3xl mb-2">One year</span>
