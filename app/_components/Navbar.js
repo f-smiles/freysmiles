@@ -63,22 +63,32 @@ export default function Navbar() {
     return subtotal
   }
 
-  const calculateItemsQuantity = () => {
-    let itemsQuantity = 0
-    itemsQuantity = bag
-      .map((item) => item.quantity)
-      .reduce((acc, cur) => acc + cur, 0)
-    return itemsQuantity
-  }
+  // const calculateItemsQuantity = () => {
+  //   let itemsQuantity = 0
+  //   itemsQuantity = bag
+  //     .map((item) => item.quantity)
+  //     .reduce((acc, cur) => acc + cur, 0)
+  //   return itemsQuantity
+  // }
 
   const handleCheckout = async () => {
-    const { data } = await axios.post("/api/checkout/checkout-sessions",
-    bag,
-    { "headers": {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/checkout/checkout-sessions`, {
+      method: "POST",
+      headers: {
         "Content-Type": "application/json"
-      }
+      },
+      body: JSON.stringify(bag)
     })
+    const data = await res.json()
     window.location.assign(data)
+
+    // const { data } = await axios.post("/api/checkout/checkout-sessions",
+    // bag,
+    // { "headers": {
+    //     "Content-Type": "application/json"
+    //   }
+    // })
+    // window.location.assign(data)
   }
 
   /* mobile nav */
@@ -401,7 +411,8 @@ export default function Navbar() {
                   // className="flex items-center relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:left-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 link-text"
                 >
                   <BagIcon className="w-6 h-6 ml-1" />
-                  {calculateItemsQuantity()}
+                  {bag.length}
+                  {/* {calculateItemsQuantity()} */}
                 </p>
               </li>
             )}
@@ -492,7 +503,7 @@ export default function Navbar() {
                                </div>
                                <div className="px-4 py-6 border-t border-gray-200 sm:px-6">
                                 <div className="flex justify-between text-base font-medium text-gray-900">
-                                  <p>Subtotal: ({calculateItemsQuantity()} items)</p>
+                                  <p>Subtotal: ({bag.length} items)</p>
                                   <p>${calculateSubtotal()}</p>
                                	</div>
                                 <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
@@ -502,7 +513,7 @@ export default function Navbar() {
                                   >Checkout</button>
                                 </div>
                                 <div className="mt-6">
-                                  <Link href="/bag" className="flex items-center justify-center px-6 py-3 text-base font-medium transition-colors duration-300 ease-in-out border rounded-md shadow-sm border-primary-50 text-primary-50 hover:text-white hover:bg-primary-30" onClick={handleToggleBagPanel}>View Bag</Link>
+                                  <Link href="/checkout" className="flex items-center justify-center px-6 py-3 text-base font-medium transition-colors duration-300 ease-in-out border rounded-md shadow-sm border-primary-50 text-primary-50 hover:text-white hover:bg-primary-30" onClick={handleToggleBagPanel}>View Bag</Link>
             	                  </div>
                             </div>
                           </div>
@@ -643,7 +654,8 @@ export default function Navbar() {
                     <div className="relative">
                       <BagIcon className="w-10 h-10" />
                       <span className="absolute top-0 right-0 p-3 bg-black rounded-full -translate-y-1/4 translate-x-2/4">
-                        <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{calculateItemsQuantity()}</p>
+                        <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{bag.length}</p>
+                        {/* <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{calculateItemsQuantity()}</p> */}
                       </span>
                     </div>
                   </li>
