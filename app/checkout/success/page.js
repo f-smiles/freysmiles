@@ -14,6 +14,9 @@ export default async function Page({ searchParams }) {
 
   const paymentDetails = await stripe.paymentMethods.retrieve(checkoutSession.payment_intent.payment_method)
 
+  console.log(checkoutSession)
+  console.log(paymentDetails)
+
   return (
     <ThankYou checkoutSession={checkoutSession} paymentDetails={paymentDetails} />
   )

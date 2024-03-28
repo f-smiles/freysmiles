@@ -31,6 +31,7 @@ export async function POST(req, res) {
       currency: "usd",
       line_items: lineItems,
       mode: "payment",
+      payment_method_types: [ "card" ],
       shipping_address_collection: {
         allowed_countries: ["US"],
       },

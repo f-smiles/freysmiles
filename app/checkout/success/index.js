@@ -7,9 +7,46 @@ import CashApp from "@/app/_components/card_brands/CashApp"
 import Diners from "@/app/_components/card_brands/Diners"
 import Discover from "@/app/_components/card_brands/Discover"
 import JCB from "@/app/_components/card_brands/JCB"
+import LinkLogo from "@/app/_components/card_brands/LinkLogo"
 import MasterCard from "@/app/_components/card_brands/MasterCard"
 import UnionPay from "@/app/_components/card_brands/UnionPay"
 import Visa from "@/app/_components/card_brands/Visa"
+import { HomeIcon, HomeModernIcon } from '@heroicons/react/24/outline'
+
+const actions = [
+  {
+    location: 'Allentown',
+    href: '#',
+    icon: HomeIcon,
+    iconForeground: 'text-teal-700',
+    iconBackground: 'bg-teal-50',
+  },
+  {
+    location: 'Bethlehem',
+    href: '#',
+    icon: HomeModernIcon,
+    iconForeground: 'text-purple-700',
+    iconBackground: 'bg-purple-50',
+  },
+  {
+    location: 'Schnecksville',
+    href: '#',
+    icon: HomeIcon,
+    iconForeground: 'text-rose-700',
+    iconBackground: 'bg-rose-50',
+  },
+  {
+    location: 'Lehighton',
+    href: '#',
+    icon: HomeModernIcon,
+    iconForeground: 'text-indigo-700',
+    iconBackground: 'bg-indigo-50',
+  },
+]
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
 
 export default function ThankYou({ checkoutSession, paymentDetails }) {  
   const dispatch = useDispatch()
@@ -19,7 +56,7 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
   const { amount_subtotal, amount_total, shipping_cost, line_items, shipping_details, customer_details } = checkoutSession
 
   return (
-    <section className="relative mx-auto lg:min-h-full lg:h-[100dvh]">
+    <section className="relative mx-auto lg:min-h-full">
       <div className="overflow-hidden h-80 lg:absolute lg:h-full lg:w-1/2 lg:pr-4 xl:pr-12">
         <img
           src="https://tailwindui.com/img/ecommerce-images/confirmation-page-06-hero.jpg"
@@ -32,11 +69,16 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
         <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
           <div className="lg:col-start-2">
             <h1 className="text-sm font-medium text-indigo-600">Payment successful</h1>
-            <p className="mt-2 text-4xl tracking-tight text-zinc-800 sm:text-5xl">Thanks for ordering</p>
-            <p className="mt-2 text-base text-zinc-500">
-              We appreciate your order, we're currently processing it. So hang tight and we'll send you confirmation
-              very soon!
+            <p className="mt-4 text-4xl tracking-tight text-zinc-800 sm:text-5xl">Thanks for ordering</p>
+            <p className="mt-4 text-base text-zinc-500">
+              {/* We appreciate your order, we're currently processing it. So hang tight and we'll send you confirmation very soon! */}
+              We appreciate your order! Your items will be ready for pick-up at one of our four office locations. We're currently processing your order, so hang tight and we'll send you confirmation very soon!
             </p>
+
+            <dl className="mt-8 text-sm font-medium">
+              <p className="text-base font-medium text-zinc-800">Pick-Up Locations:</p>
+              <PickupLocations />
+            </dl>
 
             <dl className="mt-16 text-sm font-medium">
               {/* <dt className="text-gray-900">Tracking number</dt>
@@ -47,7 +89,7 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
 
             <ul
               role="list"
-              className="mt-6 text-sm font-medium border-t border-gray-200 divide-y divide-gray-200 text-zinc-500"
+              className="mt-16 text-sm font-medium border-t border-gray-200 divide-y divide-gray-200 text-zinc-500"
             >
               {line_items.data.map((lineItem) => (
                 <li key={lineItem.id} className="flex py-6 space-x-6">
@@ -109,11 +151,6 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
                         <Amex />
                         <p className="sr-only">Amex</p>
                       </>
-                    ) : paymentDetails.type === "card" && paymentDetails.card.brand === "bccard" ? (
-                      <>
-                        <Diners />
-                        <p className="sr-only">BCcard and DinaCard</p>
-                      </>
                     ) : paymentDetails.type === "card" && paymentDetails.card.brand === "diners" ? (
                       <>
                         <Diners />
@@ -149,11 +186,13 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
                         <CashApp />
                         <p className="sr-only">Cashapp</p>
                       </>
+                    ) : paymentDetails.type === "link" ? (
+                      <LinkLogo />
                     ) : null}
                   </div>
                   <div className="flex-auto">
-                    <p className="text-zinc-800">{paymentDetails.type === "card" ? `Ending with ${paymentDetails.card.last4}` : `${paymentDetails.cashapp.buyer_id}`}</p>
-                    <p>{paymentDetails.type === "card" ? `Expires ${paymentDetails.card.exp_month} / ${paymentDetails.card.exp_year}` : `${paymentDetails.cashapp.buyer_id}`}</p>
+                    <p className="text-zinc-800">{paymentDetails.type === "card" ? `Ending with ${paymentDetails.card.last4}` : ''}</p>
+                    <p> {paymentDetails.type === "card" ? `Expires ${paymentDetails.card.exp_month} / ${paymentDetails.card.exp_year}` : (paymentDetails.type === "cashapp" ? paymentDetails.cashapp.buyer_id : '')}</p>
                   </div>
                 </dd>
               </div>
@@ -169,5 +208,57 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
         </div>
       </div>
     </section>
+  )
+}
+
+function PickupLocations() {
+  return (
+    <div className="mt-8 overflow-hidden bg-gray-200 divide-y divide-gray-200 rounded-lg shadow sm:grid sm:grid-cols-2 sm:gap-px sm:divide-y-0">
+      {actions.map((action, actionIdx) => (
+        <div
+          key={action.location}
+          className={classNames(
+            actionIdx === 0 ? 'rounded-tl-lg rounded-tr-lg sm:rounded-tr-none' : '',
+            actionIdx === 1 ? 'sm:rounded-tr-lg' : '',
+            actionIdx === actions.length - 2 ? 'sm:rounded-bl-lg' : '',
+            actionIdx === actions.length - 1 ? 'rounded-bl-lg rounded-br-lg sm:rounded-bl-none' : '',
+            'group relative bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500'
+          )}
+        >
+          <div>
+            <span
+              className={classNames(
+                action.iconBackground,
+                action.iconForeground,
+                'inline-flex rounded-lg p-3 ring-4 ring-white'
+              )}
+            >
+              <action.icon className="w-6 h-6" aria-hidden="true" />
+            </span>
+          </div>
+          <div className="mt-8">
+            <h3 className="text-base font-semibold leading-6 text-gray-900">
+              <a href={action.href} className="focus:outline-none">
+                {/* Extend touch target to entire panel */}
+                <span className="absolute inset-0" aria-hidden="true" />
+                {action.location}
+              </a>
+            </h3>
+            <p className="mt-2 text-sm text-gray-500">
+              Doloribus dolores nostrum quia qui natus officia quod et dolorem. Sit repellendus qui ut at blanditiis et
+              quo et molestiae.
+            </p>
+          </div>
+          <span
+            className="absolute text-gray-300 transition-all duration-300 ease-in-out pointer-events-none right-6 top-6 group-hover:text-gray-400 group-hover:rotate-45"
+            aria-hidden="true"
+          >
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20 4h1a1 1 0 00-1-1v1zm-1 12a1 1 0 102 0h-2zM8 3a1 1 0 000 2V3zM3.293 19.293a1 1 0 101.414 1.414l-1.414-1.414zM19 4v12h2V4h-2zm1-1H8v2h12V3zm-.707.293l-16 16 1.414 1.414 16-16-1.414-1.414z" />
+            </svg>
+          </span>
+        </div>
+      ))}
+    </div>
   )
 }
