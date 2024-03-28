@@ -18,6 +18,8 @@ const Layer = ({ colorClass }) => {
 };
 
 const OurTeam = () => {
+
+  
   gsap.registerPlugin(ScrollTrigger);
   gsap.registerPlugin(SplitText);
   const [isVisible, setIsVisible] = useState(false);
@@ -50,7 +52,7 @@ useEffect(() => {
       const splitText = new SplitText(doctorBio, { type: 'lines' });
       gsap.from(splitText.lines, {
         duration: 2,
-        xPercent: 25,
+        xPercent: 20,
         autoAlpha: 0,
         ease: 'expo.out',
         stagger: 0.12,
@@ -63,9 +65,7 @@ useEffect(() => {
     clearAnimation();
     startAnimation();
   }
-
   return () => clearAnimation();
-
 }, [switchDoctor]);
 
   useEffect(() => {
@@ -86,9 +86,6 @@ useEffect(() => {
       },
     });
   }, []);
-
-  const teamRef = useRef(null);
-  const doctorRef = useRef(null);
 
   const imagesRef = useRef([]);
   imagesRef.current = [];
@@ -207,44 +204,47 @@ useEffect(() => {
 
   const items = [
     {
-      title: '1',
-      num: 'Lexi',
-      imgSrc: '/../../images/team_members/Lexi-Photoroom.jpg'
-    },
-    {
-      title: '2',
-      num: 'Elizabeth',
-      imgSrc: '/../../images/team_members/Elizabethaao.png'
-    },
-    {
-      title: '3',
-      num: 'Nicolle',
-      imgSrc: '/../../images/team_members/Nicollewaving.png'
-    },
-       {
-      title: '4',
-      num: 'Grace',
-      imgSrc: '/../../images/team_members/Grace-Photoroom.jpg'
-    },
-    {
       title: '5',
       num: 'Adriana',
       imgSrc: '/../../images/team_members/Adriana-Photoroom.jpg'
+    },
+    {
+      title: '7',
+      num: 'Alyssa',
+      imgSrc: '/../../images/team_members/Alyssascan.png'
     },
     {
       title: '6',
       num: 'Dana',
       imgSrc: '/../../images/team_members/Dana-Photoroom.png'
     },
+   
+   
     {
-      title: '7',
-      num: 'Alyssa',
-      imgSrc: '/../../images/team_members/Alyssa-Photoroom.png'
+      title: '2',
+      num: 'Elizabeth',
+      imgSrc: '/../../images/team_members/Elizabethaao.png'
+    },
+ 
+       {
+      title: '4',
+      num: 'Grace',
+      imgSrc: '/../../images/team_members/Grace-Photoroom.jpg'
+    },
+    {
+      title: '1',
+      num: 'Lexi',
+      imgSrc: '/../../images/team_members/Lexigreen.png'
     },
     {
       title: '8',
       num: 'Lizzie',
       imgSrc: '/../../images/team_members/Lizzie-Photoroom.png'
+    },
+    {
+      title: '3',
+      num: 'Nicolle',
+      imgSrc: '/../../images/team_members/Nicollewaving.png'
     },
     {
       title: '9',
@@ -391,6 +391,35 @@ useEffect(() => {
     transition: 'opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1)'
   };
 
+
+  const [cursorPosition, setCursorPosition] = useState({ x: -100, y: -100 });
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      setCursorPosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', moveCursor);
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+    };
+  }, []);
+
+  const greenCursorStyle = {
+    position: 'fixed',
+    left: `${cursorPosition.x}px`,
+    top: `${cursorPosition.y}px`,
+    width: isFocused ? '100px' : '40px',
+    height: isFocused ? '100px' : '40px',
+    borderRadius: '50%',
+    backgroundColor: isFocused ? 'rgb(190,255,3)' : '#FFFFFF',
+    pointerEvents: 'none',
+    opacity: .7,
+    transform: 'translate(-50%, -50%)',
+    transition: 'width 0.5s, height 0.5s, background-color 0.25s',
+    zIndex: 9999
+  }; 
   return (
     <>
     <div className="bg-[#E2E2E2]">
@@ -451,7 +480,7 @@ useEffect(() => {
               {/* doctor bio */}
 
               {switchDoctor ? (
-                <p ref={doctorBioRef} className="heading">
+                <p ref={doctorBioRef} className="font-helvetica-now-thin heading">
                   Dr. Daniel Frey pursued his pre-dental requisites at the University of
                   Pittsburgh, majoring in Biology. Dr. Frey excelled in his
                   studies and was admitted to Temple University&apos;s dental
@@ -470,7 +499,7 @@ useEffect(() => {
                   ones.
                 </p>
               ) : (
-                <p ref={doctorBioRef} className="heading">
+                <p ref={doctorBioRef} className="font-helvetica-now-thin  heading">
                   Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
                   graduated from Temple University School of Dentistry with
                   honors and served in the U.S. Navy Dental Corps before
@@ -501,7 +530,7 @@ useEffect(() => {
                     ? "translateX(100%)"
                     : "translateX(0)",
                 }}
-                src="../../images/team_members/GreggFrey.jpg"
+                src="../../images/team_members/GreggFrey.png"
                 alt="Dr. Gregg Frey"
               />
               <img
@@ -513,14 +542,18 @@ useEffect(() => {
                     ? "translateX(0)"
                     : "translateX(-100%)",
                 }}
-                src="../../images/team_members/DanFrey.jpg"
+                src="../../images/team_members/DanFrey.png"
                 alt="Dr. Daniel Frey"
               />
             </figure>
-            <figcaption>
-              <h4>{!switchDoctor ? "Dr. Gregg Frey" : "Dr. Daniel Frey"}</h4>
-              <p>{!switchDoctor ? "DDS" : "DMD, MSD"}</p>
-            </figcaption>
+            <figcaption >
+  <h5 className="font-helvetica-now-thin">
+    {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
+  </h5>
+  <p className="font-helvetica-now-thin">
+    {!switchDoctor ? "DDS" : "DMD, MSD"}
+  </p>
+</figcaption>
           </div>
           <div className="col-span-5 lg:col-span-2 lg:col-start-11">
             <figure
@@ -536,7 +569,7 @@ useEffect(() => {
                     ? "translateX(0)"
                     : "translateX(-100%)",
                 }}
-                src="../../images/team_members/GreggFrey.jpg"
+                src="../../images/team_members/GreggFrey.png"
                 alt="Dr. Daniel Frey"
               />
               <img
@@ -548,7 +581,7 @@ useEffect(() => {
                     ? "translateX(100%)"
                     : "translateX(0)",
                 }}
-                src="../../images/team_members/DanFrey.jpg"
+                src="../../images/team_members/DanFrey.png"
                 alt="Dr. Gregg Frey"
               />
             </figure>
@@ -556,75 +589,67 @@ useEffect(() => {
         </div>
       </section>
       <>
+
+
+      <div style={greenCursorStyle}>
+        <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+         Click 
+        </span>
+      </div>
         <div
-   
+    onMouseEnter={() => setIsFocused(true)}
+    onMouseLeave={() => setIsFocused(false)}
           className=" horizontalContainer"
         >
 
           <div className="horizontalWrapper">
             <div className="horizontalScroller">
               <div className="horizontalRow">
-                <div className="horizontalItem horizontalFilled">
-                  <p className="sm:text-left md:text-center">
-                    Our members have received the designation of Specialized
-                    Orthodontic Assistant . This is a voluntary certification
-                    program started by the American Association of Orthodontists
-                    to recognize those in the profession for their knowledge and
-                    experience.
-                  </p>
+              <div className="horizontalItem horizontalFilled">
+  <a 
+    href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/" 
+    className="horizontalItemLink"
+  >
+    <p className="sm:text-left md:text-center">
+      Our members have received the designation of Specialized Orthodontic Assistant. This is a voluntary certification program started by the American Association of Orthodontists to recognize those in the profession for their knowledge and experience.
+    </p>
+   
+  </a>
+</div>
 
-                  <a
-                    href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/"
-                    className="horizontalItemLink"
-                  >
-                    <span className="link-text" data-text="Check our content">
-                      Learn More
-                    </span>
-                  </a>
-                </div>
                 <div className="horizontalItem horizontalFilled">
-                  <p className="text-6xl">...and first aid</p>
-                  <img style={{  }} className="w-90 h-90 absolute bottom-0" src="../images/threedots.svg" alt="Green Squiggle" />
+                  <p >  Fun fact-our team is made up of former FreySmiles
+                    patients, something we think is important, because we have
+                    all experienced treatment and can help guide you through it.</p>
+                  <img className="w-90 h-90 absolute bottom-0" src="../images/threedots.svg" alt="Green Squiggle" />
                 </div>
-                <div className="horizontalItem horizontalBig">
-                  <p>
-                    This office is on 🔥! The orthodontists as well as every
-                    single staff member. Keary Riddick
-                  </p>
-                  <a
-                    href="https://g.co/kgs/Sds93Ha"
-                    className="horizontalItemLink"
-                  >
-                    <span className="link-text" data-text="Check it out">
-                      Check it out
-                    </span>
-                  </a>
-                </div>
+                <a href="https://g.co/kgs/Sds93Ha" className="horizontalItem horizontalBig">
+  <p>
+    This office is on 🔥! The orthodontists as well as every
+    single staff member.
+  </p>
+  <span className="link-text" data-text="Check it out">
+    Keary Riddick
+  </span>
+</a>
+
               </div>
               <div className="horizontalRow">
                 <div className="horizontalItem horizontalBig">
-                  <p>Trained in CPR</p>
+                  <p>Trained in CPR and first aid</p>
                 </div>
+                <div className="horizontalItem horizontalFilled ">
+  <a href="https://g.co/kgs/YkknjNg" className="horizontalItemLink">
+
+    <p className> 
+      Had a wonderful experience at FreySmiles. Everyone is extremely professional, polite, timely. Would highly recommend! -TK
+    </p><span>  <img className="w-90 h-auto -mt-80  " src="../images/fivestars.svg" alt="Green Squiggle" /></span>
+  </a>
+</div>
+
                 <div className="horizontalItem horizontalFilled">
                   <p>
-                    5 stars Had a wonderful experience at FreySmiles. Everyone
-                    is extremely professional, polite, timely. Would highly
-                    recommend! -TK
-                  </p>
-                  <a
-                    href="https://g.co/kgs/YkknjNg"
-                    className="horizontalItemLink"
-                  >
-                    <span className="link-text" data-text="Check it out">
-                      Check it out
-                    </span>
-                  </a>
-                </div>
-                <div className="horizontalItem horizontalFilled">
-                  <p>
-                    Fun fact 2:Our team is made up of former FreySmiles
-                    patients, something we think is important, because we have
-                    all experienced treatment and can help guide you through it.
+                  Our team members are X-ray certified.
                   </p>
                 </div>
                 <div className="horizontalItem horizontalFilled">
@@ -667,6 +692,7 @@ useEffect(() => {
         <div ref={carouselRef} className="relative z-10 h-screen overflow-hidden pointer-events-none">
            <div id="cursor" style={cursorStyle} className={className}>
            <div className="cursor__circle" style={cursorCircleStyle}>
+            Drag
            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
 </svg>
