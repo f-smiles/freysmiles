@@ -1,11 +1,13 @@
 'use client'
 import Link from 'next/link'
-import axios from 'axios'
+// import axios from 'axios'
 import { Fragment, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Dialog, Transition } from '@headlessui/react'
+import { gsap } from "gsap"
+import { useGSAP } from "@gsap/react"
 import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
-import CustomCursor from './CustomCursor'
+// import CustomCursor from './CustomCursor'
 import BagIcon from './ui/BagIcon'
 import Bars2Icon from './ui/Bars2Icon'
 import XIcon from './ui/XIcon'
@@ -98,12 +100,51 @@ export default function Navbar() {
     setShow(!show)
   }
 
+  useGSAP(() => {
+    const isTouchDevice = 'ontouchstart' in window
+
+    const createCustomCursor = () => {
+      const desktopNavbar = document.querySelector("#desktop-nav")
+      const customCursor = document.querySelector('.custom-cursor') 
+
+      // Each time the mouse coordinates are updated, we need to pass the values to gsap in order to animate the element
+      desktopNavbar.addEventListener('mousemove', (e) => {
+        const { target, x, y } = e
+
+        const isTargetLinkOrButton = target?.closest('a') || target?.closest('button') || target?.closest('.target-link')
+        
+        gsap.to(customCursor, {
+          x: x + 3,
+          y: y + 3,
+          duration: 0.7,
+          ease: "power4",
+          opacity: isTargetLinkOrButton ? 0.6 : 1,
+          transform: `scale(${isTargetLinkOrButton ? 4 : 1})`,
+        })
+      })
+
+      desktopNavbar.addEventListener('mouseleave', (e) => {
+        gsap.to(customCursor, {
+          duration: 0.7,
+          opacity: 0,
+        })
+      })
+
+    }
+
+    // Only create the custom cursor if device isn't touchable
+    if (!isTouchDevice) {
+      createCustomCursor()
+    }
+  })
+
   return (
     <header>
-      <CustomCursor />
+      {/* <CustomCursor /> */}
 
       {/* DESKTOP NAVBAR */}
       <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-40 hidden w-full mb-[6vh] lg:block">
+        <div className="custom-cursor" />
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
             <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md shadow-zinc-300 hover:bg-primary-50/60 active:bg-primary-50/80">
@@ -112,7 +153,7 @@ export default function Navbar() {
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
-            <li onClick={handleToggleAbout}>
+            <li onClick={handleToggleAbout} className="target-link">
               <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">About</p>
               {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
             </li>
@@ -196,7 +237,7 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li onClick={handleTogglePatient}>
+            <li onClick={handleTogglePatient} className="target-link">
               <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Patient</p>
               {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
             </li>
@@ -280,7 +321,7 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li onClick={handleToggleTreatments}>
+            <li onClick={handleToggleTreatments} className="target-link">
               <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Treatments</p>
               {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
             </li>
