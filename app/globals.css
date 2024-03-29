@@ -194,27 +194,23 @@
 
 
 /* custom mouse cursor START */
-.cursor {
-  border-radius: 50%;
+.custom-cursor {
   position: fixed;
-  top: 0;
-  left: 0;
+  margin: 0;
+  top: -12px;
+  left: -12px;
+  width: 16px;
+  height: 16px;
+  opacity: 0;
+  user-select: none;
   pointer-events: none;
+  border-radius: 100%;
+  background-color: rgba(95, 43, 146, 0.6);
+  /* background-color: rgba(34, 34, 34, 0.6); */
+  /* background-color: rgba(144, 70, 254, 0.6); */
+  /* mix-blend-mode: difference; */
   z-index: 999;
-  background-color: #222;
-  mix-blend-mode: difference;
 }
-@media only screen and (max-width: 1023px) {
-  .cursor {
-    background-color: transparent;
-    mix-blend-mode: normal;
-  }
-}
-/* @media only screen and (min-width: 1024px) {
-  * {
-    cursor: none;
-  }
-} */
 /* custom mouse cursor END */
 
 
