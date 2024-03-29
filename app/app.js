@@ -5,7 +5,8 @@ import { store, persistor } from './_store/config'
 import Navbar from './_components/Navbar'
 import Footer from './_components/Footer'
 
-export default function App({ children }) {
+const App =  ({ children }) => 
+{
   return (
     <>
       <Provider store={store}>
@@ -20,3 +21,5 @@ export default function App({ children }) {
     </>
   )
 }
+
+export default App;

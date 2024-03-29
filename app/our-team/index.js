@@ -364,6 +364,32 @@ useEffect(() => {
     };
   }, []);
 
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setPosition({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseDown = () => {
+      setIsDragging(true);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
   const cursorStyle = {
     position: 'fixed',
     left: `${position.x}px`,
@@ -372,12 +398,11 @@ useEffect(() => {
     pointerEvents: 'none',
     zIndex: 99,
     willChange: 'transform',
-
   };
 
   const cursorCircleStyle = {
-    width: '128px',
-    height: '128px',
+    width: isDragging ? '64px' : '128px', 
+    height: isDragging ? '64px' : '128px', 
     marginTop: '-50%',
     marginLeft: '-50%',
     borderRadius: '50%',
@@ -388,8 +413,10 @@ useEffect(() => {
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '20px',
-    transition: 'opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1)'
+    transition: 'width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1)', // Add transition for size change
   };
+
+
 
 
   const [cursorPosition, setCursorPosition] = useState({ x: -100, y: -100 });

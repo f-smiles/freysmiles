@@ -1,263 +1,177 @@
 'use client'
-import { useRef, useEffect } from 'react'
-import { motion, useScroll, useSpring, useTransform, useInView } from 'framer-motion'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
-import { SplitText } from "gsap-trial/all";
-// import useIsomorphicLayoutEffect from '@/_helpers/useIsomorphicLayoutEffect'
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
-const details = [
-  {
-    number: "1.",
-    heading: "Complimentary consultation",
-    body: "Initial consultations are always free of charge.",
-    img: "/../../images/initialconsult.png",
-    alt: "FreySmiles team member warmly greeting a FreySmiles patient and shaking their hand",
-  },
-  {
-    number: "2.",
-    heading: "Payment plans are available",
-    body:"We offer a variety of payment plans at no interest.",
-    img: "/../../images/orangecylinder.svg",
-    alt: "Scene of a girl sitting on top of bags holding a percent sign representing no interest payment at FreySmiles",
-  },
-  {
-    number: "3.",
-    heading: "No hidden fees",
-    body: "Comprehensive treatment plans include retainers and supervision",
-    img: "/../../images/familymembers.png",
-    alt: "No hidden fees",
-  },
-  {
-    number: "4.",
-    heading: "One year post-treatment follow up",
-    body: "Retainers and retention visits for one year post-treatment included.",
-    img: "/../../images/followup.png",
-    alt: "Booking future appointments",
-  }
-]
+export default function CurvyTimeline() {
+  const refs = useRef([]);
+  refs.current = [];
 
-export default function FinancingTreatment() {
-  
-  const lineRef = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: lineRef,
-    offset: ["start center", "end center"],
-  })
-  const spring = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  })
-  let height = useTransform(spring, [0, 1], ["0%", "100%"])
-  const textRef1 = useRef(null);
-  const textRef2 = useRef(null);
-  const textRef3 = useRef(null);
+  const addToRefs = (el) => {
+    if (el && !refs.current.includes(el)) {
+      refs.current.push(el);
+    }
+  };
 
-  const backgroundColors = ['#bcb8ad', '#eacbd1', '#b19bb0']; 
-
-
-  const inputRange = backgroundColors.map((_, i, arr) => i / (arr.length - 1));
-
-
-  const backgroundColor = useTransform(scrollYProgress, inputRange, backgroundColors);
   useEffect(() => {
-    gsap.registerPlugin(SplitText);
+    refs.current.forEach((el, index) => {
+      const isRightSide = index % 2 === 0;
 
-    [textRef1, textRef2, textRef3].forEach(ref => {
-      const split = new SplitText(ref.current, { type: 'lines' });
-      gsap.from(split.lines, {
-        duration: 1.5,
-        y: '100%',
-        stagger: 0.15,
-        ease: 'power4.out'
+      gsap.set(el, {
+        borderRightColor: isRightSide ? 'transparent' : 'initial',
+        borderLeftColor: isRightSide ? 'initial' : 'transparent',
+        borderBottomColor: 'transparent'
+      });
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top center',
+        end: 'bottom center',
+        onEnter: () => animateBorder(el, isRightSide),
+        onLeaveBack: () => resetBorder(el, isRightSide)
       });
     });
   }, []);
-  
-  return (
-    <>
-    <motion.div  style={{ backgroundColor }} className="z-[-1] bg-[#DBDBDB] relative w-full mx-auto ">
-      <section id="main-container" className=" md:flex md:justify-between md:gap-x-6">
-  
-        {/* LEFT HALF DESKTOP SECTION */}
-        <div ref={lineRef} id="left" className="hidden md:block md:w-1/3 md:pl-12">
-        <Detail>
-  <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
-    <p className="absolute text-white -translate-x-2/4 -translate-y-2/4"></p>
-  </span>
-  <div className="flex flex-col justify-center items-center text-[#7D4459] text-6xl uppercase font-altero">
-  <div>Complimentary</div>
-  <div className="font-altero uppercase stroke-text py-5">Consultation</div>
-</div>
-<p className="flex text-xl text-center font-helvetica-now-thin ">Initial consultations are always free of charge.</p>
+
+  const animateBorder = (element, isRightSide) => {
+    const timeline = gsap.timeline();
+    
+    // Animate the side border (right or left)
+    if (isRightSide) {
+      timeline.to(element, { borderRightColor: '#4B5563', duration: 1 });
+    } else {
+      timeline.to(element, { borderLeftColor: '#4B5563', duration: 1 });
+    }
+
+    // Then animate the bottom border
+    timeline.to(element, { borderBottomColor: '#991B1B', duration: 1 }, '+=0.5');
+  };
+
+  const resetBorder = (element, isRightSide) => {
+    gsap.to(element, {
+      borderRightColor: isRightSide ? 'transparent' : 'initial',
+      borderLeftColor: isRightSide ? 'initial' : 'transparent',
+      borderBottomColor: 'transparent',
+      duration: 1
+    });
+  };
 
 
-  {/* <img 
-    src="../images/complimentary.png" 
-    alt="Complimentary Consultation"
-    className="w-full -mt-40 h-auto object-cover" 
-  /> */}
-
-</Detail>
-
-          <Detail>
-            <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
-              <p className="absolute text-white -translate-x-2/4 -translate-y-2/4"></p>
-            </span>
-            <div className="text-[#5062a6] text-5xl font-altero">
-  <span className="block stroke-text py-5 text-center">PAYMENT PLANS</span>
-  <span className="block font-altero uppercase py-2">ARE AVAILABLE</span>
-</div>
-
-
-            <p className="flex text-xl text-center font-helvetica-now-thin">We offer a variety of payment plans at no interest.</p>
-          </Detail>
-          <Detail>
-            <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
-              <p className="absolute text-white -translate-x-2/4 -translate-y-2/4"></p>
-            </span>
-            <img 
-    src="../images/keepitfam.png" 
-    alt="Complimentary Consultation"
-    className="w-full h-auto object-cover" 
-  />
-            <p className="flex text-xl text-center -mt-40 font-helvetica-now-thin">Successive family members always receive the same excellent care. Ask about our family courtesies</p>
-          </Detail>
-          <Detail>
-            <span className="absolute p-5 rounded-full bg-[#355e3b] -left-12">
-              <p className="absolute text-white -translate-x-2/4 -translate-y-2/4"></p>
-            </span>
-            <div className="flex flex-col items-center justify-center h-screen text-[#5062a6] text-5xl font-altero">
-  <span className="text-3xl mb-2">One year</span>
-  <span className="stroke-text font-altero uppercase mb-2">FOLLOW UP</span>
-  <span className="text-3xl">INCLUDED</span>
-</div>
-
-
-            {/* <img 
-    src="../images/onyear.png" 
-    alt="Complimentary Consultation"
-    className="w-full h-auto object-cover" 
-  /> */}
-
-          </Detail>
-          <motion.div
-            className="absolute top-0 hidden w-[2px] h-full left-[22px] md:block bg-[#355e3b] -z-10"
-            style={{ height }}
-          />
-        </div>
-        {/* RIGHT HALF DESKTOP SECTION */}
-        <div id="right" className="md:w-2/3 md:flex md:flex-col md:justify-center md:items-center">
-          {/* MOBILE VIEW */}
-          <div id="mobile-view" className="block space-y-16 md:space-y-0 md:hidden">
-            {details.map((detail, index) => (
-              <figure key={index} className="aspect-square">
-                <img
-                  src={detail.img}
-                  alt={detail.alt}
-                  className="object-cover object-center rounded-md"
-                />
-                <figcaption className="mt-6">
-                  <h5 className="normal-case text-primary-40">{detail.number} {detail.heading}</h5>
-                  <p className="text-gray-700">{detail.body}</p>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-          {/* DESKTOP VIEW */}
-          <Images />
-        </div>
-      </section>
-    </motion.div>
-    </>
-  )
-}
-
-function Detail({ children }) {
-  const isInViewRef = useRef(null)
-  const isInView = useInView(isInViewRef)
 
   return (
-    <div
-      ref={isInViewRef}
-      id="text-content"
-      className="relative flex flex-col justify-center w-full h-screen pl-4 "
-      style={{
-        transform: isInView ? "translateY(0px)" : "translateY(200px)",
-        opacity: isInView ? 1 : 0,
-        transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
-      }}
-    >
-      {children}
+    <div  className="mt-40 mx-auto p-1 w-3/5">
+      {/* <div className="flex -ml-20"><img src="../images/lime_worm.svg"></img></div> */}
+      <div  ref={addToRefs} className="relative border-b border-gray-600 py-8 pl-12 pr-12 border-r border-gray-600" >
+        <h3 className="font-altero uppercase py-5 text-6xl">Complimentary Consultation</h3>
+        <div className="absolute top-1/2 transform -translate-y-1/2 translate-x-1/2 rounded-full border border-[#BEFC24] bg-[#BEFC24]  text-center p-3 right-0" style={{ height: '1.6rem', width: '1.6rem' }}></div>
+        <p className="pt-2">Initial consultations are always free of charge.</p>
+      </div>
+
+      <div  ref={addToRefs} className="relative border-b border-gray-600 py-8 pl-12 pr-12 border-l border-gray-600" >
+
+
+      <div
+                  className=" md:w-1/2 flex justify-center items-center"
+       
+                >
+                  <div
+                    className="relative mx-2 "
+                    style={{ width: "300px", height: "240px" }}
+                  >
+                    <img
+                      className="rounded-full opacity-90 w-full h-full object-cover"
+                      src="../../images/carepatient1.png"
+                      alt="patient"
+                      style={{ objectPosition: "40% 50%" }}
+                    />
+                  </div>
+                  <div
+                    className="relative mx-2 "
+                    style={{ width: "300px", height: "300px" }}
+                  >
+                    <img
+                      className="rounded-full opacity-90 w-full h-full object-cover"
+                      src="../../images/carepatient2.png"
+                      alt="patient"
+                      style={{ objectPosition: "10% 50%" }}
+                    />
+                  </div>
+
+                  <div
+                    className="relative mx-2 "
+                    style={{ width: "300px", height: "340px" }}
+                  >
+                    <img
+                      className="rounded-full opacity-90 w-full h-full object-cover"
+                      src="../../images/carepatient3.png"
+                      alt="patient"
+                    />
+                  </div>
+                  <div
+                    className="relative mx-2 "
+                    style={{ width: "330px", height: "400px" }}
+                  >
+                    <img
+                      className="rounded-full opacity-90 w-full h-full object-cover"
+                      src="../../images/carepatient4.png"
+                      alt="patient"
+                      style={{ objectPosition: "40% 50%" }}
+                    />
+                  </div>
+                  <div
+                    className="relative mx-2 "
+                    style={{ width: "300px", height: "480px" }}
+                  >
+                    <img
+                      className="rounded-full opacity-90 w-full h-full object-cover"
+                      src="../../images/freysmilepatient1.jpg"
+                      alt="patient"
+                    />
+                  </div>
+                </div>
+        <div className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 rounded-full border border-[#BEFC24] bg-[#BEFC24] text-center p-2.5 left-0" style={{ height: '1.6rem', width: '1.6rem' }}></div>
+        <h3 className="font-altero uppercase stroke-text py-5 text-5xl">Payment Plans Are Available</h3>
+        <p className="pt-2">We offer a variety of payment plans at no interest</p>
+      </div>
+
+      <div  ref={addToRefs} className="relative border-b border-gray-600 py-8 pl-12 pr-12 border-r border-gray-600" >
+
+        <img
+                      className="rounded-full opacity-90 w-full h-full object-cover"
+                      src="../../images/carepatient2.png"
+                      alt="patient"
+                      style={{ objectPosition: "10% 50%" }}
+                    />
+        <div className="absolute top-1/2 transform -translate-y-1/2 translate-x-1/2 rounded-full border border-[#BEFC24] bg-[#BEFC24] text-center p-2.5 right-0" style={{ height: '1.6rem', width: '1.6rem' }}></div>
+        <h3 className="font-altero uppercase stroke-text py-5 text-5xl">Keep it in the fam</h3>
+        <p className="pt-2">Successive family members always receive the same excellent care. Ask about our family courtesies</p>
+      </div>
+
+      <div  ref={addToRefs} className="relative border-b border-gray-600 py-8 pl-12 pr-12 border-l border-gray-600" >
+      <img
+                      className="rounded-full opacity-90 w-full h-full object-cover"
+                      src="../../images/carepatient2.png"
+                      alt="patient"
+                      style={{ objectPosition: "10% 50%" }}
+                    />
+        <div className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 rounded-full border border-[#BEFC24] bg-[#BEFC24] text-center p-2.5 left-0" style={{ height: '1.6rem', width: '1.6rem' }}></div>
+        
+        <h3 className="font-altero uppercase stroke-text py-5 text-5xl">One Year Follow Up Included</h3>
+
+      </div>
+
+      <div  ref={addToRefs} className="relative border-b border-gray-600 py-8 pl-12 pr-12 border-r border-gray-600" >
+      <img
+                      className="rounded-full opacity-90 w-full h-full object-cover"
+                      src="../../images/carepatient2.png"
+                      alt="patient"
+                      style={{ objectPosition: "10% 50%" }}
+                    />
+        <div className="absolute top-1/2 transform -translate-y-1/2 translate-x-1/2 rounded-full border border-[#BEFC24] bg-[#BEFC24] text-center p-2.5 right-0" style={{ height: '1.6rem', width: '1.6rem' }}></div>
+        <p className="pt-2">lets get started</p>
+      </div>
     </div>
-  )
-}
-
-function Images() {
-  const panelsRef = useRef(null)
-
-  // useIsomorphicLayoutEffect(() => {
-  //   gsap.registerPlugin(ScrollTrigger)
-  //   let panels = gsap.utils.toArray(".panel")
-
-  //   const ctx = gsap.context(() => {
-  //     gsap.to(panels, {
-  //       yPercent: 0,
-  //       ease: "none",
-  //       scrollTrigger: {
-  //         trigger: ".wrapper",
-  //         pin: true,
-  //         scrub: true,
-  //         snap: 1 / (panels.length - 1),
-  //         start: "top top",
-  //         end: "bottom bottom",
-  //       }
-  //     })
-  //   }, panelsRef)
-  //   return () => ctx.revert()
-  // }, [])
-
-  useGSAP(() => {
-    const panels = gsap.utils.toArray(".panel")
-    panels.forEach((panel) => {
-      gsap.to(panel, {
-        yPercent: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".wrapper",
-          pin: true,
-          scrub: true,
-          snap: 1 / (panels.length - 1),
-          start: "top top",
-          end: "bottom bottom",
-        }
-      })
-    })
-  }, { scope: panelsRef })
-
-  return (
-    <div ref={panelsRef} className="hidden h-full md:block wrapper">
-      {details.map((detail, index) => (
-             <figure
-             key={index}
-             className="flex flex-col items-center justify-center w-4/5 h-screen mx-auto overflow-hidden panel"
-           >
-             <img
-               src={detail.img}
-               alt={detail.alt}
-               style={{
-                 width: index === 2 ? '70%' : '100%', 
-                 margin: index === 2 ? 'auto' : '',    
-                 borderRadius: '1rem',
-                 height: 'auto'
-               }}
-             />
-           </figure>
-      ))}
-    </div>
-  )
+  );
 }
