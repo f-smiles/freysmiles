@@ -1,13 +1,28 @@
 /** @type {import('tailwindcss').Config} */
+
+
 module.exports = {
+  theme: {
+    extend: {
+      rotate: {
+        '2': '2deg',
+        '-2': '-2deg',
+        '5': '5deg',
+        '-5': '-deg'
+      }
+    }
+  },
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./node_modules/tw-elements/dist/js/**/*.js" 
   ],
   theme: {
     fontFamily: {
       'cera': "CeraProRegular",
+      'iCiel-Gotham-Ultra':"iCiel-Gotham-Ultra",
+      'poppins':"Poppins",
       'didot': "Didot",
       'geomanist':"Geomanist-Regular",
       'Chaney-Ultra':"Chaney-Ultra",
@@ -94,6 +109,8 @@ module.exports = {
   },
   plugins: [
     require('@headlessui/tailwindcss')({ prefix: 'ui' }),
+    require('tw-elements/dist/plugin.cjs'),
     require('@tailwindcss/forms'),
+
   ],
 }

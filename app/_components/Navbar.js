@@ -31,8 +31,7 @@ export default function Navbar() {
   const patient_links = [
     { name: "Your Care", href: "/your-care" },
     { name: "Financing Treatment", href: "/financing-treatment" },
-    { name: "Virtual Consultation", href: "/virtual-consultation" },
-    { name: "Caring For Your Braces", href: "/caring-for-your-braces" },
+
   ]
 
   const treatments_links = [
@@ -138,24 +137,30 @@ export default function Navbar() {
     }
   })
 
+  
+
   return (
     <header>
       {/* <CustomCursor /> */}
 
       {/* DESKTOP NAVBAR */}
+
       <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-40 hidden w-full mb-[6vh] lg:block">
         <div className="custom-cursor" />
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
             <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md shadow-zinc-300 hover:bg-primary-50/60 active:bg-primary-50/80">
+
               <Link href="/" className="inline-block p-4">
                 {/* <HomeIcon className="w-4 h-4" /> */}
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
+
             <li onClick={handleToggleAbout} className="target-link">
               <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">About</p>
               {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
+
             </li>
             {/* ABOUT PANEL */}
             <Transition.Root show={about} as={Fragment}>
@@ -240,6 +245,7 @@ export default function Navbar() {
             <li onClick={handleTogglePatient} className="target-link">
               <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Patient</p>
               {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
+
             </li>
             {/* PATIENT PANEL */}
             <Transition.Root show={patient} as={Fragment}>
@@ -324,6 +330,7 @@ export default function Navbar() {
             <li onClick={handleToggleTreatments} className="target-link">
               <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Treatments</p>
               {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
+
             </li>
             {/* TREATMENTS PANEL */}
             <Transition.Root show={treatments} as={Fragment}>
@@ -575,6 +582,7 @@ export default function Navbar() {
               >
                 <p className="text-sm font-medium tracking-wider text-center uppercase text-primary-95 hover:text-secondary-95">Book Now</p>
                 {/* Book Now */}
+
               </Link>
             </li>
           </ul>
