@@ -1,91 +1,74 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
+import PurpleOrange from "../../public/images/PurpleOrange.js";
+import { SplitText } from "gsap-trial/all";
 import { motion, useScroll } from "framer-motion";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
+
+const Layer = ({ colorClass }) => {
+  return (
+    <div
+      className={`absolute top-0 left-0 right-0 h-full w-full ${colorClass}`}
+    ></div>
+  );
+};
+
 const OurTeam = () => {
+
+  
   gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(SplitText);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const headerRevealAnimation = gsap.to(".header-reveal", {
-      scale: 1,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".headerFirst",
-        start: "top top",
-        scrub: 1,
-        pin: true,
-        end: "+=1000",
-        onEnter: () =>
-          gsap.to("body", { backgroundColor: "black", duration: 1 }),
-        onLeaveBack: () =>
-          gsap.to("body", { backgroundColor: "originalColor", duration: 1 }),
-      },
-    });
-
-    gsap.fromTo(
-      ".headline",
-      { scale: 1, autoAlpha: 1 },
-      {
-        scale: 20,
-        autoAlpha: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".intro",
-          start: "top top",
-          end: "bottom 50%",
-          scrub: true,
-        },
-      }
-    );
-    gsap.to(".left-img", {
-      yPercent: -30,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".art-wrapper",
-        scrub: 1,
-      },
-    });
-
-    gsap.to(".right-img", {
-      yPercent: -10,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".art-wrapper",
-        scrub: 1,
-      },
-    });
-
-    gsap.to(".titel", {
-      yPercent: -0,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".art-wrapper",
-        scrub: 1,
-        end: "100px",
-      },
-    });
-
     return () => {
       if (ScrollTrigger) {
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       }
     };
   }, []);
+
   const [index, setIndex] = useState(1);
   const [switchDoctor, setSwitchDoctor] = useState(false);
+  const [animationPlayed, setAnimationPlayed] = useState(false);
 
-  const toggleSwitchDoctor = () => {
-    setSwitchDoctor(!switchDoctor);
+  const doctorBioRef = useRef(null);
+
+const toggleSwitchDoctor = () => {
+  setSwitchDoctor(prevState => !prevState);
+  setAnimationPlayed(false); 
+};
+useEffect(() => {
+  const clearAnimation = () => {
+    gsap.killTweensOf(doctorBioRef.current);
+  };
+  const startAnimation = () => {
+    const doctorBio = doctorBioRef.current;
+    if (doctorBio) {
+      const splitText = new SplitText(doctorBio, { type: 'lines' });
+      gsap.from(splitText.lines, {
+        duration: 2,
+        xPercent: 20,
+        autoAlpha: 0,
+        ease: 'expo.out',
+        stagger: 0.12,
+  
+      });
+    }
   };
 
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+  if (doctorBioRef.current) {
+    clearAnimation();
+    startAnimation();
+  }
+  return () => clearAnimation();
+}, [switchDoctor]);
 
+  useEffect(() => {
     const container = document.querySelector(".horizontalScroller");
     const containerWidth =
       container.scrollWidth - document.documentElement.clientWidth;
@@ -104,40 +87,10 @@ const OurTeam = () => {
     });
   }, []);
 
-  const teamRef = useRef(null);
-  const doctorRef = useRef(null);
-
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    if (teamRef.current && doctorRef.current) {
-      const team = teamRef.current;
-      const doctor = doctorRef.current;
-
-      gsap.set(doctor, { opacity: 0 });
-
-      const teamTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: team,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-        onComplete: () => {
-          gsap.to(doctor, { opacity: 1, duration: 0.5 });
-        },
-      });
-
-      teamTimeline
-        .to(team, { scale: 10, ease: "none" })
-        .to(team.parentNode, { backgroundColor: "black", ease: "none" }, 0);
-    }
-  }, []);
-
   const imagesRef = useRef([]);
   imagesRef.current = [];
 
-  const addToRefs = el => {
+  const addToRefs = (el) => {
     if (el && !imagesRef.current.includes(el)) {
       imagesRef.current.push(el);
     }
@@ -145,233 +98,517 @@ const OurTeam = () => {
 
   useEffect(() => {
     imagesRef.current.forEach((img, index) => {
-      gsap.fromTo(img, 
-        { y: 100, opacity: 0 }, 
+      gsap.fromTo(
+        img,
+        { y: 100, opacity: 0 },
         {
-          y: 0, 
-          opacity: 1, 
+          y: 0,
+          opacity: 1,
           scrollTrigger: {
             trigger: img,
             start: "top bottom-=100",
             toggleActions: "play none none reverse",
             ease: "power3.out",
-          }
+          },
         }
       );
     });
   }, []);
 
+  const svgRef = useRef(null);
+  const circleRef = useRef(null);
 
+  useEffect(() => {
+    const circle = circleRef.current;
+    if (!circle) {
+      console.error("Circle element is not available");
+      return;
+    }
+    const calculateMaxRadius = () => {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      return Math.sqrt(screenWidth ** 2 + screenHeight ** 2) / 2;
+    };
+
+    let initialRadius = 60;
+    gsap.set(circle, { attr: { r: initialRadius } });
+
+    const circleTl = gsap.timeline({
+      onComplete: () => {
+        gsap.to(".content", { autoAlpha: 1, duration: 1 });
+      },
+    });
+
+    circleTl.to(circle, { attr: { r: calculateMaxRadius() }, duration: 3 });
+
+    return () => {
+      gsap.killTweensOf(circle);
+    };
+  }, []);
+
+  useEffect(() => {
+    const layer = document.querySelector(".layer");
+
+    const tl = gsap.timeline();
+
+    tl.to(layer, {
+      clipPath: "circle(71% at 50% 50%)",
+      duration: 1,
+      ease: "power1.inOut",
+    }).to(layer, {
+      clipPath: "circle(0% at 50% 50%)",
+      duration: 1,
+      ease: "power1.inOut",
+    });
+  }, []);
+
+  const [svgs, setSvgs] = useState([]);
+  const svgWidth = 200;
+  useEffect(() => {
+    setSvgs((prevSvgs) => {
+      const newSvg = {
+        id: `svg-${Date.now()}`,
+        right: svgWidth * 4,
+      };
+
+      const overlapAdjustment = 1;
+
+      const updatedSvgs = prevSvgs
+        .map((svg) => ({
+          ...svg,
+          right: svg.right - svgWidth + overlapAdjustment,
+        }))
+        .filter((svg) => svg.right >= -svgWidth)
+        .concat(newSvg);
+
+      return updatedSvgs;
+    });
+    const intervalId = setInterval(() => {
+      setSvgs((prevSvgs) => {
+        const newSvg = {
+          id: `svg-${Date.now()}`,
+          right: svgWidth * 4,
+        };
+
+        const updatedSvgs = prevSvgs
+          .map((svg) => ({ ...svg, right: svg.right - svgWidth }))
+          .filter((svg) => svg.right >= -svgWidth)
+          .concat(newSvg);
+
+        return updatedSvgs;
+      });
+    }, 2000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const items = [
+    {
+      title: '5',
+      num: 'Adriana',
+      imgSrc: '/../../images/team_members/Adriana-Photoroom.jpg'
+    },
+    {
+      title: '7',
+      num: 'Alyssa',
+      imgSrc: '/../../images/team_members/Alyssascan.png'
+    },
+    {
+      title: '6',
+      num: 'Dana',
+      imgSrc: '/../../images/team_members/Dana-Photoroom.png'
+    },
+   
+   
+    {
+      title: '2',
+      num: 'Elizabeth',
+      imgSrc: '/../../images/team_members/Elizabethaao.png'
+    },
+ 
+       {
+      title: '4',
+      num: 'Grace',
+      imgSrc: '/../../images/team_members/Grace-Photoroom.jpg'
+    },
+    {
+      title: '1',
+      num: 'Lexi',
+      imgSrc: '/../../images/team_members/Lexigreen.png'
+    },
+    {
+      title: '8',
+      num: 'Lizzie',
+      imgSrc: '/../../images/team_members/Lizzie-Photoroom.png'
+    },
+    {
+      title: '3',
+      num: 'Nicolle',
+      imgSrc: '/../../images/team_members/Nicollewaving.png'
+    },
+    {
+      title: '9',
+      num: 'x',
+      imgSrc: '/../../images/team_members/Kayli-Photoroom.png'
+    }
+  ];
+  const [progress, setProgress] = useState(0);
+  const carouselRef = useRef();
+  const cursorRef = useRef();
+
+  const speedWheel = 0.02;
+  const speedDrag = -0.1;
+  let startX = 0;
+  let isDown = false;
+
+  const getZindex = (length, active) => {
+    return Array.from({ length }, (_, i) => (active === i ? length : length - Math.abs(active - i)));
+  };
+
+  const displayItems = (index, active, length) => {
+    const zIndex = getZindex(length, active)[index];
+    const activeFactor = (index - active) / length;
+    return {
+      '--zIndex': zIndex,
+      '--active': activeFactor,
+    };
+  };
+
+  const animate = () => {
+    const boundedProgress = Math.max(0, Math.min(progress, 100));
+    const active = Math.floor((boundedProgress / 100) * (carouselRef.current.children.length - 1));
+    Array.from(carouselRef.current.children).forEach((item, index) => {
+      const styles = displayItems(index, active, carouselRef.current.children.length);
+      Object.keys(styles).forEach(key => item.style.setProperty(key, styles[key]));
+    });
+  };
+
+  useEffect(animate, [progress]);
+
+
+  useEffect(() => {
+    const handleWheel = (e) => {
+      const wheelProgress = e.deltaY * speedWheel;
+      setProgress(progress => progress + wheelProgress);
+    };
+
+    const handleMouseMove = (e) => {
+  
+      if (e.type === 'mousemove' && cursorRef.current) {
+        cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+      }
+
+      if (!isDown) return;
+      const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+      const mouseProgress = (x - startX) * speedDrag;
+      setProgress(progress => progress + mouseProgress);
+      startX = x;
+    };
+
+    const handleMouseDown = (e) => {
+      isDown = true;
+      startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    };
+
+    const handleMouseUp = () => {
+      isDown = false;
+    };
+
+    document.addEventListener('wheel', handleWheel);
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchstart', handleMouseDown);
+    document.addEventListener('touchmove', handleMouseMove);
+    document.addEventListener('touchend', handleMouseUp);
+
+    return () => {
+  
+      document.removeEventListener('wheel', handleWheel);
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchstart', handleMouseDown);
+      document.removeEventListener('touchmove', handleMouseMove);
+      document.removeEventListener('touchend', handleMouseUp);
+    };
+  }, []);
+
+
+  const [position, setPosition] = useState({ x: -100, y: -100 });
+  const [className, setClassName] = useState('');
+
+  useEffect(() => {
+    const updatePosition = (e) => {
+      if (carouselRef.current) {
+        const rect = carouselRef.current.getBoundingClientRect();
+        const isInCarousel = (
+          e.clientX >= rect.left &&
+          e.clientX <= rect.right &&
+          e.clientY >= rect.top &&
+          e.clientY <= rect.bottom
+        );
+        if (isInCarousel) {
+          setPosition({ x: e.clientX, y: e.clientY });
+          setClassName(''); 
+        } else {
+          setClassName('hidden'); 
+        }
+      }
+    };
+
+    window.addEventListener('mousemove', updatePosition);
+
+    return () => {
+      window.removeEventListener('mousemove', updatePosition);
+    };
+  }, []);
+
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setPosition({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseDown = () => {
+      setIsDragging(true);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
+  const cursorStyle = {
+    position: 'fixed',
+    left: `${position.x}px`,
+    top: `${position.y}px`,
+    transform: 'translate(-50%, -50%)',
+    pointerEvents: 'none',
+    zIndex: 99,
+    willChange: 'transform',
+  };
+
+  const cursorCircleStyle = {
+    width: isDragging ? '64px' : '128px', 
+    height: isDragging ? '64px' : '128px', 
+    marginTop: '-50%',
+    marginLeft: '-50%',
+    borderRadius: '50%',
+    border: 'solid 1px #0058EF',
+    backgroundColor: '#0058EF',
+    color: 'white',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '20px',
+    transition: 'width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1)', // Add transition for size change
+  };
+
+
+
+
+  const [cursorPosition, setCursorPosition] = useState({ x: -100, y: -100 });
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      setCursorPosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', moveCursor);
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+    };
+  }, []);
+
+  const greenCursorStyle = {
+    position: 'fixed',
+    left: `${cursorPosition.x}px`,
+    top: `${cursorPosition.y}px`,
+    width: isFocused ? '100px' : '40px',
+    height: isFocused ? '100px' : '40px',
+    borderRadius: '50%',
+    backgroundColor: isFocused ? 'rgb(190,255,3)' : '#FFFFFF',
+    pointerEvents: 'none',
+    opacity: .7,
+    transform: 'translate(-50%, -50%)',
+    transition: 'width 0.5s, height 0.5s, background-color 0.25s',
+    zIndex: 9999
+  }; 
   return (
     <>
-      {/* <section
-        className="headerFirst"
-        style={{
-          height: "100vh",
-          maxWidth: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 2,
-          paddingTop: "10vh"
+    <div className="bg-[#E2E2E2]">
+      <div
+        className="layer circle-animation absolute top-0 left-0 w-full h-full gradient-green z-10"
+        ref={circleRef}
+      ></div>
+      <div className="content relative z-0"></div>
+
+      <div className="relative">
+  
+      </div>
+      <section className=" py-24 sm:py-32">
+      <div >
      
-        }}
-      >
-        <div className="header-reveal  text-8xl"
-        ></div>
-        <h1
-          className="font-novela-regular headline text-white"
-          style={{
-            textAlign: "center",
-            fontSize: "4rem",
-            textTransform: "uppercase",
-            zIndex: 10,
-          }}
-        >
-          MEET OUR TEAM
-        </h1>
+    </div>
+        <div className="w-full px-6 mx-auto mb-12 lg:px-8 max-w-7xl">
 
-      </section> */}
-
-      <section className="main-section">
-        <div className="section__content">
-          <svg ref={teamRef}>
-            <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle">
-              Meet Our Team
-            </text>
-          </svg>
-        </div>
-      </section>
-
-      <section className="main-section">
-        <div className="section__content">
-          <p ref={doctorRef}>
-            <div className="text-white font-didot flex justify-center items-center">
-              <h2 className="text-[100px] m-0 text-center leading-[0.9] vertical-text">
-                Our
-              </h2>
-              <h2 className="text-[100px] m-0 text-center leading-[0.9] normal-text">
-                Doctors
-              </h2>
+          <h1 className="font-poppins text-[90px] tracking-tight">
+           Meet Our
+            <div style={{ fontStyle: "italic", fontSize: "inherit" }}>
+              Doctors
             </div>
-          </p>
+          </h1>
+
+          {/* <h1 className="font-poppins tracking-tight">
+  <span style={{ fontSize: "3em" }}>
+    <span style={{ fontStyle: 'italic', fontSize: 'inherit' }}>M</span>eet
+  </span>
+  <span style={{ fontSize: '2em' }}>Our</span>
+  <div style={{ fontSize: '3em' }}>
+    <span style={{ fontStyle: 'italic', fontSize: 'inherit' }}>D</span>octors
+  </div>
+</h1> */}
         </div>
-      </section>
-
-      <section
-        className="text-wrapper"
-        style={{
-          height: "100vh",
-          // paddingTop:"-10rem",
-          maxWidth: "100%",
-          flexDirection: "column",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 2,
-        }}
-      >
-        <div className="imageContainer art-wrapper">
-          <div
-            className="collumn"
-            style={{ position: "relative", display: "inline-block" }}
-          >
-            <img
-              src="../../images/bannerright.svg"
-              alt=""
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "80%",
-                height: "80%",
-                objectFit: "contain",
-              }}
-            />
-
+        <div className="grid grid-cols-12 gap-8 px-6 mx-auto max-w-7xl lg:px-8">
+          <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
+            {/* slider controls */}
             <div
               id="controls"
-              style={{
-                position: "absolute",
-                top: "10%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                zIndex: 10,
-              }}
+              className="flex items-center justify-start row-span-1 row-start-1 space-x-4"
             >
               <button
-                className="border-white z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
+                className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
                 onClick={toggleSwitchDoctor}
               >
-                <ArrowLeftIcon className="w-5 h-5" style={{ color: "white" }} />
+                <ArrowLeftIcon className="w-5 h-5" />
               </button>
-              <span className="text-white">
-                0{!switchDoctor ? index : index + 1} - 02
-              </span>
+              <span className="font-poppins">0{!switchDoctor ? index : index + 1} - 02</span>
               <button
-                className="border-white z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
+                className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
                 onClick={toggleSwitchDoctor}
               >
-                <ArrowRightIcon
-                  className="w-5 h-5"
-                  style={{ color: "white" }}
-                />
+                <ArrowRightIcon className="w-5 h-5" />
               </button>
             </div>
+            <div className="row-span-1 row-start-2">
+              {/* doctor bio */}
 
-            <div
-              style={{
-                position: "absolute",
-                bottom: "10%",
-                left: "10%",
-                zIndex: 10,
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                borderRadius: "10px",
-                backdropFilter: "blur(10px)",
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                padding: "20px",
-                maxWidth: "80%",
-              }}
-            >
-              <div className="text-white row-span-1 row-start-2">
-                {/* doctor bio */}
-                {switchDoctor ? (
-                  <p>
-                    Dr. Daniel Frey graduated from high school in 2005. He then
-                    pursued his pre-dental requisites at the University of
-                    Pittsburgh, majoring in Biology. Dr. Frey excelled in his
-                    studies and was admitted to Temple University&apos;s dental
-                    school, graduating at the top of his class with the
-                    prestigious Summa Cum Laude designation. Continuing his
-                    education, Dr. Frey was admitted to the esteemed orthodontic
-                    residency program at the University of the Pacific in San
-                    Francisco where he worked with students and faculty from
-                    around the world and utilized cutting-edge orthodontic
-                    techniques. During his time in San Francisco, he conducted
-                    research in three-dimensional craniofacial analysis and
-                    earned his Master of Science degree. Dr. Frey is a member of
-                    the American Association of Orthodontists and the American
-                    Dental Association. In his leisure time, he enjoys staying
-                    active outdoors, camping, playing music, and spending time
-                    with loved ones.
-                  </p>
-                ) : (
-                  <p>
-                    Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
-                    graduated from Temple University School of Dentistry with
-                    honors and served in the U.S. Navy Dental Corps before
-                    establishing his practice in the Lehigh Valley. He is a
-                    Diplomat of the American Board of Orthodontics and has
-                    received numerous distinctions, accreditations, and honors,
-                    including being named one of America&apos;s Top
-                    Orthodontists by the Consumer Review Council of America.
-                    This distinction is held by fewer than 25% of orthodontists
-                    nationwide. ABO certification represents the culmination of
-                    5-10 years of written and oral examinations and independent
-                    expert review of actual treated patients. Recently Dr. Frey
-                    voluntarily re-certified. Dr. Frey enjoys coaching soccer,
-                    vintage car racing, and playing the drums.
-                  </p>
-                )}
-              </div>
+              {switchDoctor ? (
+                <p ref={doctorBioRef} className="font-helvetica-now-thin heading">
+                  Dr. Daniel Frey pursued his pre-dental requisites at the University of
+                  Pittsburgh, majoring in Biology. Dr. Frey excelled in his
+                  studies and was admitted to Temple University&apos;s dental
+                  school, graduating at the top of his class with the
+                  prestigious Summa Cum Laude designation. Continuing his
+                  education, Dr. Frey was admitted to the esteemed orthodontic
+                  residency program at the University of the Pacific in San
+                  Francisco where he worked with students and faculty from
+                  around the world and utilized cutting-edge orthodontic
+                  techniques. During his time in San Francisco, he conducted
+                  research in three-dimensional craniofacial analysis and earned
+                  his Master of Science degree. Dr. Frey is a member of the
+                  American Association of Orthodontists and the American Dental
+                  Association. In his leisure time, he enjoys staying active
+                  outdoors, camping, playing music, and spending time with loved
+                  ones.
+                </p>
+              ) : (
+                <p ref={doctorBioRef} className="font-helvetica-now-thin  heading">
+                  Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
+                  graduated from Temple University School of Dentistry with
+                  honors and served in the U.S. Navy Dental Corps before
+                  establishing his practice in the Lehigh Valley. He is a
+                  Diplomat of the American Board of Orthodontics and has
+                  received numerous distinctions, accreditations, and honors,
+                  including being named one of America&apos;s Top Orthodontists
+                  by the Consumer Review Council of America. This distinction is
+                  held by fewer than 25% of orthodontists nationwide. ABO
+                  certification represents the culmination of 5-10 years of
+                  written and oral examinations and independent expert review of
+                  actual treated patients. Recently Dr. Frey voluntarily
+                  re-certified. Dr. Frey enjoys coaching soccer, vintage car
+                  racing, and playing the drums.
+                </p>
+              )}
+              
             </div>
           </div>
-
-          <div className="collumn">
-            <figure className="w-full aspect-[3/4] h-max overflow-hidden flex items-start">
+          <div className="col-span-5 lg:col-span-3 lg:col-start-7">
+            <figure className="relative w-full aspect-[3/4] overflow-hidden">
               <img
-                className={`${
-                  switchDoctor ? "right" : "switch-right"
-                } mid-image object-contain w-full transition-all duration-2000`}
-                src="../../images/team_members/GreggFrey.jpg"
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  transition: "transform 1s",
+                  transform: switchDoctor
+                    ? "translateX(100%)"
+                    : "translateX(0)",
+                }}
+                src="../../images/team_members/GreggFrey.png"
                 alt="Dr. Gregg Frey"
               />
               <img
-                className={`${
-                  switchDoctor ? "left" : "switch-left"
-                } mid-image object-contain w-full transition-all duration-2000`}
-                src="../../images/team_members/DanFrey.jpg"
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  transition: "transform 1s",
+                  transform: switchDoctor
+                    ? "translateX(0)"
+                    : "translateX(-100%)",
+                }}
+                src="../../images/team_members/DanFrey.png"
                 alt="Dr. Daniel Frey"
               />
             </figure>
+            <figcaption >
+  <h5 className="font-helvetica-now-thin">
+    {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
+  </h5>
+  <p className="font-helvetica-now-thin">
+    {!switchDoctor ? "DDS" : "DMD, MSD"}
+  </p>
+</figcaption>
           </div>
-          <div className="collumn">
+          <div className="col-span-5 lg:col-span-2 lg:col-start-11">
             <figure
-              className="grayscale h-max w-full aspect-[3/4] overflow-hidden flex items-start hover:cursor-pointer"
+              className="relative grayscale w-full aspect-[3/4] overflow-hidden cursor-pointer"
               onClick={toggleSwitchDoctor}
             >
               <img
-                className={`${
-                  switchDoctor ? "right" : "switch-right"
-                } right-image object-contain w-full transition-all duration-2000`}
-                src="../../images/team_members/DanFrey.jpg"
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  transition: "transform 1s",
+                  transform: switchDoctor
+                    ? "translateX(0)"
+                    : "translateX(-100%)",
+                }}
+                src="../../images/team_members/GreggFrey.png"
                 alt="Dr. Daniel Frey"
               />
               <img
-                className={`${
-                  switchDoctor ? "left" : "switch-left"
-                } right-image object-contain w-full transition-all duration-2000`}
-                src="../../images/team_members/GreggFrey.jpg"
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  transition: "transform 1s",
+                  transform: switchDoctor
+                    ? "translateX(100%)"
+                    : "translateX(0)",
+                }}
+                src="../../images/team_members/DanFrey.png"
                 alt="Dr. Gregg Frey"
               />
             </figure>
@@ -379,70 +616,67 @@ const OurTeam = () => {
         </div>
       </section>
       <>
-        <div style={{ backgroundImage: 'url("../images/purplegradientwithoutstar.png")', backgroundSize: '100% auto' }} className=" horizontalContainer">
+
+
+      <div style={greenCursorStyle}>
+        <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+         Click 
+        </span>
+      </div>
+        <div
+    onMouseEnter={() => setIsFocused(true)}
+    onMouseLeave={() => setIsFocused(false)}
+          className=" horizontalContainer"
+        >
+
           <div className="horizontalWrapper">
             <div className="horizontalScroller">
               <div className="horizontalRow">
-                <div className="horizontalItem horizontalFilled">
-                  <p className="sm:text-left md:text-center">
-                    Our members have received the designation of Specialized
-                    Orthodontic Assistant . This is a voluntary certification
-                    program started by the American Association of Orthodontists
-                    to recognize those in the profession for their knowledge and
-                    experience.
-                  </p>
+              <div className="horizontalItem horizontalFilled">
+  <a 
+    href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/" 
+    className="horizontalItemLink"
+  >
+    <p className="sm:text-left md:text-center">
+      Our members have received the designation of Specialized Orthodontic Assistant. This is a voluntary certification program started by the American Association of Orthodontists to recognize those in the profession for their knowledge and experience.
+    </p>
+   
+  </a>
+</div>
 
-                  <a
-                    href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/"
-                    className="horizontalItemLink"
-                  >
-                    <span className="link-text" data-text="Check our content">
-                      Learn More
-                    </span>
-                  </a>
-                </div>
                 <div className="horizontalItem horizontalFilled">
-                  <p className="text-3xl">...and first aid</p>
+                  <p >  Fun fact-our team is made up of former FreySmiles
+                    patients, something we think is important, because we have
+                    all experienced treatment and can help guide you through it.</p>
+                  <img className="w-90 h-90 absolute bottom-0" src="../images/threedots.svg" alt="Green Squiggle" />
                 </div>
-                <div className="horizontalItem horizontalBig">
-                  <p>
-                    This office is on 🔥! The orthodontists as well as every
-                    single staff member. Keary Riddick
-                  </p>
-                  <a
-                    href="https://g.co/kgs/Sds93Ha"
-                    className="horizontalItemLink"
-                  >
-                    <span className="link-text" data-text="Check it out">
-                      Check it out
-                    </span>
-                  </a>
-                </div>
+                <a href="https://g.co/kgs/Sds93Ha" className="horizontalItem horizontalBig">
+  <p>
+    This office is on 🔥! The orthodontists as well as every
+    single staff member.
+  </p>
+  <span className="link-text" data-text="Check it out">
+    Keary Riddick
+  </span>
+</a>
+
               </div>
               <div className="horizontalRow">
                 <div className="horizontalItem horizontalBig">
-                  <p>Trained in CPR</p>
+                  <p>Trained in CPR and first aid</p>
                 </div>
+                <div className="horizontalItem horizontalFilled ">
+  <a href="https://g.co/kgs/YkknjNg" className="horizontalItemLink">
+
+    <p className> 
+      Had a wonderful experience at FreySmiles. Everyone is extremely professional, polite, timely. Would highly recommend! -TK
+    </p><span>  <img className="w-90 h-auto -mt-80  " src="../images/fivestars.svg" alt="Green Squiggle" /></span>
+  </a>
+</div>
+
                 <div className="horizontalItem horizontalFilled">
                   <p>
-                    5 stars Had a wonderful experience at FreySmiles. Everyone
-                    is extremely professional, polite, timely. Would highly
-                    recommend! -TK
-                  </p>
-                  <a
-                    href="https://g.co/kgs/YkknjNg"
-                    className="horizontalItemLink"
-                  >
-                    <span className="link-text" data-text="Check it out">
-                      Check it out
-                    </span>
-                  </a>
-                </div>
-                <div className="horizontalItem horizontalFilled">
-                  <p>
-                    Fun fact 2:Our team is made up of former FreySmiles
-                    patients, something we think is important, because we have
-                    all experienced treatment and can help guide you through it.
+                  Our team members are X-ray certified.
                   </p>
                 </div>
                 <div className="horizontalItem horizontalFilled">
@@ -457,120 +691,54 @@ const OurTeam = () => {
             </div>
           </div>
         </div>
+        <div className="svg-container">
+            {svgs.map((svg) => (
+              <div
+                key={svg.id}
+                className="svg-wrapper"
+                style={{
+                  position: "absolute",
+                  right: `${svg.right}px`,
+                  transition: "right 2s ease-out",
+                }}
+              >
+                <svg
+                  width={svgWidth}
+                  height={svgWidth}
+                  viewBox="0 0 200 200"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M100,0 A100,100 0 0,1 100,200 A100,100 0 0,1 100,0 Z"
+                    fill="#F3F2ED"
+                  />
+                </svg>
+              </div>
+            ))}
+          </div>
+        <div ref={carouselRef} className="relative z-10 h-screen overflow-hidden pointer-events-none">
+           <div id="cursor" style={cursorStyle} className={className}>
+           <div className="cursor__circle" style={cursorCircleStyle}>
+            Drag
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+</svg>
 
-        <section className="bg-white grid grid-cols-3 gap-4" >
+        </div>
+    </div>
+      {items.map(item => (
+        <div key={item.num} className="carousel-item">
+          <div className="carousel-box">
+            <div className="titleCard">{item.title}</div>
+            <div className="numCard">{item.num}</div>
+            <img src={item.imgSrc} alt={item.title} />
+          </div>
+        </div>
+      ))}
+    </div>
 
-        <div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
-        <img className="members-style" src="/../../images/team_members/kayli.png" alt="Kayli" />
-        <img
-          src="../images/kaylitag.png" 
-          className="w-96"
-          alt="Tag" 
-          style={{ 
-            position: 'absolute',
-            left: '70%', 
-            top: '55%', 
-            transform: 'translate(-50%, -50%)' 
-          }}
-        />
-      </div>
-
-<div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
-  <img className="members-style" src="/../../images/team_members/lexi.png" alt="Lexi" />
-  <img
-    className="w-96"
-    src="/../../images/lexi_tag.png" 
-    alt="Elizabeth Tag" 
-    style={{ position: 'absolute', left: '50%', top: '70%', transform: 'translate(-50%, -50%)' }}
-  />
-</div>
-
-      <div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
-        <img className="members-style" src="/../../images/team_members/elizabeth2.png" alt="Elizabeth" />
-        <img
-           className="w-96"
-          src="../images/elizabeth_tag.png" 
-          alt="Elizabeth Tag" 
-          style={{ 
-            position: 'absolute',
-            left: '70%', 
-            top: '55%', 
-            transform: 'translate(-50%, -50%)' 
-          }}
-        />
-      </div>
-      <div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
-        <img className="w-full h-full object-cover" src="/../../images/team_members/nicolle.png" alt="Nicolle" />
-        <img
-          src="../images/nicolletag.png" 
-          className="w-96"
-          alt="Nicolle Tag"
-          style={{ 
-            position: 'absolute',
-            left: '70%', 
-            top: '55%', 
-            transform: 'translate(-50%, -50%)' 
-          }}
-        />
-      </div>
-      <div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
-  <img className="w-full h-full object-cover" src="/../../images/team_members/grace.png" alt="Grace" />
-  <img
-    className="w-96"
-    src="/../../images/gracetag.png" 
-    alt="Grace Tag" 
-    style={{ position: 'absolute', left: '65%', top: '60%', transform: 'translate(-50%, -50%)' }}
-  />
-</div>
-
-<div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
-  <img className="w-full h-full object-cover" src="/../../images/team_members/adrianacapsule.png" alt="Adriana" />
-  <img
-    className="w-96"
-    src="/../../images/adrianatag.png" 
-    alt="Elizabeth Tag" 
-    style={{ position: 'absolute', left: '40%', top: '70%', transform: 'translate(-50%, -50%)' }}
-  />
-</div>
-
-
-<div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
-  <img className="w-full h-full object-cover" src="/../../images/team_members/dana.png" alt="Dana" />
-  <img
-    className="w-96"
-    src="/../../images/danatag.png" 
-    alt="Elizabeth Tag" 
-    style={{ position: 'absolute', left: '40%', top: '70%', transform: 'translate(-50%, -50%)' }}
-  />
-</div>
-
-<div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
-  <img className="w-full h-full object-cover" src="/../../images/team_members/alyssa.png" alt="Alyssa" />
-  <img
-    className="w-96"
-    src="/../../images/alyssatag.png" 
-    alt="Elizabeth Tag" 
-    style={{ position: 'absolute', left: '40%', top: '70%', transform: 'translate(-50%, -50%)' }}
-  />
-</div>
-
-<div ref={addToRefs} className="relative team-container" style={{ padding: 0, margin: 0, position: 'relative' }}>
-  <img className="w-full h-full object-cover" src="/../../images/team_members/lizzie.png" alt="Lizzie" />
-  <img
-    className="w-96"
-    src="/../../images/lizzietag.png" 
-    alt="Lizzie Tag" 
-    style={{ position: 'absolute', left: '40%', top: '70%', transform: 'translate(-50%, -50%)' }}
-  />
-</div>
-
-
-</section>
-
-
-
- 
       </>
+      </div>
     </>
   );
 };

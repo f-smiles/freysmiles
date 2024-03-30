@@ -1,13 +1,15 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
+import { gsap } from "gsap-trial";
 // import emailjs from "@emailjs/browser";
-// import "tw-elements";
-// import { Datepicker, Input, initTE } from "tw-elements";
+import "tw-elements";
+import { Datepicker, Input, initTE } from "tw-elements";
 // import { init } from "emailjs-com";
 import { Disclosure } from "@headlessui/react";
 
 // import classNames from 'classnames';
 import { motion, useAnimation } from "framer-motion";
+
 // import Circle from "./svg/Circle"
 
 // init(process.env.REACT_APP_PUBLIC_KEY);
@@ -43,9 +45,9 @@ const BookNow = () => {
   ]);
 
   const [appointmentType, setAppointmentType] = useState([
-    { type: "Missed Appointment", clicked: false },
-    { type: "Request Consultation", clicked: false },
-    { type: "Need Elastics", clicked: false },
+    { type: "Reschedule", clicked: false },
+    { type: "Consultation", clicked: false },
+    { type: "Elastics", clicked: false },
     { type: "Emergency", clicked: false },
   ]);
 
@@ -114,9 +116,9 @@ const BookNow = () => {
     setPreferredTime(selectedTimes);
   };
 
-  //   useEffect(() => {
-  //     initTE({ Datepicker, Input });
-  //   }, []);
+  useEffect(() => {
+    initTE({ Datepicker, Input });
+  }, []);
 
   const handleSubmit = () => {
     const emailRegex = /\S+@\S+\.\S+/;
@@ -182,56 +184,113 @@ const BookNow = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  const [typeOfAppointment, setTypeOfAppointment] = useState(null);
+  useEffect(() => {
+    gsap.set(".arrow", { yPercent: -100 });
+    gsap.to(".arrow", {
+      yPercent: 0,
+      repeat: -1,
+      ease: "expo.easeIn",
+      duration: 1,
+      repeatDelay: 1,
+    });
+  }, []);
   return (
-    <main className="">
+    <main
+      className="bg-center bg-stone-200 bg-contain"
+      style={{
+        backgroundImage: "url('../images/liquid.svg')",
+        width: "100%",
+
+        backgroundSize: "80% auto",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "-110% top",
+      }}
+    >
       <motion.div
         initial={{ clipPath: `circle(0% at 50% 50%)` }}
         animate={controls}
         transition={{ duration: 2, ease: "easeOut" }}
         style={{
           width: "100%",
-          // height: "200vh",
-          background: "#EAE0D4",
           overflow: "hidden",
         }}
       >
         <div className="flex">
           <div className="items-start w-1/2">
-            <img
-              src="../images/sayhello.png"
-              className="object-contain"
-            />
-            {/* <div className=" mt-10 text-center text-5xl mb-20" style={{letterSpacing:"px"}}>
-               SAY HELLO
-              </div>
-              <div className="text-center">We cant wait to meet you</div>
-
-              <div className="text-center">
-      <a className="underline" href="mailto:info@freysmiles.com">info@freysmiles.com</a>
-    </div>
-    <div className="flex justify-center items-center h-screen ">
-
-
-            <div className="w-1/5 max-w-xs">
-            <svg ref={svgRef} viewBox="0 0 10 10" className="w-full h-auto smiley">
-                    <circle className="smile"
-                            cx="5" cy="5" r="4"
-                            stroke="#51414F" strokeWidth=".75"
-                            strokeDasharray="11.5,13.6327"
-                            strokeLinecap="round"
-                            fill="transparent"
-                            style={{ strokeDashoffset: '-.5' }} />
-                    <circle className="eyes"
-                            cx="5" cy="5" r="4"
-                            stroke="#51414F" strokeWidth=".75"
-                            strokeDasharray="0,6.6327,0,17.5"
-                            strokeLinecap="round"
-                            fill="transparent"
-                            style={{ strokeDashoffset: '-15.5' }} />
-                </svg>
-
+            <div
+              className="font-iCiel-Gotham-Ultra text-[180px] mt-40 text-center text-8xl mb-20"
+              style={{ letterSpacing: "px" }}
+            >
+              SAY HELLO
             </div>
-        </div> */}
+            <div className="flex justify-evenly items-center w-full -mt-10">
+              <div className="font-helvetica-now-thin text-xl text-center">
+                <a
+                  className="hover:text-purple-500"
+                  href="mailto:info@freysmiles.com"
+                >
+                  • info@freysmiles.com
+                </a>
+              </div>
+              <div className="font-helvetica-now-thin text-lg text-center">
+                <a
+                  href="facetime://6104374748"
+                  className="hover:text-purple-500"
+                >
+                  • (610) 437-4748
+                </a>
+              </div>
+              <div className="text-center text-xl">
+                <div className="bg-body-bg text-blog-bg py-1.5 overflow-hidden whitespace-nowrap">
+                  <div className="animate-marquee">
+                    <a
+                      href="https://www.instagram.com/freysmiles/"
+                      className="hover:text-purple-500"
+                    >
+                      <span className="font-helvetica-now-thin mx-4">
+                        •@freysmiles
+                      </span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center items-center h-screen ">
+              <div className="w-1/5 max-w-xs">
+                <svg
+                  ref={svgRef}
+                  viewBox="0 0 10 10"
+                  className="w-full h-auto smiley"
+                >
+                  <circle
+                    className="smile"
+                    cx="5"
+                    cy="5"
+                    r="4"
+                    stroke="#51414F"
+                    strokeWidth=".75"
+                    strokeDasharray="11.5,13.6327"
+                    strokeLinecap="round"
+                    fill="transparent"
+                    style={{ strokeDashoffset: "-.5" }}
+                  />
+                  <circle
+                    className="eyes"
+                    cx="5"
+                    cy="5"
+                    r="4"
+                    stroke="#51414F"
+                    strokeWidth=".75"
+                    strokeDasharray="0,6.6327,0,17.5"
+                    strokeLinecap="round"
+                    fill="transparent"
+                    style={{ strokeDashoffset: "-15.5" }}
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
           <div className="w-1/2">
             <div id="contact-form">
@@ -250,56 +309,30 @@ const BookNow = () => {
                         <input
                           type="text"
                           id="floating_filled"
-                          style={{
-                            borderRadius: "0",
-                            borderBottom: "1px solid black",
-                          }}
-                          className="block px-2.5 pb-2.5 pt-5 w-full text-sm  bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer"
+                          className="mt-5 block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
                           placeholder=" "
                         />
                         <label
-                          for="floating_filled"
-                          className="absolute -mt-1 ml-4 px-2 text-sm dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
+                          htmlFor="floating_filled"
+                          className="font-helvetica-now-thin absolute text-md dark:text-gray-400 -top-5 left-2.5 z-10"
                         >
-                          First Name
-                        </label>
-                      </div>
-                      <div className="relative flex-1 w-1/2">
-                        <input
-                          type="text"
-                          id="floating_filled"
-                          style={{
-                            borderRadius: "0",
-                            borderBottom: "1px solid black",
-                          }}
-                          className="block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer"
-                          placeholder=" "
-                        />
-                        <label
-                          for="floating_second"
-                          className="absolute -mt-1 ml-4 px-2 text-sm  dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
-                        >
-                          Last Name
+                          Your Name*
                         </label>
                       </div>
                     </div>
 
-                    <div className="relative mt-2  w-full">
+                    <div className="relative mt-10 w-full">
                       <input
                         type="text"
                         id="floating_filled"
-                        style={{
-                          borderRadius: "0",
-                          borderBottom: "1px solid black",
-                        }}
-                        className="block px-2.5 pb-2.5 pt-5 w-full text-sm  bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer"
+                        className="mt-5 block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
                         placeholder=" "
                       />
                       <label
-                        for="guardian"
-                        className="absolute mt-2  ml-4 px-2 text-sm  duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        htmlFor="floating_filled"
+                        className="font-helvetica-now-thin absolute text-md dark:text-gray-400 -top-5 left-2.5 z-10"
                       >
-                        Guardian
+                        Guardian (if applicable)
                       </label>
                     </div>
 
@@ -308,18 +341,14 @@ const BookNow = () => {
                         <input
                           type="text"
                           id="floating_filled"
-                          style={{
-                            borderRadius: "0",
-                            borderBottom: "1px solid black",
-                          }}
-                          className="block px-2.5 pb-2.5 pt-5 w-full text-sm  bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer"
+                          className="mt-10 block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
                           placeholder=" "
                         />
                         <label
-                          for="phone"
-                          className="absolute mt-4 ml-4  px-2 text-sm  dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                          htmlFor="floating_filled"
+                          className="font-helvetica-now-thin absolute text-md dark:text-gray-400 top-5 left-2.5 z-10"
                         >
-                          Phone Number
+                          Phone Number*
                         </label>
                       </div>
 
@@ -327,18 +356,14 @@ const BookNow = () => {
                         <input
                           type="text"
                           id="floating_filled"
-                          style={{
-                            borderRadius: "0",
-                            borderBottom: "1px solid black",
-                          }}
-                          className="block px-2.5 pb-2.5 pt-5 w-full text-sm  bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer"
+                          className="mt-10 block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
                           placeholder=" "
                         />
                         <label
-                          for="email"
-                          className="absolute mt-4 ml-4 px-2 text-sm  dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                          htmlFor="floating_filled"
+                          className="font-helvetica-now-thin absolute text-md dark:text-gray-400 top-5 left-2.5 z-10"
                         >
-                          Email
+                          Email*
                         </label>
                       </div>
                     </div>
@@ -358,144 +383,86 @@ const BookNow = () => {
                     />
                     <label
                       htmlFor="floatingInput"
-                      className=" pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6]  transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
+                      className=" font-helvetica-now-thin pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6]  transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
                     >
                       Date of Birth*
                     </label>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="font-helvetica-now-thin flex justify-center space-x-4">
+                    <button
+                      className={`w-44 h-14 px-6 py-2 border border-black rounded-lg relative ${
+                        typeOfAppointment === "virtual"
+                          ? "bg-black text-white"
+                          : "text-black"
+                      } appointmentButton`}
+                      onClick={() => setTypeOfAppointment("virtual")}
+                    >
+                      Virtual
+                      <span className="appointmentBtnBg"></span>
+                    </button>
+                    <button
+                      className={`w-44 h-14 px-6 py-2 border border-black rounded-lg relative ${
+                        typeOfAppointment === "inPerson"
+                          ? "bg-black text-white"
+                          : "text-black"
+                      } appointmentButton`}
+                      onClick={() => setTypeOfAppointment("inPerson")}
+                    >
+                      In-Person
+                      <span className="appointmentBtnBg"></span>
+                    </button>
+                  </div>
+                  {typeOfAppointment === "inPerson" && (
+                    <div>
+                      <div className="font-helvetica-now-thin flex w-full justify-between rounded-lg px-4 py-2 text-left text-md font-medium focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+                        <span>Choose Location</span>
+                      </div>
+                      <div className="font-helvetica-now-thin px-4 pt-4 pb-2 text-sm ">
+                        {locations.map((button, index) => (
+                          <button
+                            className="px-4"
+                            key={button.location}
+                            type="button"
+                            onClick={() => handleClick(index)}
+                          >
+                            {button.clicked ? (
+                              <img
+                                src="../images/purplecircle.svg"
+                                alt="purplecircle"
+                                className="w-48"
+                              />
+                            ) : (
+                              <img
+                                src="../images/greycircle.svg"
+                                alt="greycircle"
+                                className="w-48"
+                              />
+                            )}
+                            {button.location}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div className="font-helvetica-now-thin grid grid-cols-2 gap-4">
                     {appointmentType.map((button, index) => (
                       <button
                         className={`w-44 h-14 px-6 py-2 rounded-lg ${
                           button.clicked
-                            ? "border  bg-black text-white"
+                            ? "bg-black text-white"
                             : "border border-black text-black"
-                        } mx-auto`}
+                        } mx-auto relative overflow-hidden appointmentButton`}
                         key={button.type}
-                        type="button"
                         onClick={() => handleAppointmentClick(index)}
                       >
                         {button.type}
+                        <span className="appointmentBtnBg absolute top-0 left-0 w-0 h-0 bg-blue-600 rounded-full z-0 transition-all duration-400"></span>{" "}
+                  
                       </button>
                     ))}
                   </div>
 
-                  <div>
-                    <div className="flex w-full justify-between rounded-lg px-4 py-2 text-left text-md font-medium focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
-                      <span>Choose Location</span>
-                    </div>
-                    <div className="px-4 pt-4 pb-2 text-sm ">
-                      {locations.map((button, index) => (
-                        <button
-                          className="px-4"
-                          key={button.location}
-                          type="button"
-                          onClick={() => handleClick(index)}
-                        >
-                          {button.clicked ? (
-                            <svg
-                              className="w-8"
-                              id="gradient_concentrics"
-                              data-name="gradient_concentrics"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 500 500"
-                            >
-                              <g
-                                className="hover:shadow-lg hover:shadow-cyan-500/50"
-                                id="gradient_concentric"
-                                data-name="gradient_concentric"
-                              >
-                                <g>
-                                  <circle
-                                    cx="250"
-                                    cy="250"
-                                    r="250"
-                                    fill="white"
-                                  />
-                                  <circle
-                                    cx="250"
-                                    cy="250"
-                                    r="221.43"
-                                    fill="#ddd6fe"
-                                  />
-                                  <circle
-                                    cx="250"
-                                    cy="250"
-                                    r="192.86"
-                                    fill="#ddd6fe"
-                                  />
-                                  <circle
-                                    cx="250"
-                                    cy="250"
-                                    r="164.29"
-                                    fill="#c4b5fd"
-                                  />
-                                  <circle
-                                    cx="250"
-                                    cy="250"
-                                    r="135.71"
-                                    fill="#c4b5fd"
-                                  />
-                                  <circle
-                                    cx="250"
-                                    cy="250"
-                                    r="107.14"
-                                    fill="#a78bfa"
-                                  />
-                                  <circle
-                                    cx="250"
-                                    cy="250"
-                                    r="78.57"
-                                    fill="#a78bfa"
-                                  />
-                                  {/* <circle cx="250" cy="250" r="50" fill="#ba9bc9" /> */}
-                                </g>
-                              </g>
-                            </svg>
-                          ) : (
-                            <svg
-                              className="w-8"
-                              stroke="black"
-                              id="gradient_concentrics"
-                              data-name="gradient_concentrics"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 500 500"
-                            >
-                              <g
-                                id="gradient_concentric"
-                                data-name="gradient_concentric"
-                              >
-                                <g>
-                                  <circle
-                                    cx="250"
-                                    cy="250"
-                                    r="250"
-                                    fill="#f3f4f6"
-                                  />
-                                  {/* <circle cx="250" cy="250" r="192.86" fill="#f3f4f6" /> */}
-                                  <circle
-                                    cx="250"
-                                    cy="250"
-                                    r="164.29"
-                                    fill="#d1d5db"
-                                  />
-                                  <circle
-                                    cx="250"
-                                    cy="250"
-                                    r="78.57"
-                                    fill="#9ca3af"
-                                  />
-                                </g>
-                              </g>
-                            </svg>
-                          )}
-                          {button.location}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className=" flex justify-center flex-col">
+                  <div className="font-helvetica-now-thin flex justify-center flex-col">
                     Preferred Day(s):
                     <div className="flex flex-wrap justify-start py-4 gap-4 ml-4">
                       {days.map((button, index) => (
@@ -514,9 +481,9 @@ const BookNow = () => {
                       ))}
                     </div>
                   </div>
-                  <div className="py-2 space-x-4">
+                  <div className="font-helvetica-now-thin py-2 space-x-4">
                     Preferred Time(s):
-                    <div className="flex flex-wrap justify-start py-4 gap-4 ml-4">
+                    <div className="font-helvetica-now-thin flex flex-wrap justify-start py-4 gap-4 ml-4">
                       {times.map((button, index) => (
                         <button
                           key={button.time}
@@ -537,21 +504,36 @@ const BookNow = () => {
                   <div className="border-2 border-black h-32 flex flex-col">
                     <label className="flex flex-col h-full">
                       <textarea
-                        placeholder="Your message"
+                        placeholder="Please include as much detail as possible"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        className="h-full bg-transparent italic text-blue-600"
+                        className="font-helvetica-now-thin h-full bg-transparent italic text-blue-600"
                       ></textarea>
                     </label>
                   </div>
 
-                  <div className="flex justify-center">
+                  <div className="font-helvetica-now-thin flex justify-center">
                     <button
-                      className="rounded-lg px-4 py-2 border border-black max-w-max -mt-3"
+                      className="relative rounded-lg px-4 py-2 border border-black max-w-max -mt-3 flex items-center justify-center"
                       type="submit"
                       onClick={handleSubmit}
                     >
-                      Send Message
+                      Submit
+                      <div
+                        className="inline-block top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 overflow-hidden"
+                        style={{ transform: "rotate(-90deg)" }}
+                      >
+                        {[...Array(2)].map((_, index) => (
+                          <svg
+                            key={index}
+                            className="arrow inline-block top-0 left-0 w-full h-full"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                          >
+                            <path d="M383.6 322.7 278.6 423c-5.8 6-13.7 9-22.4 9s-16.5-3-22.4-9L128.4 322.7a29.6 29.6 0 0 1 0-43.2 33 33 0 0 1 45.2 0l50.4 48.2v-217a31.3 31.3 0 0 1 32-30.6c17.7 0 32 13.7 32 30.6v217l50.4-48.2a33 33 0 0 1 45.2 0 29.6 29.6 0 0 1 0 43.2z" />
+                          </svg>
+                        ))}
+                      </div>
                     </button>
                   </div>
                 </form>

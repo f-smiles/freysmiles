@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import react, {useEffect} from "react"
 import Image from "next/image"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
@@ -16,6 +17,7 @@ import MinusIcon from "@/app/_components/ui/MinusIcon"
 import PlusIcon from "@/app/_components/ui/PlusIcon"
 
 function SingleProductCarousel({ product }) {
+  
   let carouselImages
   if (product.metadata.images) {
     carouselImages = product.images.concat(product.metadata.images.split(", "))
@@ -24,69 +26,68 @@ function SingleProductCarousel({ product }) {
   }
 
   const [thumbsSwiper, setThumbsSwiper] = useState(null)
+  const [imagesLoaded, setImagesLoaded] = useState(false); 
 
+  useEffect(() => {
+
+    const timer = setTimeout(() => {
+      setImagesLoaded(true);
+    }, 500); 
+
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <>
-      <Swiper
-        style={{
-          '--swiper-navigation-color': '#999999',
-          '--swiper-navigation-size': '30px',
-          // '--swiper-pagination-color': '#999999',
-        }}
-        loop={true}
-        spaceBetween={10}
-        navigation={true}
-        // thumbs={{ swiper: thumbsSwiper }}
-        thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-        modules={[FreeMode, Navigation, Thumbs]}
-      >
-        {carouselImages.length > 0 && carouselImages.map((image, index) => (
-          <SwiperSlide key={index}>
-            <Image
-              src={image}
-              width="0"
-              height="0"
-              sizes="100vw"
-              alt={product.name}
-              className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full"
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
-      <Swiper
-        onSwiper={setThumbsSwiper}
-        loop={true}
-        spaceBetween={10}
-        slidesPerView={4}
-        freeMode={true}
-        watchSlidesProgress={true}
-        modules={[FreeMode, Navigation, Thumbs]}
-      >
-        {/* {product && product.images && (
-          <SwiperSlide>
-            <Image
-              src={product.images[0]}
-              width="0"
-              height="0"
-              sizes="100vw"
-              alt={product.name}
-              className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full"
-            />
-          </SwiperSlide>
-        )} */}
-        {carouselImages.length > 0 && carouselImages.map((image, index) => (
-          <SwiperSlide key={index} className="mt-6">
-            <Image
-              src={image}
-              width="0"
-              height="0"
-              sizes="100vw"
-              alt={product.name}
-              className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full"
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      {imagesLoaded && (
+        <>
+          <Swiper
+            style={{
+              '--swiper-navigation-color': '#999999',
+              '--swiper-navigation-size': '30px',
+            }}
+            loop={true}
+            spaceBetween={10}
+            navigation={true}
+            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+            modules={[FreeMode, Navigation, Thumbs]}
+          >
+            {carouselImages.map((image, index) => (
+              <SwiperSlide key={index}>
+                <Image
+                  src={image}
+                  width="0" // Adjust these as needed
+                  height="0"
+                  sizes="100vw"
+                  alt={product.name}
+                  className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          <Swiper
+            onSwiper={setThumbsSwiper}
+            loop={true}
+            spaceBetween={10}
+            slidesPerView={4}
+            freeMode={true}
+            watchSlidesProgress={true}
+            modules={[FreeMode, Navigation, Thumbs]}
+          >
+            {carouselImages.map((image, index) => (
+              <SwiperSlide key={index} className="mt-6">
+                <Image
+                  src={image}
+                  width="0"
+                  height="0"
+                  sizes="100vw"
+                  alt={product.name}
+                  className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </>
+      )}
     </>
   )
 }

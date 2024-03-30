@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Fragment, useState } from "react"
 import { Menu, Transition } from '@headlessui/react'
-import ArrowLongRight from "../_components/ui/ArrowLongRight"
+// import ArrowLongRight from "../_components/ui/ArrowLongRight"
 import ChevronDownIcon from "../_components/ui/ChevronDownIcon"
 
 function classNames(...classes) {
@@ -11,6 +11,9 @@ function classNames(...classes) {
 }
 
 function Banner() {
+  const text = "CLICK HERE TO SHOP GIFT CARDS ";
+  const separator = " • "; 
+  const repeatedText = Array(50).fill(text + separator).join(""); 
   return (
     <div className="relative isolate flex justify-center items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5">
       <div
@@ -37,14 +40,22 @@ function Banner() {
           }}
         />
       </div>
-      <p className="flex items-center gap-2 text-sm leading-6 text-gray-900">
-        Unwrap Smiles, Gift Oral Wellness!
-        <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} className="font-semibold whitespace-nowrap" target='_blank'>
-          <span className="flex items-center gap-1">
-            Shop Gift Cards <ArrowLongRight className="w-4" />
-          </span>
-        </Link>
-      </p>
+
+      <div className="overflow-hidden"> 
+      <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank'>
+        <div className="animate-giftCardMarquee whitespace-nowrap block text-[15vw] text-purple-400 text-sm leading-6 text-gray-900">
+          {repeatedText}{repeatedText}
+        </div>
+      </Link>
+    </div>
+
+      {/* <div className="flex items-center  h-screen overflow-hidden">
+      <div className="animate-giftCardMarquee whitespace-nowrap">
+        <span className="block text-[15vw] text-purple-400 flex items-center gap-2 text-sm leading-6 text-gray-900">{repeatedText}</span>
+        <span className="block text-[15vw] text-purple-400 flex items-center gap-2 text-sm leading-6 text-gray-900">{repeatedText}</span> 
+      </div>
+    </div> */}
+
     </div>
   )
 }

@@ -29,6 +29,7 @@ export default function WhyChooseUs() {
 }
 
 function Hero() {
+
   return (
     <div className="w-full h-[100vh] flex flex-col justify-center items-center relative">
       <video autoPlay loop muted preload="true" className="absolute inset-0 object-cover object-center w-full h-full -z-10">
@@ -41,6 +42,7 @@ function Hero() {
       </video>
       <div className="absolute inset-0 m-4 bg-gray-300 border border-gray-100 rounded-xl -z-10 backdrop-filter bg-clip-padding backdrop-blur-sm bg-opacity-30" />
       <section className="flex flex-col gap-4 mx-auto my-16 text-center md:h-16 md:text-left md:flex-row w-max">
+        
         <h1 className="py-1 text-zinc-800 font-helvetica-now-thin">Experts in</h1> {/* text-[#5f6368] */}
         <div className="h-full overflow-hidden">
           <ul
