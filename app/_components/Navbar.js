@@ -149,7 +149,7 @@ export default function Navbar() {
         <div className="custom-cursor" />
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md shadow-zinc-300 hover:bg-primary-50/60 active:bg-primary-50/80">
+            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out rounded-full hover:bg-primary-50/60 active:bg-primary-50/80">
 
               <Link href="/" className="inline-block p-4">
                 {/* <HomeIcon className="w-4 h-4" /> */}
@@ -432,7 +432,7 @@ export default function Navbar() {
                 href="/#locations"
                 // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 link-text"
               >
-                <p className="text-sm leading-4 text-center">Our Locations</p>
+                <p className="text-sm leading-4 text-center">Locations</p>
               </Link>
             </li>
 
@@ -580,7 +580,7 @@ export default function Navbar() {
               <Link href="/book-now"
                 className="inline-block"
               >
-                <p className="text-sm font-medium tracking-wider text-center uppercase text-primary-95 hover:text-secondary-95">Book Now</p>
+                <p className="text-sm font-medium tracking-wider text-center text-primary-95 hover:text-secondary-95">Book Now</p>
                 {/* Book Now */}
 
               </Link>
@@ -620,10 +620,10 @@ export default function Navbar() {
                 </li> */}
                 <li className="py-2 border-b border-secondary-50/30">
                 {/* <li className="py-2 border-b border-secondary-50/30" onClick={() => setAbout(!about)}> */}
-                  <span className="flex items-center gap-2 uppercase">About</span>
+                  <span className="flex items-center gap-2 ">About</span>
                   {/* About <ChevronDownIcon className="w-4 h-4" /> */}
                   {/* {about && ( */}
-                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
+                    <div className="flex flex-col w-full my-4 space-y-1 ">
                       {about_us_links &&
                         about_us_links.map((link) => (
                           <Link
@@ -639,9 +639,9 @@ export default function Navbar() {
                   {/* )} */}
                 </li>
                 <li className="py-2 border-b border-secondary-50/30">
-                  <span className="flex items-center gap-2 uppercase">Patient</span>
+                  <span className="flex items-center gap-2 ">Patient</span>
                   {/* {patient && ( */}
-                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
+                    <div className="flex flex-col w-full my-4 space-y-1 ">
                       {patient_links &&
                         patient_links.map((link) => (
                           <Link
@@ -657,9 +657,9 @@ export default function Navbar() {
                   {/* )} */}
                 </li>
                 <li className="py-2 border-b border-secondary-50/30">
-                  <span className="flex items-center gap-2 uppercase">Treatments</span>
+                  <span className="flex items-center gap-2 ">Treatments</span>
                   {/* {treatments && ( */}
-                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
+                    <div className="flex flex-col w-full my-4 space-y-1">
                       {treatments_links &&
                         treatments_links.map((link) => (
                           <Link
