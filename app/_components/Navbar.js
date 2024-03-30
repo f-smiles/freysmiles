@@ -104,14 +104,14 @@ export default function Navbar() {
 
     const createCustomCursor = () => {
       const desktopNavbar = document.querySelector("#desktop-nav")
-      const customCursor = document.querySelector('.custom-cursor') 
+      const customCursor = document.querySelector('.custom-navbar-cursor')
 
       // Each time the mouse coordinates are updated, we need to pass the values to gsap in order to animate the element
       desktopNavbar.addEventListener('mousemove', (e) => {
         const { target, x, y } = e
 
         const isTargetLinkOrButton = target?.closest('a') || target?.closest('button') || target?.closest('.target-link')
-        
+
         gsap.to(customCursor, {
           x: x + 3,
           y: y + 3,
@@ -137,7 +137,7 @@ export default function Navbar() {
     }
   })
 
-  
+
 
   return (
     <header>
@@ -146,7 +146,7 @@ export default function Navbar() {
       {/* DESKTOP NAVBAR */}
 
       <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-40 hidden w-full mb-[6vh] lg:block">
-        <div className="custom-cursor" />
+        <div className="custom-navbar-cursor" />
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
             <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md shadow-zinc-300 hover:bg-primary-50/60 active:bg-primary-50/80">
