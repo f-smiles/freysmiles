@@ -623,6 +623,7 @@ useEffect(() => {
          Click 
         </span>
       </div>
+
         <div
     onMouseEnter={() => setIsFocused(true)}
     onMouseLeave={() => setIsFocused(false)}
@@ -659,39 +660,13 @@ useEffect(() => {
     Keary Riddick
   </span>
 </a>
-
-              </div>
-              <div className="horizontalRow">
-                <div className="horizontalItem horizontalBig">
-                  <p>Trained in CPR and first aid</p>
-                </div>
-                <div className="horizontalItem horizontalFilled ">
-  <a href="https://g.co/kgs/YkknjNg" className="horizontalItemLink">
-
-    <p className> 
-      Had a wonderful experience at FreySmiles. Everyone is extremely professional, polite, timely. Would highly recommend! -TK
-    </p><span>  <img className="w-90 h-auto -mt-80  " src="../images/fivestars.svg" alt="Green Squiggle" /></span>
-  </a>
-</div>
-
-                <div className="horizontalItem horizontalFilled">
-                  <p>
-                  Our team members are X-ray certified.
-                  </p>
-                </div>
-                <div className="horizontalItem horizontalFilled">
-                  <p>maybe a review or something about team qualifications</p>
-                  <a className="horizontalItemLink">
-                    <span className="link-text" data-text="Learn More">
-                      Learn More
-                    </span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="svg-container">
+<div  style={{
+  flexDirection: 'column',
+  justifyContent: 'center', 
+  alignItems: 'center', 
+  position: 'relative'
+  }}>
+<div className="svg-container">
             {svgs.map((svg) => (
               <div
                 key={svg.id}
@@ -716,7 +691,42 @@ useEffect(() => {
               </div>
             ))}
           </div>
-        <div ref={carouselRef} className="relative z-10 h-screen overflow-hidden pointer-events-none">
+                </div>
+              </div>
+              <div className="horizontalRow">
+                <div className="horizontalItem horizontalBig">
+                  <p>Trained in CPR and first aid</p>
+                </div>
+                <div className="horizontalItem horizontalFilled ">
+  <a href="https://g.co/kgs/YkknjNg" className="horizontalItemLink">
+
+    <p className> 
+      Had a wonderful experience at FreySmiles. Everyone is extremely professional, polite, timely. Would highly recommend! -TK
+    </p><span>  <img className="w-90 h-auto -mt-80  " src="../images/fivestars.svg" alt="Green Squiggle" /></span>
+  </a>
+</div>
+
+                <div className="horizontalItem horizontalFilled">
+                  <p>
+                  Our team members are X-ray certified.
+                  </p>
+                </div>
+                
+                <div className="horizontalItem horizontalFilled">
+                  <p>We’ve invested in in-office trainings with leading clinical consultants that have helped us develop systems and protocols streamlining our processes</p>
+                  <a className="horizontalItemLink">
+                    <span className="link-text" data-text="Learn More">
+                      Learn More
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+          
+        <div ref={carouselRef} className="mt-40 relative z-10 h-screen overflow-hidden pointer-events-none">
            <div id="cursor" style={cursorStyle} className={className}>
            <div className="cursor__circle" style={cursorCircleStyle}>
             Drag

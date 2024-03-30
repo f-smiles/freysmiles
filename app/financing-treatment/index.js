@@ -44,7 +44,7 @@ export default function CurvyTimeline() {
       timeline.to(element, { borderLeftColor: '#4B5563', duration: 1 });
     }
 
-    timeline.to(element, { borderBottomColor: '#991B1B', duration: 1 }, '+=0.5');
+    timeline.to(element, { borderBottomColor: '#4B5563', duration: 1 }, '+=0.5');
   };
 
   const resetBorder = (element, isRightSide) => {
@@ -138,7 +138,7 @@ export default function CurvyTimeline() {
 
         <img
                       className="rounded-full opacity-90 w-full h-full object-cover"
-                      src="../../images/carepatient2.png"
+                      src="../../images/orangecylinder.svg"
                       alt="patient"
                       style={{ objectPosition: "10% 50%" }}
                     />
