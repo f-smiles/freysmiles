@@ -1,11 +1,13 @@
 'use client'
 import Link from 'next/link'
-import axios from 'axios'
-import { Fragment, useEffect, useState } from 'react'
+// import axios from 'axios'
+import { Fragment, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { Dialog, Transition } from '@headlessui/react'
+import { gsap } from "gsap"
+import { useGSAP } from "@gsap/react"
 import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
+// import CustomCursor from './CustomCursor'
 import BagIcon from './ui/BagIcon'
 import Bars2Icon from './ui/Bars2Icon'
 import XIcon from './ui/XIcon'
@@ -62,22 +64,32 @@ export default function Navbar() {
     return subtotal
   }
 
-  const calculateItemsQuantity = () => {
-    let itemsQuantity = 0
-    itemsQuantity = bag
-      .map((item) => item.quantity)
-      .reduce((acc, cur) => acc + cur, 0)
-    return itemsQuantity
-  }
+  // const calculateItemsQuantity = () => {
+  //   let itemsQuantity = 0
+  //   itemsQuantity = bag
+  //     .map((item) => item.quantity)
+  //     .reduce((acc, cur) => acc + cur, 0)
+  //   return itemsQuantity
+  // }
 
   const handleCheckout = async () => {
-    const { data } = await axios.post("/api/checkout/checkout-sessions",
-    bag,
-    { "headers": {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/checkout/checkout-sessions`, {
+      method: "POST",
+      headers: {
         "Content-Type": "application/json"
-      }
+      },
+      body: JSON.stringify(bag)
     })
+    const data = await res.json()
     window.location.assign(data)
+
+    // const { data } = await axios.post("/api/checkout/checkout-sessions",
+    // bag,
+    // { "headers": {
+    //     "Content-Type": "application/json"
+    //   }
+    // })
+    // window.location.assign(data)
   }
 
   /* mobile nav */
@@ -86,76 +98,73 @@ export default function Navbar() {
     // setShow((prevState) => !prevState)
     setShow(!show)
   }
-  // const scope = useMobileNavAnimation(show)
 
-  /* mouse cursor */
-  const cursorX = useMotionValue(-100)
-  const cursorY = useMotionValue(-100)
-  const springConfig = { damping: 25, stiffness: 200 }
-  const cursorXSpring = useSpring(cursorX, springConfig)
-  const cursorYSpring = useSpring(cursorY, springConfig)
-  const [cursorVariant, setCursorVariant] = useState("default")
+  useGSAP(() => {
+    const isTouchDevice = 'ontouchstart' in window
 
-  useEffect(() => {
-    const moveCursor = (e) => {
-      cursorX.set(e.clientX - 16)
-      cursorY.set(e.clientY - 16)
+    const createCustomCursor = () => {
+      const desktopNavbar = document.querySelector("#desktop-nav")
+      const customCursor = document.querySelector('.custom-cursor') 
+
+      // Each time the mouse coordinates are updated, we need to pass the values to gsap in order to animate the element
+      desktopNavbar.addEventListener('mousemove', (e) => {
+        const { target, x, y } = e
+
+        const isTargetLinkOrButton = target?.closest('a') || target?.closest('button') || target?.closest('.target-link')
+        
+        gsap.to(customCursor, {
+          x: x + 3,
+          y: y + 3,
+          duration: 0.7,
+          ease: "power4",
+          opacity: isTargetLinkOrButton ? 0.6 : 1,
+          transform: `scale(${isTargetLinkOrButton ? 4 : 1})`,
+        })
+      })
+
+      desktopNavbar.addEventListener('mouseleave', (e) => {
+        gsap.to(customCursor, {
+          duration: 0.7,
+          opacity: 0,
+        })
+      })
+
     }
-    window.addEventListener("mousemove", moveCursor)
 
-    return () => {
-      window.removeEventListener("mousemove", moveCursor)
+    // Only create the custom cursor if device isn't touchable
+    if (!isTouchDevice) {
+      createCustomCursor()
     }
-  }, [])
-
-  const variants = {
-    default: {
-      width: 32,
-      height: 32,
-    },
-    hover: {
-      width: 64,
-      height: 64,
-    }
-  }
-
-  const hoverEnter = () => setCursorVariant("hover")
-  const hoverLeave = () => setCursorVariant("default")
+  })
 
   
 
   return (
     <header>
-      <motion.div
-        className="cursor"
-        variants={variants}
-        animate={cursorVariant}
-        style={{
-          x: cursorXSpring,
-          y: cursorYSpring,
-        }}
-      />
+      {/* <CustomCursor /> */}
 
       {/* DESKTOP NAVBAR */}
 
-      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-50 hidden w-full mb-[6vh] lg:block">
-        <div className="p-4 mx-auto transition duration-300 ease-in-out rounded-full shadow-md justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
-          <ul className="relative flex items-center gap-8 justify-evenly">
-            <li className="flex items-center tracking-wider transition duration-300 ease-in-out bg-white rounded-full shadow-md hover:bg-primary-50/60 active:bg-primary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-40 hidden w-full mb-[6vh] lg:block">
+        <div className="custom-cursor" />
+        <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
+          <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
+            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md shadow-zinc-300 hover:bg-primary-50/60 active:bg-primary-50/80">
+
               <Link href="/" className="inline-block p-4">
                 {/* <HomeIcon className="w-4 h-4" /> */}
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
-            <li onClick={handleToggleAbout} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
-              <p className="text-sm transition-all duration-500 ease-linear rounded-full hover:text-primary-40 ">
-                About
-                <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
-              </p>
+
+            <li onClick={handleToggleAbout} className="target-link">
+              <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">About</p>
+              {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
+
             </li>
             {/* ABOUT PANEL */}
             <Transition.Root show={about} as={Fragment}>
-              <Dialog as="div" className="relative z-20" onClose={setAbout}>
+              <Dialog as="div" className="relative z-50" onClose={setAbout}>
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-500"
@@ -233,15 +242,14 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li onClick={handleTogglePatient} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
-              <p className="text-sm transition-all duration-500 ease-linear rounded-full hover:text-primary-40 group">
-                Patient
-                <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
-              </p>
+            <li onClick={handleTogglePatient} className="target-link">
+              <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Patient</p>
+              {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
+
             </li>
             {/* PATIENT PANEL */}
             <Transition.Root show={patient} as={Fragment}>
-              <Dialog as="div" className="relative z-20" onClose={setPatient}>
+              <Dialog as="div" className="relative z-50" onClose={setPatient}>
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-500"
@@ -319,15 +327,14 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li onClick={handleToggleTreatments} onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
-              <p className="transition-all text-sm duration-500 ease-linear rounded-full hover:text-primary-40 group">
-                Treatments
-                <span className="block max-w-0 :max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out"></span>
-              </p>
+            <li onClick={handleToggleTreatments} className="target-link">
+              <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Treatments</p>
+              {/* <span className="block max-w-0 group-hover:max-w-full transition-all delay-150 duration-300 h-0.5 bg-secondary-60 ease-in-out" /> */}
+
             </li>
             {/* TREATMENTS PANEL */}
             <Transition.Root show={treatments} as={Fragment}>
-              <Dialog as="div" className="relative z-20" onClose={setTreatments}>
+              <Dialog as="div" className="relative z-50" onClose={setTreatments}>
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-500"
@@ -405,42 +412,56 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+            <li
+              // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out target-link"
+              // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
+            >
               <Link
                 href="https://my.orthoblink.com/bLink/Login"
-                className="inline-block relative transition-all duration-500 before:content-[''] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
+                // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 link-text"
               >
-                <p className="text-sm custom-cursor-target">Patient Login</p>
+                <p className="text-sm leading-4 text-center">Patient Login</p>
               </Link>
             </li>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+            <li
+              // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out target-link"
+              // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
+            >
               <Link
                 href="/#locations"
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
+                // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 link-text"
               >
-                <p className="text-sm custom-cursor-target">Our Locations</p>
+                <p className="text-sm leading-4 text-center">Our Locations</p>
               </Link>
             </li>
 
-            <li className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
+            <li
+              // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:right-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out target-link"
+              // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
+            >
               <Link
                 href="/products"
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50"
+                // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-1 before:left-0 before:translate-x-0 before:w-0 before:h-0.5 before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 link-text"
               >
-                <p className="text-sm custom-cursor-target">Shop</p>
+                <p className="text-sm">Shop</p>
               </Link>
             </li>
 
 						{bag.length > 0 && (
               <li
                 onClick={handleToggleBagPanel}
-                className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:right-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
+                // className="inline-block relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:right-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 hover:text-primary-50 ease-in-out target-link"
+                  // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
           		>
-          		  <span className="flex items-center relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:left-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50">
+          		  <p
+                  className="inline-flex"
+                  // className="flex items-center relative transition-all duration-500 before:content-[''] before:absolute before:-bottom-2 before:left-0 before:translate-x-0 before:w-0 before:h-[2px] before:opacity-0 hover:before:w-1/2 hover:before:opacity-100 before:transition-all before:duration-500 before:bg-primary-50 link-text"
+                >
                   <BagIcon className="w-6 h-6 ml-1" />
-                  {calculateItemsQuantity()}
-                </span>
+                  {bag.length}
+                  {/* {calculateItemsQuantity()} */}
+                </p>
               </li>
             )}
 						{/* BagSidePanel */}
@@ -494,7 +515,7 @@ export default function Navbar() {
                           <div className="flex flex-col h-full py-6 overflow-y-scroll bg-white shadow-xl">
                             <div className="px-4 sm:px-6">
                               <Dialog.Title className="pb-4 text-gray-900 border-b border-gray-200">
-                                <h4>Shopping Bag</h4>
+                                Shopping Bag
                               </Dialog.Title>
                             </div>
                             <div className="relative flex-1 px-4 mt-6 sm:px-6">
@@ -530,7 +551,7 @@ export default function Navbar() {
                                </div>
                                <div className="px-4 py-6 border-t border-gray-200 sm:px-6">
                                 <div className="flex justify-between text-base font-medium text-gray-900">
-                                  <p>Subtotal: ({calculateItemsQuantity()} items)</p>
+                                  <p>Subtotal: ({bag.length} items)</p>
                                   <p>${calculateSubtotal()}</p>
                                	</div>
                                 <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
@@ -540,7 +561,7 @@ export default function Navbar() {
                                   >Checkout</button>
                                 </div>
                                 <div className="mt-6">
-                                  <Link href="/bag" className="flex items-center justify-center px-6 py-3 text-base font-medium transition-colors duration-300 ease-in-out border rounded-md shadow-sm border-primary-50 text-primary-50 hover:text-white hover:bg-primary-30" onClick={handleToggleBagPanel}>View Bag</Link>
+                                  <Link href="/checkout" className="flex items-center justify-center px-6 py-3 text-base font-medium transition-colors duration-300 ease-in-out border rounded-md shadow-sm border-primary-50 text-primary-50 hover:text-white hover:bg-primary-30" onClick={handleToggleBagPanel}>View Bag</Link>
             	                  </div>
                             </div>
                           </div>
@@ -552,9 +573,16 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-						<li className="flex items-center tracking-wider uppercase transition duration-300 ease-in-out rounded-full shadow-sm cursor-pointer   hover:bg-secondary-50/60 hover:text-secondary-95 active:bg-secondary-50/80" onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}>
-              <Link href="/book-now" className="inline-block px-6 py-3">
-                Book Now
+						<li
+              className="px-6 py-3 transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-500 bg-primary-30 hover:bg-secondary-50/60 active:bg-secondary-50/80"
+              // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
+            >
+              <Link href="/book-now"
+                className="inline-block"
+              >
+                <p className="text-sm font-medium tracking-wider text-center uppercase text-primary-95 hover:text-secondary-95">Book Now</p>
+                {/* Book Now */}
+
               </Link>
             </li>
           </ul>
@@ -675,7 +703,8 @@ export default function Navbar() {
                     <div className="relative">
                       <BagIcon className="w-10 h-10" />
                       <span className="absolute top-0 right-0 p-3 bg-black rounded-full -translate-y-1/4 translate-x-2/4">
-                        <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{calculateItemsQuantity()}</p>
+                        <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{bag.length}</p>
+                        {/* <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{calculateItemsQuantity()}</p> */}
                       </span>
                     </div>
                   </li>

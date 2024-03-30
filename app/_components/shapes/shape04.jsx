@@ -21,8 +21,8 @@ export default function Shape04(props) {
           y2="200"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#B8DBFC" />
-          <stop offset="1" stopColor="#F8FBFE" />
+          <stop offset="0.0509862" stopColor="#FFD9A0"/>
+          <stop offset="1" stopColor="#FFF5F1"/>
         </linearGradient>
       </defs>
     </svg>
