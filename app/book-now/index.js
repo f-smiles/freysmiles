@@ -388,9 +388,9 @@ const BookNow = () => {
                       Date of Birth*
                     </label>
                   </div>
-                  <div className="font-helvetica-now-thin flex justify-center space-x-4">
+                  <div className="font-helvetica-now-thin grid grid-cols-2 gap-4 ">
                     <button
-                      className={`w-44 h-14 px-6 py-2 border border-black rounded-lg relative ${
+                      className={`w-44 h-14 px-6 py-2 border border-black rounded-lg mx-auto relative ${
                         typeOfAppointment === "virtual"
                           ? "bg-black text-white"
                           : "text-black"
@@ -401,7 +401,7 @@ const BookNow = () => {
                       <span className="appointmentBtnBg"></span>
                     </button>
                     <button
-                      className={`w-44 h-14 px-6 py-2 border border-black rounded-lg relative ${
+                      className={`w-44 h-14 px-6 py-2 border border-black mx-auto rounded-lg relative ${
                         typeOfAppointment === "inPerson"
                           ? "bg-black text-white"
                           : "text-black"
