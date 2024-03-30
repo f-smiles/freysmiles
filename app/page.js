@@ -1069,7 +1069,7 @@ const ImageGrid = () => {
   return (
 <div ref={bodyRef} className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white font-oswald">
 <div 
-        className={`custom-cursor ${isHovering ? 'rotate' : ''}`} 
+        className={`custom-cursor2 ${isHovering ? 'rotate' : ''}`} 
         style={{ left: `${cursorPos.x}px`, top: `${cursorPos.y}px`, opacity: isHovering ? 1 : 0 }}
       >
         <p >CHECK </p>
@@ -1512,7 +1512,7 @@ function Locations() {
               {selectedLocation === "All" ? "Showing All Locations" : "Show All Locations"}
             </button>
             <div 
-        className={`custom-cursor ${isHovering ? 'rotate' : ''}`} 
+        className={`custom-cursor2 ${isHovering ? 'rotate' : ''}`} 
         style={{ left: `${cursorPos.x}px`, top: `${cursorPos.y}px`, opacity: isHovering ? 1 : 0 }}
       >
         <p >MORE </p>
