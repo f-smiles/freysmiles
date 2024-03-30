@@ -40,6 +40,7 @@ function Banner() {
           }}
         />
       </div>
+
       <div className="overflow-hidden"> 
       <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank'>
         <div className="animate-giftCardMarquee whitespace-nowrap block text-[15vw] text-purple-400 text-sm leading-6 text-gray-900">
@@ -55,8 +56,6 @@ function Banner() {
       </div>
     </div> */}
 
-
-      
     </div>
   )
 }

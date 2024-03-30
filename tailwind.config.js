@@ -33,6 +33,8 @@ module.exports = {
       'altero': "Altero",
       'altero-outline': "Altero Outline",
       'helvetica-now-thin': "Helvetica Now Thin",
+      'larken': "Larken",
+      'larken-italic': "Larken Italic",
     },
     extend: {
       fontSize: {
@@ -108,6 +110,7 @@ module.exports = {
   plugins: [
     require('@headlessui/tailwindcss')({ prefix: 'ui' }),
     require('tw-elements/dist/plugin.cjs'),
+    require('@tailwindcss/forms'),
 
   ],
 }

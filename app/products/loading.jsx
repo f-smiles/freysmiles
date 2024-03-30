@@ -32,11 +32,11 @@ export default function LoadingAllProducts() {
         </div>
         <p className="flex items-center gap-2 text-sm leading-6 text-gray-900">
           Unwrap Smiles, Gift Oral Wellness!
-          <p className="font-semibold whitespace-nowrap" target='_blank'>
+          <span className="font-semibold whitespace-nowrap" target='_blank'>
             <span className="flex items-center gap-1">
               Shop Gift Cards <ArrowLongRight className="w-4" />
             </span>
-          </p>
+          </span>
         </p>
       </section>
       <section className="max-w-2xl px-10 mx-auto my-16 mb-32 lg:max-w-7xl">
@@ -53,114 +53,17 @@ export default function LoadingAllProducts() {
           </div>
         </div>
         <div className="grid grid-cols-1 mt-6 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="w-full overflow-hidden bg-white rounded-md h-80 aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
+                <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-200"/>
+              </div>
+              <div className="flex justify-between gap-4 mt-4">
+                <div className="w-3/5 h-4 rounded-full bg-zinc-200" />
+                <div className="w-1/5 h-4 rounded-full bg-zinc-200" />
+              </div>
             </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
-          <div className="animate-pulse">
-            <div className="w-full overflow-hidden bg-white rounded-md aspect-h-1 aspect-w-1 lg:aspect-none lg:h-80">
-              <div className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full bg-zinc-300"/>
-            </div>
-            <div className="flex justify-between gap-4 mt-4">
-              <div className="w-3/5 h-4 rounded-full bg-zinc-300" />
-              <div className="w-1/5 h-4 rounded-full bg-zinc-300" />
-            </div>
-          </div>
+          ))}
         </div>
       </section>
     </div>
