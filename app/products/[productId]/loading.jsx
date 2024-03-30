@@ -4,7 +4,7 @@ import HomeIcon from "@/app/_components/ui/HomeIcon"
 export default function LoadingSingleProduct() {
   return (
     <div className="max-w-2xl py-24 mx-auto lg:max-w-7xl animate-pulse">
-      {/* BREADCRUMB SKELETON */}
+
       <div className="flex w-full mb-10" aria-label="Breadcrumb">
         <ol role="list" className="flex items-center space-x-4">
           <li>
@@ -43,7 +43,7 @@ export default function LoadingSingleProduct() {
           </li>
         </ol>
       </div>
-      {/* PRODUCT DETAILS SKELETON */}
+
       <div className="grid w-full grid-cols-1 px-10 space-y-10 md:space-y-0 md:px-0 md:grid-cols-2 md:gap-12 lg:px-6">
         <section id="product" className="md:order-last">
           <div id="product-details" className="flex flex-col space-y-2 place-content-start">
