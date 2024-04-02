@@ -42,6 +42,8 @@ const toggleSwitchDoctor = () => {
   setSwitchDoctor(prevState => !prevState);
   setAnimationPlayed(false); 
 };
+
+
 useEffect(() => {
   const clearAnimation = () => {
     gsap.killTweensOf(doctorBioRef.current);
@@ -49,7 +51,7 @@ useEffect(() => {
   const startAnimation = () => {
     const doctorBio = doctorBioRef.current;
     if (doctorBio) {
-      const splitText = new SplitText(doctorBio, { type: 'lines' });
+      const splitText = new SplitText(doctorBio, { type: 'lines'  });
       gsap.from(splitText.lines, {
         duration: 2,
         xPercent: 20,
@@ -740,7 +742,7 @@ useEffect(() => {
         <div key={item.num} className="carousel-item">
           <div className="carousel-box">
             <div className="titleCard">{item.title}</div>
-            <div className="numCard">{item.num}</div>
+            <div className="nameCard">{item.num}</div>
             <img src={item.imgSrc} alt={item.title} />
           </div>
         </div>

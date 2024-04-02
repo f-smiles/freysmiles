@@ -412,7 +412,7 @@ function Hero() {
                         <span>Is</span>
                         <span>Unique</span>
                       </div>
-                      <div className="marquee__inner second">
+                      <div className=" marquee__inner second">
                         <span>Because</span>
                         <span>Every</span>
                         <span>Smile</span>
@@ -751,19 +751,19 @@ function GSAPAnimateScrollSections() {
         <div className="container">
       
           <ul>
-            <li id="first-circle" style={{ opacity: 0, filter: 'blur(10px)' }}>
+            <li className="font-altero" id="first-circle" style={{ opacity: 0, filter: 'blur(10px)' }}>
               <figure>
                 <h3>50+</h3>
                 <p>years of experience</p>
               </figure>
             </li>
-            <li id="middle-circle" style={{ boxShadow: 'inset 0 0 300px #fff' }}>
+            <li className="font-altero" id="middle-circle" style={{ boxShadow: 'inset 0 0 300px #fff' }}>
               <figure id="figure2" style={{ opacity: 0, filter: 'blur(10px)' }}>
                 <h3>25k</h3>
                 <p>Patients</p>
               </figure>
             </li>
-            <li id="last-circle" style={{ opacity: 0, filter: 'blur(10px)' }}>
+            <li className="font-altero" id="last-circle" style={{ opacity: 0, filter: 'blur(10px)' }}>
               <figure>
                 <h3>4</h3>
                 <p>Unique Locations</p>
@@ -1041,14 +1041,14 @@ const ImageGrid = () => {
 
   const images = [
     { 
-      title: "TOP 1% OF PROVIDERS", 
+      title: "Top 1% of providers", 
       src: "../images/invis.png", 
       className: "image-portrait",
     
       url: "/invisalign"
     },
     { 
-      title: "Less appointments. Faster treatment time", 
+      title: "Fewer appointments: faster treatment time", 
       src: "../images/damon1.png", 
       className: "image-landscape",
 
@@ -1084,9 +1084,9 @@ const ImageGrid = () => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <h2 className="image-header absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 text-8vw uppercase leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+      <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
         {image.title}
-      </h2>
+      </div>
       <img src={image.src} className="block w-full h-full object-cover" />
  
     </a>
