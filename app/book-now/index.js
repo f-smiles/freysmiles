@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap-trial";
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
 // import emailjs from "@emailjs/browser";
 import "tw-elements";
 import { Datepicker, Input, initTE } from "tw-elements";
@@ -196,17 +198,39 @@ const BookNow = () => {
       repeatDelay: 1,
     });
   }, []);
+
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const container = containerRef.current;
+    const textHider = container.querySelectorAll('.text-hider-fg');  
+    const textBg = container.querySelectorAll(".text-highlight-bg");
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container,
+        start: "top 80%",
+        markers: false,
+      }
+    });
+
+    tl.to(textBg, { scaleX: 1, ease: "expo.easeIn", duration: 1, stagger: 0.08 })
+      .set(textHider, { autoAlpha: 0 })
+      .to(textBg, { scaleX: 0, ease: "power4.easeOut", duration: 0.5, transformOrigin: "100% 0%", delay: .5 });
+  }, []);
+
   return (
     <main
-      className="bg-center bg-stone-200 bg-contain"
+      className="bg-center bg-[#E4E2DD] bg-contain"
       style={{
-        backgroundImage: "url('../images/liquid.svg')",
+        backgroundImage: "url('../images/threecircles.png')",
         width: "100%",
-
-        backgroundSize: "80% auto",
+        backgroundSize: "30%",
         backgroundRepeat: "no-repeat",
-        backgroundPosition: "-110% top",
+        backgroundPosition: "left 340px", 
       }}
+      
     >
       <motion.div
         initial={{ clipPath: `circle(0% at 50% 50%)` }}
@@ -219,12 +243,25 @@ const BookNow = () => {
       >
         <div className="flex">
           <div className="items-start w-1/2">
+
             <div
-              className="font-iCiel-Gotham-Ultra text-[180px] mt-40 text-center text-8xl mb-20"
+              className="font-iCiel-Gotham-Ultra text-[180px] mt-40 text-center text-8xl "
               style={{ letterSpacing: "px" }}
             >
-              SAY HELLO
+              SAY 
             </div>
+            <div className="font-iCiel-Gotham-Ultra text-center text-8xl mb-20" ref={containerRef}>
+      <h1 className="text-[180px] ">
+        {['H', 'E', 'L', 'L', 'O'].map((letter, index) => (
+          <span key={index} className="text-highlight inline-block relative">
+            <span className="text-hider-fg absolute inset-0"></span>
+            {letter}
+            <span className="text-highlight-bg absolute inset-0"></span>
+          </span>
+        ))}
+      </h1>
+    </div>
+{/* 
             <div className="flex justify-evenly items-center w-full -mt-10">
               <div className="font-helvetica-now-thin text-xl text-center">
                 <a
@@ -256,7 +293,7 @@ const BookNow = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="flex justify-center items-center h-screen ">
               <div className="w-1/5 max-w-xs">
                 <svg

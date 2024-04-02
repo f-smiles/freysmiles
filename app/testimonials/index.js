@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import gsap from 'gsap';
 
 import {
   motion,
@@ -113,7 +114,7 @@ const testimonials = [
           imageUrl: "/../../../images/testimonials/Devika_Knafo.png",
         },
       },
-      // More testimonials...
+
     ],
   ],
 ];
@@ -123,6 +124,7 @@ function classNames(...classes) {
 }
 
 export default function Testimonials() {
+  
   const fadeInOnScroll = {
     initial: {
       y: 100,
@@ -138,231 +140,118 @@ export default function Testimonials() {
       },
     },
   };
+  
+  useEffect(() => {
+    let target = 0;
+    let current = 0;
+    const ease = 0.075;
+  
+    const sliderWrapper = document.querySelector(".slider__wrapper");
+    const slides = document.querySelectorAll(".slider__item");
+  
+    let maxScroll = sliderWrapper.offsetWidth - window.innerWidth - 600;
+  
+    function lerp(start, end, factor) {
+      return start + (end - start) * factor;
+    }
+  
+    function updateScaleAndPosition() {
+      slides.forEach((slide) => {
+        const rect = slide.getBoundingClientRect();
+        const centerPosition = (rect.left + rect.right) / 2;
+        const distanceFromCenter = centerPosition - window.innerWidth / 2;
+  
+        let scale, offsetX;
+        if (distanceFromCenter > 0) {
+          scale = Math.min(1.75, 1 + distanceFromCenter / window.innerWidth);
+          offsetX = (scale - 1) * 300;
+        } else {
+          scale = Math.max(0.5, 1 - Math.abs(distanceFromCenter) / window.innerWidth);
+          offsetX = 0;
+        }
+  
+        gsap.set(slide, {
+          scale: scale,
+          x: offsetX,
+        });
+      });
+    }
+  
+    function update() {
+      current = lerp(current, target, ease);
+  
+      gsap.set(sliderWrapper, {
+        x: -current,
+      });
+  
+      updateScaleAndPosition();
+  
+      requestAnimationFrame(update);
+    }
+  
+    const handleWheel = (e) => {
+      target += e.deltaY;
+      target = Math.max(0, Math.min(maxScroll, target));
+  
+      if (target > 0 && target < maxScroll) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    };
+  
+    window.addEventListener("resize", () => {
+      maxScroll = sliderWrapper.offsetWidth - window.innerWidth;
+    });
+  
+    window.addEventListener("wheel", handleWheel);
+  
+    update();
+  
+    return () => {
+      window.removeEventListener("resize", () => {});
+      window.removeEventListener("wheel", handleWheel);
+      document.body.style.overflow = '';
+    };
+  }, []);
+  
+
+  
+  const imageUrl = [
+    "/../../../images/testimonials/kinzie1.jpg", "/../../../images/testimonials/hurlburt.jpeg",  "/../../../images/carepatient2.png",  "/../../../images/testimonials/laniepurple.png",
+    "/../../../images/testimonials/Narvaez.jpg", "/../../../images/testimonials/Natasha_Khela.jpg",  "/../../../images/testimonials/schwarz.jpeg",
+    "/../../../images/freysmilepatient.jpg","/../../../images/testimonials/hobsonblue.png",
+    "/../../../images/testimonials/elizabeth1.png",
+    "/../../../images/testimonials/Nilaya.jpeg", 
+  
+  ];
 
   return (
     <>
+<div className="bg-[#F4F1EC] min-h-screen ">
+      <div className="slider">
+      <div className="  w-screen h-screen relative ">
+ 
+ <div className="sidebar">
+   <div className="sidebar__item">
+   <p style={{ textTransform: 'uppercase', fontSize: '3.5rem', lineHeight: 1, marginBottom: '4rem' }} className="font-bold font-TerminaTest-Bold text-2xl uppercase mb-4">Our <br />Patients </p>
 
-{/* <svg class="svg-blob" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 650">
-    <path fill="#0F9381" fill-opacity=".9" d="M0,64L20,106.7C40,149,80,235,120,256C160,277,200,235,240,229.3C280,224,320,256,360,240C400,224,440,160,480,112C520,64,560,32,600,48C640,64,680,128,720,128C760,128,800,64,840,48C880,32,920,64,960,96C1000,128,1040,160,1080,165.3C1120,171,1160,149,1200,128C1240,107,1280,85,1320,74.7C1360,64,1400,64,1420,64L1440,64L1440,0L1420,0C1400,0,1360,0,1320,0C1280,0,1240,0,1200,0C1160,0,1120,0,1080,0C1040,0,1000,0,960,0C920,0,880,0,840,0C800,0,760,0,720,0C680,0,640,0,600,0C560,0,520,0,480,0C440,0,400,0,360,0C320,0,280,0,240,0C200,0,160,0,120,0C80,0,40,0,20,0L0,0Z"></path>
-</svg> */}
-
-<div>
-
-</div>
-<section className="w-full">
-      <div >
-      <div className="font-cera-bold ">
-        <section
-          className="heroTestimonial"
-          style={{
-            position: "relative",
-            zIndex: 1,
-            overflow: "hidden",
-            width: "100%",
-            height: "135vh",
-            textAlign: "center",
-            backgroundColor: "#fffff",
+     <p>Read Our Reviews <br/>link</p>
+   </div>
+   <div className="sidebar__item flex gap-24">
+     <p></p>
+     <p>&bull; &bull; &bull;</p>
+   </div>
+ </div>
+        <div className="slider__wrapper flex gap-24 p-6">
        
-          }}
-        >
-      
-        </section>
-</div>
-<div className="border rounded-2xl ">
-        <div className="relative isolate">
-          <svg
-            className="absolute inset-x-0 top-0 -z-10 h-[64rem] w-full stroke-gray-200 [mask-image:radial-gradient(32rem_32rem_at_center,white,transparent)]"
-            aria-hidden="true"
-          >
-            <defs>
-              <pattern
-                id="1f932ae7-37de-4c0a-a8b0-a6e3b4d44b84"
-                width={200}
-                height={200}
-                x="50%"
-                y={-1}
-                patternUnits="userSpaceOnUse"
-              >
-                <path d="M.5 200V.5H200" fill="none" />
-              </pattern>
-            </defs>
-            <svg x="50%" y={-1} className="overflow-visible fill-gray-50">
-              <path
-                d="M-200 0h201v201h-201Z M600 0h201v201h-201Z M-400 600h201v201h-201Z M200 800h201v201h-201Z"
-                strokeWidth={0}
-              />
-            </svg>
-            <rect
-              width="100%"
-              height="100%"
-              strokeWidth={0}
-              fill="url(#1f932ae7-37de-4c0a-a8b0-a6e3b4d44b84)"
-            />
-          </svg>
-          <div
-            className="absolute top-0 right-0 -ml-24 overflow-hidden left-1/2 -z-10 transform-gpu blur-3xl lg:ml-24 xl:ml-48"
-            aria-hidden="true"
-          >
-            <div
-              className="aspect-[801/1036] w-[50.0625rem] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30"
-              style={{
-                clipPath:
-                  "polygon(63.1% 29.5%, 100% 17.1%, 76.6% 3%, 48.4% 0%, 44.6% 4.7%, 54.5% 25.3%, 59.8% 49%, 55.2% 57.8%, 44.4% 57.2%, 27.8% 47.9%, 35.1% 81.5%, 0% 97.7%, 39.2% 100%, 35.2% 81.4%, 97.2% 52.8%, 63.1% 29.5%)",
-              }}
-            />
-          </div>
-          <div className="overflow-hidden">
-            <div className="px-6 pb-32 mx-auto max-w-7xl pt-36 sm:pt-60 lg:px-8 lg:pt-32">
-              <div className="max-w-2xl mx-auto gap-x-14 lg:mx-0 lg:flex lg:max-w-none lg:items-center">
-                <motion.div
-                  initial={{ y: -100, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.8 }}
-                  className="w-full max-w-xl lg:shrink-0 xl:max-w-lg"
-                >
-                  <h2 className="normal-case text-primary-30">
-                    We have served hundreds of amazing people
-                  </h2>
-                  <p className="relative mt-6 text-lg leading-8 text-gray-600 sm:max-w-md lg:max-w-none">
-                    Cupidatat minim id magna ipsum sint dolor qui. Sunt sit in
-                    quis cupidatat mollit aute velit. Et labore commodo nulla
-                    aliqua proident mollit ullamco exercitation tempor. Sint
-                    aliqua anim nulla sunt mollit id pariatur in voluptate
-                    cillum.
-                  </p>
-                </motion.div>
-                <div className="flex justify-end gap-8 mt-14 sm:-mt-44 sm:justify-start sm:pl-20 lg:mt-0 lg:pl-0">
-                  <div className="flex-none pt-32 ml-auto space-y-8 w-44 sm:ml-0 sm:pt-80 lg:order-last lg:pt-36 xl:order-none xl:pt-80">
-                    <motion.div
-                      initial="initial"
-                      whileInView="animate"
-                      viewport={{ once: true, amount: 0 }}
-                      variants={fadeInOnScroll}
-                      className="relative"
-                    >
-                      <img
-                        src="/../../../images/testimonials/Brooke_Walker.jpg"
-                        alt="Previous FreySmiles patient, Brooke Walker"
-                        className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                      />
-                      <div className="absolute inset-0 pointer-events-none rounded-xl ring-1 ring-inset ring-gray-900/10" />
-                    </motion.div>
-                    <motion.div
-                      initial="initial"
-                      whileInView="animate"
-                      viewport={{ once: true, amount: 0 }}
-                      variants={fadeInOnScroll}
-                      className="relative"
-                    >
-                      <img
-                        src="/../../../images/testimonials/Sophia_Lee.jpg"
-                        alt="Previous FreySmiles patient, Sophia Lee"
-                        className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                      />
-                      <div className="absolute inset-0 pointer-events-none rounded-xl ring-1 ring-inset ring-gray-900/10" />
-                    </motion.div>
-                  </div>
-                  <div className="flex-none mr-auto space-y-8 w-44 sm:mr-0 sm:pt-52 lg:pt-36">
-                    <motion.div
-                      initial="initial"
-                      whileInView="animate"
-                      viewport={{ once: true, amount: 0 }}
-                      variants={fadeInOnScroll}
-                      className="relative"
-                    >
-                      <img
-                        src="/../../../images/testimonials/Natasha_Khela.jpg"
-                        alt="Previous FreySmiles patient, Natasha Khela"
-                        className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                      />
-                      <div className="absolute inset-0 pointer-events-none rounded-xl ring-1 ring-inset ring-gray-900/10" />
-                    </motion.div>
-                    <motion.div
-                      initial="initial"
-                      whileInView="animate"
-                      viewport={{ once: true, amount: 0 }}
-                      variants={fadeInOnScroll}
-                      className="relative"
-                    >
-                      <img
-                        src="/../../../images/testimonials/James_Cipolla.jpg"
-                        alt="Previous FreySmiles patient, James Cipolla"
-                        className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                      />
-                      <div className="absolute inset-0 pointer-events-none rounded-xl ring-1 ring-inset ring-gray-900/10" />
-                    </motion.div>
-                    <motion.div
-                      initial="initial"
-                      whileInView="animate"
-                      viewport={{ once: true, amount: 0 }}
-                      variants={fadeInOnScroll}
-                      className="relative"
-                    >
-                      <img
-                        src="/../../../images/testimonials/Maria_Anagnostou.jpg"
-                        alt="Previous FreySmiles patient, Maria Anagnostou"
-                        className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                      />
-                      <div className="absolute inset-0 pointer-events-none rounded-xl ring-1 ring-inset ring-gray-900/10" />
-                    </motion.div>
-                  </div>
-                  <div className="flex-none pt-32 space-y-8 w-44 sm:pt-0">
-                    <motion.div
-                      initial="initial"
-                      whileInView="animate"
-                      viewport={{ once: true, amount: 0 }}
-                      variants={fadeInOnScroll}
-                      className="relative"
-                    >
-                      <img
-                        src="/../../../images/testimonials/Erica_Brooks.jpg"
-                        alt="Previous FreySmiles patient, Erica Brooks"
-                        className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                      />
-                      <div className="absolute inset-0 pointer-events-none rounded-xl ring-1 ring-inset ring-gray-900/10" />
-                    </motion.div>
-                    <motion.div
-                      initial="initial"
-                      whileInView="animate"
-                      viewport={{ once: true, amount: 0 }}
-                      variants={fadeInOnScroll}
-                      className="relative"
-                    >
-                      <img
-                        src="/../../../images/testimonials/Ibis_Subero.jpg"
-                        alt="Previous FreySmiles patient, Ibis Subero"
-                        className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                      />
-                      <div className="absolute inset-0 pointer-events-none rounded-xl ring-1 ring-inset ring-gray-900/10" />
-                    </motion.div>
-                    <motion.div
-                      initial="initial"
-                      whileInView="animate"
-                      viewport={{ once: true, amount: 0 }}
-                      variants={fadeInOnScroll}
-                      className="relative"
-                    >
-                      <img
-                        src="/../../../images/testimonials/Paige_Mckenna.jpg"
-                        alt="Previous FreySmiles patient, Paige McKenna"
-                        className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                      />
-                      <div className="absolute inset-0 pointer-events-none rounded-xl ring-1 ring-inset ring-gray-900/10" />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        </div>
-        </div>
-      </section>
+        {imageUrl.map((imagePath, index) => (
+  <div key={index} className="slider__item ">
+    <img className="rounded-2xl " src={imagePath} alt="" />
+  </div>
+))} <div className="additional-content">
 
-
-
-
-      <section className="mb-32 sm:pb-32">
+<section className="mb-32 sm:pb-32">
         <div className="relative mt-32 isolate sm:mt-56 sm:pt-32">
           <svg
             className="absolute inset-0 -z-10 hidden h-full w-full stroke-gray-200 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)] sm:block"
@@ -419,12 +308,12 @@ export default function Testimonials() {
               />
             </div>
 
-            <div className="px-6 mx-auto max-w-7xl lg:px-8">
+            <div className="reviews px-6 mx-auto max-w-7xl lg:px-8">
               <div className="max-w-xl mx-auto sm:text-center">
         
-                <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                {/* <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                   Here&apos;s what others had to say about us
-                </p>
+                </p> */}
               </div>
               <div className="grid max-w-2xl grid-cols-1 grid-rows-1 gap-8 mx-auto mt-16 text-sm leading-6 text-gray-900 sm:mt-20 sm:grid-cols-2 xl:mx-0 xl:max-w-none xl:grid-flow-col xl:grid-cols-4">
                 <motion.figure
@@ -432,7 +321,7 @@ export default function Testimonials() {
                   whileInView="animate"
                   viewport={{ once: true, amount: 0.2 }}
                   variants={fadeInOnScroll}
-                  className="hidden col-span-2 sm:block sm:rounded-2xl sm:bg-white sm:shadow-lg sm:ring-1 sm:ring-gray-900/5 xl:col-start-2 xl:row-end-1"
+                  className="hidden col-span-2 sm:block sm:rounded-2xl sm:shadow-lg sm:ring-1 sm:ring-gray-900/5 xl:col-start-2 xl:row-end-1"
                 >
                   <blockquote className="p-12 text-xl font-semibold leading-8 tracking-tight text-gray-900">
                     <p>{`“${featuredTestimonial.body}”`}</p>
@@ -476,7 +365,7 @@ export default function Testimonials() {
                         {column.map((testimonial) => (
                           <figure
                             key={testimonial.author.name}
-                            className="p-6 bg-white shadow-lg rounded-2xl ring-1 ring-gray-900/5"
+                            className="p-6  shadow-lg rounded-2xl ring-1 ring-gray-900/5"
                           >
                             <blockquote className="text-gray-900">
                               <p>{`“${testimonial.body}”`}</p>
@@ -505,6 +394,15 @@ export default function Testimonials() {
           </div>
         </div>
       </section>
+
+</div>
+        </div>
+        
+      </div>
+    </div>
+
+    </div>
+
     </>
   );
 }

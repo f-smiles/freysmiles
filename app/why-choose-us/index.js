@@ -1,6 +1,10 @@
 'use client'
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
+import gsap from 'gsap';
+import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from "next/link"
+import { SplitText } from "gsap-trial/all";
 // framer motion
 import { motion } from "framer-motion"
 import clsx from "clsx"
@@ -13,12 +17,14 @@ import Shape06 from "../_components/shapes/shape06"
 import Shape07 from "../_components/shapes/shape07"
 import { TextReveal } from "../_components/TextReveal"
 
-
+gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 export default function WhyChooseUs() {
   return (
 
     <>
       <Hero />
+      {/* <TextSection /> */}
+      {/* <Gallery /> */}
       <StackCards />
       <ScrollTextReveal />
       <CTA />
@@ -27,6 +33,113 @@ export default function WhyChooseUs() {
     </>
   )
 }
+
+
+const TextSection = () => {
+  const circleRef = useRef(null);
+
+  useEffect(() => {
+
+
+
+    gsap.to(circleRef.current, {
+      width: "600vmax", 
+      height: "600vmax",
+      ease: "Power1.easeInOut",
+      scrollTrigger: {
+        trigger: "#text",
+        start: "top 100%", 
+        end: "bottom top",  
+        scrub: 0.5
+      }
+    });
+  }, []);
+
+  return (
+    <section id='text'> 
+    <div ref={circleRef} className="circle"></div>
+
+
+  </section>
+  );
+};
+
+
+
+
+
+
+
+
+// const Gallery = () => {
+
+
+//   useEffect(() => {
+
+//     const bodyStyle = document.body.style;
+//     bodyStyle.margin = '0';
+//     bodyStyle.backgroundColor = '#F6E9D6';
+//     bodyStyle.color = '#000';
+//     bodyStyle.overscrollBehavior = 'none';
+//     bodyStyle.padding = '0';
+//     bodyStyle.overflowX = 'hidden';
+
+//     // Apply GSAP animations to images
+//     const images = document.querySelectorAll('.images img');
+//     images.forEach((image) => {
+//       gsap.to(image, {
+//         yPercent: -20, // Adjust the y offset as needed
+//         scrollTrigger: {
+//           trigger: image,
+//           start: 'top bottom',
+//           end: 'bottom top',
+//           scrub: true
+//         }
+//       });
+//     });
+
+
+//     ScrollSmoother.create({
+//       wrapper: '#wrapper',
+//       content: '#content',
+//       smooth: 2,
+//       effects: false
+//     });
+
+   
+//     return () => {
+   
+//       bodyStyle.margin = '';
+//       bodyStyle.backgroundColor = '';
+//       bodyStyle.color = '';
+//       bodyStyle.overscrollBehavior = '';
+//       bodyStyle.padding = '';
+//       bodyStyle.overflowX = '';
+//     };
+//   }, []);
+//   return (
+//     <>
+//     <h1 class="text">MORE THAN SMILES</h1>
+// <h1 aria-hidden="true" class="text outline-text">MORE THAN SMILES</h1>
+// <h1 aria-hidden="true" class="text filtered-text">MORE THAN SMILES</h1>
+
+//     <div id="wrapper">
+//       <section id="content">
+//         <section className="imagesScrol">
+//           <img data-speed="0.8" src="https://images.pexels.com/photos/1080696/pexels-photo-1080696.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//           <img data-speed="0.9" src="https://images.pexels.com/photos/827518/pexels-photo-827518.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//           <img data-speed="1" src="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//           <img data-speed="1.1" src="https://images.pexels.com/photos/3356416/pexels-photo-3356416.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//           <img data-speed="0.9" src="https://images.pexels.com/photos/1029803/pexels-photo-1029803.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//           <img data-speed="1.2" src="https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//         </section>
+//       </section>
+//     </div>
+//     </>
+//   );
+// };
+
+
 
 function Hero() {
 
@@ -82,7 +195,7 @@ function StackCards() {
             alt="frey smiles patient"
             className="rounded-full left-1/4 w-96 h-96 border-2 border-[#51733f]"
           />
-          <h1 className="z-10 px-4 tracking-tighter uppercase font-neue-montreal lg:text-7xl mix-blend-multiply text-[#51733f]">Uncompromising<br/>quality</h1>
+          <h1 className="z-10 px-4 tracking-tighter font-neue-montreal lg:text-7xl mix-blend-multiply text-[#51733f]">Uncompromising<br/>quality</h1>
         </div>
         <div className="max-w-screen-lg mx-auto space-y-16">
           <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] translate-x-[4dvw] border-2 border-[#51733f] -rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105 bg-[#f5f5eb]">
@@ -128,10 +241,50 @@ function StackCards() {
 }
 
 function ScrollTextReveal() {
+  const textRef = useRef(null);
+  const bgTextColor = "#cccccc";
+  const fgTextColor = "teal";
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger, SplitText);
+
+    const split = new SplitText(textRef.current, { type: "chars" });
+    const chars = split.chars; 
+
+    const animation = gsap.fromTo(
+      chars,
+      { color: bgTextColor },
+      { color: fgTextColor, stagger: 0.03}
+    );
+
+    ScrollTrigger.create({
+      trigger: textRef.current,
+      start: "top 80%",
+      end: "bottom 70%",
+      animation: animation,
+      scrub: true,
+      markers: false
+    });
+
+ 
+    return () => split.revert();
+  }, []);
+
+  
+  
   const text = "Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it."
 
   return (
     <section className="w-full px-10 bg-[#d2d3c3]">
+      <div>
+
+      <div className="animation">
+        <p ref={textRef} className="text-4xl animated-text">
+        Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it.
+        </p>
+      </div>
+    
+    </div>
       <div className="container flex flex-col-reverse mx-auto md:flex-row md:justify-between">
         <div className="w-full min-h-screen px-8 py-12 md:w-1/2 md:px-0">
           <TextReveal body={text} className="relative mx-auto h-[100vh] w-full max-w-lg">

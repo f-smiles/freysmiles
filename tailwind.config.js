@@ -21,6 +21,7 @@ module.exports = {
   theme: {
     fontFamily: {
       'cera': "CeraProRegular",
+      'TerminaTest-Bold':"TerminaTest-Bold",
       'iCiel-Gotham-Ultra':"iCiel-Gotham-Ultra",
       'poppins':"Poppins",
       'didot': "Didot",
