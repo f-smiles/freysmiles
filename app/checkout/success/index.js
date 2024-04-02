@@ -11,11 +11,18 @@ import LinkLogo from "@/app/_components/card_brands/LinkLogo"
 import MasterCard from "@/app/_components/card_brands/MasterCard"
 import UnionPay from "@/app/_components/card_brands/UnionPay"
 import Visa from "@/app/_components/card_brands/Visa"
-import { HomeIcon, HomeModernIcon } from '@heroicons/react/24/outline'
+import HomeIcon from "@/app/_components/ui/HomeIcon"
+import HomeModernIcon from "@/app/_components/ui/HomeModernIcon"
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
 
 const actions = [
   {
     location: 'Allentown',
+    address_line1: '1251 S Cedar Crest Blvd Suite 210',
+    address_line2: 'Allentown, PA 18103',
     href: '#',
     icon: HomeIcon,
     iconForeground: 'text-teal-700',
@@ -23,37 +30,87 @@ const actions = [
   },
   {
     location: 'Bethlehem',
+    address_line1: '2901 Emrick Boulevard',
+    address_line2: 'Bethlehem, PA 18020',
     href: '#',
     icon: HomeModernIcon,
     iconForeground: 'text-purple-700',
     iconBackground: 'bg-purple-50',
   },
   {
-    location: 'Schnecksville',
-    href: '#',
-    icon: HomeIcon,
-    iconForeground: 'text-rose-700',
-    iconBackground: 'bg-rose-50',
-  },
-  {
     location: 'Lehighton',
+    address_line1: '4155 Independence Drive',
+    address_line2: 'Schnecksville, PA 18078',
     href: '#',
     icon: HomeModernIcon,
     iconForeground: 'text-indigo-700',
     iconBackground: 'bg-indigo-50',
   },
+  {
+    location: 'Schnecksville',
+    address_line1: '1080 Blakeslee Blvd Dr E',
+    address_line2: 'Lehighton, PA 18235',
+    href: '#',
+    icon: HomeIcon,
+    iconForeground: 'text-rose-700',
+    iconBackground: 'bg-rose-50',
+  },
 ]
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+function PickupLocations({ location }) {
+  return (
+    <div className="w-1/2 mt-8 overflow-hidden bg-gray-200 divide-y divide-gray-200 rounded-lg shadow sm:grid sm:gap-px sm:divide-y-0">
+      {actions.filter((action) => action.location === location).map((action) => (
+        <div
+          key={action.location === location}
+          className='relative p-6 bg-white group focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500'
+        >
+          <div>
+            <span
+              className={classNames(
+                action.iconBackground,
+                action.iconForeground,
+                'inline-flex rounded-lg p-3 ring-4 ring-white'
+              )}
+            >
+              <action.icon className="w-6 h-6" aria-hidden="true" />
+            </span>
+          </div>
+          <div className="mt-8">
+            <h3 className="text-base font-semibold leading-6 text-gray-900">
+              <Link href={action.href} className="focus:outline-none">
+                {/* Extend touch target to entire panel */}
+                <span className="absolute inset-0" aria-hidden="true" />
+                {action.location}
+              </Link>
+            </h3>
+            <p className="mt-2 text-sm text-gray-500">
+              {action.address_line1}<br />
+              {action.address_line2}
+            </p>
+          </div>
+          <span
+            className="absolute text-gray-300 transition-all duration-300 ease-in-out pointer-events-none right-6 top-6 group-hover:text-gray-400 group-hover:rotate-45"
+            aria-hidden="true"
+          >
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20 4h1a1 1 0 00-1-1v1zm-1 12a1 1 0 102 0h-2zM8 3a1 1 0 000 2V3zM3.293 19.293a1 1 0 101.414 1.414l-1.414-1.414zM19 4v12h2V4h-2zm1-1H8v2h12V3zm-.707.293l-16 16 1.414 1.414 16-16-1.414-1.414z" />
+            </svg>
+          </span>
+        </div>
+      ))}
+    </div>
+  )
 }
 
-export default function ThankYou({ checkoutSession, paymentDetails }) {  
+export default function ThankYou({ checkoutSession, paymentDetails }) {
   const dispatch = useDispatch()
-  
+
   if (checkoutSession.status === "complete") dispatch(clearBag())
 
-  const { amount_subtotal, amount_total, shipping_cost, line_items, shipping_details, customer_details } = checkoutSession
+  const { amount_subtotal, amount_total, shipping_cost, line_items, shipping_details, customer_details, metadata } = checkoutSession
+
+  // console.log(checkoutSession)
 
   return (
     <section className="relative mx-auto lg:min-h-full">
@@ -64,7 +121,6 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
           className="object-cover object-center w-full h-full"
         />
       </div>
-      {/* <div className="w-full h-full bg-[#EDE0D9]/60"> */}
       <div>
         <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
           <div className="lg:col-start-2">
@@ -76,8 +132,8 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
             </p>
 
             <dl className="mt-8 text-sm font-medium">
-              <p className="text-base font-medium text-zinc-800">Pick-Up Locations:</p>
-              <PickupLocations />
+              <p className="text-base font-medium text-zinc-800">Pick-Up Location:</p>
+              <PickupLocations location={metadata.pickup_location} />
             </dl>
 
             <dl className="mt-16 text-sm font-medium">
@@ -208,57 +264,5 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
         </div>
       </div>
     </section>
-  )
-}
-
-function PickupLocations() {
-  return (
-    <div className="mt-8 overflow-hidden bg-gray-200 divide-y divide-gray-200 rounded-lg shadow sm:grid sm:grid-cols-2 sm:gap-px sm:divide-y-0">
-      {actions.map((action, actionIdx) => (
-        <div
-          key={action.location}
-          className={classNames(
-            actionIdx === 0 ? 'rounded-tl-lg rounded-tr-lg sm:rounded-tr-none' : '',
-            actionIdx === 1 ? 'sm:rounded-tr-lg' : '',
-            actionIdx === actions.length - 2 ? 'sm:rounded-bl-lg' : '',
-            actionIdx === actions.length - 1 ? 'rounded-bl-lg rounded-br-lg sm:rounded-bl-none' : '',
-            'group relative bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500'
-          )}
-        >
-          <div>
-            <span
-              className={classNames(
-                action.iconBackground,
-                action.iconForeground,
-                'inline-flex rounded-lg p-3 ring-4 ring-white'
-              )}
-            >
-              <action.icon className="w-6 h-6" aria-hidden="true" />
-            </span>
-          </div>
-          <div className="mt-8">
-            <h3 className="text-base font-semibold leading-6 text-gray-900">
-              <a href={action.href} className="focus:outline-none">
-                {/* Extend touch target to entire panel */}
-                <span className="absolute inset-0" aria-hidden="true" />
-                {action.location}
-              </a>
-            </h3>
-            <p className="mt-2 text-sm text-gray-500">
-              Doloribus dolores nostrum quia qui natus officia quod et dolorem. Sit repellendus qui ut at blanditiis et
-              quo et molestiae.
-            </p>
-          </div>
-          <span
-            className="absolute text-gray-300 transition-all duration-300 ease-in-out pointer-events-none right-6 top-6 group-hover:text-gray-400 group-hover:rotate-45"
-            aria-hidden="true"
-          >
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20 4h1a1 1 0 00-1-1v1zm-1 12a1 1 0 102 0h-2zM8 3a1 1 0 000 2V3zM3.293 19.293a1 1 0 101.414 1.414l-1.414-1.414zM19 4v12h2V4h-2zm1-1H8v2h12V3zm-.707.293l-16 16 1.414 1.414 16-16-1.414-1.414z" />
-            </svg>
-          </span>
-        </div>
-      ))}
-    </div>
   )
 }
