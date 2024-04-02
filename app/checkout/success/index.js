@@ -2,15 +2,17 @@
 import Link from "next/link"
 import { useDispatch } from 'react-redux'
 import { clearBag } from "@/app/_store/reducers/bagReducer"
-import Amex from "@/app/_components/card_brands/Amex"
-import CashApp from "@/app/_components/card_brands/CashApp"
-import Diners from "@/app/_components/card_brands/Diners"
-import Discover from "@/app/_components/card_brands/Discover"
-import JCB from "@/app/_components/card_brands/JCB"
-import LinkLogo from "@/app/_components/card_brands/LinkLogo"
-import MasterCard from "@/app/_components/card_brands/MasterCard"
-import UnionPay from "@/app/_components/card_brands/UnionPay"
-import Visa from "@/app/_components/card_brands/Visa"
+import Afterpay from "@/app/_components/payment_brands/Afterpay"
+import Amex from "@/app/_components/payment_brands/Amex"
+import CashApp from "@/app/_components/payment_brands/CashApp"
+import Clearpay from "@/app/_components/payment_brands/Clearpay"
+import Diners from "@/app/_components/payment_brands/Diners"
+import Discover from "@/app/_components/payment_brands/Discover"
+import JCB from "@/app/_components/payment_brands/JCB"
+import LinkLogo from "@/app/_components/payment_brands/LinkLogo"
+import MasterCard from "@/app/_components/payment_brands/MasterCard"
+import UnionPay from "@/app/_components/payment_brands/UnionPay"
+import Visa from "@/app/_components/payment_brands/Visa"
 import HomeIcon from "@/app/_components/ui/HomeIcon"
 import HomeModernIcon from "@/app/_components/ui/HomeModernIcon"
 
@@ -18,46 +20,46 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-const actions = [
-  {
-    location: 'Allentown',
-    address_line1: '1251 S Cedar Crest Blvd Suite 210',
-    address_line2: 'Allentown, PA 18103',
-    href: '#',
-    icon: HomeIcon,
-    iconForeground: 'text-teal-700',
-    iconBackground: 'bg-teal-50',
-  },
-  {
-    location: 'Bethlehem',
-    address_line1: '2901 Emrick Boulevard',
-    address_line2: 'Bethlehem, PA 18020',
-    href: '#',
-    icon: HomeModernIcon,
-    iconForeground: 'text-purple-700',
-    iconBackground: 'bg-purple-50',
-  },
-  {
-    location: 'Lehighton',
-    address_line1: '4155 Independence Drive',
-    address_line2: 'Schnecksville, PA 18078',
-    href: '#',
-    icon: HomeModernIcon,
-    iconForeground: 'text-indigo-700',
-    iconBackground: 'bg-indigo-50',
-  },
-  {
-    location: 'Schnecksville',
-    address_line1: '1080 Blakeslee Blvd Dr E',
-    address_line2: 'Lehighton, PA 18235',
-    href: '#',
-    icon: HomeIcon,
-    iconForeground: 'text-rose-700',
-    iconBackground: 'bg-rose-50',
-  },
-]
-
 function PickupLocations({ location }) {
+  const actions = [
+    {
+      location: 'Allentown',
+      address_line1: '1251 S Cedar Crest Blvd Suite 210',
+      address_line2: 'Allentown, PA 18103',
+      href: '#',
+      icon: HomeIcon,
+      iconForeground: 'text-teal-700',
+      iconBackground: 'bg-teal-50',
+    },
+    {
+      location: 'Bethlehem',
+      address_line1: '2901 Emrick Boulevard',
+      address_line2: 'Bethlehem, PA 18020',
+      href: '#',
+      icon: HomeModernIcon,
+      iconForeground: 'text-purple-700',
+      iconBackground: 'bg-purple-50',
+    },
+    {
+      location: 'Lehighton',
+      address_line1: '4155 Independence Drive',
+      address_line2: 'Schnecksville, PA 18078',
+      href: '#',
+      icon: HomeModernIcon,
+      iconForeground: 'text-indigo-700',
+      iconBackground: 'bg-indigo-50',
+    },
+    {
+      location: 'Schnecksville',
+      address_line1: '1080 Blakeslee Blvd Dr E',
+      address_line2: 'Lehighton, PA 18235',
+      href: '#',
+      icon: HomeIcon,
+      iconForeground: 'text-rose-700',
+      iconBackground: 'bg-rose-50',
+    },
+  ]
+
   return (
     <div className="w-1/2 mt-8 overflow-hidden bg-gray-200 divide-y divide-gray-200 rounded-lg shadow sm:grid sm:gap-px sm:divide-y-0">
       {actions.filter((action) => action.location === location).map((action) => (
@@ -110,7 +112,7 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
 
   const { amount_subtotal, amount_total, shipping_cost, line_items, shipping_details, customer_details, metadata } = checkoutSession
 
-  // console.log(checkoutSession)
+  console.log(checkoutSession)
 
   return (
     <section className="relative mx-auto lg:min-h-full">
@@ -244,7 +246,13 @@ export default function ThankYou({ checkoutSession, paymentDetails }) {
                       </>
                     ) : paymentDetails.type === "link" ? (
                       <LinkLogo />
-                    ) : null}
+                    ) : paymentDetails.type === "afterpay_clearpay" ? (
+                      <span className="flex items-center gap-1">
+                        <Afterpay /> / <Clearpay />
+                      </span>
+                    ) : (
+                      <p>{paymentDetails.type}</p>
+                    )}
                   </div>
                   <div className="flex-auto">
                     <p className="text-zinc-800">{paymentDetails.type === "card" ? `Ending with ${paymentDetails.card.last4}` : ''}</p>
