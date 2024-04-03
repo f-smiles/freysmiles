@@ -1,5 +1,5 @@
 "use client";
-import * as THREE from 'three';
+import * as THREE from "three";
 import Layout from "./layout.js";
 import { SplitText } from "gsap-trial/all";
 import React, { useState, useEffect, useRef } from "react";
@@ -11,16 +11,19 @@ const YourCare = () => {
   const canvasRef = useRef();
 
   useEffect(() => {
-
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100);
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      1,
+      100
+    );
     camera.position.set(0, -0.5, 25);
     const scene = new THREE.Scene();
-    const renderer = new THREE.WebGLRenderer({ alpha: true }); 
-    renderer.setClearColor(0x000000, 0); 
-    
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setClearColor(0x000000, 0);
+
     renderer.setSize(window.innerWidth, window.innerHeight);
     canvasRef.current.appendChild(renderer.domElement);
-
 
     const vertexShader = `
       varying vec2 vUv;
@@ -30,7 +33,6 @@ const YourCare = () => {
       }
     `;
 
-    
     const fragmentShader = `
       precision highp float;
       varying vec2 vUv;
@@ -50,10 +52,9 @@ const YourCare = () => {
       }
     `;
 
-
     const uniforms = {
-      u_c1: { type: "v3", value: new THREE.Vector3(0.90, 0.8, 0.30) },
-      u_c2: { type: "v3", value: new THREE.Vector3(1.0, 0.54, 0.40) },
+      u_c1: { type: "v3", value: new THREE.Vector3(0.9, 0.8, 0.3) },
+      u_c2: { type: "v3", value: new THREE.Vector3(1.0, 0.54, 0.4) },
       u_time: { type: "f", value: 0 },
     };
     const shaderMaterial = new THREE.ShaderMaterial({
@@ -61,7 +62,6 @@ const YourCare = () => {
       vertexShader,
       fragmentShader,
     });
-
 
     // const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
     // const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
@@ -82,17 +82,15 @@ const YourCare = () => {
     };
     animate();
 
-
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
-    window.addEventListener('resize', handleResize);
-
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       canvasRef.current.removeChild(renderer.domElement);
     };
   }, []);
@@ -379,8 +377,6 @@ const YourCare = () => {
     return () => observer.disconnect();
   }, []);
 
-
-
   useEffect(() => {
     gsap
       .timeline({
@@ -396,8 +392,6 @@ const YourCare = () => {
       .to(".stripe", { stagger: 0.3, height: 0 })
       .to(".thats-all", { opacity: 1, scale: 1 });
   }, []);
-
-
 
   useEffect(() => {
     const tl = gsap.timeline({ duration: 3, ease: "back" });
@@ -429,35 +423,54 @@ const YourCare = () => {
       });
   }, []);
 
-  const [currentSection, setCurrentSection] = useState(0);
-
-  const goToNextSection = () => {
-    setCurrentSection(current => current + 1);
-  };
-  
-  const goToPreviousSection = () => {
-    setCurrentSection(current => current > 0 ? current - 1 : 0);
-  };
-  
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const translateY = -(currentCardIndex * 20) + 'rem'; 
-  const [isSliderVisible, setIsSliderVisible] = useState(false);
-  const steps = ["Get in touch", "Initial Consult", "Be supported", "Expert Care"];
+  const steps = [
+    "Get in touch",
+    "Initial Consult",
+    "Be supported",
+    "Expert Care",
+  ];
   const cardImages = [
     "../images/nowbooking.png",
     "../images/firstappointment.svg",
     "../images/nocost.png",
-    "../images/freysmiles_insta.gif"
+    "../images/freysmiles_insta.gif",
   ];
+
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const translateY = -(currentCardIndex * 20) + "rem";
+  const [isSliderVisible, setIsSliderVisible] = useState(false);
 
   const updateSlider = (index) => {
     setCurrentCardIndex(index);
   };
-  
 
   const closeSlider = () => {
     setIsSliderVisible(false);
   };
+
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const section = sectionRef.current;
+    const horizontalScrollLength = section.scrollWidth - section.offsetWidth;
+
+    ScrollTrigger.create({
+      trigger: section,
+      start: "top top",
+      end: horizontalScrollLength,
+      pin: true,
+      scrub: 1,
+      onUpdate: (self) => {
+        gsap.to(section, {
+          x: -self.progress * horizontalScrollLength,
+          ease: "none",
+        });
+      },
+    });
+  }, []);
+
   {
     /* OTHER LANDING WITH SVG*/
   }
@@ -481,90 +494,22 @@ const YourCare = () => {
   return (
     <>
       <Layout>
-     
-        <button className="left-arrow arrow" onClick={goToPreviousSection}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-</svg>
-</button>
-        <button className="right-arrow arrow" onClick={goToNextSection}><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-</svg>
-</button>
-        <div
-          className="sections-container"
-          style={{ transform: `translateX(-${currentSection * 100}%)` }}
-        >
+        <div className="horizontal-scroll-section" ref={sectionRef}>
           <div className="section-wrapper">
             <div className="relative pagesection ">
-              <div
-                className="min-h-screen w-full  relative"
-             
-              >
-                 <div ref={canvasRef} className="w-32 h-32"></div>
-                 <div
-      style={{
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-        backdropFilter: 'blur(120px)', 
-    
-      }}
-    ></div>
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                    <tr>
-                      <td
-                        style={{
-                          position: "relative",
-                          zIndex: 10,
-                          borderBottom: "1px solid #C0C0C0",
-                          textAlign: "center",
-                          padding: "5px 0",
-                        }}
-                      >
-                        <a href="#first-steps">FIRST STEPS</a>
-                      </td>
-                      <td
-                        style={{
-                          position: "relative",
-                          zIndex: 10,
-                          borderBottom: "1px solid #C0C0C0",
-                          textAlign: "center",
-                          padding: "5px 0",
-                        }}
-                      >
-                        <a href="#getting-started">GETTING STARTED</a>
-                      </td>
-
-                      <td
-                        style={{
-                          position: "relative",
-                          zIndex: 10,
-                          borderBottom: "1px solid #C0C0C0",
-                          textAlign: "center",
-                          padding: "5px 0",
-                        }}
-                      >
-                        <a href="#pricing">PRICING</a>
-                      </td>
-
-                      <td
-                        style={{
-                          position: "relative",
-                          zIndex: 10,
-                          borderBottom: "1px solid #C0C0C0",
-                          textAlign: "center",
-                          padding: "5px 0",
-                        }}
-                      >
-                        <a href="/book-now">BOOKING NOW</a>
-                      </td>
-                    </tr>
-                  </table>
-                </div>
+              <div className="min-h-screen w-full  relative">
+                <div ref={canvasRef} className="w-32 h-32"></div>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(120px)",
+                  }}
+                ></div>
 
                 <div
                   className="grid absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center"
@@ -622,91 +567,107 @@ const YourCare = () => {
               <div className=" h-screen" id="blotter-target"></div>
             </div>
             <div className="cd-slider pagesection">
-      <div className="main_cards">
-        {cardImages.map((imageUrl, index) => (
-          <div key={index} className={`card ${currentCardIndex === index ? 'current_card' : ''}`}>
-            <div style={{ backgroundImage: `url(${imageUrl})` }} className="bg"></div>
-          </div>
-        ))}
-      </div>
-      <nav className="steps">
-  {steps.map((step, index) => (
-    <a 
-      key={index} 
-      href="#" 
-      onClick={(e) => { e.preventDefault(); updateSlider(index); }}
-    >
-      {step}
-    </a>
-  ))}
-</nav>
+              <div className="main_cards">
+                {cardImages.map((imageUrl, index) => (
+                  <div
+                    key={index}
+                    className={`card ${
+                      currentCardIndex === index ? "current_card" : ""
+                    }`}
+                  >
+                    <div
+                      style={{ backgroundImage: `url(${imageUrl})` }}
+                      className="bg"
+                    ></div>
+                  </div>
+                ))}
+              </div>
+              <nav className="steps">
+                {steps.map((step, index) => (
+                  <a
+                    key={index}
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      updateSlider(index);
+                    }}
+                  >
+                    {step}
+                  </a>
+                ))}
+              </nav>
 
-<nav className="numbers">
-        <ul style={{ transform: `translateY(${translateY})`, transition: 'transform 0.6s ease' }}>
-          {steps.map((_, index) => (
-            <li key={index} className={currentCardIndex === index ? 'current_number' : ''}>0{index + 1}</li>
-          ))}
-        </ul>
-      </nav>
-
-    
-    </div>
-    <div className="pagesection">
-    <div  id="pricing" className="bg-[#E1EEEC] flex">
-            <div className="mt-10 container">
-              <div className="gsaptext-container mx-auto">
-                <p className="font-altero text-center text-6xl">Pricing</p>
-                <p className="one text-xl">
-                  <span className="highlight"> Taking </span>{" "}
-                  <span> the first step </span>
-                  <span className="highlight">towards treatment </span>{" "}
-                  <span>
-                    can sometimes feel overwhelming, especially when it{" "}
-                  </span>
-                </p>
-                <p className="two text-xl">
-                  <span>comes to discussing</span>{" "}
-                  <span className="highlight"> personalized </span>
-                  <span>
-                    treatment plans. That's why we kindly request that all{" "}
-                  </span>
-                </p>
-                <p className="three text-xl">
-                  <span>
-                    decision-makers be present during the initial visit.{" "}
-                  </span>
-                  <span className="highlight">Our goal</span>{" "}
-                  <span>is for every patient to walk </span>
-                </p>
-                <p className="four text-xl">
-                  <span>
-                    out of our office fully informed with answers to all their
-                    questions in their treatment path.
-                  </span>
-                </p>
+              <nav className="numbers">
+                <ul
+                  style={{
+                    transform: `translateY(${translateY})`,
+                    transition: "transform 0.6s ease",
+                  }}
+                >
+                  {steps.map((_, index) => (
+                    <li
+                      key={index}
+                      className={
+                        currentCardIndex === index ? "current_number" : ""
+                      }
+                    >
+                      0{index + 1}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+            <div className="pagesection">
+              <div id="pricing" className="bg-[#E1EEEC] flex">
+                <div className="mt-10 container">
+                  <div className="gsaptext-container mx-auto">
+                    <p className="font-altero text-center text-6xl">Pricing</p>
+                    <p className="one text-xl">
+                      <span className="highlight"> Taking </span>{" "}
+                      <span> the first step </span>
+                      <span className="highlight">towards treatment </span>{" "}
+                      <span>
+                        can sometimes feel overwhelming, especially when it{" "}
+                      </span>
+                    </p>
+                    <p className="two text-xl">
+                      <span>comes to discussing</span>{" "}
+                      <span className="highlight"> personalized </span>
+                      <span>
+                        treatment plans. That's why we kindly request that all{" "}
+                      </span>
+                    </p>
+                    <p className="three text-xl">
+                      <span>
+                        decision-makers be present during the initial visit.{" "}
+                      </span>
+                      <span className="highlight">Our goal</span>{" "}
+                      <span>is for every patient to walk </span>
+                    </p>
+                    <p className="four text-xl">
+                      <span>
+                        out of our office fully informed with answers to all
+                        their questions in their treatment path.
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col items-center justify-center space-y-[-2rem] mt-[-4rem] mb-[-4rem] py-8 h-screen">
+                {stackItems.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`bg-[#e5d6F6] text-black text-center px-6 py-4 shadow-xl border-2 border-black rounded-3xl transform ${item.rotation} ${item.zIndex}`}
+                    style={{ width: "800px", height: "150px" }}
+                  >
+                    <p className="text-5xl font-semibold">{item.text}</p>
+                  </div>
+                ))}
               </div>
             </div>
+
+            <div className="pagesection"></div>
           </div>
-          <div className="flex flex-col items-center justify-center space-y-[-2rem] mt-[-4rem] mb-[-4rem] py-8 h-screen">
-            {stackItems.map((item, index) => (
-              <div
-                key={index}
-                className={`bg-[#e5d6F6] text-black text-center px-6 py-4 shadow-xl border-2 border-black rounded-3xl transform ${item.rotation} ${item.zIndex}`}
-                style={{ width: "800px", height: "150px" }}
-              >
-                <p className="text-5xl font-semibold">{item.text}</p>
-              </div>
-            ))}
-          </div>
-    </div>
-
-
-<div className="pagesection">
-
-</div>
-
-          </div>
-
 
           {/* <footer className="bottom h-screen bg-[#F5F4F5] flex justify-start items-end flex-wrap m-0 p-0">
 
@@ -929,9 +890,6 @@ const YourCare = () => {
               </div>
             </div>
           </section> */}
-
-      
-     
         </div>
       </Layout>
     </>
@@ -939,6 +897,3 @@ const YourCare = () => {
 };
 
 export default YourCare;
-
-
-

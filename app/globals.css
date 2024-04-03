@@ -1605,10 +1605,7 @@ img:nth-child(6) {
   font-weight: 900;
 }
 
-.sections-container {
-  transition: transform 0.5s ease-in-out;
-  /* overflow-x: hidden; */
-}
+
 .pagesection {
   min-width: 100vw; 
   min-height: 100vh;
@@ -1616,29 +1613,6 @@ img:nth-child(6) {
 .section-wrapper {
   display: flex;
 }
-.arrow {
-  position: fixed;
-  top: 50%; 
-  transform: translateY(-50%); 
-  z-index: 100;
-  border-radius: 50px;
-  border: 1px solid white; 
-  padding: 20px; 
- 
-}
-
-.left-arrow {
-  left: 10px; 
-}
-
-.right-arrow {
-  right: 10px; 
-}
-
-
-
-
-
 
 .cd-slider {
 	position: relative;

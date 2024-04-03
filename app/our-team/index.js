@@ -127,7 +127,6 @@ const OurTeam = () => {
       clipPath: 'circle(71% at 50% 50%)',
       duration: 1,
       ease: 'power1.inOut',
-      stagger: 1
     });
     tl.to('.layer', {
       clipPath: 'circle(0% at 50% 50%)',
