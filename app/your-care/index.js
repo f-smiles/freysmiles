@@ -626,19 +626,17 @@ const YourCare = () => {
         {cardImages.map((imageUrl, index) => (
           <div key={index} className={`card ${currentCardIndex === index ? 'current_card' : ''}`}>
             <div style={{ backgroundImage: `url(${imageUrl})` }} className="bg"></div>
-            <div className="info"></div>
-            {isSliderVisible && <button className="close" onClick={closeSlider}>Close</button>}
           </div>
         ))}
       </div>
-      <nav className="cities">
-  {steps.map((city, index) => (
+      <nav className="steps">
+  {steps.map((step, index) => (
     <a 
       key={index} 
       href="#" 
       onClick={(e) => { e.preventDefault(); updateSlider(index); }}
     >
-      {city}
+      {step}
     </a>
   ))}
 </nav>
@@ -651,11 +649,7 @@ const YourCare = () => {
         </ul>
       </nav>
 
-      <nav className="dots">
-        {cardImages.map((_, index) => (
-          <a key={index} href="#" onClick={(e) => { e.preventDefault(); updateSlider(index); }}></a>
-        ))}
-      </nav>
+    
     </div>
     <div className="pagesection">
     <div id="pricing" className="flex">

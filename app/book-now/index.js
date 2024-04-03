@@ -299,7 +299,7 @@ const BookNow = () => {
                 <svg
                   ref={svgRef}
                   viewBox="0 0 10 10"
-                  className="w-full h-auto smiley"
+                  className="w-full h-auto initial-rotate smiley"
                 >
                   <circle
                     className="smile"

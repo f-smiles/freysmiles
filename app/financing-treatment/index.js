@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -55,10 +55,42 @@ export default function CurvyTimeline() {
       duration: 1
     });
   };
+  const [isOpen, setIsOpen] = useState(true);
+ 
+  const shutterRef = useRef(null);
+
+  const toggleShutter = () => {
+    setIsOpen((prevState) => !prevState);
+  };
+
+  useEffect(() => {
+    const container = shutterRef.current;
+    if (!container) return;
+
+    container.classList.add("c-shutter--opening");
+    container.classList.remove("c-shutter--closing", "c-shutter--closed");
+
+    const initialTimer = setTimeout(() => {
+      setIsOpen(false);
+    });
+
+    return () => clearTimeout(initialTimer);
+  }, []);
 
 
 
   return (
+    <div 
+    className="shutter-container "
+    style={{
+      "--color-foreground": "#dcdce8",
+      "--delay": 10,
+    }}>
+       <ul ref={shutterRef} className="z-10 c-shutter">
+            {[...Array(10)].map((_, i) => (
+              <li key={i} className="c-shutter__slat"></li>
+            ))}
+          </ul>
     <div  className="mt-40 mx-auto p-1 w-3/5">
       {/* <div className="flex -ml-20"><img src="../images/lime_worm.svg"></img></div> */}
       <div  ref={addToRefs} className="relative border-b border-gray-600 py-8 pl-12 pr-12 border-r border-gray-600" >
@@ -170,6 +202,7 @@ export default function CurvyTimeline() {
         <div className="absolute top-1/2 transform -translate-y-1/2 translate-x-1/2 rounded-full border border-[#BEFC24] bg-[#BEFC24] text-center p-2.5 right-0" style={{ height: '1.6rem', width: '1.6rem' }}></div>
         <p className="pt-2">lets get started</p>
       </div>
+    </div>
     </div>
   );
 }
