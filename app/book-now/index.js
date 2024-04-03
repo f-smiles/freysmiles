@@ -261,6 +261,7 @@ const BookNow = () => {
         ))}
       </h1>
     </div>
+    
 {/* 
             <div className="flex justify-evenly items-center w-full -mt-10">
               <div className="font-helvetica-now-thin text-xl text-center">

@@ -652,7 +652,7 @@ const YourCare = () => {
     
     </div>
     <div className="pagesection">
-    <div id="pricing" className="flex">
+    <div  id="pricing" className="bg-[#E1EEEC] flex">
             <div className="mt-10 container">
               <div className="gsaptext-container mx-auto">
                 <p className="font-altero text-center text-6xl">Pricing</p>
