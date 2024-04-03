@@ -1113,16 +1113,6 @@ text-transform: uppercase;
   }
 }
 
-.layer {
-  clip-path: circle(0% at 50% 50%);
-}
-
-.gradient-green {
-  background-image: url('/images/radialgradient.png'); 
-  background-size: cover;  
-  background-position: center; 
-}
-
 
 .appointmentButton {
   position: relative;
@@ -1658,7 +1648,7 @@ img:nth-child(6) {
 	overflow: hidden;
   font-size: 1rem;
   color: #fff;
-  font-family: 'TerminaTest-Bold', sans-serif;
+  font-family: 'CeraProBold', sans-serif;
 }
 .steps {
 	position: absolute;
@@ -1757,4 +1747,17 @@ img:nth-child(6) {
 }
 @media screen and ( max-width: 400px) {
 	.card { width: 85%; }
+}
+
+
+.contentTeam {
+  transition: opacity 1s ease, visibility 1s ease;
+  opacity: 0;
+
+}
+
+.gradient-green {
+  background-image: url('/images/pinkgradient.png'); 
+  background-size: cover;  
+  background-position: center; 
 }
