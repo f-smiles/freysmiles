@@ -490,14 +490,71 @@ const YourCare = () => {
 
 </div> */
   }
+  const firstCardRef = useRef(null);
 
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    if (firstCardRef.current) {
+      const container = firstCardRef.current;
+      const image = container.querySelector(".bg");
+
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          toggleActions: "restart none none reset"
+        }
+      });
+
+      tl.set(container, { autoAlpha: 1 });
+      tl.from(container, 1.5, {
+        xPercent: -100,
+        ease: "power2.out"
+      });
+      tl.from(image, 1.5, {
+        xPercent: 100,
+        scale: 1.3,
+        delay: -1.5,
+        ease: "power2.out"
+      });
+    }
+  }, []);
+  useEffect(() => {
+    const tl = gsap.timeline({ repeat: -1, duration: 2, delay: 3, yoyo: true });
+
+    tl.to('#char2', { rotation: 360 });
+    tl.to('#char12', { rotation: 360 });
+
+    const splittedText = new SplitText('.split', { type: 'chars' });
+    const chars = splittedText.chars;
+
+    gsap.from(chars, {
+      yPercent: 450,
+      stagger: { each: 0.05, from: 'random' },
+      ease: 'back.out',
+      duration: 1
+    });
+
+    gsap.to('.bg-verticalText', {
+      scale: 1.1,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut'
+    });
+  }, []);
+
+  
+  
   return (
     <>
       <Layout>
         <div className="horizontal-scroll-section" ref={sectionRef}>
           <div className="section-wrapper">
+
             <div className="relative pagesection ">
-              <div className="min-h-screen w-full  relative">
+              <div className="min-h-screen   relative">
+                
                 <div ref={canvasRef} className="w-32 h-32"></div>
                 <div
                   style={{
@@ -509,7 +566,9 @@ const YourCare = () => {
                     backgroundColor: "rgba(255, 255, 255, 0.1)",
                     backdropFilter: "blur(120px)",
                   }}
-                ></div>
+                >
+                   <div className=" h-screen" id="blotter-target"></div>
+                </div>
 
                 <div
                   className="grid absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center"
@@ -564,8 +623,19 @@ const YourCare = () => {
                 </div>
               </div>
 
-              <div className=" h-screen" id="blotter-target"></div>
+             
             </div>
+<div className="bg-[#F1EFEB] relative pagesection ">
+<div className="description panel relative h-screen flex justify-center items-center">
+      <img className="bg-verticalText absolute w-96" src="https://assets.codepen.io/588164/silverpaper.png" alt="" />
+
+      <h1 className="split text-6xl text-green-500" id="splitText">
+        Science backed appraoch 
+      </h1>
+    </div>
+</div>
+
+
             <div className="cd-slider pagesection">
               <div className="main_cards">
                 {cardImages.map((imageUrl, index) => (
