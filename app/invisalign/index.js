@@ -326,17 +326,133 @@ const Invisalign = () => {
       observer.disconnect(); 
     };
   }, []);
+
+  useEffect(() => {
+    const mediaElements = document.querySelectorAll(".img img, .img video");
+    const allMediaLoaded = Array.from(mediaElements).map((media) => {
+      return new Promise((resolve) => {
+        if (
+          media.complete ||
+          (media.tagName.toLowerCase() === "video" && media.readyState >= 3)
+        ) {
+          resolve();
+        } else {
+          media.addEventListener("load", resolve, { once: true });
+          if (media.tagName.toLowerCase() === "video") {
+            media.addEventListener("loadeddata", resolve, { once: true });
+          }
+        }
+      });
+    });
+
+    Promise.all(allMediaLoaded).then(() => {
+      gsap.registerPlugin(ScrollTrigger);
+
+      gsap.to(".img", {
+        y: -700,
+        stagger: 0.5,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".img",
+          start: "top bottom",
+          end: "bottom center",
+          scrub: true,
+        },
+      });
+    });
+  }, []);
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".album",
+        start: "top top",
+        end: "+=4000",
+        scrub: true,
+        pin: true,
+      },
+    });
+
+    tl.to(".p1", { x: "-=700", duration: 1 }, 0)
+      .to(".p2", { x: "-=1400", duration: 1 }, 0.5)
+      .to(".p3", { x: "-=1300", duration: 1 }, 1)
+      .to(".p4", { x: "-=1200", duration: 1 }, 1.5);
+  }, []);
+ 
   return (
     <main >
+    <div >
+    <section className="grid grid-cols-3">
+                {[
+                  "../images/nowbooking.png",
+                  "../images/freysmiles_insta.gif",
+                  "../images/firstappointment.svg",
+                  "../images/nocost.png",
+                  "../images/scan.mp4",
+                  "../images/checkeredpatient.svg",
+                ].map((src, i) => {
+                  const isVideo = src.endsWith(".mp4");
 
-      <div style={{ 
-    display: 'flex', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    height: '100vh' 
-}}>
-      
-     
+                  return (
+                    <div
+                      key={i}
+                      className="img relative w-full overflow-hidden"
+                    >
+                      {isVideo ? (
+                        <video
+                          autoPlay
+                          loop
+                          muted
+                          className="object-cover w-full h-full"
+                        >
+                          <source src={src} type="video/mp4" />
+                        </video>
+                      ) : (
+                        <img
+                          src={src}
+                          alt={`Image ${i + 1}`}
+                          className="object-cover w-full h-full"
+                        />
+                      )}
+                      <div className="absolute top-0 left-0 w-full h-screen z-10"></div>
+                    </div>
+                  );
+                })}
+              </section>
+
+              <div >
+      <section className="album h-screen overflow-hidden relative">
+        <picture className="absolute w-[700px] h-[500px] transform translate-x-[calc(50vw-350px)] translate-y-[calc(50vh-250px)]">
+          <img
+            src="../images/pinkblur1.svg"
+            alt="greendot"
+            className="picture p1 object-cover object-cover w-full h-fulll"
+          />
+        </picture>
+        <picture className="absolute w-[700px] h-[500px] transform translate-x-[100vw] translate-y-[calc(50vh-250px)]">
+          <img
+            src="../images/pinkblur2.svg"
+            alt="greendot"
+            className="picture p2 object-cover object-cover w-full h-fulll"
+          />
+        </picture>
+        <picture className="absolute w-[700px] h-[500px] transform translate-x-[100vw] translate-y-[calc(50vh-250px)]">
+          <img
+            src="../images/pinkblur3.svg"
+            alt="greendot"
+            className="picture p3 object-cover object-cover w-full h-fulll"
+          />
+        </picture>
+        <picture className="absolute w-[700px] h-[500px] transform translate-x-[100vw] translate-y-[calc(50vh-250px)]">
+          <img
+            src="../images/pinkblur4.svg"
+            alt="greendot"
+            className="picture p4 object-cover object-cover w-full h-fulll"
+          />
+        </picture>
+      </section>
+    </div>
         <div className="flex h-full">
           <div className="flex-1"></div>
           <div className="flex-1 flex justify-end items-center pr-20">

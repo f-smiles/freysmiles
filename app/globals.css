@@ -1000,10 +1000,6 @@ padding:10px;
 }
 
 
-.line-container {
-  overflow: hidden;
-}
-
 
 .stroke-text {
   -webkit-text-stroke: 1px #7D4459;
@@ -1579,4 +1575,186 @@ img:nth-child(6) {
   left: 0;
   top: 0;
   z-index: 101;
+}
+
+
+.lineParent {
+  overflow: hidden;
+}
+
+
+.gsaptext-container {
+  width: 80%;
+  text-align: center;
+  font-weight: 300;
+  padding-top: 10vh;
+  text-transform: uppercase;
+  overflow: hidden;
+  perspective: 10000;
+  transform: translate3d(0,0,0);
+  -webkit-font-smoothing: antialiased;
+  backface-visibility: hidden;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.gsaptext-container p {
+  display: block;
+  white-space: nowrap;
+  margin-bottom: .25em;
+  margin-top: 0; 
+}
+
+.gsaptext-container span {
+  opacity: 0.6;
+}
+
+.gsaptext-container highlight {
+  color: black;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 900;
+}
+
+.sections-container {
+  transition: transform 0.5s ease-in-out;
+  /* overflow-x: hidden; */
+}
+.pagesection {
+  min-width: 100vw; 
+  min-height: 100vh;
+}
+.section-wrapper {
+  display: flex;
+}
+.arrow {
+  position: fixed;
+  top: 50%; 
+  transform: translateY(-50%); 
+  z-index: 100;
+  border-radius: 50px;
+  border: 1px solid white; 
+  padding: 20px; 
+ 
+}
+
+.left-arrow {
+  left: 10px; 
+}
+
+.right-arrow {
+  right: 10px; 
+}
+
+
+
+
+
+
+.cd-slider {
+	position: relative;
+	width: 100%;
+	height: 100vh;
+	background: #d7d2d2;
+	overflow: hidden;
+  font-size: 1rem;
+  color: #fff;
+  font-family: 'TerminaTest-Bold', sans-serif;
+}
+.steps {
+	position: absolute;
+	top: 50%;
+	left: 2rem;
+
+  z-index: 10;
+	visibility: hidden;
+	transform: translateY(-50%);
+  will-change: transform;
+}
+.steps a {
+	position: relative;
+	display: block;
+	color: #fff;
+	font-size: 2.5rem;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	opacity: .3;
+	transition: opacity .3s;
+}
+.steps a::before {
+	content: '';
+	position: absolute;
+	left: -6rem;
+	top: 50%;
+	margin-top: -.1rem;
+	width: 0;
+	height: .2rem;
+	background: #fff;
+	transition: width .3s;
+}
+.steps a.current_city, .cities a.current_city:hover {
+	opacity: 1;
+}
+.steps a.current_city::before {
+	width: 5rem;
+}
+.steps a:hover {
+	opacity: .8;
+}
+
+.numbers {
+  position: absolute;
+  top: 50%;
+  right: 0%; 
+  transform: translateY(-50%);
+	font-size: 15rem;
+	line-height: 20rem;
+	height: 20rem;
+	overflow: hidden;
+  visibility: visible; 
+  will-change: transform;
+}
+
+
+
+.card {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: #fff;
+	color: #000;
+	width: 35%;
+	height: 90%;
+	overflow: hidden;
+	cursor: pointer;
+	opacity: 0;
+	transition: width .5s .3s, height .5s .3s, opacity .5s;
+  will-change: width, height, opacity;
+}
+.current_card {
+	z-index: 2;
+	opacity: 1;
+}
+
+.bg {
+  width: 100%; 
+  height: 100%; 
+  background-size: cover;
+  background-position: center;
+}
+
+
+
+@media screen and (min-width: 850px) {
+	.numbers, .steps { visibility: visible; }
+	.dots { visibility: hidden; }
+}
+@media screen and (max-width: 849px) {
+	.card { height: 80%; width: 60%; }
+}
+@media screen and ( max-width: 500px) {
+	.card { width: 70%; }
+}
+@media screen and ( max-width: 400px) {
+	.card { width: 85%; }
 }

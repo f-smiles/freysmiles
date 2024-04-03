@@ -286,7 +286,7 @@ function ScrollTextReveal() {
     
     </div>
       <div className="container flex flex-col-reverse mx-auto md:flex-row md:justify-between">
-        <div className="w-full min-h-screen px-8 py-12 md:w-1/2 md:px-0">
+        {/* <div className="w-full min-h-screen px-8 py-12 md:w-1/2 md:px-0">
           <TextReveal body={text} className="relative mx-auto h-[100vh] w-full max-w-lg">
             {(tokens) => (
               <div className="sticky top-0 left-0 flex items-center h-full text-primary-50 font-larken font-extralight text-[clamp(1.125rem,_0.4688rem_+_2.9167vw,_2rem)] leading-[clamp(1.125rem,_0.4688rem_+_2.9167vw,_2rem)]">
@@ -310,7 +310,7 @@ function ScrollTextReveal() {
               </div>
             )}
           </TextReveal>
-        </div>
+        </div> */}
         <div className="flex flex-col items-center justify-center w-full md:w-1/2">
           <img
             className="mt-16 rounded-lg"
