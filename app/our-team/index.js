@@ -433,24 +433,34 @@ const OurTeam = () => {
       <div className="min-h-screen bg-[#E2E2E2] contentTeam relative ">
         <section className=" py-24 sm:py-32">
         
-          <div className="w-full px-6 mx-auto mb-12 lg:px-8 max-w-7xl">
-            <h1 className="font-poppins text-[90px] tracking-tight">
-              Meet Our
-              <div style={{ fontStyle: "italic", fontSize: "inherit" }}>
-                Doctors
-              </div>
-            </h1>
-
-            {/* <h1 className="font-poppins tracking-tight">
-  <span style={{ fontSize: "3em" }}>
-    <span style={{ fontStyle: 'italic', fontSize: 'inherit' }}>M</span>eet
-  </span>
-  <span style={{ fontSize: '2em' }}>Our</span>
-  <div style={{ fontSize: '3em' }}>
-    <span style={{ fontStyle: 'italic', fontSize: 'inherit' }}>D</span>octors
+        <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
+        <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
+        <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
+        <div className="flex">
+  <div className="flex flex-col items-start mr-4">
+    <h1 className="font-poppins text-[90px] tracking-tight relative z-10">
+      Meet Our
+    </h1>
+    <div className="font-poppins italic text-[90px] tracking-tight relative z-10">
+      Doctors
+    </div>
   </div>
-</h1> */}
-          </div>
+  <div className="flex items-center">
+    <div className="ml-20 w-32 h-px bg-gray-700"></div>
+    <span className="w-40 ml-10 text-[13px]">
+    With over fifty years of experience, our legacy reflects a commitment to precision, innovation, and profound dedication- constantly adapting to the ever-changing nature of our industry.
+    </span>
+  </div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
           <div className="grid grid-cols-12 gap-8 px-6 mx-auto max-w-7xl lg:px-8">
             <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
               {/* slider controls */}
@@ -478,7 +488,7 @@ const OurTeam = () => {
                 {/* doctor bio */}
 
                 {switchDoctor ? (
-                  <p ref={doctorBioRef} className=" heading">
+                  <p ref={doctorBioRef} className="font-helvetica-now-thin heading">
                     Dr. Daniel Frey pursued his pre-dental requisites at the
                     University of Pittsburgh, majoring in Biology. Dr. Frey
                     excelled in his studies and was admitted to Temple
@@ -497,7 +507,7 @@ const OurTeam = () => {
                     spending time with loved ones.
                   </p>
                 ) : (
-                  <p ref={doctorBioRef} className=" heading">
+                  <p ref={doctorBioRef} className="font-helvetica-now-thin heading">
                     Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
                     graduated from Temple University School of Dentistry with
                     honors and served in the U.S. Navy Dental Corps before

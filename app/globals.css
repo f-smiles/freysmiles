@@ -1396,13 +1396,6 @@ body {
 } */
 
 
-
-
-
-
-
-
-
 .text {
   position: fixed;
   top: 50vh;
@@ -1486,10 +1479,6 @@ img:nth-child(5) {
 img:nth-child(6) {
   grid-area: 20/2/25/9;
 }
-
-
-
-
 
 .sidebar {
   width: 100vh;
@@ -1735,3 +1724,4 @@ img:nth-child(6) {
   background-size: cover;  
   background-position: center; 
 }
+
