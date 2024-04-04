@@ -434,10 +434,10 @@ const OurTeam = () => {
         <section className=" py-24 sm:py-32">
         
         <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
-        <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
-        <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
-        <div className="flex">
-  <div className="flex flex-col items-start mr-4">
+        
+        
+        <div className="grid grid-cols-2 ">
+  <div className="flex flex-col items-start justify-center">
     <h1 className="font-poppins text-[90px] tracking-tight relative z-10">
       Meet Our
     </h1>
@@ -446,20 +446,21 @@ const OurTeam = () => {
     </div>
   </div>
   <div className="flex items-center">
-    <div className="ml-20 w-32 h-px bg-gray-700"></div>
-    <span className="w-40 ml-10 text-[13px]">
-    With over fifty years of experience, our legacy reflects a commitment to precision, innovation, and profound dedication- constantly adapting to the ever-changing nature of our industry.
+    <div className="w-24 h-px bg-gray-700 "></div>
+    <span className="text-[13px] block w-3/5 ml-4">
+      Our experience spans over 20 years, a testament to the precision, accuracy, and relevance of our vision, demonstrating our ability to adapt to the ever-changing nature of the public relations industry.
     </span>
   </div>
 </div>
 
-</div>
+
+
+
+
+
+
 
 </div>
-
-</div>
-
-
 
           <div className="grid grid-cols-12 gap-8 px-6 mx-auto max-w-7xl lg:px-8">
             <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
@@ -469,16 +470,16 @@ const OurTeam = () => {
                 className="flex items-center justify-start row-span-1 row-start-1 space-x-4"
               >
                 <button
-                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
+                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white  border-black hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
                   <ArrowLeftIcon className="w-5 h-5" />
                 </button>
                 <span className="font-poppins">
-                  0{!switchDoctor ? index : index + 1} - 02
+                  0{!switchDoctor ? index : index + 1} / 02
                 </span>
                 <button
-                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
+                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white  border-black hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
                   <ArrowRightIcon className="w-5 h-5" />
@@ -554,7 +555,7 @@ const OurTeam = () => {
                 />
               </figure>
               <figcaption>
-                <h5 className="font-helvetica-now-thin">
+                <h5 className="mt-5 font-helvetica-now-thin">
                   {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
                 </h5>
                 <p className="font-helvetica-now-thin">
