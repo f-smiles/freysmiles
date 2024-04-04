@@ -8,7 +8,7 @@ export const metadata = {
 
 async function getProducts() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products`)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products`, { cache: 'no-store' })
     return res.json()
   } catch (error) {
     throw new Error(error.message)
@@ -17,7 +17,7 @@ async function getProducts() {
 
 async function getPrices() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/prices`)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/prices`, { cache: 'no-store' })
     return res.json()
   } catch (error) {
     throw new Error(error.message)
