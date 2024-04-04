@@ -1,25 +1,33 @@
-'use client'
-import Link from 'next/link'
-import { useRef, useEffect, useLayoutEffect, useState } from 'react'
-import LocomotiveScroll from 'locomotive-scroll'
+"use client";
+import Matter from "matter-js";
+import Link from "next/link";
+import { useRef, useEffect, useLayoutEffect, useState } from "react";
+import LocomotiveScroll from "locomotive-scroll";
 // gsap
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 // framer motion
-import { motion, stagger, useAnimate, useInView, useScroll, useSpring, useTransform } from 'framer-motion'
+import {
+  motion,
+  stagger,
+  useAnimate,
+  useInView,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 // headless ui
-import { Disclosure, Transition } from '@headlessui/react'
-import ChevronRightIcon from './_components/ui/ChevronRightIcon'
-import MapPin from './_components/ui/MapPin'
+import { Disclosure, Transition } from "@headlessui/react";
+import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
+import MapPin from "./_components/ui/MapPin";
 import { SplitText } from "gsap-trial/all";
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
 export default function LandingComponent() {
-
   const [backgroundColor, setBackgroundColor] = useState("transparent");
   useEffect(() => {
-    setBackgroundColor("rgb(206, 186, 202)");
+    setBackgroundColor("rgb(223,190,196)");
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const transitionStart = 40;
@@ -30,26 +38,26 @@ export default function LandingComponent() {
         {
           start: transitionStart,
           end: transitionEnd * 0.25,
-          colorStart: [206, 186, 202],
-          colorEnd: [227, 217, 225],
+          colorStart: [223, 190, 196],
+          colorEnd: [255, 197, 184],
         },
         {
           start: transitionEnd * 0.25,
           end: transitionEnd * 0.5,
-          colorStart: [227, 217, 225],
-          colorEnd: [221, 220, 220],
+          colorStart: [255, 197, 184],
+          colorEnd: [216, 191, 215],
         },
         {
           start: transitionEnd * 0.5,
           end: transitionEnd * 0.75,
-          colorStart: [221, 220, 220],
-          colorEnd: [175, 167, 181],
+          colorStart: [216, 191, 215],
+          colorEnd: [241, 239, 235],
         },
         {
           start: transitionEnd * 0.75,
           end: transitionEnd,
-          colorStart: [175, 167, 181],
-          colorEnd: [	255, 244, 226],
+          colorStart: [241, 239, 235],
+          colorEnd: [241, 239, 234],
         },
       ];
 
@@ -84,32 +92,42 @@ export default function LandingComponent() {
   }, []);
 
   const { scrollYProgress } = useScroll();
- 
+
   return (
     <>
       <div style={{ backgroundColor }}>
-      <LogoHeader />
-      <Hero />
-      <GSAPAnimateScrollSections />
-      <ImageGrid />
-      <ParallaxOutline />
-      {/* <ParallaxInvisalignDamonBracesAdvancedTech /> */}
-      <LogoGrid />
-      <Locations />
-      <GiftCards />
+        <LogoHeader />
+        <Hero />
+        <GSAPAnimateScrollSections />
+        <ImageGrid />
+        {/* <ParallaxInvisalignDamonBracesAdvancedTech /> */}
+        <div className="sticky top-0 z-1">
+          <ParallaxOutline />
+        </div>
+        <div className="sticky bg-[#D8BFD7] top-0 h-screen z-2">
+          <LogoGrid />
+        </div>
+        <div className="bg-[#20282D] z-4 relative">
+          <Locations />
+        </div>
+        <GiftCards />
       </div>
     </>
-  )
+  );
 }
 
 function LogoHeader() {
   return (
     <header className="pt-16 m-auto w-max">
       <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
-        <img className="w-16 h-16 p-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontists" />
+        <img
+          className="w-16 h-16 p-4"
+          src="/../../logo_icon.png"
+          alt="FreySmiles Orthodontists"
+        />
       </div>
-  </header>
-  )
+    </header>
+  );
 }
 
 function Hero() {
@@ -304,7 +322,6 @@ function Hero() {
     }
   };
 
-
   const titleRef = useRef(null);
 
   useEffect(() => {
@@ -465,7 +482,7 @@ function Hero() {
                     />
                   </path>
                 </svg>
-                <span className="absolute text-3xl font-thin tracking-tight text-white transform -translate-x-1/2 -translate-y-1/2 font-HelveticaNowPro top-1/2 left-1/2">
+                <span className="uppercase absolute text-2xl font-thin tracking-tight text-white transform -translate-x-1/2 -translate-y-1/2 font-HelveticaNowPro top-1/2 left-1/2">
                   Book
                   <br />
                   Now
@@ -481,8 +498,7 @@ function Hero() {
           </div>
         </div>
       </div>
-      <div>
-      </div>
+      <div></div>
     </section>
   );
 }
@@ -564,22 +580,22 @@ function GSAPAnimateScrollSections() {
 
     const viewHeight = window.innerHeight;
 
-    document.querySelectorAll('.text-container').forEach((element) => {
+    document.querySelectorAll(".text-container").forEach((element) => {
       const top = element.getBoundingClientRect().top;
       const start = viewHeight - top;
 
-      const firstText = element.querySelector('.parallax-text:first-child');
-      const secondText = element.querySelector('.parallax-text:last-child');
+      const firstText = element.querySelector(".parallax-text:first-child");
+      const secondText = element.querySelector(".parallax-text:last-child");
 
       gsap.to(firstText, {
         scrollTrigger: {
           trigger: element,
           scrub: true,
           start: start + "px bottom",
-          end: "bottom top"
+          end: "bottom top",
         },
-        x: '-54vw',
-        ease: "none"
+        x: "-54vw",
+        ease: "none",
       });
 
       gsap.to(secondText, {
@@ -587,10 +603,10 @@ function GSAPAnimateScrollSections() {
           trigger: element,
           scrub: true,
           start: start + "px bottom",
-          end: "bottom top"
+          end: "bottom top",
         },
-        x: '32vw',
-        ease: "none"
+        x: "32vw",
+        ease: "none",
       });
     });
   }, []);
@@ -598,21 +614,17 @@ function GSAPAnimateScrollSections() {
     { title1: "50+ Years of ", title2: " Experience" },
     { title1: "4 Bespoke Locations", title2: "4 Bespoke Locations" },
     { title1: "25k Patients", title2: "25k Patients" },
-
-
   ];
   const imageStyles = [
-    { width: '32vw', height: '48vw' },
-    { width: '70vw', height: 'auto' }, 
-    { width: '32vw', height: '48vw' },
+    { width: "32vw", height: "48vw" },
+    { width: "70vw", height: "auto" },
+    { width: "32vw", height: "48vw" },
   ];
 
   useEffect(() => {
     gsap.defaults({ ease: "none" });
 
-
     const main = gsap.timeline();
-
 
     const sphereAnimation = gsap.timeline({
       scrollTrigger: {
@@ -620,7 +632,7 @@ function GSAPAnimateScrollSections() {
         start: "top 0",
         end: "bottom 100%",
         scrub: 1,
-      }
+      },
     });
 
     sphereAnimation
@@ -629,156 +641,194 @@ function GSAPAnimateScrollSections() {
         duration: 2.4,
       })
 
-      .to("#middle-circle", {
-        scale: 1,
-        boxShadow: "rgb(255, 255, 255) 0px 3px 47px inset",
-        transform: "translate(-50%, -50%) translate3d(0px, 0px, 0px)",
-        duration: 2,
-        transformOrigin: "50% 50%"
-      }, 0)
-      .to("#first-circle", {
-        transform: "translate(-50%, -50%) translate(-130%, 0px)",
-        opacity: "1",
-        filter: "blur(0px)",
-        duration: 4,
-        transformOrigin: "50% 50%"
-      }, 3)
-      .to("#last-circle", {
-        transform: "translate(-50%, -50%) translate(130%, 0px)",
-        opacity: "1",
-        filter: "blur(0px)",
-        duration: 4,
-        transformOrigin: "50% 50%"
-      }, 3)
-      .to("#figure2", {
-        scale: 1,
-        filter: "blur(0)",
-        opacity: '1',
-        duration: 4
-      }, 0)
+      .to(
+        "#middle-circle",
+        {
+          scale: 1,
+          boxShadow: "rgb(255, 255, 255) 0px 3px 47px inset",
+          transform: "translate(-50%, -50%) translate3d(0px, 0px, 0px)",
+          duration: 2,
+          transformOrigin: "50% 50%",
+        },
+        0
+      )
+      .to(
+        "#first-circle",
+        {
+          transform: "translate(-50%, -50%) translate(-130%, 0px)",
+          opacity: "1",
+          filter: "blur(0px)",
+          duration: 4,
+          transformOrigin: "50% 50%",
+        },
+        3
+      )
+      .to(
+        "#last-circle",
+        {
+          transform: "translate(-50%, -50%) translate(130%, 0px)",
+          opacity: "1",
+          filter: "blur(0px)",
+          duration: 4,
+          transformOrigin: "50% 50%",
+        },
+        3
+      )
+      .to(
+        "#figure2",
+        {
+          scale: 1,
+          filter: "blur(0)",
+          opacity: "1",
+          duration: 4,
+        },
+        0
+      )
       .to(".home-main__content-sphere-desc", {
         scale: 1,
         transform: "translate(0px, 0px)",
-        opacity: '1',
-        duration: 4
+        opacity: "1",
+        duration: 4,
       });
 
-
-
     return () => {
-
-      ScrollTrigger.getAll().forEach(t => t.kill());
-      gsap.killTweensOf(".home-hero, .home-main__content-atom, #middle-circle, #first-circle, #last-circle, #figure2, .home-main__content-sphere-desc");
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+      gsap.killTweensOf(
+        ".home-hero, .home-main__content-atom, #middle-circle, #first-circle, #last-circle, #figure2, .home-main__content-sphere-desc"
+      );
     };
   }, []);
 
   const headingRef = useRef(null);
   useEffect(() => {
-    const chars = headingRef.current.querySelectorAll('.char');
+    const chars = headingRef.current.querySelectorAll(".char");
     const middleIndex = chars.length / 2;
-  
+
     chars.forEach((char, index) => {
       const distanceFromMiddle = Math.abs(index - middleIndex);
       // Shorter delay for characters further from the middle
       const staggerDelay = (middleIndex - distanceFromMiddle) * 0.06;
-  
+
       gsap.set(char, { perspective: 2000 });
-  
-      gsap.fromTo(char, {
-        'will-change': 'opacity, transform',
-        opacity: 0,
-        y: -40 * distanceFromMiddle,
-        z: gsap.utils.random(-1500, -600),
-        rotationX: gsap.utils.random(-500, -200)
-      }, {
-        ease: 'power1.inOut',
-        opacity: 1,
-        y: 0,
-        z: 0,
-        rotationX: 0,
-        delay: staggerDelay, // Apply the calculated delay
-        scrollTrigger: {
-          trigger: char,
-          start: 'top bottom',
-          end: 'top top+=15%',
-          scrub: true,
+
+      gsap.fromTo(
+        char,
+        {
+          "will-change": "opacity, transform",
+          opacity: 0,
+          y: -40 * distanceFromMiddle,
+          z: gsap.utils.random(-1500, -600),
+          rotationX: gsap.utils.random(-500, -200),
+        },
+        {
+          ease: "power1.inOut",
+          opacity: 1,
+          y: 0,
+          z: 0,
+          rotationX: 0,
+          delay: staggerDelay, // Apply the calculated delay
+          scrollTrigger: {
+            trigger: char,
+            start: "top bottom",
+            end: "top top+=15%",
+            scrub: true,
+          },
         }
-      });
+      );
     });
   }, []);
-  
-
 
   const splitText = (text) => {
     return text.split(" ").map((word, index) => (
-      <div key={index} className="word" style={{ display: 'block' }}> 
+      <div key={index} className="word" style={{ display: "block" }}>
         {word.split("").map((char, charIndex) => (
-          <span key={charIndex} className="char" style={{ display: 'inline-block' }}>
+          <span
+            key={charIndex}
+            className="char"
+            style={{ display: "inline-block" }}
+          >
             {char}
           </span>
         ))}
       </div>
     ));
   };
-  
+
   return (
     <>
-    <header className="header-section">
-    <div className="flex items-center justify-between">
-      <div className="w-1/3">
-
-      </div>
-    </div>
-  </header>
-  <section className="home-hero">
-    <div className="home-hero__content">
-   <div className="container">
-      <h1 className="text-[160px]" ref={headingRef}>
-        {splitText("The highest standards")}
-      </h1>
-    </div>
-    </div>
-  </section>
-
-  <section className="home-main">
-    <div className="home-main__content">
-      <div >
-        <div className="container">
-   
+      <header className="header-section">
+        <div className="flex items-center justify-between">
+          <div className="w-1/3"></div>
         </div>
-      </div>
-      <div className="home-main__content-sphere">
-        <div className="container">
-      
-          <ul>
-            <li className="font-altero" id="first-circle" style={{ opacity: 0, filter: 'blur(10px)' }}>
-              <figure>
-                <h3>50+</h3>
-                <p>years of experience</p>
-              </figure>
-            </li>
-            <li className="font-altero" id="middle-circle" style={{ boxShadow: 'inset 0 0 300px #fff' }}>
-              <figure id="figure2" style={{ opacity: 0, filter: 'blur(10px)' }}>
-                <h3>25k</h3>
-                <p>Patients</p>
-              </figure>
-            </li>
-            <li className="font-altero" id="last-circle" style={{ opacity: 0, filter: 'blur(10px)' }}>
-              <figure>
-                <h3>4</h3>
-                <p>Unique Locations</p>
-              </figure>
-            </li>
-          </ul>
-          <div className="home-main__content-sphere-desc" style={{ transform: 'translate(0, 137px)', opacity: 0 }}>
-
+      </header>
+      <section className="home-hero">
+        <div className="home-hero__content">
+          <div className="container">
+            <h1 className="text-[160px]" ref={headingRef}>
+              {splitText("The highest standards")}
+            </h1>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <style>
+      <section className="home-main">
+        <div className="home-main__content">
+          <div>
+            <div className="container"></div>
+          </div>
+          <div className="home-main__content-sphere">
+            <div className="container">
+              <ul>
+                <li
+                  className="font-neue-montreal font-bold"
+                  id="first-circle"
+                  style={{ opacity: 0, filter: "blur(10px)" }}
+                >
+                  <figure>
+                    <h3>50+</h3>
+                    <p className="font-helvetica-now-thin mt-10 tracking-wide">
+                      years of experience
+                    </p>
+                  </figure>
+                </li>
+                <li
+                  className="font-neue-montreal font-bold"
+                  id="middle-circle"
+                  style={{ boxShadow: "inset 0 0 300px #fff" }}
+                >
+                  <figure
+                    id="figure2"
+                    style={{ opacity: 0, filter: "blur(10px)" }}
+                  >
+                    <h3>25k</h3>
+                    <p className="font-helvetica-now-thin mt-10 tracking-wide">
+                      patients
+                    </p>
+                  </figure>
+                </li>
+                <li
+                  className=""
+                  id="last-circle"
+                  style={{ opacity: 0, filter: "blur(10px)" }}
+                >
+                  <figure>
+                    <h3 className="font-neue-montreal font-bold">4</h3>
+                    <p className="mt-10 font-helvetica-now-thin tracking-wide">
+                      unique locations
+                    </p>
+                  </figure>
+                </li>
+              </ul>
+              <div
+                className="home-main__content-sphere-desc"
+                style={{ transform: "translate(0, 137px)", opacity: 0 }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <style>
         {`
           body {
             overflow: visible;
@@ -907,7 +957,7 @@ function GSAPAnimateScrollSections() {
           }
         `}
       </style>
-  </>
+    </>
     // <section
     //   ref={listRef}
     //   className="flex flex-col items-center justify-center"
@@ -963,9 +1013,8 @@ function GSAPAnimateScrollSections() {
     //       </div>
     //     ))}
     // </section>
-  )
+  );
 }
-
 
 const ImageGrid = () => {
   const bodyRef = useRef(null);
@@ -979,11 +1028,11 @@ const ImageGrid = () => {
     };
 
     if (isHovering) {
-      window.addEventListener('mousemove', moveCursor);
+      window.addEventListener("mousemove", moveCursor);
     }
 
     return () => {
-      window.removeEventListener('mousemove', moveCursor);
+      window.removeEventListener("mousemove", moveCursor);
     };
   }, [isHovering]);
   useEffect(() => {
@@ -1000,103 +1049,124 @@ const ImageGrid = () => {
 
       gsap.set(imageCards, { autoAlpha: 0 });
 
-      const childLines = new SplitText(pageHeading, { type: "lines", linesClass: "heading-line" });
-      const parentLines = new SplitText(pageHeading, { type: "lines", linesClass: "heading-line-wrapper" });
+      const childLines = new SplitText(pageHeading, {
+        type: "lines",
+        linesClass: "heading-line",
+      });
+      const parentLines = new SplitText(pageHeading, {
+        type: "lines",
+        linesClass: "heading-line-wrapper",
+      });
 
       tl.from(childLines.lines, {
         duration: 1,
         y: 200,
         stagger: 0.25,
         delay: 1,
-        ease: 'power4.out'
+        ease: "power4.out",
       })
-      .from(pageBody, {
-        duration: 0.5,
-        opacity: 0,
-        x: -20,
-      }, '-=0.5')
-      .from(separator, {
-        duration: 2,
-        scale: 0,
-        ease: 'expo.inOut'
-      }, '-=1.1')
-      .to(imageCards, {
-        duration: 0.75,
-        autoAlpha: 1,
-        y: -50,
-        stagger: 0.5,
-        ease: 'power4.out'
-      }, '-=0.75');
+        .from(
+          pageBody,
+          {
+            duration: 0.5,
+            opacity: 0,
+            x: -20,
+          },
+          "-=0.5"
+        )
+        .from(
+          separator,
+          {
+            duration: 2,
+            scale: 0,
+            ease: "expo.inOut",
+          },
+          "-=1.1"
+        )
+        .to(
+          imageCards,
+          {
+            duration: 0.75,
+            autoAlpha: 1,
+            y: -50,
+            stagger: 0.5,
+            ease: "power4.out",
+          },
+          "-=0.75"
+        );
 
-      // Initialize Locomotive Scroll
       const scroll = new LocomotiveScroll({
         el: bodyRef.current,
-        smooth: true
+        smooth: true,
       });
 
-      // Update Locomotive Scroll after animations
-      setTimeout(() => { scroll.update(); }, 1000);
+      setTimeout(() => {
+        scroll.update();
+      }, 1000);
     }
   }, []);
 
   const images = [
-    { 
-      title: "Top 1% of providers", 
-      src: "../images/invis.png", 
+    {
+      title: "Top 1% of providers",
+      src: "../images/invis.png",
       className: "image-portrait",
-    
-      url: "/invisalign"
-    },
-    { 
-      title: "Fewer appointments: faster treatment time", 
-      src: "../images/damon1.png", 
-      className: "image-landscape",
 
-      url: "/braces"
+      url: "/invisalign",
     },
     {
-      title: "Pioneering the most comfortable appliances since 2005", 
-      src: "../images/mountain.png", 
+      title: "Fewer appointments: faster treatment time",
+      src: "../images/damon1.png",
       className: "image-landscape",
 
-      url: "/why-choose-us"
+      url: "/braces",
     },
-  
+    {
+      title: "Pioneering the most comfortable appliances since 2005",
+      src: "../images/mountain.png",
+      className: "image-landscape",
+
+      url: "/why-choose-us",
+    },
   ];
-  
-  
 
   return (
-<div ref={bodyRef} className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white font-oswald">
-<div 
-        className={`custom-cursor2 ${isHovering ? 'rotate' : ''}`} 
-        style={{ left: `${cursorPos.x}px`, top: `${cursorPos.y}px`, opacity: isHovering ? 1 : 0 }}
+    <div
+      ref={bodyRef}
+      className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white font-oswald"
+    >
+      <div
+        className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
+        style={{
+          left: `${cursorPos.x}px`,
+          top: `${cursorPos.y}px`,
+          opacity: isHovering ? 1 : 0,
+        }}
       >
-        <p >CHECK </p>
+        <p>CHECK </p>
         <p>IT OUT</p>
       </div>
       <div className="flex flex-wrap justify-center items-center p-0 min-h-screen">
-  {images.map((image, index) => (
-    <a 
-      key={index} 
-      href={image.url}
-      className={`group image-card relative flex items-center justify-center mb-20 ${image.className === "image-portrait" ? 'mx-4 w-[27vw] h-[37vw]' : 'mx-4 w-[37vw] h-[27vw]'}`}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
-        {image.title}
+        {images.map((image, index) => (
+          <a
+            key={index}
+            href={image.url}
+            className={`group image-card relative flex items-center justify-center mb-20 ${
+              image.className === "image-portrait"
+                ? "mx-4 w-[27vw] h-[37vw]"
+                : "mx-4 w-[50vw] h-[27vw]"
+            }`}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+          >
+            <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+              {image.title}
+            </div>
+            <img src={image.src} className="block w-full h-full object-cover" />
+          </a>
+        ))}
       </div>
-      <img src={image.src} className="block w-full h-full object-cover" />
- 
-    </a>
-  ))}
-</div>
-
-
-</div>
-
-
+    </div>
   );
 };
 const ParallaxOutline = () => {
@@ -1106,8 +1176,8 @@ const ParallaxOutline = () => {
 
   const onMouseDown = (e) => {
     setIsDragging(true);
-    ref.current.style.cursor = 'grabbing';
-    ref.current.style.userSelect = 'none';
+    ref.current.style.cursor = "grabbing";
+    ref.current.style.userSelect = "none";
     setPosition({
       x: e.clientX - ref.current.getBoundingClientRect().left,
       y: e.clientY - ref.current.getBoundingClientRect().top,
@@ -1125,13 +1195,130 @@ const ParallaxOutline = () => {
 
   const onMouseUp = () => {
     setIsDragging(false);
-    ref.current.style.cursor = 'grab';
-    ref.current.style.userSelect = 'auto';
+    ref.current.style.cursor = "grab";
+    ref.current.style.userSelect = "auto";
+  };
+  const carouselRef = useRef(null);
+
+  const scroll = (direction) => {
+    if (carouselRef.current) {
+      const { current: carousel } = carouselRef;
+      const scrollAmount = carousel.offsetWidth; // Scrolls 100% of the width
+      if (direction === "left") {
+        carousel.scrollLeft -= scrollAmount;
+      } else {
+        carousel.scrollLeft += scrollAmount;
+      }
+    }
   };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen ">
-    <span className="absolute text-white font-serif text-[10vw] custom-text" data-text="Happy Patients">
+      <div className="flex justify-center uppercase tracking tracking-widest">
+        Testimonials
+      </div>
+      <div className="relative flex items-center">
+        <div className="absolute right-0 top-0 z-20 flex">
+          <button
+            onClick={() => scroll("left")}
+            className="p-4"
+            aria-label="Previous"
+          >
+            ←
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            className="p-4 "
+            aria-label="Next"
+          >
+            →
+          </button>
+        </div>
+        <div className="relative flex items-center justify-center">
+          <div
+            ref={carouselRef}
+            className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
+            style={{ width: "60vw", height: "auto" }}
+          >
+            <div
+              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              style={{
+                height: "500px",
+                backgroundImage:
+                  "linear-gradient(to right, #B5A289,#A6AF9F, #92B9AB)",
+              }}
+            >
+              <div className="flex flex-col justify-center items-center mx-[7vw] ">
+                <p className="text-2xl text-center">
+                  You will receive top notch orthodontic care at Frey Smiles.
+                  Dr. Frey and his entire staff make every visit a pleasure. It
+                  is apparent at each appointment that Dr. Frey truly cares
+                  about his patients. He has treated both of our kids and my
+                  husband, and they all have beautiful smiles! I highly
+                  recommend!
+                </p>
+                <p className="text-center">Lisa Moyer</p>
+              </div>
+            </div>
+            <div
+              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              style={{
+                height: "500px",
+                backgroundImage:
+                  "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0",
+              }}
+            >
+              <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                <p className="text-2xl text-center">
+                  My experience at FreySmiles has been amazing! I recently just
+                  completed my Invisalign and my teeth look perfect! Dr. Frey
+                  truly cares about his patients and the staff are always
+                  friendly, as well as always accommodating to my schedule.
+                  They're the best around!
+                </p>
+                <p className="text-center">Kailee</p>
+              </div>
+            </div>
+            <div
+              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              style={{
+                height: "500px",
+                backgroundImage:
+                  "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
+              }}
+            >
+              <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                <p className="text-2xl text-center">
+                  I had an open bite and misaligned teeth most of my life. Dr
+                  Frey fixed it and in record time. 1 1/2 yrs with Invisalign’s.
+                  Highly recommended! Friendly staff and easy to make
+                  appointments!
+                </p>
+                <p className="text-center">Karen Oneill</p>
+              </div>
+            </div>
+            <div
+              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              style={{
+                height: "500px",
+                backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
+              }}
+            >
+              <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                <p className="text-2xl text-center">
+                  Dr. Frey was my orthodontist when I was 11 years old, Im now
+                  42. I still talk about how amazing he was and the great work
+                  he did with my teeth. Thank you so much for giving the most
+                  beautiful smile!
+                </p>
+                <p className="text-center">Tanya Burnhauser</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* <span className="absolute text-white font-serif text-[10vw] custom-text" data-text="Happy Patients">
  Happy Patients
     </span>
     <div className="w-full overflow-hidden custom-marquee">
@@ -1155,50 +1342,276 @@ const ParallaxOutline = () => {
   ))}
 </div>
 
+    </div> */}
     </div>
-  </div>
   );
 };
 
 const LogoGrid = () => {
-
   const logos = [
-    ['../../images/movingbannerfiles/damonlogo_invert.png', '../../images/movingbannerfiles/invis-logo_invert.png', '../../images/movingbannerfiles/readers.png'], 
-    ['../../images/movingbannerfiles/topDentist_logo.png', '../../images/movingbannerfiles/aao_invert.png', 'l../../images/movingbannerfiles/invisalign_invert.png'], 
-    ['../../images/movingbannerfiles/ABO.png', '../../images/movingbannerfiles/damonlogo_invert.png', '../../images/movingbannerfiles/valley.png'], 
-    ['../../images/movingbannerfiles/readers.png', '../../images/movingbannerfiles/top-Dentist.png', './../images/movingbannerfiles/invis-logo_invert.png'] 
+    [
+      "../../images/movingbannerfiles/diamondplus.svg",
+      "../../images/movingbannerfiles/readers.png",
+      "../../images/movingbannerfiles/damonsystem.svg",
+    ],
+    [
+      "../../images/movingbannerfiles/topDentist_logo.png",
+      "../../images/movingbannerfiles/invisalign_invert.png",
+      "../../images/movingbannerfiles/ajodo.svg",
+      "../../images/movingbannerfiles/ABO_invert.png",
+    ],
+    [
+      "../../images/movingbannerfiles/valley.png",
+      "../../images/movingbannerfiles/top-Dentist.png",
+      "../../images/movingbannerfiles/aao_invert.png",
+    ],
   ];
-  const [activeLogos, setActiveLogos] = useState(logos.map(() => 0));
-
+  let isSphereCreated = false;
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveLogos(currentActive =>
-        currentActive.map((active, idx) => (active + 1) % logos[idx].length)
-      );
-    }, 2000); 
+    console.log("sphere");
+    if (isSphereCreated) {
+      return;
+    }
+    isSphereCreated = true;
+    console.log("createsphere");
+    const createSphere = () => {
+      let majorPlatformVersion;
+      const canvasSphereWrapp = document.querySelector("#ballcanvas");
 
-    return () => clearInterval(interval);
+      if (navigator.userAgentData) {
+        if (navigator.userAgentData.platform === "Windows") {
+          let ua = navigator.userAgentData.getHighEntropyValues([
+            "platformVersion",
+          ]);
+          majorPlatformVersion = parseInt(ua.platformVersion.split(".")[0]);
+        }
+      }
+
+      let sW = canvasSphereWrapp.offsetWidth;
+      let halfsW = sW / 2;
+      let circleW = sW / 12;
+
+      let Engine = Matter.Engine,
+        Render = Matter.Render,
+        Runner = Matter.Runner,
+        Body = Matter.Body,
+        Bodies = Matter.Bodies,
+        Common = Matter.Common,
+        Composite = Matter.Composite,
+        World = Matter.World,
+        Mouse = Matter.Mouse,
+        Events = Matter.Events,
+        MouseConstraint = Matter.MouseConstraint;
+
+      let engine = Engine.create();
+
+      let render = Render.create({
+        element: canvasSphereWrapp,
+        engine: engine,
+        options: {
+          isSensor: true,
+          width: canvasSphereWrapp.offsetWidth,
+          pixelRatio: "auto",
+          height: canvasSphereWrapp.offsetHeight,
+          background: "transparent",
+          wireframes: false,
+        },
+      });
+
+      if (majorPlatformVersion >= 13) {
+        engine.timing.timeScale = 0.35;
+      }
+
+      engine.gravity.y = 1;
+      engine.gravity.x = 0;
+      engine.gravity.scale = 0.0025;
+
+      let stack = [];
+      const texts = ["INVISALIGN", "DAMON", "DIAMOND 1%"];
+
+      let ballsWithText = [];
+
+      for (let i = 0; i < 12; i++) {
+        const ball = Bodies.circle(halfsW, halfsW, circleW, {
+          density: 0.00001,
+          restitution: 0.5,
+          density: 0.05,
+          collisionFilter: {
+            category: 0x0003,
+            mask: 0x0003 | 0x0001,
+          },
+          render: {
+            fillStyle: "#1e90ff",
+            // strokeStyle: 'white',
+            // lineWidth: 1,
+          },
+        });
+        ballsWithText.push({ ball, text: texts[i] });
+        Composite.add(engine.world, ball);
+      }
+      Events.on(render, "afterRender", function () {
+        const ctx = render.context;
+        ballsWithText.forEach(({ ball, text }, index) => {
+          const position = ball.position;
+
+          const image = new Image();
+          image.src = logos[Math.floor(index / 4)][index % 4];
+          const aspectRatio = image.width / image.height;
+
+          let imageWidth, imageHeight;
+          if (aspectRatio > 1) {
+            imageWidth = circleW;
+            imageHeight = circleW / aspectRatio;
+          } else {
+            imageWidth = circleW * aspectRatio;
+            imageHeight = circleW;
+          }
+
+          const destX = position.x - imageWidth / 2;
+          const destY = position.y - imageHeight / 2;
+
+          ctx.drawImage(image, destX, destY, imageWidth, imageHeight);
+        });
+      });
+
+      let mouse = Mouse.create(render.canvas),
+        mouseConstraint = MouseConstraint.create(engine, {
+          mouse: mouse,
+          constraint: {
+            stiffness: 0.2,
+            render: {
+              visible: false,
+            },
+          },
+        });
+
+      mouseConstraint.mouse.element.removeEventListener(
+        "mousewheel",
+        mouseConstraint.mouse.mousewheel
+      );
+      mouseConstraint.mouse.element.removeEventListener(
+        "DOMMouseScroll",
+        mouseConstraint.mouse.mousewheel
+      );
+
+      let shakeScene = function (engine, bodies) {
+        let timeScale = 1000 / 60 / engine.timing.lastDelta;
+
+        for (let i = 0; i < bodies.length; i++) {
+          let body = bodies[i];
+
+          if (!body.isStatic) {
+            let forceMagnitude = 0.03 * body.mass * timeScale;
+
+            Body.applyForce(body, body.position, {
+              x:
+                (forceMagnitude + Common.random() * forceMagnitude) *
+                Common.choose([1, -1]),
+              y: -forceMagnitude + Common.random() * -forceMagnitude,
+            });
+          }
+        }
+      };
+
+      Events.on(mouseConstraint, "mousemove", function (event) {
+        let foundPhysics = Matter.Query.point(stack, event.mouse.position);
+        shakeScene(engine, foundPhysics);
+      });
+
+      Composite.add(engine.world, mouseConstraint);
+
+      render.mouse = mouse;
+
+      Render.run(render);
+
+      let r = sW / 2;
+      let parts = [];
+      let pegCount = 32;
+      let TAU = Math.PI * 2;
+      for (let i = 0; i < pegCount; i++) {
+        const segment = TAU / pegCount;
+        let angle2 = (i / pegCount) * TAU + segment / 2;
+        let x2 = Math.cos(angle2);
+        let y2 = Math.sin(angle2);
+        let cx2 = x2 * r + sW / 2;
+        let cy2 = y2 * r + sW / 2;
+        let rect = addRect({
+          x: cx2,
+          y: cy2,
+          w: (10 / 1000) * sW,
+          h: (400 / 1000) * sW,
+          options: {
+            angle: angle2,
+            isStatic: true,
+            density: 1,
+            render: {
+              fillStyle: "transparent",
+              strokeStyle: "transparent",
+              lineWidth: 0,
+            },
+          },
+        });
+        parts.push(rect);
+      }
+
+      function addBody(...bodies) {
+        World.add(engine.world, ...bodies);
+      }
+
+      function addRect({ x = 0, y = 0, w = 10, h = 10, options = {} } = {}) {
+        let body = Bodies.rectangle(x, y, w, h, options);
+        addBody(body);
+        return body;
+      }
+
+      let runner = Runner.create();
+
+      Runner.run(runner, engine);
+    };
+
+    createSphere();
+
+    return () => {};
   }, []);
 
-
   return (
-   <div className=" mx-auto">
-    <div className=" logo-grid grid grid-cols-4">
-    {logos.map((columnLogos, columnIndex) => (
-      <div key={columnIndex} className="column">
-        {columnLogos.map((logo, logoIndex) => (
-          <div 
-            key={logoIndex} 
-            className={`grid-logo-wrapper ${activeLogos[columnIndex] === logoIndex ? 'active' : ''}`}
-          >
-            <img src={logo} alt={`Logo ${logoIndex + 1}`} />
+    <div className="bg-[#DDDCDC] h-screen flex justify-center items-center">
+      <div className="grid grid-cols-2 p-4">
+        <div class="horizontal-item">
+          <div className="z-10" id="ballcanvas"></div>
+        </div>
+
+        <div className="flex items-center justify-center flex-col">
+          <div className="font-neue-montreal font-bold text-8xl uppercase">
+            Awards & Recognition
           </div>
-        ))}
+          <div class="mt-10 flex items-center">
+            <div class="w-48 h-px bg-gray-700"></div>
+            <div class="text-[15px] pl-4">
+              Our greatest award is the success of our patients
+            </div>
+          </div>
+        </div>
+
+        <div className="h-80 flex items-center justify-center">
+          {/* <div className="grid grid-cols-2 gap-4">
+            {logos.map((columnLogos, columnIndex) => (
+              <div key={columnIndex} className="flex flex-col items-center">
+                {columnLogos.map((logo, logoIndex) => (
+                  <div key={logoIndex} className="p-2">
+                    <img
+                      src={logo}
+                      alt={`Logo ${logoIndex + 1}`}
+                      className="h-14 w-auto"
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div> */}
+        </div>
       </div>
-    ))}
-  </div>
-  </div> 
-  
+    </div>
   );
 };
 
@@ -1221,11 +1634,11 @@ const LogoGrid = () => {
 
 //   return (
 //     <div ref={main}>
-//       <div  style={{ 
-//     backgroundImage: "url('../images/pinkgradient.png')", 
-//     backgroundSize: 'cover',     
-//     backgroundPosition: 'center', 
-//     backgroundRepeat: 'no-repeat' 
+//       <div  style={{
+//     backgroundImage: "url('../images/pinkgradient.png')",
+//     backgroundSize: 'cover',
+//     backgroundPosition: 'center',
+//     backgroundRepeat: 'no-repeat'
 //   }}className="panel h-[100dvh] bg-[#a3bba3]">
 //         <Invisalign />
 //       </div>
@@ -1328,15 +1741,17 @@ const LogoGrid = () => {
 // }
 
 function Locations() {
-
   const [isVisible, setIsVisible] = useState(false);
   const footerRef = useRef(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      const [entry] = entries;
-      setIsVisible(entry.isIntersecting);
-    }, { threshold: 0.5 });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.5 }
+    );
 
     if (footerRef.current) {
       observer.observe(footerRef.current);
@@ -1349,22 +1764,25 @@ function Locations() {
     };
   }, []);
 
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: false})
-  const [scope, animate] = useAnimate()
-  const [selectedLocation, setSelectedLocation] = useState("All")
-  const [activeDisclosurePanel, setActiveDisclosurePanel] = useState(null)
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false });
+  const [scope, animate] = useAnimate();
+  const [selectedLocation, setSelectedLocation] = useState("All");
+  const [activeDisclosurePanel, setActiveDisclosurePanel] = useState(null);
 
   function toggleDisclosurePanels(newPanel) {
     if (activeDisclosurePanel) {
-      if (activeDisclosurePanel.key !== newPanel.key && activeDisclosurePanel.open) {
-        activeDisclosurePanel.close()
+      if (
+        activeDisclosurePanel.key !== newPanel.key &&
+        activeDisclosurePanel.open
+      ) {
+        activeDisclosurePanel.close();
       }
     }
     setActiveDisclosurePanel({
       ...newPanel,
-      open: !newPanel.open
-    })
+      open: !newPanel.open,
+    });
   }
 
   const locations = [
@@ -1375,11 +1793,11 @@ function Locations() {
       mapbox_map_title: "FreySmiles Allentown [w/ Colors]",
       mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALLENTOWN,
       hours: [
-        { "Mon": "11:00 AM - 7:00 PM" },
-        { "Tue": "11:00 AM - 7:00 PM" },
-        { "Wed": "8:00 AM - 5:30 PM" },
-        { "Thu": "7:00 AM - 4:30 PM" },
-      ]
+        { Mon: "11:00 AM - 7:00 PM" },
+        { Tue: "11:00 AM - 7:00 PM" },
+        { Wed: "8:00 AM - 5:30 PM" },
+        { Thu: "7:00 AM - 4:30 PM" },
+      ],
     },
     {
       location: "Bethlehem",
@@ -1387,22 +1805,20 @@ function Locations() {
       addressLine2: "Bethlehem, PA 18020",
       mapbox_map_title: "FreySmiles Bethlehem [w/ Colors]",
       mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_BETHLEHEM,
-      hours: [
-        { "Tue": "11:00 AM - 7:00 PM" },
-        { "Thu": "7:00 AM - 4:30 PM" },
-      ]
+      hours: [{ Tue: "11:00 AM - 7:00 PM" }, { Thu: "7:00 AM - 4:30 PM" }],
     },
     {
       location: "Schnecksville",
       addressLine1: "4155 Independence Drive",
       addressLine2: "Schnecksville, PA 18078",
       mapbox_map_title: "FreySmiles Schnecksville [w/ Colors]",
-      mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_SCHNECKSVILLE,
+      mapbox_iframe_url:
+        process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_SCHNECKSVILLE,
       hours: [
-        { "Mon": "11:00 AM - 7:00 PM" },
-        { "Tue": "11:00 AM - 7:00 PM" },
-        { "Thu": "7:00 AM - 4:30 PM" },
-      ]
+        { Mon: "11:00 AM - 7:00 PM" },
+        { Tue: "11:00 AM - 7:00 PM" },
+        { Thu: "7:00 AM - 4:30 PM" },
+      ],
     },
     {
       location: "Lehighton",
@@ -1410,205 +1826,259 @@ function Locations() {
       addressLine2: "Lehighton, PA 18235",
       mapbox_map_title: "FreySmiles Lehighton [w/ Colors]",
       mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_LEHIGHTON,
-      hours: [
-        { "Mon": "11:00 AM - 7:00 PM" },
-        { "Thu": "7:00 AM - 4:30 PM" },
-      ]
-    }
-  ]
+      hours: [{ Mon: "11:00 AM - 7:00 PM" }, { Thu: "7:00 AM - 4:30 PM" }],
+    },
+  ];
 
   useEffect(() => {
-    animate("div", isInView
-      ? { opacity: 1, transform: "translateX(0px)", scale: 1,
-      } // filter: "blur(0px)"
-      : { opacity: 0, transform: "translateX(-50px)", scale: 0.3,
-      }, // filter: "blur(20px)"
+    animate(
+      "div",
+      isInView
+        ? { opacity: 1, transform: "translateX(0px)", scale: 1 } // filter: "blur(0px)"
+        : { opacity: 0, transform: "translateX(-50px)", scale: 0.3 }, // filter: "blur(20px)"
       {
         duration: 0.2,
         delay: isInView ? stagger(0.1, { startDelay: 0.15 }) : 0,
       }
-    )
-  }, [isInView])
-
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
+    );
+  }, [isInView]);
 
   useEffect(() => {
-    const moveCursor = (e) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
-    };
+    gsap.registerPlugin(SplitText);
 
-    if (isHovering) {
-      window.addEventListener('mousemove', moveCursor);
-    }
+    const title = document.querySelector(".content__title");
+    const split = new SplitText(title, { type: "chars" });
+    const chars = split.chars;
 
-    return () => {
-      window.removeEventListener('mousemove', moveCursor);
-    };
-  }, [isHovering]);
+    gsap.fromTo(
+      chars,
+      {
+        "will-change": "opacity, transform",
+        transformOrigin: "50% 100%",
+        opacity: 0,
+        rotationX: 90,
+      },
+      {
+        ease: "power4",
+        opacity: 1,
+        stagger: 0.03,
+        rotationX: 0,
+        scrollTrigger: {
+          trigger: title,
+          start: "center bottom",
+          end: "bottom top+=20%",
+          scrub: true,
+        },
+      }
+    );
+  }, []);
 
-  
+  useEffect(() => {
+    gsap.to(".marquee-track.r h1", {
+      scrollTrigger: {
+        trigger: ".marquee-track.r h1",
+        start: "top bottom",
+        end: "400% top",
+        scrub: 0.6,
+      },
+      xPercent: 25,
+      duration: 3,
+      ease: "linear",
+    });
+  }, []);
+
   return (
-    <> 
-     <footer ref={footerRef} className="overflow-hidden py-20">
-  <h2 className="m-0 font-Poppins flex justify-center text-white text-[180px] font-extrabold" style={{ fontStretch: '150%', fontVariationSettings: '"wdth" 150' }}>
-    {['O', 'u', 'r', ' ', 'L', 'o', 'c', 'a', 't', 'i', 'o', 'n', 's'].map((letter, index) => (
-      <span 
-        key={index} 
-        className="inline-block" 
-        style={{ 
-          transform: `translateY(${index * -40}px)`, 
-          animation: isVisible ? `moveLetter 2s forwards` : 'none',
-          whiteSpace: letter === ' ' ? 'pre' : 'normal' 
-        }}>
-        {letter === ' ' ? '\u00A0' : letter} 
-      </span>
-    ))}
-  </h2>
-</footer>
+    <>
+      <div className="h-screen">
+        {/* <div className="marquee-track r">
+    <h1 className="text-8xl font-neue-montreal font-bold  uppercase">COME SAY HI COME SAY HI COME SAY HI</h1>
+  </div> */}
+        <div className="">
+          <h1 className="text-8xl font-neue-montreal font-bold  uppercase">
+            COME SAY HI
+          </h1>
+        </div>
+        {/* 
+      <img className="w-80 " src="../images/mappin.png" alt="Map Pin"></img> */}
+        <section
+          ref={ref}
+          id="locations"
+          className="flex flex-col justify-center w-full mx-auto  lg:flex-row max-w-7xl"
+        >
+          <div></div>
+          {/* LEFT */}
+          <div className="z-10 lg:w-1/2 lg:py-0">
+            <motion.div
+              className="p-6 "
+              style={{
+                transform: isInView ? "none" : "translateY(-50px)",
+                opacity: isInView ? 1 : 0,
+                transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+              }}
+            >
+              <span className="flex items-baseline ">
+                {/* <MapPin className="ml-2 transition-all duration-300 hover:animate-bounce hover:cursor-pointer" /> */}
+              </span>
 
-      <img className="w-80 " src="../images/mappin.png" alt="Map Pin"></img>
-  <section ref={ref} id="locations" className=" flex flex-col justify-center w-full mx-auto  lg:flex-row max-w-7xl">
-       <div>
-    
-    </div>
-      {/* LEFT */}
-        <div className="z-10 lg:w-1/2 lg:py-0">
-          <motion.div
-            className="p-6 "
-            style={{
-              transform: isInView ? "none" : "translateY(-50px)",
-              opacity: isInView ? 1 : 0,
-              transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
-            }}
-          >
-          <span className="flex items-baseline ">
-
-
-  {/* <MapPin className="ml-2 transition-all duration-300 hover:animate-bounce hover:cursor-pointer" /> */}
-</span>
-
-            {/* <Link
+              {/* <Link
               href="/book-now"
               className="inline-block px-6 py-4 text-white transition duration-300 ease-linear rounded-full underline-offset-8 bg-primary-50 hover:bg-secondary-50 group"
             >
               Schedule an evaluation today
               <span className="block h-[1px] transition-all duration-300 ease-linear bg-white rounded-full max-w-0 group-hover:max-w-full"></span>
             </Link> */}
-          </motion.div>
+            </motion.div>
 
-          {/* LOCATIONS LIST */}
-          <motion.div className="flex flex-col space-y-4" style={{
-            transform: isInView ? "none" : "translateX(-50px)",
-            opacity: isInView ? 1 : 0,
-            transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
-          }}>
-            <button
-              className={`${
-                selectedLocation === "All" ? "text-[#c2776a]underline" : ""
-              } self-end transition-all duration-300 ease-linear w-max  hover:text-secondary-50 mr-6`}
-              onClick={() => setSelectedLocation("All")}
+            {/* LOCATIONS LIST */}
+            <motion.div
+              className="flex flex-col space-y-4"
+              style={{
+                transform: isInView ? "none" : "translateX(-50px)",
+                opacity: isInView ? 1 : 0,
+                transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+              }}
             >
-              {selectedLocation === "All" ? "Showing All Locations" : "Show All Locations"}
-            </button>
-            <div 
-        className={`custom-cursor2 ${isHovering ? 'rotate' : ''}`} 
-        style={{ left: `${cursorPos.x}px`, top: `${cursorPos.y}px`, opacity: isHovering ? 1 : 0 }}
-      >
-        <p >MORE </p>
-        <p>INFO</p>
-      </div>
-            <dl ref={scope} className="divide-y divide-primary-70">
-              {locations.map((l, i) => (
-                <Disclosure as="div" key={l.location} className={`${selectedLocation === l.location ? "bg-primary-30 text-primary-95" : ""} px-4 py-6 transition-all duration-300 ease-linear cursor-pointer  hover:text-white group text-primary-20`}>
-                  {(panel) => {
-                    const { open, close } = panel
-                    return (<>
-                      <Disclosure.Button className="grid w-full grid-cols-12 text-left sm:px-0" onClick={() => {
-                        if (!open) close()
-                        toggleDisclosurePanels({...panel, key: i})
-                        setSelectedLocation(l.location)
-                      }}
-                      onMouseEnter={() => setIsHovering(true)}
-                      onMouseLeave={() => setIsHovering(false)}>
-                        <dt className="col-span-5 ">
-                          <h6 className="text-3xl">{l.location}</h6>
-                        </dt>
-                        <dd className="col-span-7">
-                          <span className="flex items-center justify-between">
-                            <p>
-                              {l.addressLine1}
-                              <br />
-                              {l.addressLine2}
-                            </p>
-                            <ChevronRightIcon className="w-4 h-4 ui-open:rotate-90 ui-open:transform" />
-                          </span>
-                        </dd>
-                      </Disclosure.Button>
-                      <Transition
-                        enter="transition duration-100 ease-out"
-                        enterFrom="transform scale-95 opacity-0"
-                        enterTo="transform scale-100 opacity-100"
-                        leave="transition duration-75 ease-out"
-                        leaveFrom="transform scale-100 opacity-100"
-                        leaveTo="transform scale-95 opacity-0"
-                      >
-                        <Disclosure.Panel as="div" className="grid grid-cols-12 mt-6">
-                          <ul className="col-span-7 col-start-6 text-left">
-                            <h6 className="mb-2 font-medium uppercase">Office Hours:</h6>
-                            {l.hours.map((hour, index) => (
-                              <li key={index}>{Object.keys(hour)[0]}: {Object.values(hour)[0]}</li>
-                            ))}
-                          </ul>
-                        </Disclosure.Panel>
-                      </Transition>
-                    </>)
-                  }}
-                </Disclosure>
-              ))}
-            </dl>
-          </motion.div>
-        </div>
+              <button
+                className={`${
+                  selectedLocation === "All" ? "text-white " : ""
+                } self-end transition-all duration-300 ease-linear w-max  hover:text-secondary-50 mr-6`}
+                onClick={() => setSelectedLocation("All")}
+              >
+                {selectedLocation === "All"
+                  ? "Showing All Locations"
+                  : "Show All Locations"}
+              </button>
 
-      {/* RIGHT */}
-        <motion.div className="h-screen min-h-max lg:w-1/2 lg:h-auto" style={{
-          opacity: isInView ? 1 : 0,
-          filter: isInView ? "blur(0px)" : "blur(16px)",
-          transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
-        }}>
-          <iframe width="100%" height="100%"
-            src={
-              selectedLocation === "All"
-              ? process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALL_LOCATIONS
-              : locations.find((l) => l.location === selectedLocation).mapbox_iframe_url
-            }
-            title={
-              selectedLocation === "All"
-              ? "FreySmiles All Locations [w/ Colors]"
-              : locations.find((l) => l.location === selectedLocation).mapbox_map_title
-            }
-            style={{ border: "none" }}
-          />
-        </motion.div>
-    </section>
-  </>
- 
-  )
+              <dl ref={scope} className=" divide-y ">
+                {locations.map((l, i) => (
+                  <Disclosure
+                    as="div"
+                    key={l.location}
+                    className={`${
+                      selectedLocation === l.location ? "text-primary-95" : ""
+                    } px-4 py-6 transition-all duration-300 ease-linear cursor-pointer  hover:text-white group text-white`}
+                  >
+                    {(panel) => {
+                      const { open, close } = panel;
+                      return (
+                        <>
+                          <Disclosure.Button
+                            className="grid w-full grid-cols-12 text-left sm:px-0"
+                            onClick={() => {
+                              if (!open) close();
+                              toggleDisclosurePanels({ ...panel, key: i });
+                              setSelectedLocation(l.location);
+                            }}
+                          >
+                            <dt className="col-span-5 ">
+                              <h6 className="text-xl">{l.location}</h6>
+                            </dt>
+                            <dd className="col-span-7">
+                              <span className="flex items-center justify-between">
+                                <p>
+                                  {l.addressLine1}
+                                  <br />
+                                  {l.addressLine2}
+                                </p>
+                                <ChevronRightIcon className="w-4 h-4 ui-open:rotate-90 ui-open:transform" />
+                              </span>
+                            </dd>
+                          </Disclosure.Button>
+                          <Transition
+                            show={open}
+                            enter="transition-transform ease-out duration-300"
+                            enterFrom="transform scale-y-0 opacity-0"
+                            enterTo="transform scale-y-100 opacity-100"
+                            leave="transition-transform ease-in duration-200"
+                            leaveFrom="transform scale-y-100 opacity-100"
+                            leaveTo="transform scale-y-0 opacity-0"
+                          >
+                            <Disclosure.Panel
+                              as="div"
+                              className="grid grid-cols-12 mt-6"
+                            >
+                              <ul className="col-span-7 col-start-6 text-left">
+                                <h6 className="mb-2 font-medium uppercase">
+                                  Office Hours:
+                                </h6>
+                                {l.hours.map((hour, index) => (
+                                  <li key={index}>
+                                    {Object.keys(hour)[0]}:{" "}
+                                    {Object.values(hour)[0]}
+                                  </li>
+                                ))}
+                              </ul>
+                            </Disclosure.Panel>
+                          </Transition>
+                        </>
+                      );
+                    }}
+                  </Disclosure>
+                ))}
+              </dl>
+            </motion.div>
+          </div>
+
+          {/* RIGHT */}
+          <motion.div
+            className="h-screen min-h-max lg:w-1/2 lg:h-auto"
+            style={{
+              opacity: isInView ? 1 : 0,
+              filter: isInView ? "blur(0px)" : "blur(16px)",
+              transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+            }}
+          >
+            <iframe
+              width="100%"
+              height="100%"
+              src={
+                selectedLocation === "All"
+                  ? process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALL_LOCATIONS
+                  : locations.find((l) => l.location === selectedLocation)
+                      .mapbox_iframe_url
+              }
+              title={
+                selectedLocation === "All"
+                  ? "FreySmiles All Locations [w/ Colors]"
+                  : locations.find((l) => l.location === selectedLocation)
+                      .mapbox_map_title
+              }
+              style={{ border: "none", borderRadius: "3rem" }}
+            />
+          </motion.div>
+        </section>
+      </div>
+    </>
+  );
 }
 
 function GiftCards() {
-  const ref = useRef()
-  const isInView = useInView(ref)
+  const ref = useRef();
+  const isInView = useInView(ref);
 
   return (
-    <section ref={ref} className="z-10 h-[60dvh] relative my-24 group overflow-hidden hover:cursor-pointer" style={{
-      transform: isInView ? "none" : "translateY(100px)",
-      opacity: isInView ? 1 : 0,
-      transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s"
-    }}>
+    <section
+      ref={ref}
+      className="z-10 h-[60dvh] relative my-24 group overflow-hidden hover:cursor-pointer"
+      style={{
+        transform: isInView ? "none" : "translateY(100px)",
+        opacity: isInView ? 1 : 0,
+        transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+      }}
+    >
       <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-primary-30 bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
-      <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank' className="text-2xl absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white">Send a Gift Card</Link>
-      <img src="/../../images/giftcards/gift_cards_mockup.jpg" alt="gift cards mockup" className="absolute inset-0 object-cover object-center w-full h-full -z-10" />
+      <Link
+        href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`}
+        target="_blank"
+        className="text-2xl absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white"
+      >
+        Send a Gift Card
+      </Link>
+      <img
+        src="/../../images/giftcards/gift_cards_mockup.jpg"
+        alt="gift cards mockup"
+        className="absolute inset-0 object-cover object-center w-full h-full -z-10"
+      />
     </section>
-  )
+  );
 }

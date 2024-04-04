@@ -264,7 +264,7 @@ const BookNow = () => {
     
 {/* 
             <div className="flex justify-evenly items-center w-full -mt-10">
-              <div className="font-helvetica-now-thin text-xl text-center">
+              <div className="font-CeraProBold text-xl text-center">
                 <a
                   className="hover:text-purple-500"
                   href="mailto:info@freysmiles.com"
@@ -272,7 +272,7 @@ const BookNow = () => {
                   • info@freysmiles.com
                 </a>
               </div>
-              <div className="font-helvetica-now-thin text-lg text-center">
+              <div className="font-CeraProBold text-lg text-center">
                 <a
                   href="facetime://6104374748"
                   className="hover:text-purple-500"
@@ -287,7 +287,7 @@ const BookNow = () => {
                       href="https://www.instagram.com/freysmiles/"
                       className="hover:text-purple-500"
                     >
-                      <span className="font-helvetica-now-thin mx-4">
+                      <span className="font-CeraProBold mx-4">
                         •@freysmiles
                       </span>
                     </a>
@@ -343,7 +343,37 @@ const BookNow = () => {
                 >
                   <div className="flex flex-col items-center">
                     <div className="flex w-full gap-2">
-                      <div className="relative flex-1 w-1/2">
+                    <div className="flex justify-between items-center border-b border-black">
+      <label htmlFor="nameInput" className="font-CeraProBold whitespace-nowrap text-md text-gray-700">
+        Your Name
+      </label>
+      <input
+        id="nameInput"
+        type="text"
+        placeholder="Enter name"
+        className="block px-3 py-2 bg-transparent border-none placeholder-gray-400
+                    focus:outline-none focus:ring-0 sm:text-sm"
+        style={{ width: '50%' }} 
+      />
+    </div>
+    <div className="relative  w-1/2">
+                    <div className="flex justify-between items-center w-full border-b border-black"  data-te-datepicker-init
+                   >
+      <label htmlFor="nameInput" className="font-CeraProBold whitespace-nowrap text-md  text-gray-700">
+       Birthday
+      </label>
+      <input
+        id="nameInput"
+        type="text"
+        placeholder="Enter date"
+        className="block px-3 py-2 bg-transparent border-none placeholder-gray-400
+                    focus:outline-none focus:ring-0 sm:text-sm"
+        style={{ width: '50%' }} 
+      />
+    </div>
+                    </div>
+
+                      {/* <div className="relative flex-1 w-1/2">
                         <input
                           type="text"
                           id="floating_filled"
@@ -352,62 +382,65 @@ const BookNow = () => {
                         />
                         <label
                           htmlFor="floating_filled"
-                          className="font-helvetica-now-thin absolute text-md dark:text-gray-400 -top-5 left-2.5 z-10"
+                          className="font-CeraProBold absolute text-md dark:text-gray-400 -top-5 left-2.5 z-10"
                         >
                           Your Name*
                         </label>
-                      </div>
+                      </div> */}
                     </div>
 
                     <div className="relative mt-10 w-full">
-                      <input
-                        type="text"
-                        id="floating_filled"
-                        className="mt-5 block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
-                        placeholder=" "
-                      />
-                      <label
-                        htmlFor="floating_filled"
-                        className="font-helvetica-now-thin absolute text-md dark:text-gray-400 -top-5 left-2.5 z-10"
-                      >
-                        Guardian (if applicable)
-                      </label>
+                    <div className="flex justify-between items-center w-full border-b border-black">
+      <label htmlFor="nameInput" className="font-CeraProBold whitespace-nowrap text-md  text-gray-700">
+        Guardian *if applicable
+      </label>
+      <input
+        id="nameInput"
+        type="text"
+        placeholder="Enter guardian"
+        className="block px-3 py-2 bg-transparent border-none placeholder-gray-400
+                    focus:outline-none focus:ring-0 sm:text-sm"
+        style={{ width: '50%' }} 
+      />
+    </div>
                     </div>
 
-                    <div className="w-full flex gap-2">
+                    <div className="mt-5 w-full flex gap-2">
                       <div className="w-1/2 relative flex-1 py-4">
-                        <input
-                          type="text"
-                          id="floating_filled"
-                          className="mt-10 block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
-                          placeholder=" "
-                        />
-                        <label
-                          htmlFor="floating_filled"
-                          className="font-helvetica-now-thin absolute text-md dark:text-gray-400 top-5 left-2.5 z-10"
-                        >
-                          Phone Number*
-                        </label>
+                      <div className="flex justify-between items-center w-full border-b border-black">
+      <label htmlFor="nameInput" className="font-CeraProBold whitespace-nowrap text-md text-gray-700">
+        Phone
+      </label>
+      <input
+        id="nameInput"
+        type="text"
+        placeholder="Enter number"
+        className="block px-3 py-2 bg-transparent border-none placeholder-gray-400
+                    focus:outline-none focus:ring-0 sm:text-sm"
+        style={{ width: '50%' }} 
+      />
+    </div>
                       </div>
 
                       <div className="w-1/2 relative flex-1 py-4">
-                        <input
-                          type="text"
-                          id="floating_filled"
-                          className="mt-10 block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
-                          placeholder=" "
-                        />
-                        <label
-                          htmlFor="floating_filled"
-                          className="font-helvetica-now-thin absolute text-md dark:text-gray-400 top-5 left-2.5 z-10"
-                        >
-                          Email*
-                        </label>
+                      <div className="flex justify-between items-center w-full border-b border-black">
+      <label htmlFor="nameInput" className="font-CeraProBold whitespace-nowrap text-md  text-gray-700">
+        Email
+      </label>
+      <input
+        id="nameInput"
+        type="text"
+        placeholder="Enter email"
+        className="block px-3 py-2 bg-transparent border-none placeholder-gray-400
+                    focus:outline-none focus:ring-0 sm:text-sm"
+        style={{ width: '50%' }} 
+      />
+    </div>
                       </div>
                     </div>
                   </div>
-
-                  <div
+               
+                  {/* <div
                     className="my-4 relative mb-3"
                     data-te-datepicker-init
                     data-te-input-wrapper-init
@@ -421,12 +454,12 @@ const BookNow = () => {
                     />
                     <label
                       htmlFor="floatingInput"
-                      className=" font-helvetica-now-thin pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6]  transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
+                      className=" pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6]  transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
                     >
                       Date of Birth*
                     </label>
-                  </div>
-                  <div className="font-helvetica-now-thin grid grid-cols-2 gap-4 ">
+                  </div> */}
+                  <div className="grid grid-cols-2 gap-4 ">
                     <button
                       className={`w-44 h-14 px-6 py-2 border border-black rounded-lg mx-auto relative ${
                         typeOfAppointment === "virtual"
@@ -452,10 +485,10 @@ const BookNow = () => {
                   </div>
                   {typeOfAppointment === "inPerson" && (
                     <div>
-                      <div className="font-helvetica-now-thin flex w-full justify-between rounded-lg px-4 py-2 text-left text-md font-medium focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
+                      <div className="font-CeraProBold flex w-full justify-between rounded-lg px-4 py-2 text-left text-md font-medium focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
                         <span>Choose Location</span>
                       </div>
-                      <div className="font-helvetica-now-thin px-4 pt-4 pb-2 text-sm ">
+                      <div className="font-CeraProBold px-4 pt-4 pb-2 text-sm ">
                         {locations.map((button, index) => (
                           <button
                             className="px-4"
@@ -482,7 +515,7 @@ const BookNow = () => {
                       </div>
                     </div>
                   )}
-                  <div className="font-helvetica-now-thin grid grid-cols-2 gap-4">
+                  <div className="font-CeraProBold grid grid-cols-2 gap-4">
                     {appointmentType.map((button, index) => (
                       <button
                         className={`w-44 h-14 px-6 py-2 rounded-lg ${
@@ -500,7 +533,7 @@ const BookNow = () => {
                     ))}
                   </div>
 
-                  <div className="font-helvetica-now-thin flex justify-center flex-col">
+                  <div className="font-CeraProBold flex justify-center flex-col">
                     Preferred Day(s):
                     <div className="flex flex-wrap justify-start py-4 gap-4 ml-4">
                       {days.map((button, index) => (
@@ -519,9 +552,9 @@ const BookNow = () => {
                       ))}
                     </div>
                   </div>
-                  <div className="font-helvetica-now-thin py-2 space-x-4">
+                  <div className="font-CeraProBold py-2 space-x-4">
                     Preferred Time(s):
-                    <div className="font-helvetica-now-thin flex flex-wrap justify-start py-4 gap-4 ml-4">
+                    <div className="font-CeraProBold flex flex-wrap justify-start py-4 gap-4 ml-4">
                       {times.map((button, index) => (
                         <button
                           key={button.time}
@@ -545,12 +578,12 @@ const BookNow = () => {
                         placeholder="Please include as much detail as possible"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        className="font-helvetica-now-thin h-full bg-transparent italic text-blue-600"
+                        className="font-CeraProBold h-full bg-transparent italic text-blue-600"
                       ></textarea>
                     </label>
                   </div>
 
-                  <div className="font-helvetica-now-thin flex justify-center">
+                  <div className="font-CeraProBold flex justify-center">
                     <button
                       className="relative rounded-lg px-4 py-2 border border-black max-w-max -mt-3 flex items-center justify-center"
                       type="submit"

@@ -448,7 +448,7 @@ const OurTeam = () => {
   <div className="flex items-center">
     <div className="w-24 h-px bg-gray-700 "></div>
     <span className="text-[13px] block w-3/5 ml-4">
-      Our experience spans over 20 years, a testament to the precision, accuracy, and relevance of our vision, demonstrating our ability to adapt to the ever-changing nature of the public relations industry.
+      Our experience spans over 50 years, a testament to the precision, accuracy, and relevance of our vision, demonstrating our ability to adapt to the ever-changing nature of the public relations industry.
     </span>
   </div>
 </div>
