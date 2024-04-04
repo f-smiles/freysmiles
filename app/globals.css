@@ -1340,7 +1340,7 @@ body {
     height: 100%;
     transition: opacity .8s cubic-bezier(0, 0.02, 0, 1);
     opacity: var(--opacity);
-    font-family: 'Poppins', serif;
+
 
     &:before {
       content: '';

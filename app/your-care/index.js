@@ -91,8 +91,12 @@ const YourCare = () => {
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      canvasRef.current.removeChild(renderer.domElement);
+      const canvasElement = renderer.domElement;
+      if (canvasRef.current?.contains(canvasElement)) {
+        canvasRef.current.removeChild(canvasElement);
+      }
     };
+    
   }, []);
   const [isBlotterLoaded, setIsBlotterLoaded] = useState(false);
 
@@ -627,10 +631,13 @@ const YourCare = () => {
             </div>
 <div className="bg-[#F1EFEB] relative pagesection ">
 <div className="description panel relative h-screen flex justify-center items-center">
-      <img className="bg-verticalText absolute w-96" src="https://assets.codepen.io/588164/silverpaper.png" alt="" />
+<img className="bg-verticalText absolute" src="../images/chromeoval.svg" alt="" style={{ objectFit: 'contain', width: '20%', height: 'auto' }} />
 
-      <h1 className="split text-6xl text-green-500" id="splitText">
-        Science backed appraoch 
+
+
+
+      <h1 className="font-altero split text-6xl text-[#ffff83]" id="splitText">
+        Science backed approach 
       </h1>
     </div>
 </div>
