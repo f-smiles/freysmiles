@@ -5,9 +5,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_TEST_KEY)
 export async function POST(req, res) {
   try {
     let origin = req.headers.get("origin") || "http://localhost:3000"
-  
+
     let data = await req.json()
-    let lineItems = data.map((item) => {
+    const { bag, pickupLocation } = data
+
+    let lineItems = bag.map((item) => {
       return {
         price_data: {
           currency: "usd",
@@ -24,20 +26,31 @@ export async function POST(req, res) {
         quantity: item.quantity,
       }
     })
-  
+
     const session = await stripe.checkout.sessions.create({
+      metadata: {
+        pickup_location: pickupLocation,
+      },
+      payment_intent_data: {
+        "metadata": {
+          pickup_location: pickupLocation,
+        },
+      },
       automatic_tax: { enabled: true },
       billing_address_collection: "auto",
       currency: "usd",
       line_items: lineItems,
       mode: "payment",
-      payment_method_types: [ "card" ],
+      // payment_method_types: [ "card" ],
       shipping_address_collection: {
         allowed_countries: ["US"],
       },
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout`
     })
+
+    // console.log({ "DATA": data })
+    // console.log({ "SESSION": session })
 
     return new Response(JSON.stringify(session.url))
   } catch (err) {
