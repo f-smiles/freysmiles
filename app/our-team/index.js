@@ -45,26 +45,31 @@ const OurTeam = () => {
     const clearAnimation = () => {
       gsap.killTweensOf(doctorBioRef.current);
     };
+  
     const startAnimation = () => {
-      const doctorBio = doctorBioRef.current;
-      if (doctorBio) {
-        const splitText = new SplitText(doctorBio, { type: "lines" });
-        gsap.from(splitText.lines, {
-          duration: 2,
-          xPercent: 20,
-          autoAlpha: 0,
-          ease: "expo.out",
-          stagger: 0.12,
-        });
-      }
-    };
 
+      setTimeout(() => {
+        const doctorBio = doctorBioRef.current;
+        if (doctorBio) {
+          const splitText = new SplitText(doctorBio, { type: "lines" });
+          gsap.from(splitText.lines, {
+            duration: 2,
+            xPercent: 20,
+            autoAlpha: 0,
+            ease: "Expo.easeOut",
+            stagger: 0.12,
+          });
+        }
+      }, 100); 
+    };
+  
     if (doctorBioRef.current) {
       clearAnimation();
       startAnimation();
     }
     return () => clearAnimation();
   }, [switchDoctor]);
+  
 
   useEffect(() => {
     const container = document.querySelector(".horizontalScroller");
@@ -467,22 +472,22 @@ const OurTeam = () => {
               {/* slider controls */}
               <div
                 id="controls"
-                className="flex items-center justify-start row-span-1 row-start-1 space-x-4"
+                className=" flex items-center justify-start row-span-1 row-start-1 space-x-4"
               >
                 <button
-                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white  border-black hover:bg-black"
+                  className="border-stone-600 z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white   hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
-                  <ArrowLeftIcon className="w-5 h-5" />
+                  <ArrowLeftIcon className="text-stone-600 w-5 h-5" />
                 </button>
-                <span className="font-poppins">
+                <span className="text-stone-600 font-poppins">
                   0{!switchDoctor ? index : index + 1} / 02
                 </span>
                 <button
-                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white  border-black hover:bg-black"
+                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white border-stone-600 hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
-                  <ArrowRightIcon className="w-5 h-5" />
+                  <ArrowRightIcon className="text-stone-600 w-5 h-5" />
                 </button>
               </div>
               <div className="row-span-1 row-start-2">

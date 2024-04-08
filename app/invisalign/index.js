@@ -381,7 +381,7 @@ const Invisalign = () => {
   }, []);
  
   return (
-    <main >
+    <main className="bg-[#bed600]" >
     <div >
     <section className="grid grid-cols-3">
                 {[
