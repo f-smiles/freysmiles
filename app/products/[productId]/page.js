@@ -4,7 +4,7 @@ import LoadingSingleProduct from "./loading"
 
 export const generateMetadata = async ({ params }) => {
   const { productId } = params
-  const product = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products/${productId}`)
+  const product = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products/${productId}`, { cache: 'no-store' })
     .then((res) => res.json())
 
   return {
@@ -15,7 +15,7 @@ export const generateMetadata = async ({ params }) => {
 
 async function getProduct(productId) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products/${productId}`)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products/${productId}`, { cache: 'no-store' })
     return res.json()
   } catch(error) {
     throw new Error(error.message)
