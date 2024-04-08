@@ -3,10 +3,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap-trial";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// import emailjs from "@emailjs/browser";
+import emailjs from "@emailjs/browser";
 import "tw-elements";
 import { Datepicker, Input, initTE } from "tw-elements";
-// import { init } from "emailjs-com";
+import { init } from "emailjs-com";
 import { Disclosure } from "@headlessui/react";
 
 // import classNames from 'classnames';
@@ -17,6 +17,7 @@ import { motion, useAnimation } from "framer-motion";
 // init(process.env.REACT_APP_PUBLIC_KEY);
 
 const BookNow = () => {
+  
   const controls = useAnimation();
 
   useEffect(() => {
@@ -122,9 +123,10 @@ const BookNow = () => {
     initTE({ Datepicker, Input });
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    // event.preventDefault();
     const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(emailValue)) {
       alert("Please enter a valid email address.");
       return;
     }
@@ -142,8 +144,7 @@ const BookNow = () => {
       message,
     };
 
-    emailjs
-      .send(
+    emailjs.send(
         process.env.REACT_APP_SERVICE_ID,
         process.env.REACT_APP_BOOK_NOW_TEMPLATE_ID,
         templateParams,
@@ -160,14 +161,19 @@ const BookNow = () => {
     setEmailSent(true);
   };
 
-  const baseButtonClass = "py-2 px-4 rounded-lg";
+  const baseButtonClass = "py-2 px-4 ";
   const activeButtonClass = "bg-violet-100";
   const inactiveButtonClass =
     "border border-black hover:bg-black hover:text-white ";
 
   const [showForm, setShowForm] = useState(false);
-
+  const [inputValue, setInputValue] = useState('');
+  const [phoneValue, setPhoneValue] = useState('');
+  const [emailValue, setEmailValue] = useState('');
+  const [guardianValue, setGuardianValue] = useState('');
+  const [birthdayValue, setBirthdayValue] = useState('');
   useEffect(() => {
+
     setShowForm(true);
   }, []);
 
@@ -222,14 +228,14 @@ const BookNow = () => {
 
   return (
     <main
-      className="bg-center bg-[#E4E2DD] bg-contain"
-      style={{
-        backgroundImage: "url('../images/threecircles.png')",
-        width: "100%",
-        backgroundSize: "30%",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "left 340px", 
-      }}
+      className="bg-center bg-[#E7E7E7] "
+      // style={{
+      //   backgroundImage: "url('../images/threecircles.png')",
+      //   width: "100%",
+      //   backgroundSize: "30%",
+      //   backgroundRepeat: "no-repeat",
+      //   backgroundPosition: "left 340px", 
+      // }}
       
     >
       <motion.div
@@ -238,20 +244,20 @@ const BookNow = () => {
         transition={{ duration: 2, ease: "easeOut" }}
         style={{
           width: "100%",
-          overflow: "hidden",
+          // overflow: "auto",
         }}
       >
-        <div className="flex">
-          <div className="items-start w-1/2">
+        <div className="grid grid-cols-2">
+          <div className="sticky top-0 bg- h-screen items-start ">
 
             <div
-              className="font-iCiel-Gotham-Ultra text-[180px] mt-40 text-center text-8xl "
+              className="font-iCiel-Gotham-Ultra text-[140px] mt-40 text-center text-8xl "
               style={{ letterSpacing: "px" }}
             >
               SAY 
             </div>
-            <div className="font-iCiel-Gotham-Ultra text-center text-8xl mb-20" ref={containerRef}>
-      <h1 className="text-[180px] ">
+            <div className="font-iCiel-Gotham-Ultra text-center text-7xl mb-20" ref={containerRef}>
+      <h1 className="text-[140px] ">
         {['H', 'E', 'L', 'L', 'O'].map((letter, index) => (
           <span key={index} className="text-highlight inline-block relative">
             <span className="text-hider-fg absolute inset-0"></span>
@@ -261,6 +267,10 @@ const BookNow = () => {
         ))}
       </h1>
     </div>
+    <div>CALL</div>
+    <div><img src="../images/threedots.svg"/></div>
+    <div>EMAIL</div>
+    <div>CONNECT</div>
     
 {/* 
             <div className="flex justify-evenly items-center w-full -mt-10">
@@ -330,7 +340,7 @@ const BookNow = () => {
               </div>
             </div>
           </div>
-          <div className="w-1/2">
+          <div className=" overflow-y-auto ">
             <div id="contact-form">
               {emailSent ? (
                 <span className={emailSent ? "block" : "hidden"}>
@@ -339,37 +349,47 @@ const BookNow = () => {
               ) : (
                 <form
                   onSubmit={handleSubmit}
-                  className="  max-w-screen-sm mx-auto flex flex-col space-y-12 p-8 rounded-xl"
+                  className="  max-w-screen-sm mx-auto flex flex-col space-y-12 p-8 "
                 >
                   <div className="flex flex-col items-center">
                     <div className="flex w-full gap-2">
-                    <div className="flex justify-between items-center border-b border-black">
-      <label htmlFor="nameInput" className="font-CeraProBold whitespace-nowrap text-md text-gray-700">
-        Your Name
-      </label>
+                    <div className="relative w-full border-b border-black">
       <input
         id="nameInput"
         type="text"
-        placeholder="Enter name"
-        className="block px-3 py-2 bg-transparent border-none placeholder-gray-400
-                    focus:outline-none focus:ring-0 sm:text-sm"
-        style={{ width: '50%' }} 
+        placeholder=""
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
       />
+      {!inputValue && (
+        <label
+          htmlFor="nameInput"
+          className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+        >
+          Your Name
+        </label>
+      )}
     </div>
     <div className="relative  w-1/2">
-                    <div className="flex justify-between items-center w-full border-b border-black"  data-te-datepicker-init
-                   >
-      <label htmlFor="nameInput" className="font-CeraProBold whitespace-nowrap text-md  text-gray-700">
-       Birthday
-      </label>
+    <div className="relative w-full border-b border-black" data-te-datepicker-init>
       <input
-        id="nameInput"
+        id="dateInput"
         type="text"
-        placeholder="Enter date"
-        className="block px-3 py-2 bg-transparent border-none placeholder-gray-400
-                    focus:outline-none focus:ring-0 sm:text-sm"
-        style={{ width: '50%' }} 
+        placeholder=""
+        value={birthdayValue}
+        onChange={(e) => setBirthdayValue(e.target.value)}
+        // ref={dateInputRef}
+        className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
       />
+      {!birthdayValue && (
+        <label
+          htmlFor="dateInput"
+          className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+        >
+          Birthday
+        </label>
+      )}
     </div>
                     </div>
 
@@ -390,52 +410,69 @@ const BookNow = () => {
                     </div>
 
                     <div className="relative mt-10 w-full">
-                    <div className="flex justify-between items-center w-full border-b border-black">
-      <label htmlFor="nameInput" className="font-CeraProBold whitespace-nowrap text-md  text-gray-700">
-        Guardian *if applicable
-      </label>
-      <input
-        id="nameInput"
-        type="text"
-        placeholder="Enter guardian"
-        className="block px-3 py-2 bg-transparent border-none placeholder-gray-400
-                    focus:outline-none focus:ring-0 sm:text-sm"
-        style={{ width: '50%' }} 
-      />
-    </div>
+                    <div className="relative w-full border-b border-black">
+  <input
+    id="guardianInput"
+    type="text"
+    placeholder=""
+    value={guardianValue}
+    onChange={(e) => setGuardianValue(e.target.value)}
+    className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+  />
+  {!guardianValue && (
+    <label
+      htmlFor="guardianInput"
+      className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+    >
+      Guardian *if applicable
+    </label>
+  )}
+</div>
                     </div>
 
                     <div className="mt-5 w-full flex gap-2">
                       <div className="w-1/2 relative flex-1 py-4">
-                      <div className="flex justify-between items-center w-full border-b border-black">
-      <label htmlFor="nameInput" className="font-CeraProBold whitespace-nowrap text-md text-gray-700">
-        Phone
-      </label>
-      <input
-        id="nameInput"
-        type="text"
-        placeholder="Enter number"
-        className="block px-3 py-2 bg-transparent border-none placeholder-gray-400
-                    focus:outline-none focus:ring-0 sm:text-sm"
-        style={{ width: '50%' }} 
-      />
-    </div>
+                      <div className="relative w-full border-b border-black">
+  <input
+    id="phoneInput"
+    type="text"
+    placeholder=""
+    value={phoneValue}
+    onChange={(e) => setPhoneValue(e.target.value)}
+    className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+  />
+  {!phoneValue && (
+    <label
+      htmlFor="phoneInput"
+      className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+    >
+      Phone
+    </label>
+  )}
+</div>
+
                       </div>
 
                       <div className="w-1/2 relative flex-1 py-4">
-                      <div className="flex justify-between items-center w-full border-b border-black">
-      <label htmlFor="nameInput" className="font-CeraProBold whitespace-nowrap text-md  text-gray-700">
-        Email
-      </label>
-      <input
-        id="nameInput"
-        type="text"
-        placeholder="Enter email"
-        className="block px-3 py-2 bg-transparent border-none placeholder-gray-400
-                    focus:outline-none focus:ring-0 sm:text-sm"
-        style={{ width: '50%' }} 
-      />
-    </div>
+                      <div className="relative w-full border-b border-black">
+  <input
+    id="emailInput"
+    type="email"  
+    placeholder=""
+    value={emailValue}
+    onChange={(e) => setEmailValue(e.target.value)}
+    className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+  />
+  {!emailValue && (
+    <label
+      htmlFor="emailInput"
+      className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+    >
+      Email
+    </label>
+  )}
+</div>
+
                       </div>
                     </div>
                   </div>
@@ -459,66 +496,63 @@ const BookNow = () => {
                       Date of Birth*
                     </label>
                   </div> */}
-                  <div className="grid grid-cols-2 gap-4 ">
-                    <button
-                      className={`w-44 h-14 px-6 py-2 border border-black rounded-lg mx-auto relative ${
-                        typeOfAppointment === "virtual"
-                          ? "bg-black text-white"
-                          : "text-black"
-                      } appointmentButton`}
-                      onClick={() => setTypeOfAppointment("virtual")}
-                    >
-                      Virtual
-                      <span className="appointmentBtnBg"></span>
-                    </button>
-                    <button
-                      className={`w-44 h-14 px-6 py-2 border border-black mx-auto rounded-lg relative ${
-                        typeOfAppointment === "inPerson"
-                          ? "bg-black text-white"
-                          : "text-black"
-                      } appointmentButton`}
-                      onClick={() => setTypeOfAppointment("inPerson")}
-                    >
-                      In-Person
-                      <span className="appointmentBtnBg"></span>
-                    </button>
-                  </div>
+            <div className="grid grid-cols-2 gap-4">
+  <button
+    type="button"
+    className={`w-44 h-14 px-6 py-2 mx-auto relative ${
+      typeOfAppointment === "virtual"
+        ? "bg-black text-white"
+        : "text-black"
+    } appointmentButton`}
+    onClick={() => setTypeOfAppointment("virtual")}
+  >
+    Virtual
+    <span className="appointmentBtnBg"></span>
+  </button>
+  <button
+    type="button"
+    className={`w-44 h-14 px-6 py-2 mx-auto relative ${
+      typeOfAppointment === "inPerson"
+        ? "bg-black text-white"
+        : "text-black"
+    } appointmentButton`}
+    onClick={() => setTypeOfAppointment("inPerson")}
+  >
+    In-Person
+    <span className="appointmentBtnBg"></span>
+  </button>
+</div>
+
                   {typeOfAppointment === "inPerson" && (
                     <div>
-                      <div className="font-CeraProBold flex w-full justify-between rounded-lg px-4 py-2 text-left text-md font-medium focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
-                        <span>Choose Location</span>
-                      </div>
-                      <div className="font-CeraProBold px-4 pt-4 pb-2 text-sm ">
-                        {locations.map((button, index) => (
-                          <button
-                            className="px-4"
-                            key={button.location}
-                            type="button"
-                            onClick={() => handleClick(index)}
-                          >
-                            {button.clicked ? (
-                              <img
-                                src="../images/purplecircle.svg"
-                                alt="purplecircle"
-                                className="w-48"
-                              />
-                            ) : (
-                              <img
-                                src="../images/greycircle.svg"
-                                alt="greycircle"
-                                className="w-48"
-                              />
-                            )}
-                            {button.location}
-                          </button>
-                        ))}
-                      </div>
+                      
+                      <div className="font-CeraProBold px-4 pt-4 pb-2 text-sm grid grid-cols-2 gap-4">
+  {locations.map((button, index) => (
+    <button
+      className="flex items-center space-x-2"
+      key={button.location}
+      type="button"
+      onClick={() => handleClick(index)}
+    >
+      <span className="relative w-10 h-10 border border-black">
+        {button.clicked && (
+          <span className="absolute inset-1/4 bg-black w-1/2 h-1/2"></span>
+        )}
+      </span>
+      <span className="text-gray-700">{button.location}</span>
+    </button>
+  ))}
+</div>
+
+
+
                     </div>
                   )}
                   <div className="font-CeraProBold grid grid-cols-2 gap-4">
                     {appointmentType.map((button, index) => (
                       <button
-                        className={`w-44 h-14 px-6 py-2 rounded-lg ${
+                      type="button"  
+                        className={`w-44 h-14 px-6 py-2 ${
                           button.clicked
                             ? "bg-black text-white"
                             : "border border-black text-black"
@@ -527,7 +561,7 @@ const BookNow = () => {
                         onClick={() => handleAppointmentClick(index)}
                       >
                         {button.type}
-                        <span className="appointmentBtnBg absolute top-0 left-0 w-0 h-0 bg-blue-600 rounded-full z-0 transition-all duration-400"></span>{" "}
+                        <span className="appointmentBtnBg absolute top-0 left-0 w-0 h-0 bg-blue-600  z-0 transition-all duration-400"></span>{" "}
                   
                       </button>
                     ))}
@@ -583,13 +617,13 @@ const BookNow = () => {
                     </label>
                   </div>
 
-                  <div className="font-CeraProBold flex justify-center">
+                  <div className="uppercase text-gray-500 font-CeraProBold flex justify-center">
                     <button
-                      className="relative rounded-lg px-4 py-2 border border-black max-w-max -mt-3 flex items-center justify-center"
+                      className="relative  px-8 py-4 border border-black max-w-max -mt-3 flex items-center justify-center"
                       type="submit"
                       onClick={handleSubmit}
                     >
-                      Submit
+                      Send Message
                       <div
                         className="inline-block top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 overflow-hidden"
                         style={{ transform: "rotate(-90deg)" }}

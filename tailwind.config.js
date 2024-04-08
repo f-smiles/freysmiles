@@ -8,7 +8,10 @@ module.exports = {
         '2': '2deg',
         '-2': '-2deg',
         '5': '5deg',
-        '-5': '-deg'
+        '-5': '-deg',
+        fontFamily: {
+          sans: ['Lato', 'sans-serif'],
+        },
       }
     }
   },
@@ -21,6 +24,7 @@ module.exports = {
   theme: {
     fontFamily: {
       'cera': "CeraProRegular",
+      'Lato':'Lato',
       'TerminaTest-Bold':"TerminaTest-Bold",
       'iCiel-Gotham-Ultra':"iCiel-Gotham-Ultra",
       'poppins':"Poppins",
@@ -109,6 +113,10 @@ module.exports = {
     },
   },
   plugins: [
+    require('postcss-import'), // Handles @import directives
+    require('tailwindcss/nesting'), // Handles CSS nesting
+    require('tailwindcss'), // Tailwind CSS framework
+    require('autoprefixer'), 
     require('@headlessui/tailwindcss')({ prefix: 'ui' }),
     require('tw-elements/dist/plugin.cjs'),
     require('@tailwindcss/forms'),

@@ -100,14 +100,17 @@ export default function LandingComponent() {
         <Hero />
         <GSAPAnimateScrollSections />
         <ImageGrid />
-        {/* <ParallaxInvisalignDamonBracesAdvancedTech /> */}
-        <div className="sticky top-0 z-1">
+
+        <div className="sticky top-0 z-2">
           <ParallaxOutline />
         </div>
-        <div className="sticky bg-[#D8BFD7] top-0 h-screen z-2">
+        <div className="sticky bg-[#D8BFD7] top-0 h-screen z-3">
           <LogoGrid />
         </div>
-        <div className="bg-[#20282D] z-4 relative">
+        <div className="bg-[#20282D] sticky top-0 z-1">
+          <LocationGallery />
+        </div>
+        <div className="bg-[#E0D175] z-4 relative">
           <Locations />
         </div>
         <GiftCards />
@@ -119,13 +122,13 @@ export default function LandingComponent() {
 function LogoHeader() {
   return (
     <header className="pt-16 m-auto w-max">
-      <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
+      {/* <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
         <img
           className="w-16 h-16 p-4"
           src="/../../logo_icon.png"
           alt="FreySmiles Orthodontists"
         />
-      </div>
+      </div> */}
     </header>
   );
 }
@@ -398,7 +401,7 @@ function Hero() {
   const pixiContainerRef = useRef();
 
   return (
-    <section className="relative">
+    <section className="mt-6 relative">
       <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate lg:px-8">
         <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
@@ -706,7 +709,7 @@ function GSAPAnimateScrollSections() {
 
     chars.forEach((char, index) => {
       const distanceFromMiddle = Math.abs(index - middleIndex);
-      // Shorter delay for characters further from the middle
+
       const staggerDelay = (middleIndex - distanceFromMiddle) * 0.06;
 
       gsap.set(char, { perspective: 2000 });
@@ -726,7 +729,7 @@ function GSAPAnimateScrollSections() {
           y: 0,
           z: 0,
           rotationX: 0,
-          delay: staggerDelay, // Apply the calculated delay
+          delay: staggerDelay,
           scrollTrigger: {
             trigger: char,
             start: "top bottom",
@@ -780,13 +783,13 @@ function GSAPAnimateScrollSections() {
             <div className="container">
               <ul>
                 <li
-                  className="font-neue-montreal font-bold"
+                  className="font-Lato-Regular font-bold"
                   id="first-circle"
                   style={{ opacity: 0, filter: "blur(10px)" }}
                 >
                   <figure>
                     <h3>50+</h3>
-                    <p className="font-helvetica-now-thin mt-10 tracking-wide">
+                    <p className="font-Lato-Regular uppercase mt-10 ">
                       years of experience
                     </p>
                   </figure>
@@ -800,8 +803,8 @@ function GSAPAnimateScrollSections() {
                     id="figure2"
                     style={{ opacity: 0, filter: "blur(10px)" }}
                   >
-                    <h3>25k</h3>
-                    <p className="font-helvetica-now-thin mt-10 tracking-wide">
+                    <h3 className="font-Lato font-bold">25k</h3>
+                    <p className="font-Lato mt-10 uppercase tracking-wide">
                       patients
                     </p>
                   </figure>
@@ -1115,7 +1118,7 @@ const ImageGrid = () => {
       url: "/invisalign",
     },
     {
-      title: "Fewer appointments: faster treatment time",
+      title: "Faster treatment times with fewer appointments",
       src: "../images/damon1.png",
       className: "image-landscape",
 
@@ -1133,7 +1136,7 @@ const ImageGrid = () => {
   return (
     <div
       ref={bodyRef}
-      className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white font-oswald"
+      className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white"
     >
       <div
         className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
@@ -1154,7 +1157,7 @@ const ImageGrid = () => {
             className={`group image-card relative flex items-center justify-center mb-20 ${
               image.className === "image-portrait"
                 ? "mx-4 w-[27vw] h-[37vw]"
-                : "mx-4 w-[50vw] h-[27vw]"
+                : "mx-4 w-[40vw] h-[27vw]"
             }`}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
@@ -1203,7 +1206,7 @@ const ParallaxOutline = () => {
   const scroll = (direction) => {
     if (carouselRef.current) {
       const { current: carousel } = carouselRef;
-      const scrollAmount = carousel.offsetWidth; // Scrolls 100% of the width
+      const scrollAmount = carousel.offsetWidth;
       if (direction === "left") {
         carousel.scrollLeft -= scrollAmount;
       } else {
@@ -1289,10 +1292,14 @@ const ParallaxOutline = () => {
             >
               <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
                 <p className="text-2xl text-center">
-                  I had an open bite and misaligned teeth most of my life. Dr
-                  Frey fixed it and in record time. 1 1/2 yrs with Invisalign’s.
-                  Highly recommended! Friendly staff and easy to make
-                  appointments!
+                  <h1 className="font-sans font-normal text-[24px] uppercase relative overflow-hidden">
+                    I had an open bite and misaligned teeth most of my life. Dr
+                    Frey fixed it and in record time. 1 1/2 yrs with
+                    Invisalign’s. Highly recommended! Friendly staff and easy to
+                    make appointments!
+                
+         
+                  </h1>
                 </p>
                 <p className="text-center">Karen Oneill</p>
               </div>
@@ -1305,12 +1312,12 @@ const ParallaxOutline = () => {
               }}
             >
               <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                <p className="text-2xl text-center">
+                <h1 className="text-2xl text-center">
                   Dr. Frey was my orthodontist when I was 11 years old, Im now
                   42. I still talk about how amazing he was and the great work
                   he did with my teeth. Thank you so much for giving the most
                   beautiful smile!
-                </p>
+                </h1>
                 <p className="text-center">Tanya Burnhauser</p>
               </div>
             </div>
@@ -1582,7 +1589,7 @@ const LogoGrid = () => {
         </div>
 
         <div className="flex items-center justify-center flex-col">
-          <div className="font-neue-montreal font-bold text-8xl uppercase">
+          <div className=" font-bold text-8xl uppercase">
             Awards & Recognition
           </div>
           <div class="mt-10 flex items-center">
@@ -1593,7 +1600,16 @@ const LogoGrid = () => {
           </div>
         </div>
 
-        <div className="h-80 flex items-center justify-center">
+        <div className="h-80 flex">
+          <div
+            className="bg-[#20282D] w-full"
+            style={{ position: "absolute", bottom: 0 }}
+          >
+            <h1 className=" animate-locationsCardMarquee tracking-wide text-white text-3xl font-neue-montreal font-bold  uppercase">
+              &bull; COME SEE US AT ANY OF OUR FOUR LOCATIONS &bull; COME SEE US
+              AT ANY OF OUR FOUR LOCATIONS &bull;
+            </h1>
+          </div>
           {/* <div className="grid grid-cols-2 gap-4">
             {logos.map((columnLogos, columnIndex) => (
               <div key={columnIndex} className="flex flex-col items-center">
@@ -1615,66 +1631,114 @@ const LogoGrid = () => {
   );
 };
 
-// function ParallaxInvisalignDamonBracesAdvancedTech() {
-//   const main = useRef()
+function LocationGallery() {
 
-//   useGSAP(() => {
-//     const sections = gsap.utils.toArray(".panel")
-//     sections.forEach((section) => {
-//       gsap.to(section, {
-//         scrollTrigger: {
-//           trigger: section,
-//           start: () => section.offsetHeight < window.innerHeight ? "top top" : "bottom bottom",
-//           pin: true,
-//           pinSpacing: false,
-//           scrub: true,
-//         },
-//       })
-//   })}, { scope: main })
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
 
-//   return (
-//     <div ref={main}>
-//       <div  style={{
-//     backgroundImage: "url('../images/pinkgradient.png')",
-//     backgroundSize: 'cover',
-//     backgroundPosition: 'center',
-//     backgroundRepeat: 'no-repeat'
-//   }}className="panel h-[100dvh] bg-[#a3bba3]">
-//         <Invisalign />
-//       </div>
-//       <div className="panel h-[100dvh] bg-[#a3bba3] border-t-2 border-zinc-700 rounded-t-3xl">
-//         <DamonBraces />
-//       </div>
-//       <div className="panel h-[100dvh] bg-white border-t-2 border-zinc-700 rounded-t-3xl overflow-hidden">
-//         <AdvancedTech />
-//       </div>
-//     </div>
-//   )
-// }
+    let revealContainers = document.querySelectorAll(".reveal");
+    revealContainers.forEach((container) => {
+      let image = container.querySelector("img");
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          toggleActions: "restart none none reset",
+        },
+      });
+
+      tl.set(container, { autoAlpha: 1 })
+        .from(container, { xPercent: -100, duration: 1.5, ease: "power2.out" })
+        .from(image, {
+          xPercent: 100,
+          scale: 1.3,
+          duration: 1.5,
+          ease: "power2.out",
+          delay: -1.5,
+        });
+    });
+  }, []);
+  return (
+    <div>
+      <div
+        className="container"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          width: "100%",
+          position: "relative",
+          // background: "#20282D",
+          // background: '#b6916d'
+        }}
+      >
+        <div
+          className="reveal"
+          style={{
+            visibility: "hidden",
+            position: "relative",
+            width: "80%",
+            height: "80%",
+            maxWidth: "500px",
+            overflow: "hidden",
+          }}
+        >
+          <img
+            src="../images/sch.png"
+            style={{
+              height: "100%",
+              width: "100%",
+              objectFit: "cover",
+              transformOrigin: "left",
+            }}
+            alt="Description"
+          />
+        </div>
+       
+      </div>
+    </div>
+  );
+}
 
 // function Invisalign() {
-//   const sectionRef = useRef()
+//   const sectionRef = useRef();
 //   const { scrollYProgress } = useScroll({
 //     target: sectionRef,
 //     offset: ["end end", "center center"],
-//   })
+//   });
 //   const springScroll = useSpring(scrollYProgress, {
 //     stiffness: 100,
 //     damping: 30,
-//     restDelta: 0.001
-//   })
-//   const scale = useTransform(springScroll, [0, 1], [1.2, 0.9])
-//   const transformText = useTransform(springScroll, [0, 1], ["0%", "150%"])
-//   const transformCase = useTransform(springScroll, [0, 1], ["150%", "0%"])
-//   const transformRetainer = useTransform(springScroll, [0, 1], ["-150%", "-100%"])
+//     restDelta: 0.001,
+//   });
+//   const scale = useTransform(springScroll, [0, 1], [1.2, 0.9]);
+//   const transformText = useTransform(springScroll, [0, 1], ["0%", "150%"]);
+//   const transformCase = useTransform(springScroll, [0, 1], ["150%", "0%"]);
+//   const transformRetainer = useTransform(
+//     springScroll,
+//     [0, 1],
+//     ["-150%", "-100%"]
+//   );
 
 //   return (
-//     <section ref={sectionRef} className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-start">
-//       <motion.div style={{ translateY: transformText }} className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
-//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Invisalign</h1>
+//     <section
+//       ref={sectionRef}
+//       className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-start"
+//     >
+//       <motion.div
+//         style={{ translateY: transformText }}
+//         className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0"
+//       >
+//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
+//           Invisalign
+//         </h1>
 //         <h4>Top 1% Invisalign providers</h4>
 //         {/* <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4> */}
-//         <Link href="/invisalign" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
+//         <Link
+//           href="/invisalign"
+//           className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group"
+//         >
 //           <span>Learn More</span>
 //           <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
 //             <span>Learn More</span>
@@ -1682,11 +1746,21 @@ const LogoGrid = () => {
 //         </Link>
 //       </motion.div>
 //       <div className="lg:w-1/2">
-//         <motion.img style={{ translateY: transformCase }} className="object-cover w-full h-auto mx-auto object-start" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
-//         <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover w-3/4 h-auto object-start ml-36 lg:ml-24 xl:ml-36" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
+//         <motion.img
+//           style={{ translateY: transformCase }}
+//           className="object-cover w-full h-auto mx-auto object-start"
+//           src="/../../../images/invisalign_case_transparent.png"
+//           alt="invisalign case"
+//         />
+//         <motion.img
+//           style={{ translateY: transformRetainer, scale }}
+//           className="object-cover w-3/4 h-auto object-start ml-36 lg:ml-24 xl:ml-36"
+//           src="/../../../images/invisalign_bottom.png"
+//           alt="invisalign bottom"
+//         />
 //       </div>
 //     </section>
-//   )
+//   );
 // }
 
 // function DamonBraces() {
@@ -1696,9 +1770,14 @@ const LogoGrid = () => {
 //         {/* <img className="object-cover object-center w-full h-full mx-auto"  src="/../../../images/faster_treatment_time.gif" alt="faster treatment time" /> */}
 //       </div>
 //       <div className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
-//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Damon Bracket</h1>
+//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
+//           Damon Bracket
+//         </h1>
 //         <h4>Less appointments. Faster treatment time</h4>
-//         <Link href="/braces" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
+//         <Link
+//           href="/braces"
+//           className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group"
+//         >
 //           <span>Explore</span>
 //           <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
 //             <span>Explore</span>
@@ -1706,27 +1785,42 @@ const LogoGrid = () => {
 //         </Link>
 //       </div>
 //     </section>
-//   )
+//   );
 // }
 
 // function AdvancedTech() {
-//   const { scrollYProgress } = useScroll()
-//   const scale = useTransform(scrollYProgress, [0, 1], ["500%", "-100%"])
+//   const { scrollYProgress } = useScroll();
+//   const scale = useTransform(scrollYProgress, [0, 1], ["500%", "-100%"]);
 
 //   return (
 //     <section className="relative flex flex-col py-24 mx-auto overflow-hidden lg:justify-center lg:flex-row lg:items-center h-[100dvh]">
 //       <div className="relative max-w-2xl py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max md:py-0">
-//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">Advanced Technology</h1>
-//         <h4>Our doctors have been pioneering the most comfortable appliances for your treatment since 2005</h4>
-//         <Link href="/invisalign" className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group">
+//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
+//           Advanced Technology
+//         </h1>
+//         <h4>
+//           Our doctors have been pioneering the most comfortable appliances for
+//           your treatment since 2005
+//         </h4>
+//         <Link
+//           href="/invisalign"
+//           className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group"
+//         >
 //           <span>Learn More</span>
 //           <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
 //             <span>Learn More</span>
 //           </div>
 //         </Link>
-//         <motion.img  className="absolute bottom-0 right-0 z-0 w-full h-auto translate-x-1/2 translate-y-1/2" src="/../../images/lime_worm.svg" alt="" />
+//         <motion.img
+//           className="absolute bottom-0 right-0 z-0 w-full h-auto translate-x-1/2 translate-y-1/2"
+//           src="/../../images/lime_worm.svg"
+//           alt=""
+//         />
 //       </div>
-//       <motion.div style={{ scale }} className="absolute inset-0 top-0 left-0 w-full h-full -z-10">
+//       <motion.div
+//         style={{ scale }}
+//         className="absolute inset-0 top-0 left-0 w-full h-full -z-10"
+//       >
 //         <svg viewBox="0 0 256 256" className="w-full h-full">
 //           <g>
 //             <path
@@ -1737,7 +1831,7 @@ const LogoGrid = () => {
 //         </svg>
 //       </motion.div>
 //     </section>
-//   )
+//   );
 // }
 
 function Locations() {
@@ -1886,26 +1980,64 @@ function Locations() {
       ease: "linear",
     });
   }, []);
+  const targetRef = useRef(null);
 
+  useEffect(() => {
+    gsap.registerPlugin(SplitText);
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const childSplit = new SplitText(".text-heading h1", {
+            type: "lines",
+            linesClass: "split-child",
+          });
+
+          gsap.from(childSplit.lines, {
+            duration: 2,
+            xPercent: 25,
+            autoAlpha: 0,
+            ease: "Expo.easeOut",
+            stagger: 0.12,
+            repeat: -1
+          });
+
+          observer.unobserve(entry.target);
+        }
+      });
+    });
+
+    if (targetRef.current) {
+      observer.observe(targetRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
   return (
     <>
       <div className="h-screen">
-        {/* <div className="marquee-track r">
-    <h1 className="text-8xl font-neue-montreal font-bold  uppercase">COME SAY HI COME SAY HI COME SAY HI</h1>
-  </div> */}
-        <div className="">
-          <h1 className="text-8xl font-neue-montreal font-bold  uppercase">
-            COME SAY HI
-          </h1>
+      <div className="flex flex-col   w-[50vw] h-[15vw] mx-[7vw] "  ref={targetRef}>
+          <p className="text-2xl ">
+            <div className=" w-[900px]">
+              <h1 className="font-sans font-normal text-[40px] uppercase relative overflow-hidden">
+             Come see us at any of our four convenient locations or opt for a virtual consultation
+
+
+              </h1>
+            </div>
+          </p>
+
         </div>
-        {/* 
-      <img className="w-80 " src="../images/mappin.png" alt="Map Pin"></img> */}
+        <div></div>
+
+        {/* <img className="w-20 " src="../images/mappin.png" alt="Map Pin"></img>  */}
         <section
           ref={ref}
           id="locations"
           className="flex flex-col justify-center w-full mx-auto  lg:flex-row max-w-7xl"
         >
-          <div></div>
           {/* LEFT */}
           <div className="z-10 lg:w-1/2 lg:py-0">
             <motion.div

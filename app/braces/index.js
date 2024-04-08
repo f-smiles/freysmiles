@@ -89,7 +89,7 @@ import Lenis from '@studio-freight/lenis';
 
 const YourCare = () => {
   const colors = [
-    "hsl(36° , 38% , 73%)",  
+    "hsl(0 , 0% , 20%)",  
     "hsl(39, 5%, 78%)", 
     "hsl(260, 3%, 80%)" 
 ];
@@ -235,7 +235,7 @@ useEffect(() => {
   return (
     <>
     <main data-scroll-container >
-  <section className="section-0" data-scroll-section>
+  <section className="bg-[#152412] section-0" data-scroll-section>
     <h2 data-scroll data-scroll-speed="-2">Damon Brackets</h2>
     <div className="section-0__img-wrapper" data-scroll data-scroll-speed="-2" data-scroll-direction="horizontal">
       <img src="../images/grid.png" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />

@@ -1,6 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+
+@font-face {
+  font-family: "Lato-Bold";
+  src: url('/fonts/Lato-Bold.ttf') format('truetype') url('/fonts/Lato-Bold.ttf') format('truetype');
+}
 
 
 @font-face {
@@ -74,6 +81,30 @@
   src: url("/fonts/LarkenVariableItalic.ttf") format("truetype");
 }
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+}
+
+input:-moz-autofill,
+input:-moz-autofill:hover, 
+input:-moz-autofill:focus,
+input:-moz-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: 0 0 0px 1000px transparent inset !important;
+}
+
+
+input:-webkit-autofill {
+    background-color: transparent !important;
+    background-image: none !important;
+
+}
+
 
 @layer base {
   html {
@@ -113,6 +144,167 @@
     @apply text-lg;
   }
 }
+
+
+.underline-custom {
+  position: relative;
+  display: inline-block;
+}
+
+.underline-custom::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -5px; 
+  width: 100%;
+  height: 1px; 
+  background-color: currentColor;
+}
+.custom-header {
+  position: relative;
+  z-index: 99999;
+}
+.custom-nav {
+  display: flex;
+  height: 80px;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 800px;
+  margin: 0 auto;
+  top: 20px;
+    background-color:rgb(229, 228, 226,.5);
+  /* background-color:rgba(234, 255, 175, .8); */
+  border-radius: 200px;
+  z-index: 9;
+  /* border: 1px solid rgba(234, 255, 175, .8);  */
+  backdrop-filter: blur(10px); 
+
+  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+
+.nav-sticky {
+  width: 90px;
+  height: 90px;
+  top: 20px;
+  border-radius: 50%;
+  transition: width 1s ease-in-out, height 1s ease-in-out, top 1s ease-in-out, border-radius 1s ease-in-out;
+}
+
+
+.custom-button {
+  -webkit-appearance: none;
+  /* background: rgba(181, 63, 63, 0.3); */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: absolute;
+  backdrop-filter: blur(0px);
+  z-index: 99;
+  left: 0;
+  margin: auto;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 100%;
+  outline: 0;
+  border: 0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+
+.custom-button:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.custom-span {
+  width: 40%;
+  background: #fff;
+  height: 2px;
+  display: block;
+  margin: 5px auto;
+  transition: margin 0.3s ease-in-out;
+}
+
+.custom-button:hover .custom-span {
+  margin: 10px auto;
+}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+
+:root {
+  --black: #212121;
+  --white: #efefef;
+}
+
+
+/* html,
+body {
+  background: var(--white);
+  color: var(--black);
+ 
+} */
+
+/* .white, a.white {
+  color: var(--white);
+}
+
+.black, a.black {
+  color: var(--black);
+} */
+
+
+
+.blend {
+  mix-blend-mode: difference !important;
+  color: var(--white);
+  position: relative;
+  z-index: 2;
+}
+
+.bg-black {
+  background-color: var(--black);
+}
+
+section.hero {
+  background-color: var(--black);
+  border-bottom-right-radius: 15vw;
+  position: relative;
+}
+
+section.hero::before {
+  content: "";
+  background-color: var(--black);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 15vw;
+  height: 15vw;
+}
+
+section.hero::after {
+  content: "";
+  background-color: var(--white);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 15vw;
+  height: 15vw;
+  border-top-left-radius: 15vw;
+}
+
+@media screen and (min-width: 1200px) {
+  .hero {
+    height: 75vh;
+  }
+
+
+}
+
+
 
 
 /* Footer 'Book Now' Button START */
@@ -1023,6 +1215,22 @@ padding:10px;
   animation: giftCardMarquee 20.5s infinite linear;
 }
 
+.animate-locationsCardMarquee {
+  display: inline-block;
+  animation: locationsCardMarquee 20.5s infinite linear;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@keyframes locationsCardMarquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
 
 .custom-cursor2 {
   position: fixed;
@@ -1120,7 +1328,7 @@ text-transform: uppercase;
   width: 176px;
   height: 56px;
   padding: 8px 24px;
-  border-radius: 0.5rem;
+
   border: 1px solid black;
   cursor: pointer;
   transition: background-color 0.4s, color 0.4s;
@@ -1150,9 +1358,10 @@ text-transform: uppercase;
 .appointmentButton:hover .appointmentBtnBg {
   width: 200px;
   height: 200px;
+  
 }
 
-
+    
 
 
 @keyframes marquee {
@@ -1308,8 +1517,8 @@ body {
 
 .carousel-item {
   --items: 10;
-  --width: clamp(150px, 30vw,  300px);
-  --height: clamp(200px, 40vw,  400px);
+  --width: clamp(150px, 30vw, 300px);
+  --height: clamp(200px, 40vw, 400px);
   --x: calc(var(--active) * 800%);
   --y: calc(var(--active) * 200%);
   --rot: calc(var(--active) * 120deg);
@@ -1325,63 +1534,62 @@ body {
   left: 50%;
   user-select: none;
   transform-origin: 0% 100%;
-
   background: black;
   pointer-events: all;
-  transform:  translate(var(--x), var(--y)) rotate(var(--rot)) ;
+  transform: translate(var(--x), var(--y)) rotate(var(--rot));
   transition: transform .8s cubic-bezier(0, 0.02, 0, 1);
-
-  .carousel-box {
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    transition: opacity .8s cubic-bezier(0, 0.02, 0, 1);
-    opacity: var(--opacity);
-
-
-    &:before {
-      content: '';
-      position: absolute;
-      z-index: 1;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, .3), rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .5));
-    }
-  }
-
-  .titleCard {
-    position: absolute;
-    z-index: 1;
-    color: #fff;
-    bottom: 20px;
-    left: 20px;
-    transition: opacity .8s cubic-bezier(0, 0.02, 0, 1);
-    font-size: clamp(20px, 3vw, 30px);
-    text-shadow: 0 4px 4px rgba(0, 0, 0, .1);
-  }
-
-  .nameCard {
-    position: absolute;
-    z-index: 1;
-    color: #fff;
-    top: 10px;
-    left: 20px;
-    transition: opacity .8s cubic-bezier(0, 0.02, 0, 1);
-    font-size: clamp(15px, 10vw, 20px);
-  }
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    pointer-events: none;
-  }
 }
+
+.carousel-item .carousel-box {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity .8s cubic-bezier(0, 0.02, 0, 1);
+  opacity: var(--opacity);
+}
+
+.carousel-item .carousel-box:before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, .3), rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, .5));
+}
+
+.carousel-item .titleCard {
+  position: absolute;
+  z-index: 1;
+  color: #fff;
+  bottom: 20px;
+  left: 20px;
+  transition: opacity .8s cubic-bezier(0, 0.02, 0, 1);
+  font-size: clamp(20px, 3vw, 30px);
+  text-shadow: 0 4px 4px rgba(0, 0, 0, .1);
+}
+
+.carousel-item .nameCard {
+  position: absolute;
+  z-index: 1;
+  color: #fff;
+  top: 10px;
+  left: 20px;
+  transition: opacity .8s cubic-bezier(0, 0.02, 0, 1);
+  font-size: clamp(15px, 10vw, 20px);
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
 
 
 /* .circle {
@@ -1531,7 +1739,7 @@ img:nth-child(6) {
 
 .text-highlight {
   position: relative;
-  background-color: #E4E2DD;
+  background-color: #E7E7E7;
 }
 
 .text-highlight-bg {
@@ -1729,4 +1937,13 @@ img:nth-child(6) {
 #ballcanvas {
   width: 1000px; 
     height: 1000px;
+}
+
+.reveal {
+  visibility: hidden;
+  position: relative;
+  width: 80%;
+  height: 80%;
+  max-width: 500px;
+  overflow: hidden;
 }
