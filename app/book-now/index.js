@@ -1,10 +1,12 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap-trial";
-// import emailjs from "@emailjs/browser";
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+import emailjs from "@emailjs/browser";
 import "tw-elements";
 import { Datepicker, Input, initTE } from "tw-elements";
-// import { init } from "emailjs-com";
+import { init } from "emailjs-com";
 import { Disclosure } from "@headlessui/react";
 
 // import classNames from 'classnames';
@@ -15,6 +17,7 @@ import { motion, useAnimation } from "framer-motion";
 // init(process.env.REACT_APP_PUBLIC_KEY);
 
 const BookNow = () => {
+  
   const controls = useAnimation();
 
   useEffect(() => {
@@ -120,9 +123,10 @@ const BookNow = () => {
     initTE({ Datepicker, Input });
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    // event.preventDefault();
     const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(emailValue)) {
       alert("Please enter a valid email address.");
       return;
     }
@@ -140,8 +144,7 @@ const BookNow = () => {
       message,
     };
 
-    emailjs
-      .send(
+    emailjs.send(
         process.env.REACT_APP_SERVICE_ID,
         process.env.REACT_APP_BOOK_NOW_TEMPLATE_ID,
         templateParams,
@@ -158,14 +161,19 @@ const BookNow = () => {
     setEmailSent(true);
   };
 
-  const baseButtonClass = "py-2 px-4 rounded-lg";
+  const baseButtonClass = "py-2 px-4 ";
   const activeButtonClass = "bg-violet-100";
   const inactiveButtonClass =
     "border border-black hover:bg-black hover:text-white ";
 
   const [showForm, setShowForm] = useState(false);
-
+  const [inputValue, setInputValue] = useState('');
+  const [phoneValue, setPhoneValue] = useState('');
+  const [emailValue, setEmailValue] = useState('');
+  const [guardianValue, setGuardianValue] = useState('');
+  const [birthdayValue, setBirthdayValue] = useState('');
   useEffect(() => {
+
     setShowForm(true);
   }, []);
 
@@ -196,17 +204,39 @@ const BookNow = () => {
       repeatDelay: 1,
     });
   }, []);
+
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const container = containerRef.current;
+    const textHider = container.querySelectorAll('.text-hider-fg');  
+    const textBg = container.querySelectorAll(".text-highlight-bg");
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container,
+        start: "top 80%",
+        markers: false,
+      }
+    });
+
+    tl.to(textBg, { scaleX: 1, ease: "expo.easeIn", duration: 1, stagger: 0.08 })
+      .set(textHider, { autoAlpha: 0 })
+      .to(textBg, { scaleX: 0, ease: "power4.easeOut", duration: 0.5, transformOrigin: "100% 0%", delay: .5 });
+  }, []);
+
   return (
     <main
-      className="bg-center bg-stone-200 bg-contain"
-      style={{
-        backgroundImage: "url('../images/liquid.svg')",
-        width: "100%",
-
-        backgroundSize: "80% auto",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "-110% top",
-      }}
+      className="bg-center bg-[#E7E7E7] "
+      // style={{
+      //   backgroundImage: "url('../images/threecircles.png')",
+      //   width: "100%",
+      //   backgroundSize: "30%",
+      //   backgroundRepeat: "no-repeat",
+      //   backgroundPosition: "left 340px", 
+      // }}
+      
     >
       <motion.div
         initial={{ clipPath: `circle(0% at 50% 50%)` }}
@@ -214,19 +244,37 @@ const BookNow = () => {
         transition={{ duration: 2, ease: "easeOut" }}
         style={{
           width: "100%",
-          overflow: "hidden",
+          // overflow: "auto",
         }}
       >
-        <div className="flex">
-          <div className="items-start w-1/2">
+        <div className="grid grid-cols-2">
+          <div className="sticky top-0 bg- h-screen items-start ">
+
             <div
-              className="font-iCiel-Gotham-Ultra text-[180px] mt-40 text-center text-8xl mb-20"
+              className="font-iCiel-Gotham-Ultra text-[140px] mt-40 text-center text-8xl "
               style={{ letterSpacing: "px" }}
             >
-              SAY HELLO
+              SAY 
             </div>
+            <div className="font-iCiel-Gotham-Ultra text-center text-7xl mb-20" ref={containerRef}>
+      <h1 className="text-[140px] ">
+        {['H', 'E', 'L', 'L', 'O'].map((letter, index) => (
+          <span key={index} className="text-highlight inline-block relative">
+            <span className="text-hider-fg absolute inset-0"></span>
+            {letter}
+            <span className="text-highlight-bg absolute inset-0"></span>
+          </span>
+        ))}
+      </h1>
+    </div>
+    <div>CALL</div>
+    <div><img src="../images/threedots.svg"/></div>
+    <div>EMAIL</div>
+    <div>CONNECT</div>
+    
+{/* 
             <div className="flex justify-evenly items-center w-full -mt-10">
-              <div className="font-helvetica-now-thin text-xl text-center">
+              <div className="font-CeraProBold text-xl text-center">
                 <a
                   className="hover:text-purple-500"
                   href="mailto:info@freysmiles.com"
@@ -234,7 +282,7 @@ const BookNow = () => {
                   • info@freysmiles.com
                 </a>
               </div>
-              <div className="font-helvetica-now-thin text-lg text-center">
+              <div className="font-CeraProBold text-lg text-center">
                 <a
                   href="facetime://6104374748"
                   className="hover:text-purple-500"
@@ -249,20 +297,20 @@ const BookNow = () => {
                       href="https://www.instagram.com/freysmiles/"
                       className="hover:text-purple-500"
                     >
-                      <span className="font-helvetica-now-thin mx-4">
+                      <span className="font-CeraProBold mx-4">
                         •@freysmiles
                       </span>
                     </a>
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="flex justify-center items-center h-screen ">
               <div className="w-1/5 max-w-xs">
                 <svg
                   ref={svgRef}
                   viewBox="0 0 10 10"
-                  className="w-full h-auto smiley"
+                  className="w-full h-auto initial-rotate smiley"
                 >
                   <circle
                     className="smile"
@@ -292,7 +340,7 @@ const BookNow = () => {
               </div>
             </div>
           </div>
-          <div className="w-1/2">
+          <div className=" overflow-y-auto ">
             <div id="contact-form">
               {emailSent ? (
                 <span className={emailSent ? "block" : "hidden"}>
@@ -301,11 +349,51 @@ const BookNow = () => {
               ) : (
                 <form
                   onSubmit={handleSubmit}
-                  className="  max-w-screen-sm mx-auto flex flex-col space-y-12 p-8 rounded-xl"
+                  className="  max-w-screen-sm mx-auto flex flex-col space-y-12 p-8 "
                 >
                   <div className="flex flex-col items-center">
                     <div className="flex w-full gap-2">
-                      <div className="relative flex-1 w-1/2">
+                    <div className="relative w-full border-b border-black">
+      <input
+        id="nameInput"
+        type="text"
+        placeholder=""
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+      />
+      {!inputValue && (
+        <label
+          htmlFor="nameInput"
+          className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+        >
+          Your Name
+        </label>
+      )}
+    </div>
+    <div className="relative  w-1/2">
+    <div className="relative w-full border-b border-black" data-te-datepicker-init>
+      <input
+        id="dateInput"
+        type="text"
+        placeholder=""
+        value={birthdayValue}
+        onChange={(e) => setBirthdayValue(e.target.value)}
+        // ref={dateInputRef}
+        className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+      />
+      {!birthdayValue && (
+        <label
+          htmlFor="dateInput"
+          className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+        >
+          Birthday
+        </label>
+      )}
+    </div>
+                    </div>
+
+                      {/* <div className="relative flex-1 w-1/2">
                         <input
                           type="text"
                           id="floating_filled"
@@ -314,62 +402,82 @@ const BookNow = () => {
                         />
                         <label
                           htmlFor="floating_filled"
-                          className="font-helvetica-now-thin absolute text-md dark:text-gray-400 -top-5 left-2.5 z-10"
+                          className="font-CeraProBold absolute text-md dark:text-gray-400 -top-5 left-2.5 z-10"
                         >
                           Your Name*
                         </label>
-                      </div>
+                      </div> */}
                     </div>
 
                     <div className="relative mt-10 w-full">
-                      <input
-                        type="text"
-                        id="floating_filled"
-                        className="mt-5 block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
-                        placeholder=" "
-                      />
-                      <label
-                        htmlFor="floating_filled"
-                        className="font-helvetica-now-thin absolute text-md dark:text-gray-400 -top-5 left-2.5 z-10"
-                      >
-                        Guardian (if applicable)
-                      </label>
+                    <div className="relative w-full border-b border-black">
+  <input
+    id="guardianInput"
+    type="text"
+    placeholder=""
+    value={guardianValue}
+    onChange={(e) => setGuardianValue(e.target.value)}
+    className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+  />
+  {!guardianValue && (
+    <label
+      htmlFor="guardianInput"
+      className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+    >
+      Guardian *if applicable
+    </label>
+  )}
+</div>
                     </div>
 
-                    <div className="w-full flex gap-2">
+                    <div className="mt-5 w-full flex gap-2">
                       <div className="w-1/2 relative flex-1 py-4">
-                        <input
-                          type="text"
-                          id="floating_filled"
-                          className="mt-10 block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
-                          placeholder=" "
-                        />
-                        <label
-                          htmlFor="floating_filled"
-                          className="font-helvetica-now-thin absolute text-md dark:text-gray-400 top-5 left-2.5 z-10"
-                        >
-                          Phone Number*
-                        </label>
+                      <div className="relative w-full border-b border-black">
+  <input
+    id="phoneInput"
+    type="text"
+    placeholder=""
+    value={phoneValue}
+    onChange={(e) => setPhoneValue(e.target.value)}
+    className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+  />
+  {!phoneValue && (
+    <label
+      htmlFor="phoneInput"
+      className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+    >
+      Phone
+    </label>
+  )}
+</div>
+
                       </div>
 
                       <div className="w-1/2 relative flex-1 py-4">
-                        <input
-                          type="text"
-                          id="floating_filled"
-                          className="mt-10 block px-2.5 pb-2.5 pt-5 w-full text-sm bg-transparent appearance-none dark:text-white focus:outline-none focus:border-blue-600 peer border border-black rounded-md"
-                          placeholder=" "
-                        />
-                        <label
-                          htmlFor="floating_filled"
-                          className="font-helvetica-now-thin absolute text-md dark:text-gray-400 top-5 left-2.5 z-10"
-                        >
-                          Email*
-                        </label>
+                      <div className="relative w-full border-b border-black">
+  <input
+    id="emailInput"
+    type="email"  
+    placeholder=""
+    value={emailValue}
+    onChange={(e) => setEmailValue(e.target.value)}
+    className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+  />
+  {!emailValue && (
+    <label
+      htmlFor="emailInput"
+      className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+    >
+      Email
+    </label>
+  )}
+</div>
+
                       </div>
                     </div>
                   </div>
-
-                  <div
+               
+                  {/* <div
                     className="my-4 relative mb-3"
                     data-te-datepicker-init
                     data-te-input-wrapper-init
@@ -383,71 +491,68 @@ const BookNow = () => {
                     />
                     <label
                       htmlFor="floatingInput"
-                      className=" font-helvetica-now-thin pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6]  transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
+                      className=" pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6]  transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
                     >
                       Date of Birth*
                     </label>
-                  </div>
-                  <div className="font-helvetica-now-thin flex justify-center space-x-4">
-                    <button
-                      className={`w-44 h-14 px-6 py-2 border border-black rounded-lg relative ${
-                        typeOfAppointment === "virtual"
-                          ? "bg-black text-white"
-                          : "text-black"
-                      } appointmentButton`}
-                      onClick={() => setTypeOfAppointment("virtual")}
-                    >
-                      Virtual
-                      <span className="appointmentBtnBg"></span>
-                    </button>
-                    <button
-                      className={`w-44 h-14 px-6 py-2 border border-black rounded-lg relative ${
-                        typeOfAppointment === "inPerson"
-                          ? "bg-black text-white"
-                          : "text-black"
-                      } appointmentButton`}
-                      onClick={() => setTypeOfAppointment("inPerson")}
-                    >
-                      In-Person
-                      <span className="appointmentBtnBg"></span>
-                    </button>
-                  </div>
+                  </div> */}
+            <div className="grid grid-cols-2 gap-4">
+  <button
+    type="button"
+    className={`w-44 h-14 px-6 py-2 mx-auto relative ${
+      typeOfAppointment === "virtual"
+        ? "bg-black text-white"
+        : "text-black"
+    } appointmentButton`}
+    onClick={() => setTypeOfAppointment("virtual")}
+  >
+    Virtual
+    <span className="appointmentBtnBg"></span>
+  </button>
+  <button
+    type="button"
+    className={`w-44 h-14 px-6 py-2 mx-auto relative ${
+      typeOfAppointment === "inPerson"
+        ? "bg-black text-white"
+        : "text-black"
+    } appointmentButton`}
+    onClick={() => setTypeOfAppointment("inPerson")}
+  >
+    In-Person
+    <span className="appointmentBtnBg"></span>
+  </button>
+</div>
+
                   {typeOfAppointment === "inPerson" && (
                     <div>
-                      <div className="font-helvetica-now-thin flex w-full justify-between rounded-lg px-4 py-2 text-left text-md font-medium focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75">
-                        <span>Choose Location</span>
-                      </div>
-                      <div className="font-helvetica-now-thin px-4 pt-4 pb-2 text-sm ">
-                        {locations.map((button, index) => (
-                          <button
-                            className="px-4"
-                            key={button.location}
-                            type="button"
-                            onClick={() => handleClick(index)}
-                          >
-                            {button.clicked ? (
-                              <img
-                                src="../images/purplecircle.svg"
-                                alt="purplecircle"
-                                className="w-48"
-                              />
-                            ) : (
-                              <img
-                                src="../images/greycircle.svg"
-                                alt="greycircle"
-                                className="w-48"
-                              />
-                            )}
-                            {button.location}
-                          </button>
-                        ))}
-                      </div>
+                      
+                      <div className="font-CeraProBold px-4 pt-4 pb-2 text-sm grid grid-cols-2 gap-4">
+  {locations.map((button, index) => (
+    <button
+      className="flex items-center space-x-2"
+      key={button.location}
+      type="button"
+      onClick={() => handleClick(index)}
+    >
+      <span className="relative w-10 h-10 border border-black">
+        {button.clicked && (
+          <span className="absolute inset-1/4 bg-black w-1/2 h-1/2"></span>
+        )}
+      </span>
+      <span className="text-gray-700">{button.location}</span>
+    </button>
+  ))}
+</div>
+
+
+
                     </div>
                   )}
-                  <div className="font-helvetica-now-thin grid grid-cols-2 gap-4">
+                  <div className="font-CeraProBold grid grid-cols-2 gap-4">
                     {appointmentType.map((button, index) => (
                       <button
-                        className={`w-44 h-14 px-6 py-2 rounded-lg ${
+                      type="button"  
+                        className={`w-44 h-14 px-6 py-2 ${
                           button.clicked
                             ? "bg-black text-white"
                             : "border border-black text-black"
@@ -456,13 +561,13 @@ const BookNow = () => {
                         onClick={() => handleAppointmentClick(index)}
                       >
                         {button.type}
-                        <span className="appointmentBtnBg absolute top-0 left-0 w-0 h-0 bg-blue-600 rounded-full z-0 transition-all duration-400"></span>{" "}
+                        <span className="appointmentBtnBg absolute top-0 left-0 w-0 h-0 bg-blue-600  z-0 transition-all duration-400"></span>{" "}
                   
                       </button>
                     ))}
                   </div>
 
-                  <div className="font-helvetica-now-thin flex justify-center flex-col">
+                  <div className="font-CeraProBold flex justify-center flex-col">
                     Preferred Day(s):
                     <div className="flex flex-wrap justify-start py-4 gap-4 ml-4">
                       {days.map((button, index) => (
@@ -481,9 +586,9 @@ const BookNow = () => {
                       ))}
                     </div>
                   </div>
-                  <div className="font-helvetica-now-thin py-2 space-x-4">
+                  <div className="font-CeraProBold py-2 space-x-4">
                     Preferred Time(s):
-                    <div className="font-helvetica-now-thin flex flex-wrap justify-start py-4 gap-4 ml-4">
+                    <div className="font-CeraProBold flex flex-wrap justify-start py-4 gap-4 ml-4">
                       {times.map((button, index) => (
                         <button
                           key={button.time}
@@ -507,18 +612,18 @@ const BookNow = () => {
                         placeholder="Please include as much detail as possible"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        className="font-helvetica-now-thin h-full bg-transparent italic text-blue-600"
+                        className="font-CeraProBold h-full bg-transparent italic text-blue-600"
                       ></textarea>
                     </label>
                   </div>
 
-                  <div className="font-helvetica-now-thin flex justify-center">
+                  <div className="uppercase text-gray-500 font-CeraProBold flex justify-center">
                     <button
-                      className="relative rounded-lg px-4 py-2 border border-black max-w-max -mt-3 flex items-center justify-center"
+                      className="relative  px-8 py-4 border border-black max-w-max -mt-3 flex items-center justify-center"
                       type="submit"
                       onClick={handleSubmit}
                     >
-                      Submit
+                      Send Message
                       <div
                         className="inline-block top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 overflow-hidden"
                         style={{ transform: "rotate(-90deg)" }}

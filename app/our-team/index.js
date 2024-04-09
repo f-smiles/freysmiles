@@ -18,8 +18,6 @@ const Layer = ({ colorClass }) => {
 };
 
 const OurTeam = () => {
-
-  
   gsap.registerPlugin(ScrollTrigger);
   gsap.registerPlugin(SplitText);
   const [isVisible, setIsVisible] = useState(false);
@@ -38,35 +36,40 @@ const OurTeam = () => {
 
   const doctorBioRef = useRef(null);
 
-const toggleSwitchDoctor = () => {
-  setSwitchDoctor(prevState => !prevState);
-  setAnimationPlayed(false); 
-};
-useEffect(() => {
-  const clearAnimation = () => {
-    gsap.killTweensOf(doctorBioRef.current);
-  };
-  const startAnimation = () => {
-    const doctorBio = doctorBioRef.current;
-    if (doctorBio) {
-      const splitText = new SplitText(doctorBio, { type: 'lines' });
-      gsap.from(splitText.lines, {
-        duration: 2,
-        xPercent: 20,
-        autoAlpha: 0,
-        ease: 'expo.out',
-        stagger: 0.12,
-  
-      });
-    }
+  const toggleSwitchDoctor = () => {
+    setSwitchDoctor((prevState) => !prevState);
+    setAnimationPlayed(false);
   };
 
-  if (doctorBioRef.current) {
-    clearAnimation();
-    startAnimation();
-  }
-  return () => clearAnimation();
-}, [switchDoctor]);
+  useEffect(() => {
+    const clearAnimation = () => {
+      gsap.killTweensOf(doctorBioRef.current);
+    };
+  
+    const startAnimation = () => {
+
+      setTimeout(() => {
+        const doctorBio = doctorBioRef.current;
+        if (doctorBio) {
+          const splitText = new SplitText(doctorBio, { type: "lines" });
+          gsap.from(splitText.lines, {
+            duration: 2,
+            xPercent: 20,
+            autoAlpha: 0,
+            ease: "Expo.easeOut",
+            stagger: 0.12,
+          });
+        }
+      }, 100); 
+    };
+  
+    if (doctorBioRef.current) {
+      clearAnimation();
+      startAnimation();
+    }
+    return () => clearAnimation();
+  }, [switchDoctor]);
+  
 
   useEffect(() => {
     const container = document.querySelector(".horizontalScroller");
@@ -119,46 +122,21 @@ useEffect(() => {
   const circleRef = useRef(null);
 
   useEffect(() => {
-    const circle = circleRef.current;
-    if (!circle) {
-      console.error("Circle element is not available");
-      return;
-    }
-    const calculateMaxRadius = () => {
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
-      return Math.sqrt(screenWidth ** 2 + screenHeight ** 2) / 2;
-    };
-
-    let initialRadius = 60;
-    gsap.set(circle, { attr: { r: initialRadius } });
-
-    const circleTl = gsap.timeline({
+    gsap.set('.layer', { clipPath: 'circle(0% at 50% 50%)' });
+    const tl = gsap.timeline({
       onComplete: () => {
-        gsap.to(".content", { autoAlpha: 1, duration: 1 });
-      },
+        gsap.to('.contentTeam', { opacity: 1, duration: 1 }); 
+      }
     });
-
-    circleTl.to(circle, { attr: { r: calculateMaxRadius() }, duration: 3 });
-
-    return () => {
-      gsap.killTweensOf(circle);
-    };
-  }, []);
-
-  useEffect(() => {
-    const layer = document.querySelector(".layer");
-
-    const tl = gsap.timeline();
-
-    tl.to(layer, {
-      clipPath: "circle(71% at 50% 50%)",
+    tl.to('.layer', {
+      clipPath: 'circle(71% at 50% 50%)',
       duration: 1,
-      ease: "power1.inOut",
-    }).to(layer, {
-      clipPath: "circle(0% at 50% 50%)",
+      ease: 'power1.inOut',
+    });
+    tl.to('.layer', {
+      clipPath: 'circle(0% at 50% 50%)',
       duration: 1,
-      ease: "power1.inOut",
+      ease: 'power1.inOut'
     });
   }, []);
 
@@ -204,53 +182,52 @@ useEffect(() => {
 
   const items = [
     {
-      title: '5',
-      num: 'Adriana',
-      imgSrc: '/../../images/team_members/Adriana-Photoroom.jpg'
+      title: "5",
+      num: "Adriana",
+      imgSrc: "/../../images/team_members/Adriana-Photoroom.jpg",
     },
     {
-      title: '7',
-      num: 'Alyssa',
-      imgSrc: '/../../images/team_members/Alyssascan.png'
+      title: "7",
+      num: "Alyssa",
+      imgSrc: "/../../images/team_members/Alyssascan.png",
     },
     {
-      title: '6',
-      num: 'Dana',
-      imgSrc: '/../../images/team_members/Dana-Photoroom.png'
+      title: "6",
+      num: "Dana",
+      imgSrc: "/../../images/team_members/Dana-Photoroom.png",
     },
-   
-   
+
     {
-      title: '2',
-      num: 'Elizabeth',
-      imgSrc: '/../../images/team_members/Elizabethaao.png'
+      title: "2",
+      num: "Elizabeth",
+      imgSrc: "/../../images/team_members/Elizabethaao.png",
     },
- 
-       {
-      title: '4',
-      num: 'Grace',
-      imgSrc: '/../../images/team_members/Grace-Photoroom.jpg'
-    },
+
     {
-      title: '1',
-      num: 'Lexi',
-      imgSrc: '/../../images/team_members/Lexigreen.png'
+      title: "4",
+      num: "Grace",
+      imgSrc: "/../../images/team_members/Grace-Photoroom.jpg",
     },
     {
-      title: '8',
-      num: 'Lizzie',
-      imgSrc: '/../../images/team_members/Lizzie-Photoroom.png'
+      title: "1",
+      num: "Lexi",
+      imgSrc: "/../../images/team_members/Lexigreen.png",
     },
     {
-      title: '3',
-      num: 'Nicolle',
-      imgSrc: '/../../images/team_members/Nicollewaving.png'
+      title: "8",
+      num: "Lizzie",
+      imgSrc: "/../../images/team_members/Lizzie-Photoroom.png",
     },
     {
-      title: '9',
-      num: 'x',
-      imgSrc: '/../../images/team_members/Kayli-Photoroom.png'
-    }
+      title: "3",
+      num: "Nicolle",
+      imgSrc: "/../../images/team_members/Nicollewaving.png",
+    },
+    {
+      title: "9",
+      num: "x",
+      imgSrc: "/../../images/team_members/Kayli-Photoroom.png",
+    },
   ];
   const [progress, setProgress] = useState(0);
   const carouselRef = useRef();
@@ -262,46 +239,54 @@ useEffect(() => {
   let isDown = false;
 
   const getZindex = (length, active) => {
-    return Array.from({ length }, (_, i) => (active === i ? length : length - Math.abs(active - i)));
+    return Array.from({ length }, (_, i) =>
+      active === i ? length : length - Math.abs(active - i)
+    );
   };
 
   const displayItems = (index, active, length) => {
     const zIndex = getZindex(length, active)[index];
     const activeFactor = (index - active) / length;
     return {
-      '--zIndex': zIndex,
-      '--active': activeFactor,
+      "--zIndex": zIndex,
+      "--active": activeFactor,
     };
   };
 
   const animate = () => {
     const boundedProgress = Math.max(0, Math.min(progress, 100));
-    const active = Math.floor((boundedProgress / 100) * (carouselRef.current.children.length - 1));
+    const active = Math.floor(
+      (boundedProgress / 100) * (carouselRef.current.children.length - 1)
+    );
     Array.from(carouselRef.current.children).forEach((item, index) => {
-      const styles = displayItems(index, active, carouselRef.current.children.length);
-      Object.keys(styles).forEach(key => item.style.setProperty(key, styles[key]));
+      const styles = displayItems(
+        index,
+        active,
+        carouselRef.current.children.length
+      );
+      Object.keys(styles).forEach((key) =>
+        item.style.setProperty(key, styles[key])
+      );
     });
   };
 
   useEffect(animate, [progress]);
 
-
   useEffect(() => {
     const handleWheel = (e) => {
       const wheelProgress = e.deltaY * speedWheel;
-      setProgress(progress => progress + wheelProgress);
+      setProgress((progress) => progress + wheelProgress);
     };
 
     const handleMouseMove = (e) => {
-  
-      if (e.type === 'mousemove' && cursorRef.current) {
+      if (e.type === "mousemove" && cursorRef.current) {
         cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
       }
 
       if (!isDown) return;
       const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
       const mouseProgress = (x - startX) * speedDrag;
-      setProgress(progress => progress + mouseProgress);
+      setProgress((progress) => progress + mouseProgress);
       startX = x;
     };
 
@@ -314,53 +299,50 @@ useEffect(() => {
       isDown = false;
     };
 
-    document.addEventListener('wheel', handleWheel);
-    document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('touchstart', handleMouseDown);
-    document.addEventListener('touchmove', handleMouseMove);
-    document.addEventListener('touchend', handleMouseUp);
+    document.addEventListener("wheel", handleWheel);
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("touchstart", handleMouseDown);
+    document.addEventListener("touchmove", handleMouseMove);
+    document.addEventListener("touchend", handleMouseUp);
 
     return () => {
-  
-      document.removeEventListener('wheel', handleWheel);
-      document.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('touchstart', handleMouseDown);
-      document.removeEventListener('touchmove', handleMouseMove);
-      document.removeEventListener('touchend', handleMouseUp);
+      document.removeEventListener("wheel", handleWheel);
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchstart", handleMouseDown);
+      document.removeEventListener("touchmove", handleMouseMove);
+      document.removeEventListener("touchend", handleMouseUp);
     };
   }, []);
 
-
   const [position, setPosition] = useState({ x: -100, y: -100 });
-  const [className, setClassName] = useState('');
+  const [className, setClassName] = useState("");
 
   useEffect(() => {
     const updatePosition = (e) => {
       if (carouselRef.current) {
         const rect = carouselRef.current.getBoundingClientRect();
-        const isInCarousel = (
+        const isInCarousel =
           e.clientX >= rect.left &&
           e.clientX <= rect.right &&
           e.clientY >= rect.top &&
-          e.clientY <= rect.bottom
-        );
+          e.clientY <= rect.bottom;
         if (isInCarousel) {
           setPosition({ x: e.clientX, y: e.clientY });
-          setClassName(''); 
+          setClassName("");
         } else {
-          setClassName('hidden'); 
+          setClassName("hidden");
         }
       }
     };
 
-    window.addEventListener('mousemove', updatePosition);
+    window.addEventListener("mousemove", updatePosition);
 
     return () => {
-      window.removeEventListener('mousemove', updatePosition);
+      window.removeEventListener("mousemove", updatePosition);
     };
   }, []);
 
@@ -379,45 +361,43 @@ useEffect(() => {
       setIsDragging(false);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
 
   const cursorStyle = {
-    position: 'fixed',
+    position: "fixed",
     left: `${position.x}px`,
     top: `${position.y}px`,
-    transform: 'translate(-50%, -50%)',
-    pointerEvents: 'none',
+    transform: "translate(-50%, -50%)",
+    pointerEvents: "none",
     zIndex: 99,
-    willChange: 'transform',
+    willChange: "transform",
   };
 
   const cursorCircleStyle = {
-    width: isDragging ? '64px' : '128px', 
-    height: isDragging ? '64px' : '128px', 
-    marginTop: '-50%',
-    marginLeft: '-50%',
-    borderRadius: '50%',
-    border: 'solid 1px #0058EF',
-    backgroundColor: '#0058EF',
-    color: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '20px',
-    transition: 'width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1)', // Add transition for size change
+    width: isDragging ? "64px" : "128px",
+    height: isDragging ? "64px" : "128px",
+    marginTop: "-50%",
+    marginLeft: "-50%",
+    borderRadius: "50%",
+    border: "solid 1px #0058EF",
+    backgroundColor: "#0058EF",
+    color: "white",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "20px",
+    transition:
+      "width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1)", 
   };
-
-
-
 
   const [cursorPosition, setCursorPosition] = useState({ x: -100, y: -100 });
   const [isFocused, setIsFocused] = useState(false);
@@ -427,317 +407,385 @@ useEffect(() => {
       setCursorPosition({ x: e.clientX, y: e.clientY });
     };
 
-    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener("mousemove", moveCursor);
     return () => {
-      window.removeEventListener('mousemove', moveCursor);
+      window.removeEventListener("mousemove", moveCursor);
     };
   }, []);
 
   const greenCursorStyle = {
-    position: 'fixed',
+    position: "fixed",
     left: `${cursorPosition.x}px`,
     top: `${cursorPosition.y}px`,
-    width: isFocused ? '100px' : '40px',
-    height: isFocused ? '100px' : '40px',
-    borderRadius: '50%',
-    backgroundColor: isFocused ? 'rgb(190,255,3)' : '#FFFFFF',
-    pointerEvents: 'none',
-    opacity: .7,
-    transform: 'translate(-50%, -50%)',
-    transition: 'width 0.5s, height 0.5s, background-color 0.25s',
-    zIndex: 9999
-  }; 
+    width: isFocused ? "100px" : "40px",
+    height: isFocused ? "100px" : "40px",
+    borderRadius: "50%",
+    backgroundColor: isFocused ? "rgb(190,255,3)" : "#FFFFFF",
+    pointerEvents: "none",
+    opacity: 0.7,
+    transform: "translate(-50%, -50%)",
+    transition: "width 0.5s, height 0.5s, background-color 0.25s",
+    zIndex: 9999,
+  };
   return (
     <>
-    <div className="bg-[#E2E2E2]">
-      <div
-        className="layer circle-animation absolute top-0 left-0 w-full h-full gradient-green z-10"
-        ref={circleRef}
-      ></div>
-      <div className="content relative z-0"></div>
-
-      <div className="relative">
-  
-      </div>
-      <section className=" py-24 sm:py-32">
-      <div >
-     
+     <div className="wrapper relative w-full min-h-screen">
+     <div
+    className="layer fixed top-0 left-0 w-full h-full gradient-green z-10"
+    style={{ width: '100vw', height: '100vh' }}
+    ref={circleRef}
+  ></div>
+      <div className="min-h-screen bg-[#E2E2E2] contentTeam relative ">
+        <section className=" py-24 sm:py-32">
+        
+        <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
+        
+        
+        <div className="grid grid-cols-2 ">
+  <div className="flex flex-col items-start justify-center">
+    <h1 className="font-poppins text-[90px] tracking-tight relative z-10">
+      Meet Our
+    </h1>
+    <div className="font-poppins italic text-[90px] tracking-tight relative z-10">
+      Doctors
     </div>
-        <div className="w-full px-6 mx-auto mb-12 lg:px-8 max-w-7xl">
-
-          <h1 className="font-poppins text-[90px] tracking-tight">
-           Meet Our
-            <div style={{ fontStyle: "italic", fontSize: "inherit" }}>
-              Doctors
-            </div>
-          </h1>
-
-          {/* <h1 className="font-poppins tracking-tight">
-  <span style={{ fontSize: "3em" }}>
-    <span style={{ fontStyle: 'italic', fontSize: 'inherit' }}>M</span>eet
-  </span>
-  <span style={{ fontSize: '2em' }}>Our</span>
-  <div style={{ fontSize: '3em' }}>
-    <span style={{ fontStyle: 'italic', fontSize: 'inherit' }}>D</span>octors
   </div>
-</h1> */}
-        </div>
-        <div className="grid grid-cols-12 gap-8 px-6 mx-auto max-w-7xl lg:px-8">
-          <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
-            {/* slider controls */}
-            <div
-              id="controls"
-              className="flex items-center justify-start row-span-1 row-start-1 space-x-4"
-            >
-              <button
-                className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
-                onClick={toggleSwitchDoctor}
-              >
-                <ArrowLeftIcon className="w-5 h-5" />
-              </button>
-              <span className="font-poppins">0{!switchDoctor ? index : index + 1} - 02</span>
-              <button
-                className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white text-primary-50 border-primary-50 hover:bg-primary-50"
-                onClick={toggleSwitchDoctor}
-              >
-                <ArrowRightIcon className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="row-span-1 row-start-2">
-              {/* doctor bio */}
-
-              {switchDoctor ? (
-                <p ref={doctorBioRef} className="font-helvetica-now-thin heading">
-                  Dr. Daniel Frey pursued his pre-dental requisites at the University of
-                  Pittsburgh, majoring in Biology. Dr. Frey excelled in his
-                  studies and was admitted to Temple University&apos;s dental
-                  school, graduating at the top of his class with the
-                  prestigious Summa Cum Laude designation. Continuing his
-                  education, Dr. Frey was admitted to the esteemed orthodontic
-                  residency program at the University of the Pacific in San
-                  Francisco where he worked with students and faculty from
-                  around the world and utilized cutting-edge orthodontic
-                  techniques. During his time in San Francisco, he conducted
-                  research in three-dimensional craniofacial analysis and earned
-                  his Master of Science degree. Dr. Frey is a member of the
-                  American Association of Orthodontists and the American Dental
-                  Association. In his leisure time, he enjoys staying active
-                  outdoors, camping, playing music, and spending time with loved
-                  ones.
-                </p>
-              ) : (
-                <p ref={doctorBioRef} className="font-helvetica-now-thin  heading">
-                  Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
-                  graduated from Temple University School of Dentistry with
-                  honors and served in the U.S. Navy Dental Corps before
-                  establishing his practice in the Lehigh Valley. He is a
-                  Diplomat of the American Board of Orthodontics and has
-                  received numerous distinctions, accreditations, and honors,
-                  including being named one of America&apos;s Top Orthodontists
-                  by the Consumer Review Council of America. This distinction is
-                  held by fewer than 25% of orthodontists nationwide. ABO
-                  certification represents the culmination of 5-10 years of
-                  written and oral examinations and independent expert review of
-                  actual treated patients. Recently Dr. Frey voluntarily
-                  re-certified. Dr. Frey enjoys coaching soccer, vintage car
-                  racing, and playing the drums.
-                </p>
-              )}
-              
-            </div>
-          </div>
-          <div className="col-span-5 lg:col-span-3 lg:col-start-7">
-            <figure className="relative w-full aspect-[3/4] overflow-hidden">
-              <img
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  transition: "transform 1s",
-                  transform: switchDoctor
-                    ? "translateX(100%)"
-                    : "translateX(0)",
-                }}
-                src="../../images/team_members/GreggFrey.png"
-                alt="Dr. Gregg Frey"
-              />
-              <img
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  transition: "transform 1s",
-                  transform: switchDoctor
-                    ? "translateX(0)"
-                    : "translateX(-100%)",
-                }}
-                src="../../images/team_members/DanFrey.png"
-                alt="Dr. Daniel Frey"
-              />
-            </figure>
-            <figcaption >
-  <h5 className="font-helvetica-now-thin">
-    {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
-  </h5>
-  <p className="font-helvetica-now-thin">
-    {!switchDoctor ? "DDS" : "DMD, MSD"}
-  </p>
-</figcaption>
-          </div>
-          <div className="col-span-5 lg:col-span-2 lg:col-start-11">
-            <figure
-              className="relative grayscale w-full aspect-[3/4] overflow-hidden cursor-pointer"
-              onClick={toggleSwitchDoctor}
-            >
-              <img
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  transition: "transform 1s",
-                  transform: switchDoctor
-                    ? "translateX(0)"
-                    : "translateX(-100%)",
-                }}
-                src="../../images/team_members/GreggFrey.png"
-                alt="Dr. Daniel Frey"
-              />
-              <img
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  transition: "transform 1s",
-                  transform: switchDoctor
-                    ? "translateX(100%)"
-                    : "translateX(0)",
-                }}
-                src="../../images/team_members/DanFrey.png"
-                alt="Dr. Gregg Frey"
-              />
-            </figure>
-          </div>
-        </div>
-      </section>
-      <>
-
-
-      <div style={greenCursorStyle}>
-        <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-         Click 
-        </span>
-      </div>
-        <div
-    onMouseEnter={() => setIsFocused(true)}
-    onMouseLeave={() => setIsFocused(false)}
-          className=" horizontalContainer"
-        >
-
-          <div className="horizontalWrapper">
-            <div className="horizontalScroller">
-              <div className="horizontalRow">
-              <div className="horizontalItem horizontalFilled">
-  <a 
-    href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/" 
-    className="horizontalItemLink"
-  >
-    <p className="sm:text-left md:text-center">
-      Our members have received the designation of Specialized Orthodontic Assistant. This is a voluntary certification program started by the American Association of Orthodontists to recognize those in the profession for their knowledge and experience.
-    </p>
-   
-  </a>
+  <div className="flex items-center">
+    <div className="w-24 h-px bg-gray-700 "></div>
+    <span className="text-[13px] block w-3/5 ml-4">
+      Our experience spans over 50 years, a testament to the precision, accuracy, and relevance of our vision, demonstrating our ability to adapt to the ever-changing nature of the public relations industry.
+    </span>
+  </div>
 </div>
 
-                <div className="horizontalItem horizontalFilled">
-                  <p >  Fun fact-our team is made up of former FreySmiles
-                    patients, something we think is important, because we have
-                    all experienced treatment and can help guide you through it.</p>
-                  <img className="w-90 h-90 absolute bottom-0" src="../images/threedots.svg" alt="Green Squiggle" />
-                </div>
-                <a href="https://g.co/kgs/Sds93Ha" className="horizontalItem horizontalBig">
-  <p>
-    This office is on 🔥! The orthodontists as well as every
-    single staff member.
-  </p>
-  <span className="link-text" data-text="Check it out">
-    Keary Riddick
-  </span>
-</a>
 
+
+
+
+
+
+
+</div>
+
+          <div className="grid grid-cols-12 gap-8 px-6 mx-auto max-w-7xl lg:px-8">
+            <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
+              {/* slider controls */}
+              <div
+                id="controls"
+                className=" flex items-center justify-start row-span-1 row-start-1 space-x-4"
+              >
+                <button
+                  className="border-stone-600 z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white   hover:bg-black"
+                  onClick={toggleSwitchDoctor}
+                >
+                  <ArrowLeftIcon className="text-stone-600 w-5 h-5" />
+                </button>
+                <span className="text-stone-600 font-poppins">
+                  0{!switchDoctor ? index : index + 1} / 02
+                </span>
+                <button
+                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white border-stone-600 hover:bg-black"
+                  onClick={toggleSwitchDoctor}
+                >
+                  <ArrowRightIcon className="text-stone-600 w-5 h-5" />
+                </button>
               </div>
-              <div className="horizontalRow">
-                <div className="horizontalItem horizontalBig">
-                  <p>Trained in CPR and first aid</p>
-                </div>
-                <div className="horizontalItem horizontalFilled ">
-  <a href="https://g.co/kgs/YkknjNg" className="horizontalItemLink">
+              <div className="row-span-1 row-start-2">
+                {/* doctor bio */}
 
-    <p className> 
-      Had a wonderful experience at FreySmiles. Everyone is extremely professional, polite, timely. Would highly recommend! -TK
-    </p><span>  <img className="w-90 h-auto -mt-80  " src="../images/fivestars.svg" alt="Green Squiggle" /></span>
-  </a>
-</div>
-
-                <div className="horizontalItem horizontalFilled">
-                  <p>
-                  Our team members are X-ray certified.
+                {switchDoctor ? (
+                  <p ref={doctorBioRef} className="font-helvetica-now-thin heading">
+                    Dr. Daniel Frey pursued his pre-dental requisites at the
+                    University of Pittsburgh, majoring in Biology. Dr. Frey
+                    excelled in his studies and was admitted to Temple
+                    University&apos;s dental school, graduating at the top of
+                    his class with the prestigious Summa Cum Laude designation.
+                    Continuing his education, Dr. Frey was admitted to the
+                    esteemed orthodontic residency program at the University of
+                    the Pacific in San Francisco where he worked with students
+                    and faculty from around the world and utilized cutting-edge
+                    orthodontic techniques. During his time in San Francisco, he
+                    conducted research in three-dimensional craniofacial
+                    analysis and earned his Master of Science degree. Dr. Frey
+                    is a member of the American Association of Orthodontists and
+                    the American Dental Association. In his leisure time, he
+                    enjoys staying active outdoors, camping, playing music, and
+                    spending time with loved ones.
                   </p>
-                </div>
-                <div className="horizontalItem horizontalFilled">
-                  <p>maybe a review or something about team qualifications</p>
-                  <a className="horizontalItemLink">
-                    <span className="link-text" data-text="Learn More">
-                      Learn More
+                ) : (
+                  <p ref={doctorBioRef} className="font-helvetica-now-thin heading">
+                    Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
+                    graduated from Temple University School of Dentistry with
+                    honors and served in the U.S. Navy Dental Corps before
+                    establishing his practice in the Lehigh Valley. He is a
+                    Diplomat of the American Board of Orthodontics and has
+                    received numerous distinctions, accreditations, and honors,
+                    including being named one of America&apos;s Top
+                    Orthodontists by the Consumer Review Council of America.
+                    This distinction is held by fewer than 25% of orthodontists
+                    nationwide. ABO certification represents the culmination of
+                    5-10 years of written and oral examinations and independent
+                    expert review of actual treated patients. Recently Dr. Frey
+                    voluntarily re-certified. Dr. Frey enjoys coaching soccer,
+                    vintage car racing, and playing the drums.
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="col-span-5 lg:col-span-3 lg:col-start-7">
+              <figure className="relative w-full aspect-[3/4] overflow-hidden">
+                <img
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    transition: "transform 1s",
+                    transform: switchDoctor
+                      ? "translateX(100%)"
+                      : "translateX(0)",
+                  }}
+                  src="../../images/team_members/GreggFrey.png"
+                  alt="Dr. Gregg Frey"
+                />
+                <img
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    transition: "transform 1s",
+                    transform: switchDoctor
+                      ? "translateX(0)"
+                      : "translateX(-100%)",
+                  }}
+                  src="../../images/team_members/DanFrey.png"
+                  alt="Dr. Daniel Frey"
+                />
+              </figure>
+              <figcaption>
+                <h5 className="mt-5 font-helvetica-now-thin">
+                  {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
+                </h5>
+                <p className="font-helvetica-now-thin">
+                  {!switchDoctor ? "DDS" : "DMD, MSD"}
+                </p>
+              </figcaption>
+            </div>
+            <div className="col-span-5 lg:col-span-2 lg:col-start-11">
+              <figure
+                className="relative grayscale w-full aspect-[3/4] overflow-hidden cursor-pointer"
+                onClick={toggleSwitchDoctor}
+              >
+                <img
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    transition: "transform 1s",
+                    transform: switchDoctor
+                      ? "translateX(0)"
+                      : "translateX(-100%)",
+                  }}
+                  src="../../images/team_members/GreggFrey.png"
+                  alt="Dr. Daniel Frey"
+                />
+                <img
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    transition: "transform 1s",
+                    transform: switchDoctor
+                      ? "translateX(100%)"
+                      : "translateX(0)",
+                  }}
+                  src="../../images/team_members/DanFrey.png"
+                  alt="Dr. Gregg Frey"
+                />
+              </figure>
+            </div>
+          </div>
+        </section>
+        <>
+          <div style={greenCursorStyle}>
+            {isFocused && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                }}
+              >
+                Click
+              </span>
+            )}
+          </div>
+
+          <div
+            onMouseEnter={() => setIsFocused(true)}
+            onMouseLeave={() => setIsFocused(false)}
+            className=" horizontalContainer"
+          >
+            <div className="horizontalWrapper">
+              <div className="horizontalScroller">
+                <div className="horizontalRow">
+                  <div className="horizontalItem horizontalFilled">
+                    <a
+                      href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/"
+                      className="horizontalItemLink"
+                    >
+                      <p className="sm:text-left md:text-center">
+                        Our members have received the designation of Specialized
+                        Orthodontic Assistant. This is a voluntary certification
+                        program started by the American Association of
+                        Orthodontists to recognize those in the profession for
+                        their knowledge and experience.
+                      </p>
+                    </a>
+                  </div>
+
+                  <div className="horizontalItem horizontalFilled">
+                    <p>
+                      {" "}
+                      Fun fact-our team is made up of former FreySmiles
+                      patients, something we think is important, because we have
+                      all experienced treatment and can help guide you through
+                      it.
+                    </p>
+                    <img
+                      className="w-90 h-90 absolute bottom-0"
+                      src="../images/threedots.svg"
+                      alt="Green Squiggle"
+                    />
+                  </div>
+                  <a
+                    href="https://g.co/kgs/Sds93Ha"
+                    className="horizontalItem horizontalBig"
+                  >
+                    <p>
+                      This office is on 🔥! The orthodontists as well as every
+                      single staff member.
+                    </p>
+                    <span className="link-text" data-text="Check it out">
+                      Keary Riddick
                     </span>
                   </a>
+                  <div
+                    style={{
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      position: "relative",
+                    }}
+                  >
+                    <div className="svg-container">
+                      {svgs.map((svg) => (
+                        <div
+                          key={svg.id}
+                          className="svg-wrapper"
+                          style={{
+                            position: "absolute",
+                            right: `${svg.right}px`,
+                            transition: "right 2s ease-out",
+                          }}
+                        >
+                          <svg
+                            width={svgWidth}
+                            height={svgWidth}
+                            viewBox="0 0 200 200"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M100,0 A100,100 0 0,1 100,200 A100,100 0 0,1 100,0 Z"
+                              fill="#F3F2ED"
+                            />
+                          </svg>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="horizontalRow">
+                  <div className="horizontalItem horizontalBig">
+                    <p>Trained in CPR and first aid</p>
+                  </div>
+                  <div className="horizontalItem horizontalFilled ">
+                    <a
+                      href="https://g.co/kgs/YkknjNg"
+                      className="horizontalItemLink"
+                    >
+                      <p className>
+                        Had a wonderful experience at FreySmiles. Everyone is
+                        extremely professional, polite, timely. Would highly
+                        recommend! -TK
+                      </p>
+                      <span>
+                        {" "}
+                        <img
+                          className="w-90 h-auto -mt-80  "
+                          src="../images/fivestars.svg"
+                          alt="Green Squiggle"
+                        />
+                      </span>
+                    </a>
+                  </div>
+
+                  <div className="horizontalItem horizontalFilled">
+                    <p>Our team members are X-ray certified.</p>
+                  </div>
+
+                  <div className="horizontalItem horizontalFilled">
+                    <p>
+                      We’ve invested in in-office trainings with leading
+                      clinical consultants that have helped us develop systems
+                      and protocols streamlining our processes
+                    </p>
+                    <a className="horizontalItemLink">
+                      <span className="link-text" data-text="Learn More">
+                        Learn More
+                      </span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="svg-container">
-            {svgs.map((svg) => (
-              <div
-                key={svg.id}
-                className="svg-wrapper"
-                style={{
-                  position: "absolute",
-                  right: `${svg.right}px`,
-                  transition: "right 2s ease-out",
-                }}
-              >
-                <svg
-                  width={svgWidth}
-                  height={svgWidth}
-                  viewBox="0 0 200 200"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M100,0 A100,100 0 0,1 100,200 A100,100 0 0,1 100,0 Z"
-                    fill="#F3F2ED"
-                  />
-                </svg>
+
+          <div
+            ref={carouselRef}
+            className="mt-40 relative z-10 h-screen overflow-hidden pointer-events-none"
+          >
+            <div id="cursor" style={cursorStyle} className={className}>
+              <div className="cursor__circle" style={cursorCircleStyle}>
+                {!isDragging && (
+                  <>
+                    Drag
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                      />
+                    </svg>
+                  </>
+                )}
+              </div>
+            </div>
+            {items.map((item) => (
+              <div key={item.num} className="carousel-item">
+                <div className="carousel-box">
+                  <div className="titleCard">{item.title}</div>
+                  <div className="nameCard">{item.num}</div>
+                  <img src={item.imgSrc} alt={item.title} />
+                </div>
               </div>
             ))}
           </div>
-        <div ref={carouselRef} className="relative z-10 h-screen overflow-hidden pointer-events-none">
-           <div id="cursor" style={cursorStyle} className={className}>
-           <div className="cursor__circle" style={cursorCircleStyle}>
-            Drag
-           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-</svg>
-
-        </div>
-    </div>
-      {items.map(item => (
-        <div key={item.num} className="carousel-item">
-          <div className="carousel-box">
-            <div className="titleCard">{item.title}</div>
-            <div className="numCard">{item.num}</div>
-            <img src={item.imgSrc} alt={item.title} />
-          </div>
-        </div>
-      ))}
-    </div>
-
-      </>
+        </>
+      </div>
       </div>
     </>
   );

@@ -1,4 +1,5 @@
 "use client";
+import * as THREE from "three";
 import Layout from "./layout.js";
 import { SplitText } from "gsap-trial/all";
 import React, { useState, useEffect, useRef } from "react";
@@ -6,24 +7,113 @@ import Link from "next/link";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { gsap, Power3 } from "gsap-trial";
 
-
 const YourCare = () => {
+  const canvasRef = useRef();
+
+  useEffect(() => {
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      1,
+      100
+    );
+    camera.position.set(0, -0.5, 25);
+    const scene = new THREE.Scene();
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setClearColor(0x000000, 0);
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    canvasRef.current.appendChild(renderer.domElement);
+
+    const vertexShader = `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `;
+
+    const fragmentShader = `
+      precision highp float;
+      varying vec2 vUv;
+      uniform vec3 u_c1;
+      uniform vec3 u_c2;
+      uniform float u_time;
+      void main() {
+        vec3 pX = vec3(vUv.x);
+        vec3 pY = vec3(vUv.y);
+        vec3 c1 = u_c1;
+        vec3 c2 = u_c2;
+        vec3 c3 = vec3(0.0, 1.0, 1.0); // aqua
+        vec3 cmix1 = mix(c1, c2, pX + pY/2. + cos(u_time));
+        vec3 cmix2 = mix(c2, c3, (pY - sin(u_time))*0.5);
+        vec3 color = mix(cmix1, cmix2, pX * cos(u_time+2.));
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `;
+
+    const uniforms = {
+      u_c1: { type: "v3", value: new THREE.Vector3(0.9, 0.8, 0.3) },
+      u_c2: { type: "v3", value: new THREE.Vector3(1.0, 0.54, 0.4) },
+      u_time: { type: "f", value: 0 },
+    };
+    const shaderMaterial = new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader,
+      fragmentShader,
+    });
+
+    // const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
+    // const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
+    // scene.add(gum);
+
+    // const bgGeometry = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
+    // const bgMesh = new THREE.Mesh(bgGeometry, shaderMaterial);
+    // scene.add(bgMesh);
+
+    const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
+    const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
+    scene.add(gum);
+    const clock = new THREE.Clock();
+    const animate = () => {
+      uniforms.u_time.value = clock.getElapsedTime();
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    };
+    animate();
+
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      const canvasElement = renderer.domElement;
+      if (canvasRef.current?.contains(canvasElement)) {
+        canvasRef.current.removeChild(canvasElement);
+      }
+    };
+    
+  }, []);
   const [isBlotterLoaded, setIsBlotterLoaded] = useState(false);
 
   useEffect(() => {
     const loadScript = (src, callback) => {
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       script.src = src;
       script.onload = callback;
       document.body.appendChild(script);
     };
 
     if (!window.Blotter) {
-      loadScript('/blotter.min.js', () => {
-        console.log('Blotter loaded');
+      loadScript("/blotter.min.js", () => {
+        console.log("Blotter loaded");
 
-        loadScript('/liquidDistortMaterial.js', () => {
-          console.log('LiquidDistortMaterial loaded');
+        loadScript("/liquidDistortMaterial.js", () => {
+          console.log("LiquidDistortMaterial loaded");
           setIsBlotterLoaded(true);
         });
       });
@@ -34,77 +124,58 @@ const YourCare = () => {
 
   useEffect(() => {
     if (isBlotterLoaded) {
-      let materials = []; 
-  
+      let materials = [];
+
       const lines = ["DISCOVER", "WHAT MAKES", "US UNIQUE"];
-      let container = document.getElementById('blotter-target');
-  
+      let container = document.getElementById("blotter-target");
+
       if (container) {
         lines.forEach((line, index) => {
-
-          let lineDiv = document.createElement('div');
+          let lineDiv = document.createElement("div");
           lineDiv.id = `blotter-line-${index + 1}`;
           container.appendChild(lineDiv);
-  
+
           const text = new window.Blotter.Text(line, {
             // family: "",
-            size: 100, 
+            // fill: "#f4ecd7",
+            size: 100,
           });
-  
+
           let material = new window.Blotter.LiquidDistortMaterial();
           material.uniforms.uSpeed.value = 0.1;
           material.uniforms.uVolatility.value = 0.1;
           material.uniforms.uSeed.value = 0.1;
-  
+
           let blotter = new window.Blotter(material, { texts: text });
           let scope = blotter.forText(text);
           scope.appendTo(lineDiv);
-  
-          materials.push(material); 
+
+          materials.push(material);
         });
-  
+        // const handleMouseMove = (e) => {
+        //   const formula = ((e.pageX * e.pageY) / 200000) / 1.5;
+        //   materials.forEach(material => {
+        //     material.uniforms.uVolatility.value = formula;
+        //     material.uniforms.uSeed.value = formula;
+        //   });
+        // };
         const handleMouseMove = (e) => {
-          const formula = ((e.pageX * e.pageY) / 200000) / 1.5;
-          materials.forEach(material => {
+          let formula = (e.pageX * e.pageY) / 200000 / 1.2;
+          formula = Math.min(formula, 0.65);
+          materials.forEach((material) => {
             material.uniforms.uVolatility.value = formula;
             material.uniforms.uSeed.value = formula;
           });
         };
-  
-        document.body.addEventListener('mousemove', handleMouseMove);
-  
+
+        document.body.addEventListener("mousemove", handleMouseMove);
+
         return () => {
-          document.body.removeEventListener('mousemove', handleMouseMove);
+          document.body.removeEventListener("mousemove", handleMouseMove);
         };
       }
     }
   }, [isBlotterLoaded]);
-  
-  
-  
-
-  const [isOpen, setIsOpen] = useState(true);
-  const shutterRef = useRef(null);
-
-  const toggleShutter = () => {
-    setIsOpen((prevState) => !prevState);
-  };
-
-  useEffect(() => {
-    const container = shutterRef.current;
-    if (!container) return;
-
-    container.classList.add("c-shutter--opening");
-    container.classList.remove("c-shutter--closing", "c-shutter--closed");
-
-    const initialTimer = setTimeout(() => {
-      setIsOpen(false);
-    });
-
-    return () => clearTimeout(initialTimer);
-  }, []);
-
-
 
   const scrollContainerRef = useRef(null);
   useEffect(() => {
@@ -219,8 +290,6 @@ const YourCare = () => {
     setCursorPosition({ x: e.clientX, y: e.clientY });
   };
 
-
-
   // useEffect(() => {
   //   const pathLength = progressPath.current.getTotalLength();
   //   progressPath.current.style.strokeDasharray = `${pathLength} ${pathLength}`;
@@ -276,25 +345,23 @@ const YourCare = () => {
       zIndex: "z-30",
     },
   ];
-
   const textContainerRef = useRef(null);
-  const textRef1 = useRef(null);
-  const textRef2 = useRef(null);
-  const textRef3 = useRef(null);
 
   useEffect(() => {
-    const onEntry = (entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          gsap.registerPlugin(SplitText);
+    gsap.registerPlugin(SplitText, ScrollTrigger);
 
-          [textRef1, textRef2, textRef3].forEach(ref => {
-            const split = new SplitText(ref.current, { type: 'lines' });
+    const onEntry = (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const textElements = textContainerRef.current.querySelectorAll("h1");
+
+          textElements.forEach((textElement) => {
+            const split = new SplitText(textElement, { type: "lines" });
             gsap.from(split.lines, {
               duration: 1.5,
-              y: '100%',
+              y: "100%",
               stagger: 0.15,
-              ease: 'power4.out'
+              ease: "power4.out",
             });
           });
 
@@ -304,95 +371,115 @@ const YourCare = () => {
     };
 
     const observer = new IntersectionObserver(onEntry, {
-      threshold: 1 
+      threshold: 1,
     });
 
     if (textContainerRef.current) {
       observer.observe(textContainerRef.current);
     }
 
-    return () => {
-      observer.disconnect(); 
-    };
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-  
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: '.album',
-        start: 'top top',
-        end: '+=4000',
-        scrub: true,
-        pin: true,
-      }
-    });
-
-    tl.to('.p1', { x: '-=700', duration: 1 }, 0)
-      .to('.p2', { x: '-=1400', duration: 1 }, 0.5) 
-      .to('.p3', { x: '-=1300', duration: 1 }, 1)
-      .to('.p4', { x: '-=1200', duration: 1 }, 1.5);
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: ".bottom",
+          scrub: true,
+          pin: true,
+          start: "top top",
+          end: "+=3000",
+        },
+      })
+      .to(".stripe", { stagger: 0.3, height: "100vh" })
+      .to(".stripe", { stagger: 0.3, height: 0 })
+      .to(".thats-all", { opacity: 1, scale: 1 });
   }, []);
 
-useEffect(() => {
-  gsap.timeline({
-    scrollTrigger: {
-      trigger: '.bottom',
-      scrub: true,
+  useEffect(() => {
+    const tl = gsap.timeline({ duration: 3, ease: "back" });
+    const animatedElement = gsap.utils.toArray("p .highlight");
+    const lineOne = document.querySelector(".one");
+    const lineTwo = document.querySelector(".two");
+    const lineThree = document.querySelector(".three");
+    const lineFour = document.querySelector(".four");
+
+    gsap.set([lineOne, lineThree, lineFour], { xPercent: -101, autoAlpha: 0 });
+    gsap.set(lineTwo, { xPercent: 101, autoAlpha: 0 });
+    gsap.set(animatedElement, {
+      y: -100,
+      autoAlpha: 0,
+      scale: 1.5,
+      rotationX: 45,
+    });
+
+    tl.to(lineOne, { xPercent: 0, autoAlpha: 1 })
+      .to(lineTwo, { xPercent: 0, autoAlpha: 1 }, "-=.15")
+      .to(lineThree, { xPercent: 0, autoAlpha: 1 }, "-=.21")
+      .to(lineFour, { xPercent: 0, autoAlpha: 1 }, "-=.15")
+      .to(animatedElement, {
+        y: 0,
+        autoAlpha: 1,
+        scale: 1,
+        stagger: 0.4,
+        rotationX: 0,
+      });
+  }, []);
+
+  const steps = [
+    "Get in touch",
+    "Initial Consult",
+    "Be supported",
+    "Expert Care",
+  ];
+  const cardImages = [
+    "../images/nowbooking.png",
+    "../images/firstappointment.svg",
+    "../images/nocost.png",
+    "../images/freysmiles_insta.gif",
+  ];
+
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const translateY = -(currentCardIndex * 20) + "rem";
+  const [isSliderVisible, setIsSliderVisible] = useState(false);
+
+  const updateSlider = (index) => {
+    setCurrentCardIndex(index);
+  };
+
+  const closeSlider = () => {
+    setIsSliderVisible(false);
+  };
+
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const section = sectionRef.current;
+    const horizontalScrollLength = section.scrollWidth - section.offsetWidth;
+
+    ScrollTrigger.create({
+      trigger: section,
+      start: "top top",
+      end: horizontalScrollLength,
       pin: true,
-      start: 'top top',
-      end: '+=3000',
-    },
-  })
-  .to('.stripe', { stagger: 0.3, height: '100vh' })
-  .to('.stripe', { stagger: 0.3, height: 0 })
-  .to('.thats-all', { opacity: 1, scale: 1 });
-}, []);
+      scrub: 1,
+      onUpdate: (self) => {
+        gsap.to(section, {
+          x: -self.progress * horizontalScrollLength,
+          ease: "none",
+        });
+      },
+    });
+  }, []);
 
-useEffect(() => {
-  gsap.registerPlugin(ScrollTrigger);
-
-  gsap.to('.img', {
-    y: -700, 
-    stagger: 0.3, 
-    ease: 'none', 
-    scrollTrigger: {
-      trigger: '.img',
-      start: 'top bottom',
-      end: 'bottom center',
-      scrub: true
-    },
-  });
-
-}, []);
-
-
-
-  return (
-    <>
-      <Layout>
-        <div
-          className="shutter-container "
-          style={{
-            "--color-foreground": "#dcdce8",
-            "--delay": 10,
-          }}
-        >
-          <ul ref={shutterRef} className="z-10 c-shutter">
-            {[...Array(10)].map((_, i) => (
-              <li key={i} className="c-shutter__slat"></li>
-            ))}
-          </ul>
-          <div className="relative h-screen">
-      
-          <div className=" h-screen" id="blotter-target"></div>
-        
-          </div>
-          <section className="gallery" style={{position:'relative', height: '200vh' }}>
-
-
-          {/* <div className="flex justify-center items-center text-center h-screen">
+  {
+    /* OTHER LANDING WITH SVG*/
+  }
+  {
+    /* <div className="flex justify-center items-center text-center h-screen">
           <div className="flex flex-col justify-center items-center text-center h-screen">
   <div className=" font-bold text-8xl">
     <div className="mb-4">DISCOVER WHAT</div>
@@ -405,41 +492,260 @@ useEffect(() => {
   </div>
 </div>
 
-</div> */}
-  <div>
+</div> */
+  }
+  const firstCardRef = useRef(null);
 
-  <section className="grid grid-cols-3">
-  {[
-    "../images/nowbooking.png",
-    "../images/freysmiles_insta.gif",
-    "../images/firstappointment.svg",
-    "../images/nocost.png",
-    "../images/scan.mp4",
-    "../images/checkeredpatient.svg"
-  ].map((src, i) => {
-    const isVideo = src.endsWith('.mp4');
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
 
-    return (
-      <div key={i} className="img relative w-full overflow-hidden">
-        {isVideo ? (
-          <video autoPlay loop muted className="object-cover w-full h-full">
-            <source src={src} type="video/mp4" />
-          </video>
-        ) : (
-          <img src={src} alt={`Image ${i + 1}`} className="object-cover w-full h-full" />
-        )}
-        <div className="absolute top-0 left-0 w-full h-screen z-10"></div>
-      </div>
-    );
-  })}
-</section>
+    if (firstCardRef.current) {
+      const container = firstCardRef.current;
+      const image = container.querySelector(".bg");
+
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          toggleActions: "restart none none reset"
+        }
+      });
+
+      tl.set(container, { autoAlpha: 1 });
+      tl.from(container, 1.5, {
+        xPercent: -100,
+        ease: "power2.out"
+      });
+      tl.from(image, 1.5, {
+        xPercent: 100,
+        scale: 1.3,
+        delay: -1.5,
+        ease: "power2.out"
+      });
+    }
+  }, []);
+  useEffect(() => {
+    const tl = gsap.timeline({ repeat: -1, duration: 2, delay: 3, yoyo: true });
+
+    tl.to('#char2', { rotation: 360 });
+    tl.to('#char12', { rotation: 360 });
+
+    const splittedText = new SplitText('.split', { type: 'chars' });
+    const chars = splittedText.chars;
+
+    gsap.from(chars, {
+      yPercent: 450,
+      stagger: { each: 0.05, from: 'random' },
+      ease: 'back.out',
+      duration: 1
+    });
+
+    gsap.to('.bg-verticalText', {
+      scale: 1.1,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut'
+    });
+  }, []);
+
+  
+  
+  return (
+    <>
+      <Layout>
+        <div className="horizontal-scroll-section" ref={sectionRef}>
+          <div className="section-wrapper">
+
+            <div className="relative pagesection ">
+              <div className="min-h-screen   relative">
+                
+                <div ref={canvasRef} className="w-32 h-32"></div>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(120px)",
+                  }}
+                >
+                   <div className=" h-screen" id="blotter-target"></div>
+                </div>
+
+                <div
+                  className="grid absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    width: "100%",
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4,1fr)",
+                    gridTemplateRows: "1fr",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div
+                    className="grid-lines"
+                    style={{
+                      width: "1px",
+                      background: "#000",
+                      height: "100%",
+                      opacity: 0.25,
+                    }}
+                  ></div>
+                  <div
+                    className="grid-lines"
+                    style={{
+                      width: "1px",
+                      background: "#000",
+                      height: "100%",
+                      opacity: 0.25,
+                    }}
+                  ></div>
+                  <div
+                    className="grid-lines"
+                    style={{
+                      width: "1px",
+                      background: "#000",
+                      height: "100%",
+                      opacity: 0.25,
+                    }}
+                  ></div>
+                  <div
+                    className="grid-lines"
+                    style={{
+                      width: "1px",
+                      background: "#000",
+                      height: "100%",
+                      opacity: 0.25,
+                    }}
+                  ></div>
+                </div>
+              </div>
+
+             
+            </div>
+<div className="bg-[#F1EFEB] relative pagesection ">
+<div className="description panel relative h-screen flex justify-center items-center">
+<img className="bg-verticalText absolute" src="../images/chromeoval.svg" alt="" style={{ objectFit: 'contain', width: '20%', height: 'auto' }} />
 
 
+
+
+      <h1 className="font-altero split text-6xl text-[#ffff83]" id="splitText">
+        Science backed approach 
+      </h1>
     </div>
+</div>
 
-</section>
 
-       
+            <div className="cd-slider pagesection">
+              <div className="main_cards">
+                {cardImages.map((imageUrl, index) => (
+                  <div
+                    key={index}
+                    className={`card ${
+                      currentCardIndex === index ? "current_card" : ""
+                    }`}
+                  >
+                    <div
+                      style={{ backgroundImage: `url(${imageUrl})` }}
+                      className="bg"
+                    ></div>
+                  </div>
+                ))}
+              </div>
+              <nav className="steps">
+                {steps.map((step, index) => (
+                  <a
+                    key={index}
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      updateSlider(index);
+                    }}
+                  >
+                    {step}
+                  </a>
+                ))}
+              </nav>
+
+              <nav className="numbers">
+                <ul
+                  style={{
+                    transform: `translateY(${translateY})`,
+                    transition: "transform 0.6s ease",
+                  }}
+                >
+                  {steps.map((_, index) => (
+                    <li
+                      key={index}
+                      className={
+                        currentCardIndex === index ? "current_number" : ""
+                      }
+                    >
+                      0{index + 1}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+            <div className="pagesection">
+              <div id="pricing" className="bg-[#E1EEEC] flex">
+                <div className="mt-10 container">
+                  <div className="gsaptext-container mx-auto">
+                    <p className="font-altero text-center text-6xl">Pricing</p>
+                    <p className="one text-xl">
+                      <span className="highlight"> Taking </span>{" "}
+                      <span> the first step </span>
+                      <span className="highlight">towards treatment </span>{" "}
+                      <span>
+                        can sometimes feel overwhelming, especially when it{" "}
+                      </span>
+                    </p>
+                    <p className="two text-xl">
+                      <span>comes to discussing</span>{" "}
+                      <span className="highlight"> personalized </span>
+                      <span>
+                        treatment plans. That's why we kindly request that all{" "}
+                      </span>
+                    </p>
+                    <p className="three text-xl">
+                      <span>
+                        decision-makers be present during the initial visit.{" "}
+                      </span>
+                      <span className="highlight">Our goal</span>{" "}
+                      <span>is for every patient to walk </span>
+                    </p>
+                    <p className="four text-xl">
+                      <span>
+                        out of our office fully informed with answers to all
+                        their questions in their treatment path.
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col items-center justify-center space-y-[-2rem] mt-[-4rem] mb-[-4rem] py-8 h-screen">
+                {stackItems.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`bg-[#e5d6F6] text-black text-center px-6 py-4 shadow-xl border-2 border-black rounded-3xl transform ${item.rotation} ${item.zIndex}`}
+                    style={{ width: "800px", height: "150px" }}
+                  >
+                    <p className="text-5xl font-semibold">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pagesection"></div>
+          </div>
+
           {/* <footer className="bottom h-screen bg-[#F5F4F5] flex justify-start items-end flex-wrap m-0 p-0">
 
   <div className="stripe st1 flex-grow h-0 bg-[#1B1B1E]"></div>
@@ -661,100 +967,6 @@ useEffect(() => {
               </div>
             </div>
           </section> */}
-
-          <div
-            // className="bg-[#ebded4] border rounded-[30px] section-style flex items-center z-10 relative"
-            // style={{
-            //   position: "sticky",
-            //   top: 0,
-            //   backgroundAttachment: "fixed",
-            //   backgroundSize: "cover",
-            // }}
-          >
-             <section className="album h-screen overflow-hidden relative">
-      <picture className="absolute w-[700px] h-[500px] transform translate-x-[calc(50vw-350px)] translate-y-[calc(50vh-250px)]">
-        <img src="../images/pinkblur1.svg" alt="greendot" className="picture p1 object-cover object-cover w-full h-fulll" />
-        
-      </picture>
-      <picture className="absolute w-[700px] h-[500px] transform translate-x-[100vw] translate-y-[calc(50vh-250px)]">
-      <img src="../images/pinkblur2.svg" alt="greendot" className="picture p2 object-cover object-cover w-full h-fulll" />
-      </picture>
-      <picture className="absolute w-[700px] h-[500px] transform translate-x-[100vw] translate-y-[calc(50vh-250px)]">
-      <img src="../images/pinkblur3.svg" alt="greendot" className="picture p3 object-cover object-cover w-full h-fulll" />
-      </picture>
-      <picture className="absolute w-[700px] h-[500px] transform translate-x-[100vw] translate-y-[calc(50vh-250px)]">
-      <img src="../images/pinkblur4.svg" alt="greendot" className="picture p4 object-cover object-cover w-full h-fulll" />
-      </picture>
-    </section>
-          </div>
-          <div
-            style={{
-              position: "sticky",
-              top: 0,
-      
-              backgroundAttachment: "fixed",
-              backgroundSize: "cover",
-            }}
-            className=" border rounded-[30px] section-style flex items-center z-10 relative"
-          >
-            <>
-              <div className="">
-               
-                <div className="flex">
-                <div className="mt-10 font-helvetica-now-thin flex-1  container">
-                <div className="relative p-[100px]">
-                  
-                <div className="text-container" ref={textContainerRef}>
-      <div className="line-container" ref={textRef1}>
-        <h1 className="hidden-text text-2xl">Taking the first step towards treatment can sometimes feel overwhelming , especially when it comes to discussing personalized </h1>
-      </div>
-      <div className="line-container" ref={textRef2}>
-        <h1 className="text-2xl hidden-text"> plans and navigating payment options. That's why we kindly request that all decision-makers be present during the initial visit. </h1>
-      </div>
-      <div className="line-container" ref={textRef3}>
-        <h1 className="hidden-text text-2xl">Our goal is for every patient to walk out of our office fully informed with answers to all their questions in their treatment path.
-</h1>
-      </div>
-    </div>
-        </div>
-
-</div>
-
-
-
-                <div className="mt-20 flex-1 flex items-center justify-center">
-    <svg width="100" height="100" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ verticalAlign: "middle" }}>
-        <g clip-path="url(#clip0_105_560)">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M200 100.671L100 0L0 100.671H98.6668L0 200H200L101.333 100.671H200Z" fill="url(#paint0_linear_105_560)"/>
-        </g>
-        <defs>
-            <linearGradient id="paint0_linear_105_560" x1="20.5" y1="16" x2="100" y2="200" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#ACAAFF"/>
-                <stop offset="1" stop-color="#C0E8FF"/>
-            </linearGradient>
-            <clipPath id="clip0_105_560">
-                <rect width="200" height="200" fill="white"/>
-            </clipPath>
-        </defs>
-    </svg>
-    <p className="font-altero text-center text-8xl">Pricing</p>
-</div>
-
-                </div>
-                <div className="flex flex-col items-center justify-center space-y-[-2rem] mt-[-4rem] mb-[-4rem] py-8 h-screen">
-                  {stackItems.map((item, index) => (
-                    <div
-                      key={index}
-                      className={`bg-[#e5d6F6] text-black text-center px-6 py-4 shadow-xl border-2 border-black rounded-3xl transform ${item.rotation} ${item.zIndex}`}
-                      style={{ width: "1000px", height: "150px" }}
-                    >
-                      <p className="text-5xl font-semibold">{item.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          </div>
         </div>
       </Layout>
     </>
@@ -762,286 +974,3 @@ useEffect(() => {
 };
 
 export default YourCare;
-
-
-        {/* <div
-              className="absolute top-[calc(50%-60.5px)] left-0 w-full h-[1px] bg-black"
-              style={{ zIndex: 5 }}
-            ></div>
-
-            <div className="grid grid-cols-3 gap-4 w-full">
-              <div className="z-20 flex flex-col items-center">
-                <svg
-                  width="160"
-                  height="160"
-                  viewBox="0 0 128 128"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    cx="64"
-                    cy="64"
-                    r="60"
-                    stroke="black"
-                    strokeWidth=".5"
-                    fill="#ebded4"
-                  />
-                  <image
-                    href="../images/wavydesign.png"
-                    x="0"
-                    y="0"
-                    height="128px"
-                    width="128px"
-                  />
-                </svg>
-                <p className="mt-10 flex text-center px-10">
-                  The American Association of Orthodontists (AAO) recommends an
-                  orthodontic evaluation by age 7 to assess and coordinate
-                  optimal timing of treatment
-                </p>
-              </div>
-              <div className="z-20 flex flex-col items-center">
-                <svg
-                  width="160"
-                  height="160"
-                  viewBox="0 0 128 128"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    cx="64"
-                    cy="64"
-                    r="60"
-                    stroke="black"
-                    strokeWidth=".5"
-                    fill="#ebded4"
-                  />
-
-                  <image
-                    href="../images/fscartoon.png"
-                    x="0"
-                    y="0"
-                    height="128px"
-                    width="128px"
-                  />
-                </svg>
-                <p className="mt-10 text-center px-10">
-                  If immediate treatment isn't necessary, you'll be enrolled in
-                  our FreySmiles Club, where you'll receive biannual and annual
-                  check-ins to monitor your progress.
-                </p>
-              </div>
-
-              <div className="z-20 flex flex-col items-center">
-                <svg
-                  width="160"
-                  height="160"
-                  viewBox="0 0 128 128"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    cx="64"
-                    cy="64"
-                    r="60"
-                    stroke="black"
-                    strokeWidth=".5"
-                    fill="#ebded4"
-                  />
-                  <image
-                    href="../images/connect.png"
-                    x="10"
-                    y="10"
-                    height="100px"
-                    width="100px"
-                  />
-                </svg>
-                <p className="mt-10 text-center px-10">
-                  Early intervention can simplify or eliminate the need for
-                  extensive treatment later on. Our collaboration with your
-                  family dentist ensures comprehensive care throughout your
-                  treatment.
-                </p>
-              </div>
-            </div> */}
-// const YourCare = () => {
-//   const [activeAccordion, setActiveAccordion] = useState([
-//     false,
-//     false,
-//     false,
-//     false,
-//   ]);
-
-//   const toggleAccordion = (index) => {
-//     setActiveAccordion((prevState) =>
-//       prevState.map((isActive, i) => (i === index ? !isActive : false))
-//     );
-//   };
-
-//   return (
-//     <div className="my-60 flex justify-center items-start">
-//       <div className="max-w-screen-xl flex mx-4">
-//         <div className="flex-1">
-//           <div className="flex flex-col justify-start">
-//             <div
-//               className={` py-3 px-4 flex justify-between items-center cursor-pointer select-none ${
-//                 activeAccordion[0] ? "bg-white" : ""
-//               }`}
-//               onClick={() => toggleAccordion(0)}
-//             >
-//               <h2 className="flex text-lg font-medium ml-16 text-indigo-700 ">Your First Visit</h2>
-//               <svg
-//                 className={`h-6 w-6 transform ${
-//                   activeAccordion[0] ? "rotate-180" : ""
-//                 }`}
-//                 fill="none"
-//                 viewBox="0 0 24 24"
-//                 stroke="currentColor"
-//               >
-//                 <path
-//                   strokeLinecap="round"
-//                   strokeLinejoin="round"
-//                   strokeWidth={2}
-//                   d={activeAccordion[0] ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-//                 />
-//               </svg>
-//             </div>
-//             <div
-//               className={`overflow-hidden transition-all duration-1000 ${
-//                 activeAccordion[0] ? "max-h-96" : "max-h-0"
-//               }`}
-//             >
-//               <p>
-// During your initial visit you’ll get to know some of the friendly
-// faces of the FreySmiles orthodontic team and see what makes us
-// unique. We are always excited about meeting new patients. Your first
-// appointment will consist of a thorough orthodontic examination
-// including photos, a digital radiograph of your teeth, and a
-// discussion of your options. This important 60-90 minute visit will
-// give us a picture of your orthodontic needs.
-//               </p>
-//             </div>
-//                      <div className={`border-t border-indigo-300 border-t-1 border-indigo-300 py-3 px-4 flex justify-between items-center cursor-pointer select-none ${
-//             activeAccordion[1]  ? "bg-white" : ""
-//           }`}
-//           onClick={() => toggleAccordion(1)}
-//         >
-//           <h2 className="text-lg font-medium ml-16">Accordion Item #2</h2>
-//           <svg
-//             className={`h-6 w-6 transform ${
-//               activeAccordion[1]  ? "rotate-180" : ""
-//             }`}
-//             fill="none"
-//             viewBox="0 0 24 24"
-//             stroke="currentColor"
-//           >
-//             <path
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               strokeWidth={2}
-//               d={activeAccordion[1]  ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-//             />
-//           </svg>
-//         </div>
-//         <div
-//           className={`overflow-hidden transition-all duration-1000 ${
-//             activeAccordion[1] ? "max-h-96" : "max-h-0"
-//           }`}
-//         >
-//           <p>
-//             Many times we are able to save you a return trip back to office and
-//             can start treatment at your first visit. We know you’ll be excited
-//             to see your new FreySmile!
-//           </p>
-//         </div>
-//         <div
-//           className={`border-t border-indigo-300 py-3 px-4 flex justify-between items-center cursor-pointer select-none ${
-//             activeAccordion[2]  ? "bg-white" : ""
-//           }`}
-//           onClick={() => toggleAccordion(2)}
-//         >
-//           <h2 className="text-lg font-medium ml-16 text-indigo-700">Growth And Guidance</h2>
-//           <svg
-//             className={`h-6 w-6 transform ${
-//               activeAccordion[2]  ? "rotate-180" : ""
-//             }`}
-//             fill="none"
-//             viewBox="0 0 24 24"
-//             stroke="currentColor"
-//           >
-//             <path
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               strokeWidth={2}
-//               d={activeAccordion[2]  ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-//             />
-//           </svg>
-//         </div>
-//         <div
-//           className={`overflow-hidden transition-all duration-1000 ${
-//             activeAccordion[2] ? "max-h-96" : "max-h-0"
-//           }`}
-//         >
-//           <p>
-//             {" "}
-//             If braces are not needed right away, you will be enrolled in our
-//             complementary growth and guidance program, called our Future
-//             FreySmiles Club, where we will see you every 6-12 months to monitor
-//             your progress. Timing is extremely important for us to be able to
-//             provide the best results and to deliver your new smile as quickly as
-//             possible. These visits for a “peace of mind policy” cost you
-//             nothing! We’ll also be working with your family dentist before and
-//             during braces to provide you with the highest level of care.
-//           </p>
-//         </div>
-//         <div
-//           className={`border-t border-indigo-300 py-3 px-4 flex justify-between items-center cursor-pointer select-none ${
-//             activeAccordion[3] ? "bg-white" : ""
-//           }`}
-//           onClick={() => toggleAccordion(3)}
-//         >
-//           <h2 className="text-lg font-medium ml-16 text-indigo-700">What To Bring</h2>
-//           <svg
-//             className={`h-6 w-6 transform ${
-//               activeAccordion[3]  ? "rotate-180" : ""
-//             }`}
-//             fill="none"
-//             viewBox="0 0 24 24"
-//             stroke="currentColor"
-//           >
-//             <path
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//               strokeWidth={2}
-//               d={activeAccordion[3] ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-//             />
-//           </svg>
-//         </div>
-//         <div
-//           className={`overflow-hidden transition-all duration-1000 ${
-//             activeAccordion[3] ? "max-h-96" : "max-h-0"
-//           }`}
-//         >
-//           <p >
-//             {" "}
-//             Since treatment plans and payment options may be discussed, we ask
-//             that a parent or guardian be present for the first visit. Including
-//             everyone who will be making this important decision helps us
-//             communicate thoroughly. We are an insurance friendly office so
-//             please assist us by bringing your insurance card if you have
-//             orthodontic coverage. We want our patients to leave the office with
-//             a clear understanding of their specific treatment plan, so don’t
-//             hesitate to ask questions.
-//           </p>
-//         </div>
-//           </div>
-//         </div>
-//         <div className="flex-1 flex justify-end">
-// <div className=" max-h-96 overflow-hidden">
-// <img className="opacity-90 w-full h-auto" src="../../images/itero.png" alt="scan" style={{ maxWidth: '100%', maxHeight: '100%' }} />
-//   </div>
-
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default YourCare;

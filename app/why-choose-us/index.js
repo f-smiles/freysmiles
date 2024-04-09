@@ -1,6 +1,10 @@
 'use client'
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
+import gsap from 'gsap';
+import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from "next/link"
+import { SplitText } from "gsap-trial/all";
 // framer motion
 import { motion } from "framer-motion"
 import clsx from "clsx"
@@ -13,12 +17,14 @@ import Shape06 from "../_components/shapes/shape06"
 import Shape07 from "../_components/shapes/shape07"
 import { TextReveal } from "../_components/TextReveal"
 
-
+gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 export default function WhyChooseUs() {
   return (
 
     <>
       <Hero />
+      {/* <TextSection /> */}
+      {/* <Gallery /> */}
       <StackCards />
       <ScrollTextReveal />
       <CTA />
@@ -28,85 +34,274 @@ export default function WhyChooseUs() {
   )
 }
 
+
+const TextSection = () => {
+  const circleRef = useRef(null);
+
+  useEffect(() => {
+
+
+
+    gsap.to(circleRef.current, {
+      width: "600vmax", 
+      height: "600vmax",
+      ease: "Power1.easeInOut",
+      scrollTrigger: {
+        trigger: "#text",
+        start: "top 100%", 
+        end: "bottom top",  
+        scrub: 0.5
+      }
+    });
+  }, []);
+
+  return (
+    <section id='text'> 
+    <div ref={circleRef} className="circle"></div>
+
+
+  </section>
+  );
+};
+
+
+
+
+
+
+
+
+// const Gallery = () => {
+
+
+//   useEffect(() => {
+
+//     const bodyStyle = document.body.style;
+//     bodyStyle.margin = '0';
+//     bodyStyle.backgroundColor = '#F6E9D6';
+//     bodyStyle.color = '#000';
+//     bodyStyle.overscrollBehavior = 'none';
+//     bodyStyle.padding = '0';
+//     bodyStyle.overflowX = 'hidden';
+
+//     // Apply GSAP animations to images
+//     const images = document.querySelectorAll('.images img');
+//     images.forEach((image) => {
+//       gsap.to(image, {
+//         yPercent: -20, // Adjust the y offset as needed
+//         scrollTrigger: {
+//           trigger: image,
+//           start: 'top bottom',
+//           end: 'bottom top',
+//           scrub: true
+//         }
+//       });
+//     });
+
+
+//     ScrollSmoother.create({
+//       wrapper: '#wrapper',
+//       content: '#content',
+//       smooth: 2,
+//       effects: false
+//     });
+
+   
+//     return () => {
+   
+//       bodyStyle.margin = '';
+//       bodyStyle.backgroundColor = '';
+//       bodyStyle.color = '';
+//       bodyStyle.overscrollBehavior = '';
+//       bodyStyle.padding = '';
+//       bodyStyle.overflowX = '';
+//     };
+//   }, []);
+//   return (
+//     <>
+//     <h1 class="text">MORE THAN SMILES</h1>
+// <h1 aria-hidden="true" class="text outline-text">MORE THAN SMILES</h1>
+// <h1 aria-hidden="true" class="text filtered-text">MORE THAN SMILES</h1>
+
+//     <div id="wrapper">
+//       <section id="content">
+//         <section className="imagesScrol">
+//           <img data-speed="0.8" src="https://images.pexels.com/photos/1080696/pexels-photo-1080696.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//           <img data-speed="0.9" src="https://images.pexels.com/photos/827518/pexels-photo-827518.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//           <img data-speed="1" src="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//           <img data-speed="1.1" src="https://images.pexels.com/photos/3356416/pexels-photo-3356416.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//           <img data-speed="0.9" src="https://images.pexels.com/photos/1029803/pexels-photo-1029803.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//           <img data-speed="1.2" src="https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
+//         </section>
+//       </section>
+//     </div>
+//     </>
+//   );
+// };
+
+
+
 function Hero() {
 
   return (
-    <div className="w-full h-[100vh] flex flex-col justify-center items-center relative">
-      <video autoPlay loop muted preload="true" className="absolute inset-0 object-cover object-center w-full h-full -z-10">
-        {/* undulating waves */}
-        {/* <source src="/../../videos/production_id_4779866.mp4" type="video/mp4" /> */}
-        {/* sharp waves */}
-        {/* <source src="/../../videos/pexels-rostislav-uzunov-9150545.mp4" type="video/mp4" /> */}
-        {/* shutterstock */}
-        <source src="/../../videos/shutterstock_1111670177.mp4" type="video/mp4" />
-      </video>
-      <div className="absolute inset-0 m-4 bg-gray-300 border border-gray-100 rounded-xl -z-10 backdrop-filter bg-clip-padding backdrop-blur-sm bg-opacity-30" />
-      <section className="flex flex-col gap-4 mx-auto my-16 text-center md:h-16 md:text-left md:flex-row w-max">
+    
+   
+    <div className="bg-212121   h-screen">
+      <style>
+        {`
+          .page::selection {
+            background: #212121; 
+
+            mix-blend-mode: difference;
+          }
+          .page::-moz-selection {
+            background: #212121; 
+      
+          }
+        `}
+      </style>
+    <header className="relative z-10">
+      <div className="swoosh fixed">
+     
+
+      </div>
+    </header>
+
+    <section className="hero flex items-center justify-center min-h-[800px] h-[800px] w-full bg-black border-b-right-radius-section relative">
+      <div className="content relative text-center mb-5">
+        <h1 className="hero-title blend text-white">
+        <section className="flex flex-col gap-4 mx-auto my-16 text-center md:h-16 md:text-left md:flex-row w-max">
         
-        <h1 className="py-1 text-zinc-800 font-helvetica-now-thin">Experts in</h1> {/* text-[#5f6368] */}
+        <h1 className="py-1 text-5xl font-neue-montreal text-white"><span >Experts </span>in</h1> {/* text-[#5f6368] */}
         <div className="h-full overflow-hidden">
           <ul
             style={{
               animation: "scroll-text-up 5s infinite",
             }}
           >
-            <li className="text-[#ea4335] py-1">
-              <h1 className="font-helvetica-now-thin">Invisalign</h1>
+            <li className=" py-1">
+              <h1 className="font-neue-montreal text-6xl">Invisalign</h1>
             </li>
-            <li className="text-[#4285f4] py-1">
-              <h1 className="font-helvetica-now-thin">Damon Braces</h1>
+            <li className=" py-1">
+              <h1 className="font-neue-montreal text-6xl">Damon Braces</h1>
             </li>
-            <li className="text-[#34a853] py-1">
-              <h1 className="font-helvetica-now-thin">Accelerated Orthodontic Treatment</h1>
+            <li className=" py-1">
+              <h1 className="font-neue-montreal text-6xl">Accelerated Orthodontic Treatment</h1>
             </li>
-            <li className="text-[#fbbc04] py-1">
-              <h1 className="font-helvetica-now-thin">low-dose 3D Digital Radiographs</h1>
+            <li className=" py-1">
+              <h1 className="font-neue-montreal text-6xl">low-dose 3D Digital Radiographs</h1>
             </li>
-            <li className="text-[#ea4335] py-1">
-              <h1 className="font-helvetica-now-thin">Invisalign</h1>
+            <li className="py-1">
+              <h1 className="font-neue-montreal text-6xl">Invisalign</h1>
             </li>
           </ul>
         </div>
       </section>
+        </h1>
+      </div>
+    </section>
+
+    <div className="w-full mt-20 h-[100vh] flex flex-col justify-center items-center relative">
+      {/* <video autoPlay loop muted preload="true" className="absolute inset-0 object-cover object-center w-full h-full -z-10"> */}
+        {/* undulating waves */}
+        {/* <source src="/../../videos/production_id_4779866.mp4" type="video/mp4" /> */}
+        {/* sharp waves */}
+        {/* <source src="/../../videos/pexels-rostislav-uzunov-9150545.mp4" type="video/mp4" /> */}
+        {/* shutterstock */}
+        {/* <source src="/../../videos/shutterstock_1111670177.mp4" type="video/mp4" />
+      </video> */}
+      <div className="absolute inset-0 m-4 bg-gray-300 border border-gray-100 rounded-xl -z-10 backdrop-filter bg-clip-padding backdrop-blur-sm bg-opacity-30" />
+    
     </div>
+  </div>
+   
   )
 }
 
 function StackCards() {
+
+  const textContainerRef = useRef(null);
+  const textRef1 = useRef(null);
+  const textRef2 = useRef(null); 
+
+  useEffect(() => {
+    gsap.registerPlugin(SplitText);
+
+    const onEntry = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          [textRef1, textRef2].forEach(ref => { 
+            const split = new SplitText(ref.current, { type: 'lines' });
+            split.lines.forEach((line) => {
+              gsap.fromTo(line, 
+                { y: 80, opacity: 0, clipPath: 'polygon(0 0, 100% 0, 100% 0, 0 0)' },
+                { y: 0, opacity: 1, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', duration: 1.5, ease: 'power4.out' }
+              );
+            });
+          });
+
+          observer.disconnect();
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(onEntry, {
+      threshold: 1 
+    });
+
+    if (textContainerRef.current) {
+      observer.observe(textContainerRef.current);
+    }
+
+    return () => observer.disconnect(); 
+  }, []);
+
   return (
-    <section className="py-32 bg-[#f5f5eb]">
-      <div className="relative container mx-auto border border-[#51733f]">
+    <section className="bg-white py-32 ">
+  <div className="text-container" ref={textContainerRef}>
+      <div className="line-container" ref={textRef1}>
+        <h1 className="hidden-text font-neue-montreal font-bold text-7xl uppercase">
+          Uncompromising
+        </h1>
+      </div>
+      <div className="line-container" ref={textRef2}>
+        <h1 className="hidden-text font-neue-montreal font-bold text-7xl uppercase">
+          QUALITY
+        </h1>
+      </div>
+    </div>
+      <div className="relative container mx-auto">
         <div className="flex flex-col items-center gap-6 mx-auto -translate-y-10 lg:mx-0 lg:-translate-x-10 lg:flex-row w-max">
-          <img
+          {/* <img
             src="/../../images/freysmilepatient.jpg"
             alt="frey smiles patient"
-            className="rounded-full left-1/4 w-96 h-96 border-2 border-[#51733f]"
-          />
-          <h1 className="z-10 px-4 tracking-tighter uppercase font-neue-montreal lg:text-7xl mix-blend-multiply text-[#51733f]">Uncompromising<br/>quality</h1>
+            className="rounded-full left-1/4 w-96 h-96 "
+          /> */}
+
         </div>
         <div className="max-w-screen-lg mx-auto space-y-16">
-          <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] translate-x-[4dvw] border-2 border-[#51733f] -rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105 bg-[#f5f5eb]">
+          <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] translate-x-[4dvw] border-2 border-[#51733f] -rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105 ">
             <h4>We strive to attain finished results consistent with the <span>American Board of Orthodontics (ABO)</span> qualitative standards. Our doctors place great priority on the certification and recertification process, ensuring that all diagnostic records adhere to ABO standards.</h4>
             <div className="absolute bottom-0 right-0 translate-x-1/2 translate-y-1/4 w-36 h-36 -z-10">
-              <Shape07 />
+
             </div>
           </div>
-          <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#51733f] transition-all duration-150 ease-linear hover:scale-105 bg-[#f5f5eb] rotate-2">
+          <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#51733f] transition-all duration-150 ease-linear hover:scale-105  rotate-2">
             <h4>Currently, Dr. Gregg Frey is a certified orthodontist, and is preparing cases for recertification. Dr. Daniel Frey is in the final stages of obtaining his initial certification.</h4>
             <div className="absolute bottom-0 left-0 w-48 h-48 -translate-x-1/4 -z-10">
               <Shape06 />
             </div>
           </div>
-          <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] translate-x-[2dvw] border-2 border-[#51733f] rotate-2 lg:-rotate-2 relative hover:rotate-0 hover:scale-105 transition-all duration-150 ease-linear bg-[#f5f5eb]">
+          <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] translate-x-[2dvw] border-2 border-[#51733f] rotate-2 lg:-rotate-2 relative hover:rotate-0 hover:scale-105 transition-all duration-150 ease-linear ">
             <h4>To complement our use of cutting-edge diagnostic technology, we uphold the highest standards for our records, ensuring accuracy and precision throughout the treatment process.</h4>
             <div className="absolute bottom-0 right-0 translate-x-1/2 w-44 h-44 translate-y-1/4 -z-10">
               <Shape05 />
             </div>
           </div>
-          <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#51733f] rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105 bg-[#f5f5eb]">
+          <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#51733f] rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105">
             <h4>Our office holds the distinction of being the <span className="text-4xl text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 font-helvetica-now-thin">longest-standing, active board-certified orthodontic office in the area</span>. With four offices in the Lehigh Valley, we have been providing unparalleled orthodontic care for over four decades.</h4>
             <div className="absolute bottom-0 left-0 w-40 h-40 -translate-x-1/2 -translate-y-6 -z-10">
-              <Shape04 />
+  
             </div>
           </div>
         </div>
@@ -128,13 +323,65 @@ function StackCards() {
 }
 
 function ScrollTextReveal() {
+  const textRef = useRef(null);
+  const bgTextColor = "#CECED3";
+  const fgTextColor = "#85ABA0 ";
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger, SplitText);
+
+    const split = new SplitText(textRef.current, { type: "chars" });
+    const chars = split.chars; 
+
+    const animation = gsap.fromTo(
+      chars,
+      { color: bgTextColor },
+      { color: fgTextColor, stagger: 0.03}
+    );
+
+    ScrollTrigger.create({
+      trigger: textRef.current,
+      start: "top 80%",
+      end: "bottom 70%",
+      animation: animation,
+      scrub: true,
+      markers: false
+    });
+
+ 
+    return () => split.revert();
+  }, []);
+
+  
+  
   const text = "Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it."
 
   return (
-    <section className="w-full px-10 bg-[#d2d3c3]">
-      <div className="container flex flex-col-reverse mx-auto md:flex-row md:justify-between">
+    <section className="w-full px-10 ">
+   <div className="flex flex-col items-center justify-center text-[180px] leading-none">
+      <div className="self-start ml-60">
+        <span className="underline-custom">MORE</span>
+      </div>
+      <div className="self-end mr-60">
+        <span className="underline-custom">THAN</span>
+      </div>
+      <div className="self-start ml-60">
+        <span className="underline-custom">SMILES</span>
+      </div>
+    </div>
+      <div>
+
+   
+    
+    </div>
+      {/* <div className="container flex flex-col-reverse mx-auto md:flex-row md:justify-between"> */}
         <div className="w-full min-h-screen px-8 py-12 md:w-1/2 md:px-0">
-          <TextReveal body={text} className="relative mx-auto h-[100vh] w-full max-w-lg">
+        <div className="animation">
+        <p ref={textRef} className="text-2xl animated-text">
+        Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it.
+        </p>
+      </div>
+          {/* <TextReveal body={text} className="relative mx-auto h-[100vh] w-full max-w-lg">
             {(tokens) => (
               <div className="sticky top-0 left-0 flex items-center h-full text-primary-50 font-larken font-extralight text-[clamp(1.125rem,_0.4688rem_+_2.9167vw,_2rem)] leading-[clamp(1.125rem,_0.4688rem_+_2.9167vw,_2rem)]">
                 <div>
@@ -156,16 +403,16 @@ function ScrollTextReveal() {
                 </div>
               </div>
             )}
-          </TextReveal>
+          </TextReveal> */}
         </div>
-        <div className="flex flex-col items-center justify-center w-full md:w-1/2">
+        {/* <div className="flex flex-col items-center justify-center w-full md:w-1/2">
           <img
             className="mt-16 rounded-lg"
             src="/../../images/smilescholarship.jpg"
             alt="Frey Smiles patient receiving FreySmile scholarship"
           />
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
     </section>
   )
 }
@@ -189,7 +436,7 @@ function DragTable() {
   const othersRef = useRef()
 
   return (
-    <section className="hidden lg:block bg-[#d2d3c3] py-24">
+    <section className="hidden lg:block bg-[#161818] py-24">
       <div className="container grid-cols-12 grid-rows-6 mx-auto mb-32 lg:grid place-content-stretch font-neue-montreal">
         <div className="flex col-span-6 col-start-1 row-start-1 mb-12 text-center font-extralight place-content-center place-items-end font-larken text-zinc-800"><h1>FreySmiles Orthodontics</h1></div>
         <div className="flex col-span-6 col-start-7 row-start-1 mb-12 text-center place-content-center place-items-end font-larken text-zinc-800 font-extralight"><h1>Others</h1></div>
