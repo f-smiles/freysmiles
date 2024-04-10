@@ -96,7 +96,6 @@ const YourCare = () => {
         canvasRef.current.removeChild(canvasElement);
       }
     };
-    
   }, []);
   const [isBlotterLoaded, setIsBlotterLoaded] = useState(false);
 
@@ -506,59 +505,105 @@ const YourCare = () => {
       let tl = gsap.timeline({
         scrollTrigger: {
           trigger: container,
-          toggleActions: "restart none none reset"
-        }
+          toggleActions: "restart none none reset",
+        },
       });
 
       tl.set(container, { autoAlpha: 1 });
       tl.from(container, 1.5, {
         xPercent: -100,
-        ease: "power2.out"
+        ease: "power2.out",
       });
       tl.from(image, 1.5, {
         xPercent: 100,
         scale: 1.3,
         delay: -1.5,
-        ease: "power2.out"
+        ease: "power2.out",
       });
     }
   }, []);
   useEffect(() => {
     const tl = gsap.timeline({ repeat: -1, duration: 2, delay: 3, yoyo: true });
 
-    tl.to('#char2', { rotation: 360 });
-    tl.to('#char12', { rotation: 360 });
+    tl.to("#char2", { rotation: 360 });
+    tl.to("#char12", { rotation: 360 });
 
-    const splittedText = new SplitText('.split', { type: 'chars' });
+    const splittedText = new SplitText(".split", { type: "chars" });
     const chars = splittedText.chars;
 
     gsap.from(chars, {
       yPercent: 450,
-      stagger: { each: 0.05, from: 'random' },
-      ease: 'back.out',
-      duration: 1
+      stagger: { each: 0.05, from: "random" },
+      ease: "back.out",
+      duration: 1,
     });
 
-    gsap.to('.bg-verticalText', {
+    gsap.to(".bg-verticalText", {
       scale: 1.1,
       duration: 2,
       repeat: -1,
       yoyo: true,
-      ease: 'power1.inOut'
+      ease: "power1.inOut",
     });
   }, []);
-
+  const horizontalScrollTrackRef = useRef(null);
   
+
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+
+    const horizontalMainTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: horizontalScrollTrackRef.current,
+        scrub: true,
+   
+      },
+    })
+    .to(horizontalScrollTrackRef.current, {
+      xPercent: -100,
+      ease: "none",
+      onUpdate: () => updateScrollProgress(horizontalMainTl),
+    });
+
+
+    function updateScrollProgress(timeline) {
+      setScrollProgress(Math.round(timeline.progress() * 100));
+    }
+
+
+    return () => {
+      horizontalMainTl.kill();
+    };
+  }, []);
   
   return (
     <>
       <Layout>
+      <div class="nav_bar sticky">
+            <div class="nav_top-logo">
+              <div class="nav_logo-embed w-embed"></div>
+              <div class="nav_logo-text is-top">Est. 1980</div>
+            </div>
+            <div class="nav_trigger">
+              <div class="nav_icon">
+                <div class="nav_icon-line"></div>
+                <div class="nav_icon-line"></div>
+                <div class="nav_icon-line"></div>
+              </div>
+            </div>
+            <div className="nav_bottom-progress w-full absolute bottom-8 left-0 flex justify-center items-center">
+              <div class="nav_logo-text is-bottom">
+              <span className="nav_progress-number">{scrollProgress}</span>%
+              </div>
+            </div>
+          </div>
         <div className="horizontal-scroll-section" ref={sectionRef}>
-          <div className="section-wrapper">
+        
 
+          <div className="section-wrapper">
             <div className="relative pagesection ">
               <div className="min-h-screen   relative">
-                
                 <div ref={canvasRef} className="w-32 h-32"></div>
                 <div
                   style={{
@@ -571,7 +616,7 @@ const YourCare = () => {
                     backdropFilter: "blur(120px)",
                   }}
                 >
-                   <div className=" h-screen" id="blotter-target"></div>
+                  <div className=" h-screen" id="blotter-target"></div>
                 </div>
 
                 <div
@@ -626,22 +671,24 @@ const YourCare = () => {
                   ></div>
                 </div>
               </div>
-
-             
             </div>
-<div className="bg-[#F1EFEB] relative pagesection ">
-<div className="description panel relative h-screen flex justify-center items-center">
-<img className="bg-verticalText absolute" src="../images/chromeoval.svg" alt="" style={{ objectFit: 'contain', width: '20%', height: 'auto' }} />
+            <div className="bg-[#F1EFEB] relative pagesection ">
+              <div className="description panel relative h-screen flex justify-center items-center">
+                <img
+                  className="bg-verticalText absolute"
+                  src="../images/chromeoval.svg"
+                  alt=""
+                  style={{ objectFit: "contain", width: "20%", height: "auto" }}
+                />
 
-
-
-
-      <h1 className="font-altero split text-6xl text-[#ffff83]" id="splitText">
-        Science backed approach 
-      </h1>
-    </div>
-</div>
-
+                <h1
+                  className="font-oakes-regular split text-6xl text-[#ffff83]"
+                  id="splitText"
+                >
+                  Science backed approach
+                </h1>
+              </div>
+            </div>
 
             <div className="cd-slider pagesection">
               <div className="main_cards">

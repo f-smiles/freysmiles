@@ -443,10 +443,10 @@ const OurTeam = () => {
         
         <div className="grid grid-cols-2 ">
   <div className="flex flex-col items-start justify-center">
-    <h1 className="font-poppins text-[90px] tracking-tight relative z-10">
+    <div className="font-novela-regular text-[100px] tracking-tight relative z-10">
       Meet Our
-    </h1>
-    <div className="font-poppins italic text-[90px] tracking-tight relative z-10">
+    </div>
+    <div className="font-novela-regular italic text-[100px] tracking-tight relative z-10">
       Doctors
     </div>
   </div>
@@ -480,7 +480,7 @@ const OurTeam = () => {
                 >
                   <ArrowLeftIcon className="text-stone-600 w-5 h-5" />
                 </button>
-                <span className="text-stone-600 font-poppins">
+                <span className="text-stone-600">
                   0{!switchDoctor ? index : index + 1} / 02
                 </span>
                 <button

@@ -6,37 +6,50 @@
 
 @font-face {
   font-family: "Lato-Bold";
-  src: url('/fonts/Lato-Bold.ttf') format('truetype') url('/fonts/Lato-Bold.ttf') format('truetype');
+  src: url('/fonts/Lato-Bold.ttf') format('truetype') ;
 }
 
+@font-face {
+  font-family: "Oakes-Regular";
+  src: url('/fonts/oakes-grotesk-regular.woff')  format('woff2');
+}
+
+@font-face {
+  font-family: "Oakes-Grotesk-Medium";
+  src: url('/fonts/oakes-grotesk-medium.woff')  format('woff');
+}
 
 @font-face {
   font-family: "TerminaTest-Bold";
-  src: url('/fonts/TerminaTest-Bold.otf') format('opentype') url('/fonts/TerminaTest-Bold.otf') format('otf');
+  src: url('/fonts/TerminaTest-Bold.otf') format('opentype');
 }
 
 @font-face {
   font-family: "NovelaRegular";
-  src: url('/fonts/novela_regular-webfont.woff2') format('woff'), url('/fonts/novel__regular-webfont.woff') format('woff');
+  src: url('/fonts/novela_regular-webfont.woff2') format('woff');
 }
 @font-face {
   font-family: "iCiel-Gotham-Ultra";
-  src: url('/fonts/iCiel-Gotham-Ultra.woff') format('woff'), url('/fonts/iCiel-Gotham-Ultra.woff') format('opentype');
+  src: url('/fonts/iCiel-Gotham-Ultra.woff') format('woff');
 }
 
 @font-face {
   font-family: "Poppins";
-  src: url('/fonts/poppins-extrabold.ttf') format('ttf'), url('/fonts/poppins-extrabold.ttf') format('ttf');
+  src: url('/fonts/poppins-extrabold.ttf') format('ttf'), url('/fonts/poppins-extrabold.ttf');
 }
 @font-face {
   font-family: "Geomanist-Regular";
-  src: url('/fonts/geomanist-regular-webfont.woff2') format('woff'), url('/fonts/geomanist-regular-webfont.wof2') format('woff');
+  src: url('/fonts/geomanist-regular-webfont.woff2') format('woff');
 }
 @font-face {
   font-family: "CeraProRegular";
-  src: url('/fonts/cerapro_regular.woff2') format('woff2'), url('/fonts/cerapro_regular.woff') format('woff');
+  src: url('/fonts/cerapro_regular.woff2') format('woff2');
 }
 
+@font-face {
+  font-family: "NimbusSanL-Reg";
+  src: url('/fonts/nimbus-sans-l.regular.otf') format('opentype');
+}
 @font-face {
   font-family: "CeraProBold";
   src: url('/fonts/cerapro_bold.woff2') format('woff2'), url('/fonts/cerapro_bold.woff') format('woff');
@@ -241,69 +254,19 @@ input:-webkit-autofill {
 }
 
 
-/* html,
-body {
-  background: var(--white);
-  color: var(--black);
- 
-} */
 
-/* .white, a.white {
-  color: var(--white);
+
+.accordion-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.5s ease;
 }
 
-.black, a.black {
-  color: var(--black);
-} */
-
-
-
-.blend {
-  mix-blend-mode: difference !important;
-  color: var(--white);
-  position: relative;
-  z-index: 2;
+.accordion-content.open {
+  max-height: 1000px; 
+  opacity: 1;
 }
-
-.bg-black {
-  background-color: var(--black);
-}
-
-section.hero {
-  background-color: var(--black);
-  border-bottom-right-radius: 15vw;
-  position: relative;
-}
-
-section.hero::before {
-  content: "";
-  background-color: var(--black);
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 15vw;
-  height: 15vw;
-}
-
-section.hero::after {
-  content: "";
-  background-color: var(--white);
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 15vw;
-  height: 15vw;
-  border-top-left-radius: 15vw;
-}
-
-@media screen and (min-width: 1200px) {
-  .hero {
-    height: 75vh;
-  }
-
-
-}
-
 
 
 
@@ -1946,4 +1909,282 @@ img:nth-child(6) {
   height: 80%;
   max-width: 500px;
   overflow: hidden;
+}
+
+.nav_bar {
+  z-index: 999;
+  min-width: 3rem;
+  cursor: pointer;
+  background-color: #fff;
+  border-left: 1px solid rgba(0, 0, 0, .25);
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  position: fixed;
+  top: 0%;
+  bottom: 0%;
+  left: auto;
+  right: 0%;
+}
+
+.nav_trigger {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.nav_icon {
+  width: 1rem;
+  height: 2.1875rem;
+  justify-content: space-between;
+  align-items: stretch;
+  display: flex;
+  overflow: hidden;
+}
+
+.nav_icon-line {
+  width: 1px;
+  height: 100%;
+  perspective-origin: 50% 50%;
+  transform-origin: 50% 50%;
+  background-color: #252525;
+}
+
+.nav_top-logo {
+  justify-content: center;
+  align-items: flex-start;
+  display: flex;
+  position: absolute;
+  top: 2rem;
+  bottom: auto;
+  left: 0%;
+  right: 0%;
+}
+
+.nav_logo-embed {
+  width: 1rem;
+  height: 6.25rem;
+  opacity: 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity .3s;
+  display: flex;
+}
+
+.nav_logo-text {
+  perspective-origin: 0%;
+  transform-origin: 50%;
+  white-space: nowrap;
+  margin-top: 1em;
+  font-family: Reckless, sans-serif;
+  font-style: italic;
+  font-weight: 300;
+  transition: opacity .3s;
+  position: absolute;
+  transform: rotate(90deg);
+}
+
+.nav_logo-text.is-bottom {
+  perspective-origin: 50%;
+  transform-origin: 50%;
+  text-align: right;
+  margin-top: 0;
+  font-style: normal;
+  position: absolute;
+  top: auto;
+  bottom: 0%;
+  left: 0%;
+  right: 0%;
+}
+
+.nav_bottom-progress {
+  justify-content: center;
+  align-items: stretch;
+  display: flex;
+  position: absolute;
+  top: auto;
+  bottom: 2rem;
+  left: 0%;
+  right: 0%;
+  z-index: 997;
+}
+
+.nav_menu_component {
+  z-index: 997;
+  display: none;
+  position: fixed;
+  top: 0%;
+  bottom: 0%;
+  left: 0%;
+  right: 0%;
+}
+
+.nav_menu_close-trigger {
+  z-index: 1;
+  cursor: pointer;
+  background-color: rgba(37, 37, 37, .8);
+  display: block;
+  position: absolute;
+  top: 0%;
+  bottom: 0%;
+  left: 0%;
+  right: 0%;
+}
+
+.nav_menu_wrap {
+  z-index: 2;
+  width: 75%;
+  height: 100%;
+  margin-right: 3rem;
+  position: absolute;
+  top: 0%;
+  bottom: 0%;
+  left: auto;
+  right: 0%;
+}
+
+.nav_menu_list {
+  position: absolute;
+  top: 0%;
+  bottom: 0%;
+  left: 0%;
+  right: 0%;
+}
+
+
+
+
+
+
+/* *{
+	transition: ease 0.2s;
+	box-sizing:border-box;
+	text-rendering: optimizeLegibility;
+}
+
+body{
+	margin:0;
+	padding:0;
+	width:100%;
+	height:auto
+}
+
+
+
+h1, h2, h3, h4{
+	font-family: "freight-big-pro",sans-serif;
+	font-weight: 400;
+	text-align:left;
+}
+
+
+h1.title{
+	text-align:right;
+	font-size:60px;
+	font-style:italic;
+	line-height:0.4em;
+	margin-bottom:10px;
+}
+h1.title span{
+	font-size:120px;
+	font-style:normal;
+	text-transform:UPPERCASE;
+}
+
+
+@media (max-width: 767px) {
+	
+	.lets-begin{
+		right:50px !important;
+	}
+	
+	h1.title{
+		font-size:20px;
+		font-style:italic;
+		line-height:0.4em;
+		margin-bottom:10px;
+	}
+	h1.title span{
+		font-size:50px;
+		font-style:normal;
+		text-transform:UPPERCASE;
+	}
+
+}
+
+@media (min-width: 768px) and (max-width: 1029px) {
+
+	
+}
+
+
+
+
+
+.fixed-header{
+	position:fixed;
+	top:-10px;
+	left:-10px;
+	right:-10px;
+	padding:20px 0 5px 0;
+	display:block;
+	background:white;
+	z-index:100;
+	-webkit-box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
+-moz-box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
+box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
+}
+
+.header-image{
+	max-height:45px;
+}
+
+.hero{
+	height:100vh;
+	width:100%;
+	position:relative;
+}
+
+.border{
+	position:absolute;
+	top:85px;
+	bottom:0;
+	left:20px;
+	right:20px;
+	border-top: 5px solid white;
+	border-left: 5px solid white;
+	border-right: 5px solid white;
+}
+
+.topSection{
+	position:absolute;
+	bottom:44px;
+	right:100px;
+	text-align:right;
+}
+
+
+ */
+
+
+ .project-section {
+  background: #252525;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  overflow: hidden;
+}
+
+.project-section h1 {
+  font-size: 64px;
+  text-transform: uppercase;
+  color: #E8E2D6;
+}
+
+.project-section p {
+  color: #E8E2D6;
+  width: 100%;
 }

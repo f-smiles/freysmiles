@@ -228,7 +228,7 @@ const BookNow = () => {
 
   return (
     <main
-      className="bg-center bg-[#E7E7E7] "
+      className="font-helvetica-now-thin bg-center bg-[#E7E7E7] "
       // style={{
       //   backgroundImage: "url('../images/threecircles.png')",
       //   width: "100%",
@@ -248,7 +248,7 @@ const BookNow = () => {
         }}
       >
         <div className="grid grid-cols-2">
-          <div className="sticky top-0 bg- h-screen items-start ">
+          <div className="sticky top-0  h-screen items-start ">
 
             <div
               className="font-iCiel-Gotham-Ultra text-[140px] mt-40 text-center text-8xl "
@@ -256,7 +256,7 @@ const BookNow = () => {
             >
               SAY 
             </div>
-            <div className="font-iCiel-Gotham-Ultra text-center text-7xl mb-20" ref={containerRef}>
+            <div className="font-iCiel-Gotham-Ultra text-center text-7xl " ref={containerRef}>
       <h1 className="text-[140px] ">
         {['H', 'E', 'L', 'L', 'O'].map((letter, index) => (
           <span key={index} className="text-highlight inline-block relative">
@@ -267,10 +267,17 @@ const BookNow = () => {
         ))}
       </h1>
     </div>
-    <div>CALL</div>
-    <div><img src="../images/threedots.svg"/></div>
-    <div>EMAIL</div>
-    <div>CONNECT</div>
+    <div className="flex flex-col items-start">
+  <div className="text-lg uppercase mr-4 bg-[#2E2A27] text-[#E8E2DA] font-bold font-neue-montreal]" >info@freysmiles.com</div>
+  <div><img className="w-48" src="../images/threedots.svg" alt="Decorative dots" /></div>
+  <div className="text-lg uppercase ml-4 ">(610) 437-4748</div>
+</div>
+
+
+
+
+
+  
     
 {/* 
             <div className="flex justify-evenly items-center w-full -mt-10">
