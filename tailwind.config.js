@@ -24,6 +24,9 @@ module.exports = {
   theme: {
     fontFamily: {
       'cera': "CeraProRegular",
+      'nimbus':"NimbusSanL-Reg",
+      'oakes-medium':"Oakes-Grotesk-Medium",
+      'oakes-regular':"Oakes-Regular",
       'Lato':'Lato',
       'TerminaTest-Bold':"TerminaTest-Bold",
       'iCiel-Gotham-Ultra':"iCiel-Gotham-Ultra",

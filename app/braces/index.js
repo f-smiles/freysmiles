@@ -195,47 +195,36 @@ const toggleAccordion = (index) => {
 };
 
 
-
 useEffect(() => {
   const scrollContainer = document.querySelector("main");
   if (!scrollContainer) {
     console.error("Scroll container not found");
     return;
   }
+  
   const scroll = new LocomotiveScroll({
     el: scrollContainer,
     smooth: true,
     lerp: 0.03
   });
 
-  scroll.on("scroll", (e) => {
 
-    const index = Math.floor(e.scroll.y / window.innerHeight) % colors.length;
-
-
-    const sectionProgress = (e.scroll.y % window.innerHeight) / window.innerHeight;
-
-    const currentColor = colors[index];
-    const nextColor = colors[(index + 1) % colors.length];
-    const interpolatedColor = gsap.utils.interpolate(currentColor, nextColor, sectionProgress);
-
-    scrollContainer.style.backgroundColor = interpolatedColor;
-  });
 
   return () => {
 
-
-    scrollContainer.style.backgroundColor = "";
   };
 }, []);
 
 
 
 
+
   return (
     <>
+    
     <main data-scroll-container >
-  <section className="bg-[#152412] section-0" data-scroll-section>
+
+  <section className="bg-[#cbcacd] section-0" data-scroll-section>
     <h2 data-scroll data-scroll-speed="-2">Damon Brackets</h2>
     <div className="section-0__img-wrapper" data-scroll data-scroll-speed="-2" data-scroll-direction="horizontal">
       <img src="../images/grid.png" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
@@ -295,23 +284,28 @@ useEffect(() => {
       <img src="https://picsum.photos/id/208/1600/1600" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
     </div>
   </section>
-  <div ref={containerRef} className="max-w-7xl mx-auto px-20">
-      <div className="relative">
-        {slides.map((slide, index) => (
-          <div key={index} className="relative py-16 border-b border-gray-200 cursor-pointer slide-item" data-image={slide.imageUrl} onClick={() => toggleAccordion(index)}>
-            <h2 className="font-poppins text-[80px] leading-tight text-black transition-colors duration-200 hover:text-purple-600">
-              {slide.title}
-            </h2>
-            {activeAccordionIndex === index && (
-              <div className="accordion-content">
-                <p>{slide.text}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-      <img ref={imageRef} className="blend-mode-class opacity-0 invisible fixed object-cover h-40 w-auto rounded-lg pointer-events-none will-change-transform md:w-80 md:h-64 sm:w-64 sm:h-40" alt="" />
+  <div className= "flex">
+  <div ref={containerRef} className="w-1/2 ">
+  <div className="relative">
+  {slides.map((slide, index) => (
+    <div key={index} className="relative py-16 border-b border-gray-200 cursor-pointer slide-item" data-image={slide.imageUrl} onClick={() => toggleAccordion(index)}>
+        <div className="font-oakes- text-[40px] leading-tight text-black transition-colors duration-200 hover:text-purple-600">
+            {slide.title}
+        </div>
+        <div className={`accordion-content ${activeAccordionIndex === index ? 'open' : ''}`}>
+            <p>{slide.text}</p>
+        </div>
     </div>
+))}
+
+  </div>
+
+  <img ref={imageRef} className="blend-mode-class fixed object-cover h-30 w-auto rounded-lg pointer-events-none will-change-transform md:w-64 md:h-48 sm:w-64 sm:h-40" alt="" />
+</div>
+<div className="w-1/2 top-0 sticky h-screen">
+<img className="w-1/2 justify-center h-auto" src="../images/beigewavy.png" ></img>
+</div>
+</div>
 </main>
 
     </>
