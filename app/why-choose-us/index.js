@@ -369,44 +369,7 @@ function CTA() {
   const bgTextColor = "#CECED3";
   const fgTextColor = "#161818";
     
-  const buttonRef = useRef(null);
 
-  const textInnerRef = useRef(null);
-  useEffect(() => {
-    const maxDistance = 100;
-
-    const handleMouseMove = e => {
-        const rect = buttonRef.current.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left - rect.width / 2;
-        const mouseY = e.clientY - rect.top - rect.height / 2;
-
-        const angle = Math.atan2(mouseY, mouseX);
-        const distance = Math.min(Math.sqrt(mouseX * mouseX + mouseY * mouseY), maxDistance);
-
-        const x = distance * Math.cos(angle);
-        const y = distance * Math.sin(angle);
-
-        gsap.to(buttonRef.current, {
-            x: x,
-            y: y,
-            ease: 'power1.out',
-            duration: 0.4
-        });
-
-  
-        gsap.to(textInnerRef.current, {
-            scale: 1 - Math.min(distance / maxDistance, 0.1),
-            ease: 'power1.out',
-            duration: 0.4
-        });
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-
-    return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-    };
-}, []);
 
 
   useEffect(() => {
@@ -433,7 +396,32 @@ function CTA() {
  
     return () => split.revert();
   }, []);
+  const btnRef = useRef();
+  const hitRef = useRef();
 
+  useEffect(() => {
+    const btn = btnRef.current;
+    const hit = hitRef.current;
+
+    hit.onpointermove = (e) => {
+      const domPt = new DOMPoint(e.x, e.y);
+      let svgPt = domPt.matrixTransform(btn.getScreenCTM().inverse());
+
+      gsap.timeline({ defaults: { duration: 0.3, ease: 'power3' } })
+        .to('.hit', { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
+        .to('.bg', { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
+        .to('.txt', { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
+        .to('.bg', { attr: { fill: 'rgb(197, 207, 199)' } }, 0)
+        .to('.txt', { attr: { fill: 'rgb(0,0,0)' } }, 0);
+    };
+
+    hit.onpointerleave = (e) => {
+      gsap.timeline({ defaults: { duration: 0.3, ease: 'power2' } })
+        .to('.bg', { attr: { fill: 'rgb(50,50,50)' } }, 0)
+        .to('.txt', { attr: { fill: 'rgb(255,255,255)' } }, 0)
+        .to('.hit, .bg, .txt', { duration: 0.7, ease: 'elastic.out(0.8)', x: 0, y: 0 }, 0);
+    };
+  }, []);
   return (
     <section className="sm:py-32 ">
        <div className=" flex">
@@ -450,15 +438,21 @@ function CTA() {
             the website for details on how to nominate a candidate.
           </h4>
      
-          <a href="https://morethansmiles.org/" target="_blank" rel="noopener noreferrer">
-    <button ref={buttonRef} className="relative cursor-pointer w-40 h-40 p-0 m-4 flex items-center justify-center">
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden border border-black rounded-full"></div>
-        <span className="flex items-center justify-center w-full h-full z-20 text-2xl">
-            <span ref={textInnerRef} className="button__text-inner">LEARN MORE</span>
-        </span>
-    </button>
-</a>
-
+     
+<a href="https://morethansmiles.org/" target="_blank" rel="noopener noreferrer">
+      <svg ref={btnRef} className="w-4/5 h-4/5 max-w-xs cursor-pointer" viewBox="-50 -50 100 100">
+        <circle className="bg" r="22.4" fill="rgb(50,50,50)" />
+        <text 
+          className="txt fill-white text-[5.5px] tracking-[0.2px] text-center" 
+          x="0"
+          y="2" 
+          textAnchor="middle" 
+        >
+          LEARN MORE
+        </text>
+        <circle ref={hitRef} className="hit" r="42" fill="rgba(0,0,0,0)" />
+      </svg>
+    </a>
         </div>
         <Shape03 className="md:w-1/2" />
       </div>
@@ -545,7 +539,7 @@ function ScrollTextReveal() {
       </div>
       <div className="giving-panel_img is-2">
         <div className="giving-panel_img-height">
-          <img src="https://assets.website-files.com/62fede6862a7714e740fe117/62fede6862a77106330fe121_thanks-2bis.0afa6688.webp" loading="eager" alt="" className="giving-panel_photo"/>
+          <img src="../images/wavyborderpatient.png" loading="eager" alt="" className="giving-panel_photo"/>
         </div>
       </div>
       <div className="giving-panel_img is-3">
