@@ -25,7 +25,7 @@ export default function WhyChooseUs() {
       <Hero />
       
       {/* <TextSection /> */}
-      {/* <Gallery /> */}
+
       <StackCards />
       
       <ScrollTextReveal />
@@ -60,70 +60,6 @@ const TextSection = () => {
   );
 };
 
-// const Gallery = () => {
-
-//   useEffect(() => {
-
-//     const bodyStyle = document.body.style;
-//     bodyStyle.margin = '0';
-//     bodyStyle.backgroundColor = '#F6E9D6';
-//     bodyStyle.color = '#000';
-//     bodyStyle.overscrollBehavior = 'none';
-//     bodyStyle.padding = '0';
-//     bodyStyle.overflowX = 'hidden';
-
-//     // Apply GSAP animations to images
-//     const images = document.querySelectorAll('.images img');
-//     images.forEach((image) => {
-//       gsap.to(image, {
-//         yPercent: -20, // Adjust the y offset as needed
-//         scrollTrigger: {
-//           trigger: image,
-//           start: 'top bottom',
-//           end: 'bottom top',
-//           scrub: true
-//         }
-//       });
-//     });
-
-//     ScrollSmoother.create({
-//       wrapper: '#wrapper',
-//       content: '#content',
-//       smooth: 2,
-//       effects: false
-//     });
-
-//     return () => {
-
-//       bodyStyle.margin = '';
-//       bodyStyle.backgroundColor = '';
-//       bodyStyle.color = '';
-//       bodyStyle.overscrollBehavior = '';
-//       bodyStyle.padding = '';
-//       bodyStyle.overflowX = '';
-//     };
-//   }, []);
-//   return (
-//     <>
-//     <h1 class="text">MORE THAN SMILES</h1>
-// <h1 aria-hidden="true" class="text outline-text">MORE THAN SMILES</h1>
-// <h1 aria-hidden="true" class="text filtered-text">MORE THAN SMILES</h1>
-
-//     <div id="wrapper">
-//       <section id="content">
-//         <section className="imagesScrol">
-//           <img data-speed="0.8" src="https://images.pexels.com/photos/1080696/pexels-photo-1080696.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-//           <img data-speed="0.9" src="https://images.pexels.com/photos/827518/pexels-photo-827518.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-//           <img data-speed="1" src="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-//           <img data-speed="1.1" src="https://images.pexels.com/photos/3356416/pexels-photo-3356416.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-//           <img data-speed="0.9" src="https://images.pexels.com/photos/1029803/pexels-photo-1029803.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-//           <img data-speed="1.2" src="https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" />
-//         </section>
-//       </section>
-//     </div>
-//     </>
-//   );
-// };
 
 function Hero() {
   const title = "EXPERTS IN";
@@ -588,14 +524,15 @@ function ScrollTextReveal() {
         </div>
       </div>
       <div className="giving-panel_img is-2">
-        <div className="giving-panel_img-height">
-          <img src="../images/morethansmiles.png" loading="eager" alt="" className="giving-panel_photo"/>
+      <div className="giving-panel_img-height">
+          <img src="../images/morethansmiles3.png" loading="eager" alt="" className="giving-panel_photo"/>
         </div>
       </div>
       <div className="giving-panel_img is-3">
-        <div className="giving-panel_img-height">
-          <img src="../images/morethansmiles3.png" loading="eager" alt="" className="giving-panel_photo"/>
+      <div className="giving-panel_img-height">
+          <img src="../images/hand.jpeg" loading="eager" alt="" className="giving-panel_photo"/>
         </div>
+        
       </div>
     </div>
 
@@ -603,7 +540,7 @@ function ScrollTextReveal() {
       <p className="giving-panel_text">GIVING</p>
       <div className="giving-panel_img is-1">
         <div className="giving-panel_img-height">
-          <img src="https://assets.website-files.com/62fede6862a7714e740fe117/62fede6862a77126a20fe11e_thanks-1bis.a9fa8549.webp" loading="eager" alt="" className="giving-panel_photo"/>
+          <img src="../images/morethansmiles5.png" loading="eager" alt="" className="giving-panel_photo"/>
         </div>
       </div>
       <div className="giving-panel_img is-2">
@@ -613,7 +550,7 @@ function ScrollTextReveal() {
       </div>
       <div className="giving-panel_img is-3">
         <div className="giving-panel_img-height">
-          <img src="https://assets.website-files.com/62fede6862a7714e740fe117/62fede6862a7711c030fe124_thanks-3bis.68c75dbb.webp" loading="eager" alt="" className="giving-panel_photo"/>
+          <img src="../images/morethansmiles4.png" loading="eager" alt="" className="giving-panel_photo"/>
         </div>
       </div>
     </div>
