@@ -221,8 +221,18 @@ useEffect(() => {
 
   return (
     <>
-    
-    <main data-scroll-container >
+    <div className="bg-[#efe6e1]">
+        <div><div className="container is-hero">         <div style={{maxWidth: '100%', textAlign: 'center'}}><p style={{marginBottom: '0.6em', fontSize: '2.2em', lineHeight: '1', fontWeight: '400'}}>
+      DAMON
+    </p><h1 style={{ marginTop: '0px', marginBottom: '0px', fontSize: '7em', lineHeight: '0.8', fontWeight: 700 }}>
+BRACES
+</h1>
+<div style={{width: '26rem', maxWidth: '100%', marginRight: 'auto', marginLeft: 'auto', paddingTop: '1.5rem'}}>
+      <p style={{marginTop: '0px', marginBottom: '0px', fontSize: '0.8rem', lineHeight: '1.4'}}>
+      We're the leading experts and top providers in the area of this passive, self-ligating system.Damon braces use a slide mechanism to hold the archwire, reducing the amount of pressure exerted on the teeth and allowing the teeth to move more freely, quickly, and comfortably.
+      </p>
+    </div></div></div></div>
+    {/* <main data-scroll-container >
 
   <section className="bg-[#cbcacd] section-0" data-scroll-section>
     <h2 data-scroll data-scroll-speed="-2">Damon Brackets</h2>
@@ -306,8 +316,8 @@ useEffect(() => {
 <img className="w-1/2 justify-center h-auto" src="../images/beigewavy.png" ></img>
 </div>
 </div>
-</main>
-
+</main> */}
+</div>
     </>
   );
 };
