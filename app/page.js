@@ -783,13 +783,13 @@ function GSAPAnimateScrollSections() {
             <div className="container">
               <ul>
                 <li
-                  className="font-Lato-Regular font-bold"
+                  className="font-helvetica-neue "
                   id="first-circle"
                   style={{ opacity: 0, filter: "blur(10px)" }}
                 >
                   <figure>
-                    <h3>50+</h3>
-                    <p className="font-Lato-Regular uppercase mt-10 ">
+                    <h3>60+</h3>
+                    <p className="font-poppins uppercase mt-10 ">
                       years of experience
                     </p>
                   </figure>

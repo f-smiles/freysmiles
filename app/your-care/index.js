@@ -745,8 +745,8 @@ const YourCare = () => {
               <div id="pricing" className="bg-[#E1EEEC] flex">
                 <div className="mt-10 container">
                   <div className="gsaptext-container mx-auto">
-                    <p className="font-altero text-center text-6xl">Pricing</p>
-                    <p className="one text-xl">
+                    <p className="font-poppins text-center text-6xl">Pricing</p>
+                    <p className="font-helvetica-neue one text-xl">
                       <span className="highlight"> Taking </span>{" "}
                       <span> the first step </span>
                       <span className="highlight">towards treatment </span>{" "}

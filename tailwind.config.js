@@ -8,7 +8,9 @@ module.exports = {
         '2': '2deg',
         '-2': '-2deg',
         '5': '5deg',
-        '-5': '-deg',
+        '-5': '-5deg',
+        '15': '15deg',
+        '18':'18deg',
         fontFamily: {
           sans: ['Lato', 'sans-serif'],
         },
@@ -24,6 +26,9 @@ module.exports = {
   theme: {
     fontFamily: {
       'cera': "CeraProRegular",
+      "anton":"Anton-Regular",
+      "grandslang":"GrandSlang-Roman",
+      "saol":"SaolDisplay-Regular",
       'helvetica-neue':"HelveticaNeue-Medium",
       'helvetica-neue-light':"HelveticaNeue-Light",
       'monument':"MonumentExtended-Regular",
