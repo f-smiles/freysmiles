@@ -4,9 +4,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
 @font-face {
+  font-family: "GrandSlang-Roman";
+  src: url("/fonts/GrandSlang-Roman.otf")format("opentype"),
+}
+@font-face {
+  font-family: "Anton-Regular";
+  src: url("/fonts/Anton-Regular.ttf")format("truetype"),
+}
+@font-face {
+  font-family: "SaolDisplay-Regular";
+  src: url("https://db.onlinewebfonts.com/t/4c4c08af466e9ad071b6d69cf44093df.woff2")format("woff2"),
+}
+
+@font-face {
   font-family: "MonumentExtended-Regular";
   src: url('/fonts/PPMonumentExtended-Regular.otf') format('opentype') ;
 }
+
+@font-face {
+  font-family: "MonumentExtended-Regular";
+  src: url('/fonts/PPMonumentExtended-Regular.otf') format('opentype') ;
+}
+
 
 @font-face {
   font-family: "HelveticaNeue-Medium";
@@ -90,7 +109,7 @@
   src: url("/fonts/GFSDidot-Regular.ttf") format("ttf");
 }
 @font-face {
-  font-family: "Altero Outline";
+  font-family: "AlteroOutline";
   src: url("/fonts/Altero-Outline.otf") format("opentype");
 }
 
@@ -545,7 +564,7 @@ padding:10px;
   margin-left: -20vw;
   --move-initial: calc(-25% + var(--offset));
   --move-final: calc(-50% + var(--offset));
-  /* font-family: 'TerminaTest-Bold'; */
+  font-family: 'poppins';
 }
 
 .marquee__inner {

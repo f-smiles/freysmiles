@@ -87,12 +87,8 @@ import LocomotiveScroll from 'locomotive-scroll';
 import { gsap, Power3 } from "gsap-trial";
 import Lenis from '@studio-freight/lenis';
 
-const YourCare = () => {
-  const colors = [
-    "hsl(0 , 0% , 20%)",  
-    "hsl(39, 5%, 78%)", 
-    "hsl(260, 3%, 80%)" 
-];
+const Braces = () => {
+
 const [activeAccordionIndex, setActiveAccordionIndex] = useState(null);
 const containerRef = useRef(null);
 const imageRef = useRef(null);
@@ -221,15 +217,15 @@ useEffect(() => {
 
   return (
     <>
-    <div className="bg-[#efe6e1]">
-        <div><div className="container is-hero">         <div style={{maxWidth: '100%', textAlign: 'center'}}><p style={{marginBottom: '0.6em', fontSize: '2.2em', lineHeight: '1', fontWeight: '400'}}>
+    <div className="bg-[#FFFCF8]">
+        <div ><div className="font-poppins container is-hero">         <div style={{maxWidth: '100%', textAlign: 'center'}}><p style={{marginBottom: '0.6em', fontSize: '2.2em', lineHeight: '1', fontWeight: '400'}}>
       DAMON
     </p><h1 style={{ marginTop: '0px', marginBottom: '0px', fontSize: '7em', lineHeight: '0.8', fontWeight: 700 }}>
 BRACES
 </h1>
 <div style={{width: '26rem', maxWidth: '100%', marginRight: 'auto', marginLeft: 'auto', paddingTop: '1.5rem'}}>
-      <p style={{marginTop: '0px', marginBottom: '0px', fontSize: '0.8rem', lineHeight: '1.4'}}>
-      We're the leading experts and top providers in the area of this passive, self-ligating system.Damon braces use a slide mechanism to hold the archwire, reducing the amount of pressure exerted on the teeth and allowing the teeth to move more freely, quickly, and comfortably.
+      <p style={{marginTop: '0px', marginBottom: '0px', fontSize: '0.9rem', lineHeight: '1.4'}}>
+      We're the leading experts and top providers in the area of this passive, self-ligating system. Damon braces use a slide mechanism to hold the archwire, reducing the amount of pressure exerted on the teeth and allowing the teeth to move more freely, quickly, and comfortably.
       </p>
     </div></div></div></div>
     {/* <main data-scroll-container >
@@ -322,4 +318,4 @@ BRACES
   );
 };
 
-export default YourCare;
+export default Braces;
