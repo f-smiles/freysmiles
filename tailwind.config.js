@@ -26,6 +26,7 @@ module.exports = {
   theme: {
     fontFamily: {
       'cera': "CeraProRegular",
+      'horizon':"HorizonSolid",
       "anton":"Anton-Regular",
       "grandslang":"GrandSlang-Roman",
       "saol":"SaolDisplay-Regular",

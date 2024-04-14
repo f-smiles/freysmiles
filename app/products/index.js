@@ -1,7 +1,8 @@
 "use client"
+
 import Link from "next/link"
 import Image from "next/image"
-import { Fragment, useState } from "react"
+import { Fragment, useMemo, useState } from "react"
 import { Menu, Transition } from '@headlessui/react'
 import ChevronDownIcon from "../_components/ui/ChevronDownIcon"
 
@@ -14,8 +15,22 @@ function Banner() {
   const separator = " • ";
   const repeatedText = Array(50).fill(text + separator).join("");
 
+  const letters = [
+    { char: 'S', rotate: 'rotate-12', translateY: 'translate-y-', color: 'text-black' },
+    { char: 'H', rotate: 'rotate-12', translateY: 'translate-y-20', color: 'text-black' },
+    { char: 'O', rotate: 'rotate-6', translateY: 'translate-y-2', color: 'text-black' },
+    { char: 'P', rotate: 'rotate-2', translateY: 'translate-y-20',translateX: 'translate-x-2', color: 'text-black' },
+    
+  ];
+
+  const lettersNow = [
+    { char: 'N', rotate: 'rotate-12', translateY: 'translate-y-1', color: 'text-black' },
+    { char: 'O', rotate: 'rotate-12', translateY: 'translate-y-5', color: 'text-black' },
+    { char: 'W', rotate: 'rotate-6', translateY: 'translate-y-1', color: 'text-black' },
+  ];
   
   return (
+    <div>
     <div className="relative isolate flex justify-center items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5">
       <div
         className="absolute left-[max(-7rem,calc(50%-52rem))] top-1/2 -z-10 -translate-y-1/2 transform-gpu blur-2xl"
@@ -53,6 +68,31 @@ function Banner() {
    
 
     </div>
+     <div className=" flex flex-col items-center justify-center h-screen space-y-8">
+     <div className="font-grandslang flex flex-wrap justify-center items-end">
+       {letters.map((style, index) => (
+         <span
+           key={index}
+           className={`inline-block ${style.rotate} ${style.translateY} ${style.translateX}  ${style.color} mx-1`}
+           style={{ fontSize: '8rem' }} 
+         >
+           {style.char}
+         </span>
+       ))}
+     </div>
+     <div className="font-grandslang flex justify-center items-end">
+       {lettersNow.map((style, index) => (
+         <span
+           key={`now-${index}`} 
+           className={`inline-block ${style.rotate} ${style.translateY} ${style.color}`}
+           style={{ fontSize: '8rem' }} 
+         >
+           {style.char}
+         </span>
+       ))}
+     </div>
+   </div>
+   </div>
   )
 }
 
@@ -82,47 +122,11 @@ export default function ProductsComponent({ products, prices }) {
   }
 
   const sortedProducts = selectedSortOption ? sortProducts(selectedSortOption) : products
-  const letters = [
-    { char: 'S', rotate: 'rotate-12', translateY: 'translate-y-', color: 'text-black' },
-    { char: 'H', rotate: 'rotate-12', translateY: 'translate-y-20', color: 'text-black' },
-    { char: 'O', rotate: 'rotate-6', translateY: 'translate-y-2', color: 'text-black' },
-    { char: 'P', rotate: 'rotate-2', translateY: 'translate-y-20',translateX: 'translate-x-2', color: 'text-black' },
-    
-  ];
 
-  const lettersNow = [
-    { char: 'N', rotate: 'rotate-12', translateY: 'translate-y-1', color: 'text-black' },
-    { char: 'O', rotate: 'rotate-12', translateY: 'translate-y-5', color: 'text-black' },
-    { char: 'W', rotate: 'rotate-6', translateY: 'translate-y-1', color: 'text-black' },
-  ];
-  
   return (
     <div className="bg-[#F8F8F8]">
       <Banner />
-      <div className=" flex flex-col items-center justify-center h-screen space-y-8">
-      <div className="font-grandslang flex flex-wrap justify-center items-end">
-        {letters.map((style, index) => (
-          <span
-            key={index}
-            className={`inline-block ${style.rotate} ${style.translateY} ${style.translateX}  ${style.color} mx-1`}
-            style={{ fontSize: '8rem' }} 
-          >
-            {style.char}
-          </span>
-        ))}
-      </div>
-      <div className="font-grandslang flex justify-center items-end">
-        {lettersNow.map((style, index) => (
-          <span
-            key={`now-${index}`} 
-            className={`inline-block ${style.rotate} ${style.translateY} ${style.color}`}
-            style={{ fontSize: '8rem' }} 
-          >
-            {style.char}
-          </span>
-        ))}
-      </div>
-    </div>
+     
       <section className=" max-w-2xl px-10 mx-auto my-16 mb-32 lg:max-w-7xl">
         <div className="flex items-baseline justify-between w-full pb-4 border-b-2 border-gray-100">
 
@@ -181,6 +185,7 @@ export default function ProductsComponent({ products, prices }) {
                   height="0"
                   sizes="100vw"
                   alt={product.name}
+                  // loading="lazy"
                 />
               </div>
               <div className="flex justify-between mt-4">
