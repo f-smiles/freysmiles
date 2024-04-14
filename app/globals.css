@@ -3,6 +3,15 @@
 @tailwind utilities;
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
+
+@font-face {
+  font-family: "HorizonSolid";
+  src: url("/fonts/horizon.otf")format("opentype"),
+}
+@font-face {
+  font-family: "Horizon";
+  src: url("/fonts/horizon_outlined.otf")format("opentype"),
+}
 @font-face {
   font-family: "GrandSlang-Roman";
   src: url("/fonts/GrandSlang-Roman.otf")format("opentype"),
@@ -408,7 +417,7 @@ input:-webkit-autofill {
   user-select: none;
   pointer-events: none;
   border-radius: 100%;
-  background-color: rgba(95, 43, 146, 0.6);
+  background-color: #000;
   /* background-color: rgba(34, 34, 34, 0.6); */
   /* background-color: rgba(144, 70, 254, 0.6); */
   /* mix-blend-mode: difference; */
@@ -578,7 +587,7 @@ padding:10px;
 }
 
 .marquee__inner span {
-  font-size: 10vw;
+  font-size: 9vw;
   padding: 0 2vw;
   text-transform: uppercase;
 }
@@ -2327,7 +2336,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   -webkit-align-items: flex-start;
   -ms-flex-align: start;
   align-items: flex-start;
-  background-color: #fff;
+  background-color: #F1F1F1;
   -webkit-transform: translate(0%, 0px);
   -ms-transform: translate(0%, 0px);
   transform: translate(0%, 0px);
@@ -2490,3 +2499,88 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   text-align: center;
 }
 
+/* #logoGrid {
+  will-change: transform;
+  transform-origin: center center;
+  transform: scale(0.8); 
+  
+}
+
+
+#locationGallery {
+  will-change: transform;
+  transform-origin: center center; 
+  transform: scale(0.8); 
+}
+
+#locations {
+  will-change: transform;
+  transform-origin: center center; 
+  transform: scale(0.8); 
+} */
+
+
+.maskHeader {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.maskHeader--active {
+  opacity: 1;
+}
+
+.maskHeader__main,
+.maskHeader__hover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.maskHeader__main {
+  color: #000000;
+}
+
+.maskHeader__title {
+  font-size: 7vw;
+  font-weight: 400;
+  line-height: 0.8;
+  letter-spacing: -1px;
+  text-align: center;
+  font-family: 'NimbusSanL-Reg';
+}
+
+.maskHeader__hover {
+  --s: 180px;
+  background-color: #AEA7C7;
+
+  background-size: cover;
+  will-change: mask-image;
+  pointer-events: none;
+  z-index: 3;
+  -webkit-mask-image: radial-gradient(circle at var(--x) var(--y), black var(--s), transparent calc(var(--s) + 1px));
+  mask-image: radial-gradient(circle at var(--x) var(--y), black var(--s), transparent calc(var(--s) + 1px));
+  color: #e6ff00; 
+}
+
+
+.large-text {
+  position: absolute;           
+  bottom: 0;               
+  left: 0;
+  right: 0;
+  height: 50vh;              
+  display: flex;
+  align-items: center;     
+  justify-content: center;  
+  color: white;           
+  z-index: 2;
+}

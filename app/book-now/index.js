@@ -256,7 +256,7 @@ const BookNow = () => {
           <div className="sticky top-0  h-screen items-start ">
 
             <div
-              className="text-[#2E2A27] font-iCiel-Gotham-Ultra text-[140px] mt-40 text-center text-8xl "
+              className="text-[#2E2A27] font-grandslang text-[140px] mt-40 text-center text-8xl "
               style={{ letterSpacing: "px" }}
             >
               SAY 

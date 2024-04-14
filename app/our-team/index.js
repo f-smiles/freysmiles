@@ -443,10 +443,10 @@ const OurTeam = () => {
         
         <div className="grid grid-cols-2 ">
   <div className="flex flex-col items-start justify-center">
-    <div className="font-saol text-[110px] tracking-tight relative z-10">
+    <div className="font-saol text-[80px] tracking-tight relative z-10">
       Meet Our
     </div>
-    <div className="font-grandslang italic text-[100px] tracking-tight relative z-10">
+    <div className="font-grandslang italic text-[90px] tracking-tight relative z-10">
       Doctors
     </div>
   </div>
