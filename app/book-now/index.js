@@ -17,7 +17,7 @@ import { motion, useAnimation } from "framer-motion";
 // init(process.env.REACT_APP_PUBLIC_KEY);
 
 const BookNow = () => {
-  
+
   const controls = useAnimation();
 
   useEffect(() => {
@@ -130,15 +130,22 @@ const BookNow = () => {
       alert("Please enter a valid email address.");
       return;
     }
+
+    const stringifyAppointmentTypes = appointmentType
+    .filter(item => item.clicked)
+    .map(item => item.type)
+
     const templateParams = {
-      patient_name,
-      patient_lastName,
-      guardian_name,
-      phone_number,
-      appointment_types,
+      inputValue,
+      guardianValue,
+      phoneValue,
+      stringifyAppointmentTypes,
       appointment_locations,
-      email,
-      date_of_birth: dateOfBirthRef.current.value,
+      emailValue,
+      typeOfAppointment,
+      appointment_types,
+      birthdayValue,
+      // date_of_birth: dateOfBirthRef.current.value,
       preferred_day,
       preferred_time,
       message,
@@ -210,7 +217,7 @@ const BookNow = () => {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     const container = containerRef.current;
-    const textHider = container.querySelectorAll('.text-hider-fg');  
+    const textHider = container.querySelectorAll('.text-hider-fg');
     const textBg = container.querySelectorAll(".text-highlight-bg");
 
     const tl = gsap.timeline({
@@ -239,9 +246,9 @@ const BookNow = () => {
       //   width: "100%",
       //   backgroundSize: "30%",
       //   backgroundRepeat: "no-repeat",
-      //   backgroundPosition: "left 340px", 
+      //   backgroundPosition: "left 340px",
       // }}
-      
+
     >
       <motion.div
         initial={{ clipPath: `circle(0% at 50% 50%)` }}
@@ -253,60 +260,40 @@ const BookNow = () => {
         }}
       >
         <div className="grid grid-cols-2">
-          
-          <div className="sticky top-0  h-screen items-start ">
+          <div className="sticky top-0 items-start h-screen ">
 
             <div
               className="text-[#2E2A27] font-grandslang text-[140px] mt-40 text-center text-8xl "
               style={{ letterSpacing: "px" }}
             >
-              SAY 
+              SAY
             </div>
-            <div className="font-iCiel-Gotham-Ultra text-center text-7xl " ref={containerRef}>
+            <div className="text-center font-iCiel-Gotham-Ultra text-7xl " ref={containerRef}>
       <h1 className="text-[140px] text-[#2E2A27] ">
         {['H', 'E', 'L', 'L', 'O'].map((letter, index) => (
-          <span key={index} className="text-highlight inline-block relative">
-            <span className="text-hider-fg absolute inset-0"></span>
+          <span key={index} className="relative inline-block text-highlight">
+            <span className="absolute inset-0 text-hider-fg"></span>
             {letter}
-            <span className="text-highlight-bg absolute inset-0"></span>
+            <span className="absolute inset-0 text-highlight-bg"></span>
           </span>
         ))}
       </h1>
     </div>
-    <div className="container flex justify-center items-center h-32px w-32px ">
-      {[...Array(1)].map((_, index) => (
-        <div key={index} className="moon">
-          <div className="light"></div>
-          <div className="texture"></div>
-          <div className="sphere"></div>
-        </div>
-      ))}
-    </div>
-    <div >
-
-
-    <div className="flex items-center justify-center w-full">
-        <div className="containermarquee border border-black rounded-full p-5">
-          <p className="text-md font-cera"> 
-          <a href="facetime://6104374748" className="hover:underline">
-          (610) 437-4748
-        </a>     <span className="inline-block transform rotate-45 mx-2" style={{ width: '8px', height: '8px', backgroundColor: '#000' }}></span>
-         <a href="mailto:info@freysmiles.com" className="hover:underline">
-          info@freysmiles.com
-        </a></p>
-        </div>
-      </div>
+    <div className="flex flex-col items-start">
+  <div className="text-lg uppercase mr-4 bg-[#2E2A27] text-[#E8E2DA] font-bold font-neue-montreal]" >info@freysmiles.com</div>
+  <div><img className="w-48" src="../images/threedots.svg" alt="Decorative dots" /></div>
+  <div className="ml-4 text-lg uppercase ">(610) 437-4748</div>
 </div>
 
 
 
 
 
-  
-    
-{/* 
-            <div className="flex justify-evenly items-center w-full -mt-10">
-              <div className="font-CeraProBold text-xl text-center">
+
+
+{/*
+            <div className="flex items-center w-full -mt-10 justify-evenly">
+              <div className="text-xl text-center font-CeraProBold">
                 <a
                   className="hover:text-purple-500"
                   href="mailto:info@freysmiles.com"
@@ -314,7 +301,7 @@ const BookNow = () => {
                   • info@freysmiles.com
                 </a>
               </div>
-              <div className="font-CeraProBold text-lg text-center">
+              <div className="text-lg text-center font-CeraProBold">
                 <a
                   href="facetime://6104374748"
                   className="hover:text-purple-500"
@@ -322,14 +309,14 @@ const BookNow = () => {
                   • (610) 437-4748
                 </a>
               </div>
-              <div className="text-center text-xl">
+              <div className="text-xl text-center">
                 <div className="bg-body-bg text-blog-bg py-1.5 overflow-hidden whitespace-nowrap">
                   <div className="animate-marquee">
                     <a
                       href="https://www.instagram.com/freysmiles/"
                       className="hover:text-purple-500"
                     >
-                      <span className="font-CeraProBold mx-4">
+                      <span className="mx-4 font-CeraProBold">
                         •@freysmiles
                       </span>
                     </a>
@@ -337,7 +324,7 @@ const BookNow = () => {
                 </div>
               </div>
             </div> */}
-            <div className="flex justify-center items-center h-screen ">
+            <div className="flex items-center justify-center h-screen ">
               <div className="w-1/5 max-w-xs">
                 <svg
                   ref={svgRef}
@@ -372,8 +359,7 @@ const BookNow = () => {
               </div>
             </div>
           </div>
-
-          <div className=" overflow-y-auto ">
+          <div className="overflow-y-auto ">
             <div id="contact-form">
               {emailSent ? (
                 <span className={emailSent ? "block" : "hidden"}>
@@ -382,7 +368,7 @@ const BookNow = () => {
               ) : (
                 <form
                   onSubmit={handleSubmit}
-                  className="  max-w-screen-sm mx-auto flex flex-col space-y-12 p-8 "
+                  className="flex flex-col max-w-screen-sm p-8 mx-auto space-y-12 "
                 >
                   <div className="flex flex-col items-center">
                     <div className="flex w-full gap-2">
@@ -393,18 +379,18 @@ const BookNow = () => {
         placeholder=""
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+        className="w-full px-3 py-2 placeholder-gray-400 bg-transparent border-none focus:outline-none focus:ring-0 sm:text-sm"
       />
       {!inputValue && (
         <label
           htmlFor="nameInput"
-          className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+          className="absolute text-sm text-gray-700 pointer-events-none left-3 top-2 font-CeraProBold"
         >
           Your Name
         </label>
       )}
     </div>
-    <div className="relative  w-1/2">
+    <div className="relative w-1/2">
     <div className="relative w-full border-b border-black" data-te-datepicker-init>
       <input
         id="dateInput"
@@ -413,12 +399,12 @@ const BookNow = () => {
         value={birthdayValue}
         onChange={(e) => setBirthdayValue(e.target.value)}
         // ref={dateInputRef}
-        className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+        className="w-full px-3 py-2 placeholder-gray-400 bg-transparent border-none focus:outline-none focus:ring-0 sm:text-sm"
       />
       {!birthdayValue && (
         <label
           htmlFor="dateInput"
-          className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+          className="absolute text-sm text-gray-700 pointer-events-none left-3 top-2 font-CeraProBold"
         >
           Birthday
         </label>
@@ -442,7 +428,7 @@ const BookNow = () => {
                       </div> */}
                     </div>
 
-                    <div className="relative mt-10 w-full">
+                    <div className="relative w-full mt-10">
                     <div className="relative w-full border-b border-black">
   <input
     id="guardianInput"
@@ -450,12 +436,12 @@ const BookNow = () => {
     placeholder=""
     value={guardianValue}
     onChange={(e) => setGuardianValue(e.target.value)}
-    className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+    className="w-full px-3 py-2 placeholder-gray-400 bg-transparent border-none focus:outline-none focus:ring-0 sm:text-sm"
   />
   {!guardianValue && (
     <label
       htmlFor="guardianInput"
-      className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+      className="absolute text-sm text-gray-700 pointer-events-none left-3 top-2 font-CeraProBold"
     >
       Guardian *if applicable
     </label>
@@ -463,8 +449,8 @@ const BookNow = () => {
 </div>
                     </div>
 
-                    <div className="mt-5 w-full flex gap-2">
-                      <div className="w-1/2 relative flex-1 py-4">
+                    <div className="flex w-full gap-2 mt-5">
+                      <div className="relative flex-1 w-1/2 py-4">
                       <div className="relative w-full border-b border-black">
   <input
     id="phoneInput"
@@ -472,12 +458,12 @@ const BookNow = () => {
     placeholder=""
     value={phoneValue}
     onChange={(e) => setPhoneValue(e.target.value)}
-    className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+    className="w-full px-3 py-2 placeholder-gray-400 bg-transparent border-none focus:outline-none focus:ring-0 sm:text-sm"
   />
   {!phoneValue && (
     <label
       htmlFor="phoneInput"
-      className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+      className="absolute text-sm text-gray-700 pointer-events-none left-3 top-2 font-CeraProBold"
     >
       Phone
     </label>
@@ -486,20 +472,20 @@ const BookNow = () => {
 
                       </div>
 
-                      <div className="w-1/2 relative flex-1 py-4">
+                      <div className="relative flex-1 w-1/2 py-4">
                       <div className="relative w-full border-b border-black">
   <input
     id="emailInput"
-    type="email"  
+    type="email"
     placeholder=""
     value={emailValue}
     onChange={(e) => setEmailValue(e.target.value)}
-    className="w-full px-3 py-2 bg-transparent border-none placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+    className="w-full px-3 py-2 placeholder-gray-400 bg-transparent border-none focus:outline-none focus:ring-0 sm:text-sm"
   />
   {!emailValue && (
     <label
       htmlFor="emailInput"
-      className="absolute left-3 top-2 font-CeraProBold text-sm text-gray-700 pointer-events-none"
+      className="absolute text-sm text-gray-700 pointer-events-none left-3 top-2 font-CeraProBold"
     >
       Email
     </label>
@@ -509,9 +495,9 @@ const BookNow = () => {
                       </div>
                     </div>
                   </div>
-               
+
                   {/* <div
-                    className="my-4 relative mb-3"
+                    className="relative my-4 mb-3"
                     data-te-datepicker-init
                     data-te-input-wrapper-init
                   >
@@ -558,8 +544,8 @@ const BookNow = () => {
 
                   {typeOfAppointment === "inPerson" && (
                     <div>
-                      
-                      <div className="font-CeraProBold px-4 pt-4 pb-2 text-sm grid grid-cols-2 gap-4">
+
+                      <div className="grid grid-cols-2 gap-4 px-4 pt-4 pb-2 text-sm font-CeraProBold">
   {locations.map((button, index) => (
     <button
       className="flex items-center space-x-2"
@@ -569,7 +555,7 @@ const BookNow = () => {
     >
       <span className="relative w-10 h-10 border border-black">
         {button.clicked && (
-          <span className="absolute inset-1/4 bg-black w-1/2 h-1/2"></span>
+          <span className="absolute w-1/2 bg-black inset-1/4 h-1/2"></span>
         )}
       </span>
       <span className="text-gray-700">{button.location}</span>
@@ -581,10 +567,10 @@ const BookNow = () => {
 
                     </div>
                   )}
-                  <div className="font-CeraProBold grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4 font-CeraProBold">
                     {appointmentType.map((button, index) => (
                       <button
-                      type="button"  
+                      type="button"
                         className={`w-44 h-14 px-6 py-2 ${
                           button.clicked
                             ? "bg-black text-white"
@@ -594,15 +580,15 @@ const BookNow = () => {
                         onClick={() => handleAppointmentClick(index)}
                       >
                         {button.type}
-                        <span className="appointmentBtnBg absolute top-0 left-0 w-0 h-0 bg-blue-600  z-0 transition-all duration-400"></span>{" "}
-                  
+                        <span className="absolute top-0 left-0 z-0 w-0 h-0 transition-all bg-blue-600 appointmentBtnBg duration-400"></span>{" "}
+
                       </button>
                     ))}
                   </div>
 
-                  <div className="font-CeraProBold flex justify-center flex-col">
+                  <div className="flex flex-col justify-center font-CeraProBold">
                     Preferred Day(s):
-                    <div className="flex flex-wrap justify-start py-4 gap-4 ml-4">
+                    <div className="flex flex-wrap justify-start gap-4 py-4 ml-4">
                       {days.map((button, index) => (
                         <button
                           key={button.day}
@@ -619,9 +605,9 @@ const BookNow = () => {
                       ))}
                     </div>
                   </div>
-                  <div className="font-CeraProBold py-2 space-x-4">
+                  <div className="py-2 space-x-4 font-CeraProBold">
                     Preferred Time(s):
-                    <div className="font-CeraProBold flex flex-wrap justify-start py-4 gap-4 ml-4">
+                    <div className="flex flex-wrap justify-start gap-4 py-4 ml-4 font-CeraProBold">
                       {times.map((button, index) => (
                         <button
                           key={button.time}
@@ -639,30 +625,30 @@ const BookNow = () => {
                     </div>
                   </div>
 
-                  <div className="border-2 border-black h-32 flex flex-col">
+                  <div className="flex flex-col h-32 border-2 border-black">
                     <label className="flex flex-col h-full">
                       <textarea
                         placeholder="Please include as much detail as possible"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        className="font-CeraProBold h-full bg-transparent italic text-blue-600"
+                        className="h-full italic text-blue-600 bg-transparent font-CeraProBold"
                       ></textarea>
                     </label>
-                  </div>            
-  <div className="flex justify-center items-center">
-    <div className="intro mt-8">
+                  </div>
+  <div className="flex items-center justify-center">
+    <div className="mt-8 intro">
       <button
         ref={btnRef}
         onClick={handleSubmit}
-        className="btn relative px-12 py-4 border border-black max-w-max -mt-3 flex items-center justify-center overflow-hidden font-bold cursor-crosshair"
+        className="relative flex items-center justify-center px-12 py-4 -mt-3 overflow-hidden font-bold border border-black btn max-w-max cursor-crosshair"
       >
-        <span className="span-fill absolute bottom-0 left-0 right-0 bg-black h-full transition-transform duration-700 ease-out transform translate-y-full"></span>
-        <span className="text-content z-10 relative">Send Message</span> 
+        <span className="absolute bottom-0 left-0 right-0 h-full transition-transform duration-700 ease-out transform translate-y-full bg-black span-fill"></span>
+        <span className="relative z-10 text-content">Send Message</span>
         <div className="z-10" style={{ transform: "rotate(-90deg)" }}>
           {[...Array(2)].map((_, index) => (
             <svg
               key={index}
-              className="arrow absolute w-full h-full"
+              className="absolute w-full h-full arrow"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
             >
@@ -676,9 +662,9 @@ const BookNow = () => {
   <style>
     {`
       .btn:hover .span-fill {
-        transform: translateY(0); 
+        transform: translateY(0);
       }
-      .btn:hover .text-content { 
+      .btn:hover .text-content {
         color: white;
       }
     `}
@@ -686,22 +672,22 @@ const BookNow = () => {
 
 
 
-                  {/* <div className="uppercase text-gray-500 font-CeraProBold flex justify-center">
+                  {/* <div className="flex justify-center text-gray-500 uppercase font-CeraProBold">
              <button
-  className="relative px-8 py-4 border border-black max-w-max -mt-3 flex items-center justify-center overflow-hidden"
+  className="relative flex items-center justify-center px-8 py-4 -mt-3 overflow-hidden border border-black max-w-max"
   type="submit"
   onClick={handleSubmit}
 >
-  <span className="absolute inset-0 bg-white transform translate-y-full transition-transform duration-700 ease-out" />
+  <span className="absolute inset-0 transition-transform duration-700 ease-out transform translate-y-full bg-white" />
   Send Message
   <div
-    className="inline-block top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 overflow-hidden"
+    className="inline-block w-6 h-6 overflow-hidden transform -translate-x-1/2 -translate-y-1/2 top-full left-1/2"
     style={{ transform: "rotate(-90deg)" }}
   >
     {[...Array(2)].map((_, index) => (
       <svg
         key={index}
-        className="arrow absolute w-full h-full"
+        className="absolute w-full h-full arrow"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 512 512"
       >
