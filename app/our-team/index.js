@@ -443,17 +443,17 @@ const OurTeam = () => {
         
         <div className="grid grid-cols-2 ">
   <div className="flex flex-col items-start justify-center">
-    <h1 className="font-poppins text-[90px] tracking-tight relative z-10">
+    <div className="font-saol text-[80px] tracking-tight relative z-10">
       Meet Our
-    </h1>
-    <div className="font-poppins italic text-[90px] tracking-tight relative z-10">
+    </div>
+    <div className="font-grandslang italic text-[90px] tracking-tight relative z-10">
       Doctors
     </div>
   </div>
   <div className="flex items-center">
     <div className="w-24 h-px bg-gray-700 "></div>
     <span className="text-[13px] block w-3/5 ml-4">
-      Our experience spans over 50 years, a testament to the precision, accuracy, and relevance of our vision, demonstrating our ability to adapt to the ever-changing nature of the public relations industry.
+      Our experience spans over 50 years, a testament to the precision, accuracy, and relevance of our vision, demonstrating our ability to adapt to the ever-changing nature of our industry.
     </span>
   </div>
 </div>
@@ -480,7 +480,7 @@ const OurTeam = () => {
                 >
                   <ArrowLeftIcon className="text-stone-600 w-5 h-5" />
                 </button>
-                <span className="text-stone-600 font-poppins">
+                <span className="text-stone-600">
                   0{!switchDoctor ? index : index + 1} / 02
                 </span>
                 <button

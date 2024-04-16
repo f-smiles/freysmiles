@@ -41,7 +41,11 @@ function SingleProductCarousel({ product }) {
       {imagesLoaded && (
         <>
           <Swiper
+                effect="fade" 
+                fadeEffect={{ crossFade: true }} 
+           speed={600} 
             style={{
+
               '--swiper-navigation-color': '#999999',
               '--swiper-navigation-size': '30px',
             }}
@@ -160,44 +164,46 @@ export default function ProductComponent({ product }) {
       <div className="grid w-full grid-cols-1 px-10 space-y-10 md:space-y-0 md:px-0 md:grid-cols-2 md:gap-12 lg:px-6">
         <section id="product" className="md:order-last">
           <div id="product-details" className="space-y-2">
-            <h4 className="tracking-tight capitalize font-cera">{product.name}</h4>
-            <h3 className="mb-4 tracking-tight font-cera text-primary-50">${product.price}</h3>
-            <p className="pt-8 border-t border-gray-300">{product.description}</p>
+            <h4 className="font-cera-bold text-2xl tracking-tight capitalize">{product.name}</h4>
+            <h3 className="mb-4 tracking-tight font-cera text-[#2E3192]">${product.price}</h3>
+            <p className="text-sm font-helvetica-neue pt-8 border-t border-gray-300">{product.description}</p>
           </div>
 
           {/* controls */}
           <div className="flex flex-col gap-8 my-6 lg:items-center lg:flex-row lg:justify-between">
-            <span className="flex items-center group text-primary-50">
-              <p className="mr-2 text-gray-700">Quantity:</p>
-              <button
-                onClick={handleDecrement}
-                type="button"
-                className={`${
-                  quantity > 1
-                    ? "hover:bg-primary-50 hover:text-white"
-                    : "text-gray-300"
-                  } p-2 transition-colors duration-150 ease-linear border rounded-tl rounded-bl border-primary-50`}
-                disabled={quantity === 1}
-              >
-                <MinusIcon className="w-6 h-6" />
-              </button>
-              <span className="px-4 py-2 text-gray-700 border-t border-b border-primary-50">{quantity}</span>
-              <button
-                onClick={handleIncrement}
-                type="button"
-                className="p-2 transition-colors duration-150 ease-linear border rounded-tr rounded-br border-primary-50 hover:bg-primary-50 hover:text-white"
-              >
-                <PlusIcon className="w-6 h-6" />
-              </button>
-            </span>
-            <button
-              onClick={handleAddToBag}
-              type="button"
-              className="px-5 py-4 text-sm text-white uppercase transition-colors duration-300 rounded bg-primary-50 hover:bg-primary-30"
-            >
-              Add To Bag
-            </button>
-          </div>
+  <div className="flex items-center border-2 border-[#2E3192] ">
+    <button
+      onClick={handleDecrement}
+      type="button"
+      className={`${
+        quantity > 1
+          ? "hover:bg-primary-50 hover:text-white"
+          : "text-gray-300"
+        } p-2 transition-colors duration-150 ease-linear rounded-l-lg`}
+      disabled={quantity === 1}
+    >
+      <MinusIcon className="w-6 h-6 text-[#2E3192]" />
+    </button>
+    <span className="px-4 py-2 text-[#2E3192]">
+      {quantity}
+    </span>
+    <button
+      onClick={handleIncrement}
+      type="button"
+      className="p-2 transition-colors duration-150 ease-linear rounded-r-lg hover:bg-primary-50 hover:text-white"
+    >
+      <PlusIcon className="w-6 h-6 text-[#2E3192]" />
+    </button>
+  </div>
+  <button
+    onClick={handleAddToBag}
+    type="button"
+    className="font-helvetica-neue px-5 py-4 text-sm text-white uppercase transition-colors duration-300 font-bold bg-[#2E3192] hover:bg-primary-30"
+  >
+    Add To Bag
+  </button>
+</div>
+
         </section>
         <section id="image-carousel">
           <SingleProductCarousel product={product} />

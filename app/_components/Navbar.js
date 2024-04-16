@@ -135,7 +135,7 @@ export default function Navbar() {
         <div className="custom-navbar-cursor" />
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out bg-white rounded-full shadow-md shadow-zinc-300 hover:bg-primary-50/60 active:bg-primary-50/80">
+            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out    active:bg-primary-50/80">
 
               <Link href="/" className="inline-block p-4">
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
@@ -527,13 +527,13 @@ export default function Navbar() {
             </Transition.Root>
 
 						<li
-              className="px-6 py-3 transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-500 bg-primary-30 hover:bg-secondary-50/60 active:bg-secondary-50/80"
+              className="px-6 py-3 transition duration-300 ease-in-out  hover:bg-secondary-50/60 active:bg-secondary-50/80"
               // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
             >
               <Link href="/book-now"
                 className="inline-block"
               >
-                <p className="text-sm font-medium tracking-wider text-center uppercase text-primary-95 hover:text-secondary-95">Book Now</p>
+                <p className="text-sm font-medium tracking-wider text-center uppercase hover:text-secondary-95">Book Now</p>
                 {/* Book Now */}
 
               </Link>

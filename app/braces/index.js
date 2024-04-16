@@ -87,12 +87,8 @@ import LocomotiveScroll from 'locomotive-scroll';
 import { gsap, Power3 } from "gsap-trial";
 import Lenis from '@studio-freight/lenis';
 
-const YourCare = () => {
-  const colors = [
-    "hsl(0 , 0% , 20%)",  
-    "hsl(39, 5%, 78%)", 
-    "hsl(260, 3%, 80%)" 
-];
+const Braces = () => {
+
 const [activeAccordionIndex, setActiveAccordionIndex] = useState(null);
 const containerRef = useRef(null);
 const imageRef = useRef(null);
@@ -195,47 +191,46 @@ const toggleAccordion = (index) => {
 };
 
 
-
 useEffect(() => {
   const scrollContainer = document.querySelector("main");
   if (!scrollContainer) {
     console.error("Scroll container not found");
     return;
   }
+  
   const scroll = new LocomotiveScroll({
     el: scrollContainer,
     smooth: true,
     lerp: 0.03
   });
 
-  scroll.on("scroll", (e) => {
 
-    const index = Math.floor(e.scroll.y / window.innerHeight) % colors.length;
-
-
-    const sectionProgress = (e.scroll.y % window.innerHeight) / window.innerHeight;
-
-    const currentColor = colors[index];
-    const nextColor = colors[(index + 1) % colors.length];
-    const interpolatedColor = gsap.utils.interpolate(currentColor, nextColor, sectionProgress);
-
-    scrollContainer.style.backgroundColor = interpolatedColor;
-  });
 
   return () => {
 
-
-    scrollContainer.style.backgroundColor = "";
   };
 }, []);
 
 
 
 
+
   return (
     <>
-    <main data-scroll-container >
-  <section className="bg-[#152412] section-0" data-scroll-section>
+    <div className="bg-[#FFFCF8]">
+        <div ><div className="font-poppins container is-hero">         <div style={{maxWidth: '100%', textAlign: 'center'}}><p style={{marginBottom: '0.6em', fontSize: '2.2em', lineHeight: '1', fontWeight: '400'}}>
+      DAMON
+    </p><h1 style={{ marginTop: '0px', marginBottom: '0px', fontSize: '7em', lineHeight: '0.8', fontWeight: 700 }}>
+BRACES
+</h1>
+<div style={{width: '26rem', maxWidth: '100%', marginRight: 'auto', marginLeft: 'auto', paddingTop: '1.5rem'}}>
+      <p style={{marginTop: '0px', marginBottom: '0px', fontSize: '0.9rem', lineHeight: '1.4'}}>
+      We're the leading experts and top providers in the area of this passive, self-ligating system. Damon braces use a slide mechanism to hold the archwire, reducing the amount of pressure exerted on the teeth and allowing the teeth to move more freely, quickly, and comfortably.
+      </p>
+    </div></div></div></div>
+    {/* <main data-scroll-container >
+
+  <section className="bg-[#cbcacd] section-0" data-scroll-section>
     <h2 data-scroll data-scroll-speed="-2">Damon Brackets</h2>
     <div className="section-0__img-wrapper" data-scroll data-scroll-speed="-2" data-scroll-direction="horizontal">
       <img src="../images/grid.png" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
@@ -295,27 +290,32 @@ useEffect(() => {
       <img src="https://picsum.photos/id/208/1600/1600" alt="" data-scroll data-scroll-speed="0.75" data-scroll-direction="horizontal" />
     </div>
   </section>
-  <div ref={containerRef} className="max-w-7xl mx-auto px-20">
-      <div className="relative">
-        {slides.map((slide, index) => (
-          <div key={index} className="relative py-16 border-b border-gray-200 cursor-pointer slide-item" data-image={slide.imageUrl} onClick={() => toggleAccordion(index)}>
-            <h2 className="font-poppins text-[80px] leading-tight text-black transition-colors duration-200 hover:text-purple-600">
-              {slide.title}
-            </h2>
-            {activeAccordionIndex === index && (
-              <div className="accordion-content">
-                <p>{slide.text}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-      <img ref={imageRef} className="blend-mode-class opacity-0 invisible fixed object-cover h-40 w-auto rounded-lg pointer-events-none will-change-transform md:w-80 md:h-64 sm:w-64 sm:h-40" alt="" />
+  <div className= "flex">
+  <div ref={containerRef} className="w-1/2 ">
+  <div className="relative">
+  {slides.map((slide, index) => (
+    <div key={index} className="relative py-16 border-b border-gray-200 cursor-pointer slide-item" data-image={slide.imageUrl} onClick={() => toggleAccordion(index)}>
+        <div className="font-oakes- text-[40px] leading-tight text-black transition-colors duration-200 hover:text-purple-600">
+            {slide.title}
+        </div>
+        <div className={`accordion-content ${activeAccordionIndex === index ? 'open' : ''}`}>
+            <p>{slide.text}</p>
+        </div>
     </div>
-</main>
+))}
 
+  </div>
+
+  <img ref={imageRef} className="blend-mode-class fixed object-cover h-30 w-auto rounded-lg pointer-events-none will-change-transform md:w-64 md:h-48 sm:w-64 sm:h-40" alt="" />
+</div>
+<div className="w-1/2 top-0 sticky h-screen">
+<img className="w-1/2 justify-center h-auto" src="../images/beigewavy.png" ></img>
+</div>
+</div>
+</main> */}
+</div>
     </>
   );
 };
 
-export default YourCare;
+export default Braces;
