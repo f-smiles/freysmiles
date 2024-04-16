@@ -1,7 +1,7 @@
 "use client";
 import Matter from "matter-js";
 import Link from "next/link";
-import { useRef, useEffect, useLayoutEffect, useState } from "react";
+import { useRef, useEffect, useLayoutEffect, useState, useCallback } from "react";
 import LocomotiveScroll from "locomotive-scroll";
 // gsap
 import gsap from "gsap";
@@ -22,7 +22,15 @@ import { Disclosure, Transition } from "@headlessui/react";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 import MapPin from "./_components/ui/MapPin";
 import { SplitText } from "gsap-trial/all";
+import SwiperCore, { Navigation } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+SwiperCore.use([Navigation]);
+
 gsap.registerPlugin(ScrollTrigger);
+
 
 export default function LandingComponent() {
   // const [backgroundColor, setBackgroundColor] = useState("transparent");
@@ -156,7 +164,7 @@ tlLocations.fromTo(locations,
 gsap.set(locations, { clearProps: "transform" });
   return (
     <>
-      <div className="bg-[#E5DDDE]"
+      <div className="bg-[#E5DDDE] bg-[#E0D175]"
       // style={{ backgroundColor }}
       >
         <LogoHeader />
@@ -171,12 +179,12 @@ gsap.set(locations, { clearProps: "transform" });
 <div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
     <LogoGrid />
 </div>
-<div className="bg-[#20282D] sticky top-0 z-1" id="locationGallery">
+<div className=" bg-[#F1F1F1]  sticky top-0 z-1" id="locationGallery">
 <ParallaxOutline />
 
 </div>
 
-<div className="bg-[#E0D175] z-4 relative" id="locations">
+<div className="bg-[#20282D] z-4 relative" id="locations">
     <Locations />
 </div>
         <GiftCards />
@@ -468,6 +476,7 @@ function Hero() {
 
   return (
     <section className="mt-6 relative">
+      
       <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate lg:px-8">
         <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
@@ -498,7 +507,7 @@ function Hero() {
                         <span>Is</span>
                         <span>Unique</span>
                       </div>
-                      <div className=" marquee__inner second">
+                      <div className="marquee__inner second">
                         <span>Because</span>
                         <span>Every</span>
                         <span>Smile</span>
@@ -630,10 +639,13 @@ function Mask(){
       headerRef.current.style.setProperty('--x', `${mousePosition.x}px`);
       headerRef.current.style.setProperty('--y', `${mousePosition.y}px`);
   }, [mousePosition]);
-  return(
-    <div>
 
-    <div className="maskHeader">
+
+  return(
+    <div >
+  
+
+    <div className=" maskHeader">
     <div ref={headerRef} >
        <div className="maskHeader__main">
            <div className="maskHeader__content">
@@ -652,9 +664,14 @@ INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
        </div>
    </div>
    </div>
-   <div className="flex flex-wrap w-[80vw] h-[70vh] mx-auto">
+   {/* <div className="bg-[#292929] min-h-screen min-w-full flex justify-center items-center">
+        <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
+<div style={{ backgroundImage: 'url("../images/bauhauspattern.svg")', objectFit: 'contain', backgroundRepeat: 'no-repeat', backgroundSize: 'contain', backgroundPosition: 'center' }} className="bg-[#E6E7E9] h-full w-full"></div>
+
+
+        <div className=" flex flex-wrap w-[80vw] h-[70vh] mx-auto">
   <div className="w-full md:w-1/2">
-    <div style={{ backgroundImage: 'url("../images/bauhaus.png")' }} className="bg-[#E6E7E9] rounded-l-full h-full"></div>
+    <div style={{ backgroundImage: 'url("../images/bauhauspattern.svg")' }} className="bg-[#E6E7E9] rounded-l-full h-full"></div>
   </div>
   <div className="w-full md:w-1/2 relative">
     <div className="bg-[#E6E7E9] h-full"></div>
@@ -663,6 +680,9 @@ INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
     </div>
   </div>
 </div>
+        </div>
+      </div> */}
+  
 
    </div>
   )
@@ -868,27 +888,27 @@ function GSAPAnimateScrollSections() {
     <>
 
       <section className="relative home-main">
+   
+
         <div className="home-main__content">
-          <div>
-            <div className="container"></div>
-          </div>
+     
           <div className="home-main__content-sphere">
             <div className="container">
               <ul>
                 <li
-                  className="font-helvetica-neue "
+                  className="font-grandslang "
                   id="first-circle"
                   style={{ opacity: 0, filter: "blur(10px)" }}
                 >
                   <figure>
                     <h3>60+</h3>
-                    <p className="font-poppins uppercase mt-10 ">
+                    <p className="font-didot mt-10 ">
                       years of experience
                     </p>
                   </figure>
                 </li>
                 <li
-                  className="font-neue-montreal font-bold"
+                  className=" font-bold"
                   id="middle-circle"
                   style={{ boxShadow: "inset 0 0 300px #fff" }}
                 >
@@ -896,8 +916,8 @@ function GSAPAnimateScrollSections() {
                     id="figure2"
                     style={{ opacity: 0, filter: "blur(10px)" }}
                   >
-                    <h3 className="font-Lato font-bold">25k</h3>
-                    <p className="font-Lato mt-10 uppercase tracking-wide">
+                    <h3 className="font-grandslang  font-bold">25k</h3>
+                    <p className="font-didot  mt-10 tracking-wide">
                       patients
                     </p>
                   </figure>
@@ -908,8 +928,8 @@ function GSAPAnimateScrollSections() {
                   style={{ opacity: 0, filter: "blur(10px)" }}
                 >
                   <figure>
-                    <h3 className="font-neue-montreal font-bold">4</h3>
-                    <p className="mt-10 font-helvetica-now-thin tracking-wide">
+                    <h3 className="font-grandslang  font-bold">4</h3>
+                    <p className="mt-10 font-didot tracking-wide">
                       unique locations
                     </p>
                   </figure>
@@ -922,8 +942,8 @@ function GSAPAnimateScrollSections() {
             </div>
           </div>
         </div>
-        <div className="large-text">
-      <h2 className="text-[400px]">ABOUT</h2>
+        <div className="font-horizon large-text">
+      <h2 className="text-[300px]">ABOUT</h2>
     </div>
       </section>
 
@@ -1035,7 +1055,7 @@ function GSAPAnimateScrollSections() {
               margin-bottom: 15px;
             }
             .home-main__content-sphere ul li figure p {
-              font-size: 20px;
+              font-size: 30px;
               line-height: 24px;
               max-width: 277px;
             }
@@ -1048,7 +1068,7 @@ function GSAPAnimateScrollSections() {
             }
             .home-main__content-sphere-desc p {
               display: block;
-              font-size: 20px;
+              font-size: 40px;
               line-height: 30px;
               margin: 0 auto 27px;
               max-width: 724px;
@@ -1113,6 +1133,51 @@ function GSAPAnimateScrollSections() {
     //     ))}
     // </section>
   );
+}
+
+const HorizontalGrid =() =>{
+  return(
+    <div className="relative">
+<div class="containerH">
+ 
+  <div class="content-wrapper">
+  
+    <div class="childCon">
+      <h1>CSS-only horizontal scroll tentative</h1>
+      <p>The idea is to create an horizontal scroll layout and to allow the user to scroll up/down the mouse to scroll left/right.</p>
+      <p>So… please scroll <strong>down</strong> with your mouse.</p>
+    </div>
+
+    <div class="childCon">
+      <h2>The trick</h2>
+      <p>Rotate -90deg the container, and 90deg its children blocks.</p>
+      <p>You have to fix container and children dimensions. :(</p>
+      <p>See CSS for rather correct positioning.</p>
+    </div>
+
+    <div class="childCon">
+      <h2>Desktop browsers</h2>
+      <p>Vertical scroll… scrolls. :)</p>
+      <p>But horizontal scroll (e.g. with a trackpad) doesn’t. :(</p>
+    </div>
+
+    <div class="childCon">
+      <h2>Mobile browsers</h2>
+      <p>Only horizontal touchmove works on Chrome. :)</p>
+      <p>Only vertical touchmove works on Safari and Firefox.</p>
+    </div>
+
+
+    <div class="childCon">
+      <h2>Conclusion</h2>
+      <p>Without JavaScript: no good idea.</p>
+    </div>
+
+  </div>
+  
+</div>
+</div>
+  )
 }
 
 const ImageGrid = () => {
@@ -1194,10 +1259,10 @@ const ImageGrid = () => {
           "-=0.75"
         );
 
-      const scroll = new LocomotiveScroll({
-        el: bodyRef.current,
-        smooth: true,
-      });
+      // const scroll = new LocomotiveScroll({
+      //   el: bodyRef.current,
+      //   smooth: true,
+      // });
 
       setTimeout(() => {
         scroll.update();
@@ -1229,9 +1294,13 @@ const ImageGrid = () => {
     },
   ];
 
+
+ 
   return (
+    <div>
+
     <div
-      ref={bodyRef}
+  
       className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white"
     >
       <div
@@ -1265,6 +1334,7 @@ const ImageGrid = () => {
           </a>
         ))}
       </div>
+    </div>
     </div>
   );
 };
@@ -1312,10 +1382,12 @@ const ParallaxOutline = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen ">
-      <div className="flex justify-center uppercase tracking tracking-widest">
+    <div>
+    <div className="flex pt-10 justify-center uppercase tracking tracking-widest">
         Testimonials
       </div>
+    <div className="flex flex-col items-center justify-center h-screen ">
+  
       <div className="relative flex items-center">
         <div className="absolute right-0 top-0 z-20 flex">
           <button
@@ -1323,14 +1395,18 @@ const ParallaxOutline = () => {
             className="p-4"
             aria-label="Previous"
           >
-            ←
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z" fill="white"/>
+        </svg>
           </button>
           <button
             onClick={() => scroll("right")}
             className="p-4 "
             aria-label="Next"
           >
-            →
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z" fill="white"/>
+        </svg>
           </button>
         </div>
         <div className="relative flex items-center justify-center">
@@ -1344,11 +1420,11 @@ const ParallaxOutline = () => {
               style={{
                 height: "500px",
                 backgroundImage:
-                  "linear-gradient(to right, #B5A289,#A6AF9F, #92B9AB)",
+                  "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
               }}
             >
               <div className="flex flex-col justify-center items-center mx-[7vw] ">
-                <p className="text-2xl text-center">
+                <p className="font-helvetica-now-thin text-[24px] text-center">
                   You will receive top notch orthodontic care at Frey Smiles.
                   Dr. Frey and his entire staff make every visit a pleasure. It
                   is apparent at each appointment that Dr. Frey truly cares
@@ -1356,7 +1432,7 @@ const ParallaxOutline = () => {
                   husband, and they all have beautiful smiles! I highly
                   recommend!
                 </p>
-                <p className="text-center">Lisa Moyer</p>
+                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Lisa Moyer</p>
               </div>
             </div>
             <div
@@ -1367,15 +1443,15 @@ const ParallaxOutline = () => {
                   "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0",
               }}
             >
-              <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                <p className="text-2xl text-center">
+              <div className=" flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                <p className="font-helvetica-now-thin text-[24px] text-center">
                   My experience at FreySmiles has been amazing! I recently just
                   completed my Invisalign and my teeth look perfect! Dr. Frey
                   truly cares about his patients and the staff are always
                   friendly, as well as always accommodating to my schedule.
                   They're the best around!
                 </p>
-                <p className="text-center">Kailee</p>
+                <p className="font-helvetica-now-thin text-[20px] mt-10  text-center">Kailee</p>
               </div>
             </div>
             <div
@@ -1388,7 +1464,7 @@ const ParallaxOutline = () => {
             >
               <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
                 <p className="text-2xl text-center">
-                  <h1 className="font-sans font-normal text-[24px] uppercase relative overflow-hidden">
+                  <h1 className="font-helvetica-now-thin font-normal text-[24px] relative overflow-hidden">
                     I had an open bite and misaligned teeth most of my life. Dr
                     Frey fixed it and in record time. 1 1/2 yrs with
                     Invisalign’s. Highly recommended! Friendly staff and easy to
@@ -1397,7 +1473,7 @@ const ParallaxOutline = () => {
          
                   </h1>
                 </p>
-                <p className="text-center">Karen Oneill</p>
+                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Karen Oneill</p>
               </div>
             </div>
             <div
@@ -1408,13 +1484,13 @@ const ParallaxOutline = () => {
               }}
             >
               <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                <h1 className="text-2xl text-center">
+                <h1 className="font-helvetica-now-thin text-[24px] text-center">
                   Dr. Frey was my orthodontist when I was 11 years old, Im now
                   42. I still talk about how amazing he was and the great work
                   he did with my teeth. Thank you so much for giving the most
                   beautiful smile!
                 </h1>
-                <p className="text-center">Tanya Burnhauser</p>
+                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Tanya Burnhauser</p>
               </div>
             </div>
           </div>
@@ -1446,6 +1522,7 @@ const ParallaxOutline = () => {
 </div>
 
     </div> */}
+    </div>
     </div>
   );
 };
@@ -1685,7 +1762,7 @@ const LogoGrid = () => {
         </div>
 
         <div className="flex items-center justify-center flex-col">
-          <div className=" font-bold text-8xl uppercase">
+          <div className="font-poppins font-bold text-8xl uppercase">
             Awards & Recognition
           </div>
           <div class="mt-10 flex items-center">
@@ -1729,6 +1806,7 @@ const LogoGrid = () => {
 
 function LocationGallery() {
 
+
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
@@ -1753,8 +1831,86 @@ function LocationGallery() {
         });
     });
   }, []);
+  
   return (
-    <div>
+
+    <div className="bg-[#161818]">
+      <section className="sliderMainPage-projects">
+  <div className="sliderMainPage-container w-dyn-list">
+  <div role="list" className="sliderMainPage-wrapper mainProjects w-dyn-items" style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '20px' }}>
+      {/* First Project Item (Odd) */}
+      <div role="listitem" className="sliderMainPage-item sliderMainPage-projectItem" style={{ gridColumn: '1 / 3', gridRow: '1', marginTop: '100px' }}>
+        <div className="sliderMainPage-labelGroup">
+          <div className="sliderMainPage-textSmall sliderMainPage-label text-white">01 — 01</div>
+        </div>
+        <div className="sliderMainPage-imageContainer">
+        <video
+  autoPlay
+  loop
+  muted
+  style={{
+    width: '100%',
+    height: '200px',
+    objectFit: 'cover' 
+  }}
+  className="sliderMainPage-images sliderMainPage-projectImage">
+  <source
+    src="../images/invisalignglowup.mp4"
+    type="video/mp4"
+  />
+  Your browser does not support the video tag.
+</video>
+
+        </div>
+        <div className="sliderMainPage-descr">
+          <div className="sliderMainPage-text">2023</div>
+          <div className="sliderMainPage-info">
+            <div className="sliderMainPage-text">Real estate — Chyrnaya Rechka, 41</div>
+
+          </div>
+        </div>
+      </div>
+      
+      {/* Second Project Item (Even) */}
+      <div role="listitem" className="sliderMainPage-item sliderMainPage-projectItem" style={{ gridColumn: '5 / -1', gridRow: '1', marginLeft: '1.3vw' }}>
+        <div className="sliderMainPage-labelGroup">
+          <div className="sliderMainPage-textSmall sliderMainPage-label text-white">02 — 02</div>
+        </div>
+        <div className="sliderMainPage-imageContainer">
+          <img 
+            src="../images/sch.png" 
+            loading="lazy" 
+            alt="Brand identity concept, Vladivostok" 
+            className="sliderMainPage-images sliderMainPage-projectImage" 
+            style={{ width: '100%', height: '450px', objectFit: 'cover' }}
+          />
+        </div>
+        <div className="sliderMainPage-descr">
+          <div className="sliderMainPage-text text-white">est. 2023</div>
+          <div className="sliderMainPage-info">
+            <div className="sliderMainPage-text text-white">Schnecksville</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="flex justify-start items-center mt-4 space-x-4">
+      <button id="next" className="sliderMainPage-buttonRight">
+        {/* SVG Right Arrow */}
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z" fill="white"/>
+        </svg>
+      </button>
+      <button id="prev" className="sliderMainPage-buttonLeft">
+        {/* SVG Left Arrow */}
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z" fill="white"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
       <div
         className="container"
         style={{

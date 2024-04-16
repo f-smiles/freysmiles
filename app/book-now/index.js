@@ -253,6 +253,7 @@ const BookNow = () => {
         }}
       >
         <div className="grid grid-cols-2">
+          
           <div className="sticky top-0  h-screen items-start ">
 
             <div
@@ -272,10 +273,29 @@ const BookNow = () => {
         ))}
       </h1>
     </div>
-    <div className="flex flex-col items-start">
-  <div className="text-lg uppercase mr-4 bg-[#2E2A27] text-[#E8E2DA] font-bold font-neue-montreal]" >info@freysmiles.com</div>
-  <div><img className="w-48" src="../images/threedots.svg" alt="Decorative dots" /></div>
-  <div className="text-lg uppercase ml-4 ">(610) 437-4748</div>
+    <div className="container flex justify-center items-center h-32px w-32px ">
+      {[...Array(1)].map((_, index) => (
+        <div key={index} className="moon">
+          <div className="light"></div>
+          <div className="texture"></div>
+          <div className="sphere"></div>
+        </div>
+      ))}
+    </div>
+    <div >
+
+
+    <div className="flex items-center justify-center w-full">
+        <div className="containermarquee border border-black rounded-full p-5">
+          <p className="text-md font-cera"> 
+          <a href="facetime://6104374748" className="hover:underline">
+          (610) 437-4748
+        </a>     <span className="inline-block transform rotate-45 mx-2" style={{ width: '8px', height: '8px', backgroundColor: '#000' }}></span>
+         <a href="mailto:info@freysmiles.com" className="hover:underline">
+          info@freysmiles.com
+        </a></p>
+        </div>
+      </div>
 </div>
 
 
@@ -352,6 +372,7 @@ const BookNow = () => {
               </div>
             </div>
           </div>
+
           <div className=" overflow-y-auto ">
             <div id="contact-form">
               {emailSent ? (
