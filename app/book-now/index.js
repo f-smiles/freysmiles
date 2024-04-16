@@ -226,9 +226,14 @@ const BookNow = () => {
       .to(textBg, { scaleX: 0, ease: "power4.easeOut", duration: 0.5, transformOrigin: "100% 0%", delay: .5 });
   }, []);
 
+  const btnRef = useRef(null);
+
+
+
+
   return (
     <main
-      className="bg-center bg-[#E7E7E7] "
+      className="font-helvetica-now-thin bg-center bg-[#E7E7E7] "
       // style={{
       //   backgroundImage: "url('../images/threecircles.png')",
       //   width: "100%",
@@ -248,16 +253,16 @@ const BookNow = () => {
         }}
       >
         <div className="grid grid-cols-2">
-          <div className="sticky top-0 bg- h-screen items-start ">
+          <div className="sticky top-0  h-screen items-start ">
 
             <div
-              className="font-iCiel-Gotham-Ultra text-[140px] mt-40 text-center text-8xl "
+              className="text-[#2E2A27] font-grandslang text-[140px] mt-40 text-center text-8xl "
               style={{ letterSpacing: "px" }}
             >
               SAY 
             </div>
-            <div className="font-iCiel-Gotham-Ultra text-center text-7xl mb-20" ref={containerRef}>
-      <h1 className="text-[140px] ">
+            <div className="font-iCiel-Gotham-Ultra text-center text-7xl " ref={containerRef}>
+      <h1 className="text-[140px] text-[#2E2A27] ">
         {['H', 'E', 'L', 'L', 'O'].map((letter, index) => (
           <span key={index} className="text-highlight inline-block relative">
             <span className="text-hider-fg absolute inset-0"></span>
@@ -267,10 +272,17 @@ const BookNow = () => {
         ))}
       </h1>
     </div>
-    <div>CALL</div>
-    <div><img src="../images/threedots.svg"/></div>
-    <div>EMAIL</div>
-    <div>CONNECT</div>
+    <div className="flex flex-col items-start">
+  <div className="text-lg uppercase mr-4 bg-[#2E2A27] text-[#E8E2DA] font-bold font-neue-montreal]" >info@freysmiles.com</div>
+  <div><img className="w-48" src="../images/threedots.svg" alt="Decorative dots" /></div>
+  <div className="text-lg uppercase ml-4 ">(610) 437-4748</div>
+</div>
+
+
+
+
+
+  
     
 {/* 
             <div className="flex justify-evenly items-center w-full -mt-10">
@@ -615,32 +627,70 @@ const BookNow = () => {
                         className="font-CeraProBold h-full bg-transparent italic text-blue-600"
                       ></textarea>
                     </label>
-                  </div>
+                  </div>            
+  <div className="flex justify-center items-center">
+    <div className="intro mt-8">
+      <button
+        ref={btnRef}
+        onClick={handleSubmit}
+        className="btn relative px-12 py-4 border border-black max-w-max -mt-3 flex items-center justify-center overflow-hidden font-bold cursor-crosshair"
+      >
+        <span className="span-fill absolute bottom-0 left-0 right-0 bg-black h-full transition-transform duration-700 ease-out transform translate-y-full"></span>
+        <span className="text-content z-10 relative">Send Message</span> 
+        <div className="z-10" style={{ transform: "rotate(-90deg)" }}>
+          {[...Array(2)].map((_, index) => (
+            <svg
+              key={index}
+              className="arrow absolute w-full h-full"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+            >
+              <path d="M383.6 322.7 278.6 423c-5.8 6-13.7 9-22.4 9s-16.5-3-22.4-9L128.4 322.7a29.6 29.6 0 0 1 0-43.2 33 33 0 0 1 45.2 0l50.4 48.2v-217a31.3 31.3 0 0 1 32-30.6c17.7 0 32 13.7 32 30.6v217l50.4-48.2 a33 33 0 0 1 45.2 0 29.6 29.6 0 0 1 0 43.2z" />
+            </svg>
+          ))}
+        </div>
+      </button>
+    </div>
+  </div>
+  <style>
+    {`
+      .btn:hover .span-fill {
+        transform: translateY(0); 
+      }
+      .btn:hover .text-content { 
+        color: white;
+      }
+    `}
+  </style>
 
-                  <div className="uppercase text-gray-500 font-CeraProBold flex justify-center">
-                    <button
-                      className="relative  px-8 py-4 border border-black max-w-max -mt-3 flex items-center justify-center"
-                      type="submit"
-                      onClick={handleSubmit}
-                    >
-                      Send Message
-                      <div
-                        className="inline-block top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 overflow-hidden"
-                        style={{ transform: "rotate(-90deg)" }}
-                      >
-                        {[...Array(2)].map((_, index) => (
-                          <svg
-                            key={index}
-                            className="arrow inline-block top-0 left-0 w-full h-full"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                          >
-                            <path d="M383.6 322.7 278.6 423c-5.8 6-13.7 9-22.4 9s-16.5-3-22.4-9L128.4 322.7a29.6 29.6 0 0 1 0-43.2 33 33 0 0 1 45.2 0l50.4 48.2v-217a31.3 31.3 0 0 1 32-30.6c17.7 0 32 13.7 32 30.6v217l50.4-48.2a33 33 0 0 1 45.2 0 29.6 29.6 0 0 1 0 43.2z" />
-                          </svg>
-                        ))}
-                      </div>
-                    </button>
-                  </div>
+
+
+                  {/* <div className="uppercase text-gray-500 font-CeraProBold flex justify-center">
+             <button
+  className="relative px-8 py-4 border border-black max-w-max -mt-3 flex items-center justify-center overflow-hidden"
+  type="submit"
+  onClick={handleSubmit}
+>
+  <span className="absolute inset-0 bg-white transform translate-y-full transition-transform duration-700 ease-out" />
+  Send Message
+  <div
+    className="inline-block top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 overflow-hidden"
+    style={{ transform: "rotate(-90deg)" }}
+  >
+    {[...Array(2)].map((_, index) => (
+      <svg
+        key={index}
+        className="arrow absolute w-full h-full"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 512 512"
+      >
+        <path d="M383.6 322.7 278.6 423c-5.8 6-13.7 9-22.4 9s-16.5-3-22.4-9L128.4 322.7a29.6 29.6 0 0 1 0-43.2 33 33 0 0 1 45.2 0l50.4 48.2v-217a31.3 31.3 0 0 1 32-30.6c17.7 0 32 13.7 32 30.6v217l50.4-48.2a33 33 0 0 1 45.2 0 29.6 29.6 0 0 1 0 43.2z" />
+      </svg>
+    ))}
+  </div>
+</button>
+
+                  </div> */}
                 </form>
               )}
             </div>

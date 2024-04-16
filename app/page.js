@@ -25,94 +25,160 @@ import { SplitText } from "gsap-trial/all";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function LandingComponent() {
-  const [backgroundColor, setBackgroundColor] = useState("transparent");
-  useEffect(() => {
-    setBackgroundColor("rgb(223,190,196)");
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const transitionStart = 40;
-      const transitionEnd =
-        document.documentElement.scrollHeight - window.innerHeight;
+  // const [backgroundColor, setBackgroundColor] = useState("transparent");
+  // useEffect(() => {
+  //   setBackgroundColor("rgb(223,190,196)");
+  //   const handleScroll = () => {
+  //     const scrollPosition = window.scrollY;
+  //     const transitionStart = 40;
+  //     const transitionEnd =
+  //       document.documentElement.scrollHeight - window.innerHeight;
 
-      const colorTransitions = [
-        {
-          start: transitionStart,
-          end: transitionEnd * 0.25,
-          colorStart: [223, 190, 196],
-          colorEnd: [255, 197, 184],
-        },
-        {
-          start: transitionEnd * 0.25,
-          end: transitionEnd * 0.5,
-          colorStart: [255, 197, 184],
-          colorEnd: [216, 191, 215],
-        },
-        {
-          start: transitionEnd * 0.5,
-          end: transitionEnd * 0.75,
-          colorStart: [216, 191, 215],
-          colorEnd: [241, 239, 235],
-        },
-        {
-          start: transitionEnd * 0.75,
-          end: transitionEnd,
-          colorStart: [241, 239, 235],
-          colorEnd: [241, 239, 234],
-        },
-      ];
+  //     const colorTransitions = [
+  //       {
+  //         start: transitionStart,
+  //         end: transitionEnd * 0.25,
+  //         colorStart: [223, 190, 196],
+  //         colorEnd: [255, 197, 184],
+  //       },
+  //       {
+  //         start: transitionEnd * 0.25,
+  //         end: transitionEnd * 0.5,
+  //         colorStart: [255, 197, 184],
+  //         colorEnd: [216, 191, 215],
+  //       },
+  //       {
+  //         start: transitionEnd * 0.5,
+  //         end: transitionEnd * 0.75,
+  //         colorStart: [216, 191, 215],
+  //         colorEnd: [241, 239, 235],
+  //       },
+  //       {
+  //         start: transitionEnd * 0.75,
+  //         end: transitionEnd,
+  //         colorStart: [241, 239, 235],
+  //         colorEnd: [241, 239, 234],
+  //       },
+  //     ];
 
-      const currentTransition = colorTransitions.find((transition) => {
-        return (
-          scrollPosition >= transition.start && scrollPosition < transition.end
-        );
-      });
+  //     const currentTransition = colorTransitions.find((transition) => {
+  //       return (
+  //         scrollPosition >= transition.start && scrollPosition < transition.end
+  //       );
+  //     });
 
-      if (currentTransition) {
-        const progress =
-          (scrollPosition - currentTransition.start) /
-          (currentTransition.end - currentTransition.start);
-        const scrollPercentage = Math.min(1, Math.max(0, progress));
+  //     if (currentTransition) {
+  //       const progress =
+  //         (scrollPosition - currentTransition.start) /
+  //         (currentTransition.end - currentTransition.start);
+  //       const scrollPercentage = Math.min(1, Math.max(0, progress));
 
-        const interpolatedColor = currentTransition.colorStart.map(
-          (start, i) => {
-            const end = currentTransition.colorEnd[i];
-            return Math.round(start + (end - start) * scrollPercentage);
-          }
-        );
+  //       const interpolatedColor = currentTransition.colorStart.map(
+  //         (start, i) => {
+  //           const end = currentTransition.colorEnd[i];
+  //           return Math.round(start + (end - start) * scrollPercentage);
+  //         }
+  //       );
 
-        setBackgroundColor(`rgb(${interpolatedColor.join(",")})`);
-      }
-    };
+  //       setBackgroundColor(`rgb(${interpolatedColor.join(",")})`);
+  //     }
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
+  //   window.addEventListener("scroll", handleScroll);
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, []);
 
   const { scrollYProgress } = useScroll();
+  gsap.registerPlugin(ScrollTrigger);
 
+  const logoGrid = document.getElementById('logoGrid'); 
+  
+
+  let initialScale = 0.8; 
+  let maxScale = 1;    
+  
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: logoGrid,               
+      start: "top bottom",           
+      end: "bottom bottom",        
+      scrub: 0.8,
+
+      onLeaveBack: () => gsap.set(logoGrid, { clearProps: "transform" }),
+    }
+  });
+  
+
+  tl.fromTo(logoGrid, 
+    { scale: initialScale }, 
+    { scale: maxScale, ease: "power1.out" } 
+  );
+  
+
+  gsap.set(logoGrid, { clearProps: "transform" });
+  const locationGallery = document.getElementById('locationGallery'); 
+const tlLocationGallery = gsap.timeline({
+  scrollTrigger: {
+    trigger: locationGallery,
+    start: "top bottom",
+    end: "bottom bottom",
+    scrub: 0.8,
+    onLeaveBack: () => gsap.set(locationGallery, { clearProps: "transform" }),
+  }
+});
+
+tlLocationGallery.fromTo(locationGallery, 
+  { scale: 0.8 }, 
+  { scale: maxScale, ease: "power1.out" } 
+);
+
+gsap.set(locationGallery, { clearProps: "transform" });
+  
+const locations = document.getElementById('locations'); 
+const tlLocations = gsap.timeline({
+  scrollTrigger: {
+    trigger: locations,
+    start: "top bottom",
+    end: "bottom bottom",
+    scrub: 0.8,
+    onLeaveBack: () => gsap.set(locations, { clearProps: "transform" }),
+  }
+});
+
+tlLocations.fromTo(locations, 
+  { scale: 0.8 }, 
+{ scale: maxScale, ease: "power1.out" } 
+);
+
+gsap.set(locations, { clearProps: "transform" });
   return (
     <>
-      <div style={{ backgroundColor }}>
+      <div className="bg-[#E5DDDE]"
+      // style={{ backgroundColor }}
+      >
         <LogoHeader />
         <Hero />
+        <Mask />
         <GSAPAnimateScrollSections />
         <ImageGrid />
 
         <div className="sticky top-0 z-2">
-          <ParallaxOutline />
-        </div>
-        <div className="sticky bg-[#D8BFD7] top-0 h-screen z-3">
-          <LogoGrid />
-        </div>
-        <div className="bg-[#20282D] sticky top-0 z-1">
-          <LocationGallery />
-        </div>
-        <div className="bg-[#E0D175] z-4 relative">
-          <Locations />
-        </div>
+        <LocationGallery />
+</div>
+<div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
+    <LogoGrid />
+</div>
+<div className="bg-[#20282D] sticky top-0 z-1" id="locationGallery">
+<ParallaxOutline />
+
+</div>
+
+<div className="bg-[#E0D175] z-4 relative" id="locations">
+    <Locations />
+</div>
         <GiftCards />
       </div>
     </>
@@ -506,6 +572,101 @@ function Hero() {
   );
 }
 
+function Mask(){
+
+  const headerRef = useRef(null);
+  
+  const [mousePosition, setMousePosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+
+  useEffect(() => {
+   
+      const timer = (duration, interval, from, to, minStep, callback) => {
+          let value = from;
+          const forward = from < to;
+          const range = Math.abs(to - from);
+          const steps = duration / interval;
+          const step = range / steps;
+          let last = from;
+
+          const handle = setInterval(() => {
+              value += step * (forward ? 1 : -1);
+              if (forward ? value > to : value < to) {
+                  value = to;
+                  clearInterval(handle);
+              }
+              if (!minStep || !handle || Math.abs(last - value) >= minStep) {
+                  last = value;
+                  callback(value, from, to);
+              }
+          }, interval);
+          return handle;
+      };
+
+
+      const loading = () => {
+          headerRef.current.classList.add('header--active');
+          setTimeout(() => {
+              timer(450, 20, 0, 300, 1, (value) => {
+                  headerRef.current.style.setProperty('--s', `${Math.floor(value)}px`);
+              });
+          }, 800);
+      };
+
+      loading();
+
+
+      const updateCoordinates = (e) => {
+          setMousePosition({ x: e.clientX, y: e.clientY });
+      };
+
+      document.addEventListener('mousemove', updateCoordinates);
+
+      return () => {
+          document.removeEventListener('mousemove', updateCoordinates);
+      };
+  }, []);
+
+  useEffect(() => {
+      headerRef.current.style.setProperty('--x', `${mousePosition.x}px`);
+      headerRef.current.style.setProperty('--y', `${mousePosition.y}px`);
+  }, [mousePosition]);
+  return(
+    <div>
+
+    <div className="maskHeader">
+    <div ref={headerRef} >
+       <div className="maskHeader__main">
+           <div className="maskHeader__content">
+               <h1 className="maskHeader__title">
+                   We are your go-to provider for advanced and discerning orthodontic care.
+               </h1>
+           </div>
+       </div>
+       <div className="maskHeader__hover">
+           <div className="maskHeader__content">
+               <h1 className="maskHeader__title">
+INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
+INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
+               </h1>
+           </div>
+       </div>
+   </div>
+   </div>
+   <div className="flex flex-wrap w-[80vw] h-[70vh] mx-auto">
+  <div className="w-full md:w-1/2">
+    <div style={{ backgroundImage: 'url("../images/bauhaus.png")' }} className="bg-[#E6E7E9] rounded-l-full h-full"></div>
+  </div>
+  <div className="w-full md:w-1/2 relative">
+    <div className="bg-[#E6E7E9] h-full"></div>
+    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center"> 
+      <p className="text-center text-xl font-bold">LEARN MORE</p>
+    </div>
+  </div>
+</div>
+
+   </div>
+  )
+}
 function GSAPAnimateScrollSections() {
   // const listRef = useRef(null);
 
@@ -702,79 +863,11 @@ function GSAPAnimateScrollSections() {
     };
   }, []);
 
-  const headingRef = useRef(null);
-  useEffect(() => {
-    const chars = headingRef.current.querySelectorAll(".char");
-    const middleIndex = chars.length / 2;
-
-    chars.forEach((char, index) => {
-      const distanceFromMiddle = Math.abs(index - middleIndex);
-
-      const staggerDelay = (middleIndex - distanceFromMiddle) * 0.06;
-
-      gsap.set(char, { perspective: 2000 });
-
-      gsap.fromTo(
-        char,
-        {
-          "will-change": "opacity, transform",
-          opacity: 0,
-          y: -40 * distanceFromMiddle,
-          z: gsap.utils.random(-1500, -600),
-          rotationX: gsap.utils.random(-500, -200),
-        },
-        {
-          ease: "power1.inOut",
-          opacity: 1,
-          y: 0,
-          z: 0,
-          rotationX: 0,
-          delay: staggerDelay,
-          scrollTrigger: {
-            trigger: char,
-            start: "top bottom",
-            end: "top top+=15%",
-            scrub: true,
-          },
-        }
-      );
-    });
-  }, []);
-
-  const splitText = (text) => {
-    return text.split(" ").map((word, index) => (
-      <div key={index} className="word" style={{ display: "block" }}>
-        {word.split("").map((char, charIndex) => (
-          <span
-            key={charIndex}
-            className="char"
-            style={{ display: "inline-block" }}
-          >
-            {char}
-          </span>
-        ))}
-      </div>
-    ));
-  };
 
   return (
     <>
-      <header className="header-section">
-        <div className="flex items-center justify-between">
-          <div className="w-1/3"></div>
-        </div>
-      </header>
-      <section className="home-hero">
-        <div className="home-hero__content">
-          <div className="container">
-            <h1 className="text-[160px]" ref={headingRef}>
-              {splitText("The highest standards")}
-            </h1>
-          </div>
-        </div>
-      </section>
 
-      <section className="home-main">
+      <section className="relative home-main">
         <div className="home-main__content">
           <div>
             <div className="container"></div>
@@ -783,13 +876,13 @@ function GSAPAnimateScrollSections() {
             <div className="container">
               <ul>
                 <li
-                  className="font-Lato-Regular font-bold"
+                  className="font-helvetica-neue "
                   id="first-circle"
                   style={{ opacity: 0, filter: "blur(10px)" }}
                 >
                   <figure>
-                    <h3>50+</h3>
-                    <p className="font-Lato-Regular uppercase mt-10 ">
+                    <h3>60+</h3>
+                    <p className="font-poppins uppercase mt-10 ">
                       years of experience
                     </p>
                   </figure>
@@ -829,6 +922,9 @@ function GSAPAnimateScrollSections() {
             </div>
           </div>
         </div>
+        <div className="large-text">
+      <h2 className="text-[400px]">ABOUT</h2>
+    </div>
       </section>
 
       <style>
