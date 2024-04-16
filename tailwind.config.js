@@ -25,8 +25,10 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
+      'aileron':"Aileron-Black",
       'cera': "CeraProRegular",
       'horizon':"HorizonSolid",
+      'horizonOutline':"HorizonOutline",
       "anton":"Anton-Regular",
       "grandslang":"GrandSlang-Roman",
       "saol":"SaolDisplay-Regular",
@@ -106,6 +108,10 @@ module.exports = {
           98: '#fff8f8',
           99: '#fffbff',
           100: '#ffffff',
+          'custom-seafoam': '#c2d6d6',
+          'custom-green': '#bccdcdv',
+          'custom-seafoam-green':"#c0d3d3"
+          
         },
       },
       keyframes: {

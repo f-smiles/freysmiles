@@ -76,8 +76,24 @@ export default function CurvyTimeline() {
 
     return () => clearTimeout(initialTimer);
   }, []);
+  // useEffect(() => {
+  //   gsap.registerPlugin(ScrollTrigger);
 
+  //   const path = document.querySelector('#stroke');
+  //   const pathLength = path.getTotalLength();
+  //   gsap.set("#stroke", { strokeDasharray: pathLength, strokeDashoffset: pathLength });
 
+  //   gsap.to("#stroke", {
+  //     strokeDashoffset: 0, 
+  //     ease: "none",
+  //     scrollTrigger: {
+  //       trigger: "#page",
+  //       start: "top top", 
+  //       end: "bottom bottom", 
+  //       scrub: 1 
+  //     }
+  //   });
+  // }, []);
 
   return (
     <div 
@@ -91,6 +107,7 @@ export default function CurvyTimeline() {
               <li key={i} className="c-shutter__slat"></li>
             ))}
           </ul>
+      
     <div  className="mt-40 mx-auto p-1 w-3/5">
       {/* <div className="flex -ml-20"><img src="../images/lime_worm.svg"></img></div> */}
       <div  ref={addToRefs} className="relative border-b border-gray-600 py-8 pl-12 pr-12 border-r border-gray-600" >
