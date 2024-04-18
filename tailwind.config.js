@@ -4,6 +4,7 @@
 module.exports = {
   theme: {
     extend: {
+      
       rotate: {
         '2': '2deg',
         '-2': '-2deg',

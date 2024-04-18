@@ -215,15 +215,15 @@ const Braces = () => {
   const onDragStart = (e) => {
     setDragging(true);
     setDragStart(e.clientX);
-    e.preventDefault(); // Prevent default action to ensure smooth dragging
+    e.preventDefault(); 
 };
 
 const onDragMove = (e) => {
   if (dragging) {
-      const dx = e.clientX - dragStart; // Change in horizontal mouse position
-      const newScrollX = scrollY - dx; // Calculate the new scroll position
+      const dx = e.clientX - dragStart; 
+      const newScrollX = scrollY - dx;
       setScrollY(newScrollX);
-      setDragStart(e.clientX); // Update drag start to the new mouse position
+      setDragStart(e.clientX); 
   }
 };
 
@@ -252,7 +252,7 @@ useEffect(() => {
     norm: (value, min, max) => (value - min) / (max - min)
   };
 
-  // Function to update scroll position
+ 
   const scroll = useCallback(() => {
     if (!dragging) {
       setScrollY(window.scrollY);
@@ -284,18 +284,18 @@ useEffect(() => {
   }, [scroll]);
 
   useEffect(() => {
-  // Disable body scroll
+
   document.body.style.overflow = 'hidden';
 
   return () => {
-    // Re-enable body scroll
+ 
     document.body.style.overflow = '';
   };
 }, []);
 
   return (
     <>
-      <div className="bg-[#FFFCF8]">
+      <div className="bg-[#FFFCF8] #e9e8e6">
         <div>
           <div className="font-poppins container is-hero">
             {" "}
@@ -348,140 +348,7 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        <div  style={{
-        height: '100vh', // Using '100vh' to take full viewport height which is similar to '100%' on the body
-        overflowY: 'scroll',
-        padding: 0,
-        margin: 0,
-        backgroundColor: '#111',
-        userSelect: 'none',
-        boxSizing: 'border-box' // Applying box-sizing to this element; typically, this would be globally set
-      }} className="scrolle" ref={scrollContainerRef} data-scroll>
- 
- <div class="scrollHorizontal-content" data-scroll-content>
-    <article className="horizontalSlide horizontalSlide--1 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__img js-transition-img">
-         <figure className="js-transition-img__inner">
-           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-one.png" draggable="false" />
-         </figure>
-       </div>
-     </div>
-   </article>
-   
-   <article className="horizontalSlide horizontalSlide--2 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__img js-transition-img">
-         <figure className="js-transition-img__inner">
-           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-two.png" draggable="false" />
-         </figure>
-       </div>
-     </div>
-   </article>
-   
-   <article className="horizontalSlide horizontalSlide--3 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__img">
-         <figure>
-           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-three.png" draggable="false" />
-         </figure>
-       </div>
-     </div>
-   </article>
- <article className="horizontalSlide horizontalSlide--1 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__img js-transition-img">
-         <figure className="js-transition-img__inner">
-           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-one.png" draggable="false" />
-         </figure>
-       </div>
-     </div>
-   </article>
-   
-   <article className="horizontalSlide horizontalSlide--2 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__img js-transition-img">
-         <figure className="js-transition-img__inner">
-           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-two.png" draggable="false" />
-         </figure>
-       </div>
-     </div>
-   </article>
-   
-   <article className="horizontalSlide horizontalSlide--3 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__img">
-         <figure>
-           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-three.png" draggable="false" />
-         </figure>
-       </div>
-     </div>
-   </article>
- </div>  
- 
-
- <div class="scrollHorizontal-content scrollHorizontal-content--last" data-scroll-content>
-   
- <article className="horizontalSlide horizontalSlide--1 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__sub-title"><span>Project</span></div>
-       <h1 className="horizontalSlide__title"><div className="js-transition-title">Oak Refuge</div></h1>
-       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
-       <div className="horizontalSlide__project">Corpus Studio</div>
-     </div>
-   </article>
-   
-   <article className="horizontalSlide horizontalSlide--2 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__sub-title"><span>Project</span></div>
-       <h1 className="horizontalSlide__title"><div className="js-transition-title">Teton Residence</div></h1>
-       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
-       <div className="horizontalSlide__project">Ro Rocket Design</div>
-     </div>
-   </article>
-   
-   <article className="horizontalSlide horizontalSlide--3 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__sub-title"><span>Project</span></div>
-       <h1 className="horizontalSlide__title">Oak Refuge</h1>
-       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
-       <div className="horizontalSlide__project">Corpus Studio</div>
-     </div>
-   </article>
-   <article className="horizontalSlide horizontalSlide--1 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__sub-title"><span>Project</span></div>
-       <h1 className="horizontalSlide__title"><div className="js-transition-title">Oak Refuge</div></h1>
-       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
-       <div className="horizontalSlide__project">Corpus Studio</div>
-     </div>
-   </article>
-   
-   <article className="horizontalSlide horizontalSlide--2 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__sub-title"><span>Project</span></div>
-       <h1 className="horizontalSlide__title"><div className="js-transition-title">Teton Residence</div></h1>
-       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
-       <div className="horizontalSlide__project">Ro Rocket Design</div>
-     </div>
-   </article>
-   
-   <article className="horizontalSlide horizontalSlide--3 js-slide">
-     <div className="horizontalSlide__inner">
-       <div className="horizontalSlide__sub-title"><span>Project</span></div>
-       <h1 className="horizontalSlide__title">Oak Refuge</h1>
-       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
-       <div className="horizontalSlide__project">Corpus Studio</div>
-     </div>
-   </article>
-   
- </div>
- 
- <div class="scrollbar" data-scrollbar>
-   <div class="scrollbar__handle js-scrollbar__handle"></div>
- </div>
- 
-</div>
+       
 
         {/* <main data-scroll-container >
 

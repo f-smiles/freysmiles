@@ -1,7 +1,13 @@
 "use client";
 import Matter from "matter-js";
 import Link from "next/link";
-import { useRef, useEffect, useLayoutEffect, useState, useCallback } from "react";
+import {
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useCallback,
+} from "react";
 import LocomotiveScroll from "locomotive-scroll";
 // gsap
 import gsap from "gsap";
@@ -22,15 +28,14 @@ import { Disclosure, Transition } from "@headlessui/react";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 import MapPin from "./_components/ui/MapPin";
 import { SplitText } from "gsap-trial/all";
-import SwiperCore, { Navigation } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/navigation';
+import SwiperCore, { Navigation } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
 
 SwiperCore.use([Navigation]);
 
 gsap.registerPlugin(ScrollTrigger);
-
 
 export default function LandingComponent() {
   // const [backgroundColor, setBackgroundColor] = useState("transparent");
@@ -102,91 +107,118 @@ export default function LandingComponent() {
   const { scrollYProgress } = useScroll();
   gsap.registerPlugin(ScrollTrigger);
 
-  const logoGrid = document.getElementById('logoGrid'); 
-  
+  const logoGrid = document.getElementById("logoGrid");
 
-  let initialScale = 0.8; 
-  let maxScale = 1;    
-  
+  let initialScale = 0.8;
+  let maxScale = 1;
+
   const tl = gsap.timeline({
     scrollTrigger: {
-      trigger: logoGrid,               
-      start: "top bottom",           
-      end: "bottom bottom",        
+      trigger: logoGrid,
+      start: "top bottom",
+      end: "bottom bottom",
       scrub: 0.8,
 
       onLeaveBack: () => gsap.set(logoGrid, { clearProps: "transform" }),
-    }
+    },
   });
-  
 
-  tl.fromTo(logoGrid, 
-    { scale: initialScale }, 
-    { scale: maxScale, ease: "power1.out" } 
+  tl.fromTo(
+    logoGrid,
+    { scale: initialScale },
+    { scale: maxScale, ease: "power1.out" }
   );
-  
 
   gsap.set(logoGrid, { clearProps: "transform" });
-  const locationGallery = document.getElementById('locationGallery'); 
-const tlLocationGallery = gsap.timeline({
-  scrollTrigger: {
-    trigger: locationGallery,
-    start: "top bottom",
-    end: "bottom bottom",
-    scrub: 0.8,
-    onLeaveBack: () => gsap.set(locationGallery, { clearProps: "transform" }),
-  }
-});
+  const locationGallery = document.getElementById("locationGallery");
+  const tlLocationGallery = gsap.timeline({
+    scrollTrigger: {
+      trigger: locationGallery,
+      start: "top bottom",
+      end: "bottom bottom",
+      scrub: 0.8,
+      onLeaveBack: () => gsap.set(locationGallery, { clearProps: "transform" }),
+    },
+  });
 
-tlLocationGallery.fromTo(locationGallery, 
-  { scale: 0.8 }, 
-  { scale: maxScale, ease: "power1.out" } 
-);
+  tlLocationGallery.fromTo(
+    locationGallery,
+    { scale: 0.8 },
+    { scale: maxScale, ease: "power1.out" }
+  );
 
-gsap.set(locationGallery, { clearProps: "transform" });
-  
-const locations = document.getElementById('locations'); 
-const tlLocations = gsap.timeline({
-  scrollTrigger: {
-    trigger: locations,
-    start: "top bottom",
-    end: "bottom bottom",
-    scrub: 0.8,
-    onLeaveBack: () => gsap.set(locations, { clearProps: "transform" }),
-  }
-});
+  gsap.set(locationGallery, { clearProps: "transform" });
 
-tlLocations.fromTo(locations, 
-  { scale: 0.8 }, 
-{ scale: maxScale, ease: "power1.out" } 
-);
+  const locations = document.getElementById("locations");
+  const tlLocations = gsap.timeline({
+    scrollTrigger: {
+      trigger: locations,
+      start: "top bottom",
+      end: "bottom bottom",
+      scrub: 0.8,
+      onLeaveBack: () => gsap.set(locations, { clearProps: "transform" }),
+    },
+  });
 
-gsap.set(locations, { clearProps: "transform" });
+  tlLocations.fromTo(
+    locations,
+    { scale: 0.8 },
+    { scale: maxScale, ease: "power1.out" }
+  );
+
+  gsap.set(locations, { clearProps: "transform" });
+
+  const sectionOneRef = useRef(null);
+  const sectionTwoRef = useRef(null);
+  const sectionThreeRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const scaleValue = 0.8 + 0.2 * entry.intersectionRatio;  
+            entry.target.style.transform = `scale(${scaleValue})`;
+        });
+    }, {
+        threshold: Array.from({ length: 20 }, (_, i) => i * 0.05)  // 
+    });
+
+    const sections = [sectionOneRef, sectionTwoRef, sectionThreeRef];
+    sections.forEach(ref => {
+        if (ref.current) observer.observe(ref.current);
+    });
+
+    return () => {
+        sections.forEach(ref => {
+            if (ref.current) observer.unobserve(ref.current);
+        });
+    };
+}, []);
+
   return (
     <>
-      <div className="bg-[#E5DDDE] bg-[#E0D175]"
-      // style={{ backgroundColor }}
+      <div
+        className="bg-[#E5DDDE] bg-[#E0D175]"
+        // style={{ backgroundColor }}
       >
         <LogoHeader />
         <Hero />
         <Mask />
+        <About />
         <GSAPAnimateScrollSections />
         <ImageGrid />
 
-        <div className="sticky top-0 z-2">
-        <LocationGallery />
-</div>
-<div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
-    <LogoGrid />
-</div>
-<div className=" bg-[#F1F1F1]  sticky top-0 z-1" id="locationGallery">
-<ParallaxOutline />
-
-</div>
-
-<div className="bg-[#20282D] z-4 relative" id="locations">
-    <Locations />
-</div>
+        <div ref={sectionOneRef} className="sticky top-0 z-2 transform scale-80 transition-transform duration-300 ease-in-out">
+                <LocationGallery />
+            </div>
+            <div ref={sectionTwoRef} className="sticky bg-[#D8BFD7] top-0 h-screen z-3 transform scale-80 transition-transform duration-300 ease-in-out" id="logoGrid">
+                <LogoGrid />
+            </div>
+            <div ref={sectionThreeRef} className="bg-[#F1F1F1] sticky top-0 z-1 transform scale-80 transition-transform duration-300 ease-in-out" id="locationGallery">
+                <ParallaxOutline />
+            </div>
+        <div className="bg-[#20282D] z-4 relative" id="locations">
+          <Locations />
+        </div>
         <GiftCards />
       </div>
     </>
@@ -473,10 +505,24 @@ function Hero() {
   }, []);
 
   const pixiContainerRef = useRef();
+  const mouseRef = useRef(null);
+
+  useEffect(() => {
+    document.body.addEventListener('mousemove', (e) => {
+      gsap.to("#mouse > span", {
+        duration: 1,
+        x: e.pageX - 150, 
+        y: e.pageY - 150,
+        ease: "expo.out",
+        stagger: 0.005
+      });
+    });
+  }, []);
 
   return (
-    <section className="mt-6 relative">
-      
+    <section className=" mt-6 relative">
+
+
       <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate lg:px-8">
         <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
@@ -573,98 +619,95 @@ function Hero() {
               src="../../images/mainsectionimage.jpg"
               alt="girl smiling"
             />
+           
           </div>
         </div>
       </div>
-      <div></div>
+      <div>
+      <section id="header" className="h-screen overflow-hidden bg-header-yellow"></section>
+      <section id="sep" className="h-screen overflow-hidden"></section>
+      {/* <section id="about" className="h-screen overflow-hidden bg-about-brown"></section> */}
+      <div id="mouse" ref={mouseRef} className="absolute top-0 left-0 w-[300px] h-[300px]">
+        {Array.from({ length: 30 }).map((_, index) => (
+          <span key={index} style={{
+            borderRadius: '100%',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            background: 'radial-gradient(circle, rgba(227, 255, 27, 1) 0%, rgba(227, 255, 27, 0) 100%)'
+          }}></span>
+        ))}
+      </div>
+    </div>
     </section>
   );
 }
 
-function Mask(){
-
+function Mask() {
   const headerRef = useRef(null);
-  
-  const [mousePosition, setMousePosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+ 
+  const [maskSize, setMaskSize] = useState(180);
+  const [mousePosition, setMousePosition] = useState({
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
+  });
 
   useEffect(() => {
-   
-      const timer = (duration, interval, from, to, minStep, callback) => {
-          let value = from;
-          const forward = from < to;
-          const range = Math.abs(to - from);
-          const steps = duration / interval;
-          const step = range / steps;
-          let last = from;
+    const updateCoordinates = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+      setMaskSize(180); 
+    };
 
-          const handle = setInterval(() => {
-              value += step * (forward ? 1 : -1);
-              if (forward ? value > to : value < to) {
-                  value = to;
-                  clearInterval(handle);
-              }
-              if (!minStep || !handle || Math.abs(last - value) >= minStep) {
-                  last = value;
-                  callback(value, from, to);
-              }
-          }, interval);
-          return handle;
-      };
+    const handleMouseLeave = () => {
+      setMaskSize(10);
+    };
 
+    const headerNode = headerRef.current;
+    headerNode.addEventListener("mousemove", updateCoordinates);
+    headerNode.addEventListener("mouseleave", handleMouseLeave);
 
-      const loading = () => {
-          headerRef.current.classList.add('header--active');
-          setTimeout(() => {
-              timer(450, 20, 0, 300, 1, (value) => {
-                  headerRef.current.style.setProperty('--s', `${Math.floor(value)}px`);
-              });
-          }, 800);
-      };
-
-      loading();
-
-
-      const updateCoordinates = (e) => {
-          setMousePosition({ x: e.clientX, y: e.clientY });
-      };
-
-      document.addEventListener('mousemove', updateCoordinates);
-
-      return () => {
-          document.removeEventListener('mousemove', updateCoordinates);
-      };
+    return () => {
+      headerNode.removeEventListener("mousemove", updateCoordinates);
+      headerNode.removeEventListener("mouseleave", handleMouseLeave);
+    };
   }, []);
 
   useEffect(() => {
-      headerRef.current.style.setProperty('--x', `${mousePosition.x}px`);
-      headerRef.current.style.setProperty('--y', `${mousePosition.y}px`);
-  }, [mousePosition]);
+    if (headerRef.current) {
+      headerRef.current.style.setProperty("--x", `${mousePosition.x}px`);
+      headerRef.current.style.setProperty("--y", `${mousePosition.y}px`);
+      headerRef.current.style.setProperty("--s", `${maskSize}px`);
+    }
+  }, [mousePosition, maskSize]);
 
-
-  return(
-    <div >
-  
-
+  return (
+    <div>
+            
     <div className=" maskHeader">
-    <div ref={headerRef} >
-       <div className="maskHeader__main">
-           <div className="maskHeader__content">
-               <h1 className="maskHeader__title">
-                   We are your go-to provider for advanced and discerning orthodontic care.
-               </h1>
-           </div>
-       </div>
-       <div className="maskHeader__hover">
-           <div className="maskHeader__content">
-               <h1 className="maskHeader__title">
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
-               </h1>
-           </div>
-       </div>
-   </div>
-   </div>
-   {/* <div className="bg-[#292929] min-h-screen min-w-full flex justify-center items-center">
+
+      <div ref={headerRef}>
+        
+        <div className="maskHeader__main">
+          <div className="maskHeader__content">
+
+            <h1 className="w-2/3 maskHeader__title">
+              We are your go-to provider for advanced and discerning orthodontic
+              care.
+            </h1>
+          </div>
+        </div>
+        <div className=" maskHeader__hover">
+          <div className="maskHeader__content">
+            <h1 className="text-8xl text-[#F1F1F1] font-nimbus upppercase">
+              INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON
+              BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED
+              ORTHONDOTIC CARE
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      {/* <div className="bg-[#292929] min-h-screen min-w-full flex justify-center items-center">
         <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
 <div style={{ backgroundImage: 'url("../images/bauhauspattern.svg")', objectFit: 'contain', backgroundRepeat: 'no-repeat', backgroundSize: 'contain', backgroundPosition: 'center' }} className="bg-[#E6E7E9] h-full w-full"></div>
 
@@ -682,10 +725,82 @@ INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
 </div>
         </div>
       </div> */}
-  
+    </div>
+    </div>
+  );
+}
 
-   </div>
-  )
+function About() {
+  return (
+    <div>
+     
+      <style jsx>{`
+        :global(:root) {
+          --padding: 15vh;
+          --nav: 80px;
+          --fixer: hsl(25 90% 50%);
+          --clipped: hsl(310 80% 70%);
+          --marge: hsl(250 80% 70%);
+        }
+        header {
+          background: var(--white);
+          clip-path: inset(0 0 4px 0);
+        }
+        h1 {
+          margin: 0;
+          text-transform: uppercase;
+          text-align: center;
+          z-index: 2;
+          font-size: 14em;
+     
+          line-height: 0.75;
+          font-weight: 120;
+          position: sticky;
+          top: calc(var(--padding) + var(--nav));
+          mix-blend-mode: difference;
+          color: white;
+        }
+        img {
+          width: 100%;
+          height: 100vh;
+          object-fit: cover;
+          filter: contrast(0.75) grayscale(1);
+          margin-top: calc(var(--padding) + var(--nav) + var(--nav));
+        }
+
+        .content {
+          margin: 0 auto;
+          max-width: 100%;
+          width: 80ch;
+        }
+        section {
+          background: var(--text);
+          min-height: 100vh;
+          position: relative;
+          overflow: hidden;
+        }
+        nav div,
+        main div {
+          width: 100vw;
+          background: var(--white);
+        }
+        main > section {
+          background: var(--white);
+          display: grid;
+          place-items: center;
+          padding: 0 1rem;
+        }
+   
+      `}</style>
+      <header>
+        <h1 className="font-Lato">ABOUT</h1>
+        <img
+          src="https://assets.codepen.io/605876/stage-fuel.jpeg"
+          alt="Jhey walks across a stage at All Day Hey! 2022"
+        />
+      </header>
+    </div>
+  );
 }
 function GSAPAnimateScrollSections() {
   // const listRef = useRef(null);
@@ -883,15 +998,10 @@ function GSAPAnimateScrollSections() {
     };
   }, []);
 
-
   return (
     <>
-
       <section className="relative home-main">
-   
-
         <div className="home-main__content">
-     
           <div className="home-main__content-sphere">
             <div className="container">
               <ul>
@@ -902,9 +1012,7 @@ function GSAPAnimateScrollSections() {
                 >
                   <figure>
                     <h3>60+</h3>
-                    <p className="font-didot mt-10 ">
-                      years of experience
-                    </p>
+                    <p className="font-didot mt-10 ">years of experience</p>
                   </figure>
                 </li>
                 <li
@@ -917,9 +1025,7 @@ function GSAPAnimateScrollSections() {
                     style={{ opacity: 0, filter: "blur(10px)" }}
                   >
                     <h3 className="font-grandslang  font-bold">25k</h3>
-                    <p className="font-didot  mt-10 tracking-wide">
-                      patients
-                    </p>
+                    <p className="font-didot  mt-10 tracking-wide">patients</p>
                   </figure>
                 </li>
                 <li
@@ -943,8 +1049,8 @@ function GSAPAnimateScrollSections() {
           </div>
         </div>
         <div className="font-horizon large-text">
-      <h2 className="text-[300px]">ABOUT</h2>
-    </div>
+          <h2 className="text-[300px]">ABOUT</h2>
+        </div>
       </section>
 
       <style>
@@ -1135,50 +1241,50 @@ function GSAPAnimateScrollSections() {
   );
 }
 
-const HorizontalGrid =() =>{
-  return(
+const HorizontalGrid = () => {
+  return (
     <div className="relative">
-<div class="containerH">
- 
-  <div class="content-wrapper">
-  
-    <div class="childCon">
-      <h1>CSS-only horizontal scroll tentative</h1>
-      <p>The idea is to create an horizontal scroll layout and to allow the user to scroll up/down the mouse to scroll left/right.</p>
-      <p>So… please scroll <strong>down</strong> with your mouse.</p>
+      <div class="containerH">
+        <div class="content-wrapper">
+          <div class="childCon">
+            <h1>CSS-only horizontal scroll tentative</h1>
+            <p>
+              The idea is to create an horizontal scroll layout and to allow the
+              user to scroll up/down the mouse to scroll left/right.
+            </p>
+            <p>
+              So… please scroll <strong>down</strong> with your mouse.
+            </p>
+          </div>
+
+          <div class="childCon">
+            <h2>The trick</h2>
+            <p>Rotate -90deg the container, and 90deg its children blocks.</p>
+            <p>You have to fix container and children dimensions. :(</p>
+            <p>See CSS for rather correct positioning.</p>
+          </div>
+
+          <div class="childCon">
+            <h2>Desktop browsers</h2>
+            <p>Vertical scroll… scrolls. :)</p>
+            <p>But horizontal scroll (e.g. with a trackpad) doesn’t. :(</p>
+          </div>
+
+          <div class="childCon">
+            <h2>Mobile browsers</h2>
+            <p>Only horizontal touchmove works on Chrome. :)</p>
+            <p>Only vertical touchmove works on Safari and Firefox.</p>
+          </div>
+
+          <div class="childCon">
+            <h2>Conclusion</h2>
+            <p>Without JavaScript: no good idea.</p>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div class="childCon">
-      <h2>The trick</h2>
-      <p>Rotate -90deg the container, and 90deg its children blocks.</p>
-      <p>You have to fix container and children dimensions. :(</p>
-      <p>See CSS for rather correct positioning.</p>
-    </div>
-
-    <div class="childCon">
-      <h2>Desktop browsers</h2>
-      <p>Vertical scroll… scrolls. :)</p>
-      <p>But horizontal scroll (e.g. with a trackpad) doesn’t. :(</p>
-    </div>
-
-    <div class="childCon">
-      <h2>Mobile browsers</h2>
-      <p>Only horizontal touchmove works on Chrome. :)</p>
-      <p>Only vertical touchmove works on Safari and Firefox.</p>
-    </div>
-
-
-    <div class="childCon">
-      <h2>Conclusion</h2>
-      <p>Without JavaScript: no good idea.</p>
-    </div>
-
-  </div>
-  
-</div>
-</div>
-  )
-}
+  );
+};
 
 const ImageGrid = () => {
   const bodyRef = useRef(null);
@@ -1294,47 +1400,44 @@ const ImageGrid = () => {
     },
   ];
 
-
- 
   return (
     <div>
-
-    <div
-  
-      className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white"
-    >
-      <div
-        className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
-        style={{
-          left: `${cursorPos.x}px`,
-          top: `${cursorPos.y}px`,
-          opacity: isHovering ? 1 : 0,
-        }}
-      >
-        <p>CHECK </p>
-        <p>IT OUT</p>
+      <div className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white">
+        <div
+          className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
+          style={{
+            left: `${cursorPos.x}px`,
+            top: `${cursorPos.y}px`,
+            opacity: isHovering ? 1 : 0,
+          }}
+        >
+          <p>CHECK </p>
+          <p>IT OUT</p>
+        </div>
+        <div className="flex flex-wrap justify-center items-center p-0 min-h-screen">
+          {images.map((image, index) => (
+            <a
+              key={index}
+              href={image.url}
+              className={`group image-card relative flex items-center justify-center mb-20 ${
+                image.className === "image-portrait"
+                  ? "mx-4 w-[27vw] h-[37vw]"
+                  : "mx-4 w-[40vw] h-[27vw]"
+              }`}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+                {image.title}
+              </div>
+              <img
+                src={image.src}
+                className="block w-full h-full object-cover"
+              />
+            </a>
+          ))}
+        </div>
       </div>
-      <div className="flex flex-wrap justify-center items-center p-0 min-h-screen">
-        {images.map((image, index) => (
-          <a
-            key={index}
-            href={image.url}
-            className={`group image-card relative flex items-center justify-center mb-20 ${
-              image.className === "image-portrait"
-                ? "mx-4 w-[27vw] h-[37vw]"
-                : "mx-4 w-[40vw] h-[27vw]"
-            }`}
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-          >
-            <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
-              {image.title}
-            </div>
-            <img src={image.src} className="block w-full h-full object-cover" />
-          </a>
-        ))}
-      </div>
-    </div>
     </div>
   );
 };
@@ -1383,121 +1486,148 @@ const ParallaxOutline = () => {
 
   return (
     <div>
-    <div className="flex pt-10 justify-center uppercase tracking tracking-widest">
+      <div className="flex pt-10 justify-center uppercase tracking tracking-widest">
         Testimonials
       </div>
-    <div className="flex flex-col items-center justify-center h-screen ">
-  
-      <div className="relative flex items-center">
-        <div className="absolute right-0 top-0 z-20 flex">
-          <button
-            onClick={() => scroll("left")}
-            className="p-4"
-            aria-label="Previous"
-          >
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z" fill="white"/>
-        </svg>
-          </button>
-          <button
-            onClick={() => scroll("right")}
-            className="p-4 "
-            aria-label="Next"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z" fill="white"/>
-        </svg>
-          </button>
-        </div>
-        <div className="relative flex items-center justify-center">
-          <div
-            ref={carouselRef}
-            className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
-            style={{ width: "60vw", height: "auto" }}
-          >
-            <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
-              style={{
-                height: "500px",
-                backgroundImage:
-                  "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
-              }}
+      <div className="flex flex-col items-center justify-center h-screen ">
+        <div className="relative flex items-center">
+          <div className="absolute right-0 top-0 z-20 flex">
+            <button
+              onClick={() => scroll("left")}
+              className="p-4"
+              aria-label="Previous"
             >
-              <div className="flex flex-col justify-center items-center mx-[7vw] ">
-                <p className="font-helvetica-now-thin text-[24px] text-center">
-                  You will receive top notch orthodontic care at Frey Smiles.
-                  Dr. Frey and his entire staff make every visit a pleasure. It
-                  is apparent at each appointment that Dr. Frey truly cares
-                  about his patients. He has treated both of our kids and my
-                  husband, and they all have beautiful smiles! I highly
-                  recommend!
-                </p>
-                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Lisa Moyer</p>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="13"
+                viewBox="0 0 40 13"
+                fill="none"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              className="p-4 "
+              aria-label="Next"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="13"
+                viewBox="0 0 40 13"
+                fill="none"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+          </div>
+          <div className="relative flex items-center justify-center">
+            <div
+              ref={carouselRef}
+              className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
+              style={{ width: "60vw", height: "auto" }}
+            >
+              <div
+                className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+                style={{
+                  height: "500px",
+                  backgroundImage:
+                    "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
+                }}
+              >
+                <div className="flex flex-col justify-center items-center mx-[7vw] ">
+                  <p className="font-helvetica-now-thin text-[24px] text-center">
+                    You will receive top notch orthodontic care at Frey Smiles.
+                    Dr. Frey and his entire staff make every visit a pleasure.
+                    It is apparent at each appointment that Dr. Frey truly cares
+                    about his patients. He has treated both of our kids and my
+                    husband, and they all have beautiful smiles! I highly
+                    recommend!
+                  </p>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                    Lisa Moyer
+                  </p>
+                </div>
               </div>
-            </div>
-            <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
-              style={{
-                height: "500px",
-                backgroundImage:
-                  "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0",
-              }}
-            >
-              <div className=" flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                <p className="font-helvetica-now-thin text-[24px] text-center">
-                  My experience at FreySmiles has been amazing! I recently just
-                  completed my Invisalign and my teeth look perfect! Dr. Frey
-                  truly cares about his patients and the staff are always
-                  friendly, as well as always accommodating to my schedule.
-                  They're the best around!
-                </p>
-                <p className="font-helvetica-now-thin text-[20px] mt-10  text-center">Kailee</p>
+              <div
+                className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+                style={{
+                  height: "500px",
+                  backgroundImage:
+                    "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0",
+                }}
+              >
+                <div className=" flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                  <p className="font-helvetica-now-thin text-[24px] text-center">
+                    My experience at FreySmiles has been amazing! I recently
+                    just completed my Invisalign and my teeth look perfect! Dr.
+                    Frey truly cares about his patients and the staff are always
+                    friendly, as well as always accommodating to my schedule.
+                    They're the best around!
+                  </p>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10  text-center">
+                    Kailee
+                  </p>
+                </div>
               </div>
-            </div>
-            <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
-              style={{
-                height: "500px",
-                backgroundImage:
-                  "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
-              }}
-            >
-              <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                <p className="text-2xl text-center">
-                  <h1 className="font-helvetica-now-thin font-normal text-[24px] relative overflow-hidden">
-                    I had an open bite and misaligned teeth most of my life. Dr
-                    Frey fixed it and in record time. 1 1/2 yrs with
-                    Invisalign’s. Highly recommended! Friendly staff and easy to
-                    make appointments!
-                
-         
+              <div
+                className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+                style={{
+                  height: "500px",
+                  backgroundImage:
+                    "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
+                }}
+              >
+                <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                  <p className="text-2xl text-center">
+                    <h1 className="font-helvetica-now-thin font-normal text-[24px] relative overflow-hidden">
+                      I had an open bite and misaligned teeth most of my life.
+                      Dr Frey fixed it and in record time. 1 1/2 yrs with
+                      Invisalign’s. Highly recommended! Friendly staff and easy
+                      to make appointments!
+                    </h1>
+                  </p>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                    Karen Oneill
+                  </p>
+                </div>
+              </div>
+              <div
+                className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+                style={{
+                  height: "500px",
+                  backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
+                }}
+              >
+                <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                  <h1 className="font-helvetica-now-thin text-[24px] text-center">
+                    Dr. Frey was my orthodontist when I was 11 years old, Im now
+                    42. I still talk about how amazing he was and the great work
+                    he did with my teeth. Thank you so much for giving the most
+                    beautiful smile!
                   </h1>
-                </p>
-                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Karen Oneill</p>
-              </div>
-            </div>
-            <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
-              style={{
-                height: "500px",
-                backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
-              }}
-            >
-              <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                <h1 className="font-helvetica-now-thin text-[24px] text-center">
-                  Dr. Frey was my orthodontist when I was 11 years old, Im now
-                  42. I still talk about how amazing he was and the great work
-                  he did with my teeth. Thank you so much for giving the most
-                  beautiful smile!
-                </h1>
-                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Tanya Burnhauser</p>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                    Tanya Burnhauser
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* <span className="absolute text-white font-serif text-[10vw] custom-text" data-text="Happy Patients">
+        {/* <span className="absolute text-white font-serif text-[10vw] custom-text" data-text="Happy Patients">
  Happy Patients
     </span>
     <div className="w-full overflow-hidden custom-marquee">
@@ -1522,7 +1652,7 @@ const ParallaxOutline = () => {
 </div>
 
     </div> */}
-    </div>
+      </div>
     </div>
   );
 };
@@ -1530,20 +1660,23 @@ const ParallaxOutline = () => {
 const LogoGrid = () => {
   const logos = [
     [
-      "../../images/movingbannerfiles/diamondplus.svg",
-      "../../images/movingbannerfiles/readers.png",
-      "../../images/movingbannerfiles/damonsystem.svg",
+      "../images/movingbannerfiles/diamondplus.svg",
+      "../images/movingbannerfiles/readers.png",
+      "../images/movingbannerfiles/damonsystem.svg",
+      "../images/movingbannerfiles/damonsystem.svg",
     ],
     [
-      "../../images/movingbannerfiles/topDentist_logo.png",
-      "../../images/movingbannerfiles/invisalign_invert.png",
-      "../../images/movingbannerfiles/ajodo.svg",
-      "../../images/movingbannerfiles/ABO_invert.png",
+      "../images/movingbannerfiles/topDentist_logo.png",
+      "../images/movingbannerfiles/invisalign_invert.png",
+      "../images/movingbannerfiles/ajodo.svg",
+      "../images/movingbannerfiles/ABO_invert.png",
+      "../images/movingbannerfiles/ABO_invert.png",
     ],
     [
-      "../../images/movingbannerfiles/valley.png",
-      "../../images/movingbannerfiles/top-Dentist.png",
-      "../../images/movingbannerfiles/aao_invert.png",
+      "../images/movingbannerfiles/valley.png",
+      "../images/movingbannerfiles/top-Dentist.png",
+      "../images/movingbannerfiles/aao_invert.png",
+      "../images/movingbannerfiles/aao_invert.png",
     ],
   ];
   let isSphereCreated = false;
@@ -1554,16 +1687,21 @@ const LogoGrid = () => {
     }
     isSphereCreated = true;
     console.log("createsphere");
-    const createSphere = () => {
+    const createSphere = async () => {
       let majorPlatformVersion;
       const canvasSphereWrapp = document.querySelector("#ballcanvas");
 
       if (navigator.userAgentData) {
-        if (navigator.userAgentData.platform === "Windows") {
-          let ua = navigator.userAgentData.getHighEntropyValues([
-            "platformVersion",
-          ]);
-          majorPlatformVersion = parseInt(ua.platformVersion.split(".")[0]);
+        try {
+     
+          if (navigator.userAgentData.platform === "Windows") {
+            let ua = await navigator.userAgentData.getHighEntropyValues(["platformVersion"]);
+            majorPlatformVersion = parseInt(ua.platformVersion.split(".")[0]);
+          }
+        } catch (error) {
+          console.error("version", error);
+        
+          majorPlatformVersion = undefined;
         }
       }
 
@@ -1805,8 +1943,6 @@ const LogoGrid = () => {
 };
 
 function LocationGallery() {
-
-
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
@@ -1831,86 +1967,10 @@ function LocationGallery() {
         });
     });
   }, []);
-  
+
   return (
-
     <div className="bg-[#161818]">
-      <section className="sliderMainPage-projects">
-  <div className="sliderMainPage-container w-dyn-list">
-  <div role="list" className="sliderMainPage-wrapper mainProjects w-dyn-items" style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '20px' }}>
-      {/* First Project Item (Odd) */}
-      <div role="listitem" className="sliderMainPage-item sliderMainPage-projectItem" style={{ gridColumn: '1 / 3', gridRow: '1', marginTop: '100px' }}>
-        <div className="sliderMainPage-labelGroup">
-          <div className="sliderMainPage-textSmall sliderMainPage-label text-white">01 — 01</div>
-        </div>
-        <div className="sliderMainPage-imageContainer">
-        <video
-  autoPlay
-  loop
-  muted
-  style={{
-    width: '100%',
-    height: '200px',
-    objectFit: 'cover' 
-  }}
-  className="sliderMainPage-images sliderMainPage-projectImage">
-  <source
-    src="../images/invisalignglowup.mp4"
-    type="video/mp4"
-  />
-  Your browser does not support the video tag.
-</video>
-
-        </div>
-        <div className="sliderMainPage-descr">
-          <div className="sliderMainPage-text">2023</div>
-          <div className="sliderMainPage-info">
-            <div className="sliderMainPage-text">Real estate — Chyrnaya Rechka, 41</div>
-
-          </div>
-        </div>
-      </div>
-      
-      {/* Second Project Item (Even) */}
-      <div role="listitem" className="sliderMainPage-item sliderMainPage-projectItem" style={{ gridColumn: '5 / -1', gridRow: '1', marginLeft: '1.3vw' }}>
-        <div className="sliderMainPage-labelGroup">
-          <div className="sliderMainPage-textSmall sliderMainPage-label text-white">02 — 02</div>
-        </div>
-        <div className="sliderMainPage-imageContainer">
-          <img 
-            src="../images/sch.png" 
-            loading="lazy" 
-            alt="Brand identity concept, Vladivostok" 
-            className="sliderMainPage-images sliderMainPage-projectImage" 
-            style={{ width: '100%', height: '450px', objectFit: 'cover' }}
-          />
-        </div>
-        <div className="sliderMainPage-descr">
-          <div className="sliderMainPage-text text-white">est. 2023</div>
-          <div className="sliderMainPage-info">
-            <div className="sliderMainPage-text text-white">Schnecksville</div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div className="flex justify-start items-center mt-4 space-x-4">
-      <button id="next" className="sliderMainPage-buttonRight">
-        {/* SVG Right Arrow */}
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z" fill="white"/>
-        </svg>
-      </button>
-      <button id="prev" className="sliderMainPage-buttonLeft">
-        {/* SVG Left Arrow */}
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z" fill="white"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-</section>
+   
       <div
         className="container"
         style={{
@@ -1947,7 +2007,6 @@ function LocationGallery() {
             alt="Description"
           />
         </div>
-       
       </div>
     </div>
   );
@@ -2251,7 +2310,7 @@ function Locations() {
             autoAlpha: 0,
             ease: "Expo.easeOut",
             stagger: 0.12,
-            repeat: -1
+            repeat: -1,
           });
 
           observer.unobserve(entry.target);
@@ -2270,17 +2329,18 @@ function Locations() {
   return (
     <>
       <div className="h-screen">
-      <div className="flex flex-col   w-[50vw] h-[15vw] mx-[7vw] "  ref={targetRef}>
+        <div
+          className="flex flex-col  "
+          ref={targetRef}
+        >
           <p className="text-2xl ">
             <div className=" w-[900px]">
               <h1 className="font-sans font-normal text-[40px] uppercase relative overflow-hidden">
-             Come see us at any of our four convenient locations or opt for a virtual consultation
-
-
+                Come see us at any of our four convenient locations or opt for a
+                virtual consultation
               </h1>
             </div>
           </p>
-
         </div>
         <div></div>
 
