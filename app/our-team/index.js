@@ -213,11 +213,7 @@ const OurTeam = () => {
       num: "Lexi",
       imgSrc: "/../../images/team_members/Lexigreen.png",
     },
-    {
-      title: "8",
-      num: "Lizzie",
-      imgSrc: "/../../images/team_members/Lizzie-Photoroom.png",
-    },
+   
     {
       title: "3",
       num: "Nicolle",
@@ -446,7 +442,7 @@ const OurTeam = () => {
     <div className="font-saol text-[80px] tracking-tight relative z-10">
       Meet Our
     </div>
-    <div className="font-grandslang italic text-[90px] tracking-tight relative z-10">
+    <div className="font-saol italic text-[80px] tracking-tight relative z-10">
       Doctors
     </div>
   </div>
@@ -749,7 +745,7 @@ const OurTeam = () => {
 
           <div
             ref={carouselRef}
-            className="mt-40 relative z-10 h-screen overflow-hidden pointer-events-none"
+            className="relative z-10 min-h-[150vh]  pointer-events-none"
           >
             <div id="cursor" style={cursorStyle} className={className}>
               <div className="cursor__circle" style={cursorCircleStyle}>
