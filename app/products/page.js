@@ -1,6 +1,8 @@
 import { Suspense } from "react"
-import ProductsComponent from "."
 import LoadingAllProducts from "./loading"
+import ProductsComponent from "."
+
+export const dynamic = "force-dynamic"
 
 export const metadata = {
   title: "Products",
@@ -8,7 +10,7 @@ export const metadata = {
 
 async function getProducts() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products`, { cache: 'no-store' })
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/products`)
     return res.json()
   } catch (error) {
     throw new Error(error.message)
@@ -17,7 +19,7 @@ async function getProducts() {
 
 async function getPrices() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/prices`, { cache: 'no-store' })
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/prices`)
     return res.json()
   } catch (error) {
     throw new Error(error.message)
