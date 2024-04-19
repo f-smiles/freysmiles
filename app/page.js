@@ -94,32 +94,32 @@ export default function LandingComponent() {
   const { scrollYProgress } = useScroll();
   gsap.registerPlugin(ScrollTrigger);
 
-  const logoGrid = document.getElementById('logoGrid'); 
-  
+  const logoGrid = document.getElementById('logoGrid');
 
-  let initialScale = 0.8; 
-  let maxScale = 1;    
-  
+
+  let initialScale = 0.8;
+  let maxScale = 1;
+
   const tl = gsap.timeline({
     scrollTrigger: {
-      trigger: logoGrid,               
-      start: "top bottom",           
-      end: "bottom bottom",        
+      trigger: logoGrid,
+      start: "top bottom",
+      end: "bottom bottom",
       scrub: 0.8,
 
       onLeaveBack: () => gsap.set(logoGrid, { clearProps: "transform" }),
     }
   });
-  
 
-  tl.fromTo(logoGrid, 
-    { scale: initialScale }, 
-    { scale: maxScale, ease: "power1.out" } 
+
+  tl.fromTo(logoGrid,
+    { scale: initialScale },
+    { scale: maxScale, ease: "power1.out" }
   );
-  
+
 
   gsap.set(logoGrid, { clearProps: "transform" });
-  const locationGallery = document.getElementById('locationGallery'); 
+  const locationGallery = document.getElementById('locationGallery');
 const tlLocationGallery = gsap.timeline({
   scrollTrigger: {
     trigger: locationGallery,
@@ -130,14 +130,14 @@ const tlLocationGallery = gsap.timeline({
   }
 });
 
-tlLocationGallery.fromTo(locationGallery, 
-  { scale: 0.8 }, 
-  { scale: maxScale, ease: "power1.out" } 
+tlLocationGallery.fromTo(locationGallery,
+  { scale: 0.8 },
+  { scale: maxScale, ease: "power1.out" }
 );
 
 gsap.set(locationGallery, { clearProps: "transform" });
-  
-const locations = document.getElementById('locations'); 
+
+const locations = document.getElementById('locations');
 const tlLocations = gsap.timeline({
   scrollTrigger: {
     trigger: locations,
@@ -148,9 +148,9 @@ const tlLocations = gsap.timeline({
   }
 });
 
-tlLocations.fromTo(locations, 
-  { scale: 0.8 }, 
-{ scale: maxScale, ease: "power1.out" } 
+tlLocations.fromTo(locations,
+  { scale: 0.8 },
+{ scale: maxScale, ease: "power1.out" }
 );
 
 gsap.set(locations, { clearProps: "transform" });
@@ -467,7 +467,7 @@ function Hero() {
   const pixiContainerRef = useRef();
 
   return (
-    <section className="mt-6 relative">
+    <section className="relative mt-6">
       <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate lg:px-8">
         <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
@@ -551,7 +551,7 @@ function Hero() {
                     />
                   </path>
                 </svg>
-                <span className="uppercase absolute text-2xl font-thin tracking-tight text-white transform -translate-x-1/2 -translate-y-1/2 font-HelveticaNowPro top-1/2 left-1/2">
+                <span className="absolute text-2xl font-thin tracking-tight text-white uppercase transform -translate-x-1/2 -translate-y-1/2 font-HelveticaNowPro top-1/2 left-1/2">
                   Book
                   <br />
                   Now
@@ -575,11 +575,11 @@ function Hero() {
 function Mask(){
 
   const headerRef = useRef(null);
-  
+
   const [mousePosition, setMousePosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
 
   useEffect(() => {
-   
+
       const timer = (duration, interval, from, to, minStep, callback) => {
           let value = from;
           const forward = from < to;
@@ -645,8 +645,8 @@ function Mask(){
        <div className="maskHeader__hover">
            <div className="maskHeader__content">
                <h1 className="maskHeader__title">
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
+INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
+INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
                </h1>
            </div>
        </div>
@@ -656,10 +656,10 @@ INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
   <div className="w-full md:w-1/2">
     <div style={{ backgroundImage: 'url("../images/bauhaus.png")' }} className="bg-[#E6E7E9] rounded-l-full h-full"></div>
   </div>
-  <div className="w-full md:w-1/2 relative">
+  <div className="relative w-full md:w-1/2">
     <div className="bg-[#E6E7E9] h-full"></div>
-    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center"> 
-      <p className="text-center text-xl font-bold">LEARN MORE</p>
+    <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
+      <p className="text-xl font-bold text-center">LEARN MORE</p>
     </div>
   </div>
 </div>
@@ -882,13 +882,13 @@ function GSAPAnimateScrollSections() {
                 >
                   <figure>
                     <h3>60+</h3>
-                    <p className="font-poppins uppercase mt-10 ">
+                    <p className="mt-10 uppercase font-poppins ">
                       years of experience
                     </p>
                   </figure>
                 </li>
                 <li
-                  className="font-neue-montreal font-bold"
+                  className="font-bold font-neue-montreal"
                   id="middle-circle"
                   style={{ boxShadow: "inset 0 0 300px #fff" }}
                 >
@@ -896,8 +896,8 @@ function GSAPAnimateScrollSections() {
                     id="figure2"
                     style={{ opacity: 0, filter: "blur(10px)" }}
                   >
-                    <h3 className="font-Lato font-bold">25k</h3>
-                    <p className="font-Lato mt-10 uppercase tracking-wide">
+                    <h3 className="font-bold font-Lato">25k</h3>
+                    <p className="mt-10 tracking-wide uppercase font-Lato">
                       patients
                     </p>
                   </figure>
@@ -908,8 +908,8 @@ function GSAPAnimateScrollSections() {
                   style={{ opacity: 0, filter: "blur(10px)" }}
                 >
                   <figure>
-                    <h3 className="font-neue-montreal font-bold">4</h3>
-                    <p className="mt-10 font-helvetica-now-thin tracking-wide">
+                    <h3 className="font-bold font-neue-montreal">4</h3>
+                    <p className="mt-10 tracking-wide font-helvetica-now-thin">
                       unique locations
                     </p>
                   </figure>
@@ -1009,7 +1009,7 @@ function GSAPAnimateScrollSections() {
             .home-main__content-sphere ul {
               position: relative;
             }
-            .home-main__content-sphere ul li:first-child, 
+            .home-main__content-sphere ul li:first-child,
             .home-main__content-sphere ul li:nth-child(3) {
               border: 1px solid #fff;
               filter: blur(10px);
@@ -1232,7 +1232,7 @@ const ImageGrid = () => {
   return (
     <div
       ref={bodyRef}
-      className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white"
+      className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
     >
       <div
         className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
@@ -1245,7 +1245,7 @@ const ImageGrid = () => {
         <p>CHECK </p>
         <p>IT OUT</p>
       </div>
-      <div className="flex flex-wrap justify-center items-center p-0 min-h-screen">
+      <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
         {images.map((image, index) => (
           <a
             key={index}
@@ -1261,7 +1261,7 @@ const ImageGrid = () => {
             <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
               {image.title}
             </div>
-            <img src={image.src} className="block w-full h-full object-cover" />
+            <img src={image.src} className="block object-cover w-full h-full" />
           </a>
         ))}
       </div>
@@ -1313,11 +1313,11 @@ const ParallaxOutline = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen ">
-      <div className="flex justify-center uppercase tracking tracking-widest">
+      <div className="flex justify-center tracking-widest uppercase tracking">
         Testimonials
       </div>
       <div className="relative flex items-center">
-        <div className="absolute right-0 top-0 z-20 flex">
+        <div className="absolute top-0 right-0 z-20 flex">
           <button
             onClick={() => scroll("left")}
             className="p-4"
@@ -1340,7 +1340,7 @@ const ParallaxOutline = () => {
             style={{ width: "60vw", height: "auto" }}
           >
             <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
               style={{
                 height: "500px",
                 backgroundImage:
@@ -1360,7 +1360,7 @@ const ParallaxOutline = () => {
               </div>
             </div>
             <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
               style={{
                 height: "500px",
                 backgroundImage:
@@ -1379,7 +1379,7 @@ const ParallaxOutline = () => {
               </div>
             </div>
             <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
               style={{
                 height: "500px",
                 backgroundImage:
@@ -1393,15 +1393,15 @@ const ParallaxOutline = () => {
                     Frey fixed it and in record time. 1 1/2 yrs with
                     Invisalign’s. Highly recommended! Friendly staff and easy to
                     make appointments!
-                
-         
+
+
                   </h1>
                 </p>
                 <p className="text-center">Karen Oneill</p>
               </div>
             </div>
             <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
               style={{
                 height: "500px",
                 backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
@@ -1477,16 +1477,21 @@ const LogoGrid = () => {
     }
     isSphereCreated = true;
     console.log("createsphere");
-    const createSphere = () => {
+    const createSphere = async () => {
       let majorPlatformVersion;
       const canvasSphereWrapp = document.querySelector("#ballcanvas");
 
       if (navigator.userAgentData) {
         if (navigator.userAgentData.platform === "Windows") {
-          let ua = navigator.userAgentData.getHighEntropyValues([
-            "platformVersion",
-          ]);
-          majorPlatformVersion = parseInt(ua.platformVersion.split(".")[0]);
+          try {
+            let ua = await navigator.userAgentData.getHighEntropyValues([
+              "platformVersion",
+            ]);
+            majorPlatformVersion = parseInt(ua.platformVersion.split(".")[0]);
+          } catch (error) {
+            console.error("Failed to fetch platform version:", error)
+            majorPlatformVersion = undefined
+          }
         }
       }
 
@@ -1552,30 +1557,30 @@ const LogoGrid = () => {
         ballsWithText.push({ ball, text: texts[i] });
         Composite.add(engine.world, ball);
       }
-      Events.on(render, "afterRender", function () {
-        const ctx = render.context;
-        ballsWithText.forEach(({ ball, text }, index) => {
-          const position = ball.position;
+      // Events.on(render, "afterRender", function () {
+      //   const ctx = render.context;
+      //   ballsWithText.forEach(({ ball, text }, index) => {
+      //     const position = ball.position;
 
-          const image = new Image();
-          image.src = logos[Math.floor(index / 4)][index % 4];
-          const aspectRatio = image.width / image.height;
+      //     const image = new Image();
+      //     image.src = logos[Math.floor(index / 4)][index % 4];
+      //     const aspectRatio = image.width / image.height;
 
-          let imageWidth, imageHeight;
-          if (aspectRatio > 1) {
-            imageWidth = circleW;
-            imageHeight = circleW / aspectRatio;
-          } else {
-            imageWidth = circleW * aspectRatio;
-            imageHeight = circleW;
-          }
+      //     let imageWidth, imageHeight;
+      //     if (aspectRatio > 1) {
+      //       imageWidth = circleW;
+      //       imageHeight = circleW / aspectRatio;
+      //     } else {
+      //       imageWidth = circleW * aspectRatio;
+      //       imageHeight = circleW;
+      //     }
 
-          const destX = position.x - imageWidth / 2;
-          const destY = position.y - imageHeight / 2;
+      //     const destX = position.x - imageWidth / 2;
+      //     const destY = position.y - imageHeight / 2;
 
-          ctx.drawImage(image, destX, destY, imageWidth, imageHeight);
-        });
-      });
+      //     ctx.drawImage(image, destX, destY, imageWidth, imageHeight);
+      //   });
+      // });
 
       let mouse = Mouse.create(render.canvas),
         mouseConstraint = MouseConstraint.create(engine, {
@@ -1684,8 +1689,8 @@ const LogoGrid = () => {
           <div className="z-10" id="ballcanvas"></div>
         </div>
 
-        <div className="flex items-center justify-center flex-col">
-          <div className=" font-bold text-8xl uppercase">
+        <div className="flex flex-col items-center justify-center">
+          <div className="font-bold uppercase text-8xl">
             Awards & Recognition
           </div>
           <div class="mt-10 flex items-center">
@@ -1696,12 +1701,12 @@ const LogoGrid = () => {
           </div>
         </div>
 
-        <div className="h-80 flex">
+        <div className="flex h-80">
           <div
             className="bg-[#20282D] w-full"
             style={{ position: "absolute", bottom: 0 }}
           >
-            <h1 className=" animate-locationsCardMarquee tracking-wide text-white text-3xl font-neue-montreal font-bold  uppercase">
+            <h1 className="text-3xl font-bold tracking-wide text-white uppercase animate-locationsCardMarquee font-neue-montreal">
               &bull; COME SEE US AT ANY OF OUR FOUR LOCATIONS &bull; COME SEE US
               AT ANY OF OUR FOUR LOCATIONS &bull;
             </h1>
@@ -1714,7 +1719,7 @@ const LogoGrid = () => {
                     <img
                       src={logo}
                       alt={`Logo ${logoIndex + 1}`}
-                      className="h-14 w-auto"
+                      className="w-auto h-14"
                     />
                   </div>
                 ))}
@@ -1791,7 +1796,7 @@ function LocationGallery() {
             alt="Description"
           />
         </div>
-       
+
       </div>
     </div>
   );
@@ -2132,7 +2137,7 @@ function Locations() {
         <section
           ref={ref}
           id="locations"
-          className="flex flex-col justify-center w-full mx-auto  lg:flex-row max-w-7xl"
+          className="flex flex-col justify-center w-full mx-auto lg:flex-row max-w-7xl"
         >
           {/* LEFT */}
           <div className="z-10 lg:w-1/2 lg:py-0">
@@ -2177,7 +2182,7 @@ function Locations() {
                   : "Show All Locations"}
               </button>
 
-              <dl ref={scope} className=" divide-y ">
+              <dl ref={scope} className="divide-y ">
                 {locations.map((l, i) => (
                   <Disclosure
                     as="div"
