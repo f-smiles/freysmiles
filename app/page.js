@@ -156,8 +156,9 @@ tlLocations.fromTo(locations,
 gsap.set(locations, { clearProps: "transform" });
   return (
     <>
-      <div className="bg-[#E5DDDE]"
-      // style={{ backgroundColor }}
+      <div
+        className="bg-[#E5DDDE]"
+        // style={{ backgroundColor }}
       >
         <LogoHeader />
         <Hero />
@@ -166,19 +167,23 @@ gsap.set(locations, { clearProps: "transform" });
         <ImageGrid />
 
         <div className="sticky top-0 z-2">
-        <LocationGallery />
-</div>
-<div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
-    <LogoGrid />
-</div>
-<div className="bg-[#20282D] sticky top-0 z-1" id="locationGallery">
-<ParallaxOutline />
+          <LocationGallery />
+        </div>
+        <div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
+          <LogoGrid />
+        </div>
+        <div className="bg-[#20282D] sticky top-0 z-1" id="locationGallery">
+          <ParallaxOutline />
+        </div>
 
-</div>
+        {/* <div className="bg-[#E0D175] z-4 relative" id="locations">
+          <Locations />
+        </div> */}
 
-<div className="bg-[#E0D175] z-4 relative" id="locations">
-    <Locations />
-</div>
+        <div className="bg-[#E0D175] z-4 relative" id="locations">
+          <Test />
+        </div>
+
         <GiftCards />
       </div>
     </>
@@ -2292,7 +2297,7 @@ function GiftCards() {
   return (
     <section
       ref={ref}
-      className="z-10 h-[60dvh] relative my-24 group overflow-hidden hover:cursor-pointer"
+      className="z-10 h-[60dvh] relative group overflow-hidden hover:cursor-pointer"
       style={{
         transform: isInView ? "none" : "translateY(100px)",
         opacity: isInView ? 1 : 0,
@@ -2314,4 +2319,223 @@ function GiftCards() {
       />
     </section>
   );
+}
+
+function Test() {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: false })
+  const [scope, animate] = useAnimate()
+  const [selectedLocation, setSelectedLocation] = useState("All")
+  const [activeDisclosurePanel, setActiveDisclosurePanel] = useState(null)
+
+  function toggleDisclosurePanels(newPanel) {
+    if (activeDisclosurePanel) {
+      if (
+        activeDisclosurePanel.key !== newPanel.key &&
+        activeDisclosurePanel.open
+      ) {
+        activeDisclosurePanel.close();
+      }
+    }
+    setActiveDisclosurePanel({
+      ...newPanel,
+      open: !newPanel.open,
+    })
+  }
+
+  const locations = [
+    {
+      location: "Allentown",
+      addressLine1: "1251 S Cedar Crest Blvd",
+      addressLine2: "Suite 210 Allentown, PA 18103",
+      mapbox_map_title: "FreySmiles Allentown [w/ Colors]",
+      mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALLENTOWN,
+      hours: [
+        { Mon: "11:00 AM - 7:00 PM" },
+        { Tue: "11:00 AM - 7:00 PM" },
+        { Wed: "8:00 AM - 5:30 PM" },
+        { Thu: "7:00 AM - 4:30 PM" },
+      ],
+    },
+    {
+      location: "Bethlehem",
+      addressLine1: "2901 Emrick Boulevard",
+      addressLine2: "Bethlehem, PA 18020",
+      mapbox_map_title: "FreySmiles Bethlehem [w/ Colors]",
+      mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_BETHLEHEM,
+      hours: [{ Tue: "11:00 AM - 7:00 PM" }, { Thu: "7:00 AM - 4:30 PM" }],
+    },
+    {
+      location: "Schnecksville",
+      addressLine1: "4155 Independence Drive",
+      addressLine2: "Schnecksville, PA 18078",
+      mapbox_map_title: "FreySmiles Schnecksville [w/ Colors]",
+      mapbox_iframe_url:
+        process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_SCHNECKSVILLE,
+      hours: [
+        { Mon: "11:00 AM - 7:00 PM" },
+        { Tue: "11:00 AM - 7:00 PM" },
+        { Thu: "7:00 AM - 4:30 PM" },
+      ],
+    },
+    {
+      location: "Lehighton",
+      addressLine1: "1080 Blakeslee Blvd Dr E",
+      addressLine2: "Lehighton, PA 18235",
+      mapbox_map_title: "FreySmiles Lehighton [w/ Colors]",
+      mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_LEHIGHTON,
+      hours: [{ Mon: "11:00 AM - 7:00 PM" }, { Thu: "7:00 AM - 4:30 PM" }],
+    },
+  ]
+
+  useEffect(() => {
+    animate(
+      "div",
+      isInView
+        ? { opacity: 1, transform: "translateX(0px)", scale: 1 } // filter: "blur(0px)"
+        : { opacity: 0, transform: "translateX(-50px)", scale: 0.3 }, // filter: "blur(20px)"
+      {
+        duration: 0.2,
+        delay: isInView ? stagger(0.1, { startDelay: 0.15 }) : 0,
+      }
+    );
+  }, [isInView])
+
+  return (
+    <>
+      {/*
+        This example requires updating your template:
+
+        ```
+        <html class="h-full bg-white">
+        <body class="h-full">
+        ```
+      */}
+      <section ref={ref} className="relative lg:min-h-full">
+        <motion.div
+          className="overflow-hidden h-80 lg:absolute lg:right-0 lg:h-full lg:w-1/2"
+          style={{
+            opacity: isInView ? 1 : 0,
+            filter: isInView ? "blur(0px)" : "blur(16px)",
+            transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+          }}
+        >
+          <iframe
+            className="w-full h-full rounded-lg"
+            // width="100%"
+            // height="100%"
+            src={
+              selectedLocation === "All"
+                ? process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALL_LOCATIONS
+                : locations.find((l) => l.location === selectedLocation)
+                    .mapbox_iframe_url
+            }
+            title={
+              selectedLocation === "All"
+                ? "FreySmiles All Locations [w/ Colors]"
+                : locations.find((l) => l.location === selectedLocation)
+                    .mapbox_map_title
+            }
+          />
+        </motion.div>
+
+        <div>
+          <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
+            <div className="gap-8">
+              <h1 className="font-neue-montreal text-[40px] uppercase">Come see us at any of our four convenient locations or opt for a virtual consultation</h1>
+
+              {/* LOCATIONS LIST */}
+              <motion.div
+                className="flex flex-col mt-10"
+                style={{
+                  transform: isInView ? "none" : "translateX(-50px)",
+                  opacity: isInView ? 1 : 0,
+                  transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+                }}
+              >
+                <button
+                  className={`${
+                    selectedLocation === "All" ? "text-white " : ""
+                  } self-end transition-all duration-300 ease-linear w-max  hover:text-secondary-50 mr-6`}
+                  onClick={() => setSelectedLocation("All")}
+                >
+                  {selectedLocation === "All"
+                    ? "Showing All Locations"
+                    : "Show All Locations"}
+                </button>
+
+                <dl ref={scope} className="divide-y ">
+                  {locations.map((l, i) => (
+                    <Disclosure
+                      as="div"
+                      key={l.location}
+                      className={`${
+                        selectedLocation === l.location ? "text-primary-95" : ""
+                      } px-4 py-6 transition-all duration-300 ease-linear cursor-pointer  hover:text-white group text-white`}
+                    >
+                      {(panel) => {
+                        const { open, close } = panel;
+                        return (
+                          <>
+                            <Disclosure.Button
+                              className="grid w-full grid-cols-12 text-left sm:px-0"
+                              onClick={() => {
+                                if (!open) close();
+                                toggleDisclosurePanels({ ...panel, key: i });
+                                setSelectedLocation(l.location);
+                              }}
+                            >
+                              <dt className="col-span-5 ">
+                                <h6 className="text-xl">{l.location}</h6>
+                              </dt>
+                              <dd className="col-span-7">
+                                <span className="flex items-center justify-between">
+                                  <p>
+                                    {l.addressLine1}
+                                    <br />
+                                    {l.addressLine2}
+                                  </p>
+                                  <ChevronRightIcon className="w-4 h-4 ui-open:rotate-90 ui-open:transform" />
+                                </span>
+                              </dd>
+                            </Disclosure.Button>
+                            <Transition
+                              show={open}
+                              enter="transition-transform ease-out duration-300"
+                              enterFrom="transform scale-y-0 opacity-0"
+                              enterTo="transform scale-y-100 opacity-100"
+                              leave="transition-transform ease-in duration-200"
+                              leaveFrom="transform scale-y-100 opacity-100"
+                              leaveTo="transform scale-y-0 opacity-0"
+                            >
+                              <Disclosure.Panel
+                                as="div"
+                                className="grid grid-cols-12 mt-6"
+                              >
+                                <ul className="col-span-7 col-start-6 text-left">
+                                  <h6 className="mb-2 font-medium uppercase">
+                                    Office Hours:
+                                  </h6>
+                                  {l.hours.map((hour, index) => (
+                                    <li key={index}>
+                                      {Object.keys(hour)[0]}:{" "}
+                                      {Object.values(hour)[0]}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </Disclosure.Panel>
+                            </Transition>
+                          </>
+                        );
+                      }}
+                    </Disclosure>
+                  ))}
+                </dl>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  )
 }
