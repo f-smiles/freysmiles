@@ -50,6 +50,9 @@ module.exports = {
       'helvetica-now-thin': "Helvetica Now Thin",
       'larken': "Larken",
       'larken-italic': "Larken Italic",
+      'editorial-new': "Editorial New",
+      'agrandir-bold': "Agrandir Bold",
+      'agrandir-grandheavy': "Agrandir Grand Heavy",
     },
     extend: {
       fontSize: {
