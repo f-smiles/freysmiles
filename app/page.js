@@ -14,13 +14,10 @@ import {
   useAnimate,
   useInView,
   useScroll,
-  useSpring,
-  useTransform,
 } from "framer-motion";
 // headless ui
 import { Disclosure, Transition } from "@headlessui/react";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
-import MapPin from "./_components/ui/MapPin";
 import { SplitText } from "gsap-trial/all";
 gsap.registerPlugin(ScrollTrigger);
 
@@ -2424,12 +2421,13 @@ function Test() {
             className="w-full h-full rounded-lg"
             // width="100%"
             // height="100%"
-            src={
-              selectedLocation === "All"
-                ? process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALL_LOCATIONS
-                : locations.find((l) => l.location === selectedLocation)
-                    .mapbox_iframe_url
-            }
+            src={process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALL_LOCATIONS}
+            // src={
+            //   selectedLocation === "All"
+            //     ? process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_ALL_LOCATIONS
+            //     : locations.find((l) => l.location === selectedLocation)
+            //         .mapbox_iframe_url
+            // }
             title={
               selectedLocation === "All"
                 ? "FreySmiles All Locations [w/ Colors]"
@@ -2441,7 +2439,7 @@ function Test() {
 
         <div>
           <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
-            <div className="gap-8">
+            <div className="gap-8 lg:gap-16">
               <h1 className="font-neue-montreal text-[40px] uppercase">Come see us at any of our four convenient locations or opt for a virtual consultation</h1>
 
               {/* LOCATIONS LIST */}
