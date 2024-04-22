@@ -2275,7 +2275,7 @@ function Test() {
         <body class="h-full">
         ```
       */}
-      <section ref={ref} className="relative lg:min-h-full">
+      <div ref={ref} className="relative lg:min-h-full">
         <motion.div
           className="overflow-hidden h-80 lg:absolute lg:right-0 lg:h-full lg:w-1/2"
           style={{
@@ -2305,10 +2305,22 @@ function Test() {
         </motion.div>
 
         <div>
-          <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
-            <div className="gap-8 lg:gap-16">
-              <h1 className="font-neue-montreal text-[40px] uppercase">Come see us at any of our four convenient locations or opt for a virtual consultation</h1>
-
+          <div className="max-w-2xl px-4 py-16 mx-auto border sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
+            <div className="relative gap-8 border lg:gap-16 border-lime-500">
+              {/* <h1 className="font-neue-montreal text-[40px] uppercase">Come see us at any of our four convenient locations or opt for a virtual consultation</h1> */}
+              <svg
+                className="absolute top-0 left-0 right-0 border border-white rotate-12 w-36 h-36"
+                viewBox="0 0 254 107"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3 103.824C45.3292 106.086 85.2951 90.8282 118.182 63.953C129.508 54.6969 140.763 42.4172 147.387 29.1688C150.391 23.1616 154.398 11.338 149.274 5.78786C140.768 -3.42746 129.585 13.6307 125.893 19.9805C119.22 31.4586 124.234 53.8078 136.148 60.2613C158.264 72.2407 191.043 69.3799 215.315 68.3011C225.006 67.8703 234.869 65.4297 244.439 65.4297C248.152 65.4297 239.179 60.7699 237.794 59.5229C229.618 52.165 229.186 52.3018 239.27 58.7846C240.667 59.6823 250.92 65.2052 250.92 66.168C250.92 66.84 233.48 79.6822 231.887 81.6733"
+                  stroke="currentColor"
+                  stroke-width="5"
+                  stroke-linecap="round"
+                />
+              </svg>
               {/* LOCATIONS LIST */}
               <motion.div
                 className="flex flex-col mt-10"
@@ -2400,7 +2412,7 @@ function Test() {
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </>
-  )
+  );
 }
