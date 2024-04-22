@@ -1,5 +1,5 @@
-'use client'
-import { useEffect, useRef, } from "react";
+"use client";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 export default function Canvas() {
@@ -113,7 +113,7 @@ export default function Canvas() {
 
     function resize() {
       let size = Math.min(window.innerWidth, window.innerHeight) * 0.8;
-      if(size > 512) size = 512;
+      if (size > 512) size = 512;
       canvas.width = size;
       canvas.height = size * 2;
     }
@@ -180,5 +180,7 @@ export default function Canvas() {
     };
   }, []);
 
-  return (<canvas ref={canvasRef} className="border rounded-full border-zinc-800" />)
+  return (
+    <canvas ref={canvasRef} className="border rounded-full border-zinc-800" />
+  );
 }
