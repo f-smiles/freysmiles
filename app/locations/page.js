@@ -71,6 +71,11 @@ export default function Test() {
     },
   ]
 
+  const handleShowAllLocations = () => {
+    activeDisclosurePanel.close()
+    setSelectedLocation("All")
+  }
+
   useEffect(() => {
     animate(
       "div",
@@ -156,7 +161,7 @@ export default function Test() {
                   className={`${
                     selectedLocation === "All" ? "text-[#147b5d]" : ""
                   } self-end transition-all duration-300 ease-linear w-max mr-6 mb-6 underline underline-offset-4 hover:text-[#147b5d]`}
-                  onClick={() => setSelectedLocation("All")}
+                  onClick={handleShowAllLocations}
                 >
                   {selectedLocation === "All"
                     ? "Showing All Locations"
@@ -194,7 +199,7 @@ export default function Test() {
                                     <br />
                                     {l.addressLine2}
                                   </p>
-                                  <ChevronRightIcon className="w-4 h-4 ui-open:rotate-90 ui-open:transform" />
+                                  <ChevronRightIcon className="w-6 h-6 ui-open:rotate-90 ui-open:transform text-[#ff6432]" />
                                 </span>
                               </dd>
                             </Disclosure.Button>
@@ -211,8 +216,8 @@ export default function Test() {
                                 as="div"
                                 className="grid grid-cols-12"
                               >
-                                <ul className="col-span-7 col-start-6 text-left">
-                                  <h6 className="mb-2 font-medium uppercase">
+                                <ul className="col-span-7 col-start-6 text-left text-[#147b5d] mt-4 mb-2">
+                                  <h6 className="font-medium uppercase">
                                     Office Hours:
                                   </h6>
                                   {l.hours.map((hour, index) => (
