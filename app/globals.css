@@ -203,7 +203,15 @@ input:-webkit-autofill {
     @apply text-lg;
   }
 }
-
+.curtains-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  pointer-events: none;
+}
 
 .underline-custom {
   position: relative;
@@ -2586,18 +2594,6 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
 }
 
 
-.large-text {
-  position: absolute;           
-  bottom: 0;               
-  left: 0;
-  right: 0;
-  height: 50vh;              
-  display: flex;
-  align-items: center;     
-  justify-content: center;  
-  color: #E0F291;           
-  z-index: 2;
-}
 
 
 .sliderMainPage-slider {
@@ -2888,8 +2884,191 @@ justify-content: center;
   border-radius: 100px;
   padding: 20px 10px;
   position: relative;
-
- 
 }
 
 
+
+.carousel-wrapper, .carousel-obj {
+  position: relative;
+  height: 100vh;
+}
+
+.carousel-active .carousel-picture {
+  background: red;
+}
+
+.carousel-wrapper {
+  white-space: nowrap;
+  font-size: 0;
+}
+
+.carousel-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  background-color: #fff;
+  width: 100%;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.carousel-obj {
+  display: inline-block;
+  width: 50vw;
+  margin-left: 20vw;
+}
+
+.carousel-obj:first-of-type {
+  margin-left: 25vw;
+}
+
+.carousel-obj:last-of-type {
+  margin-right: 25vw;
+}
+
+.carousel-cover {
+  position: absolute;
+  width: 100%;
+  height: 25vw;
+  top: 50%;
+  transform: translateY(-50%);
+  backface-visibility: hidden;
+}
+
+.carousel-picture {
+  background-color: #212121;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: all 1s;
+}
+.carousel-title {
+  display: inline-block;
+  position: absolute;
+  top: 10%; /* Adjust this value to move down from the top */
+  left: 10%;  
+  z-index: 10;
+  font-family: 'Canela', sans-serif;
+  font-style: Thin;
+  font-size: 4vw;
+  letter-spacing: .14vw;
+  color: #fff;
+  text-decoration: none;
+  backface-visibility: hidden;
+}
+
+
+
+
+.button {
+  background-color:#F1F1F1;
+  border: none;
+  border-radius: 100px;
+  color: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  height: 50px;
+  min-width: 240px;
+  overflow: hidden;
+  padding: 0 15px;
+  position: relative;
+ }
+ 
+
+ 
+ .button--marquee {
+  &::after,
+  &::before {
+   animation: marquee 12s linear infinite;
+   color: #2E2A27;
+   content: attr(data-text);
+   line-height: 50px;
+   position: absolute;
+   top: 0;
+   width: 100%;
+   will-change: transform;
+ 
+   @media (prefers-reduced-motion) {
+    animation: none;
+   }
+  }
+ 
+  &::after {
+   left: 100%;
+  }
+ 
+  &::before {
+   left: 0;
+  }
+ 
+  &:hover {
+   &::after,
+   &::before {
+    animation-play-state: paused;
+   }
+  }
+ }
+ 
+ 
+ 
+ @keyframes marquee {
+   from {
+     transform: translate3d(0, 0, 0);
+   }
+ 
+   to {
+     transform: translate3d(-100%, 0, 0);
+   }
+ }
+ 
+ 
+
+ 
+ 
+
+.book-text {
+  font-family: "NimbusSanL-Reg";
+  font-weight: 800;
+  font-size: 24px;
+  letter-spacing: 5px;
+  fill: #FF5741;
+  text-transform: uppercase;
+}
+
+@keyframes spin {
+  from {
+      transform: rotate(0deg);
+  }
+  to {
+      transform: rotate(360deg);
+  }
+}
+
+
+.book-svg {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+  animation: spin 15s infinite;
+  animation-timing-function: linear;
+}
+
+
+@keyframes marquee-slide {
+  from {
+      transform: translateX(0);
+  }
+  to {
+      transform: translateX(-50%);
+  }
+}
+
+
+@keyframes rotor-spin {
+  from {
+      transform: rotate3d(0.3, 1, 0.1, 0deg);
+  }
+  to {
+      transform: rotate3d(0.15, 1, 0.1, 360deg);
+  }
+}

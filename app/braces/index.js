@@ -82,10 +82,16 @@
 
 // export default Braces;
 "use client";
+import {Application} from 'pixi.js';
+import { BulgePinchFilter } from 'pixi-filters';
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import LocomotiveScroll from "locomotive-scroll";
 import { gsap, Power3 } from "gsap-trial";
 import Lenis from "@studio-freight/lenis";
+import { Draggable } from 'gsap/Draggable';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(Draggable, ScrollTrigger);
 
 const Braces = () => {
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(null);
@@ -292,10 +298,198 @@ useEffect(() => {
     document.body.style.overflow = '';
   };
 }, []);
+const wrapperRef = useRef(null);
+const objsRef = useRef([]);
 
+useEffect(() => {
+    const updatePositions = () => {
+        const wrapperLeft = -wrapperRef.current.scrollLeft + window.innerWidth / 2;
+        objsRef.current.forEach((obj, index) => {
+            if (obj.offsetLeft < wrapperLeft) {
+                objsRef.current.forEach(o => o.classList.remove('active'));
+                obj.classList.add('active');
+            }
+        });
+    };
+
+    const draggable = Draggable.create(wrapperRef.current, {
+        type: "scrollLeft",
+        edgeResistance: 0.9,
+        throwProps: true,
+        maxDuration: 2,
+        minDuration: 1.2,
+        onThrowUpdate: updatePositions,
+        snap: (value) => {
+            return Math.round(value / (window.innerWidth * 0.7)) * (window.innerWidth * 0.7);
+        }
+    });
+
+
+    gsap.set(wrapperRef.current, { overflow: "hidden" });
+
+    return () => {
+        draggable[0].kill();
+    };
+}, []);
+
+
+const [resized, setResized] = useState(true);
+const [updatePosition, setUpdatePosition] = useState(true);
+const mainRef = useRef(null);
+const viewRef = useRef(null);
+const textRef = useRef(null);
+
+useEffect(() => {
+  const main = mainRef.current;
+  const view = viewRef.current;
+
+  if (!main || !view) return; // Ensure refs are available
+
+  const h = window.innerWidth;
+  const maskSpeed = 0.06;
+  const maskRadius = h / 5;
+
+  const app = new Application();({
+    width: mainRef.current.clientWidth,
+    height: mainRef.current.clientHeight,
+    antialias: true,
+    view: viewRef.current
+  });
+
+  if (!app || !app.renderer) return;
+  const renderer = app.renderer; // Move the screen initialization inside useEffect
+  const bgSize = new PIXI.Rectangle(0, 0, 1920, 1080);
+  const pointer = new PIXI.Point(screen.width / 2, screen.height / 2);
+
+  const mask = new PIXI.Graphics()
+    .beginFill(0xFFFFFF, 1)
+    .drawCircle(0, 0, maskRadius)
+    .endFill();
+
+  const maskPosition = mask.position;
+
+  const bulgeCenter = new PIXI.Point(0.5, 0.5);
+  const bulgeFilter = new BulgePinchFilter(bulgeCenter, maskRadius, 0.425);
+
+  const bgContainer = new PIXI.Container();
+  const bgTexture = PIXI.Texture.from('https://raw.githubusercontent.com/Efetivos/gallery/master/avulsos/Web%201366-test.png');
+
+  const bg1 = PIXI.Sprite.from('https://raw.githubusercontent.com/Efetivos/gallery/master/avulsos/Web%201366-test%20%E2%80%93%201.png');
+  bg1.anchor.set(0.5);
+
+  const bg3 = new PIXI.Sprite(bgTexture);
+  bg3.anchor.set(0.5);
+  bg3.filters = [bulgeFilter];
+  bg3.filterArea = screen;
+  bg3.mask = mask;
+
+  bgContainer.addChild(bg1, bg3);
+
+  const tl = new TimelineMax();
+  buildTimeline();
+
+  tl.reverse().timeScale(2);
+
+  let resized = true;
+  let updatePosition = true;
+
+  app.stage.interactive = true;
+  app.stage.filterArea = screen;
+  app.stage.addChild(bgContainer, mask);
+
+  app.stage
+    .on("pointerdown", onPointerMove)
+    .on("pointermove", onPointerMove);
+
+  app.ticker.add(onTick);
+  window.addEventListener("resize", () => resized = true);
+  textRef.current.addEventListener("click", () => tl.reversed(!tl.reversed()));
+
+  //
+  // ON TICK
+  // ===========================================================================
+  function onTick(delta) {
+    if (resized) {
+      onResize();
+      updatePosition = true;
+      resized = false;
+    }
+
+    if (updatePosition) {
+      const dx = pointer.x - maskPosition.x;
+      const dy = pointer.y - maskPosition.y;
+
+      if (Math.abs(dx) < 0.05 && Math.abs(dy) < 0.05) {
+        maskPosition.copy(pointer);
+        updatePosition = false;
+      } else {
+        const dt = 1 - Math.pow(1 - maskSpeed, delta);
+        maskPosition.x += dx * dt;
+        maskPosition.y += dy * dt;
+      }
+
+      bulgeCenter.x = maskPosition.x / screen.width;
+      bulgeCenter.y = maskPosition.y / screen.height;
+    }
+  }
+
+  function onResize() {
+    const width = main.clientWidth;
+    const height = main.clientHeight;
+
+    const scaleX = width / bgSize.width;
+    const scaleY = height / bgSize.height;
+    const scale = Math.max(scaleX, scaleY);
+
+    app.renderer.resize(width, height);
+
+    bgContainer.scale.set(scale);
+    bgContainer.position.set(width / 2, height / 2);
+
+    pointer.x = clamp(pointer.x, 0, width);
+    pointer.y = clamp(pointer.y, 0, height);
+
+    buildTimeline();
+  }
+
+  function buildTimeline() {
+    const ease = Power3.easeInOut;
+    const size = Math.sqrt(screen.width * screen.width + screen.height * screen.height);
+    const scale = size / maskRadius;
+
+    const progress = tl.progress() || 0;
+    const reversed = tl.reversed() || false;
+
+    tl.progress(0).clear()
+      .to(bulgeFilter, 3, { strength: 0, ease }, 0)
+      .to(mask, 4, { pixi: { scale }, ease }, 0)
+      .to(bg1, 2, { alpha: 0, ease }, 2)
+      .progress(progress)
+      .reversed(reversed);
+  }
+
+  function onPointerMove(eventData) {
+    pointer.copy(eventData.data.global);
+    updatePosition = true;
+  }
+
+  function clamp(value, min, max) {
+    return value <= min ? min : (value >= max ? max : value);
+  }
+
+  // Cleanup function
+  return () => {
+    // Remove event listeners or perform any necessary cleanup here
+    window.removeEventListener("resize", () => resized = true);
+  };
+}, []);
   return (
     <>
       <div className="bg-[#FFFCF8] #e9e8e6">
+      <div ref={mainRef} id="view" className="w-full h-full">
+      <canvas ref={viewRef} id="text" className="ctn-text w-full h-full"></canvas>
+
+    </div>
         <div>
           <div className="font-poppins container is-hero">
             {" "}
@@ -348,7 +542,186 @@ useEffect(() => {
             </div>
           </div>
         </div>
-       
+             <div>
+            <div className="carousel-line"></div>
+            <div className="carousel-wrapper" ref={wrapperRef}>
+                <div id="obj_1" className="carousel-obj carousel-active">
+                    <div className="carousel-cover" data-velocity="-10">
+                        <div className="carousel-picture"></div>
+                        <a className="carousel-title parallax" data-velocity="-50" href="#"><div>Home 1</div></a>
+                    </div>
+                </div>
+                <div id="obj_2" className="carousel-obj">
+                    <div className="carousel-cover" data-velocity="-10">
+                        <div className="carousel-picture"></div>
+                        <a className="carousel-title parallax" data-velocity="-50" href="#"><div>About 2</div></a>
+                    </div>
+                </div>
+                <div id="obj_3" className="carousel-obj">
+                    <div className="carousel-cover" data-velocity="-10">
+                        <div className="carousel-picture"></div>
+                        <a className="carousel-title parallax" data-velocity="-50" href="#"><div>Service 3</div></a>
+                    </div>
+                </div>
+                <div id="obj_4" className="carousel-obj">
+                    <div className="carousel-cover" data-velocity="-10">
+                        <div className="carousel-picture"></div>
+                        <a className="carousel-title parallax" data-velocity="-50" href="#"><div>News 4</div></a>
+                    </div>
+                </div>
+                <div id="obj_5" className="carousel-obj">
+                    <div className="carousel-cover" data-velocity="-10">
+                        <div className="carousel-picture"></div>
+                        <a className="carousel-title parallax" data-velocity="-50" href="#"><div>Events 5</div></a>
+                    </div>
+                </div>
+                <div id="obj_6" className="carousel-obj">
+                    <div className="carousel-cover" data-velocity="-10">
+                        <div className="carousel-picture"></div>
+                        <a className="carousel-title parallax" data-velocity="-50" href="#"><div>Contact 6</div></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        {/* <div  style={{
+        height: '100vh', 
+        overflowY: 'scroll',
+        padding: 0,
+        margin: 0,
+        backgroundColor: '#111',
+        userSelect: 'none',
+        boxSizing: 'border-box'
+      }} className="scrolle" ref={scrollContainerRef} data-scroll>
+ 
+ <div class="scrollHorizontal-content" data-scroll-content>
+    <article className="horizontalSlide horizontalSlide--1 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__img js-transition-img">
+         <figure className="js-transition-img__inner">
+           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-one.png" draggable="false" />
+         </figure>
+       </div>
+     </div>
+   </article>
+   
+   <article className="horizontalSlide horizontalSlide--2 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__img js-transition-img">
+         <figure className="js-transition-img__inner">
+           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-two.png" draggable="false" />
+         </figure>
+       </div>
+     </div>
+   </article>
+   
+   <article className="horizontalSlide horizontalSlide--3 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__img">
+         <figure>
+           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-three.png" draggable="false" />
+         </figure>
+       </div>
+     </div>
+   </article>
+ <article className="horizontalSlide horizontalSlide--1 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__img js-transition-img">
+         <figure className="js-transition-img__inner">
+           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-one.png" draggable="false" />
+         </figure>
+       </div>
+     </div>
+   </article>
+   
+   <article className="horizontalSlide horizontalSlide--2 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__img js-transition-img">
+         <figure className="js-transition-img__inner">
+           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-two.png" draggable="false" />
+         </figure>
+       </div>
+     </div>
+   </article>
+   
+   <article className="horizontalSlide horizontalSlide--3 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__img">
+         <figure>
+           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/project-three.png" draggable="false" />
+         </figure>
+       </div>
+     </div>
+   </article>
+ </div>  
+ 
+
+ <div class="scrollHorizontal-content scrollHorizontal-content--last" data-scroll-content>
+   
+ <article className="horizontalSlide horizontalSlide--1 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__sub-title"><span>Project</span></div>
+       <h1 className="horizontalSlide__title"><div className="js-transition-title">Oak Refuge</div></h1>
+       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
+       <div className="horizontalSlide__project">Corpus Studio</div>
+     </div>
+   </article>
+   
+   <article className="horizontalSlide horizontalSlide--2 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__sub-title"><span>Project</span></div>
+       <h1 className="horizontalSlide__title"><div className="js-transition-title">Teton Residence</div></h1>
+       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
+       <div className="horizontalSlide__project">Ro Rocket Design</div>
+     </div>
+   </article>
+   
+   <article className="horizontalSlide horizontalSlide--3 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__sub-title"><span>Project</span></div>
+       <h1 className="horizontalSlide__title">Oak Refuge</h1>
+       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
+       <div className="horizontalSlide__project">Corpus Studio</div>
+     </div>
+   </article>
+   <article className="horizontalSlide horizontalSlide--1 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__sub-title"><span>Project</span></div>
+       <h1 className="horizontalSlide__title"><div className="js-transition-title">Oak Refuge</div></h1>
+       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
+       <div className="horizontalSlide__project">Corpus Studio</div>
+     </div>
+   </article>
+   
+   <article className="horizontalSlide horizontalSlide--2 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__sub-title"><span>Project</span></div>
+       <h1 className="horizontalSlide__title"><div className="js-transition-title">Teton Residence</div></h1>
+       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
+       <div className="horizontalSlide__project">Ro Rocket Design</div>
+     </div>
+   </article>
+   
+   <article className="horizontalSlide horizontalSlide--3 js-slide">
+     <div className="horizontalSlide__inner">
+       <div className="horizontalSlide__sub-title"><span>Project</span></div>
+       <h1 className="horizontalSlide__title">Oak Refuge</h1>
+       <div className="horizontalSlide__img horizontalSlide__img--proxy"></div>
+       <div className="horizontalSlide__project">Corpus Studio</div>
+     </div>
+   </article>
+   
+ </div>
+ 
+ <div class="scrollbar" data-scrollbar>
+   <div class="scrollbar__handle js-scrollbar__handle"></div>
+ </div>
+ 
+</div> */}
 
         {/* <main data-scroll-container >
 

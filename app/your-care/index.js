@@ -1,13 +1,16 @@
 "use client";
 import * as THREE from "three";
+import * as PIXI from 'pixi.js';
 import Layout from "./layout.js";
 import { SplitText } from "gsap-trial/all";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { gsap, Power3 } from "gsap-trial";
+
+import { gsap, TweenLite, TimelineMax, Sine } from 'gsap';
 
 const YourCare = () => {
+
   const canvasRef = useRef();
 
   useEffect(() => {
@@ -576,10 +579,94 @@ const YourCare = () => {
       horizontalMainTl.kill();
     };
   }, []);
+
+  const stageRef = useRef(null);
+
+  useEffect(() => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const app = new PIXI.Application({
+      view: stageRef.current,
+      resolution: window.devicePixelRatio || 1,
+      backgroundColor: 0x000000,
+      antialias: true,
+      autoResize: true,
+      width: vw,
+      height: vh
+    });
+
+    // Use PIXI.Assets to load assets
+    PIXI.Assets.add('bubble', `${baseUrl}bubble256.png?v=1`);
+    PIXI.Assets.add('rain', 'https://i.imgur.com/Hyn0A2H.jpg');
+    PIXI.Assets.add('displacement', `${baseUrl}displacementmap.png?v=1`);
+    PIXI.Assets.load().then(() => {
+      init();
+    });
+
+    function init() {
+      const rainTexture = PIXI.Assets.get('rain').texture;
+      const bubbleTexture = PIXI.Assets.get('bubble').texture;
+      const displacementTexture = PIXI.Assets.get('displacement').texture;
+
+      const background = new PIXI.Sprite(rainTexture);
+      background.width = vw;
+      background.height = vh;
+
+      const bubble1 = new PIXI.Sprite(bubbleTexture);
+      const bubble2 = new PIXI.Sprite(bubbleTexture);
+
+      const bubbleContainer1 = new PIXI.Container();
+      const bubbleContainer2 = new PIXI.Container();
+
+      const displacementSprite1 = new PIXI.Sprite(displacementTexture);
+      const displacementSprite2 = new PIXI.Sprite(displacementTexture);
+
+      const displacementFilter1 = new PIXI.filters.DisplacementFilter(displacementSprite1);
+      const displacementFilter2 = new PIXI.filters.DisplacementFilter(displacementSprite2);
+
+      bubbleContainer1.addChild(displacementSprite1, bubble1);
+      bubbleContainer2.addChild(displacementSprite2, bubble2);
+
+      TweenMax.set([bubbleContainer1, bubbleContainer2], { x: vw / 2, y: vh / 2 });
+      TweenMax.set([displacementSprite1, displacementSprite2], { pixi: { scale: 0.625 }});    
+      TweenMax.set([displacementSprite1, displacementSprite2, bubble1, bubble2], { pixi: { anchor: 0.5 }});  
+
+      displacementFilter1.scale.set(20);
+      displacementFilter2.scale.set(100);
+
+      app.stage.addChild(background, bubbleContainer1, bubbleContainer2);
+      
+      app.stage.filters = [
+        displacementFilter1,
+        displacementFilter2
+      ];
+
+      const tl = new TimelineMax({ repeat: -1, repeatDelay: 0.5, yoyo: true })
+        .to([bubble1, bubble2], 6, { pixi: { rotation: 360 }, ease: Sine.easeInOut }, 0.5)
+        .fromTo(bubbleContainer1, 6, { pixi: { x: (vw / 2) - 300, y: (vh / 2) - 150, scale: 1 }}, { pixi: { x: (vw / 2) + 300, y: (vh / 2) + 150, scale: 0.6 }, ease: Sine.easeInOut }, 0.5)
+        .fromTo(bubbleContainer2, 6, { pixi: { x: (vw / 2) - 200, y: (vh / 2) + 150, scale: 1 }}, { pixi: { x: (vw / 2) + 200, y: (vh / 2) - 150, scale: 1.2 }, ease: Sine.easeInOut }, 0.5)
+        .to(displacementFilter1, 5, { pixi: { scale: 40 }, ease: Sine.easeInOut}, 1.5);
+
+      window.addEventListener("resize", () => {
+        const newVw = window.innerWidth;
+        const newVh = window.innerHeight;
+        app.renderer.resize(newVw, newVh);
+        background.width = newVw;
+        background.height = newVh;
+      });
+    }
+
+    return () => {
+      app.destroy(true, true);
+    };
+  }, []);
+  const baseUrl = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/";
   
   return (
     <>
       <Layout>
+
       <div class="nav_bar sticky">
             <div class="nav_top-logo">
               <div class="nav_logo-embed w-embed"></div>
@@ -598,11 +685,17 @@ const YourCare = () => {
               </div>
             </div>
           </div>
+         
         <div className="horizontal-scroll-section" ref={sectionRef}>
-        
+   
 
           <div className="section-wrapper">
-            <div className="relative pagesection ">
+            
+          <div id="stage" />
+            <div className="bg-[#F1F1F1] relative pagesection">
+<img className="py-40 px-40 rounded-full" src="../images/skyclouds.jpeg"></img>
+            </div>
+            <div className="relative pagesection">
               <div className="min-h-screen   relative">
                 <div ref={canvasRef} className="w-32 h-32"></div>
                 <div
