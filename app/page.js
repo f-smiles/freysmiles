@@ -1,6 +1,9 @@
 "use client";
+import { gsap } from 'gsap';
+import * as THREE from "three";
 import Matter from "matter-js";
 import Link from "next/link";
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import {
   useRef,
   useEffect,
@@ -9,8 +12,6 @@ import {
   useCallback,
 } from "react";
 import LocomotiveScroll from "locomotive-scroll";
-// gsap
-import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 // framer motion
@@ -38,71 +39,71 @@ SwiperCore.use([Navigation]);
 gsap.registerPlugin(ScrollTrigger);
 
 export default function LandingComponent() {
-  // const [backgroundColor, setBackgroundColor] = useState("transparent");
-  // useEffect(() => {
-  //   setBackgroundColor("rgb(223,190,196)");
-  //   const handleScroll = () => {
-  //     const scrollPosition = window.scrollY;
-  //     const transitionStart = 40;
-  //     const transitionEnd =
-  //       document.documentElement.scrollHeight - window.innerHeight;
+  const [backgroundColor, setBackgroundColor] = useState("transparent");
+  useEffect(() => {
+    setBackgroundColor("rgb(239,233,232)");
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const transitionStart = 40;
+      const transitionEnd =
+        document.documentElement.scrollHeight - window.innerHeight;
 
-  //     const colorTransitions = [
-  //       {
-  //         start: transitionStart,
-  //         end: transitionEnd * 0.25,
-  //         colorStart: [223, 190, 196],
-  //         colorEnd: [255, 197, 184],
-  //       },
-  //       {
-  //         start: transitionEnd * 0.25,
-  //         end: transitionEnd * 0.5,
-  //         colorStart: [255, 197, 184],
-  //         colorEnd: [216, 191, 215],
-  //       },
-  //       {
-  //         start: transitionEnd * 0.5,
-  //         end: transitionEnd * 0.75,
-  //         colorStart: [216, 191, 215],
-  //         colorEnd: [241, 239, 235],
-  //       },
-  //       {
-  //         start: transitionEnd * 0.75,
-  //         end: transitionEnd,
-  //         colorStart: [241, 239, 235],
-  //         colorEnd: [241, 239, 234],
-  //       },
-  //     ];
+      const colorTransitions = [
+        {
+          start: transitionStart,
+          end: transitionEnd * 0.25,
+          colorStart: [239,233,232],
+          colorEnd: [229,222,224],
+        },
+        {
+          start: transitionEnd * 0.25,
+          end: transitionEnd * 0.5,
+          colorStart: [229,222,224],
+          colorEnd: [211,202,210],
+        },
+        {
+          start: transitionEnd * 0.5,
+          end: transitionEnd * 0.75,
+          colorStart: [ 211,202,210],
+          colorEnd: [211,202,210],
+        },
+        {
+          start: transitionEnd * 0.75,
+          end: transitionEnd,
+          colorStart: [211,202,210],
+          colorEnd: [211,202,210],
+        },
+      ];
 
-  //     const currentTransition = colorTransitions.find((transition) => {
-  //       return (
-  //         scrollPosition >= transition.start && scrollPosition < transition.end
-  //       );
-  //     });
+      const currentTransition = colorTransitions.find((transition) => {
+        return (
+          scrollPosition >= transition.start && scrollPosition < transition.end
+        );
+      });
 
-  //     if (currentTransition) {
-  //       const progress =
-  //         (scrollPosition - currentTransition.start) /
-  //         (currentTransition.end - currentTransition.start);
-  //       const scrollPercentage = Math.min(1, Math.max(0, progress));
+      if (currentTransition) {
+        const progress =
+          (scrollPosition - currentTransition.start) /
+          (currentTransition.end - currentTransition.start);
+        const scrollPercentage = Math.min(1, Math.max(0, progress));
 
-  //       const interpolatedColor = currentTransition.colorStart.map(
-  //         (start, i) => {
-  //           const end = currentTransition.colorEnd[i];
-  //           return Math.round(start + (end - start) * scrollPercentage);
-  //         }
-  //       );
+        const interpolatedColor = currentTransition.colorStart.map(
+          (start, i) => {
+            const end = currentTransition.colorEnd[i];
+            return Math.round(start + (end - start) * scrollPercentage);
+          }
+        );
 
-  //       setBackgroundColor(`rgb(${interpolatedColor.join(",")})`);
-  //     }
-  //   };
+        setBackgroundColor(`rgb(${interpolatedColor.join(",")})`);
+      }
+    };
 
-  //   window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
-  //   return () => {
-  //     window.removeEventListener("scroll", handleScroll);
-  //   };
-  // }, []);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const { scrollYProgress } = useScroll();
   gsap.registerPlugin(ScrollTrigger);
@@ -197,7 +198,7 @@ export default function LandingComponent() {
   return (
     <>
       <div
-        className="bg-[#E5DDDE] bg-[#E0D175]"
+        style={{ backgroundColor }} className="bg-[#EFE9E8] bg-[#E0D175]"
         // style={{ backgroundColor }}
       >
         <LogoHeader />
@@ -505,20 +506,216 @@ function Hero() {
   }, []);
 
   const pixiContainerRef = useRef();
-  const mouseRef = useRef(null);
+  // const mouseRef = useRef(null);
 
+  // useEffect(() => {
+  //   document.body.addEventListener('mousemove', (e) => {
+  //     gsap.to("#mouse > span", {
+  //       duration: 1,
+  //       x: e.pageX - 150, 
+  //       y: e.pageY - 150,
+  //       ease: "expo.out",
+  //       stagger: 0.005
+  //     });
+  //   });
+  // }, []);
+  const vertexSrc = `
+  precision mediump float;
+  attribute vec4 position;
+  varying vec2 vUv;
+  void main() {
+      gl_Position = position;
+      vUv = vec2((position.x + 1.)/2., (-position.y + 1.)/2.);
+  }
+  `;
+  
+  const fragmentSrc = `
+  precision mediump float;
+  uniform float uTrans;
+  uniform sampler2D uTexture0;
+  uniform sampler2D uTexture1;
+  uniform sampler2D uDisp;
+  varying vec2 vUv;
+  float quarticInOut(float t) {
+      return t < 0.5 ? +8.0 * pow(t, 4.0) : -8.0 * pow(t - 1.0, 4.0) + 1.0;
+  }
+  void main() {
+      vec4 disp = texture2D(uDisp, vec2(0., 0.5) + (vUv - vec2(0., 0.5)) * (0.2 + 0.8 * (1.0 - uTrans)));
+      float trans = clamp(1.6 * uTrans - disp.r * 0.4 - vUv.x * 0.2, 0.0, 1.0);
+      trans = quarticInOut(trans);
+      vec4 color0 = texture2D(uTexture0, vec2(0.5 - 0.3 * trans, 0.5) + (vUv - vec2(0.5)) * (1.0 - 0.2 * trans));
+      vec4 color1 = texture2D(uTexture1, vec2(0.5 + sin((1. - trans) * 0.1), 0.5) + (vUv - vec2(0.5)) * (0.9 + 0.1 * trans));
+      gl_FragColor = mix(color0, color1 , trans);
+  }
+  `
+  
+  const assetUrls = [
+    '../images/smilegirl.jpg',
+    '../images/1024mainsectionimage.jpg',
+    'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1600187/waterTemp.jpg'
+  ];
+  
+  const canvasRef = useRef(null);
+  const obj = useRef({ trans: 0 });
+  
   useEffect(() => {
-    document.body.addEventListener('mousemove', (e) => {
-      gsap.to("#mouse > span", {
-        duration: 1,
-        x: e.pageX - 150, 
-        y: e.pageY - 150,
-        ease: "expo.out",
-        stagger: 0.005
-      });
-    });
-  }, []);
+    const canvas = canvasRef.current;
+    canvas.style.width = 1024
+    const gl = canvas.getContext('webgl');
+    let cnt = 0;
+    let textureArr = [];
+  
+    let program = gl.createProgram();
+  
+  
+    const vShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vShader, vertexSrc);
+    gl.compileShader(vShader);
+  
+    const fShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fShader, fragmentSrc);
+    gl.compileShader(fShader);
+  
+  
+    gl.attachShader(program, vShader);
+    gl.deleteShader(vShader);
+    gl.attachShader(program, fShader);
+    gl.deleteShader(fShader);
+    gl.linkProgram(program);
+  
+    const vertices = new Float32Array([
+      -1, -1,
+      1, -1,
+      -1, 1,
+      1, -1,
+      -1, 1,
+      1, 1,
+    ]);
+  
+    const vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    const vertexLocation = gl.getAttribLocation(program, 'position');
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+  
+  
+    const uTransLoc = gl.getUniformLocation(program, 'uTrans');
+    const textureLocArr = [
+      gl.getUniformLocation(program, 'uTexture0'),
+      gl.getUniformLocation(program, 'uTexture1'),
+      gl.getUniformLocation(program, 'uDisp')
+    ];
+  
+    const obj = { trans: 0 };
+  
+    function start() {
+      loop();
+    }
+  
+    function loop() {
+      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+  
+      gl.useProgram(program);
+  
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.vertexAttribPointer(
+        vertexLocation, 2, gl.FLOAT, false, 0, 0)
+      gl.enableVertexAttribArray(vertexLocation);
+  
+      textureArr.forEach((texture, index) => {
+        gl.activeTexture(gl.TEXTURE0 + index);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.uniform1i(textureLocArr[index], index);
+      })
+  
+      gl.uniform1f(uTransLoc, obj.trans);
+  
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+  
+      requestAnimationFrame(loop);
+    }
+  
+    function resize() {
+      const aspectRatio = 1 / 2; 
+      const maxWidth = 512; 
+      const minHeight = 300; 
 
+      let width = Math.min(window.innerWidth, window.innerHeight * aspectRatio);
+      let height = width / aspectRatio;
+
+      if (height < minHeight) {
+          height = minHeight;
+          width = height * aspectRatio;
+      }
+  
+      if (width > maxWidth) {
+          width = maxWidth;
+          height = width / aspectRatio;
+      }
+  
+      canvas.width = width;
+      canvas.height = height;
+  }
+  
+  
+    function loadImages() {
+      assetUrls.forEach ((url, index) => {
+        let img = new Image();
+  
+        let texture = gl.createTexture();
+        textureArr.push(texture);
+  
+   img.onload =  function (_index, _img) {
+          let texture = textureArr[_index];
+  
+          gl.bindTexture(gl.TEXTURE_2D, texture);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, _img);
+          gl.generateMipmap(gl.TEXTURE_2D);
+  
+          cnt++;
+          if (cnt === 3) start();
+        }.bind(this, index, img);
+  
+        img.crossOrigin = ' Anonymous';
+        img.src = url;
+     
+        console.log(img)
+      });
+    }
+  
+  
+    canvas.addEventListener('mouseenter', () => {
+      gsap.killTweensOf(obj);
+      gsap.to(obj, 1.5, { trans: 1 });
+    });
+  
+    canvas.addEventListener('mouseleave', () => {
+      gsap.killTweensOf(obj);
+      gsap.to(obj, 1.5, { trans: 0 });
+    });
+  
+    window.addEventListener('resize', () => {
+      resize();
+    });
+  
+    loadImages();
+    resize();
+  
+    return () => {
+      window.removeEventListener('resize', resize);
+      canvas.removeEventListener('mouseenter', () => {
+        gsap.killTweensOf(obj);
+        gsap.to(obj, 1.5, { trans: 1 });
+      });
+      canvas.removeEventListener('mouseleave', () => {
+        gsap.killTweensOf(obj);
+        gsap.to(obj, 1.5, { trans: 0 });
+      });
+    };
+  }, []);
+  
   return (
     <section className=" mt-6 relative">
 
@@ -566,6 +763,7 @@ function Hero() {
               </div>
             </div>
           </div>
+        
           <div className="relative flex items-center justify-center">
             <div
               className={`absolute z-20 inline-block ${
@@ -574,59 +772,37 @@ function Hero() {
               onClick={handleClick}
               style={{ top: "10%", left: "-20%" }}
             >
-              <Link
-                href="/book-now"
-                className="inline-flex items-center justify-center"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 480 480"
-                  className="w-48 h-48"
-                >
-                  <path fill="#C8A2C8">
-                    <animate
-                      attributeName="d"
-                      values="M20,248c0,57.7,21.4,114.4,56.8,154.6C118.6,450,181.8,476,250,476c63,0,122-23.5,163.2-64.8
-                      C454.5,370,480,315,480,252c0-68.1-29.9-133.3-77.2-175c-40.2-35.5-97-57-154.8-57C167.1,20,96,66.2,55.5,129.7
-                      C33,165,20,203,20,248z;
-                      M24,248c0,57.7,19.4,112.4,54.8,152.6C120.6,448,183.8,478,252,478c63,0,118-27.5,159.2-68.8
-                      C452.5,368,482,317,482,254c0-68.1-29.9-137.3-77.2-179c-40.2-35.5-101-53-158.8-53C165.1,22,94,64.2,53.5,127.7
-                      C31,163,24,203,24,248z;
-                      M20,248c0,57.7,25.4,110.4,60.8,150.6C122.6,446,185.8,480,254,480c63,0,114-31.5,155.2-72.8
-                      C450.5,366,484,319,484,256c0-68.1-29.9-139.3-77.2-181c-40.2-35.5-105-55-162.8-55C163.1,20,92,62.2,51.5,125.7
-                      C29,161,20,203,20,248z;
-                      M20,248c6.7,58.1,19.2,116.9,60.8,150.6c53.4,43.3,105.5,73,173.2,81.4c64,8,109.2-36.8,155.2-72.8
-                      C453,373,494.2,318.1,484,256c-11-67-21.5-151.4-77.2-181C358,49,301.5,14.4,244,20C162,28,85.6,58.5,51.5,125.7
-                      C31.2,165.9,14.8,203.3,20,248z;
-                      M20,248c0,57.7,21.4,114.4,56.8,154.6C118.6,450,181.8,476,250,476c63,0,122-23.5,163.2-64.8
-                      C454.5,370,480,315,480,252c0-68.1-29.9-133.3-77.2-175c-40.2-35.5-97-57-154.8-57C167.1,20,96,66.2,55.5,129.7
-                      C33,165,20,203,20,248z"
-                      dur="1.5s"
-                      repeatCount="indefinite"
-                    />
-                  </path>
-                </svg>
-                <span className="uppercase absolute text-2xl font-thin tracking-tight text-white transform -translate-x-1/2 -translate-y-1/2 font-HelveticaNowPro top-1/2 left-1/2">
-                  Book
-                  <br />
-                  Now
-                </span>
-              </Link>
-            </div>
+             <a href="/book-now" className="inline-flex items-center justify-center">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="300px" height="300px" viewBox="0 0 300 300" xmlSpace="preserve" className="book-svg">
+        <defs>
+            <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"/>
+        </defs>
+        <circle cx="150" cy="150" r="135" fill="#FEC195"/>
+        <g>
+            <text class="book-text">
+                <textPath xlinkHref="#circlePath">
+                    BOOK NOW → BOOK NOW →
+                </textPath>
+            </text>
+        </g>
+    </svg>
+</a>
 
-            <img
+            </div>
+            <canvas className="z-10 rounded-full" ref={canvasRef}></canvas>
+            {/* <img
               className="z-10 max-w-md rounded-full"
               src="../../images/mainsectionimage.jpg"
               alt="girl smiling"
-            />
+            /> */}
            
           </div>
         </div>
       </div>
-      <div>
+      {/* <div>
       <section id="header" className="h-screen overflow-hidden bg-header-yellow"></section>
       <section id="sep" className="h-screen overflow-hidden"></section>
-      {/* <section id="about" className="h-screen overflow-hidden bg-about-brown"></section> */}
+      <section id="about" className="h-screen overflow-hidden bg-about-brown"></section>
       <div id="mouse" ref={mouseRef} className="absolute top-0 left-0 w-[300px] h-[300px]">
         {Array.from({ length: 30 }).map((_, index) => (
           <span key={index} style={{
@@ -638,7 +814,7 @@ function Hero() {
           }}></span>
         ))}
       </div>
-    </div>
+    </div> */}
     </section>
   );
 }
@@ -679,10 +855,72 @@ function Mask() {
       headerRef.current.style.setProperty("--s", `${maskSize}px`);
     }
   }, [mousePosition, maskSize]);
+  const mountRef = useRef(null);
+
+//   useEffect(() => {
+//     const scene = new THREE.Scene();
+//     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+//     camera.position.z = 250;
+
+//     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+//     renderer.setPixelRatio(window.devicePixelRatio);
+//     renderer.setSize(window.innerWidth, window.innerHeight);
+//     mountRef.current.appendChild(renderer.domElement);
+
+//     const directionalLight = new THREE.DirectionalLight(0xffffff, 1); 
+//     directionalLight.position.set(5, 5, 5); 
+//     directionalLight.lookAt(scene.position);
+    
+    
+//     const group = new THREE.Group();
+//     scene.add(group);
+
+//     const modelUrl = '../images/symbol.obj';
+//     new OBJLoader().load(
+//         modelUrl,
+//         (obj) => {
+//             obj.traverse((child) => {
+//                 if (child instanceof THREE.Mesh) {
+                  
+//                     child.material = new THREE.MeshPhongMaterial({
+//                         color: 0x555555,
+//                         specular: 0x222222,
+//                         shininess: 25
+//                     });
+//                 }
+//             });
+//             group.add(obj);
+//         },
+//         (xhr) => console.log(`${(xhr.loaded / xhr.total * 100).toFixed(2)}% loaded`),
+//         (err) => console.error("An error happened during the loading: ", err)
+//     );
+
+//     renderer.setAnimationLoop(() => {
+//         group.rotation.y += 0.001; 
+//         renderer.render(scene, camera);
+//     });
+
+//     const onWindowResize = () => {
+//         camera.aspect = window.innerWidth / window.innerHeight;
+//         camera.updateProjectionMatrix();
+//         renderer.setSize(window.innerWidth, window.innerHeight);
+//     };
+
+//     window.addEventListener('resize', onWindowResize);
+
+//     return () => {
+//         window.removeEventListener('resize', onWindowResize);
+//         mountRef.current.removeChild(renderer.domElement);
+//         scene.clear();
+//         renderer.dispose();
+//     };
+// }, []);
+
 
   return (
     <div>
-            
+{/* <div ref={mountRef} className="w-full h-full"></div> */}
+{/* <canvas className=" rounded-full" ref={canvasRef}></canvas> */}
     <div className=" maskHeader">
 
       <div ref={headerRef}>
@@ -760,11 +998,11 @@ function About() {
           mix-blend-mode: difference;
           color: white;
         }
-        img {
+        video {
           width: 100%;
           height: 100vh;
           object-fit: cover;
-          filter: contrast(0.75) grayscale(1);
+          // filter: contrast(0.75) grayscale(1);
           margin-top: calc(var(--padding) + var(--nav) + var(--nav));
         }
 
@@ -793,11 +1031,28 @@ function About() {
    
       `}</style>
       <header>
-        <h1 className="font-Lato">ABOUT</h1>
-        <img
-          src="https://assets.codepen.io/605876/stage-fuel.jpeg"
-          alt="Jhey walks across a stage at All Day Hey! 2022"
-        />
+        <h1 className="font-Lato">about</h1>
+        {/* <video autoplay loop muted playsinline >
+  <source src="../images/exam.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video> */}
+
+<video
+                  autoPlay
+                  loop
+                  muted
+                  style={{
+        
+                    objectFit: "contain",
+                  }}
+                 
+                >
+                  <source
+                    src="../images/exam.mp4"
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
       </header>
     </div>
   );
@@ -1048,9 +1303,7 @@ function GSAPAnimateScrollSections() {
             </div>
           </div>
         </div>
-        <div className="font-horizon large-text">
-          <h2 className="text-[300px]">ABOUT</h2>
-        </div>
+        
       </section>
 
       <style>
@@ -1970,7 +2223,130 @@ function LocationGallery() {
 
   return (
     <div className="bg-[#161818]">
-   
+      <section className="sliderMainPage-projects">
+        <div className="sliderMainPage-container w-dyn-list">
+          <div
+            role="list"
+            className="sliderMainPage-wrapper mainProjects w-dyn-items"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(9, 1fr)",
+              gap: "20px",
+            }}
+          >
+            {/* First Project Item (Odd) */}
+            <div
+              role="listitem"
+              className="sliderMainPage-item sliderMainPage-projectItem"
+              style={{ gridColumn: "1 / 3", gridRow: "1", marginTop: "100px" }}
+            >
+              <div className="sliderMainPage-labelGroup">
+                <div className="sliderMainPage-textSmall sliderMainPage-label text-white">
+                  01 — 01
+                </div>
+              </div>
+              <div className="sliderMainPage-imageContainer">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  style={{
+                    width: "100%",
+                    height: "200px",
+                    objectFit: "cover",
+                  }}
+                  className="sliderMainPage-images sliderMainPage-projectImage"
+                >
+                  <source
+                    src="../images/invisalignglowup.mp4"
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <div className="sliderMainPage-descr">
+                <div className="sliderMainPage-text">2023</div>
+                <div className="sliderMainPage-info">
+                  <div className="sliderMainPage-text">
+                    Real estate — Chyrnaya Rechka, 41
+                  </div>
+                </div>
+              </div>
+            </div>
+
+      
+            <div
+              role="listitem"
+              className="sliderMainPage-item sliderMainPage-projectItem"
+              style={{
+                gridColumn: "5 / -1",
+                gridRow: "1",
+                marginLeft: "1.3vw",
+              }}
+            >
+              <div className="sliderMainPage-labelGroup">
+                <div className="sliderMainPage-textSmall sliderMainPage-label text-white">
+                  02 — 02
+                </div>
+              </div>
+              <div className="sliderMainPage-imageContainer">
+                <img
+                  src="../images/sch.png"
+                  loading="lazy"
+                  alt="Brand identity concept, Vladivostok"
+                  className="sliderMainPage-images sliderMainPage-projectImage"
+                  style={{ width: "100%", height: "450px", objectFit: "cover" }}
+                />
+              </div>
+              <div className="sliderMainPage-descr">
+                <div className="sliderMainPage-text text-white">est. 2023</div>
+                <div className="sliderMainPage-info">
+                  <div className="sliderMainPage-text text-white">
+                    Schnecksville
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-start items-center mt-4 space-x-4">
+            <button id="next" className="sliderMainPage-buttonRight">
+              {/* SVG Right Arrow */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="13"
+                viewBox="0 0 40 13"
+                fill="none"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+            <button id="prev" className="sliderMainPage-buttonLeft">
+              {/* SVG Left Arrow */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="13"
+                viewBox="0 0 40 13"
+                fill="none"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
       <div
         className="container"
         style={{
@@ -2326,6 +2702,8 @@ function Locations() {
       observer.disconnect();
     };
   }, []);
+
+
   return (
     <>
       <div className="h-screen">
@@ -2342,7 +2720,7 @@ function Locations() {
             </div>
           </p>
         </div>
-        <div></div>
+
 
         {/* <img className="w-20 " src="../images/mappin.png" alt="Map Pin"></img>  */}
         <section

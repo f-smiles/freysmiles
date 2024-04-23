@@ -186,19 +186,19 @@ const BookNow = () => {
 
   const svgRef = useRef(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (svgRef.current) {
-        svgRef.current.classList.add("initial-rotate");
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (svgRef.current) {
+  //       svgRef.current.classList.add("initial-rotate");
 
-        setTimeout(() => {
-          svgRef.current.classList.remove("initial-rotate");
-        }, 1200);
-      }
-    }, 1000);
+  //       setTimeout(() => {
+  //         svgRef.current.classList.remove("initial-rotate");
+  //       }, 1200);
+  //     }
+  //   }, 1000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   const [typeOfAppointment, setTypeOfAppointment] = useState(null);
   useEffect(() => {
@@ -279,11 +279,12 @@ const BookNow = () => {
         ))}
       </h1>
     </div>
-    <div className="flex flex-col items-start">
-  <div className="text-lg uppercase mr-4 bg-[#2E2A27] text-[#E8E2DA] font-bold font-neue-montreal]" >info@freysmiles.com</div>
-  <div><img className="w-48" src="../images/threedots.svg" alt="Decorative dots" /></div>
-  <div className="ml-4 text-lg uppercase ">(610) 437-4748</div>
-</div>
+    <button class="button button--marquee" data-text="(610) 437-4748 — info@freysmiles.com — (610) 437-4748 — freysmiles.com">
+    (610) 437-4748 — info@freysmiles.com
+</button>
+
+
+   
 
 
 
