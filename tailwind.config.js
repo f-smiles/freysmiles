@@ -54,6 +54,7 @@ module.exports = {
       'altero-outline': "Altero Outline",
       'helvetica-now-thin': "Helvetica Now Thin",
       'larken': "Larken",
+      'saol':'SaolDisplay-Regular',
       'larken-italic': "Larken Italic",
     },
     extend: {

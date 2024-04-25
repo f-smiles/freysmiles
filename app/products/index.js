@@ -30,8 +30,8 @@ function Banner() {
   ];
   
   return (
-    <div>
-    <div className="relative isolate flex justify-center items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5">
+    <div  className="bg-[#F1F1F1]" > 
+    <div className=" relative isolate flex justify-center items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5">
       <div
         className="absolute left-[max(-7rem,calc(50%-52rem))] top-1/2 -z-10 -translate-y-1/2 transform-gpu blur-2xl"
         aria-hidden="true"
@@ -124,7 +124,7 @@ export default function ProductsComponent({ products, prices }) {
   const sortedProducts = selectedSortOption ? sortProducts(selectedSortOption) : products
 
   return (
-    <div className="bg-[#F8F8F8]">
+    <div className="bg-[#F1F1F1]">
       <Banner />
      
       <section className=" max-w-2xl px-10 mx-auto my-16 mb-32 lg:max-w-7xl">

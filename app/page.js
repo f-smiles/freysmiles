@@ -204,7 +204,7 @@ export default function LandingComponent() {
         <LogoHeader />
         <Hero />
         <Mask />
-        <About />
+        {/* <About /> */}
         <GSAPAnimateScrollSections />
         <ImageGrid />
 
@@ -550,8 +550,8 @@ function Hero() {
   `
   
   const assetUrls = [
-    '../images/smilegirl.jpg',
     '../images/1024mainsectionimage.jpg',
+    '../images/smilegirl.jpg',
     'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1600187/waterTemp.jpg'
   ];
   
@@ -921,6 +921,7 @@ function Mask() {
     <div>
 {/* <div ref={mountRef} className="w-full h-full"></div> */}
 {/* <canvas className=" rounded-full" ref={canvasRef}></canvas> */}
+
     <div className=" maskHeader">
 
       <div ref={headerRef}>
@@ -968,95 +969,91 @@ function Mask() {
   );
 }
 
-function About() {
-  return (
-    <div>
+// function About() {
+//   return (
+//     <div>
      
-      <style jsx>{`
-        :global(:root) {
-          --padding: 15vh;
-          --nav: 80px;
-          --fixer: hsl(25 90% 50%);
-          --clipped: hsl(310 80% 70%);
-          --marge: hsl(250 80% 70%);
-        }
-        header {
-          background: var(--white);
-          clip-path: inset(0 0 4px 0);
-        }
-        h1 {
-          margin: 0;
-          text-transform: uppercase;
-          text-align: center;
-          z-index: 2;
-          font-size: 14em;
+//       <style jsx>{`
+//         :global(:root) {
+//           --padding: 15vh;
+//           --nav: 80px;
+//           --fixer: hsl(25 90% 50%);
+//           --clipped: hsl(310 80% 70%);
+//           --marge: hsl(250 80% 70%);
+//         }
+//         header {
+//           background: var(--white);
+//           clip-path: inset(0 0 4px 0);
+//         }
+//         h1 {
+//           margin: 0;
+//           text-transform: uppercase;
+//           text-align: center;
+//           z-index: 2;
+//           font-size: 14em;
      
-          line-height: 0.75;
-          font-weight: 120;
-          position: sticky;
-          top: calc(var(--padding) + var(--nav));
-          mix-blend-mode: difference;
-          color: white;
-        }
-        video {
-          width: 100%;
-          height: 100vh;
-          object-fit: cover;
-          // filter: contrast(0.75) grayscale(1);
-          margin-top: calc(var(--padding) + var(--nav) + var(--nav));
-        }
+//           line-height: 0.75;
+//           font-weight: 120;
+//           position: sticky;
+//           top: calc(var(--padding) + var(--nav));
+//           mix-blend-mode: difference;
+//           color: white;
+//         }
+//         video {
+//           width: 100%;
+//           height: 100vh;
+//           object-fit: cover;
+//           // filter: contrast(0.75) grayscale(1);
+//           margin-top: calc(var(--padding) + var(--nav) + var(--nav));
+//         }
 
-        .content {
-          margin: 0 auto;
-          max-width: 100%;
-          width: 80ch;
-        }
-        section {
-          background: var(--text);
-          min-height: 100vh;
-          position: relative;
-          overflow: hidden;
-        }
-        nav div,
-        main div {
-          width: 100vw;
-          background: var(--white);
-        }
-        main > section {
-          background: var(--white);
-          display: grid;
-          place-items: center;
-          padding: 0 1rem;
-        }
+//         .content {
+//           margin: 0 auto;
+//           max-width: 100%;
+//           width: 80ch;
+//         }
+//         section {
+//           background: var(--text);
+//           min-height: 100vh;
+//           position: relative;
+//           overflow: hidden;
+//         }
+//         nav div,
+//         main div {
+//           width: 100vw;
+//           background: var(--white);
+//         }
+//         main > section {
+//           background: var(--white);
+//           display: grid;
+//           place-items: center;
+//           padding: 0 1rem;
+//         }
    
-      `}</style>
-      <header>
-        <h1 className="font-Lato">about</h1>
-        {/* <video autoplay loop muted playsinline >
-  <source src="../images/exam.mp4" type="video/mp4" />
-  Your browser does not support the video tag.
-</video> */}
+//       `}</style>
+//       <header>
+//         <h1 className="font-Lato">about</h1>
 
-<video
-                  autoPlay
-                  loop
-                  muted
-                  style={{
+// <video
+//                   autoPlay
+//                   loop
+//                   muted
+//                   style={{
         
-                    objectFit: "contain",
-                  }}
+//                     objectFit: "contain",
+//                   }}
                  
-                >
-                  <source
-                    src="../images/exam.mp4"
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-      </header>
-    </div>
-  );
-}
+//                 >
+//                   <source
+//                     src="../images/exam.mp4"
+//                     type="video/mp4"
+//                   />
+//                   Your browser does not support the video tag.
+//                 </video>
+//       </header>
+//     </div>
+//   );
+// }
 function GSAPAnimateScrollSections() {
   // const listRef = useRef(null);
 
