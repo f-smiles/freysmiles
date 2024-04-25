@@ -2,7 +2,13 @@
 import { useEffect, useRef, useState } from "react"
 import { motion, stagger, useAnimate, useInView } from "framer-motion"
 import { Disclosure, Transition } from "@headlessui/react"
+import { gsap } from "gsap"
+import { useGSAP } from "@gsap/react"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin"
 import ChevronRightIcon from "../_components/ui/ChevronRightIcon"
+
+gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger)
 
 export default function Test() {
   const ref = useRef(null)
@@ -101,13 +107,14 @@ export default function Test() {
         bg-[#ff6432]
         ```
       */}
-      <section className="bg-[#f8f1de]">
+      <section id="locations-section" className="bg-[#f8f1de]">
         <div id="locations-heading" className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32">
           <h1 className="lg:text-6xl font-agrandir-bold text-[#171616]">
             Come see us at any of our{" "}
             <span className="relative inline-block my-8 leading-tight lowercase font-editorial-new underline-offset-8">
               four convenient locations
-              <img className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" src="/../../images/ellipse.svg" />
+              {/* <img className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" src="/../../images/ellipse.svg" /> */}
+              <DrawEllipse className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" />
             </span>{" "}
             or opt for a{" "}
             <span className="relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#147b5d] underline inline-block">virtual consultation</span>
@@ -117,7 +124,7 @@ export default function Test() {
           </svg>
         </div>
 
-        <div ref={ref} className="relative lg:min-h-full">
+        <div ref={ref} className="relative">
           <motion.div
             id="locations-map"
             className="overflow-hidden h-80 lg:absolute lg:right-0 lg:h-full lg:w-1/2"
@@ -243,6 +250,41 @@ export default function Test() {
         </div>
       </section>
     </>
+  )
+}
+
+function DrawEllipse(props) {
+  useGSAP(() => {
+    gsap.from(".draw", {
+      drawSVG: "0%",
+      ease: "expo.out",
+      scrollTrigger: {
+        trigger: '#locations-heading',
+        start: "clamp(top top)",
+        scrub: true,
+        pinSpacing: false,
+        markers: true,
+      }
+    })
+  })
+
+  return (
+    <svg
+      width="508"
+      height="122"
+      viewBox="0 0 508 122"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        className="draw"
+        d="M2 23.2421C28.9079 14.5835 113.098 -1.63994 234.594 2.73493C386.464 8.20351 515.075 37.5458 505.497 77.9274C503.774 85.1946 491.815 127.145 271.535 118.942C51.2552 110.739 32.8106 78.7919 45.7824 58.053C59.4644 36.1787 112.824 27.9758 193.548 27.9758"
+        stroke="#ff6432"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+    </svg>
   )
 }
 
