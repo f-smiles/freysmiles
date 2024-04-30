@@ -3,14 +3,7 @@ import { gsap } from 'gsap';
 import * as THREE from "three";
 import Matter from "matter-js";
 import Link from "next/link";
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import {
-  useRef,
-  useEffect,
-  useLayoutEffect,
-  useState,
-  useCallback,
-} from "react";
+import { useRef, useEffect, useLayoutEffect, useState, useCallback } from "react";
 import LocomotiveScroll from "locomotive-scroll";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -29,14 +22,15 @@ import { Disclosure, Transition } from "@headlessui/react";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 import MapPin from "./_components/ui/MapPin";
 import { SplitText } from "gsap-trial/all";
-import SwiperCore, { Navigation } from "swiper";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
+import SwiperCore, { Navigation } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 SwiperCore.use([Navigation]);
 
 gsap.registerPlugin(ScrollTrigger);
+
 
 export default function LandingComponent() {
   const [backgroundColor, setBackgroundColor] = useState("transparent");
@@ -200,6 +194,8 @@ export default function LandingComponent() {
       <div
         style={{ backgroundColor }} className="bg-[#EFE9E8] bg-[#E0D175]"
         // style={{ backgroundColor }}
+      <div className="bg-[#E5DDDE] bg-[#E0D175]"
+      // style={{ backgroundColor }}
       >
         <LogoHeader />
         <Hero />
@@ -220,6 +216,20 @@ export default function LandingComponent() {
         <div className="bg-[#20282D] z-4 relative" id="locations">
           <Locations />
         </div>
+        <div className="sticky top-0 z-2">
+        <LocationGallery />
+</div>
+<div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
+    <LogoGrid />
+</div>
+<div className=" bg-[#F1F1F1]  sticky top-0 z-1" id="locationGallery">
+<ParallaxOutline />
+
+</div>
+
+<div className="bg-[#20282D] z-4 relative" id="locations">
+    <Locations />
+</div>
         <GiftCards />
       </div>
     </>
@@ -720,6 +730,8 @@ function Hero() {
     <section className=" mt-6 relative">
 
 
+    <section className="mt-6 relative">
+      
       <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate lg:px-8">
         <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
@@ -952,6 +964,88 @@ function Mask() {
 
 
         <div className=" flex flex-wrap w-[80vw] h-[70vh] mx-auto">
+
+      const timer = (duration, interval, from, to, minStep, callback) => {
+          let value = from;
+          const forward = from < to;
+          const range = Math.abs(to - from);
+          const steps = duration / interval;
+          const step = range / steps;
+          let last = from;
+
+          const handle = setInterval(() => {
+              value += step * (forward ? 1 : -1);
+              if (forward ? value > to : value < to) {
+                  value = to;
+                  clearInterval(handle);
+              }
+              if (!minStep || !handle || Math.abs(last - value) >= minStep) {
+                  last = value;
+                  callback(value, from, to);
+              }
+          }, interval);
+          return handle;
+      };
+
+
+      const loading = () => {
+          headerRef.current.classList.add('header--active');
+          setTimeout(() => {
+              timer(450, 20, 0, 300, 1, (value) => {
+                  headerRef.current.style.setProperty('--s', `${Math.floor(value)}px`);
+              });
+          }, 800);
+      };
+
+      loading();
+
+
+      const updateCoordinates = (e) => {
+          setMousePosition({ x: e.clientX, y: e.clientY });
+      };
+
+      document.addEventListener('mousemove', updateCoordinates);
+
+      return () => {
+          document.removeEventListener('mousemove', updateCoordinates);
+      };
+  }, []);
+
+  useEffect(() => {
+      headerRef.current.style.setProperty('--x', `${mousePosition.x}px`);
+      headerRef.current.style.setProperty('--y', `${mousePosition.y}px`);
+  }, [mousePosition]);
+
+
+  return(
+    <div >
+  
+
+    <div className=" maskHeader">
+    <div ref={headerRef} >
+       <div className="maskHeader__main">
+           <div className="maskHeader__content">
+               <h1 className="maskHeader__title">
+                   We are your go-to provider for advanced and discerning orthodontic care.
+               </h1>
+           </div>
+       </div>
+       <div className="maskHeader__hover">
+           <div className="maskHeader__content">
+               <h1 className="maskHeader__title">
+INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
+INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
+               </h1>
+           </div>
+       </div>
+   </div>
+   </div>
+   {/* <div className="bg-[#292929] min-h-screen min-w-full flex justify-center items-center">
+        <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
+<div style={{ backgroundImage: 'url("../images/bauhauspattern.svg")', objectFit: 'contain', backgroundRepeat: 'no-repeat', backgroundSize: 'contain', backgroundPosition: 'center' }} className="bg-[#E6E7E9] h-full w-full"></div>
+
+
+        <div className=" flex flex-wrap w-[80vw] h-[70vh] mx-auto">
   <div className="w-full md:w-1/2">
     <div style={{ backgroundImage: 'url("../images/bauhauspattern.svg")' }} className="bg-[#E6E7E9] rounded-l-full h-full"></div>
   </div>
@@ -964,9 +1058,10 @@ function Mask() {
 </div>
         </div>
       </div> */}
-    </div>
-    </div>
-  );
+  
+
+   </div>
+  )
 }
 
 // function About() {
@@ -1253,7 +1348,10 @@ function GSAPAnimateScrollSections() {
   return (
     <>
       <section className="relative home-main">
+   
+
         <div className="home-main__content">
+     
           <div className="home-main__content-sphere">
             <div className="container">
               <ul>
@@ -1264,7 +1362,9 @@ function GSAPAnimateScrollSections() {
                 >
                   <figure>
                     <h3>60+</h3>
-                    <p className="font-didot mt-10 ">years of experience</p>
+                    <p className="font-didot mt-10 ">
+                      years of experience
+                    </p>
                   </figure>
                 </li>
                 <li
@@ -1277,7 +1377,9 @@ function GSAPAnimateScrollSections() {
                     style={{ opacity: 0, filter: "blur(10px)" }}
                   >
                     <h3 className="font-grandslang  font-bold">25k</h3>
-                    <p className="font-didot  mt-10 tracking-wide">patients</p>
+                    <p className="font-didot  mt-10 tracking-wide">
+                      patients
+                    </p>
                   </figure>
                 </li>
                 <li
@@ -1301,6 +1403,9 @@ function GSAPAnimateScrollSections() {
           </div>
         </div>
         
+        <div className="font-horizon large-text">
+      <h2 className="text-[300px]">ABOUT</h2>
+    </div>
       </section>
 
       <style>
@@ -1491,50 +1596,50 @@ function GSAPAnimateScrollSections() {
   );
 }
 
-const HorizontalGrid = () => {
-  return (
+const HorizontalGrid =() =>{
+  return(
     <div className="relative">
-      <div class="containerH">
-        <div class="content-wrapper">
-          <div class="childCon">
-            <h1>CSS-only horizontal scroll tentative</h1>
-            <p>
-              The idea is to create an horizontal scroll layout and to allow the
-              user to scroll up/down the mouse to scroll left/right.
-            </p>
-            <p>
-              So… please scroll <strong>down</strong> with your mouse.
-            </p>
-          </div>
-
-          <div class="childCon">
-            <h2>The trick</h2>
-            <p>Rotate -90deg the container, and 90deg its children blocks.</p>
-            <p>You have to fix container and children dimensions. :(</p>
-            <p>See CSS for rather correct positioning.</p>
-          </div>
-
-          <div class="childCon">
-            <h2>Desktop browsers</h2>
-            <p>Vertical scroll… scrolls. :)</p>
-            <p>But horizontal scroll (e.g. with a trackpad) doesn’t. :(</p>
-          </div>
-
-          <div class="childCon">
-            <h2>Mobile browsers</h2>
-            <p>Only horizontal touchmove works on Chrome. :)</p>
-            <p>Only vertical touchmove works on Safari and Firefox.</p>
-          </div>
-
-          <div class="childCon">
-            <h2>Conclusion</h2>
-            <p>Without JavaScript: no good idea.</p>
-          </div>
-        </div>
-      </div>
+<div class="containerH">
+ 
+  <div class="content-wrapper">
+  
+    <div class="childCon">
+      <h1>CSS-only horizontal scroll tentative</h1>
+      <p>The idea is to create an horizontal scroll layout and to allow the user to scroll up/down the mouse to scroll left/right.</p>
+      <p>So… please scroll <strong>down</strong> with your mouse.</p>
     </div>
-  );
-};
+
+    <div class="childCon">
+      <h2>The trick</h2>
+      <p>Rotate -90deg the container, and 90deg its children blocks.</p>
+      <p>You have to fix container and children dimensions. :(</p>
+      <p>See CSS for rather correct positioning.</p>
+    </div>
+
+    <div class="childCon">
+      <h2>Desktop browsers</h2>
+      <p>Vertical scroll… scrolls. :)</p>
+      <p>But horizontal scroll (e.g. with a trackpad) doesn’t. :(</p>
+    </div>
+
+    <div class="childCon">
+      <h2>Mobile browsers</h2>
+      <p>Only horizontal touchmove works on Chrome. :)</p>
+      <p>Only vertical touchmove works on Safari and Firefox.</p>
+    </div>
+
+
+    <div class="childCon">
+      <h2>Conclusion</h2>
+      <p>Without JavaScript: no good idea.</p>
+    </div>
+
+  </div>
+  
+</div>
+</div>
+  )
+}
 
 const ImageGrid = () => {
   const bodyRef = useRef(null);
@@ -1650,44 +1755,49 @@ const ImageGrid = () => {
     },
   ];
 
+
+ 
   return (
     <div>
-      <div className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white">
-        <div
-          className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
-          style={{
-            left: `${cursorPos.x}px`,
-            top: `${cursorPos.y}px`,
-            opacity: isHovering ? 1 : 0,
-          }}
-        >
-          <p>CHECK </p>
-          <p>IT OUT</p>
-        </div>
-        <div className="flex flex-wrap justify-center items-center p-0 min-h-screen">
-          {images.map((image, index) => (
-            <a
-              key={index}
-              href={image.url}
-              className={`group image-card relative flex items-center justify-center mb-20 ${
-                image.className === "image-portrait"
-                  ? "mx-4 w-[27vw] h-[37vw]"
-                  : "mx-4 w-[40vw] h-[27vw]"
-              }`}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
-                {image.title}
-              </div>
-              <img
-                src={image.src}
-                className="block w-full h-full object-cover"
-              />
-            </a>
-          ))}
-        </div>
+
+    <div
+  
+      className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white"
+      ref={bodyRef}
+      className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
+    >
+      <div
+        className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
+        style={{
+          left: `${cursorPos.x}px`,
+          top: `${cursorPos.y}px`,
+          opacity: isHovering ? 1 : 0,
+        }}
+      >
+        <p>CHECK </p>
+        <p>IT OUT</p>
       </div>
+      <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
+        {images.map((image, index) => (
+          <a
+            key={index}
+            href={image.url}
+            className={`group image-card relative flex items-center justify-center mb-20 ${
+              image.className === "image-portrait"
+                ? "mx-4 w-[27vw] h-[37vw]"
+                : "mx-4 w-[40vw] h-[27vw]"
+            }`}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+          >
+            <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+              {image.title}
+            </div>
+            <img src={image.src} className="block object-cover w-full h-full" />
+          </a>
+        ))}
+      </div>
+    </div>
     </div>
   );
 };
@@ -1736,146 +1846,119 @@ const ParallaxOutline = () => {
 
   return (
     <div>
-      <div className="flex pt-10 justify-center uppercase tracking tracking-widest">
+    <div className="flex pt-10 justify-center uppercase tracking tracking-widest">
         Testimonials
       </div>
-      <div className="flex flex-col items-center justify-center h-screen ">
-        <div className="relative flex items-center">
-          <div className="absolute right-0 top-0 z-20 flex">
-            <button
-              onClick={() => scroll("left")}
-              className="p-4"
-              aria-label="Previous"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="13"
-                viewBox="0 0 40 13"
-                fill="none"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
-                  fill="white"
-                />
-              </svg>
-            </button>
-            <button
-              onClick={() => scroll("right")}
-              className="p-4 "
-              aria-label="Next"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="13"
-                viewBox="0 0 40 13"
-                fill="none"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
-                  fill="white"
-                />
-              </svg>
-            </button>
-          </div>
-          <div className="relative flex items-center justify-center">
+    <div className="flex flex-col items-center justify-center h-screen ">
+  
+      <div className="relative flex items-center">
+        <div className="absolute top-0 right-0 z-20 flex">
+          <button
+            onClick={() => scroll("left")}
+            className="p-4"
+            aria-label="Previous"
+          >
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z" fill="white"/>
+        </svg>
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            className="p-4 "
+            aria-label="Next"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z" fill="white"/>
+        </svg>
+          </button>
+        </div>
+        <div className="relative flex items-center justify-center">
+          <div
+            ref={carouselRef}
+            className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
+            style={{ width: "60vw", height: "auto" }}
+          >
             <div
-              ref={carouselRef}
-              className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
-              style={{ width: "60vw", height: "auto" }}
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+              style={{
+                height: "500px",
+                backgroundImage:
+                  "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
+              }}
             >
-              <div
-                className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
-                style={{
-                  height: "500px",
-                  backgroundImage:
-                    "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
-                }}
-              >
-                <div className="flex flex-col justify-center items-center mx-[7vw] ">
-                  <p className="font-helvetica-now-thin text-[24px] text-center">
-                    You will receive top notch orthodontic care at Frey Smiles.
-                    Dr. Frey and his entire staff make every visit a pleasure.
-                    It is apparent at each appointment that Dr. Frey truly cares
-                    about his patients. He has treated both of our kids and my
-                    husband, and they all have beautiful smiles! I highly
-                    recommend!
-                  </p>
-                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
-                    Lisa Moyer
-                  </p>
-                </div>
+              <div className="flex flex-col justify-center items-center mx-[7vw] ">
+                <p className="font-helvetica-now-thin text-[24px] text-center">
+                  You will receive top notch orthodontic care at Frey Smiles.
+                  Dr. Frey and his entire staff make every visit a pleasure. It
+                  is apparent at each appointment that Dr. Frey truly cares
+                  about his patients. He has treated both of our kids and my
+                  husband, and they all have beautiful smiles! I highly
+                  recommend!
+                </p>
+                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Lisa Moyer</p>
               </div>
-              <div
-                className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
-                style={{
-                  height: "500px",
-                  backgroundImage:
-                    "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0",
-                }}
-              >
-                <div className=" flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                  <p className="font-helvetica-now-thin text-[24px] text-center">
-                    My experience at FreySmiles has been amazing! I recently
-                    just completed my Invisalign and my teeth look perfect! Dr.
-                    Frey truly cares about his patients and the staff are always
-                    friendly, as well as always accommodating to my schedule.
-                    They're the best around!
-                  </p>
-                  <p className="font-helvetica-now-thin text-[20px] mt-10  text-center">
-                    Kailee
-                  </p>
-                </div>
+            </div>
+            <div
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+              style={{
+                height: "500px",
+                backgroundImage:
+                  "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0",
+              }}
+            >
+              <div className=" flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                <p className="font-helvetica-now-thin text-[24px] text-center">
+                  My experience at FreySmiles has been amazing! I recently just
+                  completed my Invisalign and my teeth look perfect! Dr. Frey
+                  truly cares about his patients and the staff are always
+                  friendly, as well as always accommodating to my schedule.
+                  They're the best around!
+                </p>
+                <p className="font-helvetica-now-thin text-[20px] mt-10  text-center">Kailee</p>
               </div>
-              <div
-                className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
-                style={{
-                  height: "500px",
-                  backgroundImage:
-                    "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
-                }}
-              >
-                <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                  <p className="text-2xl text-center">
-                    <h1 className="font-helvetica-now-thin font-normal text-[24px] relative overflow-hidden">
-                      I had an open bite and misaligned teeth most of my life.
-                      Dr Frey fixed it and in record time. 1 1/2 yrs with
-                      Invisalign’s. Highly recommended! Friendly staff and easy
-                      to make appointments!
-                    </h1>
-                  </p>
-                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
-                    Karen Oneill
-                  </p>
-                </div>
-              </div>
-              <div
-                className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
-                style={{
-                  height: "500px",
-                  backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
-                }}
-              >
-                <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                  <h1 className="font-helvetica-now-thin text-[24px] text-center">
-                    Dr. Frey was my orthodontist when I was 11 years old, Im now
-                    42. I still talk about how amazing he was and the great work
-                    he did with my teeth. Thank you so much for giving the most
-                    beautiful smile!
+            </div>
+            <div
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+              style={{
+                height: "500px",
+                backgroundImage:
+                  "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
+              }}
+            >
+              <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                <p className="text-2xl text-center">
+                  <h1 className="font-helvetica-now-thin font-normal text-[24px] relative overflow-hidden">
+                    I had an open bite and misaligned teeth most of my life. Dr
+                    Frey fixed it and in record time. 1 1/2 yrs with
+                    Invisalign’s. Highly recommended! Friendly staff and easy to
+                    make appointments!
+
+
                   </h1>
-                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
-                    Tanya Burnhauser
-                  </p>
-                </div>
+                </p>
+                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Karen Oneill</p>
+              </div>
+            </div>
+            <div
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+              style={{
+                height: "500px",
+                backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
+              }}
+            >
+              <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                <h1 className="font-helvetica-now-thin text-[24px] text-center">
+                  Dr. Frey was my orthodontist when I was 11 years old, Im now
+                  42. I still talk about how amazing he was and the great work
+                  he did with my teeth. Thank you so much for giving the most
+                  beautiful smile!
+                </h1>
+                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Tanya Burnhauser</p>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
         {/* <span className="absolute text-white font-serif text-[10vw] custom-text" data-text="Happy Patients">
  Happy Patients
@@ -1902,7 +1985,7 @@ const ParallaxOutline = () => {
 </div>
 
     </div> */}
-      </div>
+    </div>
     </div>
   );
 };
@@ -2193,6 +2276,8 @@ const LogoGrid = () => {
 };
 
 function LocationGallery() {
+
+
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
@@ -2217,133 +2302,86 @@ function LocationGallery() {
         });
     });
   }, []);
-
+  
   return (
+
     <div className="bg-[#161818]">
       <section className="sliderMainPage-projects">
-        <div className="sliderMainPage-container w-dyn-list">
-          <div
-            role="list"
-            className="sliderMainPage-wrapper mainProjects w-dyn-items"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(9, 1fr)",
-              gap: "20px",
-            }}
-          >
-            {/* First Project Item (Odd) */}
-            <div
-              role="listitem"
-              className="sliderMainPage-item sliderMainPage-projectItem"
-              style={{ gridColumn: "1 / 3", gridRow: "1", marginTop: "100px" }}
-            >
-              <div className="sliderMainPage-labelGroup">
-                <div className="sliderMainPage-textSmall sliderMainPage-label text-white">
-                  01 — 01
-                </div>
-              </div>
-              <div className="sliderMainPage-imageContainer">
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  style={{
-                    width: "100%",
-                    height: "200px",
-                    objectFit: "cover",
-                  }}
-                  className="sliderMainPage-images sliderMainPage-projectImage"
-                >
-                  <source
-                    src="../images/invisalignglowup.mp4"
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-              <div className="sliderMainPage-descr">
-                <div className="sliderMainPage-text">2023</div>
-                <div className="sliderMainPage-info">
-                  <div className="sliderMainPage-text">
-                    Real estate — Chyrnaya Rechka, 41
-                  </div>
-                </div>
-              </div>
-            </div>
+  <div className="sliderMainPage-container w-dyn-list">
+  <div role="list" className="sliderMainPage-wrapper mainProjects w-dyn-items" style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '20px' }}>
+      {/* First Project Item (Odd) */}
+      <div role="listitem" className="sliderMainPage-item sliderMainPage-projectItem" style={{ gridColumn: '1 / 3', gridRow: '1', marginTop: '100px' }}>
+        <div className="sliderMainPage-labelGroup">
+          <div className="sliderMainPage-textSmall sliderMainPage-label text-white">01 — 01</div>
+        </div>
+        <div className="sliderMainPage-imageContainer">
+        <video
+  autoPlay
+  loop
+  muted
+  style={{
+    width: '100%',
+    height: '200px',
+    objectFit: 'cover' 
+  }}
+  className="sliderMainPage-images sliderMainPage-projectImage">
+  <source
+    src="../images/invisalignglowup.mp4"
+    type="video/mp4"
+  />
+  Your browser does not support the video tag.
+</video>
 
-      
-            <div
-              role="listitem"
-              className="sliderMainPage-item sliderMainPage-projectItem"
-              style={{
-                gridColumn: "5 / -1",
-                gridRow: "1",
-                marginLeft: "1.3vw",
-              }}
-            >
-              <div className="sliderMainPage-labelGroup">
-                <div className="sliderMainPage-textSmall sliderMainPage-label text-white">
-                  02 — 02
-                </div>
-              </div>
-              <div className="sliderMainPage-imageContainer">
-                <img
-                  src="../images/sch.png"
-                  loading="lazy"
-                  alt="Brand identity concept, Vladivostok"
-                  className="sliderMainPage-images sliderMainPage-projectImage"
-                  style={{ width: "100%", height: "450px", objectFit: "cover" }}
-                />
-              </div>
-              <div className="sliderMainPage-descr">
-                <div className="sliderMainPage-text text-white">est. 2023</div>
-                <div className="sliderMainPage-info">
-                  <div className="sliderMainPage-text text-white">
-                    Schnecksville
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        </div>
+        <div className="sliderMainPage-descr">
+          <div className="sliderMainPage-text">2023</div>
+          <div className="sliderMainPage-info">
+            <div className="sliderMainPage-text">Real estate — Chyrnaya Rechka, 41</div>
 
-          <div className="flex justify-start items-center mt-4 space-x-4">
-            <button id="next" className="sliderMainPage-buttonRight">
-              {/* SVG Right Arrow */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="13"
-                viewBox="0 0 40 13"
-                fill="none"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
-                  fill="white"
-                />
-              </svg>
-            </button>
-            <button id="prev" className="sliderMainPage-buttonLeft">
-              {/* SVG Left Arrow */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="13"
-                viewBox="0 0 40 13"
-                fill="none"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
-                  fill="white"
-                />
-              </svg>
-            </button>
           </div>
         </div>
-      </section>
+      </div>
+      
+      {/* Second Project Item (Even) */}
+      <div role="listitem" className="sliderMainPage-item sliderMainPage-projectItem" style={{ gridColumn: '5 / -1', gridRow: '1', marginLeft: '1.3vw' }}>
+        <div className="sliderMainPage-labelGroup">
+          <div className="sliderMainPage-textSmall sliderMainPage-label text-white">02 — 02</div>
+        </div>
+        <div className="sliderMainPage-imageContainer">
+          <img 
+            src="../images/sch.png" 
+            loading="lazy" 
+            alt="Brand identity concept, Vladivostok" 
+            className="sliderMainPage-images sliderMainPage-projectImage" 
+            style={{ width: '100%', height: '450px', objectFit: 'cover' }}
+          />
+        </div>
+        <div className="sliderMainPage-descr">
+          <div className="sliderMainPage-text text-white">est. 2023</div>
+          <div className="sliderMainPage-info">
+            <div className="sliderMainPage-text text-white">Schnecksville</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="flex justify-start items-center mt-4 space-x-4">
+      <button id="next" className="sliderMainPage-buttonRight">
+        {/* SVG Right Arrow */}
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z" fill="white"/>
+        </svg>
+      </button>
+      <button id="prev" className="sliderMainPage-buttonLeft">
+        {/* SVG Left Arrow */}
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z" fill="white"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
       <div
         className="container"
         style={{
