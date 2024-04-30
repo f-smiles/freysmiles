@@ -3,26 +3,19 @@ import Matter from "matter-js";
 import Link from "next/link";
 import { useRef, useEffect, useLayoutEffect, useState } from "react";
 import LocomotiveScroll from "locomotive-scroll";
-// gsap
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 // framer motion
-import {
-  motion,
-  stagger,
-  useAnimate,
-  useInView,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { motion, stagger, useAnimate, useInView, useScroll, } from "framer-motion";
 // headless ui
 import { Disclosure, Transition } from "@headlessui/react";
+// gsap
+import { gsap } from "gsap"
+import { useGSAP } from "@gsap/react"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin"
+import { SplitText } from "gsap-trial/SplitText"
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
-import MapPin from "./_components/ui/MapPin";
-import { SplitText } from "gsap-trial/all";
-gsap.registerPlugin(ScrollTrigger);
+
+gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText)
 
 export default function LandingComponent() {
   // const [backgroundColor, setBackgroundColor] = useState("transparent");
@@ -94,32 +87,32 @@ export default function LandingComponent() {
   const { scrollYProgress } = useScroll();
   gsap.registerPlugin(ScrollTrigger);
 
-  const logoGrid = document.getElementById('logoGrid'); 
-  
+  const logoGrid = document.getElementById('logoGrid');
 
-  let initialScale = 0.8; 
-  let maxScale = 1;    
-  
+
+  let initialScale = 0.8;
+  let maxScale = 1;
+
   const tl = gsap.timeline({
     scrollTrigger: {
-      trigger: logoGrid,               
-      start: "top bottom",           
-      end: "bottom bottom",        
+      trigger: logoGrid,
+      start: "top bottom",
+      end: "bottom bottom",
       scrub: 0.8,
 
       onLeaveBack: () => gsap.set(logoGrid, { clearProps: "transform" }),
     }
   });
-  
 
-  tl.fromTo(logoGrid, 
-    { scale: initialScale }, 
-    { scale: maxScale, ease: "power1.out" } 
+
+  tl.fromTo(logoGrid,
+    { scale: initialScale },
+    { scale: maxScale, ease: "power1.out" }
   );
-  
+
 
   gsap.set(logoGrid, { clearProps: "transform" });
-  const locationGallery = document.getElementById('locationGallery'); 
+  const locationGallery = document.getElementById('locationGallery');
 const tlLocationGallery = gsap.timeline({
   scrollTrigger: {
     trigger: locationGallery,
@@ -130,14 +123,14 @@ const tlLocationGallery = gsap.timeline({
   }
 });
 
-tlLocationGallery.fromTo(locationGallery, 
-  { scale: 0.8 }, 
-  { scale: maxScale, ease: "power1.out" } 
+tlLocationGallery.fromTo(locationGallery,
+  { scale: 0.8 },
+  { scale: maxScale, ease: "power1.out" }
 );
 
 gsap.set(locationGallery, { clearProps: "transform" });
-  
-const locations = document.getElementById('locations'); 
+
+const locations = document.getElementById('locations');
 const tlLocations = gsap.timeline({
   scrollTrigger: {
     trigger: locations,
@@ -148,16 +141,17 @@ const tlLocations = gsap.timeline({
   }
 });
 
-tlLocations.fromTo(locations, 
-  { scale: 0.8 }, 
-{ scale: maxScale, ease: "power1.out" } 
+tlLocations.fromTo(locations,
+  { scale: 0.8 },
+{ scale: maxScale, ease: "power1.out" }
 );
 
 gsap.set(locations, { clearProps: "transform" });
   return (
     <>
-      <div className="bg-[#E5DDDE]"
-      // style={{ backgroundColor }}
+      <div
+        className="bg-[#E5DDDE]"
+        // style={{ backgroundColor }}
       >
         <LogoHeader />
         <Hero />
@@ -166,19 +160,17 @@ gsap.set(locations, { clearProps: "transform" });
         <ImageGrid />
 
         <div className="sticky top-0 z-2">
-        <LocationGallery />
-</div>
-<div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
-    <LogoGrid />
-</div>
-<div className="bg-[#20282D] sticky top-0 z-1" id="locationGallery">
-<ParallaxOutline />
+          <LocationGallery />
+        </div>
+        <div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
+          <LogoGrid />
+        </div>
+        <div className="bg-[#20282D] sticky top-0 z-1" id="locationGallery">
+          <ParallaxOutline />
+        </div>
 
-</div>
+        <Locations />
 
-<div className="bg-[#E0D175] z-4 relative" id="locations">
-    <Locations />
-</div>
         <GiftCards />
       </div>
     </>
@@ -467,7 +459,7 @@ function Hero() {
   const pixiContainerRef = useRef();
 
   return (
-    <section className="mt-6 relative">
+    <section className="relative mt-6">
       <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate lg:px-8">
         <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
@@ -551,7 +543,7 @@ function Hero() {
                     />
                   </path>
                 </svg>
-                <span className="uppercase absolute text-2xl font-thin tracking-tight text-white transform -translate-x-1/2 -translate-y-1/2 font-HelveticaNowPro top-1/2 left-1/2">
+                <span className="absolute text-2xl font-thin tracking-tight text-white uppercase transform -translate-x-1/2 -translate-y-1/2 font-HelveticaNowPro top-1/2 left-1/2">
                   Book
                   <br />
                   Now
@@ -575,11 +567,11 @@ function Hero() {
 function Mask(){
 
   const headerRef = useRef(null);
-  
+
   const [mousePosition, setMousePosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
 
   useEffect(() => {
-   
+
       const timer = (duration, interval, from, to, minStep, callback) => {
           let value = from;
           const forward = from < to;
@@ -645,8 +637,8 @@ function Mask(){
        <div className="maskHeader__hover">
            <div className="maskHeader__content">
                <h1 className="maskHeader__title">
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
+INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
+INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
                </h1>
            </div>
        </div>
@@ -656,10 +648,10 @@ INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
   <div className="w-full md:w-1/2">
     <div style={{ backgroundImage: 'url("../images/bauhaus.png")' }} className="bg-[#E6E7E9] rounded-l-full h-full"></div>
   </div>
-  <div className="w-full md:w-1/2 relative">
+  <div className="relative w-full md:w-1/2">
     <div className="bg-[#E6E7E9] h-full"></div>
-    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center"> 
-      <p className="text-center text-xl font-bold">LEARN MORE</p>
+    <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
+      <p className="text-xl font-bold text-center">LEARN MORE</p>
     </div>
   </div>
 </div>
@@ -882,13 +874,13 @@ function GSAPAnimateScrollSections() {
                 >
                   <figure>
                     <h3>60+</h3>
-                    <p className="font-poppins uppercase mt-10 ">
+                    <p className="mt-10 uppercase font-poppins ">
                       years of experience
                     </p>
                   </figure>
                 </li>
                 <li
-                  className="font-neue-montreal font-bold"
+                  className="font-bold font-neue-montreal"
                   id="middle-circle"
                   style={{ boxShadow: "inset 0 0 300px #fff" }}
                 >
@@ -896,8 +888,8 @@ function GSAPAnimateScrollSections() {
                     id="figure2"
                     style={{ opacity: 0, filter: "blur(10px)" }}
                   >
-                    <h3 className="font-Lato font-bold">25k</h3>
-                    <p className="font-Lato mt-10 uppercase tracking-wide">
+                    <h3 className="font-bold font-Lato">25k</h3>
+                    <p className="mt-10 tracking-wide uppercase font-Lato">
                       patients
                     </p>
                   </figure>
@@ -908,8 +900,8 @@ function GSAPAnimateScrollSections() {
                   style={{ opacity: 0, filter: "blur(10px)" }}
                 >
                   <figure>
-                    <h3 className="font-neue-montreal font-bold">4</h3>
-                    <p className="mt-10 font-helvetica-now-thin tracking-wide">
+                    <h3 className="font-bold font-neue-montreal">4</h3>
+                    <p className="mt-10 tracking-wide font-helvetica-now-thin">
                       unique locations
                     </p>
                   </figure>
@@ -1009,7 +1001,7 @@ function GSAPAnimateScrollSections() {
             .home-main__content-sphere ul {
               position: relative;
             }
-            .home-main__content-sphere ul li:first-child, 
+            .home-main__content-sphere ul li:first-child,
             .home-main__content-sphere ul li:nth-child(3) {
               border: 1px solid #fff;
               filter: blur(10px);
@@ -1232,7 +1224,7 @@ const ImageGrid = () => {
   return (
     <div
       ref={bodyRef}
-      className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white"
+      className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
     >
       <div
         className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
@@ -1245,7 +1237,7 @@ const ImageGrid = () => {
         <p>CHECK </p>
         <p>IT OUT</p>
       </div>
-      <div className="flex flex-wrap justify-center items-center p-0 min-h-screen">
+      <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
         {images.map((image, index) => (
           <a
             key={index}
@@ -1261,7 +1253,7 @@ const ImageGrid = () => {
             <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
               {image.title}
             </div>
-            <img src={image.src} className="block w-full h-full object-cover" />
+            <img src={image.src} className="block object-cover w-full h-full" />
           </a>
         ))}
       </div>
@@ -1313,11 +1305,11 @@ const ParallaxOutline = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen ">
-      <div className="flex justify-center uppercase tracking tracking-widest">
+      <div className="flex justify-center tracking-widest uppercase tracking">
         Testimonials
       </div>
       <div className="relative flex items-center">
-        <div className="absolute right-0 top-0 z-20 flex">
+        <div className="absolute top-0 right-0 z-20 flex">
           <button
             onClick={() => scroll("left")}
             className="p-4"
@@ -1340,7 +1332,7 @@ const ParallaxOutline = () => {
             style={{ width: "60vw", height: "auto" }}
           >
             <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
               style={{
                 height: "500px",
                 backgroundImage:
@@ -1360,7 +1352,7 @@ const ParallaxOutline = () => {
               </div>
             </div>
             <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
               style={{
                 height: "500px",
                 backgroundImage:
@@ -1379,7 +1371,7 @@ const ParallaxOutline = () => {
               </div>
             </div>
             <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
               style={{
                 height: "500px",
                 backgroundImage:
@@ -1393,15 +1385,15 @@ const ParallaxOutline = () => {
                     Frey fixed it and in record time. 1 1/2 yrs with
                     Invisalign’s. Highly recommended! Friendly staff and easy to
                     make appointments!
-                
-         
+
+
                   </h1>
                 </p>
                 <p className="text-center">Karen Oneill</p>
               </div>
             </div>
             <div
-              className="snap-start shrink-0 w-full h-48 flex items-center justify-center "
+              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
               style={{
                 height: "500px",
                 backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
@@ -1477,16 +1469,21 @@ const LogoGrid = () => {
     }
     isSphereCreated = true;
     console.log("createsphere");
-    const createSphere = () => {
+    const createSphere = async () => {
       let majorPlatformVersion;
       const canvasSphereWrapp = document.querySelector("#ballcanvas");
 
       if (navigator.userAgentData) {
         if (navigator.userAgentData.platform === "Windows") {
-          let ua = navigator.userAgentData.getHighEntropyValues([
-            "platformVersion",
-          ]);
-          majorPlatformVersion = parseInt(ua.platformVersion.split(".")[0]);
+          try {
+            let ua = await navigator.userAgentData.getHighEntropyValues([
+              "platformVersion",
+            ]);
+            majorPlatformVersion = parseInt(ua.platformVersion.split(".")[0]);
+          } catch (error) {
+            console.error("Failed to fetch platform version:", error)
+            majorPlatformVersion = undefined
+          }
         }
       }
 
@@ -1552,30 +1549,30 @@ const LogoGrid = () => {
         ballsWithText.push({ ball, text: texts[i] });
         Composite.add(engine.world, ball);
       }
-      Events.on(render, "afterRender", function () {
-        const ctx = render.context;
-        ballsWithText.forEach(({ ball, text }, index) => {
-          const position = ball.position;
+      // Events.on(render, "afterRender", function () {
+      //   const ctx = render.context;
+      //   ballsWithText.forEach(({ ball, text }, index) => {
+      //     const position = ball.position;
 
-          const image = new Image();
-          image.src = logos[Math.floor(index / 4)][index % 4];
-          const aspectRatio = image.width / image.height;
+      //     const image = new Image();
+      //     image.src = logos[Math.floor(index / 4)][index % 4];
+      //     const aspectRatio = image.width / image.height;
 
-          let imageWidth, imageHeight;
-          if (aspectRatio > 1) {
-            imageWidth = circleW;
-            imageHeight = circleW / aspectRatio;
-          } else {
-            imageWidth = circleW * aspectRatio;
-            imageHeight = circleW;
-          }
+      //     let imageWidth, imageHeight;
+      //     if (aspectRatio > 1) {
+      //       imageWidth = circleW;
+      //       imageHeight = circleW / aspectRatio;
+      //     } else {
+      //       imageWidth = circleW * aspectRatio;
+      //       imageHeight = circleW;
+      //     }
 
-          const destX = position.x - imageWidth / 2;
-          const destY = position.y - imageHeight / 2;
+      //     const destX = position.x - imageWidth / 2;
+      //     const destY = position.y - imageHeight / 2;
 
-          ctx.drawImage(image, destX, destY, imageWidth, imageHeight);
-        });
-      });
+      //     ctx.drawImage(image, destX, destY, imageWidth, imageHeight);
+      //   });
+      // });
 
       let mouse = Mouse.create(render.canvas),
         mouseConstraint = MouseConstraint.create(engine, {
@@ -1684,8 +1681,8 @@ const LogoGrid = () => {
           <div className="z-10" id="ballcanvas"></div>
         </div>
 
-        <div className="flex items-center justify-center flex-col">
-          <div className=" font-bold text-8xl uppercase">
+        <div className="flex flex-col items-center justify-center">
+          <div className="font-bold uppercase text-8xl">
             Awards & Recognition
           </div>
           <div class="mt-10 flex items-center">
@@ -1696,12 +1693,12 @@ const LogoGrid = () => {
           </div>
         </div>
 
-        <div className="h-80 flex">
+        <div className="flex h-80">
           <div
             className="bg-[#20282D] w-full"
             style={{ position: "absolute", bottom: 0 }}
           >
-            <h1 className=" animate-locationsCardMarquee tracking-wide text-white text-3xl font-neue-montreal font-bold  uppercase">
+            <h1 className="text-3xl font-bold tracking-wide text-white uppercase animate-locationsCardMarquee font-neue-montreal">
               &bull; COME SEE US AT ANY OF OUR FOUR LOCATIONS &bull; COME SEE US
               AT ANY OF OUR FOUR LOCATIONS &bull;
             </h1>
@@ -1714,7 +1711,7 @@ const LogoGrid = () => {
                     <img
                       src={logo}
                       alt={`Logo ${logoIndex + 1}`}
-                      className="h-14 w-auto"
+                      className="w-auto h-14"
                     />
                   </div>
                 ))}
@@ -1791,174 +1788,41 @@ function LocationGallery() {
             alt="Description"
           />
         </div>
-       
+
       </div>
     </div>
   );
 }
 
-// function Invisalign() {
-//   const sectionRef = useRef();
-//   const { scrollYProgress } = useScroll({
-//     target: sectionRef,
-//     offset: ["end end", "center center"],
-//   });
-//   const springScroll = useSpring(scrollYProgress, {
-//     stiffness: 100,
-//     damping: 30,
-//     restDelta: 0.001,
-//   });
-//   const scale = useTransform(springScroll, [0, 1], [1.2, 0.9]);
-//   const transformText = useTransform(springScroll, [0, 1], ["0%", "150%"]);
-//   const transformCase = useTransform(springScroll, [0, 1], ["150%", "0%"]);
-//   const transformRetainer = useTransform(
-//     springScroll,
-//     [0, 1],
-//     ["-150%", "-100%"]
-//   );
-
-//   return (
-//     <section
-//       ref={sectionRef}
-//       className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-start"
-//     >
-//       <motion.div
-//         style={{ translateY: transformText }}
-//         className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0"
-//       >
-//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
-//           Invisalign
-//         </h1>
-//         <h4>Top 1% Invisalign providers</h4>
-//         {/* <h4>As part of the top 1% of Invisalign providers in the US, we have the experience to deliver the smile you deserve.</h4> */}
-//         <Link
-//           href="/invisalign"
-//           className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group"
-//         >
-//           <span>Learn More</span>
-//           <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
-//             <span>Learn More</span>
-//           </div>
-//         </Link>
-//       </motion.div>
-//       <div className="lg:w-1/2">
-//         <motion.img
-//           style={{ translateY: transformCase }}
-//           className="object-cover w-full h-auto mx-auto object-start"
-//           src="/../../../images/invisalign_case_transparent.png"
-//           alt="invisalign case"
-//         />
-//         <motion.img
-//           style={{ translateY: transformRetainer, scale }}
-//           className="object-cover w-3/4 h-auto object-start ml-36 lg:ml-24 xl:ml-36"
-//           src="/../../../images/invisalign_bottom.png"
-//           alt="invisalign bottom"
-//         />
-//       </div>
-//     </section>
-//   );
-// }
-
-// function DamonBraces() {
-//   return (
-//     <section className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-center">
-//       <div className="h-auto lg:w-1/2">
-//         {/* <img className="object-cover object-center w-full h-full mx-auto"  src="/../../../images/faster_treatment_time.gif" alt="faster treatment time" /> */}
-//       </div>
-//       <div className="py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max lg:w-1/2 md:py-0">
-//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
-//           Damon Bracket
-//         </h1>
-//         <h4>Less appointments. Faster treatment time</h4>
-//         <Link
-//           href="/braces"
-//           className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group"
-//         >
-//           <span>Explore</span>
-//           <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
-//             <span>Explore</span>
-//           </div>
-//         </Link>
-//       </div>
-//     </section>
-//   );
-// }
-
-// function AdvancedTech() {
-//   const { scrollYProgress } = useScroll();
-//   const scale = useTransform(scrollYProgress, [0, 1], ["500%", "-100%"]);
-
-//   return (
-//     <section className="relative flex flex-col py-24 mx-auto overflow-hidden lg:justify-center lg:flex-row lg:items-center h-[100dvh]">
-//       <div className="relative max-w-2xl py-12 pl-6 ml-12 space-y-6 border-l-4 border-pink-500 h-max md:py-0">
-//         <h1 className="text-transparent uppercase font-helvetica-now-thin bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
-//           Advanced Technology
-//         </h1>
-//         <h4>
-//           Our doctors have been pioneering the most comfortable appliances for
-//           your treatment since 2005
-//         </h4>
-//         <Link
-//           href="/invisalign"
-//           className="relative inline-flex px-8 py-4 border-2 rounded-full border-zinc-700 group"
-//         >
-//           <span>Learn More</span>
-//           <div className="absolute inset-0 px-8 py-4 bg-primary-30 text-white [clip-path:circle(20%_at_50%_150%)] group-hover:[clip-path:circle(170%_at_50%_150%)] motion-safe:transition-[clip-path] motion-safe:duration-700 ease-in-out rounded-full">
-//             <span>Learn More</span>
-//           </div>
-//         </Link>
-//         <motion.img
-//           className="absolute bottom-0 right-0 z-0 w-full h-auto translate-x-1/2 translate-y-1/2"
-//           src="/../../images/lime_worm.svg"
-//           alt=""
-//         />
-//       </div>
-//       <motion.div
-//         style={{ scale }}
-//         className="absolute inset-0 top-0 left-0 w-full h-full -z-10"
-//       >
-//         <svg viewBox="0 0 256 256" className="w-full h-full">
-//           <g>
-//             <path
-//               fill="#a3bba3"
-//               d="M10,71.6c0,17.2,4.5,36.1,12.3,52c17,34.7,49.9,58.6,88.4,64.6c8.9,1.4,25.9,1.4,34.5,0c28.3-4.4,53.7-18.4,71.8-39.4c13.2-15.4,22.2-33.4,26.2-52.4c1.7-8,2.8-18.3,2.8-25.2v-4.5H128H10V71.6z"
-//             />
-//           </g>
-//         </svg>
-//       </motion.div>
-//     </section>
-//   );
-// }
-
 function Locations() {
-  const [isVisible, setIsVisible] = useState(false);
-  const footerRef = useRef(null);
+  // const [isVisible, setIsVisible] = useState(false);
+  // const footerRef = useRef(null);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        setIsVisible(entry.isIntersecting);
-      },
-      { threshold: 0.5 }
-    );
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       const [entry] = entries;
+  //       setIsVisible(entry.isIntersecting);
+  //     },
+  //     { threshold: 0.5 }
+  //   );
 
-    if (footerRef.current) {
-      observer.observe(footerRef.current);
-    }
+  //   if (footerRef.current) {
+  //     observer.observe(footerRef.current);
+  //   }
 
-    return () => {
-      if (footerRef.current) {
-        observer.unobserve(footerRef.current);
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (footerRef.current) {
+  //       observer.unobserve(footerRef.current);
+  //     }
+  //   };
+  // }, []);
 
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
-  const [scope, animate] = useAnimate();
-  const [selectedLocation, setSelectedLocation] = useState("All");
-  const [activeDisclosurePanel, setActiveDisclosurePanel] = useState(null);
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: false })
+  const [scope, animate] = useAnimate()
+  const [selectedLocation, setSelectedLocation] = useState("All")
+  const [activeDisclosurePanel, setActiveDisclosurePanel] = useState(null)
 
   function toggleDisclosurePanels(newPanel) {
     if (activeDisclosurePanel) {
@@ -1966,13 +1830,13 @@ function Locations() {
         activeDisclosurePanel.key !== newPanel.key &&
         activeDisclosurePanel.open
       ) {
-        activeDisclosurePanel.close();
+        activeDisclosurePanel.close()
       }
     }
     setActiveDisclosurePanel({
       ...newPanel,
       open: !newPanel.open,
-    });
+    })
   }
 
   const locations = [
@@ -2018,20 +1882,25 @@ function Locations() {
       mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_LEHIGHTON,
       hours: [{ Mon: "11:00 AM - 7:00 PM" }, { Thu: "7:00 AM - 4:30 PM" }],
     },
-  ];
+  ]
+
+  const handleShowAllLocations = () => {
+    activeDisclosurePanel.close()
+    setSelectedLocation("All")
+  }
 
   useEffect(() => {
     animate(
       "div",
       isInView
-        ? { opacity: 1, transform: "translateX(0px)", scale: 1 } // filter: "blur(0px)"
-        : { opacity: 0, transform: "translateX(-50px)", scale: 0.3 }, // filter: "blur(20px)"
+        ? { opacity: 1, transform: "translateX(0px)", scale: 1, filter: "blur(0px)"}
+        : { opacity: 0, transform: "translateX(-50px)", scale: 0.3, filter: "blur(2px)" },
       {
         duration: 0.2,
         delay: isInView ? stagger(0.1, { startDelay: 0.15 }) : 0,
       }
-    );
-  }, [isInView]);
+    )
+  }, [isInView])
 
   useEffect(() => {
     gsap.registerPlugin(SplitText);
@@ -2111,145 +1980,38 @@ function Locations() {
       observer.disconnect();
     };
   }, []);
+
   return (
     <>
-      <div className="h-screen">
-      <div className="flex flex-col   w-[50vw] h-[15vw] mx-[7vw] "  ref={targetRef}>
-          <p className="text-2xl ">
-            <div className=" w-[900px]">
-              <h1 className="font-sans font-normal text-[40px] uppercase relative overflow-hidden">
-             Come see us at any of our four convenient locations or opt for a virtual consultation
-
-
-              </h1>
-            </div>
-          </p>
-
+      {/*
+        --beige: #f8f1de;
+        --black: #171616;
+        --orange: #ff6432; hsl(14 100% 52%)
+        --white: white;
+        --rosemary: #147b5d;
+        --rosemary-text: #fee5e1;
+      */}
+      <section id="locations-section" className="relative bg-[#f8f1de]">
+        <div id="locations-heading" className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32">
+          <h1 className="lg:text-6xl font-agrandir-bold text-[#171616]">
+            Come see us at any of our{" "}
+            <span className="relative inline-block my-8 leading-tight lowercase font-editorial-new underline-offset-8">
+              four convenient locations
+              {/* <img className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" src="/../../images/ellipse.svg" /> */}
+              <DrawEllipse className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" />
+            </span>{" "}
+            or opt for a{" "}
+            <span className="relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#147b5d] underline inline-block">virtual consultation</span>
+          </h1>
+          <svg className="absolute bottom-0 translate-y-1/2 left-0 translate-x-64 w-36 h-36 rotate-[120deg] text-[#ff6432]" viewBox="0 0 77 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1.33755 84.3973C0.297616 62.7119 2.93494 39.8181 19.4192 23.8736C28.2211 15.3599 42.4944 12.5723 47.6281 26.2359C51.1245 35.5419 51.542 51.9945 41.0605 57.0865C29.486 62.7095 40.2945 35.2221 41.9942 32.4952C49.9497 19.7313 59.7772 11.6122 72.2699 3.78281C76.9496 0.849879 73.7108 0.477284 70.0947 1.13476C66.9572 1.7052 63.4035 2.43717 60.5291 3.81975C59.6524 4.24143 65.7349 2.73236 66.6827 2.44768C70.7471 1.22705 75.4874 -0.0219285 75.9527 5.60812C76.0274 6.5127 75.9956 14.9844 74.7481 15.2963C74.099 15.4586 71.0438 10.27 70.4642 9.65288C66.6996 5.64506 63.5835 4.42393 58.2726 5.11792" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
         </div>
-        <div></div>
 
-        {/* <img className="w-20 " src="../images/mappin.png" alt="Map Pin"></img>  */}
-        <section
-          ref={ref}
-          id="locations"
-          className="flex flex-col justify-center w-full mx-auto  lg:flex-row max-w-7xl"
-        >
-          {/* LEFT */}
-          <div className="z-10 lg:w-1/2 lg:py-0">
-            <motion.div
-              className="p-6 "
-              style={{
-                transform: isInView ? "none" : "translateY(-50px)",
-                opacity: isInView ? 1 : 0,
-                transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
-              }}
-            >
-              <span className="flex items-baseline ">
-                {/* <MapPin className="ml-2 transition-all duration-300 hover:animate-bounce hover:cursor-pointer" /> */}
-              </span>
-
-              {/* <Link
-              href="/book-now"
-              className="inline-block px-6 py-4 text-white transition duration-300 ease-linear rounded-full underline-offset-8 bg-primary-50 hover:bg-secondary-50 group"
-            >
-              Schedule an evaluation today
-              <span className="block h-[1px] transition-all duration-300 ease-linear bg-white rounded-full max-w-0 group-hover:max-w-full"></span>
-            </Link> */}
-            </motion.div>
-
-            {/* LOCATIONS LIST */}
-            <motion.div
-              className="flex flex-col space-y-4"
-              style={{
-                transform: isInView ? "none" : "translateX(-50px)",
-                opacity: isInView ? 1 : 0,
-                transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
-              }}
-            >
-              <button
-                className={`${
-                  selectedLocation === "All" ? "text-white " : ""
-                } self-end transition-all duration-300 ease-linear w-max  hover:text-secondary-50 mr-6`}
-                onClick={() => setSelectedLocation("All")}
-              >
-                {selectedLocation === "All"
-                  ? "Showing All Locations"
-                  : "Show All Locations"}
-              </button>
-
-              <dl ref={scope} className=" divide-y ">
-                {locations.map((l, i) => (
-                  <Disclosure
-                    as="div"
-                    key={l.location}
-                    className={`${
-                      selectedLocation === l.location ? "text-primary-95" : ""
-                    } px-4 py-6 transition-all duration-300 ease-linear cursor-pointer  hover:text-white group text-white`}
-                  >
-                    {(panel) => {
-                      const { open, close } = panel;
-                      return (
-                        <>
-                          <Disclosure.Button
-                            className="grid w-full grid-cols-12 text-left sm:px-0"
-                            onClick={() => {
-                              if (!open) close();
-                              toggleDisclosurePanels({ ...panel, key: i });
-                              setSelectedLocation(l.location);
-                            }}
-                          >
-                            <dt className="col-span-5 ">
-                              <h6 className="text-xl">{l.location}</h6>
-                            </dt>
-                            <dd className="col-span-7">
-                              <span className="flex items-center justify-between">
-                                <p>
-                                  {l.addressLine1}
-                                  <br />
-                                  {l.addressLine2}
-                                </p>
-                                <ChevronRightIcon className="w-4 h-4 ui-open:rotate-90 ui-open:transform" />
-                              </span>
-                            </dd>
-                          </Disclosure.Button>
-                          <Transition
-                            show={open}
-                            enter="transition-transform ease-out duration-300"
-                            enterFrom="transform scale-y-0 opacity-0"
-                            enterTo="transform scale-y-100 opacity-100"
-                            leave="transition-transform ease-in duration-200"
-                            leaveFrom="transform scale-y-100 opacity-100"
-                            leaveTo="transform scale-y-0 opacity-0"
-                          >
-                            <Disclosure.Panel
-                              as="div"
-                              className="grid grid-cols-12 mt-6"
-                            >
-                              <ul className="col-span-7 col-start-6 text-left">
-                                <h6 className="mb-2 font-medium uppercase">
-                                  Office Hours:
-                                </h6>
-                                {l.hours.map((hour, index) => (
-                                  <li key={index}>
-                                    {Object.keys(hour)[0]}:{" "}
-                                    {Object.values(hour)[0]}
-                                  </li>
-                                ))}
-                              </ul>
-                            </Disclosure.Panel>
-                          </Transition>
-                        </>
-                      );
-                    }}
-                  </Disclosure>
-                ))}
-              </dl>
-            </motion.div>
-          </div>
-
-          {/* RIGHT */}
+        <div ref={ref} className="relative">
           <motion.div
-            className="h-screen min-h-max lg:w-1/2 lg:h-auto"
+            id="locations-map"
+            className="overflow-hidden h-80 lg:absolute lg:right-0 lg:h-full lg:w-1/2"
             style={{
               opacity: isInView ? 1 : 0,
               filter: isInView ? "blur(0px)" : "blur(16px)",
@@ -2257,6 +2019,7 @@ function Locations() {
             }}
           >
             <iframe
+              className="w-full h-full rounded-lg"
               width="100%"
               height="100%"
               src={
@@ -2271,13 +2034,236 @@ function Locations() {
                   : locations.find((l) => l.location === selectedLocation)
                       .mapbox_map_title
               }
-              style={{ border: "none", borderRadius: "3rem" }}
             />
           </motion.div>
-        </section>
-      </div>
+
+          <div id="locations-details">
+            <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
+              {/* LOCATIONS LIST */}
+              <motion.div
+                className="flex flex-col mt-10"
+                style={{
+                  transform: isInView ? "none" : "translateX(-50px)",
+                  opacity: isInView ? 1 : 0,
+                  transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+                }}
+              >
+                <button
+                  className={`${
+                    selectedLocation === "All" ? "text-[#147b5d]" : ""
+                  } self-end transition-all duration-300 ease-linear w-max mr-6 mb-6 underline underline-offset-4 hover:text-[#147b5d]`}
+                  onClick={handleShowAllLocations}
+                >
+                  {selectedLocation === "All"
+                    ? "Showing All Locations"
+                    : "Show All Locations"}
+                </button>
+
+                <dl ref={scope}>
+                  {locations.map((l, i) => (
+                    <Disclosure
+                      as="div"
+                      key={l.location}
+                      className={`${
+                        selectedLocation === l.location ? "text-white" : ""
+                      } px-4 py-6 transition-all duration-300 ease-linear cursor-pointer hover:text-white group text-white`}
+                    >
+                      {(panel) => {
+                        const { open, close } = panel
+                        return (
+                          <>
+                            <BezierCurve />
+
+                            <Disclosure.Button
+                              className="grid w-full grid-cols-12 grid-rows-1 text-left sm:px-0"
+                              onClick={() => {
+                                if (!open) close()
+                                toggleDisclosurePanels({ ...panel, key: i })
+                                setSelectedLocation(l.location)
+                              }}
+                            >
+                              <dt className="col-span-5 row-start-1">
+                                <h6 className="text-xl text-[#171616] uppercase font-agrandir-bold">{l.location}</h6>
+                              </dt>
+                              <dd className="col-span-7 row-start-1">
+                                <span className="flex items-center justify-between">
+                                  <p className="text-[#171616]">
+                                    {l.addressLine1}
+                                    <br />
+                                    {l.addressLine2}
+                                  </p>
+                                  <ChevronRightIcon className="w-6 h-6 ui-open:rotate-90 ui-open:transform text-[#ff6432]" />
+                                </span>
+                              </dd>
+                            </Disclosure.Button>
+                            <Transition
+                              show={open}
+                              enter="transition-transform ease-out duration-300"
+                              enterFrom="transform scale-y-0 opacity-0"
+                              enterTo="transform scale-y-100 opacity-100"
+                              leave="transition-transform ease-in duration-200"
+                              leaveFrom="transform scale-y-100 opacity-100"
+                              leaveTo="transform scale-y-0 opacity-0"
+                            >
+                              <Disclosure.Panel
+                                as="div"
+                                className="grid grid-cols-12"
+                              >
+                                <ul className="col-span-7 col-start-6 text-left text-[#147b5d] mt-4 mb-2">
+                                  <h6 className="font-medium uppercase">
+                                    Office Hours:
+                                  </h6>
+                                  {l.hours.map((hour, index) => (
+                                    <li key={index}>
+                                      {Object.keys(hour)[0]}:{" "}
+                                      {Object.values(hour)[0]}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </Disclosure.Panel>
+                            </Transition>
+                          </>
+                        )
+                      }}
+                    </Disclosure>
+                  ))}
+                </dl>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   );
+}
+
+function DrawEllipse(props) {
+  useGSAP(() => {
+    gsap.from(".draw", {
+      drawSVG: "0%",
+      ease: "expo.out",
+      scrollTrigger: {
+        trigger: '#locations-heading',
+        start: "clamp(top top)",
+        scrub: true,
+        pinSpacing: false,
+        markers: true,
+      }
+    })
+  })
+
+  return (
+    <svg
+      width="508"
+      height="122"
+      viewBox="0 0 508 122"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        className="draw"
+        d="M2 23.2421C28.9079 14.5835 113.098 -1.63994 234.594 2.73493C386.464 8.20351 515.075 37.5458 505.497 77.9274C503.774 85.1946 491.815 127.145 271.535 118.942C51.2552 110.739 32.8106 78.7919 45.7824 58.053C59.4644 36.1787 112.824 27.9758 193.548 27.9758"
+        stroke="#ff6432"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+function BezierCurve() {
+  const container = useRef(null)
+  const path = useRef(null)
+  let progress = 0
+  let time = Math.PI / 2 // want the initial time value to be 1; in sine graph y = 1 when x = pi / 2
+  let reqId = null // everytime mouse enters and leaves line's bounding box, animation gets called causing simultaneous chains of it being called (this is bad), only want one request animation running at the same time
+  let x = 0.5 // middle point is 1/2
+
+  useEffect(() => {
+    setPath(progress)
+    window.addEventListener('resize', () => {
+      setPath(progress)
+    })
+  }, [])
+
+  {/*
+    use svg container's width to get control point (center point) of quadratic bezier curve; control point = svg container's width / 2
+    30 ==> svg height(60) divided by 2 to align the path within the center of the svg
+  */}
+  const setPath = (progress) => {
+    const width = container.current.offsetWidth
+    path.current.setAttributeNS(null, "d", `M 0 30 Q${width * x} ${30 + progress} ${width} 30`)
+  }
+
+  const manageMouseEnter = () => {
+    if (reqId) {
+      window.cancelAnimationFrame(reqId)
+      resetAnimation()
+    }
+  }
+
+  const manageMouseMove = (e) => {
+    const { movementY, clientX } = e
+    const { left, width } = path.current.getBoundingClientRect()
+    // get value of x depending on where mouse is on the x-axis of the line
+    x = (clientX - left) / width
+    progress += movementY
+    setPath(progress)
+  }
+
+  const manageMouseLeave = () => {
+    animateOut()
+  }
+
+  {/*
+    linear interpolation
+    x: The value we want to interpolate from (start) => 10
+    y: The target value we want to interpolate to (end) => 0
+    a: The amount by which we want x to be closer to y => 10% or 0.1
+    ex: value = lerp(value, 0, 0.1)
+    if value = 10, bring that value close to 0 by 10% which will give 9
+  */}
+  const lerp = (x, y, a) => x * (1 - a) + y * a
+
+  // sine function, linear interpolation, recursivity
+  const animateOut = () => {
+    // sine function creates the "wobbly" line animation when mouse leaves the line
+    const newProgress = progress * Math.sin(time)
+    time += 0.25 // speed of bounce animation
+    setPath(newProgress)
+    progress = lerp(progress, 0, 0.05) // change 3rd lerp argument to change curve's bounce exaggeration
+
+    // exit condition
+    if (Math.abs(progress) > 0.75) {
+      reqId = window.requestAnimationFrame(animateOut)
+    } else {
+      resetAnimation()
+    }
+  }
+
+  const resetAnimation = () => {
+    time = Math.PI / 2
+    progress = 0
+  }
+
+  return (
+    <>
+      {/* line */}
+      <div ref={container} className="mb-[30px] col-span-12 row-start-2 h-[1px] w-full relative">
+        {/* box for event listeners overlays the svg element */}
+        <div
+          onMouseEnter={manageMouseEnter}
+          onMouseMove={(e) => {manageMouseMove(e)}}
+          onMouseLeave={manageMouseLeave}
+          className="h-[30px] relative -top-[15px] z-10 hover:h-[60px] hover:-top-[30px]"
+        />
+        <svg className="w-full h-[60px] -top-[30px] absolute">
+          <path ref={path} strokeWidth={1} stroke="#147b5d" fill="none" />
+        </svg>
+      </div>
+    </>
+  )
 }
 
 function GiftCards() {
@@ -2287,7 +2273,7 @@ function GiftCards() {
   return (
     <section
       ref={ref}
-      className="z-10 h-[60dvh] relative my-24 group overflow-hidden hover:cursor-pointer"
+      className="z-10 h-[60dvh] relative group overflow-hidden hover:cursor-pointer"
       style={{
         transform: isInView ? "none" : "translateY(100px)",
         opacity: isInView ? 1 : 0,
