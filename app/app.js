@@ -11,9 +11,7 @@ export default function App({ children }) {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <Navbar />
-          <main>
-            {children}
-          </main>
+          {children}
           <Footer />
         </PersistGate>
       </Provider>
