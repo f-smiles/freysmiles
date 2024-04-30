@@ -105,7 +105,7 @@ const Invisalign = () => {
     });
   };
   return (
-    <div className=" bg-[#FFF8EF]">
+    <div className=" bg-[#E3E1DB]">
   
       <div
         style={{
@@ -133,9 +133,9 @@ const Invisalign = () => {
               <h1 className="text-[8em] font-bold leading-none">
                 <div>SOLUTIONS</div>
                 <div>DESIGNED TO FIT</div>
-                <div className="flex items-baseline">
+                <div className="flex items-center">
                   <span>YOUR NEEDS</span>
-
+<div className="-mt-10">
                   <Link href="/book-now">
                     <button
                       data-text="BOOK CONSULT"
@@ -144,13 +144,14 @@ const Invisalign = () => {
                       BOOK CONSULT
                     </button>
                   </Link>
+                  </div>
                 </div>
               </h1>
             </div>
           </div>
         </main>
       </div>
-      <div className="rounded-[50px] bg-[#FFFFFF] text-white min-h-screen flex relative">
+      <div className="text-white min-h-screen flex relative">
       <div className="flex w-full min-h-screen">
       <div className="flex-1">
           <video
