@@ -243,160 +243,17 @@ export default function Testimonials() {
      <p>&bull; &bull; &bull;</p>
    </div>
  </div>
-        <div className="slider__wrapper flex gap-24 p-6">
-       
-        {imageUrl.map((imagePath, index) => (
-  <div key={index} className="slider__item ">
-    <img className="rounded-2xl " src={imagePath} alt="" />
-  </div>
-))} <div className="additional-content">
-
-<section className="mb-32 sm:pb-32">
-        <div className="relative mt-32 isolate sm:mt-56 sm:pt-32">
-          <svg
-            className="absolute inset-0 -z-10 hidden h-full w-full stroke-gray-200 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)] sm:block"
-            aria-hidden="true"
-          >
-            <defs>
-              <pattern
-                id="55d3d46d-692e-45f2-becd-d8bdc9344f45"
-                width={200}
-                height={200}
-                x="50%"
-                y={0}
-                patternUnits="userSpaceOnUse"
-              >
-                <path d="M.5 200V.5H200" fill="none" />
-              </pattern>
-            </defs>
-            <svg x="50%" y={0} className="overflow-visible fill-gray-50">
-              <path
-                d="M-200.5 0h201v201h-201Z M599.5 0h201v201h-201Z M399.5 400h201v201h-201Z M-400.5 600h201v201h-201Z"
-                strokeWidth={0}
-              />
-            </svg>
-            <rect
-              width="100%"
-              height="100%"
-              strokeWidth={0}
-              fill="url(#55d3d46d-692e-45f2-becd-d8bdc9344f45)"
-            />
-          </svg>
-          <div className="relative">
-            <div
-              className="absolute inset-x-0 overflow-hidden -translate-y-1/2 top-1/2 -z-10 transform-gpu opacity-30 blur-3xl"
-              aria-hidden="true"
-            >
-              <div
-                className="ml-[max(50%,38rem)] aspect-[1313/771] w-[82.0625rem] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc]"
-                style={{
-                  clipPath:
-                    "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-                }}
-              />
-            </div>
-            <div
-              className="absolute inset-x-0 top-0 flex pt-8 overflow-hidden opacity-25 -z-10 transform-gpu blur-3xl xl:justify-end"
-              aria-hidden="true"
-            >
-              <div
-                className="ml-[-22rem] aspect-[1313/771] w-[82.0625rem] flex-none origin-top-right rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] xl:ml-0 xl:mr-[calc(50%-12rem)]"
-                style={{
-                  clipPath:
-                    "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-                }}
-              />
-            </div>
-
-            <div className="reviews px-6 mx-auto max-w-7xl lg:px-8">
-              <div className="max-w-xl mx-auto sm:text-center">
-        
-                {/* <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                  Here&apos;s what others had to say about us
-                </p> */}
-              </div>
-              <div className="grid max-w-2xl grid-cols-1 grid-rows-1 gap-8 mx-auto mt-16 text-sm leading-6 text-gray-900 sm:mt-20 sm:grid-cols-2 xl:mx-0 xl:max-w-none xl:grid-flow-col xl:grid-cols-4">
-                <motion.figure
-                  initial="initial"
-                  whileInView="animate"
-                  viewport={{ once: true, amount: 0.2 }}
-                  variants={fadeInOnScroll}
-                  className="hidden col-span-2 sm:block sm:rounded-2xl sm:shadow-lg sm:ring-1 sm:ring-gray-900/5 xl:col-start-2 xl:row-end-1"
-                >
-                  <blockquote className="p-12 text-xl font-semibold leading-8 tracking-tight text-gray-900">
-                    <p>{`“${featuredTestimonial.body}”`}</p>
-                  </blockquote>
-                  <figcaption className="flex items-center px-6 py-4 border-t gap-x-4 border-gray-900/10">
-                    <img
-                      src={featuredTestimonial.author.imageUrl}
-                      alt={featuredTestimonial.author.name}
-                      className="flex-none w-10 h-10 rounded-full bg-gray-50"
-                    />
-                    <div className="flex-auto">
-                      <div className="font-semibold">
-                        {featuredTestimonial.author.name}
-                      </div>
-                      <div className="text-gray-600">{`${featuredTestimonial.author.treatment}`}</div>
-                    </div>
-                    {/* <img className="flex-none w-auto h-10" src={featuredTestimonial.author.logoUrl} alt="" /> */}
-                  </figcaption>
-                </motion.figure>
-                {testimonials.map((columnGroup, columnGroupIdx) => (
-                  <div
-                    key={columnGroupIdx}
-                    className="space-y-8 xl:contents xl:space-y-0"
-                  >
-                    {columnGroup.map((column, columnIdx) => (
-                      <motion.div
-                        key={columnIdx}
-                        initial="initial"
-                        whileInView="animate"
-                        viewport={{ once: false, amount: 0.2 }}
-                        variants={fadeInOnScroll}
-                        className={classNames(
-                          (columnGroupIdx === 0 && columnIdx === 0) ||
-                            (columnGroupIdx === testimonials.length - 1 &&
-                              columnIdx === columnGroup.length - 1)
-                            ? "xl:row-span-2"
-                            : "xl:row-start-1",
-                          "space-y-8"
-                        )}
-                      >
-                        {column.map((testimonial) => (
-                          <figure
-                            key={testimonial.author.name}
-                            className="p-6  shadow-lg rounded-2xl ring-1 ring-gray-900/5"
-                          >
-                            <blockquote className="text-gray-900">
-                              <p>{`“${testimonial.body}”`}</p>
-                            </blockquote>
-                            <figcaption className="flex items-center pt-4 mt-6 border-t border-gray-900/10 gap-x-4">
-                              <img
-                                src={testimonial.author.imageUrl}
-                                alt={testimonial.author.name}
-                                className="w-10 h-10 rounded-full bg-gray-50"
-                              />
-                              <div>
-                                <div className="font-semibold">
-                                  {testimonial.author.name}
-                                </div>
-                                <div className="text-gray-600">{`${testimonial.author.treatment}`}</div>
-                              </div>
-                            </figcaption>
-                          </figure>
-                        ))}
-                      </motion.div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
+ <div className="slider__wrapper flex gap-24 p-6">
+  {imageUrl.map((imagePath, index) => (
+    <div key={index} className="slider__item relative group">
+      <img className="rounded-2xl transition-all duration-300 ease-in-out" src={imagePath} alt="" />
+      <div className="absolute inset-0 bg-[#000]/30 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-2xl transition-opacity duration-300 ease-in-out">
+        <span className="text-lg font-semibold text-black">Name</span> 
+      </div>
+    </div>
+  ))}
 </div>
-        </div>
+
         
       </div>
     </div>

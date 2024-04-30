@@ -39,22 +39,23 @@ import { SplitText } from "gsap-trial/all";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
-const Section = ({ children, onHoverStart }) => (
+const Section = ({ children, onHoverStart, onHoverEnd }) => (
   <motion.div
     onHoverStart={onHoverStart}
+    onHoverEnd={onHoverEnd}
     style={{
-      height: '100%', 
-      width: '100%', 
+      height: '50%', 
       display: 'flex',
-      justifyContent: 'center',
+      border: '1px solid black', 
+      // justifyContent: 'center',
       alignItems: 'center',
       cursor: 'pointer',
       backgroundColor: 'transparent',
-      color: 'white',
+      color: 'black', 
       fontSize: '2em',
       userSelect: 'none',
-      position: 'relative',
-      zIndex: 2,
+      position: 'relative', 
+      zIndex: 2
     }}
   >
     {children}
@@ -105,23 +106,7 @@ const Invisalign = () => {
   };
   return (
     <div className=" bg-[#FFF8EF]">
-       <div style={{ position: 'relative', width: '100%', height: '600px', overflow: 'hidden' }}>
-      <motion.div
-        initial={{ y: '0%' }} // Start from the first section
-        animate={controls}
-        style={{
-          position: 'absolute',
-          width: '100%', // Take the full width of the container
-          height: '33.3%', // Height matches one section's height
-          backgroundColor: '#D3FD50', // Yellow background
-          zIndex: 1, // Behind the text
-        }}
-      />
-      {/* Define each section and pass the corresponding index to handleHover */}
-      <Section onHoverStart={() => handleHover(0)}>EVERYTHING</Section>
-      <Section onHoverStart={() => handleHover(1)}>AGENCE</Section>
-      <Section onHoverStart={() => handleHover(2)}>CONTACT</Section>
-    </div>
+  
       <div
         style={{
           backgroundImage: "url('../images/invisalignset.png')",
@@ -166,7 +151,8 @@ const Invisalign = () => {
         </main>
       </div>
       <div className="rounded-[50px] bg-[#FFFFFF] text-white min-h-screen flex relative">
-        <div className="relative">
+      <div className="flex w-full min-h-screen">
+      <div className="flex-1">
           <video
             autoPlay
             loop
@@ -180,6 +166,24 @@ const Invisalign = () => {
             <source src="../images/invisfullvideo.mov" type="video/mp4" /> Your
             browser does not support the video tag.
           </video>{" "}
+          </div>
+          <div className="w-1/3 relative" style={{ height: '600px', overflow: 'hidden' }}>
+      <motion.div
+        initial={{ y: '0%' }} 
+        animate={controls}
+        style={{
+          position: 'absolute',
+          width: '100%', 
+          height: '50%',
+          background: 'rgb(245,255,125,.6)', 
+          zIndex: 1, 
+        }}
+      />
+
+      <Section onHoverStart={() => handleHover(0)}>A healthier journey to a better smile</Section>
+      <Section onHoverStart={() => handleHover(1)}>Less appointments faster treatment time</Section>
+
+    </div>
         </div>
       </div>
       <div className="flex  items-center ">
