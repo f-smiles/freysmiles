@@ -105,7 +105,7 @@ const Invisalign = () => {
     });
   };
   return (
-    <div className=" bg-[#E3E1DB]">
+    <div className=" bg-[#fff]">
   
       <div
         style={{
