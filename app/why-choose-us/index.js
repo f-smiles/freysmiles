@@ -1,5 +1,8 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import { Curtains, useCurtains, Plane } from "react-curtains"
+import { Vec2 } from "curtainsjs";
+// import SimplePlane from "./curtains"
+import React, { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -19,9 +22,14 @@ import { TextReveal } from "../_components/TextReveal";
 import { Circle } from "pixi.js";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
+
+
+
 export default function WhyChooseUs() {
+
   return (
     <>
+   
       <Hero />
       
       {/* <TextSection /> */}
@@ -32,6 +40,12 @@ export default function WhyChooseUs() {
       <CTA />
       <DragTable />
       <BentoGrid />
+        <div className="min-h-screen">
+      {/* <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
+        <SimplePlane />
+      </Curtains> */}
+    </div>
+     
     </>
   );
 }
@@ -67,6 +81,7 @@ function Hero() {
   
   return (
     <div className="bg-212121   h-screen">
+ 
       <div className="bg-[#DFFF00] min-h-screen min-w-full flex justify-center items-center">
         <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
           <h2 className="absolute top-20 left-[5vw] m-0 text-[10vw] uppercase text-center">

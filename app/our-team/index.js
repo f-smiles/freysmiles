@@ -180,55 +180,51 @@ const OurTeam = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const items = [
-    {
-      title: "5",
-      num: "Adriana",
-      imgSrc: "/../../images/team_members/Adriana-Photoroom.jpg",
-    },
-    {
-      title: "7",
-      num: "Alyssa",
-      imgSrc: "/../../images/team_members/Alyssascan.png",
-    },
-    {
-      title: "6",
-      num: "Dana",
-      imgSrc: "/../../images/team_members/Dana-Photoroom.png",
-    },
+  // const items = [
+  //   {
+  //     title: "5",
+  //     num: "Adriana",
+  //     imgSrc: "/../../images/team_members/Adriana-Photoroom.jpg",
+  //   },
+  //   {
+  //     title: "7",
+  //     num: "Alyssa",
+  //     imgSrc: "/../../images/team_members/Alyssascan.png",
+  //   },
+  //   {
+  //     title: "6",
+  //     num: "Dana",
+  //     imgSrc: "/../../images/team_members/Dana-Photoroom.png",
+  //   },
 
-    {
-      title: "2",
-      num: "Elizabeth",
-      imgSrc: "/../../images/team_members/Elizabethaao.png",
-    },
+  //   {
+  //     title: "2",
+  //     num: "Elizabeth",
+  //     imgSrc: "/../../images/team_members/Elizabethaao.png",
+  //   },
 
-    {
-      title: "4",
-      num: "Grace",
-      imgSrc: "/../../images/team_members/Grace-Photoroom.jpg",
-    },
-    {
-      title: "1",
-      num: "Lexi",
-      imgSrc: "/../../images/team_members/Lexigreen.png",
-    },
-    {
-      title: "8",
-      num: "Lizzie",
-      imgSrc: "/../../images/team_members/Lizzie-Photoroom.png",
-    },
-    {
-      title: "3",
-      num: "Nicolle",
-      imgSrc: "/../../images/team_members/Nicollewaving.png",
-    },
-    {
-      title: "9",
-      num: "x",
-      imgSrc: "/../../images/team_members/Kayli-Photoroom.png",
-    },
-  ];
+  //   {
+  //     title: "4",
+  //     num: "Grace",
+  //     imgSrc: "/../../images/team_members/Grace-Photoroom.jpg",
+  //   },
+  //   {
+  //     title: "1",
+  //     num: "Lexi",
+  //     imgSrc: "/../../images/team_members/Lexigreen.png",
+  //   },
+   
+  //   {
+  //     title: "3",
+  //     num: "Nicolle",
+  //     imgSrc: "/../../images/team_members/Nicollewaving.png",
+  //   },
+  //   {
+  //     title: "9",
+  //     num: "x",
+  //     imgSrc: "/../../images/team_members/Kayli-Photoroom.png",
+  //   },
+  // ];
   const [progress, setProgress] = useState(0);
   const carouselRef = useRef();
   const cursorRef = useRef();
@@ -238,39 +234,39 @@ const OurTeam = () => {
   let startX = 0;
   let isDown = false;
 
-  const getZindex = (length, active) => {
-    return Array.from({ length }, (_, i) =>
-      active === i ? length : length - Math.abs(active - i)
-    );
-  };
+  // const getZindex = (length, active) => {
+  //   return Array.from({ length }, (_, i) =>
+  //     active === i ? length : length - Math.abs(active - i)
+  //   );
+  // };
 
-  const displayItems = (index, active, length) => {
-    const zIndex = getZindex(length, active)[index];
-    const activeFactor = (index - active) / length;
-    return {
-      "--zIndex": zIndex,
-      "--active": activeFactor,
-    };
-  };
+  // const displayItems = (index, active, length) => {
+  //   const zIndex = getZindex(length, active)[index];
+  //   const activeFactor = (index - active) / length;
+  //   return {
+  //     "--zIndex": zIndex,
+  //     "--active": activeFactor,
+  //   };
+  // };
 
-  const animate = () => {
-    const boundedProgress = Math.max(0, Math.min(progress, 100));
-    const active = Math.floor(
-      (boundedProgress / 100) * (carouselRef.current.children.length - 1)
-    );
-    Array.from(carouselRef.current.children).forEach((item, index) => {
-      const styles = displayItems(
-        index,
-        active,
-        carouselRef.current.children.length
-      );
-      Object.keys(styles).forEach((key) =>
-        item.style.setProperty(key, styles[key])
-      );
-    });
-  };
+  // const animate = () => {
+  //   const boundedProgress = Math.max(0, Math.min(progress, 100));
+  //   const active = Math.floor(
+  //     (boundedProgress / 100) * (carouselRef.current.children.length - 1)
+  //   );
+  //   Array.from(carouselRef.current.children).forEach((item, index) => {
+  //     const styles = displayItems(
+  //       index,
+  //       active,
+  //       carouselRef.current.children.length
+  //     );
+  //     Object.keys(styles).forEach((key) =>
+  //       item.style.setProperty(key, styles[key])
+  //     );
+  //   });
+  // };
 
-  useEffect(animate, [progress]);
+  // useEffect(animate, [progress]);
 
   useEffect(() => {
     const handleWheel = (e) => {
@@ -348,56 +344,56 @@ const OurTeam = () => {
 
   const [isDragging, setIsDragging] = useState(false);
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-    };
+  // useEffect(() => {
+  //   const handleMouseMove = (e) => {
+  //     setPosition({ x: e.clientX, y: e.clientY });
+  //   };
 
-    const handleMouseDown = () => {
-      setIsDragging(true);
-    };
+  //   const handleMouseDown = () => {
+  //     setIsDragging(true);
+  //   };
 
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
+  //   const handleMouseUp = () => {
+  //     setIsDragging(false);
+  //   };
 
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("mouseup", handleMouseUp);
+  //   document.addEventListener("mousemove", handleMouseMove);
+  //   document.addEventListener("mousedown", handleMouseDown);
+  //   document.addEventListener("mouseup", handleMouseUp);
 
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, []);
+  //   return () => {
+  //     document.removeEventListener("mousemove", handleMouseMove);
+  //     document.removeEventListener("mousedown", handleMouseDown);
+  //     document.removeEventListener("mouseup", handleMouseUp);
+  //   };
+  // }, []);
 
-  const cursorStyle = {
-    position: "fixed",
-    left: `${position.x}px`,
-    top: `${position.y}px`,
-    transform: "translate(-50%, -50%)",
-    pointerEvents: "none",
-    zIndex: 99,
-    willChange: "transform",
-  };
+  // const cursorStyle = {
+  //   position: "fixed",
+  //   left: `${position.x}px`,
+  //   top: `${position.y}px`,
+  //   transform: "translate(-50%, -50%)",
+  //   pointerEvents: "none",
+  //   zIndex: 99,
+  //   willChange: "transform",
+  // };
 
-  const cursorCircleStyle = {
-    width: isDragging ? "64px" : "128px",
-    height: isDragging ? "64px" : "128px",
-    marginTop: "-50%",
-    marginLeft: "-50%",
-    borderRadius: "50%",
-    border: "solid 1px #0058EF",
-    backgroundColor: "#0058EF",
-    color: "white",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "20px",
-    transition:
-      "width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1)", 
-  };
+  // const cursorCircleStyle = {
+  //   width: isDragging ? "64px" : "128px",
+  //   height: isDragging ? "64px" : "128px",
+  //   marginTop: "-50%",
+  //   marginLeft: "-50%",
+  //   borderRadius: "50%",
+  //   border: "solid 1px #0058EF",
+  //   backgroundColor: "#0058EF",
+  //   color: "white",
+  //   display: "flex",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   fontSize: "20px",
+  //   transition:
+  //     "width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1)", 
+  // };
 
   const [cursorPosition, setCursorPosition] = useState({ x: -100, y: -100 });
   const [isFocused, setIsFocused] = useState(false);
@@ -446,7 +442,7 @@ const OurTeam = () => {
     <div className="font-saol text-[80px] tracking-tight relative z-10">
       Meet Our
     </div>
-    <div className="font-grandslang italic text-[90px] tracking-tight relative z-10">
+    <div className="font-saol italic text-[80px] tracking-tight relative z-10">
       Doctors
     </div>
   </div>
@@ -746,10 +742,10 @@ const OurTeam = () => {
               </div>
             </div>
           </div>
-
-          <div
+   
+          {/* <div
             ref={carouselRef}
-            className="mt-40 relative z-10 h-screen overflow-hidden pointer-events-none"
+            className="relative z-10 min-h-[150vh]  pointer-events-none"
           >
             <div id="cursor" style={cursorStyle} className={className}>
               <div className="cursor__circle" style={cursorCircleStyle}>
@@ -783,7 +779,7 @@ const OurTeam = () => {
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
         </>
       </div>
       </div>
