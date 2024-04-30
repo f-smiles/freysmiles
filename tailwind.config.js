@@ -1,6 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-
-
 module.exports = {
   theme: {
     extend: {
@@ -21,7 +19,7 @@ module.exports = {
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
-    "./node_modules/tw-elements/dist/js/**/*.js" 
+    "./node_modules/tw-elements/dist/js/**/*.js"
   ],
   theme: {
     fontFamily: {
@@ -52,6 +50,9 @@ module.exports = {
       'helvetica-now-thin': "Helvetica Now Thin",
       'larken': "Larken",
       'larken-italic': "Larken Italic",
+      'editorial-new': "Editorial New",
+      'agrandir-bold': "Agrandir Bold",
+      'agrandir-grandheavy': "Agrandir Grand Heavy",
     },
     extend: {
       fontSize: {
@@ -126,9 +127,9 @@ module.exports = {
   },
   plugins: [
     require('postcss-import'), // Handles @import directives
-    require('tailwindcss/nesting'), // Handles CSS nesting
+    require('autoprefixer'),
     require('tailwindcss'), // Tailwind CSS framework
-    require('autoprefixer'), 
+    require('tailwindcss/nesting'), // Handles CSS nesting
     require('@headlessui/tailwindcss')({ prefix: 'ui' }),
     require('tw-elements/dist/plugin.cjs'),
     require('@tailwindcss/forms'),
