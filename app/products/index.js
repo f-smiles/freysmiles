@@ -1,8 +1,7 @@
 "use client"
-
 import Link from "next/link"
 import Image from "next/image"
-import { Fragment, useMemo, useState } from "react"
+import { Fragment, useState } from "react"
 import { Menu, Transition } from '@headlessui/react'
 import ChevronDownIcon from "../_components/ui/ChevronDownIcon"
 
@@ -15,23 +14,10 @@ function Banner() {
   const separator = " • ";
   const repeatedText = Array(50).fill(text + separator).join("");
 
-  const letters = [
-    { char: 'S', rotate: 'rotate-12', translateY: 'translate-y-', color: 'text-black' },
-    { char: 'H', rotate: 'rotate-12', translateY: 'translate-y-20', color: 'text-black' },
-    { char: 'O', rotate: 'rotate-6', translateY: 'translate-y-2', color: 'text-black' },
-    { char: 'P', rotate: 'rotate-2', translateY: 'translate-y-20',translateX: 'translate-x-2', color: 'text-black' },
-    
-  ];
-
-  const lettersNow = [
-    { char: 'N', rotate: 'rotate-12', translateY: 'translate-y-1', color: 'text-black' },
-    { char: 'O', rotate: 'rotate-12', translateY: 'translate-y-5', color: 'text-black' },
-    { char: 'W', rotate: 'rotate-6', translateY: 'translate-y-1', color: 'text-black' },
-  ];
-  
   return (
-    <div  className="bg-[#F1F1F1]" > 
-    <div className=" relative isolate flex justify-center items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5">
+
+    <div className="relative isolate flex justify-center items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5">
+
       <div
         className="absolute left-[max(-7rem,calc(50%-52rem))] top-1/2 -z-10 -translate-y-1/2 transform-gpu blur-2xl"
         aria-hidden="true"
@@ -56,43 +42,56 @@ function Banner() {
           }}
         />
       </div>
-
       <div className="overflow-hidden">
-      <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank'>
-        <div className="animate-giftCardMarquee whitespace-nowrap block text-[15vw] text-purple-400 text-sm leading-6">
-          {repeatedText}{repeatedText}
-        </div>
-      </Link>
+        <Link href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`} target='_blank'>
+          <div className="animate-giftCardMarquee whitespace-nowrap block text-[15vw] text-purple-400 text-sm leading-6">
+            {repeatedText}{repeatedText}
+          </div>
+        </Link>
+      </div>
     </div>
+  )
+}
 
-   
+function Hero() {
+  const letters = [
+    { char: 'S', rotate: 'rotate-12', translateY: 'translate-y-', color: 'text-black' },
+    { char: 'H', rotate: 'rotate-12', translateY: 'translate-y-20', color: 'text-black' },
+    { char: 'O', rotate: 'rotate-6', translateY: 'translate-y-2', color: 'text-black' },
+    { char: 'P', rotate: 'rotate-2', translateY: 'translate-y-20',translateX: 'translate-x-2', color: 'text-black' },
+  ];
 
-    </div>
-     <div className=" flex flex-col items-center justify-center h-screen space-y-8">
-     <div className="font-grandslang flex flex-wrap justify-center items-end">
-       {letters.map((style, index) => (
-         <span
-           key={index}
-           className={`inline-block ${style.rotate} ${style.translateY} ${style.translateX}  ${style.color} mx-1`}
-           style={{ fontSize: '8rem' }} 
-         >
-           {style.char}
-         </span>
-       ))}
-     </div>
-     <div className="font-grandslang flex justify-center items-end">
-       {lettersNow.map((style, index) => (
-         <span
-           key={`now-${index}`} 
-           className={`inline-block ${style.rotate} ${style.translateY} ${style.color}`}
-           style={{ fontSize: '8rem' }} 
-         >
-           {style.char}
-         </span>
-       ))}
-     </div>
-   </div>
-   </div>
+  const lettersNow = [
+    { char: 'N', rotate: 'rotate-12', translateY: 'translate-y-1', color: 'text-black' },
+    { char: 'O', rotate: 'rotate-12', translateY: 'translate-y-5', color: 'text-black' },
+    { char: 'W', rotate: 'rotate-6', translateY: 'translate-y-1', color: 'text-black' },
+  ];
+
+  return (
+    <section className="flex flex-col items-center justify-center h-screen space-y-8 ">
+      <div className="flex flex-wrap items-end justify-center font-grandslang">
+        {letters.map((style, index) => (
+          <span
+            key={index}
+            className={`inline-block ${style.rotate} ${style.translateY} ${style.translateX}  ${style.color} mx-1`}
+            style={{ fontSize: '8rem' }}
+          >
+            {style.char}
+          </span>
+        ))}
+      </div>
+      <div className="flex items-end justify-center font-grandslang">
+        {lettersNow.map((style, index) => (
+          <span
+            key={`now-${index}`}
+            className={`inline-block ${style.rotate} ${style.translateY} ${style.color}`}
+            style={{ fontSize: '8rem' }}
+          >
+            {style.char}
+          </span>
+        ))}
+      </div>
+    </section>
   )
 }
 
@@ -126,13 +125,14 @@ export default function ProductsComponent({ products, prices }) {
   return (
     <div className="bg-[#F1F1F1]">
       <Banner />
-     
-      <section className=" max-w-2xl px-10 mx-auto my-16 mb-32 lg:max-w-7xl">
+      <Hero />
+
+      <section className="max-w-2xl px-10 mx-auto my-16 mb-32 lg:max-w-7xl">
         <div className="flex items-baseline justify-between w-full pb-4 border-b-2 border-gray-100">
 
-          <Menu as="div" className=" relative inline-block text-left">
+          <Menu as="div" className="relative inline-block text-left">
             <div>
-              <Menu.Button className="text-lg inline-flex items-center justify-center text-sm font-medium text-gray-700 group hover:text-gray-900">
+              <Menu.Button className="inline-flex items-center justify-center text-lg font-medium text-gray-700 group hover:text-gray-900">
                SORT BY
                 <ChevronDownIcon
                   className="flex-shrink-0 w-5 h-5 ml-1 -mr-1 text-gray-400 group-hover:text-gray-500"
@@ -150,7 +150,7 @@ export default function ProductsComponent({ products, prices }) {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <Menu.Items className="absolute right-0 z-10 w-40 mt-2 origin-top-right  rounded-md shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Menu.Items className="absolute left-0 z-10 w-40 mt-2 origin-top-right rounded-md shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div className="py-1">
                   {sortOptions.map((option) => (
                     <Menu.Item key={option.name}>
@@ -177,7 +177,7 @@ export default function ProductsComponent({ products, prices }) {
         <div className="grid grid-cols-1 mt-6 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
           {sortedProducts.map((product) => (
             <div key={product.id} className="relative group">
-              <div className="w-full overflow-hidden  rounded-md aspect-h-1 aspect-w-1 lg:aspect-none group-hover:opacity-75 lg:h-80">
+              <div className="w-full overflow-hidden rounded-md aspect-h-1 aspect-w-1 lg:aspect-none group-hover:opacity-75 lg:h-80">
                 <Image
                   className="object-cover object-center w-full h-full lg:object-contain lg:h-full lg:w-full"
                   src={product.images[0]}

@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 @import url('https://db.onlinewebfonts.com/c/4c4c08af466e9ad071b6d69cf44093df?family=SaolDisplay-Regular');
 @font-face {
@@ -165,7 +166,132 @@ input:-webkit-autofill {
 }
 
 
-@layer base {
+  @font-face {
+    font-family: "HorizonSolid";
+    src: url("/fonts/horizon.otf")format("opentype"),
+  }
+  @font-face {
+    font-family: "Horizon";
+    src: url("/fonts/horizon_outlined.otf")format("opentype"),
+  }
+  @font-face {
+    font-family: "GrandSlang-Roman";
+    src: url("/fonts/GrandSlang-Roman.otf")format("opentype"),
+  }
+  @font-face {
+    font-family: "Anton-Regular";
+    src: url("/fonts/Anton-Regular.ttf")format("truetype"),
+  }
+  @font-face {
+    font-family: "SaolDisplay-Regular";
+    src: url("https://db.onlinewebfonts.com/t/4c4c08af466e9ad071b6d69cf44093df.woff2")format("woff2"),
+  }
+  @font-face {
+    font-family: "MonumentExtended-Regular";
+    src: url('/fonts/PPMonumentExtended-Regular.otf') format('opentype') ;
+  }
+  @font-face {
+    font-family: "MonumentExtended-Regular";
+    src: url('/fonts/PPMonumentExtended-Regular.otf') format('opentype') ;
+  }
+  @font-face {
+    font-family: "HelveticaNeue-Medium";
+    src: url('/fonts/HelveticaNeueMedium.otf') format('opentype') ;
+  }
+  @font-face {
+    font-family: "HelveticaNeue-Light";
+    src: url('/fonts/HelveticaNeueLight.otf') format('opentype') ;
+  }
+  @font-face {
+    font-family: "Lato-Bold";
+    src: url('/fonts/Lato-Bold.ttf') format('truetype') ;
+  }
+  @font-face {
+    font-family: "Oakes-Regular";
+    src: url('/fonts/oakes-grotesk-regular.woff')  format('woff2');
+  }
+  @font-face {
+    font-family: "Oakes-Grotesk-Medium";
+    src: url('/fonts/oakes-grotesk-medium.woff')  format('woff');
+  }
+  @font-face {
+    font-family: "TerminaTest-Bold";
+    src: url('/fonts/TerminaTest-Bold.otf') format('opentype');
+  }
+  @font-face {
+    font-family: "NovelaRegular";
+    src: url('/fonts/novela_regular-webfont.woff2') format('woff');
+  }
+  @font-face {
+    font-family: "iCiel-Gotham-Ultra";
+    src: url('/fonts/iCiel-Gotham-Ultra.woff') format('woff');
+  }
+  @font-face {
+    font-family: "Poppins";
+    src: url('/fonts/poppins-extrabold.ttf') format('ttf'), url('/fonts/poppins-extrabold.ttf');
+  }
+  @font-face {
+    font-family: "Geomanist-Regular";
+    src: url('/fonts/geomanist-regular-webfont.woff2') format('woff');
+  }
+  @font-face {
+    font-family: "CeraProRegular";
+    src: url('/fonts/cerapro_regular.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: "NimbusSanL-Reg";
+    src: url('/fonts/nimbus-sans-l.regular.otf') format('opentype');
+  }
+  @font-face {
+    font-family: "CeraProBold";
+    src: url('/fonts/cerapro_bold.woff2') format('woff2'), url('/fonts/cerapro_bold.woff') format('woff');
+  }
+  @font-face {
+    font-family: "NeueMontrealBook";
+    src: url("/fonts/PPNeueMontreal-Book.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "NeueMontrealMedium";
+    src: url("/fonts/PPNeueMontreal-Medium.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "Altero";
+    src: url("/fonts/Altero-Regular.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "Didot";
+    src: url("/fonts/GFSDidot-Regular.ttf") format("ttf");
+  }
+  @font-face {
+    font-family: "AlteroOutline";
+    src: url("/fonts/Altero-Outline.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "Helvetica Now Thin";
+    src: url("/fonts/helvetica_now_thin.woff") format("woff"), url("/fonts/helvetica_now_thin.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Larken";
+    src: url("/fonts/LarkenVariable.ttf") format("truetype");
+  }
+  @font-face {
+    font-family: "Larken Italic";
+    src: url("/fonts/LarkenVariableItalic.ttf") format("truetype");
+  }
+  @font-face {
+    font-family: "Editorial New";
+    /* src: url("/fonts/PPEditorialNew-ThinItalic.ttf") format("truetype"); */
+    src: url("/fonts/PPEditorialNew-UltralightItalic.ttf") format("truetype");
+  }
+  @font-face {
+    font-family: "Agrandir Bold";
+    src: url("/fonts/PPAgrandir-Bold.ttf") format("truetype");
+  }
+  @font-face {
+    font-family: "Agrandir Grand Heavy";
+    src: url("/fonts/PPAgrandir-GrandHeavy.ttf") format("truetype");
+  }
+
   html {
     font-family: 'CeraProRegular', Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
@@ -202,6 +328,7 @@ input:-webkit-autofill {
   h6 {
     @apply text-lg;
   }
+
 }
 .curtains-canvas {
   position: fixed;
@@ -211,6 +338,29 @@ input:-webkit-autofill {
   height: 100vh;
   z-index: 10;
   pointer-events: none;
+
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  }
+
+  input:-moz-autofill,
+  input:-moz-autofill:hover,
+  input:-moz-autofill:focus,
+  input:-moz-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: 0 0 0px 1000px transparent inset !important;
+  }
+
+  input:-webkit-autofill {
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
 }
 
 .underline-custom {
@@ -222,9 +372,9 @@ input:-webkit-autofill {
   content: '';
   position: absolute;
   left: 0;
-  bottom: -5px; 
+  bottom: -5px;
   width: 100%;
-  height: 1px; 
+  height: 1px;
   background-color: currentColor;
 }
 .custom-header {
@@ -247,7 +397,7 @@ input:-webkit-autofill {
   border-radius: 200px;
   z-index: 9;
   /* border: 1px solid rgba(234, 255, 175, .8);  */
-  backdrop-filter: blur(10px); 
+  backdrop-filter: blur(10px);
 
   transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
@@ -300,15 +450,6 @@ input:-webkit-autofill {
 .custom-button:hover .custom-span {
   margin: 10px auto;
 }
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
-
-:root {
-  --black: #212121;
-  --white: #efefef;
-}
-
-
-
 
 .accordion-content {
   max-height: 0;
@@ -318,7 +459,7 @@ input:-webkit-autofill {
 }
 
 .accordion-content.open {
-  max-height: 1000px; 
+  max-height: 1000px;
   opacity: 1;
 }
 
@@ -1113,13 +1254,6 @@ padding:10px;
 }
 
 
-:root {
-
-	--white: #ffffff;
-	--grey-light: #f2f7f9;
-	--grey: #ecedf3;
-}
-
 .center-wrap {
     position: absolute;
 	width: 100%;
@@ -1375,10 +1509,10 @@ text-transform: uppercase;
 .appointmentButton:hover .appointmentBtnBg {
   width: 200px;
   height: 200px;
-  
+
 }
 
-    
+
 
 
 @keyframes marquee {
@@ -1610,7 +1744,7 @@ body {
 
 
 /* .circle {
-  background-color: #F5F1ED; 
+  background-color: #F5F1ED;
   width: 0px;
   height: 0px;
   border-radius: 50%;
@@ -1760,7 +1894,7 @@ img:nth-child(6) {
 }
 
 .text-highlight-bg {
-  width: auto; 
+  width: auto;
   height: auto;
   position: absolute;
   left: 0;
@@ -1773,7 +1907,7 @@ img:nth-child(6) {
 
 .text-hider-fg {
   background-color: inherit;
-  width: auto; 
+  width: auto;
   height: auto;
   position: absolute;
   left: 0;
@@ -1805,7 +1939,7 @@ img:nth-child(6) {
   display: block;
   white-space: nowrap;
   margin-bottom: .25em;
-  margin-top: 0; 
+  margin-top: 0;
 }
 
 .gsaptext-container span {
@@ -1821,7 +1955,7 @@ img:nth-child(6) {
 
 
 .pagesection {
-  min-width: 100vw; 
+  min-width: 100vw;
   min-height: 100vh;
 }
 .section-wrapper {
@@ -1882,13 +2016,13 @@ img:nth-child(6) {
 .numbers {
   position: absolute;
   top: 50%;
-  right: 0%; 
+  right: 0%;
   transform: translateY(-50%);
 	font-size: 15rem;
 	line-height: 20rem;
 	height: 20rem;
 	overflow: hidden;
-  visibility: visible; 
+  visibility: visible;
   will-change: transform;
 }
 
@@ -1915,8 +2049,8 @@ img:nth-child(6) {
 }
 
 .bg {
-  width: 100%; 
-  height: 100%; 
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
 }
@@ -1945,14 +2079,14 @@ img:nth-child(6) {
 }
 
 .gradient-green {
-  background-image: url('/images/pinkgradient.png'); 
-  background-size: cover;  
-  background-position: center; 
+  background-image: url('/images/pinkgradient.png');
+  background-size: cover;
+  background-position: center;
 }
 
 
 #ballcanvas {
-  width: 1000px; 
+  width: 1000px;
     height: 1000px;
 }
 
@@ -2151,11 +2285,11 @@ h1.title span{
 
 
 @media (max-width: 767px) {
-	
+
 	.lets-begin{
 		right:50px !important;
 	}
-	
+
 	h1.title{
 		font-size:20px;
 		font-style:italic;
@@ -2172,7 +2306,7 @@ h1.title span{
 
 @media (min-width: 768px) and (max-width: 1029px) {
 
-	
+
 }
 
 
@@ -2382,7 +2516,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   z-index: 2;
   background-color: #161818;
   color: #fff;
-  
+
 }
 
 .giving-panel_text {
@@ -2392,7 +2526,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   font-weight: 400;
   letter-spacing: -0.04em;
   text-transform: uppercase;
-  
+
 }
 
 .giving-panel_img {
@@ -2513,21 +2647,21 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
 /* #logoGrid {
   will-change: transform;
   transform-origin: center center;
-  transform: scale(0.8); 
-  
+  transform: scale(0.8);
+
 }
 
 
 #locationGallery {
   will-change: transform;
-  transform-origin: center center; 
-  transform: scale(0.8); 
+  transform-origin: center center;
+  transform: scale(0.8);
 }
 
 #locations {
   will-change: transform;
-  transform-origin: center center; 
-  transform: scale(0.8); 
+  transform-origin: center center;
+  transform: scale(0.8);
 } */
 
 
@@ -2594,6 +2728,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   z-index: 3;
   -webkit-mask-image: radial-gradient(circle at var(--x) var(--y), black var(--s), transparent calc(var(--s) + 1px));
   mask-image: radial-gradient(circle at var(--x) var(--y), black var(--s), transparent calc(var(--s) + 1px));
+
 }
 
 
@@ -2702,6 +2837,19 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
 }
 
 .horizontalSlide--3 {
+
+  color: #e6ff00;
+}
+
+
+.large-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  display: flex;
+
   align-items: center;
   justify-content: center;
   color: white;

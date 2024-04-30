@@ -279,6 +279,7 @@ const BookNow = () => {
         ))}
       </h1>
     </div>
+
     <button class="button button--marquee" data-text="(610) 437-4748 — info@freysmiles.com — (610) 437-4748 — freysmiles.com">
     (610) 437-4748 — info@freysmiles.com
 </button>
