@@ -1,9 +1,9 @@
 "use client";
-
+import Image from 'next/image';
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 // import DotPattern from "../svg/DotPattern";
-import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { motion, useScroll, useSpring, useAnimation, useTransform } from "framer-motion";
 import gsap from "gsap";
 
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
@@ -39,6 +39,28 @@ import { SplitText } from "gsap-trial/all";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
+const Section = ({ children, onHoverStart }) => (
+  <motion.div
+    onHoverStart={onHoverStart}
+    style={{
+      height: '100%', 
+      width: '100%', 
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      cursor: 'pointer',
+      backgroundColor: 'transparent',
+      color: 'white',
+      fontSize: '2em',
+      userSelect: 'none',
+      position: 'relative',
+      zIndex: 2,
+    }}
+  >
+    {children}
+  </motion.div>
+);
+
 const Invisalign = () => {
   const headingRef = useRef(null);
 
@@ -73,8 +95,33 @@ const Invisalign = () => {
       ScrollTrigger.getAll().forEach((st) => st.kill());
     };
   }, []);
+  const controls = useAnimation();
+
+  const handleHover = (index) => {
+    controls.start({
+      y: `${index * 100}%`, 
+      transition: { type: 'tween', duration: 0.3 }
+    });
+  };
   return (
     <div className=" bg-[#FFF8EF]">
+       <div style={{ position: 'relative', width: '100%', height: '600px', overflow: 'hidden' }}>
+      <motion.div
+        initial={{ y: '0%' }} // Start from the first section
+        animate={controls}
+        style={{
+          position: 'absolute',
+          width: '100%', // Take the full width of the container
+          height: '33.3%', // Height matches one section's height
+          backgroundColor: '#D3FD50', // Yellow background
+          zIndex: 1, // Behind the text
+        }}
+      />
+      {/* Define each section and pass the corresponding index to handleHover */}
+      <Section onHoverStart={() => handleHover(0)}>EVERYTHING</Section>
+      <Section onHoverStart={() => handleHover(1)}>AGENCE</Section>
+      <Section onHoverStart={() => handleHover(2)}>CONTACT</Section>
+    </div>
       <div
         style={{
           backgroundImage: "url('../images/invisalignset.png')",
@@ -135,17 +182,101 @@ const Invisalign = () => {
           </video>{" "}
         </div>
       </div>
-      <div className="flex items-center h-screen bg-black">
-        <h1
-          ref={headingRef}
-          className="text-white  max-w-xl text-xl overflow-hidden"
-        >
-          Our team, led by the skilled Dr. Gregg and Dr. Daniel, possesses the
-          expertise required to achieve the smile you desire. Countless
-          individuals have already experienced the transformative effects of our
-          advanced orthodontic treatments
-        </h1>
+      <div className="flex  items-center ">
+        <div className="w-1/2">
+          <h1
+            ref={headingRef}
+            className="  max-w-xl text-xl overflow-hidden"
+          >
+            Our team, led by the skilled Dr. Gregg and Dr. Daniel, possesses the
+            expertise required to achieve the smile you desire. Countless
+            individuals have already experienced the transformative effects of
+            our advanced orthodontic treatments
+          </h1>
+        </div>
+        <div className="rounded-2xl max-w-xl bg-black w-1/3  items-center">
+          <div className="h-[32rem]">
+          <svg role="group" viewBox="0 0 233 184">
+            <defs>
+              <pattern
+                id="grid"
+                width="16"
+                height="10"
+                patternUnits="userSpaceOnUse"
+              >
+                <circle cx="15" cy="5" r="1" fill="grey" />
+              </pattern>
+            </defs>
+
+            <rect width="100%" height="100%" fill="url(#grid)" />
+
+            <g
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1"
+            >
+              <path
+                stroke="#3a3d4c"
+                d="M37.05 102.4s11.09 23.44 28.46 23.44 22.3-36 47.05-36 28.4 33.7 39.83 33.7S164.74 102.1 199 102.1"
+              />
+
+              <path
+                class="squiggle"
+                pathLength="1"
+                stroke="#FD6635"
+                d="M37.05 102.4s11.09 23.44 28.46 23.44 22.3-36 47.05-36c11.63 0 18.61 7.45 23.92 15.35"
+              />
+            </g>
+
+            <g fill="none" stroke-linecap="round" stroke-width="1">
+              <path
+                stroke="#3a3d4c"
+                stroke-linejoin="round"
+                d="M37.05 92.88s8.34-12.11 25.72-12.11S88.6 111.86 111 111.86s22-37.27 35.21-37.27 13.49 34 51.9 12.35"
+              />
+
+              <path
+                class="squiggle squiggle-2"
+                pathLength="1"
+                stroke="#EBE3F5"
+                stroke-miterlimit="10"
+                d="M37.05 92.88s8.34-12.11 25.72-12.11S88.6 111.86 111 111.86c14 0 19.08-14.56 24.15-25.47"
+              />
+            </g>
+
+            <g
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1"
+            >
+              <path
+                stroke="#3a3d4c"
+                d="M37.05 72.9s14.52-7.55 26.63-7.55 20.81 18.91 39.56 18.91 29.26-24.39 44.58-24.39S167.25 81.59 199 81.59"
+              />
+
+              <path
+                class="squiggle squiggle-3"
+                pathLength="1"
+                stroke="#BCE456"
+                d="M37.05 72.9s14.52-7.55 26.63-7.55 20.81 18.91 39.56 18.91 29.26-24.39 44.58-24.39c7 0 11.66 4.54 17.7 9.47"
+              />
+            </g>
+            <foreignObject width="200" height="200">
+
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '120%', height: '120%' }}>
+  <img src="../images/logo_icon.png" alt="Description" style={{ width: '24px', height: '24px' }} />
+</div>
+
+      </foreignObject>
+
+          </svg>
+          </div>
+        </div>
       </div>
+
+      <div></div>
       {/* <div className="rounded-[40px] ContentContainer flex-grow grid grid-cols-3 grid-rows-3 gap-4 p-4">
     <div className="col-start-2 col-end-3 row-start-2 row-end-3 border-r-2 border-white">
 
