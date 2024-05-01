@@ -11,7 +11,7 @@ import { motion, stagger, useAnimate, useInView, useScroll, } from "framer-motio
 // headless ui
 import { Disclosure, Transition } from "@headlessui/react";
 // gsap
-import { gsap } from "gsap"
+
 import { useGSAP } from "@gsap/react"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin"
@@ -19,7 +19,7 @@ import { SplitText } from "gsap-trial/SplitText"
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 
 import MapPin from "./_components/ui/MapPin";
-import { SplitText } from "gsap-trial/all";
+
 import SwiperCore, { Navigation } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -198,8 +198,6 @@ export default function LandingComponent() {
 
         style={{ backgroundColor }} className="bg-[#EFE9E8] bg-[#E0D175]"
         // style={{ backgroundColor }}
-      <div className="bg-[#E5DDDE] bg-[#E0D175]"
-      // style={{ backgroundColor }}
 
       >
         <LogoHeader />
@@ -798,7 +796,7 @@ function Hero() {
             >
 
              <a href="/book-now" className="inline-flex items-center justify-center">
-    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="300px" height="300px" viewBox="0 0 300 300" xmlSpace="preserve" className="book-svg">
+    <svg id="circlepath" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="300px" height="300px" viewBox="0 0 300 300" xmlSpace="preserve" className="book-svg">
         <defs>
             <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"/>
         </defs>
@@ -1664,7 +1662,7 @@ const ImageGrid = () => {
 
 
       ref={bodyRef}
-      className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
+
     >
       <div
         className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
@@ -2684,7 +2682,7 @@ function DrawEllipse(props) {
         start: "clamp(top top)",
         scrub: true,
         pinSpacing: false,
-        markers: true,
+        // markers: true,
       }
     })
   })
