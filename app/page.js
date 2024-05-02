@@ -2111,7 +2111,7 @@ const LogoGrid = () => {
               AT ANY OF OUR FOUR LOCATIONS &bull;
             </h1>
           </div>
-          {/* <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {logos.map((columnLogos, columnIndex) => (
               <div key={columnIndex} className="flex flex-col items-center">
                 {columnLogos.map((logo, logoIndex) => (
@@ -2125,7 +2125,7 @@ const LogoGrid = () => {
                 ))}
               </div>
             ))}
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

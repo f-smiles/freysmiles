@@ -1,13 +1,70 @@
 "use client";
+import Image from 'next/image';
+import Lenis from '@studio-freight/lenis'
 import React, { useEffect, useState, useRef } from "react";
 import PurpleOrange from "../../public/images/PurpleOrange.js";
 import { SplitText } from "gsap-trial/all";
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
+const Card = ({i, title, description, src, url, color, progress, range, targetScale}) => {
+  const container = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: container,
+    offset: ['start end', 'start start']
+  })
+
+  const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1])
+  const scale = useTransform(progress, range, [1, targetScale]);
+ 
+  return (
+    <div ref={container} 
+      className="uniqueCardContainer"
+    >
+      <motion.div 
+        style={{backgroundColor: color, scale, top:`calc(-5vh + ${i * 25}px)`}} 
+        className="uniqueCard"
+      >
+        <h2>{title}</h2>
+        <div 
+          className="uniqueBody"
+        >
+          <div
+            className="uniqueDescription"
+          >
+            <p>{description}</p>
+            <span>
+              <a href={url} target="_blank">See more</a>
+              <svg width="22" height="12" viewBox="0 0 22 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.5303 6.53033C21.8232 6.23744 21.8232 5.76256 21.5303 5.46967L16.7574 0.696699C16.4645 0.403806 15.9896 0.403806 15.6967 0.696699C15.4038 0.989592 15.4038 1.46447 15.6967 1.75736L19.9393 6L15.6967 10.2426C15.4038 10.5355 15.4038 11.0104 15.6967 11.3033C15.9896 11.5962 16.4645 11.5962 16.7574 11.3033L21.5303 6.53033ZM0 6.75L21 6.75V5.25L0 5.25L0 6.75Z" fill="black"/>
+              </svg>
+            </span>
+          </div>
+
+          <div 
+            className="uniqueImageContainer"
+          >
+            <motion.div
+              className="uniqueInner"
+              style={{scale: imageScale}}
+            >
+              <Image
+                fill
+                src={`/images/${src}`}
+                alt="image" 
+              />
+            </motion.div>
+          </div>
+
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 
 const Layer = ({ colorClass }) => {
   return (
@@ -180,6 +237,67 @@ const OurTeam = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+
+const projects = [
+    {
+      title: "Adriana",
+      description: "LOREM IPSUM",
+      src: "team_members/Adriana-Photoroom.jpg", 
+      color: "#BBACAF"
+    },
+    {
+      title: "Alyssa",
+      description: "LOREM IPSUM",
+      src: "team_members/Alyssascan.png",
+      color: "#977F6D"
+    },
+    {
+      title: "Elizabeth",
+      description: "LOREM IPSUM",
+      src: "team_members/Elizabethaao.png",
+      color: "#C2491D"
+    },
+    {
+      title: "Grace",
+      description: "LOREM IPSUM",
+      src: "team_members/Grace-Photoroom.jpg",
+      color: "#B62429"
+    },
+    {
+      title: "Lexi",
+      description: "LOREM IPSUM",
+      src: "team_members/lexigreen.png",
+      color: "#88A28D"
+    },
+    {
+      title: "Nicole",
+      description: "LOREM IPSUM",
+      src: "team_members/nicollewaving.png",
+      color: "#88A28D"
+    }
+  ]
+
+
+  const container = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: container,
+    offset: ['start start', 'end end']
+  })
+  useEffect(() => {
+    const lenis = new Lenis({
+      lerp: 0.1 
+    });
+  
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    
+    const rafId = requestAnimationFrame(raf);
+    
+    return () => cancelAnimationFrame(rafId); 
+  }, []);
+  
   // const items = [
   //   {
   //     title: "5",
@@ -423,6 +541,10 @@ const OurTeam = () => {
     transition: "width 0.5s, height 0.5s, background-color 0.25s",
     zIndex: 9999,
   };
+
+
+
+
   return (
     <>
      <div className="wrapper relative w-full min-h-screen">
@@ -742,7 +864,17 @@ const OurTeam = () => {
               </div>
             </div>
           </div>
-   
+          <main ref={container}
+      style={{ position: 'relative', marginTop: '50vh' }}
+>
+  {
+    projects.map((project, i) => {
+      const targetScale = 1 - ((projects.length - i) * 0.05);
+      return <Card key={`p_${i}`} i={i} {...project} progress={scrollYProgress} range={[i * .25, 1]} targetScale={targetScale}/>
+    })
+  }
+</main>
+
           {/* <div
             ref={carouselRef}
             className="relative z-10 min-h-[150vh]  pointer-events-none"
