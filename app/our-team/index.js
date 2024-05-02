@@ -241,39 +241,39 @@ const OurTeam = () => {
 const projects = [
     {
       title: "Adriana",
-      description: "LOREM IPSUM",
+      description: "Insurance Coordinator",
       src: "team_members/Adriana-Photoroom.jpg", 
       color: "#BBACAF"
     },
     {
       title: "Alyssa",
-      description: "LOREM IPSUM",
+      description: "Treatment Coordinator",
       src: "team_members/Alyssascan.png",
-      color: "#977F6D"
+      color: "#c4aead"
     },
     {
       title: "Elizabeth",
-      description: "LOREM IPSUM",
+      description: "Patient Services",
       src: "team_members/Elizabethaao.png",
-      color: "#C2491D"
+      color: "#998d8f"
     },
     {
       title: "Grace",
-      description: "LOREM IPSUM",
+      description: "Specialized Orthodontic Assistant",
       src: "team_members/Grace-Photoroom.jpg",
-      color: "#B62429"
+      color: "#e5e4e2"
     },
     {
       title: "Lexi",
-      description: "LOREM IPSUM",
+      description: "Treatment Coordinator",
       src: "team_members/lexigreen.png",
-      color: "#88A28D"
+      color: "#cbc4c5"
     },
     {
-      title: "Nicole",
-      description: "LOREM IPSUM",
+      title: "Nicolle",
+      description: "Specialized Orthodontic Assistant",
       src: "team_members/nicollewaving.png",
-      color: "#88A28D"
+      color: "#c9c0bb"
     }
   ]
 
