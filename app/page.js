@@ -844,110 +844,66 @@ function Hero() {
 }
 
 function Mask() {
-  const headerRef = useRef(null);
+  const useMousePosition = () => {
 
+    const [mousePosition, setMousePosition] = useState({ x: null, y: null });
+  
+  
+  
+    const updateMousePosition = e => {
+  
+      setMousePosition({ x: e.clientX, y: e.clientY });
+  
+    };
+  
+  
+  
+    useEffect(() => {
+  
+      window.addEventListener("mousemove", updateMousePosition);
+  
+  
+  
+      return () => window.removeEventListener("mousemove", updateMousePosition);
+  
+    }, []);
+  
+  
+  
+    return mousePosition;
+  
+  };
+  const [isHovered, setIsHovered] = useState(false);
 
-  const [mousePosition, setMousePosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const { x, y } = useMousePosition();
 
-  useEffect(() => {
+  const size = isHovered ? 400 : 40;
 
-
-      const timer = (duration, interval, from, to, minStep, callback) => {
-          let value = from;
-          const forward = from < to;
-          const range = Math.abs(to - from);
-          const steps = duration / interval;
-          const step = range / steps;
-          let last = from;
-
-          const handle = setInterval(() => {
-              value += step * (forward ? 1 : -1);
-              if (forward ? value > to : value < to) {
-                  value = to;
-                  clearInterval(handle);
-              }
-              if (!minStep || !handle || Math.abs(last - value) >= minStep) {
-                  last = value;
-                  callback(value, from, to);
-              }
-          }, interval);
-          return handle;
-      };
-
-
-      const loading = () => {
-          headerRef.current.classList.add('header--active');
-          setTimeout(() => {
-              timer(450, 20, 0, 300, 1, (value) => {
-                  headerRef.current.style.setProperty('--s', `${Math.floor(value)}px`);
-              });
-          }, 800);
-      };
-
-      loading();
-
-
-      const updateCoordinates = (e) => {
-          setMousePosition({ x: e.clientX, y: e.clientY });
-      };
-
-      document.addEventListener('mousemove', updateCoordinates);
-
-      return () => {
-          document.removeEventListener('mousemove', updateCoordinates);
-      };
-  }, []);
-
-  useEffect(() => {
-      headerRef.current.style.setProperty('--x', `${mousePosition.x}px`);
-      headerRef.current.style.setProperty('--y', `${mousePosition.y}px`);
-  }, [mousePosition]);
 
 
   return(
-    <div >
-  
+<main className="uniqueMain">
+      <motion.div 
+        className="uniqueMask"
+        animate={{
+          WebkitMaskPosition: `${x - (size/2)}px ${y - (size/2)}px`,
+          WebkitMaskSize: `${size}px`,
+        }}
+        transition={{ type: "tween", ease: "backOut", duration: 0.5}}
+      >
+          <p onMouseEnter={() => {setIsHovered(true)}} onMouseLeave={() => {setIsHovered(false)}}>
+INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
+          </p>
+      </motion.div>
 
-    <div className=" maskHeader">
-    <div ref={headerRef} >
-       <div className="maskHeader__main">
-           <div className="maskHeader__content">
-               <h1 className="maskHeader__title">
-                   We are your go-to provider for advanced and discerning orthodontic care.
-               </h1>
-           </div>
-       </div>
-       <div className="maskHeader__hover">
-           <div className="maskHeader__content">
-               <h1 className="maskHeader__title">
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
-               </h1>
-           </div>
-       </div>
-   </div>
-   </div>
-   {/* <div className="bg-[#292929] min-h-screen min-w-full flex justify-center items-center">
-        <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
-<div style={{ backgroundImage: 'url("../images/bauhauspattern.svg")', objectFit: 'contain', backgroundRepeat: 'no-repeat', backgroundSize: 'contain', backgroundPosition: 'center' }} className="bg-[#E6E7E9] h-full w-full"></div>
+      <div className="uniqueBody">
+        <p> We are your  <span>go-to provider </span> for advanced and discerning orthodontic care.</p>
+      </div>
+
+    </main>
 
 
-        <div className=" flex flex-wrap w-[80vw] h-[70vh] mx-auto">
-  <div className="w-full md:w-1/2">
-    <div style={{ backgroundImage: 'url("../images/bauhauspattern.svg")' }} className="bg-[#E6E7E9] rounded-l-full h-full"></div>
-  </div>
-  <div className="relative w-full md:w-1/2">
-    <div className="bg-[#E6E7E9] h-full"></div>
-    <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
-      <p className="text-xl font-bold text-center">LEARN MORE</p>
-    </div>
-  </div>
-</div>
-        </div>
-      </div> */}
-  
 
-   </div>
   )
 }
 
@@ -1297,10 +1253,7 @@ function GSAPAnimateScrollSections() {
             </div>
           </div>
         </div>
-        
-        <div className="font-horizon large-text">
-      <h2 className="text-[300px]">ABOUT</h2>
-    </div>
+
       </section>
 
       <style>
@@ -2002,30 +1955,30 @@ const LogoGrid = () => {
         ballsWithText.push({ ball, text: texts[i] });
         Composite.add(engine.world, ball);
       }
-      // Events.on(render, "afterRender", function () {
-      //   const ctx = render.context;
-      //   ballsWithText.forEach(({ ball, text }, index) => {
-      //     const position = ball.position;
+      Events.on(render, "afterRender", function () {
+        const ctx = render.context;
+        ballsWithText.forEach(({ ball, text }, index) => {
+          const position = ball.position;
 
-      //     const image = new Image();
-      //     image.src = logos[Math.floor(index / 4)][index % 4];
-      //     const aspectRatio = image.width / image.height;
+          const image = new Image();
+          image.src = logos[Math.floor(index / 4)][index % 4];
+          const aspectRatio = image.width / image.height;
 
-      //     let imageWidth, imageHeight;
-      //     if (aspectRatio > 1) {
-      //       imageWidth = circleW;
-      //       imageHeight = circleW / aspectRatio;
-      //     } else {
-      //       imageWidth = circleW * aspectRatio;
-      //       imageHeight = circleW;
-      //     }
+          let imageWidth, imageHeight;
+          if (aspectRatio > 1) {
+            imageWidth = circleW;
+            imageHeight = circleW / aspectRatio;
+          } else {
+            imageWidth = circleW * aspectRatio;
+            imageHeight = circleW;
+          }
 
-      //     const destX = position.x - imageWidth / 2;
-      //     const destY = position.y - imageHeight / 2;
+          const destX = position.x - imageWidth / 2;
+          const destY = position.y - imageHeight / 2;
 
-      //     ctx.drawImage(image, destX, destY, imageWidth, imageHeight);
-      //   });
-      // });
+          ctx.drawImage(image, destX, destY, imageWidth, imageHeight);
+        });
+      });
 
       let mouse = Mouse.create(render.canvas),
         mouseConstraint = MouseConstraint.create(engine, {
