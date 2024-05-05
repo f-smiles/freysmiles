@@ -2132,7 +2132,7 @@ function DrawEllipse(props) {
         start: "clamp(top top)",
         scrub: true,
         pinSpacing: false,
-        markers: true,
+        markers: false,
       }
     })
   })
