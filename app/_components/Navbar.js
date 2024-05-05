@@ -135,9 +135,8 @@ export default function Navbar() {
         <div className="custom-navbar-cursor" />
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out    active:bg-primary-50/80">
-
-              <Link href="/" className="inline-block p-4">
+            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out active:bg-primary-50/80">
+              <Link href="/" className="ml-1 p-2 inline-block bg-[rgba(228,_218,_208,_0.8)] rounded-full shadow-[0px_0px_0px_6px_rgba(228,_218,_208,_0.4),_0px_0px_0px_12px_rgba(228,_218,_208,_0.2)]">
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
