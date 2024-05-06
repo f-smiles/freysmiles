@@ -2029,7 +2029,7 @@ function Locations() {
           </motion.div>
 
           <div id="locations-details">
-            <div className="max-w-2xl px-4 py-16 mt-10 mx-auto sm:px-6 sm:py-24 lg:mt-0 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
+            <div className="max-w-2xl px-4 py-16 mx-auto mt-10 sm:px-6 sm:py-24 lg:mt-0 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
               {/* LOCATIONS LIST */}
               <motion.div
                 className="flex flex-col mt-10"
