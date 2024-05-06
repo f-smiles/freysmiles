@@ -2135,7 +2135,7 @@ function DrawEllipse(props) {
       ease: "expo.out",
       scrollTrigger: {
         trigger: '#locations-heading',
-        start: "clamp(top top)",
+        start: "clamp(top center)",
         scrub: true,
         pinSpacing: false,
         markers: false,
