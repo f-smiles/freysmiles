@@ -9,6 +9,10 @@
   src: url("/fonts/Aileron-Black.otf")format("opentype"),
 }
 @font-face {
+  font-family: "Novela-Regular";
+  src: url("/fonts/Novela-Regular.otf")format("opentype"),
+}
+@font-face {
   font-family: "HorizonSolid";
   src: url("/fonts/horizon.otf")format("opentype"),
 }

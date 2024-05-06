@@ -564,7 +564,7 @@ const projects = [
     <div className="font-saol text-[80px] tracking-tight relative z-10">
       Meet Our
     </div>
-    <div className="font-saol italic text-[80px] tracking-tight relative z-10">
+    <div className="font-novela italic text-[80px] tracking-tight relative z-10">
       Doctors
     </div>
   </div>
