@@ -51,8 +51,11 @@ module.exports = {
       'larken': "Larken",
       'larken-italic': "Larken Italic",
       'editorial-new': "Editorial New",
+      'editorial-new-italic': "Editorial New Italic",
       'agrandir-bold': "Agrandir Bold",
       'agrandir-grandheavy': "Agrandir Grand Heavy",
+      'nautica': "Nautica",
+      'drayton': "Drayton",
     },
     extend: {
       fontSize: {
