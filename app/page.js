@@ -1365,14 +1365,10 @@ const ParallaxOutline = () => {
             >
               <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
                 <p className="text-2xl text-center">
-                  <h1 className="font-sans font-normal text-[24px] uppercase relative overflow-hidden">
-                    I had an open bite and misaligned teeth most of my life. Dr
-                    Frey fixed it and in record time. 1 1/2 yrs with
-                    Invisalign’s. Highly recommended! Friendly staff and easy to
-                    make appointments!
-
-
-                  </h1>
+                  I had an open bite and misaligned teeth most of my life. Dr
+                  Frey fixed it and in record time. 1 1/2 yrs with
+                  Invisalign's. Highly recommended! Friendly staff and easy to
+                  make appointments!
                 </p>
                 <p className="text-center">Karen Oneill</p>
               </div>
@@ -1662,7 +1658,7 @@ const LogoGrid = () => {
   return (
     <div className="bg-[#DDDCDC] h-screen flex justify-center items-center">
       <div className="grid grid-cols-2 p-4">
-        <div class="horizontal-item">
+        <div className="horizontal-item">
           <div className="z-10" id="ballcanvas"></div>
         </div>
 
@@ -1670,9 +1666,9 @@ const LogoGrid = () => {
           <div className="font-bold uppercase text-8xl">
             Awards & Recognition
           </div>
-          <div class="mt-10 flex items-center">
-            <div class="w-48 h-px bg-gray-700"></div>
-            <div class="text-[15px] pl-4">
+          <div className="flex items-center mt-10">
+            <div className="w-48 h-px bg-gray-700"></div>
+            <div className="text-[15px] pl-4">
               Our greatest award is the success of our patients
             </div>
           </div>
