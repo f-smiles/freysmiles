@@ -719,8 +719,6 @@ function GSAPAnimateScrollSections() {
   //   },
   // ];
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     const viewHeight = window.innerHeight;
 
     document.querySelectorAll(".text-container").forEach((element) => {
@@ -1115,8 +1113,6 @@ const ImageGrid = () => {
   }, [isHovering]);
 
   useEffect(() => {
-    gsap.registerPlugin(SplitText);
-
     if (headerRef.current) {
       const tl = gsap.timeline();
       gsap.set(bodyRef.current, { autoAlpha: 1 });
@@ -1714,8 +1710,6 @@ const LogoGrid = () => {
 function LocationGallery() {
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     let revealContainers = document.querySelectorAll(".reveal");
     revealContainers.forEach((container) => {
       let image = container.querySelector("img");
