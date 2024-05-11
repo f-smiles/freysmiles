@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRef, useEffect, useLayoutEffect, useState } from "react";
 import LocomotiveScroll from "locomotive-scroll";
 // framer motion
-import { motion, stagger, useAnimate, useInView, useScroll, } from "framer-motion";
+import { motion, stagger, useAnimate, useInView } from "framer-motion";
 // headless ui
 import { Disclosure, Transition } from "@headlessui/react";
 // gsap
@@ -84,11 +84,7 @@ export default function LandingComponent() {
   //   };
   // }, []);
 
-  const { scrollYProgress } = useScroll();
-  gsap.registerPlugin(ScrollTrigger);
-
-  const logoGrid = document.getElementById('logoGrid');
-
+  const logoGrid = document.getElementById("logoGrid");
 
   let initialScale = 0.8;
   let maxScale = 1;
@@ -101,52 +97,54 @@ export default function LandingComponent() {
       scrub: 0.8,
 
       onLeaveBack: () => gsap.set(logoGrid, { clearProps: "transform" }),
-    }
+    },
   });
 
-
-  tl.fromTo(logoGrid,
+  tl.fromTo(
+    logoGrid,
     { scale: initialScale },
     { scale: maxScale, ease: "power1.out" }
   );
 
-
   gsap.set(logoGrid, { clearProps: "transform" });
-  const locationGallery = document.getElementById('locationGallery');
-const tlLocationGallery = gsap.timeline({
-  scrollTrigger: {
-    trigger: locationGallery,
-    start: "top bottom",
-    end: "bottom bottom",
-    scrub: 0.8,
-    onLeaveBack: () => gsap.set(locationGallery, { clearProps: "transform" }),
-  }
-});
+  const locationGallery = document.getElementById("locationGallery");
+  const tlLocationGallery = gsap.timeline({
+    scrollTrigger: {
+      trigger: locationGallery,
+      start: "top bottom",
+      end: "bottom bottom",
+      scrub: 0.8,
+      onLeaveBack: () => gsap.set(locationGallery, { clearProps: "transform" }),
+    },
+  });
 
-tlLocationGallery.fromTo(locationGallery,
-  { scale: 0.8 },
-  { scale: maxScale, ease: "power1.out" }
-);
+  tlLocationGallery.fromTo(
+    locationGallery,
+    { scale: 0.8 },
+    { scale: maxScale, ease: "power1.out" }
+  );
 
-gsap.set(locationGallery, { clearProps: "transform" });
+  gsap.set(locationGallery, { clearProps: "transform" });
 
-const locations = document.getElementById('locations');
-const tlLocations = gsap.timeline({
-  scrollTrigger: {
-    trigger: locations,
-    start: "top bottom",
-    end: "bottom bottom",
-    scrub: 0.8,
-    onLeaveBack: () => gsap.set(locations, { clearProps: "transform" }),
-  }
-});
+  const locations = document.getElementById("locations");
+  const tlLocations = gsap.timeline({
+    scrollTrigger: {
+      trigger: locations,
+      start: "top bottom",
+      end: "bottom bottom",
+      scrub: 0.8,
+      onLeaveBack: () => gsap.set(locations, { clearProps: "transform" }),
+    },
+  });
 
-tlLocations.fromTo(locations,
-  { scale: 0.8 },
-{ scale: maxScale, ease: "power1.out" }
-);
+  tlLocations.fromTo(
+    locations,
+    { scale: 0.8 },
+    { scale: maxScale, ease: "power1.out" }
+  );
 
-gsap.set(locations, { clearProps: "transform" });
+  gsap.set(locations, { clearProps: "transform" });
+
   return (
     <>
       <div
@@ -550,100 +548,104 @@ function Hero() {
 }
 
 function Mask(){
-
   const headerRef = useRef(null);
 
-  const [mousePosition, setMousePosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const [mousePosition, setMousePosition] = useState({
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
+  });
 
   useEffect(() => {
+    const timer = (duration, interval, from, to, minStep, callback) => {
+      let value = from;
+      const forward = from < to;
+      const range = Math.abs(to - from);
+      const steps = duration / interval;
+      const step = range / steps;
+      let last = from;
 
-      const timer = (duration, interval, from, to, minStep, callback) => {
-          let value = from;
-          const forward = from < to;
-          const range = Math.abs(to - from);
-          const steps = duration / interval;
-          const step = range / steps;
-          let last = from;
+      const handle = setInterval(() => {
+        value += step * (forward ? 1 : -1);
+        if (forward ? value > to : value < to) {
+          value = to;
+          clearInterval(handle);
+        }
+        if (!minStep || !handle || Math.abs(last - value) >= minStep) {
+          last = value;
+          callback(value, from, to);
+        }
+      }, interval);
+      return handle;
+    };
 
-          const handle = setInterval(() => {
-              value += step * (forward ? 1 : -1);
-              if (forward ? value > to : value < to) {
-                  value = to;
-                  clearInterval(handle);
-              }
-              if (!minStep || !handle || Math.abs(last - value) >= minStep) {
-                  last = value;
-                  callback(value, from, to);
-              }
-          }, interval);
-          return handle;
-      };
+    const loading = () => {
+      headerRef.current.classList.add("header--active");
+      setTimeout(() => {
+        timer(450, 20, 0, 300, 1, (value) => {
+          headerRef.current.style.setProperty("--s", `${Math.floor(value)}px`);
+        });
+      }, 800);
+    };
 
+    loading();
 
-      const loading = () => {
-          headerRef.current.classList.add('header--active');
-          setTimeout(() => {
-              timer(450, 20, 0, 300, 1, (value) => {
-                  headerRef.current.style.setProperty('--s', `${Math.floor(value)}px`);
-              });
-          }, 800);
-      };
+    const updateCoordinates = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
 
-      loading();
+    document.addEventListener("mousemove", updateCoordinates);
 
-
-      const updateCoordinates = (e) => {
-          setMousePosition({ x: e.clientX, y: e.clientY });
-      };
-
-      document.addEventListener('mousemove', updateCoordinates);
-
-      return () => {
-          document.removeEventListener('mousemove', updateCoordinates);
-      };
+    return () => {
+      document.removeEventListener("mousemove", updateCoordinates);
+    };
   }, []);
 
   useEffect(() => {
-      headerRef.current.style.setProperty('--x', `${mousePosition.x}px`);
-      headerRef.current.style.setProperty('--y', `${mousePosition.y}px`);
+    headerRef.current.style.setProperty("--x", `${mousePosition.x}px`);
+    headerRef.current.style.setProperty("--y", `${mousePosition.y}px`);
   }, [mousePosition]);
-  return(
+
+  return (
     <div>
-
-    <div className="maskHeader">
-    <div ref={headerRef} >
-       <div className="maskHeader__main">
-           <div className="maskHeader__content">
-               <h1 className="maskHeader__title">
-                   We are your go-to provider for advanced and discerning orthodontic care.
-               </h1>
-           </div>
-       </div>
-       <div className="maskHeader__hover">
-           <div className="maskHeader__content">
-               <h1 className="maskHeader__title">
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
-               </h1>
-           </div>
-       </div>
-   </div>
-   </div>
-   <div className="flex flex-wrap w-[80vw] h-[70vh] mx-auto">
-  <div className="w-full md:w-1/2">
-    <div style={{ backgroundImage: 'url("../images/bauhaus.png")' }} className="bg-[#E6E7E9] rounded-l-full h-full"></div>
-  </div>
-  <div className="relative w-full md:w-1/2">
-    <div className="bg-[#E6E7E9] h-full"></div>
-    <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
-      <p className="text-xl font-bold text-center">LEARN MORE</p>
+      <div className="maskHeader">
+        <div ref={headerRef}>
+          <div className="maskHeader__main">
+            <div className="maskHeader__content">
+              <h1 className="maskHeader__title">
+                We are your go-to provider for advanced and discerning
+                orthodontic care.
+              </h1>
+            </div>
+          </div>
+          <div className="maskHeader__hover">
+            <div className="maskHeader__content">
+              <h1 className="maskHeader__title">
+                INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN
+                DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES
+                ADVANCED ORTHONDOTIC CARE
+              </h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-wrap w-[80vw] h-[70vh] mx-auto">
+        <div className="w-full md:w-1/2">
+          <div
+            style={{ backgroundImage: 'url("../images/bauhaus.png")' }}
+            className="bg-[#E6E7E9] rounded-l-full h-full"
+          ></div>
+        </div>
+        <div className="relative w-full md:w-1/2">
+          <div className="bg-[#E6E7E9] h-full"></div>
+          <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
+            <p className="text-xl font-bold text-center">LEARN MORE</p>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
-   </div>
-  )
+  );
 }
+
 function GSAPAnimateScrollSections() {
   // const listRef = useRef(null);
 
@@ -1111,6 +1113,7 @@ const ImageGrid = () => {
       window.removeEventListener("mousemove", moveCursor);
     };
   }, [isHovering]);
+
   useEffect(() => {
     gsap.registerPlugin(SplitText);
 
@@ -1245,6 +1248,7 @@ const ImageGrid = () => {
     </div>
   );
 };
+
 const ParallaxOutline = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -1442,7 +1446,9 @@ const LogoGrid = () => {
       "../../images/movingbannerfiles/aao_invert.png",
     ],
   ];
+
   let isSphereCreated = false;
+
   useEffect(() => {
     console.log("sphere");
     if (isSphereCreated) {
@@ -1776,29 +1782,6 @@ function LocationGallery() {
 }
 
 function Locations() {
-  // const [isVisible, setIsVisible] = useState(false);
-  // const footerRef = useRef(null);
-
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       const [entry] = entries;
-  //       setIsVisible(entry.isIntersecting);
-  //     },
-  //     { threshold: 0.5 }
-  //   );
-
-  //   if (footerRef.current) {
-  //     observer.observe(footerRef.current);
-  //   }
-
-  //   return () => {
-  //     if (footerRef.current) {
-  //       observer.unobserve(footerRef.current);
-  //     }
-  //   };
-  // }, []);
-
   const ref = useRef(null)
   const isInView = useInView(ref, { once: false })
   const [scope, animate] = useAnimate()
@@ -1884,8 +1867,6 @@ function Locations() {
   }, [isInView])
 
   useEffect(() => {
-    gsap.registerPlugin(SplitText);
-
     const title = document.querySelector(".content__title");
     const split = new SplitText(title, { type: "chars" });
     const chars = split.chars;
@@ -1926,11 +1907,10 @@ function Locations() {
       ease: "linear",
     });
   }, []);
+
   const targetRef = useRef(null);
 
   useEffect(() => {
-    gsap.registerPlugin(SplitText);
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
