@@ -444,7 +444,7 @@ function Hero() {
   const pixiContainerRef = useRef();
 
   return (
-    <section className="relative mt-6">
+    <section className="relative">
       <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate lg:px-8">
         <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
