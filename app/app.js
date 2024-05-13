@@ -10,7 +10,9 @@ export default function App({ children }) {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Navbar />
-        {children}
+        <main>
+          {children}
+        </main>
         <Footer />
       </PersistGate>
     </Provider>
