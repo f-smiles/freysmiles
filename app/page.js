@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRef, useEffect, useLayoutEffect, useState } from "react";
 import LocomotiveScroll from "locomotive-scroll";
 // framer motion
-import { motion, stagger, useAnimate, useInView } from "framer-motion";
+import { motion, stagger, useAnimate, useInView, useScroll, useTransform } from 'framer-motion'
 // headless ui
 import { Disclosure, Transition } from "@headlessui/react";
 // gsap
@@ -842,9 +842,71 @@ function GSAPAnimateScrollSections() {
     };
   }, []);
 
+  const MobileLayout = () => {
+    const targetRef = useRef(null)
+    const { scrollYProgress } = useScroll({
+      target: targetRef,
+      offset: ["start center", "center center"],
+    })
+
+    const scaleCenterCircle = useTransform(scrollYProgress, [0, 1], ["0%", "100%"])
+    const translateLeftCircle = useTransform(scrollYProgress, [0, 1], ["100%", "0%"])
+    const translateRightCircle = useTransform(scrollYProgress, [0, 1], ["-100%", "0%"])
+    const translateHeading = useTransform(scrollYProgress, [0, 1], ["200%", "-20%"])
+    const opacity = useTransform(scrollYProgress, [0, 1], [0, 1])
+
+    return (
+      <section ref={targetRef} className='place-content-center'>
+        <div className="flex items-center justify-center gap-2 border border-dashed border-zinc-100">
+          <motion.div
+            style={{ translateX: translateLeftCircle, opacity }}
+            onViewportEnter={() => console.log("enter")}
+            onViewportLeave={() => console.log("exit")}
+            className="w-64 h-64 p-4 text-center border rounded-full place-content-center place-items-center border-zinc-100 aspect-square shadow-[inset_0_0_40px_rgba(255,255,255,1)]"
+          >
+            <p className="text-2xl leading-5 tracking-wide capitalize font-editorial-new text-zinc-100">
+              <span className="mb-2 block leading-6 font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider">
+                60+ yrs
+              </span>
+              experience
+            </p>
+          </motion.div>
+          <motion.div
+            style={{ scale: scaleCenterCircle }}
+            className="p-4 text-center rounded-full w-96 h-96 place-content-center place-items-center aspect-square shadow-[inset_0_0_80px_rgba(255,255,255,1)]"
+          >
+            <p className="text-2xl leading-5 tracking-wide capitalize font-editorial-new text-zinc-100">
+              <span className="mb-2 block leading-6 font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider">
+                25,000
+              </span>
+              patients
+            </p>
+          </motion.div>
+          <motion.div
+            style={{ translateX: translateRightCircle, opacity }}
+            className="w-64 h-64 p-4 text-center border rounded-full place-content-center place-items-center border-zinc-100 aspect-square shadow-[inset_0_0_40px_rgba(255,255,255,1)]"
+          >
+            <p className="text-2xl leading-5 tracking-wide capitalize font-editorial-new text-zinc-100">
+              <span className="mb-2 block leading-6 font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider">
+                4
+              </span>
+            locations
+            </p>
+          </motion.div>
+        </div>
+        <motion.p
+          style={{ translateY: translateHeading, opacity }}
+          className='text-[clamp(2.25rem,_5.422vw_+_1.03rem,_4.5rem)] tracking-wider text-center uppercase text-zinc-100 font-agrandir-grandheavy'
+        >
+          About
+        </motion.p>
+      </section>
+    )
+  }
+
   return (
     <>
-      <section className="relative home-main">
+      <section className="relative hidden home-main">
         <div className="home-main__content">
           <div>
             <div className="container"></div>
@@ -904,135 +966,7 @@ function GSAPAnimateScrollSections() {
         </div>
       </section>
 
-      <style>
-        {`
-          body {
-            overflow: visible;
-            overflow-x: hidden;
-          }
-
-          .flex {
-            display: flex;
-          }
-          .items-center {
-            align-items: center;
-          }
-          .justify-between {
-            justify-content: space-between;
-          }
-
-          .inline-flex {
-            display: inline-flex;
-          }
-          .justify-end {
-            justify-content: flex-end;
-          }
-
-          @media (min-width: 768px) {
-            .home-fly {
-
-              height: 100vh;
-              left: 0;
-              position: fixed;
-              top: 0;
-              width: 100vw;
-            }
-            .home-hero {
-              overflow: unset;
-              position: relative;
-              z-index: 1;
-            }
-            .home-hero__content {
-              align-items: center;
-              display: flex;
-              height: 100vh;
-              left: 0;
-              position: absolute;
-              text-align: center;
-              top: 0;
-              width: 100%;
-            }
-
-            .home-main {
-              min-height: 250vh;
-              overflow: unset;
-              padding-bottom: 100px;
-            }
-            .home-main__content {
-              align-items: center;
-              display: flex;
-              height: 100vh;
-              overflow: unset;
-              position: sticky;
-              top: 0;
-            }
-
-            .container {
-              margin: 0 auto;
-              width: 100%;
-            }
-
-            .home-main__content-sphere {
-              align-items: center;
-              color: #fff;
-              display: flex;
-              height: 100%;
-              left: 0;
-              position: absolute;
-              top: 0;
-              width: 100%;
-            }
-
-            .home-main__content-sphere ul {
-              position: relative;
-            }
-            .home-main__content-sphere ul li:first-child,
-            .home-main__content-sphere ul li:nth-child(3) {
-              border: 1px solid #fff;
-              filter: blur(10px);
-              height: 363px;
-              opacity: 0;
-              width: 363px;
-            }
-            .home-main__content-sphere ul li {
-              align-items: center;
-              border-radius: 50%;
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              left: 50%;
-              position: absolute;
-              text-align: center;
-              top: 50%;
-              transform: translate(-50%,-50%);
-            }
-            .home-main__content-sphere ul li figure h3 {
-              font-size: 100px;
-              font-weight: 500;
-              margin-bottom: 15px;
-            }
-            .home-main__content-sphere ul li figure p {
-              font-size: 20px;
-              line-height: 24px;
-              max-width: 277px;
-            }
-            .home-main__content-sphere ul li:nth-child(2) {
-              box-shadow: inset 0 0 300px #fff;
-              height: 518px;
-              transform: translate(-50%,-50%) scale(.0579150579);
-              width: 518px;
-              z-index: 1;
-            }
-            .home-main__content-sphere-desc p {
-              display: block;
-              font-size: 20px;
-              line-height: 30px;
-              margin: 0 auto 27px;
-              max-width: 724px;
-            }
-          }
-        `}
-      </style>
+      <MobileLayout />
     </>
     // <section
     //   ref={listRef}
@@ -2230,24 +2164,13 @@ function Locations() {
 }
 
 function GiftCards() {
-  const ref = useRef();
-  const isInView = useInView(ref);
-
   return (
-    <section
-      ref={ref}
-      className="z-10 h-[60dvh] relative group overflow-hidden hover:cursor-pointer"
-      style={{
-        opacity: isInView ? 1 : 0,
-        transform: isInView ? "none" : "translateY(100px)",
-        transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
-      }}
-    >
+    <section className="z-10 h-[60dvh] relative group overflow-hidden hover:cursor-pointer">
       <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-primary-30 bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
       <Link
         href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`}
         target="_blank"
-        className="text-2xl absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white"
+        className="text-2xl font-editorial-new absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white"
       >
         Send a Gift Card
       </Link>
