@@ -16,7 +16,7 @@ import { SplitText } from "gsap-trial/SplitText"
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText)
+  gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText, useGSAP)
 }
 
 export default function LandingComponent() {
@@ -161,7 +161,7 @@ export default function LandingComponent() {
         <div className="sticky top-0 z-2">
           <LocationGallery />
         </div>
-        <div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
+        <div className="sticky top-0 h-screen z-3" id="logoGrid">
           <LogoGrid />
         </div>
         <div className="bg-[#20282D] sticky top-0 z-1" id="locationGallery">
@@ -444,7 +444,7 @@ function Hero() {
   const pixiContainerRef = useRef();
 
   return (
-    <section className="relative">
+    <section className="relative pt-10 overflow-hidden">
       <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate lg:px-8">
         <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
@@ -462,7 +462,7 @@ function Hero() {
             </svg>
           </div>
 
-          <div className="relative z-10 mx-auto lg:mt-0">
+          <div className="relative z-10 w-full mx-auto lg:mt-0">
             <div className="flex flex-wrap items-center justify-center">
               <div className="relative">
                 <div className="hero">
@@ -549,7 +549,7 @@ function Hero() {
   );
 }
 
-function Mask(){
+function Mask() {
   const headerRef = useRef(null);
 
   const [mousePosition, setMousePosition] = useState({
@@ -608,7 +608,7 @@ function Mask(){
   }, [mousePosition]);
 
   return (
-    <div>
+    <div className="w-full overflow-hidden">
       <div className="maskHeader">
         <div ref={headerRef}>
           <div className="maskHeader__main">
@@ -634,7 +634,7 @@ function Mask(){
         <div className="w-full md:w-1/2">
           <div
             style={{ backgroundImage: 'url("../images/bauhaus.png")' }}
-            className="bg-[#E6E7E9] rounded-l-full h-full"
+            className="bg-[#E6E7E9] rounded-l-full h-full bg-center bg-no-repeat bg-cover"
           ></div>
         </div>
         <div className="relative w-full md:w-1/2">
@@ -843,126 +843,134 @@ function GSAPAnimateScrollSections() {
   }, []);
 
   const MobileLayout = () => {
-    const targetRef = useRef(null)
-    const { scrollYProgress } = useScroll({
-      target: targetRef,
-      offset: ["start center", "center center"],
+    useGSAP(() => {
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#stats-section',
+          start: 'top 50%',
+          end: 'bottom 100%',
+          scrub: 1,
+        },
+        defaults: { ease: 'power1.in' },
+      })
+
+      tl.to('.middle-circle', {
+        scale: 1,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 4,
+      }, 0)
+      .to('.middle-circle-text', {
+        scale: 1,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 6,
+      }, 0)
+      .to('.left-circle', {
+        opacity: 1,
+        filter: "blur(0px)",
+        transform: "translate(0%, 0%)",
+        duration: 6,
+      }, 3)
+      tl.to('.right-circle', {
+        opacity: 1,
+        filter: "blur(0px)",
+        transform: "translate(0%, 0%)",
+        duration: 6,
+      }, 3)
+      .to('#stats-heading', {
+        opacity: 1,
+        transform: "translate(0%, 0%)",
+        duration: 4,
+      })
     })
 
-    const scaleCenterCircle = useTransform(scrollYProgress, [0, 1], ["0%", "100%"])
-    const translateLeftCircle = useTransform(scrollYProgress, [0, 1], ["100%", "0%"])
-    const translateRightCircle = useTransform(scrollYProgress, [0, 1], ["-100%", "0%"])
-    const translateHeading = useTransform(scrollYProgress, [0, 1], ["200%", "-20%"])
-    const opacity = useTransform(scrollYProgress, [0, 1], [0, 1])
-
     return (
-      <section ref={targetRef} className='place-content-center'>
-        <div className="flex items-center justify-center gap-2 border border-dashed border-zinc-100">
-          <motion.div
-            style={{ translateX: translateLeftCircle, opacity }}
-            onViewportEnter={() => console.log("enter")}
-            onViewportLeave={() => console.log("exit")}
-            className="w-64 h-64 p-4 text-center border rounded-full place-content-center place-items-center border-zinc-100 aspect-square shadow-[inset_0_0_40px_rgba(255,255,255,1)]"
-          >
-            <p className="text-2xl leading-5 tracking-wide capitalize font-editorial-new text-zinc-100">
-              <span className="mb-2 block leading-6 font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider">
-                60+ yrs
-              </span>
-              experience
-            </p>
-          </motion.div>
-          <motion.div
-            style={{ scale: scaleCenterCircle }}
-            className="p-4 text-center rounded-full w-96 h-96 place-content-center place-items-center aspect-square shadow-[inset_0_0_80px_rgba(255,255,255,1)]"
-          >
-            <p className="text-2xl leading-5 tracking-wide capitalize font-editorial-new text-zinc-100">
-              <span className="mb-2 block leading-6 font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider">
-                25,000
-              </span>
-              patients
-            </p>
-          </motion.div>
-          <motion.div
-            style={{ translateX: translateRightCircle, opacity }}
-            className="w-64 h-64 p-4 text-center border rounded-full place-content-center place-items-center border-zinc-100 aspect-square shadow-[inset_0_0_40px_rgba(255,255,255,1)]"
-          >
-            <p className="text-2xl leading-5 tracking-wide capitalize font-editorial-new text-zinc-100">
-              <span className="mb-2 block leading-6 font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider">
-                4
-              </span>
-            locations
-            </p>
-          </motion.div>
+      <section id='stats-section' className='relative block w-full h-[50vh] md:h-screen place-content-center place-items-center xl:hidden'>
+        <div className='container flex items-center justify-center gap-2 px-8 py-4 mx-auto'>
+          <figure className='translate-x-1/2 opacity-0 blur-sm left-circle'>
+            <span className='block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square'>
+              <p className='text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]'>60+ yrs</p>
+            </span>
+            <p className='leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]'>experience</p>
+          </figure>
+          <figure className='scale-0 opacity-0 blur-sm middle-circle'>
+            <span className='block w-40 h-40 md:w-60 md:h-60 mb-4 rounded-full place-content-center place-items-center aspect-square shadow-[inset_0_0_20px_rgba(255,255,255,1)] md:shadow-[inset_0_0_30px_rgba(255,255,255,1)] middle-circle-text opacity-0 blur-sm'>
+              <p className='text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]'>25,000</p>
+            </span>
+            <p className='leading-4 tracking-wide text-center capitalize opacity-0 middle-circle-text blur-sm font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]'>patients</p>
+          </figure>
+          <figure className='-translate-x-1/2 opacity-0 blur-sm right-circle'>
+            <span className='block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square'>
+              <p className='text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]'>4</p>
+            </span>
+            <p className='leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]'>locations</p>
+          </figure>
         </div>
-        <motion.p
-          style={{ translateY: translateHeading, opacity }}
-          className='text-[clamp(2.25rem,_5.422vw_+_1.03rem,_4.5rem)] tracking-wider text-center uppercase text-zinc-100 font-agrandir-grandheavy'
-        >
-          About
-        </motion.p>
+        <div id='stats-heading' className='container mx-auto translate-y-1/2 opacity-0'>
+          <h2 className='tracking-wide text-center font-agrandir-grandheavy uppercase text-[clamp(1rem,_-3.3055rem_+_22.9627vw,_11.390625rem)] leading-[clamp(1rem,_-3.3055rem_+_22.9627vw,_11.390625rem)] text-zinc-100'>About</h2>
+        </div>
       </section>
     )
   }
 
   return (
     <>
-      <section className="relative hidden home-main">
+      <section className="relative hidden home-main xl:block">
         <div className="home-main__content">
           <div>
             <div className="container"></div>
           </div>
           <div className="home-main__content-sphere">
-            <div className="container">
-              <ul>
-                <li
-                  className="font-helvetica-neue "
-                  id="first-circle"
+            <ul className="container mx-auto">
+              <li
+                className="font-helvetica-neue "
+                id="first-circle"
+                style={{ opacity: 0, filter: "blur(10px)" }}
+              >
+                <figure>
+                  <h3>60+</h3>
+                  <p className="mt-10 uppercase font-poppins ">
+                    years of experience
+                  </p>
+                </figure>
+              </li>
+              <li
+                className="font-bold font-neue-montreal"
+                id="middle-circle"
+                style={{ boxShadow: "inset 0 0 300px #fff" }}
+              >
+                <figure
+                  id="figure2"
                   style={{ opacity: 0, filter: "blur(10px)" }}
                 >
-                  <figure>
-                    <h3>60+</h3>
-                    <p className="mt-10 uppercase font-poppins ">
-                      years of experience
-                    </p>
-                  </figure>
-                </li>
-                <li
-                  className="font-bold font-neue-montreal"
-                  id="middle-circle"
-                  style={{ boxShadow: "inset 0 0 300px #fff" }}
-                >
-                  <figure
-                    id="figure2"
-                    style={{ opacity: 0, filter: "blur(10px)" }}
-                  >
-                    <h3 className="font-bold font-Lato">25k</h3>
-                    <p className="mt-10 tracking-wide uppercase font-Lato">
-                      patients
-                    </p>
-                  </figure>
-                </li>
-                <li
-                  className=""
-                  id="last-circle"
-                  style={{ opacity: 0, filter: "blur(10px)" }}
-                >
-                  <figure>
-                    <h3 className="font-bold font-neue-montreal">4</h3>
-                    <p className="mt-10 tracking-wide font-helvetica-now-thin">
-                      unique locations
-                    </p>
-                  </figure>
-                </li>
-              </ul>
-              <div
-                className="home-main__content-sphere-desc"
-                style={{ transform: "translate(0, 137px)", opacity: 0 }}
-              ></div>
-            </div>
+                  <h3 className="font-bold font-Lato">25k</h3>
+                  <p className="mt-10 tracking-wide uppercase font-Lato">
+                    patients
+                  </p>
+                </figure>
+              </li>
+              <li
+                className=""
+                id="last-circle"
+                style={{ opacity: 0, filter: "blur(10px)" }}
+              >
+                <figure>
+                  <h3 className="font-bold font-neue-montreal">4</h3>
+                  <p className="mt-10 tracking-wide font-helvetica-now-thin">
+                    unique locations
+                  </p>
+                </figure>
+              </li>
+            </ul>
+            <div
+              className="home-main__content-sphere-desc"
+              style={{ transform: "translate(0, 137px)", opacity: 0 }}
+            ></div>
           </div>
         </div>
         <div className="large-text">
-          <h2 className="text-[400px]">ABOUT</h2>
+          <h1 className="text-[300px]">ABOUT</h1>
         </div>
       </section>
 
@@ -1592,49 +1600,42 @@ const LogoGrid = () => {
   }, []);
 
   return (
-    <div className="bg-[#DDDCDC] h-screen flex justify-center items-center">
-      <div className="grid grid-cols-2 p-4">
-        <div className="horizontal-item">
-          <div className="z-10" id="ballcanvas"></div>
-        </div>
-
-        <div className="flex flex-col items-center justify-center">
-          <div className="font-bold uppercase text-8xl">
-            Awards & Recognition
-          </div>
-          <div className="flex items-center mt-10">
-            <div className="w-48 h-px bg-gray-700"></div>
-            <div className="text-[15px] pl-4">
-              Our greatest award is the success of our patients
-            </div>
-          </div>
-        </div>
-
-        <div className="flex h-80">
-          <div
-            className="bg-[#20282D] w-full"
-            style={{ position: "absolute", bottom: 0 }}
-          >
-            <h1 className="text-3xl font-bold tracking-wide text-white uppercase animate-locationsCardMarquee font-neue-montreal">
-              &bull; COME SEE US AT ANY OF OUR FOUR LOCATIONS &bull; COME SEE US
-              AT ANY OF OUR FOUR LOCATIONS &bull;
-            </h1>
-          </div>
-          {/* <div className="grid grid-cols-2 gap-4">
-            {logos.map((columnLogos, columnIndex) => (
-              <div key={columnIndex} className="flex flex-col items-center">
-                {columnLogos.map((logo, logoIndex) => (
-                  <div key={logoIndex} className="p-2">
-                    <img
-                      src={logo}
-                      alt={`Logo ${logoIndex + 1}`}
-                      className="w-auto h-14"
-                    />
-                  </div>
-                ))}
+    <div className="bg-[#DDDCDC] relative h-screen overflow-hidden">
+      {/* MARQUEE  */}
+      <div className="bg-[#20282D] w-full absolute top-0">
+        <h1 className="text-3xl font-bold tracking-wide text-white uppercase animate-locationsCardMarquee font-neue-montreal">
+          &bull; COME SEE US AT ANY OF OUR FOUR LOCATIONS &bull; COME SEE US
+          AT ANY OF OUR FOUR LOCATIONS &bull;
+        </h1>
+      </div>
+      {/* <div className="grid grid-cols-2 gap-4">
+        {logos.map((columnLogos, columnIndex) => (
+          <div key={columnIndex} className="flex flex-col items-center">
+            {columnLogos.map((logo, logoIndex) => (
+              <div key={logoIndex} className="p-2">
+                <img
+                  src={logo}
+                  alt={`Logo ${logoIndex + 1}`}
+                  className="w-auto h-14"
+                />
               </div>
             ))}
-          </div> */}
+          </div>
+        ))}
+      </div> */}
+      <div className="container flex flex-col-reverse items-center justify-center h-full gap-4 mx-auto overflow-hidden lg:flex-row lg:overflow-visible">
+        <div id="ballcanvas" className="z-10 w-full h-full lg:w-1/2 horizontal-item" />
+
+        <div className="lg:w-1/2">
+          <p className="font-bold uppercase leading-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]  text-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]">
+            Awards & Recognition
+          </p>
+          <div className="flex items-center mt-10">
+            <div className="w-48 h-px bg-gray-700"></div>
+            <p className="text-[15px] pl-4">
+              Our greatest award is the success of our patients
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -2029,15 +2030,10 @@ function Locations() {
           </svg>
         </div>
 
-        <div ref={ref} className="relative">
-          {/* arrow */}
-          <svg className="block lg:hidden absolute top-1/3 left-0 translate-x-64 w-36 h-36 rotate-[120deg] text-[#ff6432]" viewBox="0 0 77 85" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1.33755 84.3973C0.297616 62.7119 2.93494 39.8181 19.4192 23.8736C28.2211 15.3599 42.4944 12.5723 47.6281 26.2359C51.1245 35.5419 51.542 51.9945 41.0605 57.0865C29.486 62.7095 40.2945 35.2221 41.9942 32.4952C49.9497 19.7313 59.7772 11.6122 72.2699 3.78281C76.9496 0.849879 73.7108 0.477284 70.0947 1.13476C66.9572 1.7052 63.4035 2.43717 60.5291 3.81975C59.6524 4.24143 65.7349 2.73236 66.6827 2.44768C70.7471 1.22705 75.4874 -0.0219285 75.9527 5.60812C76.0274 6.5127 75.9956 14.9844 74.7481 15.2963C74.099 15.4586 71.0438 10.27 70.4642 9.65288C66.6996 5.64506 63.5835 4.42393 58.2726 5.11792" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-
+        <div ref={ref}>
           <motion.div
             id="locations-map"
-            className="overflow-hidden h-80 lg:absolute lg:right-0 lg:h-full lg:w-1/2"
+            className="h-[60vh] overflow-hidden lg:absolute lg:right-0 lg:h-full lg:w-1/2"
             style={{
               opacity: isInView ? 1 : 0,
               filter: isInView ? "blur(0px)" : "blur(16px)",
@@ -2064,7 +2060,7 @@ function Locations() {
           </motion.div>
 
           <div id="locations-details">
-            <div className="max-w-2xl px-4 py-16 mx-auto mt-10 sm:px-6 sm:py-24 lg:mt-0 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
+            <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:mt-0 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 xl:gap-x-24">
               {/* LOCATIONS LIST */}
               <motion.div
                 className="flex flex-col mt-10"
