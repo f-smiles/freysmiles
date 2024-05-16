@@ -1623,7 +1623,7 @@ const LogoGrid = () => {
           </div>
         ))}
       </div> */}
-      <div className="container flex flex-col-reverse items-center justify-center h-full gap-4 mx-auto overflow-hidden lg:flex-row lg:overflow-visible">
+      <div className="container flex flex-col-reverse items-center justify-center h-full gap-4 py-32 mx-auto overflow-hidden lg:py-0 lg:flex-row lg:overflow-visible">
         <div id="ballcanvas" className="z-10 w-full h-full lg:w-1/2 horizontal-item" />
 
         <div className="lg:w-1/2">
