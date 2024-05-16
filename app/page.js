@@ -907,8 +907,8 @@ function GSAPAnimateScrollSections() {
             <p className='leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]'>locations</p>
           </figure>
         </div>
-        <div id='stats-heading' className='container mx-auto translate-y-1/2 opacity-0'>
-          <h2 className='tracking-wide text-center font-agrandir-grandheavy uppercase text-[clamp(1rem,_-3.3055rem_+_22.9627vw,_11.390625rem)] leading-[clamp(1rem,_-3.3055rem_+_22.9627vw,_11.390625rem)] text-zinc-100'>About</h2>
+        <div id='stats-heading' className='container w-full mx-auto translate-y-1/2 opacity-0 place-content-center'>
+          <h2 className='w-full tracking-tighter text-center uppercase text-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] leading-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] font-agrandir-grandheavy text-zinc-100'>About</h2>
         </div>
       </section>
     )
