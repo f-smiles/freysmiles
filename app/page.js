@@ -800,7 +800,7 @@ function Hero() {
         <defs>
             <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"/>
         </defs>
-        <circle cx="150" cy="150" r="135" fill="#FEC195"/>
+        <circle cx="150" cy="150" r="135" fill="#FFFFFF"/>
         <g>
             <text class="book-text">
                 <textPath xlinkHref="#circlePath">
