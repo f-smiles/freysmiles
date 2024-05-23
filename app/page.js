@@ -795,14 +795,24 @@ function Hero() {
               style={{ top: "10%", left: "-20%" }}
             >
 
-             <a href="/book-now" className="inline-flex items-center justify-center">
+<a href="/book-now" className="inline-flex items-center justify-center">
     <svg id="circlepath" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="300px" height="300px" viewBox="0 0 300 300" xmlSpace="preserve" className="book-svg">
         <defs>
             <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"/>
+            <filter id="frostyFilter" x="-10%" y="-10%" width="120%" height="120%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+                <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.4"/>
+                </feComponentTransfer>
+                <feMerge>
+                    <feMergeNode/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
         </defs>
-        <circle cx="150" cy="150" r="135" fill="#FFFFFF"/>
+        <circle cx="150" cy="150" r="135" fill="rgba(255, 255, 255, 0.6)" filter="url(#frostyFilter)"/>
         <g>
-            <text class="book-text">
+            <text className="book-text">
                 <textPath xlinkHref="#circlePath">
                     BOOK NOW → BOOK NOW →
                 </textPath>
@@ -812,13 +822,14 @@ function Hero() {
 </a>
 
 
+
             </div>
-            <canvas className="z-10 rounded-full" ref={canvasRef}></canvas>
-            {/* <img
+            {/* <canvas className="z-10 rounded-full" ref={canvasRef}></canvas> */}
+            <img
               className="z-10 max-w-md rounded-full"
               src="../../images/mainsectionimage.jpg"
               alt="girl smiling"
-            /> */}
+            />
            
           </div>
         </div>
