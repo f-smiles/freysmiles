@@ -2,13 +2,17 @@
 import Link from 'next/link'
 import { Fragment, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { gsap } from "gsap"
 import { useGSAP } from "@gsap/react"
 import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
 import BagIcon from './ui/BagIcon'
 import Bars2Icon from './ui/Bars2Icon'
 import XIcon from './ui/XIcon'
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
 
 export default function Navbar() {
   const dispatch = useDispatch()
@@ -83,10 +87,9 @@ export default function Navbar() {
   }
 
   /* mobile nav */
-  const [show, setShow] = useState(null)
+  const [openMobileNav, setOpenMobileNav] = useState(false)
   const handleToggleMobileNav = () => {
-    // setShow((prevState) => !prevState)
-    setShow(!show)
+    setOpenMobileNav(!openMobileNav)
   }
 
   useGSAP(() => {
@@ -127,11 +130,10 @@ export default function Navbar() {
     }
   })
 
-
   return (
-    <header>
+    <header className='overflow-hidden'>
       {/* DESKTOP NAVBAR */}
-      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-40 hidden w-full mb-[6vh] lg:block">
+      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-40 w-max mx-auto hidden mb-[6vh] lg:block">
         <div className="custom-navbar-cursor" />
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
@@ -526,7 +528,7 @@ export default function Navbar() {
             </Transition.Root>
 
 						<li
-              className="px-6 py-3 transition duration-300 ease-in-out  hover:bg-secondary-50/60 active:bg-secondary-50/80"
+              className="px-6 py-3 transition duration-300 ease-in-out hover:bg-secondary-50/60 active:bg-secondary-50/80"
               // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
             >
               <Link href="/book-now"
@@ -542,139 +544,32 @@ export default function Navbar() {
       </nav>
 
       {/* MOBILE NAVBAR */}
-      <nav id="mobile-nav" className={`${show ? "top-0 flex flex-col-reverse gap-6 justify-between h-full bg-white" : "bottom-0 max-w-[75vw] rounded-full bg-gray-100/60"} fixed left-0 right-0 mb-[4vh] p-4 w-full mx-auto text-gray-600 backdrop-blur-md shadow-md z-50 lg:hidden`}>
-        <section className={`${show ? "px-4 py-6" : ""} flex items-center justify-between`}>
-          <Link href="/">
-            <img
-              src="/../../../logo_full.png"
-              alt="FreySmiles Orthodontics logo"
-              className="w-auto h-8"
-            />
-          </Link>
-          <div
-            onClick={handleToggleMobileNav}
-            className="transition duration-300 ease-linear cursor-pointer text-primary-50 hover:text-secondary-50"
-          >
-            {show ? (
-              <XIcon className="w-6 h-6" />
-            ) : (
-              <Bars2Icon className="w-6 h-6" />
-            )}
-          </div>
-        </section>
-        {/* <section ref={scope} className="overflow-y-scroll"> */}
-        <section className="overflow-y-scroll">
-          {show && (
-            <ul className="relative text-2xl">
-              <div className="px-4 mt-10 cursor-pointer group text-primary-40">
-                {/* <li className="py-2 uppercase border-b border-secondary-50/30">
-                  <Link href="/">Home</Link>
-                </li> */}
-                <li className="py-2 border-b border-secondary-50/30">
-                {/* <li className="py-2 border-b border-secondary-50/30" onClick={() => setAbout(!about)}> */}
-                  <span className="flex items-center gap-2 uppercase">About</span>
-                  {/* About <ChevronDownIcon className="w-4 h-4" /> */}
-                  {/* {about && ( */}
-                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
-                      {about_us_links &&
-                        about_us_links.map((link) => (
-                          <Link
-                            key={link.name}
-                            href={link.href}
-                            className="mx-6 text-xl text-secondary-50"
-                            onClick={() => setShow(!show)}
-                          >
-                            {link.name}
-                          </Link>
-                        ))}
-                    </div>
-                  {/* )} */}
-                </li>
-                <li className="py-2 border-b border-secondary-50/30">
-                  <span className="flex items-center gap-2 uppercase">Patient</span>
-                  {/* {patient && ( */}
-                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
-                      {patient_links &&
-                        patient_links.map((link) => (
-                          <Link
-                            key={link.name}
-                            href={link.href}
-                            className="mx-6 text-xl text-secondary-50"
-                            onClick={() => setShow(!show)}
-                          >
-                            {link.name}
-                          </Link>
-                        ))}
-                    </div>
-                  {/* )} */}
-                </li>
-                <li className="py-2 border-b border-secondary-50/30">
-                  <span className="flex items-center gap-2 uppercase">Treatments</span>
-                  {/* {treatments && ( */}
-                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
-                      {treatments_links &&
-                        treatments_links.map((link) => (
-                          <Link
-                            key={link.name}
-                            href={link.href}
-                            className="mx-6 text-xl text-secondary-50"
-                            onClick={() => setShow(!show)}
-                          >
-                            {link.name}
-                          </Link>
-                        ))}
-                    </div>
-                  {/* )} */}
-                </li>
-              </div>
-              <div className="px-4 mt-10 space-y-2 cursor-pointer"
-                onClick={() => setShow(!show)}
-              >
-                <li>
-                  <Link
-                    className="block text-secondary-50"
-                    href="https://my.orthoblink.com/bLink/Login"
-                  >
-                    Patient Login
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="block text-secondary-50"
-                    href="/products"
-                  >
-                    Shop
-                  </Link>
-                </li>
-                {bag.length > 0 && (
-                  <li
-                    onClick={handleToggleBagPanel}
-                    className="flex items-center gap-x-1 text-primary-50"
-                  >
-                    Bag
-                    <div className="relative">
-                      <BagIcon className="w-10 h-10" />
-                      <span className="absolute top-0 right-0 p-3 bg-black rounded-full -translate-y-1/4 translate-x-2/4">
-                        <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{bag.length}</p>
-                        {/* <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{calculateItemsQuantity()}</p> */}
-                      </span>
-                    </div>
-                  </li>
+      <nav className="z-40 fixed bottom-0 block left-1/2 -translate-x-1/2 w-[80vw] mx-auto shadow-md mb-[4vh] bg-zinc-100 lg:hidden rounded-full">
+        <div className='px-4 mx-auto max-w-7xl sm:px-6 lg:px-8'>
+          <div className="flex justify-between h-16">
+            <div className="flex items-center flex-shrink-0">
+              <img
+                className="w-auto h-8"
+                src="/../../logo_full.png"
+                alt="FreySmiles Orthodontics"
+              />
+            </div>
+            <div className="flex items-center -mr-2 lg:hidden">
+              {/* Mobile menu button */}
+              <button onClick={handleToggleMobileNav} className="relative inline-flex items-center justify-center p-2 rounded-full text-primary-50 hover:bg-primary-50/30 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-50">
+                <span className="sr-only">Open main menu</span>
+                {openMobileNav ? (
+                  <XIcon className="block w-6 h-6" aria-hidden="true" />
+                ) : (
+                  <Bars2Icon className="block w-6 h-6" aria-hidden="true" />
                 )}
-                <li className="pt-6">
-                  <div className="px-3 py-2 rounded-md w-max bg-primary-40 active:bg-primary-30">
-                    <Link
-                      href="/book-now"
-                      className="font-normal text-white uppercase"
-                    >
-                      Book Now
-                    </Link>
-                  </div>
-                </li>
-              </div>
-            </ul>
-          )}
-        </section>
+              </button>
+            </div>
+          </div>
+
+          {/* mobile links panel */}
+
+        </div>
       </nav>
     </header>
   )
