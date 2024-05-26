@@ -754,19 +754,19 @@ padding:10px;
 }
 
 .first span {
-  color: black;
-  -webkit-text-fill-color: black;
+  color: white;
+  -webkit-text-fill-color: white;
 }
 
 
 .second span {
-  -webkit-text-stroke: 2px black;
+  -webkit-text-stroke: 1px white;
   -webkit-text-fill-color: transparent;
 }
 
 @media (min-width: 1224px) {
   .second span {
-    -webkit-text-stroke: 3px black;
+    -webkit-text-stroke: 1px #39ff14;
   }
 }
 
