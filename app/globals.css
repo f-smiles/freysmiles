@@ -766,7 +766,7 @@ padding:10px;
 
 @media (min-width: 1224px) {
   .second span {
-    -webkit-text-stroke: 1px #39ff14;
+    -webkit-text-stroke: 1px #fff;
   }
 }
 
@@ -1492,7 +1492,7 @@ text-transform: uppercase;
 
 
 .appointmentButton.clicked {
-  background-color: black;
+  background-color: #D3D6D1;
   color: white;
 }
 
@@ -1503,7 +1503,7 @@ text-transform: uppercase;
   left: 50%;
   width: 0;
   height: 0;
-  background-color: black;
+  background-color: #D3D6D1;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   transition: width 0.4s, height 0.4s;
@@ -1517,7 +1517,10 @@ text-transform: uppercase;
 }
 
 
-
+.appointmentButton .buttonText {
+  position: relative;
+  z-index: 1;
+}
 
 @keyframes marquee {
   from { transform: translateX(100%); }
