@@ -1546,6 +1546,13 @@ text-transform: uppercase;
 }
 
 
+.hover-slide {
+  transition: transform 0.3s ease;
+}
+
+.hover-slide:hover {
+  transform: translateX(-20px);
+}
 
 #blotter-target {
   position: absolute;

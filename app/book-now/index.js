@@ -225,7 +225,7 @@ const BookNow = () => {
     <main
       className="font-helvetica-now-thin bg-center bg-[#E7E7E7] "
       // style={{
-      //   backgroundImage: "url('../images/threecircles.png')",
+      //   backgroundImage: "url('../images/liquidpastel.png')",
       //   width: "100%",
       //   backgroundSize: "30%",
       //   backgroundRepeat: "no-repeat",
@@ -259,6 +259,14 @@ const BookNow = () => {
         Begin your smile journey today
       </h1>
     </div>
+<div className="flex justify-end"> <button className="text-xl flex items-center space-x-2 hover-slide">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+  </svg>
+  <span className="text-3xl">info@freysmiles.com</span>
+</button></div>
+   
+
             <div className="text-center font-iCiel-Gotham-Ultra text-7xl " ref={containerRef}>
       <h1 className="text-[140px] text-[#2E2A27] ">
         {['H', 'E', 'L', 'L', 'O'].map((letter, index) => (
@@ -271,9 +279,13 @@ const BookNow = () => {
       </h1>
     </div>
     </div>
-    <button class="button button--marquee" data-text="(610) 437-4748 — info@freysmiles.com — (610) 437-4748 — freysmiles.com">
-    (610) 437-4748 — info@freysmiles.com
-</button>
+    {/* <button >
+    (610) 437-4748 
+</button> */}
+
+
+
+
 
 
    
