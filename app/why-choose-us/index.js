@@ -1,5 +1,5 @@
 "use client";
-import { Curtains, useCurtains, Plane } from "react-curtains"
+import { Curtains, useCurtains, Plane } from "react-curtains";
 import { Vec2 } from "curtainsjs";
 // import SimplePlane from "./curtains"
 import React, { useRef, useState, useEffect } from "react";
@@ -23,29 +23,24 @@ import { Circle } from "pixi.js";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 
-
-
 export default function WhyChooseUs() {
-
   return (
     <>
-   
       <Hero />
-      
+
       {/* <TextSection /> */}
 
       <StackCards />
-      
+
       <ScrollTextReveal />
       <CTA />
       <DragTable />
       <BentoGrid />
-        <div className="min-h-screen">
-      {/* <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
+      <div className="min-h-screen">
+        {/* <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
         <SimplePlane />
       </Curtains> */}
-    </div>
-     
+      </div>
     </>
   );
 }
@@ -74,14 +69,37 @@ const TextSection = () => {
   );
 };
 
-
 function Hero() {
   const title = "EXPERTS IN";
   const imageUrl = "../images/crystal.png";
-  
+  const svgRef = useRef(null);
+  let lastScrollTop = 0;
+  const rotationFactor = 5;
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+
+      if (svgRef.current) {
+        if (scrollTop > lastScrollTop) {
+          svgRef.current.style.transform = `rotate(${
+            scrollTop / rotationFactor
+          }deg)`;
+        } else {
+          svgRef.current.style.transform = `rotate(${
+            scrollTop / rotationFactor
+          }deg)`;
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // mobile
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="bg-212121   h-screen">
- 
       <div className="bg-[#DFFF00] min-h-screen min-w-full flex justify-center items-center">
         <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
           <h2 className="absolute top-20 left-[5vw] m-0 text-[10vw] uppercase text-center">
@@ -142,6 +160,41 @@ function Hero() {
               </li>
             </ul>
           </div>
+     
+          <div className="relative" style={{ left: '20rem' }}>
+        <svg
+          ref={svgRef}
+          id="spinscroll"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+          width="300px"
+          height="300px"
+          viewBox="0 0 300 300"
+          xmlSpace="preserve"
+          className="book-svg transition-transform duration-100 inline-flex"
+        >
+          <defs>
+            <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150" />
+          </defs>
+          <g id="rotatingGroup">
+            <text className="scroll-text">
+              <textPath xlinkHref="#circlePath">Scroll Down Scroll Down</textPath>
+            </text>
+          </g>
+        </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 63 305"
+          width="10.75"
+          height="56.25"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        >
+          <path className="arrow-line" style={{ fill: 'none', stroke: '#000', strokeWidth: '1.5', strokeDashoffset: 0, strokeDasharray: '304' }} d="M31 0,31 304" />
+          <path className="arrow-left" style={{ fill: 'none', stroke: '#000', strokeWidth: '1.5', strokeDashoffset: 0, strokeDasharray: '51' }} d="M1,269c0,0,29-1,30,35" />
+          <path className="arrow-right" style={{ fill: 'none', stroke: '#000', strokeWidth: '1.5', strokeDashoffset: 0, strokeDasharray: '51' }} d="M61,269c0,0-29-1-30,35" />
+        </svg>
+      </div>
+
         </section>
       </section>
 
@@ -355,10 +408,10 @@ function StackCards() {
           </div>
           <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#c5cfc7] rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105">
             <h4>
-              Our office holds the distinction of being the
-                longest-standing, active board-certified orthodontic office in
-                the area . With four offices in the Lehigh Valley, we have been providing
-                unparalleled orthodontic care for over four decades.
+              Our office holds the distinction of being the longest-standing,
+              active board-certified orthodontic office in the area . With four
+              offices in the Lehigh Valley, we have been providing unparalleled
+              orthodontic care for over four decades.
             </h4>
             <div className="absolute bottom-0 left-0 w-40 h-40 -translate-x-1/2 -translate-y-6 -z-10"></div>
           </div>
@@ -383,20 +436,17 @@ function CTA() {
   const textRef = useRef(null);
   const bgTextColor = "#CECED3";
   const fgTextColor = "#161818";
-    
-
-
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger, SplitText);
 
     const split = new SplitText(textRef.current, { type: "chars" });
-    const chars = split.chars; 
+    const chars = split.chars;
 
     const animation = gsap.fromTo(
       chars,
       { color: bgTextColor },
-      { color: fgTextColor, stagger: 0.03}
+      { color: fgTextColor, stagger: 0.03 }
     );
 
     ScrollTrigger.create({
@@ -405,10 +455,9 @@ function CTA() {
       end: "bottom 70%",
       animation: animation,
       scrub: true,
-      markers: false
+      markers: false,
     });
 
- 
     return () => split.revert();
   }, []);
   const btnRef = useRef();
@@ -422,28 +471,38 @@ function CTA() {
       const domPt = new DOMPoint(e.x, e.y);
       let svgPt = domPt.matrixTransform(btn.getScreenCTM().inverse());
 
-      gsap.timeline({ defaults: { duration: 0.3, ease: 'power3' } })
-        .to('.hit', { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
-        .to('.bg', { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
-        .to('.txt', { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
-        .to('.bg', { attr: { fill: 'rgb(197, 207, 199)' } }, 0)
-        .to('.txt', { attr: { fill: 'rgb(0,0,0)' } }, 0);
+      gsap
+        .timeline({ defaults: { duration: 0.3, ease: "power3" } })
+        .to(".hit", { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
+        .to(".bg", { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
+        .to(".txt", { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
+        .to(".bg", { attr: { fill: "rgb(197, 207, 199)" } }, 0)
+        .to(".txt", { attr: { fill: "rgb(0,0,0)" } }, 0);
     };
 
     hit.onpointerleave = (e) => {
-      gsap.timeline({ defaults: { duration: 0.3, ease: 'power2' } })
-        .to('.bg', { attr: { fill: 'rgb(50,50,50)' } }, 0)
-        .to('.txt', { attr: { fill: 'rgb(255,255,255)' } }, 0)
-        .to('.hit, .bg, .txt', { duration: 0.7, ease: 'elastic.out(0.8)', x: 0, y: 0 }, 0);
+      gsap
+        .timeline({ defaults: { duration: 0.3, ease: "power2" } })
+        .to(".bg", { attr: { fill: "rgb(50,50,50)" } }, 0)
+        .to(".txt", { attr: { fill: "rgb(255,255,255)" } }, 0)
+        .to(
+          ".hit, .bg, .txt",
+          { duration: 0.7, ease: "elastic.out(0.8)", x: 0, y: 0 },
+          0
+        );
     };
   }, []);
   return (
     <section className="sm:py-32 ">
-       <div className=" flex">
-<div className="px-40">
-        <p ref={textRef} className="font-helvetica-neue text-3xl uppercase">
-        Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it.
-        </p>
+      <div className=" flex">
+        <div className="px-40">
+          <p ref={textRef} className="font-helvetica-neue text-3xl uppercase">
+            Frey Smiles believes in providing accessible orthodontic care for
+            everyone. In 2011, they established a non-profit organization called
+            More Than Smiles, which offers orthodontic treatment to deserving
+            individuals who may not have access to world-class orthodontic care
+            or cannot afford it.
+          </p>
         </div>
       </div>
       <div className="container flex flex-col gap-8 mx-auto md:flex-row md:justify-between lg:gap-16">
@@ -452,22 +511,34 @@ function CTA() {
             If you know someone who could benefit from this gift, please visit
             the website for details on how to nominate a candidate.
           </h4>
-     
-     
-<a href="https://morethansmiles.org/" target="_blank" rel="noopener noreferrer">
-      <svg ref={btnRef} className="w-4/5 h-4/5 max-w-xs cursor-pointer" viewBox="-50 -50 100 100">
-        <circle className="bg" r="22.4" fill="rgb(50,50,50)" />
-        <text 
-          className="txt fill-white text-[5.5px] tracking-[0.2px] text-center" 
-          x="0"
-          y="2" 
-          textAnchor="middle" 
-        >
-          LEARN MORE
-        </text>
-        <circle ref={hitRef} className="hit" r="42" fill="rgba(0,0,0,0)" />
-      </svg>
-    </a>
+
+          <a
+            href="https://morethansmiles.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg
+              ref={btnRef}
+              className="w-4/5 h-4/5 max-w-xs cursor-pointer"
+              viewBox="-50 -50 100 100"
+            >
+              <circle className="bg" r="22.4" fill="rgb(50,50,50)" />
+              <text
+                className="txt fill-white text-[5.5px] tracking-[0.2px] text-center"
+                x="0"
+                y="2"
+                textAnchor="middle"
+              >
+                LEARN MORE
+              </text>
+              <circle
+                ref={hitRef}
+                className="hit"
+                r="42"
+                fill="rgba(0,0,0,0)"
+              />
+            </svg>
+          </a>
         </div>
         <Shape03 className="md:w-1/2" />
       </div>
@@ -476,104 +547,130 @@ function CTA() {
 }
 
 function ScrollTextReveal() {
-
-
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-  
-    let tlMain = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".section-height",
-        start: "top top",
-        end: "98% bottom",
-        scrub: 1
-      }
-    }).to(".track", {
-      xPercent: -100,
-      ease: "none"
-    });
-  
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: ".giving-panel_wrap", 
-        containerAnimation: tlMain,
-        start: "left left",
-        end: "right right",
-        scrub: true
-      }
-    })
-    .to(".giving-panel", { xPercent: 100, ease: "none" }) 
-    .to(".giving-panel_photo", { scale: 1 }, 0) 
-    .fromTo(
-      ".giving-panel_contain.is-2", 
-      { clipPath: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)" },
-      { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)", ease: "none" },
-      0
-    );
-  
+
+    let tlMain = gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: ".section-height",
+          start: "top top",
+          end: "98% bottom",
+          scrub: 1,
+        },
+      })
+      .to(".track", {
+        xPercent: -100,
+        ease: "none",
+      });
+
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: ".giving-panel_wrap",
+          containerAnimation: tlMain,
+          start: "left left",
+          end: "right right",
+          scrub: true,
+        },
+      })
+      .to(".giving-panel", { xPercent: 100, ease: "none" })
+      .to(".giving-panel_photo", { scale: 1 }, 0)
+      .fromTo(
+        ".giving-panel_contain.is-2",
+        { clipPath: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)" },
+        {
+          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+          ease: "none",
+        },
+        0
+      );
   }, []);
 
-  
-  const text = "Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it."
+  const text =
+    "Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it.";
   return (
     <section className="w-full min-h-screen ">
-
-    
-        <div className="section-height">
+      <div className="section-height">
         <div className="sticky-element">
           <div className="track">
             <div className="track-flex">
-            <div className="giving-panel_wrap">
-  <div className="giving-panel">
-    <div className="giving-panel_contain">
-      <p className="giving-panel_text">GIVING</p>
-      <div className="giving-panel_img is-1">
-        <div className="giving-panel_img-height">
-          <img src="../images/morethansmiles2.png" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-      </div>
-      <div className="giving-panel_img is-2">
-      <div className="giving-panel_img-height">
-          <img src="../images/morethansmiles3.png" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-      </div>
-      <div className="giving-panel_img is-3">
-      <div className="giving-panel_img-height">
-          <img src="../images/hand.jpeg" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-        
-      </div>
-    </div>
+              <div className="giving-panel_wrap">
+                <div className="giving-panel">
+                  <div className="giving-panel_contain">
+                    <p className="giving-panel_text">GIVING</p>
+                    <div className="giving-panel_img is-1">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/morethansmiles2.png"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                    <div className="giving-panel_img is-2">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/morethansmiles3.png"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                    <div className="giving-panel_img is-3">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/hand.jpeg"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-    <div className="giving-panel_contain is-2">
-      <p className="giving-panel_text">GIVING</p>
-      <div className="giving-panel_img is-1">
-        <div className="giving-panel_img-height">
-          <img src="../images/morethansmiles5.png" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-      </div>
-      <div className="giving-panel_img is-2">
-        <div className="giving-panel_img-height">
-          <img src="../images/wavyborderpatient.png" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-      </div>
-      <div className="giving-panel_img is-3">
-        <div className="giving-panel_img-height">
-          <img src="../images/morethansmiles4.png" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
+                  <div className="giving-panel_contain is-2">
+                    <p className="giving-panel_text">GIVING</p>
+                    <div className="giving-panel_img is-1">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/morethansmiles5.png"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                    <div className="giving-panel_img is-2">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/wavyborderpatient.png"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                    <div className="giving-panel_img is-3">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/morethansmiles4.png"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-
-
-  
       {/* <div className="flex flex-col items-center justify-center text-[180px] leading-none">
         <div className="flex self-start ml-60 items-center">
           <span className="underline-custom">MORE</span>
@@ -617,9 +714,6 @@ function ScrollTextReveal() {
     </section>
   );
 }
-
-
-
 
 function DragTable() {
   const freySmilesRef = useRef();
