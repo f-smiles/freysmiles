@@ -399,7 +399,7 @@ export default function Navbar() {
             </li>
 
             <li>
-              <Link href="/#locations">
+              <Link href="/#locations-section">
                 <p className="text-sm leading-4 text-center">Our Locations</p>
               </Link>
             </li>
