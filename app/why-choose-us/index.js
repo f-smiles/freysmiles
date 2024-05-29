@@ -1,59 +1,35 @@
 "use client";
 import React, { useRef, useEffect } from "react";
+// gsap
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap-trial/all";
 // framer motion
-import { motion } from "framer-motion";
-import clsx from "clsx";
 import GalaxyShape from "../_components/shapes/galaxy";
 import Shape03 from "../_components/shapes/shape03";
 import Shape05 from "../_components/shapes/shape05";
 import Shape06 from "../_components/shapes/shape06";
+import VennDiagram from "./vennDiagram";
 
-gsap.registerPlugin(ScrollSmoother, ScrollTrigger, SplitText, useGSAP);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollSmoother, ScrollTrigger, SplitText, useGSAP)
+}
 
 export default function WhyChooseUs() {
   return (
     <>
       <Hero />
-      {/* <TextSection /> */}
       <MarqueeAnimation />
       <StackCards />
       <ScrollTextReveal />
       <CTA />
-      <DragTable />
+      <VennDiagram />
       <GridLayout />
     </>
   );
 }
-
-const TextSection = () => {
-  const circleRef = useRef(null);
-
-  useEffect(() => {
-    gsap.to(circleRef.current, {
-      width: "600vmax",
-      height: "600vmax",
-      ease: "Power1.easeInOut",
-      scrollTrigger: {
-        trigger: "#text",
-        start: "top 100%",
-        end: "bottom top",
-        scrub: 0.5,
-      },
-    });
-  }, []);
-
-  return (
-    <section id="text">
-      <div ref={circleRef} className="circle"></div>
-    </section>
-  );
-};
-
 
 function Hero() {
   const title = "EXPERTS IN";
@@ -298,7 +274,7 @@ function StackCards() {
               adhere to ABO standards.
             </h4>
           </div>
-          <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#c5cfc7] transition-all duration-150 ease-linear hover:scale-105  rotate-2">
+          <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#c5cfc7] transition-all duration-150 ease-linear hover:scale-105 rotate-2 hover:rotate-0">
             <h4>
               Currently, Dr. Gregg Frey is a certified orthodontist, and is
               preparing cases for recertification. Dr. Daniel Frey is in the
@@ -331,13 +307,11 @@ function StackCards() {
     </section>
   );
 }
+
 function CTA() {
   const textRef = useRef(null);
   const bgTextColor = "#CECED3";
   const fgTextColor = "#161818";
-
-
-
 
   useEffect(() => {
     const split = new SplitText(textRef.current, { type: "chars" });
@@ -358,9 +332,9 @@ function CTA() {
       markers: false
     });
 
-
     return () => split.revert();
   }, []);
+
   const btnRef = useRef();
   const hitRef = useRef();
 
@@ -387,13 +361,18 @@ function CTA() {
         .to('.hit, .bg, .txt', { duration: 0.7, ease: 'elastic.out(0.8)', x: 0, y: 0 }, 0);
     };
   }, []);
+
   return (
     <section className="sm:py-32 ">
-       <div className="flex ">
-<div className="px-40">
-        <p ref={textRef} className="text-3xl uppercase font-helvetica-neue">
-        Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it.
-        </p>
+      <div className="flex ">
+        <div className="px-40">
+          <p ref={textRef} className="text-3xl uppercase font-helvetica-neue">
+            Frey Smiles believes in providing accessible orthodontic care for
+            everyone. In 2011, they established a non-profit organization called
+            More Than Smiles, which offers orthodontic treatment to deserving
+            individuals who may not have access to world-class orthodontic care
+            or cannot afford it.
+          </p>
         </div>
       </div>
       <div className="container flex flex-col gap-8 mx-auto md:flex-row md:justify-between lg:gap-16">
@@ -403,21 +382,33 @@ function CTA() {
             the website for details on how to nominate a candidate.
           </h4>
 
-
-<a href="https://morethansmiles.org/" target="_blank" rel="noopener noreferrer">
-      <svg ref={btnRef} className="w-4/5 max-w-xs cursor-pointer h-4/5" viewBox="-50 -50 100 100">
-        <circle className="bg" r="22.4" fill="rgb(50,50,50)" />
-        <text
-          className="txt fill-white text-[5.5px] tracking-[0.2px] text-center"
-          x="0"
-          y="2"
-          textAnchor="middle"
-        >
-          LEARN MORE
-        </text>
-        <circle ref={hitRef} className="hit" r="42" fill="rgba(0,0,0,0)" />
-      </svg>
-    </a>
+          <a
+            href="https://morethansmiles.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg
+              ref={btnRef}
+              className="w-4/5 max-w-xs cursor-pointer h-4/5"
+              viewBox="-50 -50 100 100"
+            >
+              <circle className="bg" r="22.4" fill="rgb(50,50,50)" />
+              <text
+                className="txt fill-white text-[5.5px] tracking-[0.2px] text-center"
+                x="0"
+                y="2"
+                textAnchor="middle"
+              >
+                LEARN MORE
+              </text>
+              <circle
+                ref={hitRef}
+                className="hit"
+                r="42"
+                fill="rgba(0,0,0,0)"
+              />
+            </svg>
+          </a>
         </div>
         <Shape03 className="md:w-1/2" />
       </div>
@@ -426,8 +417,6 @@ function CTA() {
 }
 
 function ScrollTextReveal() {
-
-
   useEffect(() => {
     let tlMain = gsap.timeline({
       scrollTrigger: {
@@ -461,66 +450,89 @@ function ScrollTextReveal() {
 
   }, []);
 
-
   const text = "Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it."
+
   return (
     <section className="w-full min-h-screen ">
-
-
-        <div className="section-height">
+      <div className="section-height">
         <div className="sticky-element">
           <div className="track">
             <div className="track-flex">
-            <div className="giving-panel_wrap">
-  <div className="giving-panel">
-    <div className="giving-panel_contain">
-      <p className="giving-panel_text">GIVING</p>
-      <div className="giving-panel_img is-1">
-        <div className="giving-panel_img-height">
-          <img src="../images/morethansmiles2.png" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-      </div>
-      <div className="giving-panel_img is-2">
-      <div className="giving-panel_img-height">
-          <img src="../images/morethansmiles3.png" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-      </div>
-      <div className="giving-panel_img is-3">
-      <div className="giving-panel_img-height">
-          <img src="../images/hand.jpeg" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
+              <div className="giving-panel_wrap">
+                <div className="giving-panel">
+                  <div className="giving-panel_contain">
+                    <p className="giving-panel_text">GIVING</p>
+                    <div className="giving-panel_img is-1">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/morethansmiles2.png"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                    <div className="giving-panel_img is-2">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/morethansmiles3.png"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                    <div className="giving-panel_img is-3">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/hand.jpeg"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-      </div>
-    </div>
-
-    <div className="giving-panel_contain is-2">
-      <p className="giving-panel_text">GIVING</p>
-      <div className="giving-panel_img is-1">
-        <div className="giving-panel_img-height">
-          <img src="../images/morethansmiles5.png" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-      </div>
-      <div className="giving-panel_img is-2">
-        <div className="giving-panel_img-height">
-          <img src="../images/wavyborderpatient.png" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-      </div>
-      <div className="giving-panel_img is-3">
-        <div className="giving-panel_img-height">
-          <img src="../images/morethansmiles4.png" loading="eager" alt="" className="giving-panel_photo"/>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
+                  <div className="giving-panel_contain is-2">
+                    <p className="giving-panel_text">GIVING</p>
+                    <div className="giving-panel_img is-1">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/morethansmiles5.png"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                    <div className="giving-panel_img is-2">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/wavyborderpatient.png"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                    <div className="giving-panel_img is-3">
+                      <div className="giving-panel_img-height">
+                        <img
+                          src="../images/morethansmiles4.png"
+                          loading="eager"
+                          alt=""
+                          className="giving-panel_photo"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-
-
 
       {/* <div className="flex flex-col items-center justify-center text-[180px] leading-none">
         <div className="flex items-center self-start ml-60">
@@ -562,102 +574,6 @@ function ScrollTextReveal() {
           />
         </div> */}
       {/* </div> */}
-    </section>
-  );
-}
-
-
-
-
-function DragTable() {
-  const freySmilesRef = useRef();
-  const othersRef = useRef();
-
-  return (
-    <section className="hidden py-24 lg:block">
-      <div className="container grid-cols-12 grid-rows-6 mx-auto mb-32 lg:grid place-content-stretch font-neue-montreal">
-        <div className="flex col-span-6 col-start-1 row-start-1 mb-12 text-center font-extralight place-content-center place-items-end font-larken text-zinc-800">
-          <h1>FreySmiles Orthodontics</h1>
-        </div>
-        <div className="flex col-span-6 col-start-7 row-start-1 mb-12 text-center place-content-center place-items-end font-larken text-zinc-800 font-extralight">
-          <h1>Others</h1>
-        </div>
-        <motion.div
-          ref={freySmilesRef}
-          className="relative col-span-6 col-start-1 row-span-5 row-start-2 translate-x-8 border-2 rounded-full aspect-square border-[#51733f]"
-        >
-          <motion.div
-            className="absolute left-0 flex w-48 h-48 text-center rotate-45 rounded-full top-1/2 -translate-y-1/3 bg-[#9dbb81] place-content-center place-items-center text-zinc-800"
-            drag
-            dragConstraints={freySmilesRef}
-          >
-            <p className="text-2xl leading-6">
-              <span className="text-4xl">4</span>
-              <br /> convenient
-              <br /> locations
-            </p>
-          </motion.div>
-          <motion.div
-            className="absolute flex text-center -rotate-45 translate-x-1/2 translate-y-1/2 border rounded-full left-1/3 w-36 h-36 top-1/2 border-zinc-800 bg-zinc-800 place-content-center place-items-center text-zinc-100"
-            drag
-            dragConstraints={freySmilesRef}
-          >
-            <p className="text-xl leading-5">
-              Modern
-              <br /> office
-              <br /> settings
-            </p>
-          </motion.div>
-          <motion.div
-            className="absolute bottom-0 left-0 flex w-56 h-56 text-center translate-x-1/2 rounded-full text-zinc-800 -translate-y-1/4 bg-[#9dbb81] place-content-center place-items-center -rotate-12"
-            drag
-            dragConstraints={freySmilesRef}
-          >
-            <p className="text-2xl leading-6">
-              Over
-              <br />
-              <span className="text-4xl">50+ years</span>
-              <br /> of experience
-            </p>
-          </motion.div>
-          <motion.div
-            className="absolute bottom-0 flex text-center -translate-y-2 border rounded-full text-zinc-800 w-36 h-36 -translate-x-1/4 left-1/2 border-zinc-800 place-content-center -rotate-12 place-items-center"
-            drag
-            dragConstraints={freySmilesRef}
-          >
-            <p className="text-xl leading-5">
-              Financial
-              <br /> options
-            </p>
-          </motion.div>
-          <motion.div
-            className="absolute bottom-0 right-0 flex w-48 h-48 my-auto text-center rotate-45 -translate-x-1/2 -translate-y-1/2 rounded-full text-zinc-800 bg-[#9dbb81] place-content-center place-items-center"
-            drag
-            dragConstraints={freySmilesRef}
-          >
-            <p className="text-2xl leading-6">
-              <span className="text-3xl leading-8">
-                Leaders
-                <br />
-              </span>{" "}
-              in the <br />
-              industry
-            </p>
-          </motion.div>
-        </motion.div>
-        <motion.div
-          ref={othersRef}
-          className="relative z-0 col-span-6 col-start-7 row-span-5 row-start-2 -translate-x-8 border-2 border-dashed rounded-full aspect-square border-[#51733f]"
-        >
-          <motion.div
-            className="absolute bottom-0 flex w-48 h-48 text-center -translate-x-1/2 rounded-full rotate-12 left-1/2 bg-zinc-800 place-content-center place-items-center text-zinc-100"
-            drag
-            dragConstraints={othersRef}
-          >
-            <p>Financial options</p>
-          </motion.div>
-        </motion.div>
-      </div>
     </section>
   );
 }
