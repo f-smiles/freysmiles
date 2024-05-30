@@ -9,6 +9,10 @@
   src: url("/fonts/Aileron-Black.otf")format("opentype"),
 }
 @font-face {
+  font-family: "Novela-Regular";
+  src: url("/fonts/Novela-Regular.otf")format("opentype"),
+}
+@font-face {
   font-family: "HorizonSolid";
   src: url("/fonts/horizon.otf")format("opentype"),
 }
@@ -329,7 +333,7 @@ input:-webkit-autofill {
     @apply text-lg;
   }
 
-}
+
 .curtains-canvas {
   position: fixed;
   top: 0;
@@ -750,19 +754,19 @@ padding:10px;
 }
 
 .first span {
-  color: black;
-  -webkit-text-fill-color: black;
+  color: white;
+  -webkit-text-fill-color: white;
 }
 
 
 .second span {
-  -webkit-text-stroke: 2px black;
+  -webkit-text-stroke: 1px white;
   -webkit-text-fill-color: transparent;
 }
 
 @media (min-width: 1224px) {
   .second span {
-    -webkit-text-stroke: 3px black;
+    -webkit-text-stroke: 1px #fff;
   }
 }
 
@@ -1488,7 +1492,7 @@ text-transform: uppercase;
 
 
 .appointmentButton.clicked {
-  background-color: black;
+  background-color: #D3D6D1;
   color: white;
 }
 
@@ -1499,7 +1503,7 @@ text-transform: uppercase;
   left: 50%;
   width: 0;
   height: 0;
-  background-color: black;
+  background-color: #D3D6D1;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   transition: width 0.4s, height 0.4s;
@@ -1513,7 +1517,10 @@ text-transform: uppercase;
 }
 
 
-
+.appointmentButton .buttonText {
+  position: relative;
+  z-index: 1;
+}
 
 @keyframes marquee {
   from { transform: translateX(100%); }
@@ -1539,6 +1546,13 @@ text-transform: uppercase;
 }
 
 
+.hover-slide {
+  transition: transform 0.3s ease;
+}
+
+.hover-slide:hover {
+  transform: translateX(-20px);
+}
 
 #blotter-target {
   position: absolute;
@@ -2842,19 +2856,6 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
 }
 
 
-.large-text {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 50vh;
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-  color: white;
-  z-index: 2;
-}
 
 
 .sliderMainPage-slider {
@@ -3149,4 +3150,200 @@ justify-content: center;
  
 }
 
+#spinscroll{
+	max-width: 200px;
+	width: 100%;
+	height: auto;
+}
+
+.book-text {
+	font-weight: 600;
+	font-size: 27px;
+	letter-spacing: 5px;
+	text-transform: uppercase;
+}
+
+.book-svg {
+  transition: transform 0.5s linear;
+}
+
+
+.scroll-text {
+	font-weight: 600;
+	font-size: 23px;
+	letter-spacing: 5px;
+	text-transform: uppercase;
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+#circlepath {
+	max-width: 200px;
+	width: 100%;
+	height: auto;
+	animation: spin 15s infinite;
+	animation-timing-function: linear;
+}
+
+
+
+
+.uniqueMain {
+  position: relative;
+  height: 100vh;
+  overflow: auto;
+}
+
+.uniqueMain .uniqueMask, .uniqueMain .uniqueBody {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b7b1b1;
+
+ 
+  cursor: default;
+}
+
+.uniqueMain .uniqueMask p, .uniqueMain .uniqueBody p {
+  width: 1000px;
+  padding: 40px;
+  font-size: 48px;
+  font-family: "TerminaTest-Bold";
+  line-height: 66px;
+}
+
+.uniqueMain .uniqueMask span, .uniqueMain .uniqueBody span {
+  color: #ec4e39;
+  font-size: 64px;
+  line-height: 66px;
+}
+
+.uniqueMain .uniqueMask {
+  mask-image: url('../public/images/mask.svg');
+  mask-repeat: no-repeat;
+  mask-size: 36px;
+  background: #ec4e39;
+  position: absolute;
+  color: black;
+}
+
+
+.uniqueCardContainer {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: 0px;
+}
+
+.uniqueCardContainer .uniqueCard {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: -25%;
+  height: 500px;
+  width: 800px;
+  border-radius: 25px;
+  padding: 50px;
+  transform-origin: top;
+}
+
+.uniqueCardContainer .uniqueCard h2 {
+  text-align: center;
+  margin: 0px;
+  font-size: 28px;
+}
+
+.uniqueCardContainer .uniqueCard .uniqueBody {
+  display: flex;
+  height: 100%;
+  margin-top: 50px;
+  gap: 50px;
+}
+
+.uniqueCardContainer .uniqueCard .uniqueBody .uniqueDescription {
+  width: 40%;
+  position: relative;
+  top: 10%;
+}
+
+.uniqueCardContainer .uniqueCard .uniqueBody .uniqueDescription p {
+  font-size: 16px;
+}
+
+.uniqueCardContainer .uniqueCard .uniqueBody .uniqueDescription p::first-letter {
+  font-size: 28px;
+  font-family: 'Title';
+}
+
+.uniqueCardContainer .uniqueCard .uniqueBody .uniqueDescription span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.uniqueCardContainer .uniqueCard .uniqueBody .uniqueDescription span a {
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.uniqueCardContainer .uniqueCard .uniqueBody .uniqueImageContainer {
+  position: relative;
+  width: 30%;
+  height: 100%;
+  border-radius: 25px;
+  overflow: hidden;
+}
+
+.uniqueCardContainer .uniqueCard .uniqueBody .uniqueImageContainer .uniqueInner {
+  width: 100%;
+  height: 100%;
+}
+
+.uniqueCardContainer .uniqueCard .uniqueBody .uniqueImageContainer img {
+  object-fit: cover;
+}
+
+
+
+
+.circled {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+
+.circle__text {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  font-size: 16px;
+  text-align: center;
+  line-height: 200px;
+  transform: rotate(0deg);
+  transform-origin: center;
+}
+
+.circle__text::before {
+  content: attr(data-text);
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
 

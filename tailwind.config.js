@@ -35,6 +35,7 @@ module.exports = {
       'helvetica-neue-light':"HelveticaNeue-Light",
       'monument':"MonumentExtended-Regular",
       'nimbus':"NimbusSanL-Reg",
+      'novela':"Novela-Regular",
       'oakes-medium':"Oakes-Grotesk-Medium",
       'oakes-regular':"Oakes-Regular",
       'Lato':'Lato',

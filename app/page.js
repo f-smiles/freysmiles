@@ -11,7 +11,7 @@ import { motion, stagger, useAnimate, useInView, useScroll, } from "framer-motio
 // headless ui
 import { Disclosure, Transition } from "@headlessui/react";
 // gsap
-import { gsap } from "gsap"
+
 import { useGSAP } from "@gsap/react"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin"
@@ -19,7 +19,7 @@ import { SplitText } from "gsap-trial/SplitText"
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 
 import MapPin from "./_components/ui/MapPin";
-import { SplitText } from "gsap-trial/all";
+
 import SwiperCore, { Navigation } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -198,8 +198,6 @@ export default function LandingComponent() {
 
         style={{ backgroundColor }} className="bg-[#EFE9E8] bg-[#E0D175]"
         // style={{ backgroundColor }}
-      <div className="bg-[#E5DDDE] bg-[#E0D175]"
-      // style={{ backgroundColor }}
 
       >
         <LogoHeader />
@@ -252,7 +250,7 @@ export default function LandingComponent() {
 
 function LogoHeader() {
   return (
-    <header className="pt-16 m-auto w-max">
+    <header className=" m-auto w-max">
       {/* <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
         <img
           className="w-16 h-16 p-4"
@@ -582,167 +580,170 @@ function Hero() {
   const canvasRef = useRef(null);
   const obj = useRef({ trans: 0 });
   
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    canvas.style.width = 1024
-    const gl = canvas.getContext('webgl');
-    let cnt = 0;
-    let textureArr = [];
+  // useEffect(() => {
+  //   const canvas = canvasRef.current;
+  //   canvas.style.width = 1024
+  //   const gl = canvas.getContext('webgl');
+  //   let cnt = 0;
+  //   let textureArr = [];
   
-    let program = gl.createProgram();
-  
-  
-    const vShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vShader, vertexSrc);
-    gl.compileShader(vShader);
-  
-    const fShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fShader, fragmentSrc);
-    gl.compileShader(fShader);
+  //   let program = gl.createProgram();
   
   
-    gl.attachShader(program, vShader);
-    gl.deleteShader(vShader);
-    gl.attachShader(program, fShader);
-    gl.deleteShader(fShader);
-    gl.linkProgram(program);
+  //   const vShader = gl.createShader(gl.VERTEX_SHADER);
+  //   gl.shaderSource(vShader, vertexSrc);
+  //   gl.compileShader(vShader);
   
-    const vertices = new Float32Array([
-      -1, -1,
-      1, -1,
-      -1, 1,
-      1, -1,
-      -1, 1,
-      1, 1,
-    ]);
-  
-    const vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-    const vertexLocation = gl.getAttribLocation(program, 'position');
-    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+  //   const fShader = gl.createShader(gl.FRAGMENT_SHADER);
+  //   gl.shaderSource(fShader, fragmentSrc);
+  //   gl.compileShader(fShader);
   
   
-    const uTransLoc = gl.getUniformLocation(program, 'uTrans');
-    const textureLocArr = [
-      gl.getUniformLocation(program, 'uTexture0'),
-      gl.getUniformLocation(program, 'uTexture1'),
-      gl.getUniformLocation(program, 'uDisp')
-    ];
+  //   gl.attachShader(program, vShader);
+  //   gl.deleteShader(vShader);
+  //   gl.attachShader(program, fShader);
+  //   gl.deleteShader(fShader);
+  //   gl.linkProgram(program);
   
-    const obj = { trans: 0 };
+  //   const vertices = new Float32Array([
+  //     -1, -1,
+  //     1, -1,
+  //     -1, 1,
+  //     1, -1,
+  //     -1, 1,
+  //     1, 1,
+  //   ]);
   
-    function start() {
-      loop();
-    }
+  //   const vertexBuffer = gl.createBuffer();
+  //   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  //   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+  //   const vertexLocation = gl.getAttribLocation(program, 'position');
+  //   gl.bindBuffer(gl.ARRAY_BUFFER, null);
   
-    function loop() {
-      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
   
-      gl.useProgram(program);
+  //   const uTransLoc = gl.getUniformLocation(program, 'uTrans');
+  //   const textureLocArr = [
+  //     gl.getUniformLocation(program, 'uTexture0'),
+  //     gl.getUniformLocation(program, 'uTexture1'),
+  //     gl.getUniformLocation(program, 'uDisp')
+  //   ];
   
-      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-      gl.vertexAttribPointer(
-        vertexLocation, 2, gl.FLOAT, false, 0, 0)
-      gl.enableVertexAttribArray(vertexLocation);
+  //   const obj = { trans: 0 };
   
-      textureArr.forEach((texture, index) => {
-        gl.activeTexture(gl.TEXTURE0 + index);
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.uniform1i(textureLocArr[index], index);
-      })
+  //   function start() {
+  //     loop();
+  //   }
   
-      gl.uniform1f(uTransLoc, obj.trans);
+  //   function loop() {
+  //     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  //     gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  //     gl.clear(gl.COLOR_BUFFER_BIT);
   
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+  //     gl.useProgram(program);
   
-      requestAnimationFrame(loop);
-    }
+  //     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  //     gl.vertexAttribPointer(
+  //       vertexLocation, 2, gl.FLOAT, false, 0, 0)
+  //     gl.enableVertexAttribArray(vertexLocation);
   
-    function resize() {
-      const aspectRatio = 1 / 2; 
-      const maxWidth = 512; 
-      const minHeight = 300; 
+  //     textureArr.forEach((texture, index) => {
+  //       gl.activeTexture(gl.TEXTURE0 + index);
+  //       gl.bindTexture(gl.TEXTURE_2D, texture);
+  //       gl.uniform1i(textureLocArr[index], index);
+  //     })
+  
+  //     gl.uniform1f(uTransLoc, obj.trans);
+  
+  //     gl.drawArrays(gl.TRIANGLES, 0, 6);
+  
+  //     requestAnimationFrame(loop);
+  //   }
+  
+  //   function resize() {
+  //     const aspectRatio = 1 / 2; 
+  //     const maxWidth = 512; 
+  //     const minHeight = 300; 
 
-      let width = Math.min(window.innerWidth, window.innerHeight * aspectRatio);
-      let height = width / aspectRatio;
+  //     let width = Math.min(window.innerWidth, window.innerHeight * aspectRatio);
+  //     let height = width / aspectRatio;
 
-      if (height < minHeight) {
-          height = minHeight;
-          width = height * aspectRatio;
-      }
+  //     if (height < minHeight) {
+  //         height = minHeight;
+  //         width = height * aspectRatio;
+  //     }
   
-      if (width > maxWidth) {
-          width = maxWidth;
-          height = width / aspectRatio;
-      }
+  //     if (width > maxWidth) {
+  //         width = maxWidth;
+  //         height = width / aspectRatio;
+  //     }
   
-      canvas.width = width;
-      canvas.height = height;
-  }
+  //     canvas.width = width;
+  //     canvas.height = height;
+  // }
   
   
-    function loadImages() {
-      assetUrls.forEach ((url, index) => {
-        let img = new Image();
+  //   function loadImages() {
+  //     assetUrls.forEach ((url, index) => {
+  //       let img = new Image();
   
-        let texture = gl.createTexture();
-        textureArr.push(texture);
+  //       let texture = gl.createTexture();
+  //       textureArr.push(texture);
   
-   img.onload =  function (_index, _img) {
-          let texture = textureArr[_index];
+  //  img.onload =  function (_index, _img) {
+  //         let texture = textureArr[_index];
   
-          gl.bindTexture(gl.TEXTURE_2D, texture);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, _img);
-          gl.generateMipmap(gl.TEXTURE_2D);
+  //         gl.bindTexture(gl.TEXTURE_2D, texture);
+  //         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, _img);
+  //         gl.generateMipmap(gl.TEXTURE_2D);
   
-          cnt++;
-          if (cnt === 3) start();
-        }.bind(this, index, img);
+  //         cnt++;
+  //         if (cnt === 3) start();
+  //       }.bind(this, index, img);
   
-        img.crossOrigin = ' Anonymous';
-        img.src = url;
+  //       img.crossOrigin = ' Anonymous';
+  //       img.src = url;
      
-        console.log(img)
-      });
-    }
+  //       console.log(img)
+  //     });
+  //   }
   
   
-    canvas.addEventListener('mouseenter', () => {
-      gsap.killTweensOf(obj);
-      gsap.to(obj, 1.5, { trans: 1 });
-    });
+  //   canvas.addEventListener('mouseenter', () => {
+  //     gsap.killTweensOf(obj);
+  //     gsap.to(obj, 1.5, { trans: 1 });
+  //   });
   
-    canvas.addEventListener('mouseleave', () => {
-      gsap.killTweensOf(obj);
-      gsap.to(obj, 1.5, { trans: 0 });
-    });
+  //   canvas.addEventListener('mouseleave', () => {
+  //     gsap.killTweensOf(obj);
+  //     gsap.to(obj, 1.5, { trans: 0 });
+  //   });
   
-    window.addEventListener('resize', () => {
-      resize();
-    });
+  //   window.addEventListener('resize', () => {
+  //     resize();
+  //   });
   
-    loadImages();
-    resize();
+  //   loadImages();
+  //   resize();
   
-    return () => {
-      window.removeEventListener('resize', resize);
-      canvas.removeEventListener('mouseenter', () => {
-        gsap.killTweensOf(obj);
-        gsap.to(obj, 1.5, { trans: 1 });
-      });
-      canvas.removeEventListener('mouseleave', () => {
-        gsap.killTweensOf(obj);
-        gsap.to(obj, 1.5, { trans: 0 });
-      });
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('resize', resize);
+  //     canvas.removeEventListener('mouseenter', () => {
+  //       gsap.killTweensOf(obj);
+  //       gsap.to(obj, 1.5, { trans: 1 });
+  //     });
+  //     canvas.removeEventListener('mouseleave', () => {
+  //       gsap.killTweensOf(obj);
+  //       gsap.to(obj, 1.5, { trans: 0 });
+  //     });
+  //   };
+  // }, []);
   
   return (
 
-    <section className="relative mt-6">
+    <section
+    className="relative bg-cover bg-center"
+    style={{ backgroundImage: 'url(../images/purplepeach.jpg)' }}
+  >
 
       <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate lg:px-8">
@@ -797,14 +798,24 @@ function Hero() {
               style={{ top: "10%", left: "-20%" }}
             >
 
-             <a href="/book-now" className="inline-flex items-center justify-center">
-    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="300px" height="300px" viewBox="0 0 300 300" xmlSpace="preserve" className="book-svg">
+<a href="/book-now" className="inline-flex items-center justify-center">
+    <svg id="circlepath" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="300px" height="300px" viewBox="0 0 300 300" xmlSpace="preserve" className="book-svg">
         <defs>
             <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"/>
+            <filter id="frostyFilter" x="-10%" y="-10%" width="120%" height="120%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
+                <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.4"/>
+                </feComponentTransfer>
+                <feMerge>
+                    <feMergeNode/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
         </defs>
-        <circle cx="150" cy="150" r="135" fill="#FEC195"/>
+        <circle cx="150" cy="150" r="135" fill="rgba(255, 255, 255, 0.6)" filter="url(#frostyFilter)"/>
         <g>
-            <text class="book-text">
+            <text className="book-text">
                 <textPath xlinkHref="#circlePath">
                     BOOK NOW → BOOK NOW →
                 </textPath>
@@ -814,13 +825,14 @@ function Hero() {
 </a>
 
 
+
             </div>
-            <canvas className="z-10 rounded-full" ref={canvasRef}></canvas>
-            {/* <img
+            {/* <canvas className="z-10 rounded-full" ref={canvasRef}></canvas> */}
+            <img
               className="z-10 max-w-md rounded-full"
               src="../../images/mainsectionimage.jpg"
               alt="girl smiling"
-            /> */}
+            />
            
           </div>
         </div>
@@ -846,110 +858,66 @@ function Hero() {
 }
 
 function Mask() {
-  const headerRef = useRef(null);
+  const useMousePosition = () => {
 
+    const [mousePosition, setMousePosition] = useState({ x: null, y: null });
+  
+  
+  
+    const updateMousePosition = e => {
+  
+      setMousePosition({ x: e.clientX, y: e.clientY });
+  
+    };
+  
+  
+  
+    useEffect(() => {
+  
+      window.addEventListener("mousemove", updateMousePosition);
+  
+  
+  
+      return () => window.removeEventListener("mousemove", updateMousePosition);
+  
+    }, []);
+  
+  
+  
+    return mousePosition;
+  
+  };
+  const [isHovered, setIsHovered] = useState(false);
 
-  const [mousePosition, setMousePosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const { x, y } = useMousePosition();
 
-  useEffect(() => {
+  const size = isHovered ? 400 : 40;
 
-
-      const timer = (duration, interval, from, to, minStep, callback) => {
-          let value = from;
-          const forward = from < to;
-          const range = Math.abs(to - from);
-          const steps = duration / interval;
-          const step = range / steps;
-          let last = from;
-
-          const handle = setInterval(() => {
-              value += step * (forward ? 1 : -1);
-              if (forward ? value > to : value < to) {
-                  value = to;
-                  clearInterval(handle);
-              }
-              if (!minStep || !handle || Math.abs(last - value) >= minStep) {
-                  last = value;
-                  callback(value, from, to);
-              }
-          }, interval);
-          return handle;
-      };
-
-
-      const loading = () => {
-          headerRef.current.classList.add('header--active');
-          setTimeout(() => {
-              timer(450, 20, 0, 300, 1, (value) => {
-                  headerRef.current.style.setProperty('--s', `${Math.floor(value)}px`);
-              });
-          }, 800);
-      };
-
-      loading();
-
-
-      const updateCoordinates = (e) => {
-          setMousePosition({ x: e.clientX, y: e.clientY });
-      };
-
-      document.addEventListener('mousemove', updateCoordinates);
-
-      return () => {
-          document.removeEventListener('mousemove', updateCoordinates);
-      };
-  }, []);
-
-  useEffect(() => {
-      headerRef.current.style.setProperty('--x', `${mousePosition.x}px`);
-      headerRef.current.style.setProperty('--y', `${mousePosition.y}px`);
-  }, [mousePosition]);
 
 
   return(
-    <div >
-  
+<main className="uniqueMain">
+      <motion.div 
+        className="uniqueMask"
+        animate={{
+          WebkitMaskPosition: `${x - (size/2)}px ${y - (size/2)}px`,
+          WebkitMaskSize: `${size}px`,
+        }}
+        transition={{ type: "tween", ease: "backOut", duration: 0.5}}
+      >
+          <p onMouseEnter={() => {setIsHovered(true)}} onMouseLeave={() => {setIsHovered(false)}}>
+INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
+          </p>
+      </motion.div>
 
-    <div className=" maskHeader">
-    <div ref={headerRef} >
-       <div className="maskHeader__main">
-           <div className="maskHeader__content">
-               <h1 className="maskHeader__title">
-                   We are your go-to provider for advanced and discerning orthodontic care.
-               </h1>
-           </div>
-       </div>
-       <div className="maskHeader__hover">
-           <div className="maskHeader__content">
-               <h1 className="maskHeader__title">
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
-               </h1>
-           </div>
-       </div>
-   </div>
-   </div>
-   {/* <div className="bg-[#292929] min-h-screen min-w-full flex justify-center items-center">
-        <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
-<div style={{ backgroundImage: 'url("../images/bauhauspattern.svg")', objectFit: 'contain', backgroundRepeat: 'no-repeat', backgroundSize: 'contain', backgroundPosition: 'center' }} className="bg-[#E6E7E9] h-full w-full"></div>
+      <div className="uniqueBody">
+        <p> We are your  <span>go-to provider </span> for advanced and discerning orthodontic care.</p>
+      </div>
+
+    </main>
 
 
-        <div className=" flex flex-wrap w-[80vw] h-[70vh] mx-auto">
-  <div className="w-full md:w-1/2">
-    <div style={{ backgroundImage: 'url("../images/bauhauspattern.svg")' }} className="bg-[#E6E7E9] rounded-l-full h-full"></div>
-  </div>
-  <div className="relative w-full md:w-1/2">
-    <div className="bg-[#E6E7E9] h-full"></div>
-    <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
-      <p className="text-xl font-bold text-center">LEARN MORE</p>
-    </div>
-  </div>
-</div>
-        </div>
-      </div> */}
-  
 
-   </div>
   )
 }
 
@@ -1299,10 +1267,7 @@ function GSAPAnimateScrollSections() {
             </div>
           </div>
         </div>
-        
-        <div className="font-horizon large-text">
-      <h2 className="text-[300px]">ABOUT</h2>
-    </div>
+
       </section>
 
       <style>
@@ -1664,7 +1629,7 @@ const ImageGrid = () => {
 
 
       ref={bodyRef}
-      className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
+
     >
       <div
         className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
@@ -2004,30 +1969,30 @@ const LogoGrid = () => {
         ballsWithText.push({ ball, text: texts[i] });
         Composite.add(engine.world, ball);
       }
-      // Events.on(render, "afterRender", function () {
-      //   const ctx = render.context;
-      //   ballsWithText.forEach(({ ball, text }, index) => {
-      //     const position = ball.position;
+      Events.on(render, "afterRender", function () {
+        const ctx = render.context;
+        ballsWithText.forEach(({ ball, text }, index) => {
+          const position = ball.position;
 
-      //     const image = new Image();
-      //     image.src = logos[Math.floor(index / 4)][index % 4];
-      //     const aspectRatio = image.width / image.height;
+          const image = new Image();
+          image.src = logos[Math.floor(index / 4)][index % 4];
+          const aspectRatio = image.width / image.height;
 
-      //     let imageWidth, imageHeight;
-      //     if (aspectRatio > 1) {
-      //       imageWidth = circleW;
-      //       imageHeight = circleW / aspectRatio;
-      //     } else {
-      //       imageWidth = circleW * aspectRatio;
-      //       imageHeight = circleW;
-      //     }
+          let imageWidth, imageHeight;
+          if (aspectRatio > 1) {
+            imageWidth = circleW;
+            imageHeight = circleW / aspectRatio;
+          } else {
+            imageWidth = circleW * aspectRatio;
+            imageHeight = circleW;
+          }
 
-      //     const destX = position.x - imageWidth / 2;
-      //     const destY = position.y - imageHeight / 2;
+          const destX = position.x - imageWidth / 2;
+          const destY = position.y - imageHeight / 2;
 
-      //     ctx.drawImage(image, destX, destY, imageWidth, imageHeight);
-      //   });
-      // });
+          ctx.drawImage(image, destX, destY, imageWidth, imageHeight);
+        });
+      });
 
       let mouse = Mouse.create(render.canvas),
         mouseConstraint = MouseConstraint.create(engine, {
@@ -2160,7 +2125,7 @@ const LogoGrid = () => {
               AT ANY OF OUR FOUR LOCATIONS &bull;
             </h1>
           </div>
-          {/* <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {logos.map((columnLogos, columnIndex) => (
               <div key={columnIndex} className="flex flex-col items-center">
                 {columnLogos.map((logo, logoIndex) => (
@@ -2174,7 +2139,7 @@ const LogoGrid = () => {
                 ))}
               </div>
             ))}
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
@@ -2684,7 +2649,7 @@ function DrawEllipse(props) {
         start: "clamp(top top)",
         scrub: true,
         pinSpacing: false,
-        markers: true,
+        // markers: true,
       }
     })
   })

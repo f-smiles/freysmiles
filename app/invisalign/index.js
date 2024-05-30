@@ -47,12 +47,13 @@ const Section = ({ children, onHoverStart, onHoverEnd }) => (
       height: '50%', 
       display: 'flex',
       border: '1px solid black', 
-      // justifyContent: 'center',
+      justifyContent: 'center',
       alignItems: 'center',
       cursor: 'pointer',
       backgroundColor: 'transparent',
       color: 'black', 
       fontSize: '2em',
+      fontFamily:"HelveticaNeue-Light",
       userSelect: 'none',
       position: 'relative', 
       zIndex: 2
@@ -105,7 +106,7 @@ const Invisalign = () => {
     });
   };
   return (
-    <div className=" bg-[#fff]">
+    <div className=" bg-[#FFF7F4]">
   
       <div
         style={{
@@ -128,13 +129,13 @@ const Invisalign = () => {
               backgroundPosition: "center",
             }}
           />
-          <div className="z-10 flex flex-col items-center">
+          <div className="z-10 flex flex-col ">
             <div className="w-full pb-20 ">
-              <h1 className="text-[8em] font-bold leading-none">
-                <div>SOLUTIONS</div>
-                <div>DESIGNED TO FIT</div>
-                <div className="flex items-center">
-                  <span>YOUR NEEDS</span>
+              <h1 className="text-[7em] font-bold leading-none">
+                <div className="mb-4" >SOLUTIONS</div>
+                <div><span className="px-2 rounded-full  border border-black">DESIGNED</span> TO FIT</div>
+                <div className="flex ">
+                  <span className="mt-4">YOUR NEEDS</span>
 <div className="-mt-10">
                   <Link href="/book-now">
                     <button
@@ -181,8 +182,8 @@ const Invisalign = () => {
         }}
       />
 
-      <Section onHoverStart={() => handleHover(0)}>A healthier journey to a better smile</Section>
-      <Section onHoverStart={() => handleHover(1)}>Less appointments faster treatment time</Section>
+      <Section  onHoverStart={() => handleHover(0)}>A healthier journey to a better smile</Section>
+      <Section onHoverStart={() => handleHover(1)}>Fewer appointments, faster treatment</Section>
 
     </div>
         </div>
