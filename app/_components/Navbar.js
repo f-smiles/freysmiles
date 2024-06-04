@@ -535,7 +535,7 @@ export default function Navbar() {
               <Link href="/book-now"
                 className="inline-block"
               >
-                <p className="text-sm font-medium tracking-wider text-center uppercase hover:text-secondary-95">Book Now</p>
+                <p className="text-sm font-medium tracking-wider text-center uppercase ">Book Now</p>
                 {/* Book Now */}
 
               </Link>
