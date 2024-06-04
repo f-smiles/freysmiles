@@ -14,13 +14,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin"
 import { SplitText } from "gsap-trial/SplitText"
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
-// swiper.js
-import SwiperCore, { Navigation } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-
-SwiperCore.use([Navigation]);
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText, useGSAP)
