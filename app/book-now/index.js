@@ -186,19 +186,19 @@ const BookNow = () => {
 
   const svgRef = useRef(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (svgRef.current) {
-        svgRef.current.classList.add("initial-rotate");
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (svgRef.current) {
+  //       svgRef.current.classList.add("initial-rotate");
 
-        setTimeout(() => {
-          svgRef.current.classList.remove("initial-rotate");
-        }, 1200);
-      }
-    }, 1000);
+  //       setTimeout(() => {
+  //         svgRef.current.classList.remove("initial-rotate");
+  //       }, 1200);
+  //     }
+  //   }, 1000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   const [typeOfAppointment, setTypeOfAppointment] = useState(null);
   useEffect(() => {
@@ -214,24 +214,7 @@ const BookNow = () => {
 
   const containerRef = useRef(null);
 
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    const container = containerRef.current;
-    const textHider = container.querySelectorAll('.text-hider-fg');
-    const textBg = container.querySelectorAll(".text-highlight-bg");
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: container,
-        start: "top 80%",
-        markers: false,
-      }
-    });
-
-    tl.to(textBg, { scaleX: 1, ease: "expo.easeIn", duration: 1, stagger: 0.08 })
-      .set(textHider, { autoAlpha: 0 })
-      .to(textBg, { scaleX: 0, ease: "power4.easeOut", duration: 0.5, transformOrigin: "100% 0%", delay: .5 });
-  }, []);
 
   const btnRef = useRef(null);
 
@@ -242,7 +225,7 @@ const BookNow = () => {
     <main
       className="font-helvetica-now-thin bg-center bg-[#E7E7E7] "
       // style={{
-      //   backgroundImage: "url('../images/threecircles.png')",
+      //   backgroundImage: "url('../images/liquidpastel.png')",
       //   width: "100%",
       //   backgroundSize: "30%",
       //   backgroundRepeat: "no-repeat",
@@ -261,13 +244,29 @@ const BookNow = () => {
       >
         <div className="grid grid-cols-2">
           <div className="sticky top-0 items-start h-screen ">
+<div >
+<div className="text-center mt-40">
+      <h1
+        className="text-[#2E2A27] font-helvetica-neue text-[100px] text-8xl"
+        style={{
+          letterSpacing: 'px',
+          backgroundImage: 'radial-gradient(circle farthest-corner at 100% 0,#ffaccf 28%,#5cb6f8 51%,#ba75e0 87%,#dd5183 96%)',
+          backgroundClip: 'text',
+          WebkitBackgroundClip: 'text',
+          color: 'transparent'
+        }}
+      >
+        Begin your smile journey today
+      </h1>
+    </div>
+<div className="flex justify-end"> <button className="text-xl flex items-center space-x-2 hover-slide">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+  </svg>
+  <span className="text-3xl">info@freysmiles.com</span>
+</button></div>
+   
 
-            <div
-              className="text-[#2E2A27] font-grandslang text-[140px] mt-40 text-center text-8xl "
-              style={{ letterSpacing: "px" }}
-            >
-              SAY
-            </div>
             <div className="text-center font-iCiel-Gotham-Ultra text-7xl " ref={containerRef}>
       <h1 className="text-[140px] text-[#2E2A27] ">
         {['H', 'E', 'L', 'L', 'O'].map((letter, index) => (
@@ -279,11 +278,17 @@ const BookNow = () => {
         ))}
       </h1>
     </div>
-    <div className="flex flex-col items-start">
-  <div className="text-lg uppercase mr-4 bg-[#2E2A27] text-[#E8E2DA] font-bold font-neue-montreal]" >info@freysmiles.com</div>
-  <div><img className="w-48" src="../images/threedots.svg" alt="Decorative dots" /></div>
-  <div className="ml-4 text-lg uppercase ">(610) 437-4748</div>
-</div>
+    </div>
+    {/* <button >
+    (610) 437-4748 
+</button> */}
+
+
+
+
+
+
+   
 
 
 
@@ -520,24 +525,24 @@ const BookNow = () => {
     type="button"
     className={`w-44 h-14 px-6 py-2 mx-auto relative ${
       typeOfAppointment === "virtual"
-        ? "bg-black text-white"
+        ? "bg-[#D3D6D1] "
         : "text-black"
     } appointmentButton`}
     onClick={() => setTypeOfAppointment("virtual")}
   >
-    Virtual
+   <span className="buttonText">Virtual</span>
     <span className="appointmentBtnBg"></span>
   </button>
   <button
     type="button"
     className={`w-44 h-14 px-6 py-2 mx-auto relative ${
       typeOfAppointment === "inPerson"
-        ? "bg-black text-white"
+        ? "bg-[#D3D6D1] "
         : "text-black"
     } appointmentButton`}
     onClick={() => setTypeOfAppointment("inPerson")}
   >
-    In-Person
+   <span className="buttonText">In-Person</span> 
     <span className="appointmentBtnBg"></span>
   </button>
 </div>
@@ -567,19 +572,21 @@ const BookNow = () => {
 
                     </div>
                   )}
+
                   <div className="grid grid-cols-2 gap-4 font-CeraProBold">
                     {appointmentType.map((button, index) => (
                       <button
                       type="button"
                         className={`w-44 h-14 px-6 py-2 ${
                           button.clicked
-                            ? "bg-black text-white"
+                            ? "bg-[#D3D6D1] "
                             : "border border-black text-black"
                         } mx-auto relative overflow-hidden appointmentButton`}
                         key={button.type}
                         onClick={() => handleAppointmentClick(index)}
                       >
-                        {button.type}
+                        <span className="buttonText"> {button.type}</span>
+                       
                         <span className="absolute top-0 left-0 z-0 w-0 h-0 transition-all bg-blue-600 appointmentBtnBg duration-400"></span>{" "}
 
                       </button>

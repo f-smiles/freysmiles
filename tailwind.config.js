@@ -2,6 +2,7 @@
 module.exports = {
   theme: {
     extend: {
+      
       rotate: {
         '2': '2deg',
         '-2': '-2deg',
@@ -23,8 +24,10 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
+      'aileron':"Aileron-Black",
       'cera': "CeraProRegular",
       'horizon':"HorizonSolid",
+      'horizonOutline':"HorizonOutline",
       "anton":"Anton-Regular",
       "grandslang":"GrandSlang-Roman",
       "saol":"SaolDisplay-Regular",
@@ -32,6 +35,7 @@ module.exports = {
       'helvetica-neue-light':"HelveticaNeue-Light",
       'monument':"MonumentExtended-Regular",
       'nimbus':"NimbusSanL-Reg",
+      'novela':"Novela-Regular",
       'oakes-medium':"Oakes-Grotesk-Medium",
       'oakes-regular':"Oakes-Regular",
       'Lato':'Lato',
@@ -49,6 +53,7 @@ module.exports = {
       'altero-outline': "Altero Outline",
       'helvetica-now-thin': "Helvetica Now Thin",
       'larken': "Larken",
+      'saol':'SaolDisplay-Regular',
       'larken-italic': "Larken Italic",
       'editorial-new': "Editorial New",
       'editorial-new-italic': "Editorial New Italic",
@@ -110,6 +115,10 @@ module.exports = {
           98: '#fff8f8',
           99: '#fffbff',
           100: '#ffffff',
+          'custom-seafoam': '#c2d6d6',
+          'custom-green': '#bccdcdv',
+          'custom-seafoam-green':"#c0d3d3"
+          
         },
       },
       keyframes: {

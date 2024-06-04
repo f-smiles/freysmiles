@@ -1,6 +1,9 @@
 "use client";
-import React, { useRef, useEffect } from "react";
 // gsap
+// import { Curtains, useCurtains, Plane } from "react-curtains";
+// import { Vec2 } from "curtainsjs";
+// import SimplePlane from "./curtains"
+import React, { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
@@ -27,13 +30,69 @@ export default function WhyChooseUs() {
       <CTA />
       <VennDiagram />
       <GridLayout />
+
+      {/* <TextSection /> */}
+      {/* <div className="min-h-screen"> */}
+        {/* <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
+        <SimplePlane />
+      </Curtains> */}
+      {/* </div> */}
     </>
   );
 }
 
+const TextSection = () => {
+  const circleRef = useRef(null);
+
+  useEffect(() => {
+    gsap.to(circleRef.current, {
+      width: "600vmax",
+      height: "600vmax",
+      ease: "Power1.easeInOut",
+      scrollTrigger: {
+        trigger: "#text",
+        start: "top 100%",
+        end: "bottom top",
+        scrub: 0.5,
+      },
+    });
+  }, []);
+
+  return (
+    <section id="text">
+      <div ref={circleRef} className="circle"></div>
+    </section>
+  );
+};
+
 function Hero() {
   const title = "EXPERTS IN";
   const imageUrl = "../images/crystal.png";
+  const svgRef = useRef(null);
+  let lastScrollTop = 0;
+  const rotationFactor = 5;
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+
+      if (svgRef.current) {
+        if (scrollTop > lastScrollTop) {
+          svgRef.current.style.transform = `rotate(${
+            scrollTop / rotationFactor
+          }deg)`;
+        } else {
+          svgRef.current.style.transform = `rotate(${
+            scrollTop / rotationFactor
+          }deg)`;
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // mobile
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="h-screen bg-212121">
@@ -97,6 +156,41 @@ function Hero() {
               </li>
             </ul>
           </div>
+
+          <div className="relative" style={{ left: '20rem' }}>
+        <svg
+          ref={svgRef}
+          id="spinscroll"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+          width="300px"
+          height="300px"
+          viewBox="0 0 300 300"
+          xmlSpace="preserve"
+          className="inline-flex transition-transform duration-100 book-svg"
+        >
+          <defs>
+            <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150" />
+          </defs>
+          <g id="rotatingGroup">
+            <text className="scroll-text">
+              <textPath xlinkHref="#circlePath">Scroll Down Scroll Down</textPath>
+            </text>
+          </g>
+        </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 63 305"
+          width="10.75"
+          height="56.25"
+          className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+        >
+          <path className="arrow-line" style={{ fill: 'none', stroke: '#000', strokeWidth: '1.5', strokeDashoffset: 0, strokeDasharray: '304' }} d="M31 0,31 304" />
+          <path className="arrow-left" style={{ fill: 'none', stroke: '#000', strokeWidth: '1.5', strokeDashoffset: 0, strokeDasharray: '51' }} d="M1,269c0,0,29-1,30,35" />
+          <path className="arrow-right" style={{ fill: 'none', stroke: '#000', strokeWidth: '1.5', strokeDashoffset: 0, strokeDasharray: '51' }} d="M61,269c0,0-29-1-30,35" />
+        </svg>
+      </div>
+
         </section>
       </section>
 
@@ -296,10 +390,10 @@ function StackCards() {
           </div>
           <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#c5cfc7] rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105">
             <h4>
-              Our office holds the distinction of being the
-                longest-standing, active board-certified orthodontic office in
-                the area . With four offices in the Lehigh Valley, we have been providing
-                unparalleled orthodontic care for over four decades.
+              Our office holds the distinction of being the longest-standing,
+              active board-certified orthodontic office in the area . With four
+              offices in the Lehigh Valley, we have been providing unparalleled
+              orthodontic care for over four decades.
             </h4>
           </div>
         </div>
@@ -320,7 +414,7 @@ function CTA() {
     const animation = gsap.fromTo(
       chars,
       { color: bgTextColor },
-      { color: fgTextColor, stagger: 0.03}
+      { color: fgTextColor, stagger: 0.03 }
     );
 
     ScrollTrigger.create({
@@ -329,7 +423,7 @@ function CTA() {
       end: "bottom 70%",
       animation: animation,
       scrub: true,
-      markers: false
+      markers: false,
     });
 
     return () => split.revert();
@@ -346,19 +440,25 @@ function CTA() {
       const domPt = new DOMPoint(e.x, e.y);
       let svgPt = domPt.matrixTransform(btn.getScreenCTM().inverse());
 
-      gsap.timeline({ defaults: { duration: 0.3, ease: 'power3' } })
-        .to('.hit', { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
-        .to('.bg', { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
-        .to('.txt', { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
-        .to('.bg', { attr: { fill: 'rgb(197, 207, 199)' } }, 0)
-        .to('.txt', { attr: { fill: 'rgb(0,0,0)' } }, 0);
+      gsap
+        .timeline({ defaults: { duration: 0.3, ease: "power3" } })
+        .to(".hit", { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
+        .to(".bg", { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
+        .to(".txt", { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
+        .to(".bg", { attr: { fill: "rgb(197, 207, 199)" } }, 0)
+        .to(".txt", { attr: { fill: "rgb(0,0,0)" } }, 0);
     };
 
     hit.onpointerleave = (e) => {
-      gsap.timeline({ defaults: { duration: 0.3, ease: 'power2' } })
-        .to('.bg', { attr: { fill: 'rgb(50,50,50)' } }, 0)
-        .to('.txt', { attr: { fill: 'rgb(255,255,255)' } }, 0)
-        .to('.hit, .bg, .txt', { duration: 0.7, ease: 'elastic.out(0.8)', x: 0, y: 0 }, 0);
+      gsap
+        .timeline({ defaults: { duration: 0.3, ease: "power2" } })
+        .to(".bg", { attr: { fill: "rgb(50,50,50)" } }, 0)
+        .to(".txt", { attr: { fill: "rgb(255,255,255)" } }, 0)
+        .to(
+          ".hit, .bg, .txt",
+          { duration: 0.7, ease: "elastic.out(0.8)", x: 0, y: 0 },
+          0
+        );
     };
   }, []);
 
@@ -418,40 +518,45 @@ function CTA() {
 
 function ScrollTextReveal() {
   useEffect(() => {
-    let tlMain = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".section-height",
-        start: "top top",
-        end: "98% bottom",
-        scrub: 1
-      }
-    }).to(".track", {
-      xPercent: -100,
-      ease: "none"
-    });
+    let tlMain = gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: ".section-height",
+          start: "top top",
+          end: "98% bottom",
+          scrub: 1,
+        },
+      })
+      .to(".track", {
+        xPercent: -100,
+        ease: "none",
+      });
 
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: ".giving-panel_wrap",
-        containerAnimation: tlMain,
-        start: "left left",
-        end: "right right",
-        scrub: true
-      }
-    })
-    .to(".giving-panel", { xPercent: 100, ease: "none" })
-    .to(".giving-panel_photo", { scale: 1 }, 0)
-    .fromTo(
-      ".giving-panel_contain.is-2",
-      { clipPath: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)" },
-      { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)", ease: "none" },
-      0
-    );
-
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: ".giving-panel_wrap",
+          containerAnimation: tlMain,
+          start: "left left",
+          end: "right right",
+          scrub: true,
+        },
+      })
+      .to(".giving-panel", { xPercent: 100, ease: "none" })
+      .to(".giving-panel_photo", { scale: 1 }, 0)
+      .fromTo(
+        ".giving-panel_contain.is-2",
+        { clipPath: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)" },
+        {
+          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+          ease: "none",
+        },
+        0
+      );
   }, []);
 
-  const text = "Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it."
-
+  const text =
+    "Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it.";
   return (
     <section className="w-full min-h-screen ">
       <div className="section-height">
