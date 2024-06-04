@@ -85,6 +85,8 @@ export default function CurvyTimeline() {
 
     return () => clearTimeout(initialTimer);
   }, []);
+  // useEffect(() => {
+  //   gsap.registerPlugin(ScrollTrigger);
 
   useGSAP(() => {
     let headingSection = gsap.timeline({
@@ -375,5 +377,18 @@ export default function CurvyTimeline() {
         </section>
       </div>
     </div>
+
+    // <motion.div
+    //   className="line"
+    //   variants={variants}
+    //   initial="hidden"
+    //   animate="visible"
+    //   style={{
+    //     originX: 0,
+    //     backgroundColor: 'red',
+    //     height: '5px',
+    //     width: '100%',
+    //   }}
+    // />
   );
-}
+};

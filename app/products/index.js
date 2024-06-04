@@ -15,7 +15,9 @@ function Banner() {
   const repeatedText = Array(50).fill(text + separator).join("");
 
   return (
+
     <div className="relative isolate flex justify-center items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5">
+
       <div
         className="absolute left-[max(-7rem,calc(50%-52rem))] top-1/2 -z-10 -translate-y-1/2 transform-gpu blur-2xl"
         aria-hidden="true"
@@ -121,7 +123,7 @@ export default function ProductsComponent({ products, prices }) {
   const sortedProducts = selectedSortOption ? sortProducts(selectedSortOption) : products
 
   return (
-    <div className="bg-[#F8F8F8]">
+    <div className="bg-[#F1F1F1]">
       <Banner />
       <Hero />
 
