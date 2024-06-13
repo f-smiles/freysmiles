@@ -86,11 +86,12 @@ export default function Navbar() {
     window.location.assign(data)
   }
 
-  /* mobile nav */
-  const [openMobileNav, setOpenMobileNav] = useState(false)
-  const handleToggleMobileNav = () => {
-    setOpenMobileNav(!openMobileNav)
-  }
+   /* mobile nav */
+   const [show, setShow] = useState(null)
+   const handleToggleMobileNav = () => {
+     // setShow((prevState) => !prevState)
+     setShow(!show)
+   }
 
   useGSAP(() => {
     const isTouchDevice = 'ontouchstart' in window
@@ -544,32 +545,139 @@ export default function Navbar() {
       </nav>
 
       {/* MOBILE NAVBAR */}
-      <nav className="z-40 fixed bottom-0 block left-1/2 -translate-x-1/2 w-[80vw] mx-auto shadow-md mb-[4vh] bg-zinc-100 lg:hidden rounded-full">
-        <div className='px-4 mx-auto max-w-7xl sm:px-6 lg:px-8'>
-          <div className="flex justify-between h-16">
-            <div className="flex items-center flex-shrink-0">
-              <img
-                className="w-auto h-8"
-                src="/../../logo_full.png"
-                alt="FreySmiles Orthodontics"
-              />
-            </div>
-            <div className="flex items-center -mr-2 lg:hidden">
-              {/* Mobile menu button */}
-              <button onClick={handleToggleMobileNav} className="relative inline-flex items-center justify-center p-2 rounded-full text-primary-50 hover:bg-primary-50/30 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-50">
-                <span className="sr-only">Open main menu</span>
-                {openMobileNav ? (
-                  <XIcon className="block w-6 h-6" aria-hidden="true" />
-                ) : (
-                  <Bars2Icon className="block w-6 h-6" aria-hidden="true" />
-                )}
-              </button>
-            </div>
+      <nav id="mobile-nav" className={`${show ? "top-0 flex flex-col-reverse gap-6 justify-between h-full bg-white" : "bottom-0 max-w-[75vw] rounded-full bg-gray-100/60"} fixed left-0 right-0 mb-[4vh] p-4 w-full mx-auto text-gray-600 backdrop-blur-md shadow-md z-50 lg:hidden`}>
+        <section className={`${show ? "px-4 py-6" : ""} flex items-center justify-between`}>
+          <Link href="/">
+            <img
+              src="/../../../logo_full.png"
+              alt="FreySmiles Orthodontics logo"
+              className="w-auto h-8"
+            />
+          </Link>
+          <div
+            onClick={handleToggleMobileNav}
+            className="transition duration-300 ease-linear cursor-pointer text-primary-50 hover:text-secondary-50"
+          >
+            {show ? (
+              <XIcon className="w-6 h-6" />
+            ) : (
+              <Bars2Icon className="w-6 h-6" />
+            )}
           </div>
-
-          {/* mobile links panel */}
-
-        </div>
+        </section>
+        {/* <section ref={scope} className="overflow-y-scroll"> */}
+        <section className="overflow-y-scroll">
+          {show && (
+            <ul className="relative text-2xl">
+              <div className="px-4 mt-10 cursor-pointer group text-primary-40">
+                {/* <li className="py-2 uppercase border-b border-secondary-50/30">
+                  <Link href="/">Home</Link>
+                </li> */}
+                <li className="py-2 border-b border-secondary-50/30">
+                {/* <li className="py-2 border-b border-secondary-50/30" onClick={() => setAbout(!about)}> */}
+                  <span className="flex items-center gap-2 uppercase">About</span>
+                  {/* About <ChevronDownIcon className="w-4 h-4" /> */}
+                  {/* {about && ( */}
+                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
+                      {about_us_links &&
+                        about_us_links.map((link) => (
+                          <Link
+                            key={link.name}
+                            href={link.href}
+                            className="mx-6 text-xl text-secondary-50"
+                            onClick={() => setShow(!show)}
+                          >
+                            {link.name}
+                          </Link>
+                        ))}
+                    </div>
+                  {/* )} */}
+                </li>
+                <li className="py-2 border-b border-secondary-50/30">
+                  <span className="flex items-center gap-2 uppercase">Patient</span>
+                  {/* {patient && ( */}
+                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
+                      {patient_links &&
+                        patient_links.map((link) => (
+                          <Link
+                            key={link.name}
+                            href={link.href}
+                            className="mx-6 text-xl text-secondary-50"
+                            onClick={() => setShow(!show)}
+                          >
+                            {link.name}
+                          </Link>
+                        ))}
+                    </div>
+                  {/* )} */}
+                </li>
+                <li className="py-2 border-b border-secondary-50/30">
+                  <span className="flex items-center gap-2 uppercase">Treatments</span>
+                  {/* {treatments && ( */}
+                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
+                      {treatments_links &&
+                        treatments_links.map((link) => (
+                          <Link
+                            key={link.name}
+                            href={link.href}
+                            className="mx-6 text-xl text-secondary-50"
+                            onClick={() => setShow(!show)}
+                          >
+                            {link.name}
+                          </Link>
+                        ))}
+                    </div>
+                  {/* )} */}
+                </li>
+              </div>
+              <div className="px-4 mt-10 space-y-2 cursor-pointer"
+                onClick={() => setShow(!show)}
+              >
+                <li>
+                  <Link
+                    className="block text-secondary-50"
+                    href="https://my.orthoblink.com/bLink/Login"
+                  >
+                    Patient Login
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="block text-secondary-50"
+                    href="/products"
+                  >
+                    Shop
+                  </Link>
+                </li>
+                {bag.length > 0 && (
+                  <li
+                    onClick={handleToggleBagPanel}
+                    className="flex items-center gap-x-1 text-primary-50"
+                  >
+                    Bag
+                    <div className="relative">
+                      <BagIcon className="w-10 h-10" />
+                      <span className="absolute top-0 right-0 p-3 bg-black rounded-full -translate-y-1/4 translate-x-2/4">
+                        <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{bag.length}</p>
+                        {/* <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{calculateItemsQuantity()}</p> */}
+                      </span>
+                    </div>
+                  </li>
+                )}
+                <li className="pt-6">
+                  <div className="px-3 py-2 rounded-md w-max bg-primary-40 active:bg-primary-30">
+                    <Link
+                      href="/book-now"
+                      className="font-normal text-white uppercase"
+                    >
+                      Book Now
+                    </Link>
+                  </div>
+                </li>
+              </div>
+            </ul>
+          )}
+        </section>
       </nav>
     </header>
   )
