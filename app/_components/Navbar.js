@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { gsap } from "gsap"
@@ -130,22 +130,39 @@ export default function Navbar() {
       createCustomCursor()
     }
   })
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <header className='overflow-hidden'>
       {/* DESKTOP NAVBAR */}
-      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-40 w-max mx-auto hidden mb-[6vh] lg:block">
+      <nav id="desktop-nav" className="fixed top-10 left-0 z-40 hidden w-full mb-[6vh] lg:block">
         <div className="custom-navbar-cursor" />
-        <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
+        <div className={`text-[#FFF] p-4 mx-auto text-sm transition duration-300 ease-in-out border-gray-300 rounded-full justify-evenly ${hasScrolled ? 'bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm' : ''} max-w-max`}>
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out active:bg-primary-50/80">
-              <Link href="/" className="ml-1 p-2 inline-block bg-[rgba(228,_218,_208,_0.8)] rounded-full shadow-[0px_0px_0px_6px_rgba(228,_218,_208,_0.4),_0px_0px_0px_12px_rgba(228,_218,_208,_0.2)]">
-                <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
+            <li className="flex items-center font-medium tracking-wider transition duration-300 ease-in-out    active:bg-primary-50/80">
+
+              <Link href="/" className="inline-block p-4">
+                <img className="w-4 h-4" src="images/logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
 
             <li onClick={handleToggleAbout} className="target-link">
-              <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">About</p>
+              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">About</p>
             </li>
             {/* ABOUT PANEL */}
             <Transition.Root show={about} as={Fragment}>
@@ -228,7 +245,7 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleTogglePatient} className="target-link">
-              <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Patient</p>
+              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Patient</p>
             </li>
             {/* PATIENT PANEL */}
             <Transition.Root show={patient} as={Fragment}>
@@ -311,7 +328,7 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleToggleTreatments} className="target-link">
-              <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Treatments</p>
+              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Treatments</p>
             </li>
             {/* TREATMENTS PANEL */}
             <Transition.Root show={treatments} as={Fragment}>
