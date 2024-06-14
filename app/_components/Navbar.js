@@ -148,7 +148,11 @@ export default function Navbar() {
       {/* DESKTOP NAVBAR */}
       <nav id="desktop-nav" className="fixed top-10 left-0 z-40 hidden w-full mb-[6vh] lg:block">
         <div className="custom-navbar-cursor" />
-        <div className={`text-[#FFF] p-4 mx-auto text-sm transition duration-300 ease-in-out border-gray-300 rounded-full justify-evenly ${hasScrolled ? 'bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm' : ''} max-w-max`}>
+        <div
+      className={`text-[#FFF] p-4 mx-auto text-sm transition duration-300 ease-in-out border border-gray-100 rounded-full justify-evenly max-w-max ${
+        hasScrolled ? 'bg-gray-100/60 backdrop-blur-md hover:bg-[#CFFFB1]/70 hover:shadow-sm' : 'hover:bg-[#CFFFB1]/70'
+      }`}
+    >
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
             <li className="flex items-center font-medium tracking-wider transition duration-300 ease-in-out    active:bg-primary-50/80">
 
