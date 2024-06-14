@@ -2,15 +2,18 @@
 import Image from 'next/image';
 import Lenis from '@studio-freight/lenis'
 import React, { useEffect, useState, useRef } from "react";
-import PurpleOrange from "../../public/images/PurpleOrange.js";
 import { SplitText } from "gsap-trial/all";
 import { motion, useScroll, useTransform } from "framer-motion";
-import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
-const Card = ({i, title, description, src, url, color, progress, range, targetScale}) => {
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, SplitText)
+}
+
+const Card = ({ i, title, description, src, url, color, progress, range, targetScale }) => {
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
     target: container,
@@ -19,64 +22,60 @@ const Card = ({i, title, description, src, url, color, progress, range, targetSc
 
   const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1])
   const scale = useTransform(progress, range, [1, targetScale]);
- 
+
   return (
-    <div ref={container} 
-      className="uniqueCardContainer"
-    >
-      <motion.div 
-        style={{backgroundColor: color, scale, top:`calc(-5vh + ${i * 25}px)`}} 
+    <div ref={container} className="uniqueCardContainer">
+      <motion.div
+        style={{
+          backgroundColor: color,
+          scale,
+          top: `calc(-5vh + ${i * 25}px)`,
+        }}
         className="uniqueCard"
       >
         <h2>{title}</h2>
-        <div 
-          className="uniqueBody"
-        >
-          <div
-            className="uniqueDescription"
-          >
+        <div className="uniqueBody">
+          <div className="uniqueDescription">
             <p>{description}</p>
             <span>
-              <a href={url} target="_blank">See more</a>
-              <svg width="22" height="12" viewBox="0 0 22 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21.5303 6.53033C21.8232 6.23744 21.8232 5.76256 21.5303 5.46967L16.7574 0.696699C16.4645 0.403806 15.9896 0.403806 15.6967 0.696699C15.4038 0.989592 15.4038 1.46447 15.6967 1.75736L19.9393 6L15.6967 10.2426C15.4038 10.5355 15.4038 11.0104 15.6967 11.3033C15.9896 11.5962 16.4645 11.5962 16.7574 11.3033L21.5303 6.53033ZM0 6.75L21 6.75V5.25L0 5.25L0 6.75Z" fill="black"/>
+              <a href={url} target="_blank">
+                See more
+              </a>
+              <svg
+                width="22"
+                height="12"
+                viewBox="0 0 22 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21.5303 6.53033C21.8232 6.23744 21.8232 5.76256 21.5303 5.46967L16.7574 0.696699C16.4645 0.403806 15.9896 0.403806 15.6967 0.696699C15.4038 0.989592 15.4038 1.46447 15.6967 1.75736L19.9393 6L15.6967 10.2426C15.4038 10.5355 15.4038 11.0104 15.6967 11.3033C15.9896 11.5962 16.4645 11.5962 16.7574 11.3033L21.5303 6.53033ZM0 6.75L21 6.75V5.25L0 5.25L0 6.75Z"
+                  fill="black"
+                />
               </svg>
             </span>
           </div>
 
-          <div 
-            className="uniqueImageContainer"
-          >
-            <motion.div
-              className="uniqueInner"
-              style={{scale: imageScale}}
-            >
-              <Image
-                fill
-                src={`/images/${src}`}
-                alt="image" 
-              />
+          <div className="uniqueImageContainer">
+            <motion.div className="uniqueInner" style={{ scale: imageScale }}>
+              <Image fill src={`/images/${src}`} alt="image" />
             </motion.div>
           </div>
-
         </div>
       </motion.div>
     </div>
   )
 }
 
-
 const Layer = ({ colorClass }) => {
   return (
     <div
       className={`absolute top-0 left-0 right-0 h-full w-full ${colorClass}`}
-    ></div>
+    />
   );
 };
 
-const OurTeam = () => {
-  gsap.registerPlugin(ScrollTrigger);
-  gsap.registerPlugin(SplitText);
+export default function OurTeam() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -102,9 +101,8 @@ const OurTeam = () => {
     const clearAnimation = () => {
       gsap.killTweensOf(doctorBioRef.current);
     };
-  
-    const startAnimation = () => {
 
+    const startAnimation = () => {
       setTimeout(() => {
         const doctorBio = doctorBioRef.current;
         if (doctorBio) {
@@ -117,16 +115,16 @@ const OurTeam = () => {
             stagger: 0.12,
           });
         }
-      }, 100); 
+      }, 100);
     };
-  
+
     if (doctorBioRef.current) {
       clearAnimation();
       startAnimation();
     }
     return () => clearAnimation();
   }, [switchDoctor]);
-  
+
 
   useEffect(() => {
     const container = document.querySelector(".horizontalScroller");
@@ -182,7 +180,7 @@ const OurTeam = () => {
     gsap.set('.layer', { clipPath: 'circle(0% at 50% 50%)' });
     const tl = gsap.timeline({
       onComplete: () => {
-        gsap.to('.contentTeam', { opacity: 1, duration: 1 }); 
+        gsap.to('.contentTeam', { opacity: 1, duration: 1 });
       }
     });
     tl.to('.layer', {
@@ -218,6 +216,7 @@ const OurTeam = () => {
 
       return updatedSvgs;
     });
+
     const intervalId = setInterval(() => {
       setSvgs((prevSvgs) => {
         const newSvg = {
@@ -238,45 +237,44 @@ const OurTeam = () => {
   }, []);
 
 
-const projects = [
+  const projects = [
     {
       title: "Adriana",
       description: "Insurance Coordinator",
-      src: "team_members/Adriana-Photoroom.jpg", 
-      color: "#BBACAF"
+      src: "team_members/Adriana-Photoroom.jpg",
+      color: "#BBACAF",
     },
     {
       title: "Alyssa",
       description: "Treatment Coordinator",
       src: "team_members/Alyssascan.png",
-      color: "#c4aead"
+      color: "#c4aead",
     },
     {
       title: "Elizabeth",
       description: "Patient Services",
       src: "team_members/Elizabethaao.png",
-      color: "#998d8f"
+      color: "#998d8f",
     },
     {
       title: "Grace",
       description: "Specialized Orthodontic Assistant",
       src: "team_members/Grace-Photoroom.jpg",
-      color: "#e5e4e2"
+      color: "#e5e4e2",
     },
     {
       title: "Lexi",
       description: "Treatment Coordinator",
       src: "team_members/lexigreen.png",
-      color: "#cbc4c5"
+      color: "#cbc4c5",
     },
     {
       title: "Nicolle",
       description: "Specialized Orthodontic Assistant",
       src: "team_members/nicollewaving.png",
-      color: "#c9c0bb"
-    }
-  ]
-
+      color: "#c9c0bb",
+    },
+  ];
 
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -285,19 +283,19 @@ const projects = [
   })
   useEffect(() => {
     const lenis = new Lenis({
-      lerp: 0.1 
+      lerp: 0.1
     });
-  
+
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
-    
+
     const rafId = requestAnimationFrame(raf);
-    
-    return () => cancelAnimationFrame(rafId); 
+
+    return () => cancelAnimationFrame(rafId);
   }, []);
-  
+
   // const items = [
   //   {
   //     title: "5",
@@ -331,7 +329,7 @@ const projects = [
   //     num: "Lexi",
   //     imgSrc: "/../../images/team_members/Lexigreen.png",
   //   },
-   
+
   //   {
   //     title: "3",
   //     num: "Nicolle",
@@ -343,6 +341,7 @@ const projects = [
   //     imgSrc: "/../../images/team_members/Kayli-Photoroom.png",
   //   },
   // ];
+
   const [progress, setProgress] = useState(0);
   const carouselRef = useRef();
   const cursorRef = useRef();
@@ -510,21 +509,23 @@ const projects = [
   //   justifyContent: "center",
   //   fontSize: "20px",
   //   transition:
-  //     "width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1)", 
+  //     "width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
   // };
 
   const [cursorPosition, setCursorPosition] = useState({ x: -100, y: -100 });
   const [isFocused, setIsFocused] = useState(false);
+  const isTouchDevice = 'ontouchstart' in window
 
   useEffect(() => {
-    const moveCursor = (e) => {
-      setCursorPosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener("mousemove", moveCursor);
-    return () => {
-      window.removeEventListener("mousemove", moveCursor);
-    };
+    if (!isTouchDevice) {
+      const moveCursor = (e) => {
+        setCursorPosition({ x: e.clientX, y: e.clientY });
+      };
+      window.addEventListener("mousemove", moveCursor);
+      return () => {
+        window.removeEventListener("mousemove", moveCursor);
+      };
+    }
   }, []);
 
   const greenCursorStyle = {
@@ -542,61 +543,49 @@ const projects = [
     zIndex: 9999,
   };
 
-
-
-
   return (
-    <>
-     <div className="wrapper relative w-full min-h-screen">
-     <div
-    className="layer fixed top-0 left-0 w-full h-full gradient-green z-10"
-    style={{ width: '100vw', height: '100vh' }}
-    ref={circleRef}
-  ></div>
+    <div className="relative w-full min-h-screen wrapper">
+      <div
+        className="fixed top-0 left-0 z-10 w-full h-full layer gradient-green"
+        style={{ width: "100vw", height: "100vh" }}
+        ref={circleRef}
+      />
       <div className="min-h-screen bg-[#E2E2E2] contentTeam relative ">
-        <section className=" py-24 sm:py-32">
-        
-        <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
-        
-        
-        <div className="grid grid-cols-2 ">
-  <div className="flex flex-col items-start justify-center">
-    <div className="font-saol text-[80px] tracking-tight relative z-10">
-      Meet Our
-    </div>
-    <div className="font-novela italic text-[80px] tracking-tight relative z-10">
-      Doctors
-    </div>
-  </div>
-  <div className="flex items-center">
-    <div className="w-24 h-px bg-gray-700 "></div>
-    <span className="text-[13px] block w-3/5 ml-4">
-      Our experience spans over 50 years, a testament to the precision, accuracy, and relevance of our vision, demonstrating our ability to adapt to the ever-changing nature of our industry.
-    </span>
-  </div>
-</div>
-
-
-
-
-
-
-
-
-</div>
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
+            <div className="grid grid-cols-2 ">
+              <div className="flex flex-col items-start justify-center">
+                <div className="font-saol text-[80px] tracking-tight relative z-10">
+                  Meet Our
+                </div>
+                <div className="font-novela italic text-[80px] tracking-tight relative z-10">
+                  Doctors
+                </div>
+              </div>
+              <div className="flex items-center">
+                <div className="w-24 h-px bg-gray-700 "></div>
+                <span className="text-[13px] block w-3/5 ml-4">
+                  Our experience spans over 50 years, a testament to the
+                  precision, accuracy, and relevance of our vision,
+                  demonstrating our ability to adapt to the ever-changing nature
+                  of our industry.
+                </span>
+              </div>
+            </div>
+          </div>
 
           <div className="grid grid-cols-12 gap-8 px-6 mx-auto max-w-7xl lg:px-8">
             <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
               {/* slider controls */}
               <div
                 id="controls"
-                className=" flex items-center justify-start row-span-1 row-start-1 space-x-4"
+                className="flex items-center justify-start row-span-1 row-start-1 space-x-4 "
               >
                 <button
-                  className="border-stone-600 z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white   hover:bg-black"
+                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full border-stone-600 hover:text-white hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
-                  <ArrowLeftIcon className="text-stone-600 w-5 h-5" />
+                  <ArrowLeftIcon className="w-5 h-5 text-stone-600" />
                 </button>
                 <span className="text-stone-600">
                   0{!switchDoctor ? index : index + 1} / 02
@@ -605,14 +594,16 @@ const projects = [
                   className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white border-stone-600 hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
-                  <ArrowRightIcon className="text-stone-600 w-5 h-5" />
+                  <ArrowRightIcon className="w-5 h-5 text-stone-600" />
                 </button>
               </div>
               <div className="row-span-1 row-start-2">
                 {/* doctor bio */}
-
                 {switchDoctor ? (
-                  <p ref={doctorBioRef} className="font-helvetica-now-thin heading">
+                  <p
+                    ref={doctorBioRef}
+                    className="font-helvetica-now-thin heading"
+                  >
                     Dr. Daniel Frey pursued his pre-dental requisites at the
                     University of Pittsburgh, majoring in Biology. Dr. Frey
                     excelled in his studies and was admitted to Temple
@@ -631,7 +622,10 @@ const projects = [
                     spending time with loved ones.
                   </p>
                 ) : (
-                  <p ref={doctorBioRef} className="font-helvetica-now-thin heading">
+                  <p
+                    ref={doctorBioRef}
+                    className="font-helvetica-now-thin heading"
+                  >
                     Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
                     graduated from Temple University School of Dentistry with
                     honors and served in the U.S. Navy Dental Corps before
@@ -719,22 +713,23 @@ const projects = [
             </div>
           </div>
         </section>
-        <>
-          <div style={greenCursorStyle}>
-            {isFocused && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                }}
-              >
-                Click
-              </span>
-            )}
-          </div>
 
+        <div style={greenCursorStyle}>
+          {isFocused && (
+            <span
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              Click
+            </span>
+          )}
+        </div>
+
+        <section className='overflow-x-auto overflow-y-hidden lg:overflow-hidden'>
           <div
             onMouseEnter={() => setIsFocused(true)}
             onMouseLeave={() => setIsFocused(false)}
@@ -767,7 +762,7 @@ const projects = [
                       it.
                     </p>
                     <img
-                      className="w-90 h-90 absolute bottom-0"
+                      className="absolute bottom-0 w-90 h-90"
                       src="../images/threedots.svg"
                       alt="Green Squiggle"
                     />
@@ -836,7 +831,7 @@ const projects = [
                       <span>
                         {" "}
                         <img
-                          className="w-90 h-auto -mt-80  "
+                          className="h-auto w-90 -mt-80 "
                           src="../images/fivestars.svg"
                           alt="Green Squiggle"
                         />
@@ -864,59 +859,65 @@ const projects = [
               </div>
             </div>
           </div>
-          <main ref={container}
-      style={{ position: 'relative', marginTop: '50vh' }}
->
-  {
-    projects.map((project, i) => {
-      const targetScale = 1 - ((projects.length - i) * 0.05);
-      return <Card key={`p_${i}`} i={i} {...project} progress={scrollYProgress} range={[i * .25, 1]} targetScale={targetScale}/>
-    })
-  }
-</main>
+        </section>
 
-          {/* <div
-            ref={carouselRef}
-            className="relative z-10 min-h-[150vh]  pointer-events-none"
-          >
-            <div id="cursor" style={cursorStyle} className={className}>
-              <div className="cursor__circle" style={cursorCircleStyle}>
-                {!isDragging && (
-                  <>
-                    Drag
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-                      />
-                    </svg>
-                  </>
-                )}
+        <section
+          ref={container}
+          style={{ position: "relative", marginTop: "50vh" }}
+        >
+          {projects.map((project, i) => {
+            const targetScale = 1 - (projects.length - i) * 0.05;
+            return (
+              <Card
+                key={`p_${i}`}
+                i={i}
+                {...project}
+                progress={scrollYProgress}
+                range={[i * 0.25, 1]}
+                targetScale={targetScale}
+              />
+            );
+          })}
+        </section>
+
+        {/* <div
+          ref={carouselRef}
+          className="relative z-10 min-h-[150vh]  pointer-events-none"
+        >
+          <div id="cursor" style={cursorStyle} className={className}>
+            <div className="cursor__circle" style={cursorCircleStyle}>
+              {!isDragging && (
+                <>
+                  Drag
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                    />
+                  </svg>
+                </>
+              )}
+            </div>
+          </div>
+          {items.map((item) => (
+            <div key={item.num} className="carousel-item">
+              <div className="carousel-box">
+                <div className="titleCard">{item.title}</div>
+                <div className="nameCard">{item.num}</div>
+                <img src={item.imgSrc} alt={item.title} />
               </div>
             </div>
-            {items.map((item) => (
-              <div key={item.num} className="carousel-item">
-                <div className="carousel-box">
-                  <div className="titleCard">{item.title}</div>
-                  <div className="nameCard">{item.num}</div>
-                  <img src={item.imgSrc} alt={item.title} />
-                </div>
-              </div>
-            ))}
-          </div> */}
-        </>
+          ))}
+        </div> */}
       </div>
-      </div>
-    </>
+    </div>
   );
 };
-
-export default OurTeam;
