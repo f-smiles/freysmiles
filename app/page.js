@@ -1,38 +1,27 @@
 "use client";
-import { gsap } from 'gsap';
+import Link from "next/link";
 import * as THREE from "three";
 import Matter from "matter-js";
-import Link from "next/link";
 import { useRef, useEffect, useLayoutEffect, useState, useCallback } from "react";
-import LocomotiveScroll from "locomotive-scroll";
-
 // framer motion
-import { motion, stagger, useAnimate, useInView, useScroll, } from "framer-motion";
+import { motion, stagger,  useAnimate, useInView } from 'framer-motion'
 // headless ui
 import { Disclosure, Transition } from "@headlessui/react";
 // gsap
-
+import { gsap } from 'gsap';
 import { useGSAP } from "@gsap/react"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin"
 import { SplitText } from "gsap-trial/SplitText"
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 
-import MapPin from "./_components/ui/MapPin";
-
-import SwiperCore, { Navigation } from 'swiper';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-
-SwiperCore.use([Navigation]);
-
-gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText)
-
-
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText, useGSAP)
+}
 
 export default function LandingComponent() {
   const [backgroundColor, setBackgroundColor] = useState("transparent");
+
   useEffect(() => {
     setBackgroundColor("rgb(239,233,232)");
     const handleScroll = () => {
@@ -98,13 +87,7 @@ export default function LandingComponent() {
     };
   }, []);
 
-  const { scrollYProgress } = useScroll();
-  gsap.registerPlugin(ScrollTrigger);
-
-
   const logoGrid = document.getElementById("logoGrid");
-
-
   let initialScale = 0.8;
   let maxScale = 1;
 
@@ -118,7 +101,6 @@ export default function LandingComponent() {
       onLeaveBack: () => gsap.set(logoGrid, { clearProps: "transform" }),
     },
   });
-
 
   tl.fromTo(
     logoGrid,
@@ -172,11 +154,11 @@ export default function LandingComponent() {
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            const scaleValue = 0.8 + 0.2 * entry.intersectionRatio;  
+            const scaleValue = 0.8 + 0.2 * entry.intersectionRatio;
             entry.target.style.transform = `scale(${scaleValue})`;
         });
     }, {
-        threshold: Array.from({ length: 20 }, (_, i) => i * 0.05)  // 
+        threshold: Array.from({ length: 20 }, (_, i) => i * 0.05)  //
     });
 
     const sections = [sectionOneRef, sectionTwoRef, sectionThreeRef];
@@ -194,71 +176,38 @@ export default function LandingComponent() {
 
   return (
     <>
-      <div
-
-        style={{ backgroundColor }} className="bg-[#EFE9E8] bg-[#E0D175]"
-        // style={{ backgroundColor }}
-
-      >
-        <LogoHeader />
+      <div style={{ backgroundColor }} className="bg-[#EFE9E8] bg-[#E0D175]">
         <Hero />
         <Mask />
         {/* <About /> */}
         <GSAPAnimateScrollSections />
         <ImageGrid />
 
-        <div ref={sectionOneRef} className="sticky top-0 z-2 transform scale-80 transition-transform duration-300 ease-in-out">
-                <LocationGallery />
-            </div>
-            <div ref={sectionTwoRef} className="sticky bg-[#D8BFD7] top-0 h-screen z-3 transform scale-80 transition-transform duration-300 ease-in-out" id="logoGrid">
-                <LogoGrid />
-            </div>
-            <div ref={sectionThreeRef} className="bg-[#F1F1F1] sticky top-0 z-1 transform scale-80 transition-transform duration-300 ease-in-out" id="locationGallery">
-                <ParallaxOutline />
-            </div>
-        <div className="bg-[#20282D] z-4 relative" id="locations">
-          <Locations />
-        </div>
-        <div className="sticky top-0 z-2">
-
-        <LocationGallery />
-</div>
-<div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
-    <LogoGrid />
-</div>
-<div className=" bg-[#F1F1F1]  sticky top-0 z-1" id="locationGallery">
-<ParallaxOutline />
-
+        <div
+          ref={sectionOneRef}
+          className="sticky top-0 transition-transform duration-300 ease-in-out transform z-2 scale-80"
+        >
           <LocationGallery />
         </div>
-        <div className="sticky bg-[#D8BFD7] top-0 h-screen z-3" id="logoGrid">
+        <div
+          ref={sectionTwoRef}
+          className="sticky bg-[#D8BFD7] top-0 h-screen z-3 transform scale-80 transition-transform duration-300 ease-in-out"
+          id="logoGrid"
+        >
           <LogoGrid />
         </div>
-        <div className="bg-[#20282D] sticky top-0 z-1" id="locationGallery">
+        <div
+          ref={sectionThreeRef}
+          className="bg-[#F1F1F1] sticky top-0 z-1 transform scale-80 transition-transform duration-300 ease-in-out"
+          id="locationGallery"
+        >
           <ParallaxOutline />
         </div>
 
-
         <Locations />
-
-
         <GiftCards />
       </div>
     </>
-  );
-}
-
-function LogoHeader() {
-  return (
-    <header className=" m-auto w-max">
-      {/* <div className="bg-[rgba(253,_192,_129,_1)] rounded-full shadow-[0px_0px_0px_8px_rgba(253,_192,_129,_0.8),_0px_0px_0px_16px_rgba(253,_199,_143,0.6),_0px_0px_0px_24px_rgba(253,_206,_157,_0.4),_0px_0px_0px_32px_rgba(253,_213,_171,_0.2),_0px_0px_0px_40px_rgba(254,_220,_185,_0.1)]">
-        <img
-          className="w-16 h-16 p-4"
-          src="/../../logo_icon.png"
-          alt="FreySmiles Orthodontists"
-        />
-      </div> */}
-    </header>
   );
 }
 
@@ -534,7 +483,7 @@ function Hero() {
   //   document.body.addEventListener('mousemove', (e) => {
   //     gsap.to("#mouse > span", {
   //       duration: 1,
-  //       x: e.pageX - 150, 
+  //       x: e.pageX - 150,
   //       y: e.pageY - 150,
   //       ease: "expo.out",
   //       stagger: 0.005
@@ -542,69 +491,69 @@ function Hero() {
   //   });
   // }, []);
   const vertexSrc = `
-  precision mediump float;
-  attribute vec4 position;
-  varying vec2 vUv;
-  void main() {
-      gl_Position = position;
-      vUv = vec2((position.x + 1.)/2., (-position.y + 1.)/2.);
-  }
-  `;
-  
-  const fragmentSrc = `
-  precision mediump float;
-  uniform float uTrans;
-  uniform sampler2D uTexture0;
-  uniform sampler2D uTexture1;
-  uniform sampler2D uDisp;
-  varying vec2 vUv;
-  float quarticInOut(float t) {
-      return t < 0.5 ? +8.0 * pow(t, 4.0) : -8.0 * pow(t - 1.0, 4.0) + 1.0;
-  }
-  void main() {
-      vec4 disp = texture2D(uDisp, vec2(0., 0.5) + (vUv - vec2(0., 0.5)) * (0.2 + 0.8 * (1.0 - uTrans)));
-      float trans = clamp(1.6 * uTrans - disp.r * 0.4 - vUv.x * 0.2, 0.0, 1.0);
-      trans = quarticInOut(trans);
-      vec4 color0 = texture2D(uTexture0, vec2(0.5 - 0.3 * trans, 0.5) + (vUv - vec2(0.5)) * (1.0 - 0.2 * trans));
-      vec4 color1 = texture2D(uTexture1, vec2(0.5 + sin((1. - trans) * 0.1), 0.5) + (vUv - vec2(0.5)) * (0.9 + 0.1 * trans));
-      gl_FragColor = mix(color0, color1 , trans);
-  }
-  `
-  
+    precision mediump float;
+    attribute vec4 position;
+    varying vec2 vUv;
+    void main() {
+        gl_Position = position;
+        vUv = vec2((position.x + 1.)/2., (-position.y + 1.)/2.);
+    }
+    `;
+
+    const fragmentSrc = `
+    precision mediump float;
+    uniform float uTrans;
+    uniform sampler2D uTexture0;
+    uniform sampler2D uTexture1;
+    uniform sampler2D uDisp;
+    varying vec2 vUv;
+    float quarticInOut(float t) {
+        return t < 0.5 ? +8.0 * pow(t, 4.0) : -8.0 * pow(t - 1.0, 4.0) + 1.0;
+    }
+    void main() {
+        vec4 disp = texture2D(uDisp, vec2(0., 0.5) + (vUv - vec2(0., 0.5)) * (0.2 + 0.8 * (1.0 - uTrans)));
+        float trans = clamp(1.6 * uTrans - disp.r * 0.4 - vUv.x * 0.2, 0.0, 1.0);
+        trans = quarticInOut(trans);
+        vec4 color0 = texture2D(uTexture0, vec2(0.5 - 0.3 * trans, 0.5) + (vUv - vec2(0.5)) * (1.0 - 0.2 * trans));
+        vec4 color1 = texture2D(uTexture1, vec2(0.5 + sin((1. - trans) * 0.1), 0.5) + (vUv - vec2(0.5)) * (0.9 + 0.1 * trans));
+        gl_FragColor = mix(color0, color1 , trans);
+    }
+    `
+
   const assetUrls = [
     '../images/1024mainsectionimage.jpg',
     '../images/smilegirl.jpg',
     'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1600187/waterTemp.jpg'
   ];
-  
+
   const canvasRef = useRef(null);
   const obj = useRef({ trans: 0 });
-  
+
   // useEffect(() => {
   //   const canvas = canvasRef.current;
   //   canvas.style.width = 1024
   //   const gl = canvas.getContext('webgl');
   //   let cnt = 0;
   //   let textureArr = [];
-  
+
   //   let program = gl.createProgram();
-  
-  
+
+
   //   const vShader = gl.createShader(gl.VERTEX_SHADER);
   //   gl.shaderSource(vShader, vertexSrc);
   //   gl.compileShader(vShader);
-  
+
   //   const fShader = gl.createShader(gl.FRAGMENT_SHADER);
   //   gl.shaderSource(fShader, fragmentSrc);
   //   gl.compileShader(fShader);
-  
-  
+
+
   //   gl.attachShader(program, vShader);
   //   gl.deleteShader(vShader);
   //   gl.attachShader(program, fShader);
   //   gl.deleteShader(fShader);
   //   gl.linkProgram(program);
-  
+
   //   const vertices = new Float32Array([
   //     -1, -1,
   //     1, -1,
@@ -613,56 +562,56 @@ function Hero() {
   //     -1, 1,
   //     1, 1,
   //   ]);
-  
+
   //   const vertexBuffer = gl.createBuffer();
   //   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   //   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
   //   const vertexLocation = gl.getAttribLocation(program, 'position');
   //   gl.bindBuffer(gl.ARRAY_BUFFER, null);
-  
-  
+
+
   //   const uTransLoc = gl.getUniformLocation(program, 'uTrans');
   //   const textureLocArr = [
   //     gl.getUniformLocation(program, 'uTexture0'),
   //     gl.getUniformLocation(program, 'uTexture1'),
   //     gl.getUniformLocation(program, 'uDisp')
   //   ];
-  
+
   //   const obj = { trans: 0 };
-  
+
   //   function start() {
   //     loop();
   //   }
-  
+
   //   function loop() {
   //     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
   //     gl.clearColor(0.0, 0.0, 0.0, 1.0);
   //     gl.clear(gl.COLOR_BUFFER_BIT);
-  
+
   //     gl.useProgram(program);
-  
+
   //     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   //     gl.vertexAttribPointer(
   //       vertexLocation, 2, gl.FLOAT, false, 0, 0)
   //     gl.enableVertexAttribArray(vertexLocation);
-  
+
   //     textureArr.forEach((texture, index) => {
   //       gl.activeTexture(gl.TEXTURE0 + index);
   //       gl.bindTexture(gl.TEXTURE_2D, texture);
   //       gl.uniform1i(textureLocArr[index], index);
   //     })
-  
+
   //     gl.uniform1f(uTransLoc, obj.trans);
-  
+
   //     gl.drawArrays(gl.TRIANGLES, 0, 6);
-  
+
   //     requestAnimationFrame(loop);
   //   }
-  
+
   //   function resize() {
-  //     const aspectRatio = 1 / 2; 
-  //     const maxWidth = 512; 
-  //     const minHeight = 300; 
+  //     const aspectRatio = 1 / 2;
+  //     const maxWidth = 512;
+  //     const minHeight = 300;
 
   //     let width = Math.min(window.innerWidth, window.innerHeight * aspectRatio);
   //     let height = width / aspectRatio;
@@ -671,60 +620,60 @@ function Hero() {
   //         height = minHeight;
   //         width = height * aspectRatio;
   //     }
-  
+
   //     if (width > maxWidth) {
   //         width = maxWidth;
   //         height = width / aspectRatio;
   //     }
-  
+
   //     canvas.width = width;
   //     canvas.height = height;
   // }
-  
-  
+
+
   //   function loadImages() {
   //     assetUrls.forEach ((url, index) => {
   //       let img = new Image();
-  
+
   //       let texture = gl.createTexture();
   //       textureArr.push(texture);
-  
+
   //  img.onload =  function (_index, _img) {
   //         let texture = textureArr[_index];
-  
+
   //         gl.bindTexture(gl.TEXTURE_2D, texture);
   //         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, _img);
   //         gl.generateMipmap(gl.TEXTURE_2D);
-  
+
   //         cnt++;
   //         if (cnt === 3) start();
   //       }.bind(this, index, img);
-  
+
   //       img.crossOrigin = ' Anonymous';
   //       img.src = url;
-     
+
   //       console.log(img)
   //     });
   //   }
-  
-  
+
+
   //   canvas.addEventListener('mouseenter', () => {
   //     gsap.killTweensOf(obj);
   //     gsap.to(obj, 1.5, { trans: 1 });
   //   });
-  
+
   //   canvas.addEventListener('mouseleave', () => {
   //     gsap.killTweensOf(obj);
   //     gsap.to(obj, 1.5, { trans: 0 });
   //   });
-  
+
   //   window.addEventListener('resize', () => {
   //     resize();
   //   });
-  
+
   //   loadImages();
   //   resize();
-  
+
   //   return () => {
   //     window.removeEventListener('resize', resize);
   //     canvas.removeEventListener('mouseenter', () => {
@@ -737,11 +686,10 @@ function Hero() {
   //     });
   //   };
   // }, []);
-  
-  return (
 
+  return (
     <section
-    className="relative bg-cover bg-center"
+    className="relative pt-10 overflow-hidden bg-center bg-cover"
     style={{ backgroundImage: 'url(../images/purplepeach.jpg)' }}
   >
 
@@ -762,7 +710,7 @@ function Hero() {
             </svg>
           </div>
 
-          <div className="relative z-10 mx-auto lg:mt-0">
+          <div className="relative z-10 w-full mx-auto lg:mt-0">
             <div className="flex flex-wrap items-center justify-center">
               <div className="relative">
                 <div className="hero">
@@ -788,7 +736,7 @@ function Hero() {
               </div>
             </div>
           </div>
-        
+
           <div className="relative flex items-center justify-center">
             <div
               className={`absolute z-20 inline-block ${
@@ -833,7 +781,7 @@ function Hero() {
               src="../../images/mainsectionimage.jpg"
               alt="girl smiling"
             />
-           
+
           </div>
         </div>
       </div>
@@ -859,45 +807,28 @@ function Hero() {
 
 function Mask() {
   const useMousePosition = () => {
-
     const [mousePosition, setMousePosition] = useState({ x: null, y: null });
-  
-  
-  
     const updateMousePosition = e => {
-  
       setMousePosition({ x: e.clientX, y: e.clientY });
-  
     };
-  
-  
-  
+
     useEffect(() => {
-  
       window.addEventListener("mousemove", updateMousePosition);
-  
-  
-  
       return () => window.removeEventListener("mousemove", updateMousePosition);
-  
     }, []);
-  
-  
-  
+
     return mousePosition;
-  
   };
+
   const [isHovered, setIsHovered] = useState(false);
 
   const { x, y } = useMousePosition();
 
   const size = isHovered ? 400 : 40;
 
-
-
-  return(
-<main className="uniqueMain">
-      <motion.div 
+  return (
+    <main className="uniqueMain">
+      <motion.div
         className="uniqueMask"
         animate={{
           WebkitMaskPosition: `${x - (size/2)}px ${y - (size/2)}px`,
@@ -905,26 +836,22 @@ function Mask() {
         }}
         transition={{ type: "tween", ease: "backOut", duration: 0.5}}
       >
-          <p onMouseEnter={() => {setIsHovered(true)}} onMouseLeave={() => {setIsHovered(false)}}>
-INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE 
-          </p>
+        <p onMouseEnter={() => {setIsHovered(true)}} onMouseLeave={() => {setIsHovered(false)}}>
+          INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
+        </p>
       </motion.div>
 
       <div className="uniqueBody">
         <p> We are your  <span>go-to provider </span> for advanced and discerning orthodontic care.</p>
       </div>
-
     </main>
-
-
-
   )
 }
 
 // function About() {
 //   return (
 //     <div>
-     
+
 //       <style jsx>{`
 //         :global(:root) {
 //           --padding: 15vh;
@@ -943,7 +870,7 @@ INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
 //           text-align: center;
 //           z-index: 2;
 //           font-size: 14em;
-     
+
 //           line-height: 0.75;
 //           font-weight: 120;
 //           position: sticky;
@@ -981,7 +908,7 @@ INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
 //           place-items: center;
 //           padding: 0 1rem;
 //         }
-   
+
 //       `}</style>
 //       <header>
 //         <h1 className="font-Lato">about</h1>
@@ -991,10 +918,10 @@ INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
 //                   loop
 //                   muted
 //                   style={{
-        
+
 //                     objectFit: "contain",
 //                   }}
-                 
+
 //                 >
 //                   <source
 //                     src="../images/exam.mp4"
@@ -1006,6 +933,7 @@ INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
 //     </div>
 //   );
 // }
+
 function GSAPAnimateScrollSections() {
   // const listRef = useRef(null);
 
@@ -1079,8 +1007,6 @@ function GSAPAnimateScrollSections() {
   //   },
   // ];
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     const viewHeight = window.innerHeight;
 
     document.querySelectorAll(".text-container").forEach((element) => {
@@ -1202,203 +1128,137 @@ function GSAPAnimateScrollSections() {
     };
   }, []);
 
+  const MobileLayout = () => {
+    useGSAP(() => {
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#stats-section',
+          start: 'top 50%',
+          end: 'bottom 100%',
+          scrub: 1,
+        },
+        defaults: { ease: 'power1.in' },
+      })
+
+      tl.to('.middle-circle', {
+        scale: 1,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 4,
+      }, 0)
+      .to('.middle-circle-text', {
+        scale: 1,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 6,
+      }, 0)
+      .to('.left-circle', {
+        opacity: 1,
+        filter: "blur(0px)",
+        transform: "translate(0%, 0%)",
+        duration: 6,
+      }, 3)
+      tl.to('.right-circle', {
+        opacity: 1,
+        filter: "blur(0px)",
+        transform: "translate(0%, 0%)",
+        duration: 6,
+      }, 3)
+      .to('#stats-heading', {
+        opacity: 1,
+        transform: "translate(0%, 0%)",
+        duration: 4,
+      })
+    })
+
+    return (
+      <section id='stats-section' className='relative block w-full h-[50vh] md:h-screen place-content-center place-items-center xl:hidden'>
+        <div className='container flex items-center justify-center gap-2 px-8 py-4 mx-auto'>
+          <figure className='translate-x-1/2 opacity-0 blur-sm left-circle'>
+            <span className='block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square'>
+              <p className='text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]'>60+ yrs</p>
+            </span>
+            <p className='leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]'>experience</p>
+          </figure>
+          <figure className='scale-0 opacity-0 blur-sm middle-circle'>
+            <span className='block w-40 h-40 md:w-60 md:h-60 mb-4 rounded-full place-content-center place-items-center aspect-square shadow-[inset_0_0_20px_rgba(255,255,255,1)] md:shadow-[inset_0_0_30px_rgba(255,255,255,1)] middle-circle-text opacity-0 blur-sm'>
+              <p className='text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]'>25,000</p>
+            </span>
+            <p className='leading-4 tracking-wide text-center capitalize opacity-0 middle-circle-text blur-sm font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]'>patients</p>
+          </figure>
+          <figure className='-translate-x-1/2 opacity-0 blur-sm right-circle'>
+            <span className='block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square'>
+              <p className='text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]'>4</p>
+            </span>
+            <p className='leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]'>locations</p>
+          </figure>
+        </div>
+        <div id='stats-heading' className='container w-full mx-auto translate-y-1/2 opacity-0 place-content-center'>
+          <h2 className='w-full tracking-tighter text-center uppercase text-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] leading-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] font-agrandir-grandheavy text-zinc-100'>About</h2>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <>
-      <section className="relative home-main">
-   
-
+      <section className="relative hidden home-main xl:block">
         <div className="home-main__content">
-     
+
           <div className="home-main__content-sphere">
-            <div className="container">
-              <ul>
-                <li
-                  className="font-grandslang "
-                  id="first-circle"
+            <ul className="container mx-auto">
+              <li
+                className="font-helvetica-neue "
+                id="first-circle"
+                style={{ opacity: 0, filter: "blur(10px)" }}
+              >
+                <figure>
+                  <h3>60+</h3>
+                  <p className="mt-10 uppercase font-poppins ">
+                    years of experience
+                  </p>
+                </figure>
+              </li>
+              <li
+                className="font-bold font-neue-montreal"
+                id="middle-circle"
+                style={{ boxShadow: "inset 0 0 300px #fff" }}
+              >
+                <figure
+                  id="figure2"
                   style={{ opacity: 0, filter: "blur(10px)" }}
                 >
-                  <figure>
-                    <h3>60+</h3>
-
-                    <p className="mt-10 uppercase font-poppins ">
-
-                      years of experience
-                    </p>
-                  </figure>
-                </li>
-                <li
-
-                  className="font-bold font-neue-montreal"
-
-                  id="middle-circle"
-                  style={{ boxShadow: "inset 0 0 300px #fff" }}
-                >
-                  <figure
-                    id="figure2"
-                    style={{ opacity: 0, filter: "blur(10px)" }}
-                  >
-
-                    <h3 className="font-bold font-Lato">25k</h3>
-                    <p className="mt-10 tracking-wide uppercase font-Lato">
-
-                      patients
-                    </p>
-                  </figure>
-                </li>
-                <li
-                  className=""
-                  id="last-circle"
-                  style={{ opacity: 0, filter: "blur(10px)" }}
-                >
-                  <figure>
-
-                    <h3 className="font-bold font-neue-montreal">4</h3>
-                    <p className="mt-10 tracking-wide font-helvetica-now-thin">
-
-                      unique locations
-                    </p>
-                  </figure>
-                </li>
-              </ul>
-              <div
-                className="home-main__content-sphere-desc"
-                style={{ transform: "translate(0, 137px)", opacity: 0 }}
-              ></div>
-            </div>
+                  <h3 className="font-bold font-Lato">25k</h3>
+                  <p className="mt-10 tracking-wide uppercase font-Lato">
+                    patients
+                  </p>
+                </figure>
+              </li>
+              <li
+                className=""
+                id="last-circle"
+                style={{ opacity: 0, filter: "blur(10px)" }}
+              >
+                <figure>
+                  <h3 className="font-bold font-neue-montreal">4</h3>
+                  <p className="mt-10 tracking-wide font-helvetica-now-thin">
+                    unique locations
+                  </p>
+                </figure>
+              </li>
+            </ul>
+            <div
+              className="home-main__content-sphere-desc"
+              style={{ transform: "translate(0, 137px)", opacity: 0 }}
+            ></div>
           </div>
         </div>
-
+        <div className="text-center large-text">
+          <h1 className="text-[300px]">ABOUT</h1>
+        </div>
       </section>
 
-      <style>
-        {`
-          body {
-            overflow: visible;
-            overflow-x: hidden;
-          }
-
-          .flex {
-            display: flex;
-          }
-          .items-center {
-            align-items: center;
-          }
-          .justify-between {
-            justify-content: space-between;
-          }
-
-          .inline-flex {
-            display: inline-flex;
-          }
-          .justify-end {
-            justify-content: flex-end;
-          }
-
-          @media (min-width: 768px) {
-            .home-fly {
-
-              height: 100vh;
-              left: 0;
-              position: fixed;
-              top: 0;
-              width: 100vw;
-            }
-            .home-hero {
-              overflow: unset;
-              position: relative;
-              z-index: 1;
-            }
-            .home-hero__content {
-              align-items: center;
-              display: flex;
-              height: 100vh;
-              left: 0;
-              position: absolute;
-              text-align: center;
-              top: 0;
-              width: 100%;
-            }
-
-            .home-main {
-              min-height: 250vh;
-              overflow: unset;
-              padding-bottom: 100px;
-            }
-            .home-main__content {
-              align-items: center;
-              display: flex;
-              height: 100vh;
-              overflow: unset;
-              position: sticky;
-              top: 0;
-            }
-
-            .container {
-              margin: 0 auto;
-              width: 100%;
-            }
-
-            .home-main__content-sphere {
-              align-items: center;
-              color: #fff;
-              display: flex;
-              height: 100%;
-              left: 0;
-              position: absolute;
-              top: 0;
-              width: 100%;
-            }
-
-            .home-main__content-sphere ul {
-              position: relative;
-            }
-            .home-main__content-sphere ul li:first-child,
-            .home-main__content-sphere ul li:nth-child(3) {
-              border: 1px solid #fff;
-              filter: blur(10px);
-              height: 363px;
-              opacity: 0;
-              width: 363px;
-            }
-            .home-main__content-sphere ul li {
-              align-items: center;
-              border-radius: 50%;
-              display: flex;
-              flex-direction: column;
-              justify-content: center;
-              left: 50%;
-              position: absolute;
-              text-align: center;
-              top: 50%;
-              transform: translate(-50%,-50%);
-            }
-            .home-main__content-sphere ul li figure h3 {
-              font-size: 100px;
-              font-weight: 500;
-              margin-bottom: 15px;
-            }
-            .home-main__content-sphere ul li figure p {
-              font-size: 30px;
-              line-height: 24px;
-              max-width: 277px;
-            }
-            .home-main__content-sphere ul li:nth-child(2) {
-              box-shadow: inset 0 0 300px #fff;
-              height: 518px;
-              transform: translate(-50%,-50%) scale(.0579150579);
-              width: 518px;
-              z-index: 1;
-            }
-            .home-main__content-sphere-desc p {
-              display: block;
-              font-size: 40px;
-              line-height: 30px;
-              margin: 0 auto 27px;
-              max-width: 724px;
-            }
-          }
-        `}
-      </style>
+      <MobileLayout />
     </>
     // <section
     //   ref={listRef}
@@ -1459,48 +1319,48 @@ function GSAPAnimateScrollSections() {
 }
 
 const HorizontalGrid =() =>{
-  return(
+  return (
     <div className="relative">
-<div class="containerH">
- 
-  <div class="content-wrapper">
-  
-    <div class="childCon">
-      <h1>CSS-only horizontal scroll tentative</h1>
-      <p>The idea is to create an horizontal scroll layout and to allow the user to scroll up/down the mouse to scroll left/right.</p>
-      <p>So… please scroll <strong>down</strong> with your mouse.</p>
+      <div class="containerH">
+        <div class="content-wrapper">
+          <div class="childCon">
+            <h1>CSS-only horizontal scroll tentative</h1>
+            <p>
+              The idea is to create an horizontal scroll layout and to allow the
+              user to scroll up/down the mouse to scroll left/right.
+            </p>
+            <p>
+              So… please scroll <strong>down</strong> with your mouse.
+            </p>
+          </div>
+
+          <div class="childCon">
+            <h2>The trick</h2>
+            <p>Rotate -90deg the container, and 90deg its children blocks.</p>
+            <p>You have to fix container and children dimensions. :(</p>
+            <p>See CSS for rather correct positioning.</p>
+          </div>
+
+          <div class="childCon">
+            <h2>Desktop browsers</h2>
+            <p>Vertical scroll… scrolls. :)</p>
+            <p>But horizontal scroll (e.g. with a trackpad) doesn’t. :(</p>
+          </div>
+
+          <div class="childCon">
+            <h2>Mobile browsers</h2>
+            <p>Only horizontal touchmove works on Chrome. :)</p>
+            <p>Only vertical touchmove works on Safari and Firefox.</p>
+          </div>
+
+          <div class="childCon">
+            <h2>Conclusion</h2>
+            <p>Without JavaScript: no good idea.</p>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div class="childCon">
-      <h2>The trick</h2>
-      <p>Rotate -90deg the container, and 90deg its children blocks.</p>
-      <p>You have to fix container and children dimensions. :(</p>
-      <p>See CSS for rather correct positioning.</p>
-    </div>
-
-    <div class="childCon">
-      <h2>Desktop browsers</h2>
-      <p>Vertical scroll… scrolls. :)</p>
-      <p>But horizontal scroll (e.g. with a trackpad) doesn’t. :(</p>
-    </div>
-
-    <div class="childCon">
-      <h2>Mobile browsers</h2>
-      <p>Only horizontal touchmove works on Chrome. :)</p>
-      <p>Only vertical touchmove works on Safari and Firefox.</p>
-    </div>
-
-
-    <div class="childCon">
-      <h2>Conclusion</h2>
-      <p>Without JavaScript: no good idea.</p>
-    </div>
-
-  </div>
-  
-</div>
-</div>
-  )
+  );
 }
 
 const ImageGrid = () => {
@@ -1522,9 +1382,8 @@ const ImageGrid = () => {
       window.removeEventListener("mousemove", moveCursor);
     };
   }, [isHovering]);
-  useEffect(() => {
-    gsap.registerPlugin(SplitText);
 
+  useEffect(() => {
     if (headerRef.current) {
       const tl = gsap.timeline();
       gsap.set(bodyRef.current, { autoAlpha: 1 });
@@ -1618,54 +1477,52 @@ const ImageGrid = () => {
   ];
 
 
- 
+
   return (
     <div>
-
-    <div
-
-  
-      className="container flex flex-col py-24 mx-auto overflow-hidden lg:flex-row lg:items-start text-white"
-
-
-      ref={bodyRef}
-
-    >
       <div
-        className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
-        style={{
-          left: `${cursorPos.x}px`,
-          top: `${cursorPos.y}px`,
-          opacity: isHovering ? 1 : 0,
-        }}
+        className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
+        ref={bodyRef}
       >
-        <p>CHECK </p>
-        <p>IT OUT</p>
+        <div
+          className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
+          style={{
+            left: `${cursorPos.x}px`,
+            top: `${cursorPos.y}px`,
+            opacity: isHovering ? 1 : 0,
+          }}
+        >
+          <p>CHECK </p>
+          <p>IT OUT</p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
+          {images.map((image, index) => (
+            <a
+              key={index}
+              href={image.url}
+              className={`group image-card relative flex items-center justify-center mb-20 ${
+                image.className === "image-portrait"
+                  ? "mx-4 w-[27vw] h-[37vw]"
+                  : "mx-4 w-[40vw] h-[27vw]"
+              }`}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+                {image.title}
+              </div>
+              <img
+                src={image.src}
+                className="block object-cover w-full h-full"
+              />
+            </a>
+          ))}
+        </div>
       </div>
-      <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
-        {images.map((image, index) => (
-          <a
-            key={index}
-            href={image.url}
-            className={`group image-card relative flex items-center justify-center mb-20 ${
-              image.className === "image-portrait"
-                ? "mx-4 w-[27vw] h-[37vw]"
-                : "mx-4 w-[40vw] h-[27vw]"
-            }`}
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-          >
-            <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
-              {image.title}
-            </div>
-            <img src={image.src} className="block object-cover w-full h-full" />
-          </a>
-        ))}
-      </div>
-    </div>
     </div>
   );
 };
+
 const ParallaxOutline = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -1710,122 +1567,145 @@ const ParallaxOutline = () => {
   };
 
   return (
-
     <div className="flex flex-col items-center justify-center h-screen ">
       <div className="flex justify-center tracking-widest uppercase tracking">
-
         Testimonials
       </div>
-    <div className="flex flex-col items-center justify-center h-screen ">
-  
-      <div className="relative flex items-center">
-        <div className="absolute top-0 right-0 z-20 flex">
-          <button
-            onClick={() => scroll("left")}
-            className="p-4"
-            aria-label="Previous"
-          >
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z" fill="white"/>
-        </svg>
-          </button>
-          <button
-            onClick={() => scroll("right")}
-            className="p-4 "
-            aria-label="Next"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z" fill="white"/>
-        </svg>
-          </button>
-        </div>
-        <div className="relative flex items-center justify-center">
-          <div
-            ref={carouselRef}
-            className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
-            style={{ width: "60vw", height: "auto" }}
-          >
-            <div
-              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
-              style={{
-                height: "500px",
-                backgroundImage:
-                  "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
-              }}
+      <div className="flex flex-col items-center justify-center h-screen ">
+        <div className="relative flex items-center">
+          <div className="absolute top-0 right-0 z-20 flex">
+            <button
+              onClick={() => scroll("left")}
+              className="p-4"
+              aria-label="Previous"
             >
-              <div className="flex flex-col justify-center items-center mx-[7vw] ">
-                <p className="font-helvetica-now-thin text-[24px] text-center">
-                  You will receive top notch orthodontic care at Frey Smiles.
-                  Dr. Frey and his entire staff make every visit a pleasure. It
-                  is apparent at each appointment that Dr. Frey truly cares
-                  about his patients. He has treated both of our kids and my
-                  husband, and they all have beautiful smiles! I highly
-                  recommend!
-                </p>
-                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Lisa Moyer</p>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="13"
+                viewBox="0 0 40 13"
+                fill="none"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              className="p-4 "
+              aria-label="Next"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="13"
+                viewBox="0 0 40 13"
+                fill="none"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+          </div>
+          <div className="relative flex items-center justify-center">
+            <div
+              ref={carouselRef}
+              className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
+              style={{ width: "60vw", height: "auto" }}
+            >
+              <div
+                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+                style={{
+                  height: "500px",
+                  backgroundImage:
+                    "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
+                }}
+              >
+                <div className="flex flex-col justify-center items-center mx-[7vw] ">
+                  <p className="font-helvetica-now-thin text-[24px] text-center">
+                    You will receive top notch orthodontic care at Frey Smiles.
+                    Dr. Frey and his entire staff make every visit a pleasure.
+                    It is apparent at each appointment that Dr. Frey truly cares
+                    about his patients. He has treated both of our kids and my
+                    husband, and they all have beautiful smiles! I highly
+                    recommend!
+                  </p>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                    Lisa Moyer
+                  </p>
+                </div>
               </div>
-            </div>
-            <div
-              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
-              style={{
-                height: "500px",
-                backgroundImage:
-                  "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0",
-              }}
-            >
-              <div className=" flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                <p className="font-helvetica-now-thin text-[24px] text-center">
-                  My experience at FreySmiles has been amazing! I recently just
-                  completed my Invisalign and my teeth look perfect! Dr. Frey
-                  truly cares about his patients and the staff are always
-                  friendly, as well as always accommodating to my schedule.
-                  They're the best around!
-                </p>
-                <p className="font-helvetica-now-thin text-[20px] mt-10  text-center">Kailee</p>
+              <div
+                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+                style={{
+                  height: "500px",
+                  backgroundImage:
+                    "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0",
+                }}
+              >
+                <div className=" flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                  <p className="font-helvetica-now-thin text-[24px] text-center">
+                    My experience at FreySmiles has been amazing! I recently
+                    just completed my Invisalign and my teeth look perfect! Dr.
+                    Frey truly cares about his patients and the staff are always
+                    friendly, as well as always accommodating to my schedule.
+                    They're the best around!
+                  </p>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10  text-center">
+                    Kailee
+                  </p>
+                </div>
               </div>
-            </div>
-            <div
-              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
-              style={{
-                height: "500px",
-                backgroundImage:
-                  "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
-              }}
-            >
-              <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                <p className="text-2xl text-center">
-                  <h1 className="font-helvetica-now-thin font-normal text-[24px] relative overflow-hidden">
+              <div
+                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+                style={{
+                  height: "500px",
+                  backgroundImage:
+                    "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
+                }}
+              >
+                <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                  <p className="text-2xl text-center">
                     I had an open bite and misaligned teeth most of my life. Dr
                     Frey fixed it and in record time. 1 1/2 yrs with
-                    Invisalign’s. Highly recommended! Friendly staff and easy to
+                    Invisalign's. Highly recommended! Friendly staff and easy to
                     make appointments!
-
-
-                  </h1>
-                </p>
-                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Karen Oneill</p>
+                  </p>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                    Karen Oneill
+                  </p>
+                </div>
               </div>
-            </div>
-            <div
-              className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
-              style={{
-                height: "500px",
-                backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
-              }}
-            >
-              <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                <h1 className="font-helvetica-now-thin text-[24px] text-center">
-                  Dr. Frey was my orthodontist when I was 11 years old, Im now
-                  42. I still talk about how amazing he was and the great work
-                  he did with my teeth. Thank you so much for giving the most
-                  beautiful smile!
-                </h1>
-                <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">Tanya Burnhauser</p>
+              <div
+                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+                style={{
+                  height: "500px",
+                  backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
+                }}
+              >
+                <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                  <h1 className="font-helvetica-now-thin text-[24px] text-center">
+                    Dr. Frey was my orthodontist when I was 11 years old, Im now
+                    42. I still talk about how amazing he was and the great work
+                    he did with my teeth. Thank you so much for giving the most
+                    beautiful smile!
+                  </h1>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                    Tanya Burnhauser
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
         {/* <span className="absolute text-white font-serif text-[10vw] custom-text" data-text="Happy Patients">
  Happy Patients
@@ -1852,7 +1732,7 @@ const ParallaxOutline = () => {
 </div>
 
     </div> */}
-    </div>
+      </div>
     </div>
   );
 };
@@ -1879,7 +1759,9 @@ const LogoGrid = () => {
       "../images/movingbannerfiles/aao_invert.png",
     ],
   ];
+
   let isSphereCreated = false;
+
   useEffect(() => {
     console.log("sphere");
     if (isSphereCreated) {
@@ -1894,14 +1776,14 @@ const LogoGrid = () => {
       if (navigator.userAgentData) {
 
         try {
-     
+
           if (navigator.userAgentData.platform === "Windows") {
             let ua = await navigator.userAgentData.getHighEntropyValues(["platformVersion"]);
             majorPlatformVersion = parseInt(ua.platformVersion.split(".")[0]);
           }
         } catch (error) {
           console.error("version", error);
-        
+
           majorPlatformVersion = undefined;
 
         }
@@ -2095,50 +1977,41 @@ const LogoGrid = () => {
   }, []);
 
   return (
-    <div className="bg-[#DDDCDC] h-screen flex justify-center items-center">
-      <div className="grid grid-cols-2 p-4">
-        <div class="horizontal-item">
-          <div className="z-10" id="ballcanvas"></div>
-        </div>
-
-
-        <div className="flex items-center justify-center flex-col">
-          <div className="font-poppins font-bold text-8xl uppercase">
-
-            Awards & Recognition
-          </div>
-          <div class="mt-10 flex items-center">
-            <div class="w-48 h-px bg-gray-700"></div>
-            <div class="text-[15px] pl-4">
-              Our greatest award is the success of our patients
-            </div>
-          </div>
-        </div>
-
-        <div className="flex h-80">
-          <div
-            className="bg-[#20282D] w-full"
-            style={{ position: "absolute", bottom: 0 }}
-          >
-            <h1 className="text-3xl font-bold tracking-wide text-white uppercase animate-locationsCardMarquee font-neue-montreal">
-              &bull; COME SEE US AT ANY OF OUR FOUR LOCATIONS &bull; COME SEE US
-              AT ANY OF OUR FOUR LOCATIONS &bull;
-            </h1>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {logos.map((columnLogos, columnIndex) => (
-              <div key={columnIndex} className="flex flex-col items-center">
-                {columnLogos.map((logo, logoIndex) => (
-                  <div key={logoIndex} className="p-2">
-                    <img
-                      src={logo}
-                      alt={`Logo ${logoIndex + 1}`}
-                      className="w-auto h-14"
-                    />
-                  </div>
-                ))}
+    <div className="bg-[#DDDCDC] relative h-screen overflow-hidden">
+      {/* MARQUEE  */}
+      <div className="bg-[#20282D] w-full absolute top-0">
+        <h1 className="text-3xl font-bold tracking-wide text-white uppercase animate-locationsCardMarquee font-neue-montreal">
+          &bull; COME SEE US AT ANY OF OUR FOUR LOCATIONS &bull; COME SEE US
+          AT ANY OF OUR FOUR LOCATIONS &bull;
+        </h1>
+      </div>
+      {/* <div className="grid grid-cols-2 gap-4">
+        {logos.map((columnLogos, columnIndex) => (
+          <div key={columnIndex} className="flex flex-col items-center">
+            {columnLogos.map((logo, logoIndex) => (
+              <div key={logoIndex} className="p-2">
+                <img
+                  src={logo}
+                  alt={`Logo ${logoIndex + 1}`}
+                  className="w-auto h-14"
+                />
               </div>
             ))}
+          </div>
+        ))}
+      </div> */}
+      <div className="container flex flex-col-reverse items-center justify-center h-full gap-4 py-32 mx-auto overflow-hidden lg:py-0 lg:flex-row lg:overflow-visible">
+        <div id="ballcanvas" className="z-10 w-full h-full lg:w-1/2 horizontal-item" />
+
+        <div className="lg:w-1/2">
+          <p className="font-bold uppercase leading-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]  text-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]">
+            Awards & Recognition
+          </p>
+          <div className="flex items-center mt-10">
+            <div className="w-48 h-px bg-gray-700"></div>
+            <p className="text-[15px] pl-4">
+              Our greatest award is the success of our patients
+            </p>
           </div>
         </div>
       </div>
@@ -2147,11 +2020,7 @@ const LogoGrid = () => {
 };
 
 function LocationGallery() {
-
-
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     let revealContainers = document.querySelectorAll(".reveal");
     revealContainers.forEach((container) => {
       let image = container.querySelector("img");
@@ -2173,86 +2042,133 @@ function LocationGallery() {
         });
     });
   }, []);
-  
-  return (
 
+  return (
     <div className="bg-[#161818]">
       <section className="sliderMainPage-projects">
-  <div className="sliderMainPage-container w-dyn-list">
-  <div role="list" className="sliderMainPage-wrapper mainProjects w-dyn-items" style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '20px' }}>
-      {/* First Project Item (Odd) */}
-      <div role="listitem" className="sliderMainPage-item sliderMainPage-projectItem" style={{ gridColumn: '1 / 3', gridRow: '1', marginTop: '100px' }}>
-        <div className="sliderMainPage-labelGroup">
-          <div className="sliderMainPage-textSmall sliderMainPage-label text-white">01 — 01</div>
-        </div>
-        <div className="sliderMainPage-imageContainer">
-        <video
-  autoPlay
-  loop
-  muted
-  style={{
-    width: '100%',
-    height: '200px',
-    objectFit: 'cover' 
-  }}
-  className="sliderMainPage-images sliderMainPage-projectImage">
-  <source
-    src="../images/invisalignglowup.mp4"
-    type="video/mp4"
-  />
-  Your browser does not support the video tag.
-</video>
+        <div className="sliderMainPage-container w-dyn-list">
+          <div
+            role="list"
+            className="sliderMainPage-wrapper mainProjects w-dyn-items"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(9, 1fr)",
+              gap: "20px",
+            }}
+          >
+            {/* First Project Item (Odd) */}
+            <div
+              role="listitem"
+              className="sliderMainPage-item sliderMainPage-projectItem"
+              style={{ gridColumn: "1 / 3", gridRow: "1", marginTop: "100px" }}
+            >
+              <div className="sliderMainPage-labelGroup">
+                <div className="text-white sliderMainPage-textSmall sliderMainPage-label">
+                  01 — 01
+                </div>
+              </div>
+              <div className="sliderMainPage-imageContainer">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  style={{
+                    width: "100%",
+                    height: "200px",
+                    objectFit: "cover",
+                  }}
+                  className="sliderMainPage-images sliderMainPage-projectImage"
+                >
+                  <source
+                    src="../images/invisalignglowup.mp4"
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <div className="sliderMainPage-descr">
+                <div className="sliderMainPage-text">2023</div>
+                <div className="sliderMainPage-info">
+                  <div className="sliderMainPage-text">
+                    Real estate — Chyrnaya Rechka, 41
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        </div>
-        <div className="sliderMainPage-descr">
-          <div className="sliderMainPage-text">2023</div>
-          <div className="sliderMainPage-info">
-            <div className="sliderMainPage-text">Real estate — Chyrnaya Rechka, 41</div>
+            {/* Second Project Item (Even) */}
+            <div
+              role="listitem"
+              className="sliderMainPage-item sliderMainPage-projectItem"
+              style={{
+                gridColumn: "5 / -1",
+                gridRow: "1",
+                marginLeft: "1.3vw",
+              }}
+            >
+              <div className="sliderMainPage-labelGroup">
+                <div className="text-white sliderMainPage-textSmall sliderMainPage-label">
+                  02 — 02
+                </div>
+              </div>
+              <div className="sliderMainPage-imageContainer">
+                <img
+                  src="../images/sch.png"
+                  loading="lazy"
+                  alt="Brand identity concept, Vladivostok"
+                  className="sliderMainPage-images sliderMainPage-projectImage"
+                  style={{ width: "100%", height: "450px", objectFit: "cover" }}
+                />
+              </div>
+              <div className="sliderMainPage-descr">
+                <div className="text-white sliderMainPage-text">est. 2023</div>
+                <div className="sliderMainPage-info">
+                  <div className="text-white sliderMainPage-text">
+                    Schnecksville
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
+          <div className="flex items-center justify-start mt-4 space-x-4">
+            <button id="next" className="sliderMainPage-buttonRight">
+              {/* SVG Right Arrow */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="13"
+                viewBox="0 0 40 13"
+                fill="none"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+            <button id="prev" className="sliderMainPage-buttonLeft">
+              {/* SVG Left Arrow */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="13"
+                viewBox="0 0 40 13"
+                fill="none"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
+                  fill="white"
+                />
+              </svg>
+            </button>
           </div>
         </div>
-      </div>
-      
-      {/* Second Project Item (Even) */}
-      <div role="listitem" className="sliderMainPage-item sliderMainPage-projectItem" style={{ gridColumn: '5 / -1', gridRow: '1', marginLeft: '1.3vw' }}>
-        <div className="sliderMainPage-labelGroup">
-          <div className="sliderMainPage-textSmall sliderMainPage-label text-white">02 — 02</div>
-        </div>
-        <div className="sliderMainPage-imageContainer">
-          <img 
-            src="../images/sch.png" 
-            loading="lazy" 
-            alt="Brand identity concept, Vladivostok" 
-            className="sliderMainPage-images sliderMainPage-projectImage" 
-            style={{ width: '100%', height: '450px', objectFit: 'cover' }}
-          />
-        </div>
-        <div className="sliderMainPage-descr">
-          <div className="sliderMainPage-text text-white">est. 2023</div>
-          <div className="sliderMainPage-info">
-            <div className="sliderMainPage-text text-white">Schnecksville</div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div className="flex justify-start items-center mt-4 space-x-4">
-      <button id="next" className="sliderMainPage-buttonRight">
-        {/* SVG Right Arrow */}
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z" fill="white"/>
-        </svg>
-      </button>
-      <button id="prev" className="sliderMainPage-buttonLeft">
-        {/* SVG Left Arrow */}
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="13" viewBox="0 0 40 13" fill="none">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z" fill="white"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-</section>
+      </section>
       <div
         className="container"
         style={{
@@ -2289,36 +2205,12 @@ function LocationGallery() {
             alt="Description"
           />
         </div>
-
       </div>
     </div>
   );
 }
 
 function Locations() {
-  // const [isVisible, setIsVisible] = useState(false);
-  // const footerRef = useRef(null);
-
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       const [entry] = entries;
-  //       setIsVisible(entry.isIntersecting);
-  //     },
-  //     { threshold: 0.5 }
-  //   );
-
-  //   if (footerRef.current) {
-  //     observer.observe(footerRef.current);
-  //   }
-
-  //   return () => {
-  //     if (footerRef.current) {
-  //       observer.unobserve(footerRef.current);
-  //     }
-  //   };
-  // }, []);
-
   const ref = useRef(null)
   const isInView = useInView(ref, { once: false })
   const [scope, animate] = useAnimate()
@@ -2403,9 +2295,138 @@ function Locations() {
     )
   }, [isInView])
 
-  useEffect(() => {
-    gsap.registerPlugin(SplitText);
+  const DrawEllipse = (props) => {
+    useGSAP(() => {
+      gsap.from(".draw", {
+        drawSVG: "0%",
+        ease: "expo.out",
+        scrollTrigger: {
+          trigger: "#locations-section",
+          start: "clamp(top center)",
+          scrub: true,
+          pinSpacing: false,
+          markers: false,
+        },
+      });
+    });
 
+    return (
+      <svg
+        width="508"
+        height="122"
+        viewBox="0 0 508 122"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <path
+          className="draw"
+          d="M2 23.2421C28.9079 14.5835 113.098 -1.63994 234.594 2.73493C386.464 8.20351 515.075 37.5458 505.497 77.9274C503.774 85.1946 491.815 127.145 271.535 118.942C51.2552 110.739 32.8106 78.7919 45.7824 58.053C59.4644 36.1787 112.824 27.9758 193.548 27.9758"
+          stroke="#ff6432"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </svg>
+    )
+  }
+
+  const BezierCurve = () => {
+    const container = useRef(null)
+    const path = useRef(null)
+    let progress = 0
+    let time = Math.PI / 2 // want the initial time value to be 1; in sine graph y = 1 when x = pi / 2
+    let reqId = null // everytime mouse enters and leaves line's bounding box, animation gets called causing simultaneous chains of it being called (this is bad), only want one request animation running at the same time
+    let x = 0.5 // middle point is 1/2
+
+    useEffect(() => {
+      setPath(progress)
+      window.addEventListener('resize', () => {
+        setPath(progress)
+      })
+    }, [])
+
+    {/*
+      use svg container's width to get control point (center point) of quadratic bezier curve; control point = svg container's width / 2
+      30 ==> svg height(60) divided by 2 to align the path within the center of the svg
+    */}
+    const setPath = (progress) => {
+      if (container.current) {
+        const width = container.current.offsetWidth
+        path.current.setAttributeNS(null, "d", `M 0 30 Q${width * x} ${30 + progress} ${width} 30`)
+      }
+    }
+
+    const manageMouseEnter = () => {
+      if (reqId) {
+        window.cancelAnimationFrame(reqId)
+        resetAnimation()
+      }
+    }
+
+    const manageMouseMove = (e) => {
+      const { movementY, clientX } = e
+      const { left, width } = path.current.getBoundingClientRect()
+      // get value of x depending on where mouse is on the x-axis of the line
+      x = (clientX - left) / width
+      progress += movementY
+      setPath(progress)
+    }
+
+    const manageMouseLeave = () => {
+      animateOut()
+    }
+
+    {/*
+      linear interpolation
+      x: The value we want to interpolate from (start) => 10
+      y: The target value we want to interpolate to (end) => 0
+      a: The amount by which we want x to be closer to y => 10% or 0.1
+      ex: value = lerp(value, 0, 0.1)
+      if value = 10, bring that value close to 0 by 10% which will give 9
+    */}
+    const lerp = (x, y, a) => x * (1 - a) + y * a
+
+    // sine function, linear interpolation, recursivity
+    const animateOut = () => {
+      // sine function creates the "wobbly" line animation when mouse leaves the line
+      const newProgress = progress * Math.sin(time)
+      time += 0.25 // speed of bounce animation
+      setPath(newProgress)
+      progress = lerp(progress, 0, 0.05) // change 3rd lerp argument to change curve's bounce exaggeration
+
+      // exit condition
+      if (Math.abs(progress) > 0.75) {
+        reqId = window.requestAnimationFrame(animateOut)
+      } else {
+        resetAnimation()
+      }
+    }
+
+    const resetAnimation = () => {
+      time = Math.PI / 2
+      progress = 0
+    }
+
+    return (
+      <>
+        {/* line */}
+        <div ref={container} className="mb-[30px] col-span-12 row-start-2 h-[1px] w-full relative">
+          {/* box for event listeners overlays the svg element */}
+          <div
+            onMouseEnter={manageMouseEnter}
+            onMouseMove={(e) => {manageMouseMove(e)}}
+            onMouseLeave={manageMouseLeave}
+            className="h-[30px] relative -top-[15px] z-10 hover:h-[60px] hover:-top-[30px]"
+          />
+          <svg className="w-full h-[60px] -top-[30px] absolute">
+            <path ref={path} strokeWidth={1} stroke="#147b5d" fill="none" />
+          </svg>
+        </div>
+      </>
+    )
+  }
+
+  useEffect(() => {
     const title = document.querySelector(".content__title");
     const split = new SplitText(title, { type: "chars" });
     const chars = split.chars;
@@ -2446,11 +2467,10 @@ function Locations() {
       ease: "linear",
     });
   }, []);
+
   const targetRef = useRef(null);
 
   useEffect(() => {
-    gsap.registerPlugin(SplitText);
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -2484,14 +2504,6 @@ function Locations() {
 
   return (
     <>
-      {/*
-        --beige: #f8f1de;
-        --black: #171616;
-        --orange: #ff6432; hsl(14 100% 52%)
-        --white: white;
-        --rosemary: #147b5d;
-        --rosemary-text: #fee5e1;
-      */}
       <section id="locations-section" className="relative bg-[#f8f1de]">
         <div id="locations-heading" className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32">
           <h1 className="lg:text-6xl font-agrandir-bold text-[#171616]">
@@ -2504,16 +2516,16 @@ function Locations() {
             or opt for a{" "}
             <span className="relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#147b5d] underline inline-block">virtual consultation</span>
           </h1>
-          <svg className="absolute bottom-0 translate-y-1/2 left-0 translate-x-64 w-36 h-36 rotate-[120deg] text-[#ff6432]" viewBox="0 0 77 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* arrow */}
+          <svg className="hidden lg:block absolute bottom-0 translate-y-1/2 left-0 translate-x-64 w-36 h-36 rotate-[120deg] text-[#ff6432]" viewBox="0 0 77 85" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M1.33755 84.3973C0.297616 62.7119 2.93494 39.8181 19.4192 23.8736C28.2211 15.3599 42.4944 12.5723 47.6281 26.2359C51.1245 35.5419 51.542 51.9945 41.0605 57.0865C29.486 62.7095 40.2945 35.2221 41.9942 32.4952C49.9497 19.7313 59.7772 11.6122 72.2699 3.78281C76.9496 0.849879 73.7108 0.477284 70.0947 1.13476C66.9572 1.7052 63.4035 2.43717 60.5291 3.81975C59.6524 4.24143 65.7349 2.73236 66.6827 2.44768C70.7471 1.22705 75.4874 -0.0219285 75.9527 5.60812C76.0274 6.5127 75.9956 14.9844 74.7481 15.2963C74.099 15.4586 71.0438 10.27 70.4642 9.65288C66.6996 5.64506 63.5835 4.42393 58.2726 5.11792" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
 
-
-        <div ref={ref} className="relative">
+        <div ref={ref}>
           <motion.div
             id="locations-map"
-            className="overflow-hidden h-80 lg:absolute lg:right-0 lg:h-full lg:w-1/2"
+            className="h-[60vh] overflow-hidden lg:absolute lg:right-0 lg:h-full lg:w-1/2"
             style={{
               opacity: isInView ? 1 : 0,
               filter: isInView ? "blur(0px)" : "blur(16px)",
@@ -2540,7 +2552,7 @@ function Locations() {
           </motion.div>
 
           <div id="locations-details">
-            <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
+            <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:mt-0 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 xl:gap-x-24">
               {/* LOCATIONS LIST */}
               <motion.div
                 className="flex flex-col mt-10"
@@ -2639,154 +2651,14 @@ function Locations() {
   );
 }
 
-function DrawEllipse(props) {
-  useGSAP(() => {
-    gsap.from(".draw", {
-      drawSVG: "0%",
-      ease: "expo.out",
-      scrollTrigger: {
-        trigger: '#locations-heading',
-        start: "clamp(top top)",
-        scrub: true,
-        pinSpacing: false,
-        // markers: true,
-      }
-    })
-  })
-
-  return (
-    <svg
-      width="508"
-      height="122"
-      viewBox="0 0 508 122"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <path
-        className="draw"
-        d="M2 23.2421C28.9079 14.5835 113.098 -1.63994 234.594 2.73493C386.464 8.20351 515.075 37.5458 505.497 77.9274C503.774 85.1946 491.815 127.145 271.535 118.942C51.2552 110.739 32.8106 78.7919 45.7824 58.053C59.4644 36.1787 112.824 27.9758 193.548 27.9758"
-        stroke="#ff6432"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function BezierCurve() {
-  const container = useRef(null)
-  const path = useRef(null)
-  let progress = 0
-  let time = Math.PI / 2 // want the initial time value to be 1; in sine graph y = 1 when x = pi / 2
-  let reqId = null // everytime mouse enters and leaves line's bounding box, animation gets called causing simultaneous chains of it being called (this is bad), only want one request animation running at the same time
-  let x = 0.5 // middle point is 1/2
-
-  useEffect(() => {
-    setPath(progress)
-    window.addEventListener('resize', () => {
-      setPath(progress)
-    })
-  }, [])
-
-  {/*
-    use svg container's width to get control point (center point) of quadratic bezier curve; control point = svg container's width / 2
-    30 ==> svg height(60) divided by 2 to align the path within the center of the svg
-  */}
-  const setPath = (progress) => {
-    const width = container.current.offsetWidth
-    path.current.setAttributeNS(null, "d", `M 0 30 Q${width * x} ${30 + progress} ${width} 30`)
-  }
-
-  const manageMouseEnter = () => {
-    if (reqId) {
-      window.cancelAnimationFrame(reqId)
-      resetAnimation()
-    }
-  }
-
-  const manageMouseMove = (e) => {
-    const { movementY, clientX } = e
-    const { left, width } = path.current.getBoundingClientRect()
-    // get value of x depending on where mouse is on the x-axis of the line
-    x = (clientX - left) / width
-    progress += movementY
-    setPath(progress)
-  }
-
-  const manageMouseLeave = () => {
-    animateOut()
-  }
-
-  {/*
-    linear interpolation
-    x: The value we want to interpolate from (start) => 10
-    y: The target value we want to interpolate to (end) => 0
-    a: The amount by which we want x to be closer to y => 10% or 0.1
-    ex: value = lerp(value, 0, 0.1)
-    if value = 10, bring that value close to 0 by 10% which will give 9
-  */}
-  const lerp = (x, y, a) => x * (1 - a) + y * a
-
-  // sine function, linear interpolation, recursivity
-  const animateOut = () => {
-    // sine function creates the "wobbly" line animation when mouse leaves the line
-    const newProgress = progress * Math.sin(time)
-    time += 0.25 // speed of bounce animation
-    setPath(newProgress)
-    progress = lerp(progress, 0, 0.05) // change 3rd lerp argument to change curve's bounce exaggeration
-
-    // exit condition
-    if (Math.abs(progress) > 0.75) {
-      reqId = window.requestAnimationFrame(animateOut)
-    } else {
-      resetAnimation()
-    }
-  }
-
-  const resetAnimation = () => {
-    time = Math.PI / 2
-    progress = 0
-  }
-
-  return (
-    <>
-      {/* line */}
-      <div ref={container} className="mb-[30px] col-span-12 row-start-2 h-[1px] w-full relative">
-        {/* box for event listeners overlays the svg element */}
-        <div
-          onMouseEnter={manageMouseEnter}
-          onMouseMove={(e) => {manageMouseMove(e)}}
-          onMouseLeave={manageMouseLeave}
-          className="h-[30px] relative -top-[15px] z-10 hover:h-[60px] hover:-top-[30px]"
-        />
-        <svg className="w-full h-[60px] -top-[30px] absolute">
-          <path ref={path} strokeWidth={1} stroke="#147b5d" fill="none" />
-        </svg>
-      </div>
-    </>
-  )
-}
-
 function GiftCards() {
-  const ref = useRef();
-  const isInView = useInView(ref);
-
   return (
-    <section
-      ref={ref}
-      className="z-10 h-[60dvh] relative group overflow-hidden hover:cursor-pointer"
-      style={{
-        transform: isInView ? "none" : "translateY(100px)",
-        opacity: isInView ? 1 : 0,
-        transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
-      }}
-    >
+    <section className="z-10 h-[60dvh] relative group overflow-hidden hover:cursor-pointer">
       <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-primary-30 bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
       <Link
         href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`}
         target="_blank"
-        className="text-2xl absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white"
+        className="text-2xl font-editorial-new absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white"
       >
         Send a Gift Card
       </Link>

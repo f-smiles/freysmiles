@@ -1,46 +1,42 @@
 "use client";
-import { Curtains, useCurtains, Plane } from "react-curtains";
-import { Vec2 } from "curtainsjs";
+// gsap
+// import { Curtains, useCurtains, Plane } from "react-curtains";
+// import { Vec2 } from "curtainsjs";
 // import SimplePlane from "./curtains"
 import React, { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Link from "next/link";
 import { SplitText } from "gsap-trial/all";
 // framer motion
-import { motion } from "framer-motion";
-import clsx from "clsx";
 import GalaxyShape from "../_components/shapes/galaxy";
-import Shape02 from "../_components/shapes/shape02";
 import Shape03 from "../_components/shapes/shape03";
-import Shape04 from "../_components/shapes/shape04";
 import Shape05 from "../_components/shapes/shape05";
 import Shape06 from "../_components/shapes/shape06";
-import Shape07 from "../_components/shapes/shape07";
-import { TextReveal } from "../_components/TextReveal";
-import { Circle } from "pixi.js";
+import VennDiagram from "./vennDiagram";
 
-gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollSmoother, ScrollTrigger, SplitText, useGSAP)
+}
 
 export default function WhyChooseUs() {
   return (
     <>
       <Hero />
-
-      {/* <TextSection /> */}
-
+      <MarqueeAnimation />
       <StackCards />
-
       <ScrollTextReveal />
       <CTA />
-      <DragTable />
-      <BentoGrid />
-      <div className="min-h-screen">
+      <VennDiagram />
+      <GridLayout />
+
+      {/* <TextSection /> */}
+      {/* <div className="min-h-screen"> */}
         {/* <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
         <SimplePlane />
       </Curtains> */}
-      </div>
+      {/* </div> */}
     </>
   );
 }
@@ -99,7 +95,7 @@ function Hero() {
   }, []);
 
   return (
-    <div className="bg-212121   h-screen">
+    <div className="h-screen bg-212121">
       <div className="bg-[#DFFF00] min-h-screen min-w-full flex justify-center items-center">
         <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
           <h2 className="absolute top-20 left-[5vw] m-0 text-[10vw] uppercase text-center">
@@ -108,12 +104,12 @@ function Hero() {
           <img
             src={imageUrl}
             alt={title}
-            className="block w-full h-full object-cover"
+            className="block object-cover w-full h-full"
           />
         </div>
       </div>
 
-      <section class="">
+      <section>
         <video
           autoPlay
           loop
@@ -132,25 +128,25 @@ function Hero() {
           />
         </video>
 
-        <section className="absolute top-60 mx-auto my-16 text-center md:h-16 md:flex-row w-full">
+        <section className="absolute w-full mx-auto my-16 text-center top-60 md:h-16 md:flex-row">
           <div className="h-full overflow-hidden">
             <ul
               style={{
                 animation: "scroll-text-up 5s infinite",
               }}
             >
-              <li className=" py-1">
+              <li className="py-1 ">
                 <h1 className="font-neue-montreal text-7xl">Invisalign</h1>
               </li>
-              <li className=" py-1">
+              <li className="py-1 ">
                 <h1 className="font-neue-montreal text-7xl">Damon Braces</h1>
               </li>
-              <li className=" py-1">
+              <li className="py-1 ">
                 <h1 className="font-neue-montreal text-7xl">
                   Accelerated Orthodontic Treatment
                 </h1>
               </li>
-              <li className=" py-1">
+              <li className="py-1 ">
                 <h1 className="font-neue-montreal text-7xl">
                   low-dose 3D Digital Radiographs
                 </h1>
@@ -160,7 +156,7 @@ function Hero() {
               </li>
             </ul>
           </div>
-     
+
           <div className="relative" style={{ left: '20rem' }}>
         <svg
           ref={svgRef}
@@ -171,7 +167,7 @@ function Hero() {
           height="300px"
           viewBox="0 0 300 300"
           xmlSpace="preserve"
-          className="book-svg transition-transform duration-100 inline-flex"
+          className="inline-flex transition-transform duration-100 book-svg"
         >
           <defs>
             <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150" />
@@ -187,7 +183,7 @@ function Hero() {
           viewBox="0 0 63 305"
           width="10.75"
           height="56.25"
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
         >
           <path className="arrow-line" style={{ fill: 'none', stroke: '#000', strokeWidth: '1.5', strokeDashoffset: 0, strokeDasharray: '304' }} d="M31 0,31 304" />
           <path className="arrow-left" style={{ fill: 'none', stroke: '#000', strokeWidth: '1.5', strokeDashoffset: 0, strokeDasharray: '51' }} d="M1,269c0,0,29-1,30,35" />
@@ -205,14 +201,12 @@ function Hero() {
   );
 }
 
-function StackCards() {
+function MarqueeAnimation() {
   const textContainerRef = useRef(null);
   const textRef1 = useRef(null);
   const textRef2 = useRef(null);
 
   useEffect(() => {
-    gsap.registerPlugin(SplitText);
-
     const onEntry = (entries, observer) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -276,6 +270,7 @@ function StackCards() {
 
     requestAnimationFrame(animate);
   }, []);
+
   const svgIcon = (
     <svg
       width="20"
@@ -284,10 +279,10 @@ function StackCards() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g clip-path="url(#clip0_104_26)">
+      <g clipPath="url(#clip0_104_26)">
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M107.143 0H92.8571V82.7556L34.3401 24.2385L24.2386 34.3401L82.7556 92.8571H0V107.143H82.7555L24.2386 165.66L34.3401 175.761L92.8571 117.244V200H107.143V117.244L165.66 175.761L175.761 165.66L117.244 107.143H200V92.8571H117.244L175.761 34.34L165.66 24.2385L107.143 82.7555V0Z"
           fill="#E8E2D6"
         />
@@ -307,75 +302,63 @@ function StackCards() {
     "Care",
     svgIcon,
   ];
+
   const duplicatedItems = [...items, ...items];
+
   return (
-    <section className="rounded-2xl bg-[#F1F1F1] py-32 ">
-      <section class="project-section">
-        <div
-          ref={marqueeRef}
-          className="overflow-hidden w-full whitespace-nowrap flex"
-        >
-          <div className="text-[#E8E2D6] flex">
-            {duplicatedItems.map((item, index) => (
-              <div key={index} className="marquee-item mx-4">
-                <h3 className="text-3xl font-semibold uppercase">{item}</h3>
-              </div>
-            ))}
-          </div>
-          <div className="text-[#E8E2D6] flex">
-            {duplicatedItems.map((item, index) => (
-              <div
-                key={index + duplicatedItems.length}
-                className="marquee-item mx-4"
-              >
-                <h3 className="text-3xl font-semibold uppercase">{item}</h3>
-              </div>
-            ))}
-          </div>
+    <section className="project-section">
+      <div
+        ref={marqueeRef}
+        className="flex w-full overflow-hidden whitespace-nowrap"
+      >
+        <div className="text-[#E8E2D6] flex">
+          {duplicatedItems.map((item, index) => (
+            <div key={index} className="mx-4 marquee-item">
+              <h3 className="text-3xl font-semibold uppercase">{item}</h3>
+            </div>
+          ))}
         </div>
-        {/* <div className="appointmentMarquee flex items-center"> 
-          <svg width="50" height="50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g clip-path="url(#clip0_104_26)">
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M107.143 0H92.8571V82.7556L34.3401 24.2385L24.2386 34.3401L82.7556 92.8571H0V107.143H82.7555L24.2386 165.66L34.3401 175.761L92.8571 117.244V200H107.143V117.244L165.66 175.761L175.761 165.66L117.244 107.143H200V92.8571H117.244L175.761 34.34L165.66 24.2385L107.143 82.7555V0Z" fill="#E8E2D6"/>
-    </g>
-    <clipPath id="clip0_104_26">
-      <rect width="200" height="200" fill="white"/>
-    </clipPath>
-  </svg>
-  <div class="project-heading col-lg-6">
-    <h1>UNPARALLELED CARE AND EXPERTISE</h1>
-  </div>
-  <svg width="50" height="50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g clip-path="url(#clip0_104_26)">
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M107.143 0H92.8571V82.7556L34.3401 24.2385L24.2386 34.3401L82.7556 92.8571H0V107.143H82.7555L24.2386 165.66L34.3401 175.761L92.8571 117.244V200H107.143V117.244L165.66 175.761L175.761 165.66L117.244 107.143H200V92.8571H117.244L175.761 34.34L165.66 24.2385L107.143 82.7555V0Z" fill="#E8E2D6"/>
-    </g>
-    <clipPath id="clip0_104_26">
-      <rect width="200" height="200" fill="white"/>
-    </clipPath>
-  </svg>
-</div> */}
-      </section>
-      {/* <div className="text-container" ref={textContainerRef}>
-      <div className="line-container" ref={textRef1}>
-        <h1 className="hidden-text font-neue-montreal font-bold text-7xl uppercase">
-          Uncompromising
-        </h1>
-      </div>
-      <div className="line-container" ref={textRef2}>
-        <h1 className="hidden-text font-neue-montreal font-bold text-7xl uppercase">
-          QUALITY
-        </h1>
-      </div>
-    </div> */}
-      <div className="relative container mx-auto">
-        <div className="flex flex-col items-center gap-6 mx-auto -translate-y-10 lg:mx-0 lg:-translate-x-10 lg:flex-row w-max">
-          {/* <img
-            src="/../../images/freysmilepatient.jpg"
-            alt="frey smiles patient"
-            className="rounded-full left-1/4 w-96 h-96 "
-          /> */}
+        <div className="text-[#E8E2D6] flex">
+          {duplicatedItems.map((item, index) => (
+            <div
+              key={index + duplicatedItems.length}
+              className="mx-4 marquee-item"
+            >
+              <h3 className="text-3xl font-semibold uppercase">{item}</h3>
+            </div>
+          ))}
         </div>
-        <div className="mt-10 max-w-screen-lg mx-auto space-y-16">
+      </div>
+      {/* <div className="flex items-center appointmentMarquee">
+        <svg width="50" height="50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clipPath="url(#clip0_104_26)">
+          <path fillRule="evenodd" clipRule="evenodd" d="M107.143 0H92.8571V82.7556L34.3401 24.2385L24.2386 34.3401L82.7556 92.8571H0V107.143H82.7555L24.2386 165.66L34.3401 175.761L92.8571 117.244V200H107.143V117.244L165.66 175.761L175.761 165.66L117.244 107.143H200V92.8571H117.244L175.761 34.34L165.66 24.2385L107.143 82.7555V0Z" fill="#E8E2D6"/>
+        </g>
+          <clipPath id="clip0_104_26">
+            <rect width="200" height="200" fill="white"/>
+          </clipPath>
+        </svg>
+        <div className="project-heading col-lg-6">
+          <h1>UNPARALLELED CARE AND EXPERTISE</h1>
+        </div>
+        <svg width="50" height="50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clipPath="url(#clip0_104_26)">
+            <path fillRule="evenodd" clipRule="evenodd" d="M107.143 0H92.8571V82.7556L34.3401 24.2385L24.2386 34.3401L82.7556 92.8571H0V107.143H82.7555L24.2386 165.66L34.3401 175.761L92.8571 117.244V200H107.143V117.244L165.66 175.761L175.761 165.66L117.244 107.143H200V92.8571H117.244L175.761 34.34L165.66 24.2385L107.143 82.7555V0Z" fill="#E8E2D6"/>
+          </g>
+          <clipPath id="clip0_104_26">
+            <rect width="200" height="200" fill="white"/>
+          </clipPath>
+        </svg>
+      </div> */}
+    </section>
+  );
+}
+
+function StackCards() {
+  return (
+    <section className="rounded-2xl bg-[#F1F1F1] py-24 sm:py-32">
+      <div className="container relative mx-auto">
+        <div className="max-w-screen-lg mx-auto mt-10 space-y-16">
           <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] translate-x-[4dvw] border-2 border-[#c5cfc7] -rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105 ">
             <h4>
               We strive to attain finished results consistent with the{" "}
@@ -384,9 +367,8 @@ function StackCards() {
               and recertification process, ensuring that all diagnostic records
               adhere to ABO standards.
             </h4>
-            <div className=" absolute bottom-0 right-0 translate-x-1/2 translate-y-1/4 w-36 h-36 -z-10"></div>
           </div>
-          <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#c5cfc7] transition-all duration-150 ease-linear hover:scale-105  rotate-2">
+          <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#c5cfc7] transition-all duration-150 ease-linear hover:scale-105 rotate-2 hover:rotate-0">
             <h4>
               Currently, Dr. Gregg Frey is a certified orthodontist, and is
               preparing cases for recertification. Dr. Daniel Frey is in the
@@ -413,33 +395,19 @@ function StackCards() {
               offices in the Lehigh Valley, we have been providing unparalleled
               orthodontic care for over four decades.
             </h4>
-            <div className="absolute bottom-0 left-0 w-40 h-40 -translate-x-1/2 -translate-y-6 -z-10"></div>
           </div>
         </div>
-        {/* <div className="flex translate-x-10 translate-y-10 place-content-end">
-          <div className="overflow-hidden border border-black rounded-full w-max">
-            <span className="relative">
-              <Shape02 className="absolute inset-0 left-0 right-0 z-10 object-fill object-center scale-110 top-1/2 text-zinc-100/80 h-96 w-96" />
-              <img
-                className="object-cover object-center h-96 w-96"
-                src="/../../images/drfreyperfecting.jpg"
-                alt="Dr. Gregg Frey attending a FreySmiles patient"
-              />
-            </span>
-          </div>
-        </div> */}
       </div>
     </section>
   );
 }
+
 function CTA() {
   const textRef = useRef(null);
   const bgTextColor = "#CECED3";
   const fgTextColor = "#161818";
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger, SplitText);
-
     const split = new SplitText(textRef.current, { type: "chars" });
     const chars = split.chars;
 
@@ -460,6 +428,7 @@ function CTA() {
 
     return () => split.revert();
   }, []);
+
   const btnRef = useRef();
   const hitRef = useRef();
 
@@ -492,11 +461,12 @@ function CTA() {
         );
     };
   }, []);
+
   return (
     <section className="sm:py-32 ">
-      <div className=" flex">
+      <div className="flex ">
         <div className="px-40">
-          <p ref={textRef} className="font-helvetica-neue text-3xl uppercase">
+          <p ref={textRef} className="text-3xl uppercase font-helvetica-neue">
             Frey Smiles believes in providing accessible orthodontic care for
             everyone. In 2011, they established a non-profit organization called
             More Than Smiles, which offers orthodontic treatment to deserving
@@ -519,7 +489,7 @@ function CTA() {
           >
             <svg
               ref={btnRef}
-              className="w-4/5 h-4/5 max-w-xs cursor-pointer"
+              className="w-4/5 max-w-xs cursor-pointer h-4/5"
               viewBox="-50 -50 100 100"
             >
               <circle className="bg" r="22.4" fill="rgb(50,50,50)" />
@@ -548,8 +518,6 @@ function CTA() {
 
 function ScrollTextReveal() {
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     let tlMain = gsap
       .timeline({
         scrollTrigger: {
@@ -672,7 +640,7 @@ function ScrollTextReveal() {
       </div>
 
       {/* <div className="flex flex-col items-center justify-center text-[180px] leading-none">
-        <div className="flex self-start ml-60 items-center">
+        <div className="flex items-center self-start ml-60">
           <span className="underline-custom">MORE</span>
           <img
             className="w-32 h-auto ml-4"
@@ -690,7 +658,7 @@ function ScrollTextReveal() {
           />
           <span className="underline-custom">THAN</span>
         </div>
-        <div className="flex self-start ml-60 items-center">
+        <div className="flex items-center self-start ml-60">
           <span className="underline-custom">SMILES</span>
           <img
             className="w-32 h-auto ml-4"
@@ -715,210 +683,147 @@ function ScrollTextReveal() {
   );
 }
 
-function DragTable() {
-  const freySmilesRef = useRef();
-  const othersRef = useRef();
+function GridLayout() {
+  useGSAP(() => {
+    const isTouchDevice = 'ontouchstart' in window
+
+    let targetMedias = gsap.utils.toArray('.media')
+
+    const parallaxMouse = () => {
+      document.addEventListener('mousemove', (e) => {
+        targetMedias.forEach((targetMedia, i) => {
+          const deltaX = (e.clientX - window.innerWidth / 2) * 0.01
+          const deltaY = (e.clientY - window.innerHeight / 2) * 0.01
+
+          gsap.to(targetMedia, {
+            x: deltaX,
+            y: deltaY,
+            scale: 1.02,
+            duration: 0.75,
+            ease: "power4",
+          })
+        })
+      })
+
+      document.addEventListener('mouseleave', (e) => {
+        targetMedias.forEach((targetMedia) => {
+          gsap.to(targetMedia, {
+            x: 0,
+            y: 0,
+            scale: 1.02,
+            duration: 0.75,
+            ease: "power4",
+          })
+        })
+      })
+    }
+
+    if (!isTouchDevice) {
+      parallaxMouse()
+    }
+  })
 
   return (
-    <section className="hidden lg:block py-24">
-      <div className="container grid-cols-12 grid-rows-6 mx-auto mb-32 lg:grid place-content-stretch font-neue-montreal">
-        <div className="flex col-span-6 col-start-1 row-start-1 mb-12 text-center font-extralight place-content-center place-items-end font-larken text-zinc-800">
-          <h1>FreySmiles Orthodontics</h1>
+    <section>
+      <div className="grid grid-cols-8 h-[60dvh]">
+        <div className="relative col-span-4 lg:col-span-5 h-full place-content-center place-items-center bg-[#6a7265] text-center flex gap-2 p-8">
+          <h2 className="text-2xl break-words lg:text-4xl xl:text-6xl font-editorial-new text-[#1d1f1b]">
+            <span
+              className="text-4xl lg:text-6xl xl:text-8xl font-nautica"
+              style={{
+                color: "#434840",
+                WebkitTextFillColor: "#6a7265",
+                WebkitTextStroke: "1px #434840",
+              }}
+            >
+              We{" "}
+            </span>
+            have 50+ years of experience
+          </h2>
+          <GalaxyShape className="absolute inset-0 hidden object-cover object-center w-full h-full p-8 lg:block lg:p-16 text-[#444941]" />
         </div>
-        <div className="flex col-span-6 col-start-7 row-start-1 mb-12 text-center place-content-center place-items-end font-larken text-zinc-800 font-extralight">
-          <h1>Others</h1>
-        </div>
-        <motion.div
-          ref={freySmilesRef}
-          className="relative col-span-6 col-start-1 row-span-5 row-start-2 translate-x-8 border-2 rounded-full aspect-square border-[#51733f]"
-        >
-          <motion.div
-            className="absolute left-0 flex w-48 h-48 text-center rotate-45 rounded-full top-1/2 -translate-y-1/3 bg-[#9dbb81] place-content-center place-items-center text-zinc-800"
-            drag
-            dragConstraints={freySmilesRef}
-          >
-            <p className="text-2xl leading-6">
-              <span className="text-4xl">4</span>
-              <br /> convenient
-              <br /> locations
-            </p>
-          </motion.div>
-          <motion.div
-            className="absolute flex text-center -rotate-45 translate-x-1/2 translate-y-1/2 border rounded-full left-1/3 w-36 h-36 top-1/2 border-zinc-800 bg-zinc-800 place-content-center place-items-center text-zinc-100"
-            drag
-            dragConstraints={freySmilesRef}
-          >
-            <p className="text-xl leading-5">
-              Modern
-              <br /> office
-              <br /> settings
-            </p>
-          </motion.div>
-          <motion.div
-            className="absolute bottom-0 left-0 flex w-56 h-56 text-center translate-x-1/2 rounded-full text-zinc-800 -translate-y-1/4 bg-[#9dbb81] place-content-center place-items-center -rotate-12"
-            drag
-            dragConstraints={freySmilesRef}
-          >
-            <p className="text-2xl leading-6">
-              Over
-              <br />
-              <span className="text-4xl">50+ years</span>
-              <br /> of experience
-            </p>
-          </motion.div>
-          <motion.div
-            className="absolute bottom-0 flex text-center -translate-y-2 border rounded-full text-zinc-800 w-36 h-36 -translate-x-1/4 left-1/2 border-zinc-800 place-content-center -rotate-12 place-items-center"
-            drag
-            dragConstraints={freySmilesRef}
-          >
-            <p className="text-xl leading-5">
-              Financial
-              <br /> options
-            </p>
-          </motion.div>
-          <motion.div
-            className="absolute bottom-0 right-0 flex w-48 h-48 my-auto text-center rotate-45 -translate-x-1/2 -translate-y-1/2 rounded-full text-zinc-800 bg-[#9dbb81] place-content-center place-items-center"
-            drag
-            dragConstraints={freySmilesRef}
-          >
-            <p className="text-2xl leading-6">
-              <span className="text-3xl leading-8">
-                Leaders
-                <br />
-              </span>{" "}
-              in the <br />
-              industry
-            </p>
-          </motion.div>
-        </motion.div>
-        <motion.div
-          ref={othersRef}
-          className="relative z-0 col-span-6 col-start-7 row-span-5 row-start-2 -translate-x-8 border-2 border-dashed rounded-full aspect-square border-[#51733f]"
-        >
-          <motion.div
-            className="absolute bottom-0 flex w-48 h-48 text-center -translate-x-1/2 rounded-full rotate-12 left-1/2 bg-zinc-800 place-content-center place-items-center text-zinc-100"
-            drag
-            dragConstraints={othersRef}
-          >
-            <p>Financial options</p>
-          </motion.div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function BentoGrid() {
-  return (
-    <section className="sm:my-32">
-      <div className="grid grid-cols-8">
-        <div className="relative col-span-5 place-content-center">
-          <GalaxyShape className="absolute inset-0 object-cover object-center -translate-x-1/2 -translate-y-1/2 opacity-70 top-1/2 left-1/2 fill-primary-70" />
-          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)]">
-            We have <br />{" "}
-            <span className="inline-block uppercase">50+ years</span> <br /> of
-            experience.
-          </p>
-        </div>
-        <div className="col-span-3 overflow-hidden">
+        <div className="relative h-full col-span-4 overflow-hidden lg:col-span-3">
           <img
-            className="object-cover object-center"
             src="/../../images/pexels-cedric-fauntleroy-4269276_1920x2880.jpg"
+            alt="dental chair"
+            className="absolute inset-0 object-cover object-center w-full h-full media"
           />
         </div>
-        {/* <div className="relative flex flex-col items-center justify-center w-2/3">
-          <GalaxyShape className="absolute inset-0 object-cover object-center w-1/2 -translate-x-1/2 -translate-y-1/2 opacity-70 top-1/2 left-1/2 fill-primary-70" />
-          <p className="text-5xl leading-snug text-center text-stone-500 font-extralight font-larken">We have <br/> <span className="inline-block mt-3 uppercase text-7xl">50+ years</span> <br/> of experience.</p>
-        </div>
-        <div className="w-1/3">
-          <img className="object-cover object-center" src="/../../images/pexels-cedric-fauntleroy-4269276_1920x2880.jpg" />
-        </div> */}
       </div>
-      <div className="grid grid-cols-6 grid-rows-6">
-        <div className="col-span-3 row-span-2 lg:col-span-2 place-content-center">
-          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] uppercase">
-            25K+ <br /> Patients
+      <div className="grid grid-cols-9 lg:h-[50vh]">
+        <div className="min-h-[50vh] h-full col-span-9 bg-[#988193] text-[#f4f4f4] lg:col-span-3 place-content-center place-items-center p-8">
+          <p className="text-2xl tracking-wide text-center font-editorial-new">
+            <span className="block uppercase font-agrandir-grandheavy">
+              25,000+{" "}
+            </span>
+            patients treated
           </p>
         </div>
-        <div className="col-span-3 row-span-2 lg:col-span-2">
+        <div className="relative min-h-[50vh] h-full col-span-9 lg:col-span-3 place-content-center overflow-hidden">
           <img
-            className="object-cover object-center"
             src="/../../images/aurela-redenica-VuN-RYI4XU4-unsplash_2400x3600.jpg"
+            alt="invisalign aligners and case"
+            className="absolute inset-0 object-cover object-bottom w-full h-full media"
           />
         </div>
-        <div className="col-span-3 row-span-2 lg:col-span-2 place-content-center">
-          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] uppercase">
-            ABO <br /> Certified
+        <div className="min-h-[50vh] h-full col-span-9 bg-[#988193] text-[#f4f4f4] lg:col-span-3 place-content-center place-items-center p-8">
+          <p className="text-2xl tracking-wide text-center font-editorial-new">
+            <span className="block uppercase font-agrandir-grandheavy">
+              ABO{" "}
+            </span>
+            certified
           </p>
         </div>
-        <div className="relative col-span-3 row-span-2 lg:col-span-2">
+      </div>
+      <div className="grid grid-cols-9 lg:h-[50vh]">
+        <div className="relative min-h-[50vh] h-full col-span-9 lg:col-span-3 place-content-center overflow-hidden">
           <img
-            className="object-cover object-right-bottom w-full h-full"
             src="/../../images/goby-D0ApR8XZgLI-unsplash_2400x1467.jpg"
             alt="hand reaching towards another hand offering pink toothbrush"
+            className="absolute inset-0 object-cover object-right w-full h-full media"
           />
         </div>
-        <div className="col-span-3 row-span-2 place-content-center lg:col-span-2">
-          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] uppercase">
-            10+ <br /> Members
-          </p>
+        <div className="min-h-[50vh] h-full col-span-9 bg-[#988193] text-[#f4f4f4] lg:col-span-3 place-content-center place-items-center p-8">
+        <p className="text-2xl tracking-wide text-center font-editorial-new">
+          <span className="block uppercase font-agrandir-grandheavy">
+            10+{" "}
+          </span>
+          members
+        </p>
         </div>
-        <div className="col-span-3 row-span-2 lg:col-span-2">
+        <div className="relative min-h-[50vh] h-full col-span-9 lg:col-span-3 place-content-center overflow-hidden">
           <img
-            className="object-cover object-center"
             src="/../../images/pexels-cedric-fauntleroy-4269491_1920x2880.jpg"
             alt="dental equipment"
+            className="absolute inset-0 object-cover object-center w-full h-full media"
           />
         </div>
-        <div className="col-span-3 row-span-2 place-content-center lg:col-span-2">
-          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] uppercase">
-            4 <br /> Locations
+      </div>
+      <div className="grid grid-cols-9 lg:h-[50vh]">
+        <div className="min-h-[50vh] h-full col-span-9 bg-[#988193] text-[#f4f4f4] lg:col-span-3 place-content-center place-items-center p-8">
+          <p className="text-2xl tracking-wide text-center font-editorial-new">
+            <span className="block uppercase font-agrandir-grandheavy">
+              4{" "}
+            </span>
+            locations
           </p>
         </div>
-        <div className="col-span-3 row-span-2 lg:col-span-2">
+        <div className="relative min-h-[50vh] h-full col-span-9 lg:col-span-3 place-content-center overflow-hidden">
           <img
-            className="object-cover object-center"
             src="/../../images/tony-litvyak-glPVwPr1FKo-unsplash_2400x3600.jpg"
-            alt="smile"
+            alt="woman smiling"
+            className="absolute inset-0 object-cover object-center w-full h-full media"
           />
         </div>
-        <div className="col-span-6 row-span-2 py-8 lg:col-span-2 place-content-center">
-          <p className="text-center text-[#CBB99F] text-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] leading-[clamp(1rem,_-0.6667rem_+_4.1667vw,_2rem)] uppercase">
-            We Use <br /> Modern Technology
+        <div className="min-h-[50vh] h-full col-span-9 bg-[#988193] text-[#f4f4f4] lg:col-span-3 place-content-center place-items-center p-8">
+          <p className="text-2xl tracking-wide text-center font-editorial-new">
+            <span className="block uppercase font-agrandir-grandheavy">
+              advanced{" "}
+            </span>
+            technology
           </p>
         </div>
       </div>
     </section>
-  );
+  )
 }
-
-// <motion.div ref={constraintsRef} className="grid grid-cols-5 col-span-1 gap-4 p-8 prose border-2 border-blue-300 border-dashed rounded-full place-items-end place-content-end aspect-w-1 aspect-h-1 lg:prose-xl">
-//   <motion.div className="flex col-span-1 p-8 text-center border border-pink-300 rounded-full aspect-square item place-content-center place-items-center" drag dragConstraints={constraintsRef}>
-//     <p><span className="text-2xl">4</span> Convenient Locations</p>
-//   </motion.div>
-//   <motion.div className="flex col-span-1 p-8 text-center border border-pink-300 rounded-full aspect-square item place-content-center place-items-center" drag dragConstraints={constraintsRef}>
-//     <p>Leaders in the industry</p>
-//   </motion.div>
-//   <motion.div className="flex col-span-1 p-8 text-center border border-pink-300 rounded-full aspect-square item place-content-center place-items-center" drag dragConstraints={constraintsRef}>
-//     <p>Modern office settings</p>
-//   </motion.div>
-//   <motion.div className="flex col-span-1 p-8 text-center border border-pink-300 rounded-full aspect-square item place-content-center place-items-center" drag dragConstraints={constraintsRef}>
-//     <p>Over 50+ years of experience</p>
-//   </motion.div>
-//   <motion.div className="flex col-span-1 p-8 text-center border border-pink-300 rounded-full aspect-square item place-content-center place-items-center" drag dragConstraints={constraintsRef}>
-//     <p>Financial options</p>
-//   </motion.div>
-// </motion.div>
-
-//  <div className="relative self-center w-full md:w-1/2">
-//           <img
-//             className="w-full"
-//             src="/../../images/smilescholarship.jpg"
-//             alt="Frey Smiles patient receiving FreySmile scholarship"
-//           />
-//           <div className="absolute bottom-0 right-0 w-1/2 -translate-y-1/2 -translate-x-1/3">
-//             <div className="flex flex-col overflow-hidden shadow-[5px_5px_rgba(0,_98,_90,_0.4),_10px_10px_rgba(0,_98,_90,_0.3),_15px_15px_rgba(0,_98,_90,_0.2),_20px_20px_rgba(0,_98,_90,_0.1),_25px_25px_rgba(0,_98,_90,_0.05)] text-center bg-white p-8">
-//               <h3 className="font-helvetica-now-thin">Giving Back</h3>
-//             </div>
-//           </div>
-//         </div>

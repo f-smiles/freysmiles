@@ -2,13 +2,17 @@
 import Link from 'next/link'
 import { Fragment, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { gsap } from "gsap"
 import { useGSAP } from "@gsap/react"
 import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
 import BagIcon from './ui/BagIcon'
 import Bars2Icon from './ui/Bars2Icon'
 import XIcon from './ui/XIcon'
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
 
 export default function Navbar() {
   const dispatch = useDispatch()
@@ -82,12 +86,12 @@ export default function Navbar() {
     window.location.assign(data)
   }
 
-  /* mobile nav */
-  const [show, setShow] = useState(null)
-  const handleToggleMobileNav = () => {
-    // setShow((prevState) => !prevState)
-    setShow(!show)
-  }
+   /* mobile nav */
+   const [show, setShow] = useState(null)
+   const handleToggleMobileNav = () => {
+     // setShow((prevState) => !prevState)
+     setShow(!show)
+   }
 
   useGSAP(() => {
     const isTouchDevice = 'ontouchstart' in window
@@ -127,17 +131,15 @@ export default function Navbar() {
     }
   })
 
-
   return (
-    <header>
+    <header className='overflow-hidden'>
       {/* DESKTOP NAVBAR */}
-      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-40 hidden w-full mb-[6vh] lg:block">
+      <nav id="desktop-nav" className="fixed bottom-0 left-0 right-0 z-40 w-max mx-auto hidden mb-[6vh] lg:block">
         <div className="custom-navbar-cursor" />
         <div className="p-4 mx-auto text-sm transition duration-300 ease-in-out rounded-full shadow-md shadow-zinc-300 justify-evenly bg-gray-100/60 backdrop-blur-md hover:bg-white/70 hover:shadow-sm max-w-max">
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out    active:bg-primary-50/80">
-
-              <Link href="/" className="inline-block p-4">
+            <li className="flex items-center font-medium tracking-wider uppercase transition duration-300 ease-in-out active:bg-primary-50/80">
+              <Link href="/" className="ml-1 p-2 inline-block bg-[rgba(228,_218,_208,_0.8)] rounded-full shadow-[0px_0px_0px_6px_rgba(228,_218,_208,_0.4),_0px_0px_0px_12px_rgba(228,_218,_208,_0.2)]">
                 <img className="w-4 h-4" src="/../../logo_icon.png" alt="FreySmiles Orthodontics" />
               </Link>
             </li>
@@ -398,7 +400,7 @@ export default function Navbar() {
             </li>
 
             <li>
-              <Link href="/#locations">
+              <Link href="/#locations-section">
                 <p className="text-sm leading-4 text-center">Our Locations</p>
               </Link>
             </li>
@@ -527,7 +529,7 @@ export default function Navbar() {
             </Transition.Root>
 
 						<li
-              className="px-6 py-3 transition duration-300 ease-in-out  hover:bg-secondary-50/60 active:bg-secondary-50/80"
+              className="px-6 py-3 transition duration-300 ease-in-out hover:bg-secondary-50/60 active:bg-secondary-50/80"
               // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
             >
               <Link href="/book-now"
