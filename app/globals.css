@@ -632,6 +632,7 @@ input:-webkit-autofill {
   left: -12px;
   width: 16px;
   height: 16px;
+
   opacity: 0;
   user-select: none;
   pointer-events: none;
