@@ -1253,9 +1253,7 @@ function GSAPAnimateScrollSections() {
             ></div>
           </div>
         </div>
-        <div className="text-center large-text">
-          <h1 className="text-[300px]">ABOUT</h1>
-        </div>
+  
       </section>
 
       <MobileLayout />
