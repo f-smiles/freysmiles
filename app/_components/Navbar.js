@@ -550,7 +550,7 @@ export default function Navbar() {
             </Transition.Root>
 
 						<li
-              className="px-6 py-3 transition duration-300 ease-in-out hover:bg-secondary-50/60 active:bg-secondary-50/80"
+              className="px-6 py-3 transition duration-300 ease-in-out active:bg-secondary-50/80"
               // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
             >
               <Link href="/book-now"
