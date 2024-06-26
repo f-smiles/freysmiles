@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { gsap } from "gsap"
@@ -550,7 +551,7 @@ export default function Navbar() {
             </Transition.Root>
 
 						<li
-              className="px-6 py-3 transition duration-300 ease-in-out active:bg-secondary-50/80"
+              className="px-6 py-3 transition duration-300 ease-in-out "
               // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
             >
               <Link href="/book-now"
