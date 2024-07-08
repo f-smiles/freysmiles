@@ -270,7 +270,7 @@ const BookNow = () => {
                   onSubmit={handleSubmit}
                   className="flex flex-col max-w-screen-lg p-8 mx-auto space-y-12"
                 >
-                  {/* Add your form content here */}
+
                   <div className="flex flex-col items-center">
                     <div className="flex w-full gap-2">
                     <div className="relative rounded-full border border-gray-400 p-2 flex items-center">
@@ -304,73 +304,57 @@ const BookNow = () => {
                               htmlFor="dateInput"
                               className="absolute text-sm text-gray-700 pointer-events-none left-3 top-2 font-CeraProBold"
                             >
-                              Birthday
+                           BIRTHDAY*
                             </label>
                           )}
                         </div>
                       </div>
                     </div>
                     <div className="relative w-full mt-10">
-                      <div className="relative w-full border-b border-black">
-                        <input
-                          id="guardianInput"
-                          type="text"
-                          placeholder=""
-                          value={guardianValue}
-                          onChange={(e) => setGuardianValue(e.target.value)}
-                          className="w-full px-3 py-2 placeholder-gray-400 bg-transparent border-none focus:outline-none focus:ring-0 sm:text-sm"
-                        />
-                        {!guardianValue && (
-                          <label
-                            htmlFor="guardianInput"
-                            className="absolute text-sm text-gray-700 pointer-events-none left-3 top-2 font-CeraProBold"
-                          >
-                            Guardian *if applicable
-                          </label>
-                        )}
-                      </div>
+                    <div className="relative flex items-center rounded-full border border-gray-400 p-2">
+            <span className="pl-4 pr-4 text-sm">GUARDIAN* if applicable</span>
+            <div className="border-l border-gray-400 h-8"></div>
+            <input
+              id="nameInput"
+              type="text"
+              placeholder="Type something"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="flex-1 bg-transparent text-white pl-4 focus:outline-none focus:ring-0 focus:border-none border-none"
+            />
+          </div>
                     </div>
                     <div className="flex w-full gap-2 mt-5">
                       <div className="relative flex-1 w-1/2 py-4">
-                        <div className="relative w-full border-b border-black">
-                          <input
-                            id="phoneInput"
-                            type="text"
-                            placeholder=""
-                            value={phoneValue}
-                            onChange={(e) => setPhoneValue(e.target.value)}
-                            className="w-full px-3 py-2 placeholder-gray-400 bg-transparent border-none focus:outline-none focus:ring-0 sm:text-sm"
-                          />
-                          {!phoneValue && (
-                            <label
-                              htmlFor="phoneInput"
-                              className="absolute text-sm text-gray-700 pointer-events-none left-3 top-2 font-CeraProBold"
-                            >
-                              Phone
-                            </label>
-                          )}
-                        </div>
+                      <div className="relative w-full">
+                    <div className="relative flex items-center rounded-full border border-gray-400 p-2">
+            <span className="pl-4 pr-4 text-sm">PHONE*</span>
+            <div className="border-l border-gray-400 h-8"></div>
+            <input
+              id="nameInput"
+              type="text"
+              placeholder="Type something"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="flex-1 bg-transparent text-white pl-4 focus:outline-none focus:ring-0 focus:border-none border-none"
+            />
+          </div>
+                    </div>
                       </div>
-                      <div className="relative flex-1 w-1/2 py-4">
-                        <div className="relative w-full border-b border-black">
-                          <input
-                            id="emailInput"
-                            type="email"
-                            placeholder=""
-                            value={emailValue}
-                            onChange={(e) => setEmailValue(e.target.value)}
-                            className="w-full px-3 py-2 placeholder-gray-400 bg-transparent border-none focus:outline-none focus:ring-0 sm:text-sm"
-                          />
-                          {!emailValue && (
-                            <label
-                              htmlFor="emailInput"
-                              className="absolute text-sm text-gray-700 pointer-events-none left-3 top-2 font-CeraProBold"
-                            >
-                              Email
-                            </label>
-                          )}
-                        </div>
-                      </div>
+                      <div className="relative py-4 w-full">
+                    <div className="relative flex items-center rounded-full border border-gray-400 p-2">
+            <span className="pl-4 pr-4 text-sm">EMAIL*</span>
+            <div className="border-l border-gray-400 h-8"></div>
+            <input
+              id="nameInput"
+              type="text"
+              placeholder="Type something"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="flex-1 bg-transparent text-white pl-4 focus:outline-none focus:ring-0 focus:border-none border-none"
+            />
+          </div>
+                    </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
