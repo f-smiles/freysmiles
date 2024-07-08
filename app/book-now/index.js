@@ -287,7 +287,19 @@ const BookNow = () => {
             />
           </div>
                       <div className="relative w-1/2">
-                        <div
+                      <div className="relative flex items-center rounded-full border border-gray-400 p-2" data-te-datepicker-init>
+            <span className="pl-4 pr-4 text-sm">BIRTHDAY *</span>
+            <div className="border-l border-gray-400 h-8"></div>
+            <input
+              id="dateInput"
+              type="text"
+              placeholder="Type something"
+              value={birthdayValue}
+              onChange={(e) => setBirthdayValue(e.target.value)}
+              className="flex-1 bg-transparent pl-4 focus:outline-none focus:ring-0 focus:border-none border-none rounded-full"
+            />
+          </div>
+                        {/* <div
                           className="relative w-full border-b border-black"
                           data-te-datepicker-init
                         >
@@ -307,7 +319,7 @@ const BookNow = () => {
                            BIRTHDAY*
                             </label>
                           )}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                     <div className="relative w-full mt-10">
@@ -315,12 +327,12 @@ const BookNow = () => {
             <span className="pl-4 pr-4 text-sm">GUARDIAN* if applicable</span>
             <div className="border-l border-gray-400 h-8"></div>
             <input
-              id="nameInput"
+              id="guardianInput"
               type="text"
               placeholder="Type something"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              className="flex-1 bg-transparent text-white pl-4 focus:outline-none focus:ring-0 focus:border-none border-none"
+              value={guardianValue}
+              onChange={(e) => setGuardianValue(e.target.value)}
+              className="flex-1 bg-transparent pl-4 focus:outline-none focus:ring-0 focus:border-none border-none"
             />
           </div>
                     </div>
@@ -331,12 +343,12 @@ const BookNow = () => {
             <span className="pl-4 pr-4 text-sm">PHONE*</span>
             <div className="border-l border-gray-400 h-8"></div>
             <input
-              id="nameInput"
+              id="set"
               type="text"
               placeholder="Type something"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              className="flex-1 bg-transparent text-white pl-4 focus:outline-none focus:ring-0 focus:border-none border-none"
+              value={phoneValue}
+              onChange={(e) => setPhoneValue(e.target.value)}
+              className="flex-1 bg-transparent pl-4 focus:outline-none focus:ring-0 focus:border-none border-none"
             />
           </div>
                     </div>
@@ -349,9 +361,9 @@ const BookNow = () => {
               id="nameInput"
               type="text"
               placeholder="Type something"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              className="flex-1 bg-transparent text-white pl-4 focus:outline-none focus:ring-0 focus:border-none border-none"
+              value={emailValue}
+              onChange={(e) => setEmailValue(e.target.value)}
+              className="flex-1 bg-transparent pl-4 focus:outline-none focus:ring-0 focus:border-none border-none"
             />
           </div>
                     </div>
