@@ -1,7 +1,6 @@
 'use client'
 import Link from 'next/link'
 import { Fragment, useState, useEffect } from 'react'
-import { Fragment, useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
 import { gsap } from "gsap"
