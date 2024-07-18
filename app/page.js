@@ -746,7 +746,7 @@ function Hero() {
               style={{ top: "10%", left: "-20%" }}
             >
 
-<a href="/book-now" className="inline-flex items-center justify-center">
+{/* <a href="/book-now" className="inline-flex items-center justify-center">
     <svg id="circlepath" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="300px" height="300px" viewBox="0 0 300 300" xmlSpace="preserve" className="book-svg">
         <defs>
             <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"/>
@@ -770,8 +770,20 @@ function Hero() {
             </text>
         </g>
     </svg>
-</a>
-
+</a> */}
+  <a href="/book-now" class="circlebutton right black">
+    <svg viewBox="0 0 240 240">
+      <text class="circle-text" data-bs-circle>
+        <textPath class="circle-text-path" aria-label="Day" data-max-char="60"></textPath>
+      </text>
+    </svg>
+    <span>BOOK NOW</span>
+  </a>
+  <svg> 
+  <def>
+    <path id="circleButton" d="M225,120c0,58-47,105-105,105S15,178,15,120S62,15,120,15S225,62,225,120z" />
+  </def>
+</svg>
 
 
             </div>
@@ -1253,9 +1265,7 @@ function GSAPAnimateScrollSections() {
             ></div>
           </div>
         </div>
-        <div className="text-center large-text">
-          <h1 className="text-[300px]">ABOUT</h1>
-        </div>
+  
       </section>
 
       <MobileLayout />

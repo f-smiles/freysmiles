@@ -632,6 +632,7 @@ input:-webkit-autofill {
   left: -12px;
   width: 16px;
   height: 16px;
+
   opacity: 0;
   user-select: none;
   pointer-events: none;
@@ -3509,3 +3510,79 @@ justify-content: center;
   white-space: nowrap;
 }
 
+
+
+.container{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circlebutton{
+  font-size: 16px;
+  width: 240px;
+  height: 240px;
+  padding:20px;
+  box-sizing: border-box;
+  border: 6px solid red;
+  background-color: red;
+  border-radius: 100%;
+  margin: 0px 20px;
+  color:white;
+  position:relative;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all .5s ease;
+  font-weight:600;
+  &.right{
+    transform: rotate( 18deg );
+    &:hover {
+      transform: rotate( -18deg );
+    }
+  }
+  &.left{
+    transform: rotate( -18deg );
+    &:hover {
+      transform: rotate( 18deg );
+    }
+  }
+  &.black{
+    border-color: black;
+    background-color: black;
+    color: pink;
+  }
+  svg{
+    position: absolute;
+    top:0;
+    left:0;
+    width:100% !important;
+    height:100% !important;
+  }
+  span{
+    font-size:24px;
+    font-weight:bold;
+  }
+  &:hover {
+    border-color: black;
+    background-color: black;
+    color: pink;
+    svg text{
+      fill: pink;
+    }
+  }
+}
+
+.circle-text {
+  fill: white; 
+  .black & {
+    fill: pink; 
+  }
+  transition: fill .5s ease;
+  text-transform: uppercase;
+  transform-origin: 105px 105px;
+  will-change: transform, opacity;
+}
