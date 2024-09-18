@@ -3586,3 +3586,11 @@ justify-content: center;
   transform-origin: 105px 105px;
   will-change: transform, opacity;
 }
+
+.displace-effect {
+  transition: filter 0.3s ease;
+}
+
+.displace-effect:hover {
+  filter: url('#displacementFilter');
+}

@@ -147,6 +147,7 @@ export default function Navbar() {
     };
   }, []);
 
+  
   return (
     <header className='overflow-hidden'>
       <div className="flex w-full h-80 items-center p-8">
@@ -165,7 +166,7 @@ export default function Navbar() {
       </div>
 
       {/* Right Section */}
-      <div className="bg-lime-300 w-4/5 h-full rounded-3xl flex flex-col items-center justify-center p-4">
+      <div className="bg-[#F5FF7D] w-4/5 h-full rounded-3xl flex flex-col items-center justify-center p-4">
         <h1 className="text-green-900 text-5xl font-extrabold">FREY SMILES</h1>
 
       </div>

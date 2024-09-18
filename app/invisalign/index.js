@@ -46,22 +46,26 @@ const Section = ({ children, onHoverStart, onHoverEnd }) => (
     style={{
       height: '50%', 
       display: 'flex',
-      border: '1px solid black', 
       justifyContent: 'center',
       alignItems: 'center',
       cursor: 'pointer',
       backgroundColor: 'transparent',
       color: 'black', 
       fontSize: '2em',
-      fontFamily:"HelveticaNeue-Light",
+      fontFamily: "HelveticaNeue-Light",
       userSelect: 'none',
       position: 'relative', 
-      zIndex: 2
+      zIndex: 2,
+      textAlign: 'center',  // Ensure text is centered within the div
+      width: '100%', // Make sure the div takes full width
+      boxSizing: 'border-box', // To avoid any padding issues
+      border: '1px solid black', 
     }}
   >
     {children}
   </motion.div>
 );
+
 
 const Invisalign = () => {
   const headingRef = useRef(null);
