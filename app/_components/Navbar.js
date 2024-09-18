@@ -149,6 +149,27 @@ export default function Navbar() {
 
   return (
     <header className='overflow-hidden'>
+      <div className="flex w-full h-80 items-center p-8">
+      {/* Left Section */}
+      <div className="bg-purple-200 w-1/6 h-full rounded-3xl flex flex-col items-center justify-center p-4">
+        <div className="text-green-800 font-semibold text-xl mb-2">ABOUT</div>
+   
+      </div>
+
+      {/* Center Section */}
+      <div className="bg-pink-500 w-1/3 h-full rounded-3xl flex items-center justify-center p-4">
+        <div className="flex flex-col items-center">
+          <div className="text-gray-800 text-xl font-light">Patient</div>
+          <div className="mt-4 text-gray-800 text-4xl font-light">✳️</div> 
+        </div>
+      </div>
+
+      {/* Right Section */}
+      <div className="bg-lime-300 w-4/5 h-full rounded-3xl flex flex-col items-center justify-center p-4">
+        <h1 className="text-green-900 text-5xl font-extrabold">FREY SMILES</h1>
+
+      </div>
+    </div>
       {/* DESKTOP NAVBAR */}
       <nav id="desktop-nav" className="fixed top-10 left-0 z-40 hidden w-full mb-[6vh] lg:block">
         <div className="custom-navbar-cursor" />
