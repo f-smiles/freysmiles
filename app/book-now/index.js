@@ -202,7 +202,7 @@ const BookNow = () => {
     setEmailSent(true);
   };
 
-  const baseButtonClass = "py-2 px-4 rounded-full border";
+  const baseButtonClass = "py-2 px-4 rounded-full border-gray-400";
   const activeButtonClass = "rounded border bg-black text-white";
   const inactiveButtonClass =
     "border border-black hover:bg-black hover:text-white ";
