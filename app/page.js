@@ -1,8 +1,11 @@
 "use client";
 import Link from "next/link";
-import * as THREE from "three";
 import Matter from "matter-js";
-import { useRef, useEffect, useLayoutEffect, useState, useCallback } from "react";
+import {Canvas, useFrame, extend, useThree } from '@react-three/fiber';
+import * as THREE from 'three';
+import { GUI } from 'dat.gui';
+import { OrbitControls, shaderMaterial } from '@react-three/drei';
+import React, { useRef, useEffect, useLayoutEffect, useState, useCallback } from "react";
 // framer motion
 import { motion, stagger,  useAnimate, useInView } from 'framer-motion'
 // headless ui
@@ -14,6 +17,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin"
 import { SplitText } from "gsap-trial/SplitText"
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
+
+
+
+
+
+
+
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText, useGSAP)
@@ -174,9 +184,12 @@ export default function LandingComponent() {
 }, []);
 
 
+
   return (
     <>
+
       <div style={{ backgroundColor }} className="bg-[#EFE9E8] bg-[#E0D175]">
+ 
         <Hero />
         <Mask />
         {/* <About /> */}
