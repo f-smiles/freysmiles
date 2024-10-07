@@ -15,6 +15,19 @@ function classNames(...classes) {
 }
 
 export default function Navbar() {
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const handleTestimonialsClick = (e, href) => {
+    e.preventDefault(); // Prevent default navigation
+    setIsTransitioning(true); // Start the transition
+
+    // Delay navigation until the animation completes
+    setTimeout(() => {
+      window.location.href = href; // Use `window.location.href` for a delayed navigation
+      setIsTransitioning(false); // Reset transition state
+    }, 1000); // Adjust the delay to match your animation duration
+  };
+  
   const dispatch = useDispatch()
 
   const bag = useSelector(selectBag)
@@ -152,24 +165,24 @@ export default function Navbar() {
     <header className='overflow-hidden'>
       <div className="flex w-full h-80 items-center p-8">
       {/* Left Section */}
-      <div className="bg-purple-200 w-1/6 h-full rounded-3xl flex flex-col items-center justify-center p-4">
+      {/* <div className="bg-purple-200 w-1/6 h-full rounded-3xl flex flex-col items-center justify-center p-4">
         <div className="text-green-800 font-semibold text-xl mb-2">ABOUT</div>
    
-      </div>
+      </div> */}
 
       {/* Center Section */}
-      <div className="bg-pink-500 w-1/3 h-full rounded-3xl flex items-center justify-center p-4">
+      {/* <div className="bg-pink-500 w-1/3 h-full rounded-3xl flex items-center justify-center p-4">
         <div className="flex flex-col items-center">
           <div className="text-gray-800 text-xl font-light">Patient</div>
           <div className="mt-4 text-gray-800 text-4xl font-light">✳️</div> 
         </div>
-      </div>
+      </div> */}
 
       {/* Right Section */}
-      <div className="bg-[#F5FF7D] w-4/5 h-full rounded-3xl flex flex-col items-center justify-center p-4">
+      {/* <div className="bg-[#F5FF7D] w-4/5 h-full rounded-3xl flex flex-col items-center justify-center p-4">
         <h1 className="text-green-900 text-5xl font-extrabold">FREY SMILES</h1>
 
-      </div>
+      </div> */}
     </div>
       {/* DESKTOP NAVBAR */}
       <nav id="desktop-nav" className="fixed top-10 left-0 z-40 hidden w-full mb-[6vh] lg:block">
@@ -246,19 +259,30 @@ export default function Navbar() {
                               </Dialog.Title>
                             </div> */}
                             <div className="relative flex-1 px-4 mt-6 sm:px-6">
-                              <ul className="px-4 space-y-2">
-                                {about_us_links && about_us_links.map((link, index) => (
-                                  <li key={link.name}>
-                                    <Link
-                                      href={link.href}
-                                      className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
-                                      onClick={handleToggleAbout}
-                                    >
-                                      <h4>{link.name}</h4>
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
+                            <ul className="px-4 space-y-2">
+      {about_us_links.map((link) => (
+        <li key={link.name}>
+   
+          <Link
+            href={link.href}
+            className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
+            onClick={
+              link.name === "Testimonials"
+                ? (e) => handleTestimonialsClick(e, link.href)
+                : null
+            }
+          >
+            <h4>{link.name}</h4>
+          </Link>
+        </li>
+      ))}
+
+{/* <div
+        className={`fixed inset-0 bg-black z-50 transform transition-transform duration-1000 ${
+          isTransitioning ? "translate-y-0" : "translate-y-full"
+        }`}
+      ></div> */}
+    </ul>
                               {/* <Sphere /> */}
                             </div>
                           </div>
