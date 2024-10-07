@@ -1,28 +1,48 @@
 'use client';
-import { useEffect, useState } from "react";
-import Scene from "./scene.js";
-import Projects from "./projects.js";
-import Lenis from '@studio-freight/lenis';
+
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { SplitText } from "gsap-trial/SplitText";
+
+gsap.registerPlugin(SplitText);
+
 export default function Home() {
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const textRef = useRef(null);
 
-  const [activeMenu, setActiveMenu] = useState(null)
-  useEffect( () => {
-    const lenis = new Lenis()
+  useEffect(() => {
+    const transitionDuration = 1000;
 
-    function raf(time) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
+    if (typeof window !== "undefined" && textRef.current) {
+      const splitText = new SplitText(textRef.current, { type: "chars" });
+
+      gsap.from(splitText.chars, {
+        duration: 1,
+        y: -200,
+        stagger: 0.05,
+        ease: "power3.out",
+        delay: transitionDuration / 1000,
+      });
     }
 
-    requestAnimationFrame(raf)
-  }, [])
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, transitionDuration);
+  }, []);
 
   return (
-    <main className="bg-green-100">
-      <div className="h-[50vh]"></div>
-      <Projects setActiveMenu={setActiveMenu}/>
-      <Scene activeMenu={activeMenu}/>
-      <div className="h-[50vh]"></div>
+    <main className="relative">
+      <div
+        className={`fixed inset-0 bg-black z-50 transform transition-transform duration-1000 ${
+          isTransitioning ? "translate-y-0" : "translate-y-full"
+        }`}
+      ></div>
+
+      <div id="text">
+        <div ref={textRef} className="h-[50vh] text-[22rem] uppercase text-center">
+          Testimonials
+        </div>
+      </div>
     </main>
   );
 }
