@@ -1,0 +1,1 @@
+ALTER TABLE "password_reset_tokens" ADD CONSTRAINT "password_reset_tokens_id_token_pk" PRIMARY KEY("id","token");
