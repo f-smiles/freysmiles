@@ -14,7 +14,19 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'utfs.io',
+      },
     ],
+  },
+  webpack: (config) => {
+    config.externals = [...config.externals, "bcrypt"];
+    return config;
   },
 }
 
