@@ -1,6 +1,6 @@
-import { integer, pgEnum, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core"
+import { boolean, integer, pgEnum, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core"
 import type { AdapterAccountType } from "next-auth/adapters"
-
+import { createId } from "@paralleldrive/cuid2"
 
 export const RoleEnum = pgEnum("roles", ["user", "admin"])
 
@@ -8,8 +8,10 @@ export const users = pgTable("user", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text("name"),
   email: text("email").unique(),
+  password: text("password"),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
+  twoFactorEnabled: boolean("twoFactorEnabled").default(false),
   role: RoleEnum("roles").default("user"),
 })
 
@@ -35,8 +37,47 @@ export const accounts = pgTable(
   })
 )
 
-export const sessions = pgTable("session", {
-  sessionToken: text("sessionToken").primaryKey(),
-  userId: text("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
-  expires: timestamp("expires", { mode: "date" }).notNull(),
-})
+export const emailTokens = pgTable(
+  "email_tokens",
+  {
+    id: text("id").notNull().$defaultFn(() => createId()),
+    email: text("email").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (vt) => ({
+    compoundKey: primaryKey({
+      columns: [vt.id, vt.token]
+    })
+  }),
+)
+
+export const passwordResetTokens = pgTable(
+  "password_reset_tokens",
+  {
+    id: text("id").notNull().$defaultFn(() => createId()),
+    email: text("email").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (vt) => ({
+    compoundKey: primaryKey({
+      columns: [vt.id, vt.token]
+    })
+  }),
+)
+
+export const twoFactorTokens = pgTable(
+  "two_factor_tokens",
+  {
+    id: text("id").notNull().$defaultFn(() => createId()),
+    email: text("email").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (vt) => ({
+    compoundKey: primaryKey({
+      columns: [vt.id, vt.token]
+    })
+  }),
+)
