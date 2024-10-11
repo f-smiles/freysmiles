@@ -27,7 +27,7 @@ export default function Home() {
             const logo = textRef.current;
             const scroll = document.scrollingElement.scrollTop;
             const maxScroll = 300; 
-            const minScale = 0.5;
+            const minScale = 0.4;
 
             let scale = 1 - Math.min(scroll / maxScroll, 1); 
 
@@ -64,7 +64,7 @@ export default function Home() {
       <div className="h-screen flex justify-center items-center">
         <div
           ref={textRef}
-          className="text-[24vw] uppercase whitespace-nowrap leading-none absolute inset-0 flex justify-center items-center"
+          className="text-[34vw] uppercase whitespace-nowrap leading-none absolute inset-0 flex justify-center items-center"
           style={{ transformOrigin: "center center", position: "fixed" }}
         >
           Testimonials
