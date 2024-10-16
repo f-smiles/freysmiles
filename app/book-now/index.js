@@ -19,7 +19,7 @@ const LeftColumn = () => {
   return (
     <div className="sticky top-0 flex flex-col items-center justify-center h-screen col-span-1">
       <div className="flex flex-col justify-center space-y-4">
-        <h1 className="text-8xl font-bold">LET'S GO</h1>
+        <h1 className="text-8xl font-aileron font-bold">LET'S GO</h1>
 
         <a
           href="facetime://6104374748"
@@ -202,8 +202,8 @@ const BookNow = () => {
     setEmailSent(true);
   };
 
-  const baseButtonClass = "py-2 px-4 ";
-  const activeButtonClass = "bg-violet-100";
+  const baseButtonClass = "py-2 px-4 rounded-full border-gray-400";
+  const activeButtonClass = "rounded border bg-black text-white";
   const inactiveButtonClass =
     "border border-black hover:bg-black hover:text-white ";
 
@@ -374,8 +374,8 @@ const BookNow = () => {
                       type="button"
                       className={`w-44 h-14 px-6 py-2 mx-auto relative ${
                         typeOfAppointment === "virtual"
-                          ? "bg-[#D3D6D1]"
-                          : "text-black"
+                          ? "bg-[#D3D6D1] rounded-full border border-gray-400  "
+                          : "text-black rounded-full border border-gray-400  "
                       } appointmentButton`}
                       onClick={() => setTypeOfAppointment("virtual")}
                     >
@@ -386,12 +386,12 @@ const BookNow = () => {
                       type="button"
                       className={`w-44 h-14 px-6 py-2 mx-auto relative ${
                         typeOfAppointment === "inPerson"
-                          ? "bg-[#D3D6D1]"
-                          : "text-black"
+                          ? "rounded-full border border-gray-400 bg-[#D3D6D1]"
+                          : "rounded-full border border-gray-400  text-black"
                       } appointmentButton`}
                       onClick={() => setTypeOfAppointment("inPerson")}
                     >
-                      <span className="buttonText">In-Person</span>
+                      <span className=" buttonText">In-Person</span>
                       <span className="appointmentBtnBg"></span>
                     </button>
                   </div>
@@ -405,7 +405,7 @@ const BookNow = () => {
                             type="button"
                             onClick={() => handleClick(index)}
                           >
-                            <span className="relative w-10 h-10 border border-black">
+                            <span className="relative w-10 h-10 rounded-full border border-gray-400  ">
                               {button.clicked && (
                                 <span className="absolute w-1/2 bg-black inset-1/4 h-1/2"></span>
                               )}
@@ -424,8 +424,8 @@ const BookNow = () => {
                         type="button"
                         className={`w-44 h-14 px-6 py-2 ${
                           button.clicked
-                            ? "bg-[#D3D6D1]"
-                            : "border border-black text-black"
+                            ? "bg-[#D3D6D1] rounded-full border border-gray-400  "
+                            : "border rounded-full border border-gray-400  text-black"
                         } mx-auto relative overflow-hidden appointmentButton`}
                         key={button.type}
                         onClick={() => handleAppointmentClick(index)}
