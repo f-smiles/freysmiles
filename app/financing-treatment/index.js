@@ -123,7 +123,9 @@
 // export default ScrollPath;
 
 "use client";
-import React, {useState, useEffect } from "react";
+
+import React, {useState, useEffect, useRef } from "react";
+import Link from "next/link"
 import { gsap } from "gsap";
 import { ScrollTrigger, MotionPathPlugin } from "gsap/all";
 
@@ -131,6 +133,41 @@ gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
 
 
 const HeaderBanner = () => {
+  const marqueeRef = useRef(null);
+
+  useEffect(() => {
+    const marqueeElement = marqueeRef.current;
+    const windowWidth = window.innerWidth;
+
+   
+    const marqueeSpan = marqueeElement.querySelector("span");
+    const spanWidth = marqueeSpan.offsetWidth;
+
+
+    const numberOfClones = Math.floor(windowWidth / spanWidth) + 1;
+    let innerContent = marqueeElement.innerHTML;
+
+    marqueeElement.style.width = (numberOfClones + 1) * spanWidth + "px";
+
+    for (let i = 0; i < numberOfClones; i++) {
+      innerContent += marqueeElement.innerHTML;
+    }
+
+    marqueeElement.innerHTML = innerContent;
+
+  
+    gsap.to(marqueeElement, {
+      duration: 8,
+      repeat: -1,
+      x: '-=' + spanWidth,
+      modifiers: {
+        x: (x) => gsap.utils.wrap(-spanWidth, 0, parseFloat(x)) + "px",
+      },
+      ease: 'linear',
+    });
+  }, []);
+
+
   const [hover, setHover] = useState(false);
 
   useEffect(() => {
@@ -195,8 +232,8 @@ const HeaderBanner = () => {
   }, []);
 
   return (
-    <div>
-      <div className="bg-gray-50 flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32 relative">
+    <div className="">
+      <div className="bg-[#efefef] flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32 relative">
         {/* Centered Cylinder Image */}
         {/* <img
     className="absolute left-1/2 transform -translate-x-1/2 object-contain w-1/2 h-1/2 opacity-90"
@@ -207,7 +244,7 @@ const HeaderBanner = () => {
         {/* Left Section */}
         <div className="max-w-lg z-10">
           {" "}
-          {/* Add z-10 to bring the content above the image */}
+         
           <h1 className="text-4xl font-bold font-neue-montreal text-gray-900 leading-snug">
             Your care plan is tailored{" "}
             <span className="text-gray-500 italic">to your needs,</span> and
@@ -234,9 +271,10 @@ const HeaderBanner = () => {
     </ul>
 
     <div className="font-neue-montreal text-lg flex items-center space-x-4 mt-8">
-  <button className="px-6 py-3">
-    Get started
-  </button>
+    <Link href="/book-now"> <button className="px-6 py-3">
+          Get started
+        </button></Link>
+
 
   <svg
     className="cursor-pointer w-12" 
@@ -269,14 +307,216 @@ const HeaderBanner = () => {
         {/* Right Section - Image */}
         <div className="hidden lg:block z-10">
           {" "}
-          {/* Add z-10 to bring the content above the image */}
+
           <img src="../images/budget.png" alt="Product" className="max-w-md" />
+        </div>
+        
+      </div>
+
+      <div className=" bg-[#efefef] w-full py-4"> 
+      <div ref={marqueeRef} className="inline-block text-6xl font-sans whitespace-nowrap">
+        <span>Expert Clinical Care, Personalized Just for You&nbsp;</span>
+      </div>
+
+  
+
+
+
+
+
+
+
+{/* <div className="flex">
+      <section className="relative p-8 w-1/2 ">
+          <div className="flex w-2/3 items-center justify-center ">
+            <div
+              className="relative mx-2"
+              style={{ width: "300px", height: "240px" }}
+            >
+              <img
+                className="object-cover w-full h-full rounded-full opacity-90"
+                src="../../images/carepatient1.png"
+                alt="patient"
+                style={{ objectPosition: "40% 50%" }}
+              />
+            </div>
+            <div
+              className="relative mx-2"
+              style={{ width: "300px", height: "300px" }}
+            >
+              <img
+                className="object-cover w-full h-full rounded-full opacity-90"
+                src="../../images/carepatient2.png"
+                alt="patient"
+                style={{ objectPosition: "10% 50%" }}
+              />
+            </div>
+
+            <div
+              className="relative mx-2 "
+              style={{ width: "300px", height: "340px" }}
+            >
+              <img
+                className="object-cover w-full h-full rounded-full opacity-90"
+                src="../../images/carepatient3.png"
+                alt="patient"
+              />
+            </div>
+            <div
+              className="relative mx-2 "
+              style={{ width: "330px", height: "400px" }}
+            >
+              <img
+                className="object-cover w-full h-full rounded-full opacity-90"
+                src="../../images/carepatient4.png"
+                alt="patient"
+                style={{ objectPosition: "40% 50%" }}
+              />
+            </div>
+            <div
+              className="relative mx-2 "
+              style={{ width: "300px", height: "480px" }}
+            >
+              <img
+                className="object-cover w-full h-full rounded-full opacity-90"
+                src="../../images/freysmilepatient1.jpg"
+                alt="patient"
+              />
+            </div>
+          </div>
+       
+ 
+        </section>
+        
+        <div className="flex  ">
+  <div className="relative bg-white bg-opacity-10 p-12 rounded-3xl m-6 backdrop-filter backdrop-blur-lg shadow-lg max-w-lg w-full">
+
+    <div className="flex items-center justify-center mb-8">
+      <img src="../../images/logo_icon.png" alt="Logo" className="w-20 h-20 mr-4" />
+
+    </div>
+
+
+    <p className="text-lg text-gray-700 mb-8">
+      "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!"
+    </p>
+
+
+    <div className="mt-8">
+      <p className="text-xl font-bold text-[#212353]">James P</p>
+      <p className="text-sm text-gray-500">Happy Customer</p>
+    </div>
+  </div>
+</div>
+
+        </div> */}
+    </div>
+    
+    <div className="bg-[#efefef] min-h-screen">
+  <div className="grid grid-cols-2 max-w-6xl w-full mx-auto">
+
+    {/* Left Column - Gif (Sticky) */}
+    <div className="sticky top-0  h-[100vh] p-8">
+      <img src="../../images/testimonial.gif" alt="Logo" className="w-full h-auto" />
+    </div>
+
+    {/* Right Column - Scrollable */}
+    <div className="p-16 h-auto overflow-y-auto flex flex-col justify-center items-center">
+      {/* Coverage */}
+      <div className="w-full max-w-md border border-green-300 p-16 mb-24">
+        <div className="flex flex-col items-center">
+   
+          <div className="flex items-center space-x-4 mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-green-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+
+ 
+          <h2 className="text-3xl font-bold text-gray-700">Coverage</h2>
+
+   
+          <p className="mt-4 text-center text-gray-500">
+            If you have orthodontic insurance, we’ll help you maximize your lifetime benefits.
+          </p>
         </div>
       </div>
 
-      <div></div>
-      {/* Timeline Section */}
+      {/* HSA/FSA Box */}
+      <div className="w-full max-w-md border border-green-300 p-16 mb-24">
+        <div className="flex flex-col items-center">
 
+          <div className="flex items-center space-x-4 mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-green-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+
+          {/* Title */}
+          <h2 className="text-3xl font-bold text-gray-700">HSA/FSA</h2>
+
+          {/* Text */}
+          <p className="mt-4 text-center text-gray-500">
+            We accept HSA/FSA to help you save on your orthodontic treatment.
+          </p>
+        </div>
+      </div>
+   
+         {/* Out of Network */}
+      <div className="w-full max-w-md border border-green-300 p-16">
+        <div className="flex flex-col items-center">
+
+          <div className="flex items-center space-x-4 mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-green-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+
+       
+          <h2 className="text-3xl font-bold text-gray-700">Out-of-network</h2>
+
+     
+          <p className="mt-4 text-center text-gray-500">
+          We will help you submit claims for reimbursement based on your insurance plan’s guidelines
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
       <div className="py-16 px-8 bg-cover bg-center" id="tracking-section" style={{ backgroundImage: "url('../images/background_min.png')" }}>
         <div
           id="element"
@@ -299,31 +539,33 @@ const HeaderBanner = () => {
                 className="w-15 h-15"
               />
             </div>
-            <div
-              className="py-10 cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] p-4 "
-              style={{
-                background:
-                  "linear-gradient(183deg, hsla(240, 9%, 98%, 0.4) 26.79%, rgba(233, 237, 245, 0.4))",
-                backdropFilter: "blur(3px)",
-                WebkitBackdropFilter: "blur(3px)",
-                borderRadius: "6px",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-              }}
-            >
-              <h2 className="text-3xl text-center font-oakes-regular ">
-                Complimentary Consultation
-              </h2>
-              <p className="text-gray-700 text-md text-center my-4">
-                Initial consultations are always free of charge
-              </p>
-              <a
-                href="#0"
-                className="float-right text-white bg-black px-4 py-2 rounded-full hover:bg-gray-300"
-              >
-                Book Now
-              </a>
-              <span className="block text-gray-400 text-sm mt-2"></span>
-            </div>
+       
+            <div className="cd-timeline-content flex justify-end">
+  <div className="relative bg-[#68C9BA1A] p-12 rounded-3xl m-6 lg:w-[45%] min-w-[min-content]">
+    <img
+      src="../images/consultgraphic.svg"
+      alt="Consult Graphic"
+      className="absolute left-[-100px] top-0 w-[150px] h-auto"
+    />
+
+    <h3 className="text-4xl font-bold text-[#212353] mb-4">
+      Complimentary Consultation
+    </h3>
+
+    <p className="text-md text-[#4B5D68] mb-6">
+      Initial consultations are always free of charge.
+    </p>
+
+    <a
+      href="#0"
+      className="float-right text-white bg-black px-4 py-2 rounded-full hover:bg-gray-300"
+    >
+      Book Now
+    </a>
+  </div>
+</div>
+
+
           </div>
 
           {/* Section 2 (Right Aligned) */}
@@ -336,38 +578,42 @@ const HeaderBanner = () => {
               />
             </div>
 
-            <div
-              className="py-10 cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] p-4 "
-              style={{
-                background:
-                  "linear-gradient(183deg, hsla(240, 9%, 98%, 0.4) 26.79%, rgba(233, 237, 245, 0.4))",
-                backdropFilter: "blur(3px)",
-                WebkitBackdropFilter: "blur(3px)",
-                borderRadius: "6px",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-              }}
-            >
-              <h2 className="text-3xl  font-oakes-regular text-center ">
-                Explore Flexible Ways to Pay
-              </h2>
-              <p className="text-gray-700 text-md text-center my-4">
-                Choose from flexible payment plans or enjoy 10% off when you pay
-                in full prior to starting treatment
-              </p>
 
-              <a
-                href="https://www.klarna.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="float-right"
-              >
-                <img
-                  src="../images/klarna.svg"
-                  alt="Klarna"
-                  className="w-12 h-auto"
-                />
-              </a>
-            </div>
+
+  <div className="cd-timeline-content">
+    <div className="relative bg-[#F063B81A] p-12 rounded-3xl m-6 lg:w-[45%]">
+
+      <img
+        src="../../images/orangecylinder.svg"
+        alt="Consult Graphic"
+        className="absolute left-[-100px] top-0 w-[150px] h-auto"
+      />
+
+      <h3 className="text-4xl font-bold text-[#212353] mb-4">
+        Explore Flexible Ways to Pay
+      </h3>
+
+      <p className="text-md text-[#4B5D68] mb-6">
+        Choose from flexible payment plans or enjoy 10% off when you pay in full prior to starting treatment
+      </p>
+
+
+      <a
+        href="https://www.klarna.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="float-right"
+      >
+        <img
+          src="../images/klarna.svg"
+          alt="Klarna"
+          className="w-12 h-auto"
+        />
+      </a>
+    </div>
+
+</div>
+
           </div>
 
           {/* Section 3 (Left Aligned) */}
@@ -379,32 +625,31 @@ const HeaderBanner = () => {
                 className="w-15 h-15"
               />
             </div>
-            <div
-              className="py-10 cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] p-4 "
-              style={{
-                background:
-                  "linear-gradient(183deg, hsla(240, 9%, 98%, 0.4) 26.79%, rgba(233, 237, 245, 0.4))",
-                backdropFilter: "blur(3px)",
-                WebkitBackdropFilter: "blur(3px)",
-                borderRadius: "6px",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-              }}
-            >
-              <h2 className="text-3xl text-center font-oakes-regular">
-                Caring Tradition{" "}
-              </h2>
-              <p className="text-gray-700 text-md my-4 text-center">
-                Successive family members always receive the same excellent
-                care. Ask about our family courtesies
-              </p>
-              <a
-                href="#0"
-                className="float-right text-blue-500 bg-gray-200 px-4 py-2 rounded-full hover:bg-gray-300"
-              >
-                Read more
-              </a>
-              <span className="block text-gray-400 text-sm mt-2"></span>
-            </div>
+            <div className="cd-timeline-content flex justify-end">
+  <div className="relative bg-[#9C69E21A] p-12 rounded-3xl m-6 lg:w-[45%] min-w-[min-content]">
+    <img
+      src="../images/consultgraphic.svg"
+      alt="Caring Tradition"
+      className="absolute left-[-100px] top-0 w-[150px] h-auto"
+    />
+
+    <h3 className="text-4xl font-bold text-[#212353] mb-4">
+      Caring Tradition
+    </h3>
+
+    <p className="text-md text-[#4B5D68] mb-6">
+      Successive family members always receive the same excellent care. Ask about our family courtesies.
+    </p>
+
+    <a
+      href="#0"
+      className="float-right text-white bg-black px-4 py-2 rounded-full hover:bg-gray-300"
+    >
+      Inquire
+    </a>
+  </div>
+</div>
+
           </div>
 
           {/* Section 4 (Right Aligned) */}
@@ -416,26 +661,89 @@ const HeaderBanner = () => {
                 className="w-15 h-15"
               />
             </div>
+            <div className="cd-timeline-content flex justify-start">
+  <div className="relative bg-[#68C9BA1A] p-12 rounded-3xl m-6 lg:w-[45%] min-w-[min-content]">
+
+    <img
+      src="../images/winky.svg"
+      alt="Post-Op Care Graphic"
+      className="absolute left-[-100px] top-0 w-[150px] h-auto"
+    />
+
+    <h3 className="text-4xl font-bold text-[#212353] mb-4">
+    Our Support Doesn't End When Treatment Does. 
+    </h3>
+
+    <p className="text-md text-[#4B5D68] mb-6">
+      Your treatment includes one year of follow-up care. We're never cheap with our energy.
+    </p>
+
+
+   
+  </div>
+</div>
+
+          </div>
+        </section>
+        <section className="relative p-8 w-full ">
+          <div className="flex w-full items-center justify-center ">
             <div
-              className="py-10 cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] p-4 "
-              style={{
-                background:
-                  "linear-gradient(183deg, hsla(240, 9%, 98%, 0.4) 26.79%, rgba(233, 237, 245, 0.4))",
-                backdropFilter: "blur(3px)",
-                WebkitBackdropFilter: "blur(3px)",
-                borderRadius: "6px",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-              }}
+              className="relative mx-2"
+              style={{ width: "300px", height: "240px" }}
             >
-              <h2 className="text-3xl text-center font-oakes-regular">
-                Post-Op Care
-              </h2>
-              <p className="text-gray-700 text-md text-center my-4">
-                Your treatment includes one year of follow-up care
-              </p>
-              <span className="block text-gray-400 text-sm mt-2"></span>
+              <img
+                className="object-cover w-full h-full rounded-full opacity-90"
+                src="../../images/carepatient1.png"
+                alt="patient"
+                style={{ objectPosition: "40% 50%" }}
+              />
+            </div>
+            <div
+              className="relative mx-2"
+              style={{ width: "300px", height: "300px" }}
+            >
+              <img
+                className="object-cover w-full h-full rounded-full opacity-90"
+                src="../../images/carepatient2.png"
+                alt="patient"
+                style={{ objectPosition: "10% 50%" }}
+              />
+            </div>
+
+            <div
+              className="relative mx-2 "
+              style={{ width: "300px", height: "340px" }}
+            >
+              <img
+                className="object-cover w-full h-full rounded-full opacity-90"
+                src="../../images/carepatient3.png"
+                alt="patient"
+              />
+            </div>
+            <div
+              className="relative mx-2 "
+              style={{ width: "330px", height: "400px" }}
+            >
+              <img
+                className="object-cover w-full h-full rounded-full opacity-90"
+                src="../../images/carepatient4.png"
+                alt="patient"
+                style={{ objectPosition: "40% 50%" }}
+              />
+            </div>
+            <div
+              className="relative mx-2 "
+              style={{ width: "300px", height: "480px" }}
+            >
+              <img
+                className="object-cover w-full h-full rounded-full opacity-90"
+                src="../../images/freysmilepatient1.jpg"
+                alt="patient"
+              />
             </div>
           </div>
+       
+ 
         </section>
       </div>
     </div>
@@ -443,3 +751,17 @@ const HeaderBanner = () => {
 };
 
 export default HeaderBanner;
+
+   {/* <div className="flex items-center w-1/4 h-full justify-center bg-[#e5c2cc]">
+      <p className="text-2xl font-bold tracking-wider text-black transform -rotate-90">REVIEWS</p>
+    </div>
+
+
+    <div className="p-8">
+      <p className="text-gray-500">
+      "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!"
+      </p>
+      <p className="mt-4 font-bold text-black">
+   <a href="/testimonials" className="text-black underline">Read More</a>
+      </p>
+    </div> */}
