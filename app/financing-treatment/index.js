@@ -18,7 +18,7 @@
 //         scrub: 1,
 //       },
 //       motionPath: {
-//         path: "#path", 
+//         path: "#path",
 //         align: "#path",
 //         autoRotate: true,
 //         alignOrigin: [0.5, 0.5],
@@ -99,7 +99,7 @@
 //       />
 //     </mask>
 //   </defs>
- 
+
 //   <path
 //     id="path"
 //     stroke="grey"
@@ -122,208 +122,327 @@
 // };
 // export default ScrollPath;
 
-"use client"
-import React, {useEffect} from 'react';
+"use client";
+import React, { useEffect } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger, MotionPathPlugin } from "gsap/all";
 
-
+gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
 
 const HeaderBanner = () => {
   useEffect(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#tracking-section",
+        start: "top center",
+        end: "bottom center",
+        scrub: true,
+      },
+    });
+  
+    tl.fromTo(
+      "#element",
+      { x: 0, y: 0 },
+      {
+        ease: "none",
+        motionPath: {
+          path: [
+            { x: "50vw", y: "100vh" },
+            { x: "25vw", y: "200vh" },
+            { x: "75vw", y: "300vh" },
+            { x: "0vw", y: "400vh" },
+          ],
+        },
+      }
+    );
+  }, []);
+  
+
+  useEffect(() => {
     const handleScroll = () => {
-      const timelineBlocks = document.querySelectorAll('.cd-timeline-block');
+      const timelineBlocks = document.querySelectorAll(".cd-timeline-block");
       timelineBlocks.forEach((block) => {
         const top = block.getBoundingClientRect().top;
         if (top <= window.innerHeight * 0.75) {
-          block.querySelector('.cd-timeline-img').classList.remove('is-hidden');
-          block.querySelector('.cd-timeline-img').classList.add('bounce-in');
-          block.querySelector('.cd-timeline-content').classList.remove('is-hidden');
-          block.querySelector('.cd-timeline-content').classList.add('bounce-in');
+          block.querySelector(".cd-timeline-img").classList.remove("is-hidden");
+          block.querySelector(".cd-timeline-img").classList.add("bounce-in");
+          block
+            .querySelector(".cd-timeline-content")
+            .classList.remove("is-hidden");
+          block
+            .querySelector(".cd-timeline-content")
+            .classList.add("bounce-in");
         }
       });
     };
 
-    const timelineBlocks = document.querySelectorAll('.cd-timeline-block');
+    const timelineBlocks = document.querySelectorAll(".cd-timeline-block");
     timelineBlocks.forEach((block) => {
       const top = block.getBoundingClientRect().top;
       if (top > window.innerHeight * 0.75) {
-        block.querySelector('.cd-timeline-img').classList.add('is-hidden');
-        block.querySelector('.cd-timeline-content').classList.add('is-hidden');
+        block.querySelector(".cd-timeline-img").classList.add("is-hidden");
+        block.querySelector(".cd-timeline-content").classList.add("is-hidden");
       }
     });
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   return (
     <div>
-      
-    <div className="bg-[#F6F3F1] flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32">
-    <img
-            className="object-contain w-1/2 h-1/2 opacity-90"
-            src="../../images/orangecylinder.svg"
-            alt="patient"
-          />
-      {/* Left Section */}
-      <div className="max-w-lg">
-        <h1 className="text-4xl font-bold text-gray-900 leading-snug">
-        Your care plan is tailored <span className="text-gray-500 italic">to your needs,</span> and biology
-        </h1>
-        <ul className="mt-6 space-y-4">
-          <li className="flex items-center">
-            <svg
-              className="w-6 h-6 text-green-500 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-gray-700">Effective</span>
-          </li>
-          <li className="flex items-center">
-            <svg
-              className="w-6 h-6 text-green-500 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-gray-700">Expert, virtual clinical care</span>
-          </li>
-          <li className="flex items-center">
-            <svg
-              className="w-6 h-6 text-green-500 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-gray-700">Plan personalized for you</span>
-          </li>
-        </ul>
-        <button className="mt-8 px-6 py-3 bg-black text-white rounded-full shadow-lg hover:bg-gray-800">
-          Get started
-        </button>
+      <div className="bg-[#F6F3F1] flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32 relative">
+        {/* Centered Cylinder Image */}
+        {/* <img
+    className="absolute left-1/2 transform -translate-x-1/2 object-contain w-1/2 h-1/2 opacity-90"
+    src="../../images/orangecylinder.svg"
+    alt="Cylinder"
+  /> */}
+
+        {/* Left Section */}
+        <div className="max-w-lg z-10">
+          {" "}
+          {/* Add z-10 to bring the content above the image */}
+          <h1 className="text-4xl font-bold text-gray-900 leading-snug">
+            Your care plan is tailored{" "}
+            <span className="text-gray-500 italic">to your needs,</span> and
+            biology
+          </h1>
+          <ul className="mt-6 space-y-4">
+            <li className="flex items-center">
+              <svg
+                className="w-6 h-6 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <span className="text-gray-700">Effective</span>
+            </li>
+            <li className="flex items-center">
+              <svg
+                className="w-6 h-6 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <span className="text-gray-700">
+                Expert, virtual clinical care
+              </span>
+            </li>
+            <li className="flex items-center">
+              <svg
+                className="w-6 h-6 text-green-500 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <span className="text-gray-700">Plan personalized for you</span>
+            </li>
+          </ul>
+          <button className="mt-8 px-6 py-3 bg-black text-white rounded-full shadow-lg hover:bg-gray-800">
+            Get started
+          </button>
+        </div>
+
+        {/* Right Section - Image */}
+        <div className="hidden lg:block z-10">
+          {" "}
+          {/* Add z-10 to bring the content above the image */}
+          <img src="../images/budget.png" alt="Product" className="max-w-md" />
+        </div>
       </div>
 
-      {/* Right Section - Image */}
-      <div className="hidden lg:block">
-        <img
-          src="../images/budget.png"
-          alt="Product"
-          className="max-w-md"
-        />
-      </div>
-
-  
-    </div>
+      <div></div>
       {/* Timeline Section */}
- 
-      <div className="bg-white py-16 px-8">
 
-      <header className="text-center py-6">
-        <h1 className="text-4xl font-bold">Responsive Vertical Timeline</h1>
-      </header>
+      <div className="py-16 px-8 bg-cover bg-center" id="tracking-section" style={{ backgroundImage: "url('../images/background_min.png')" }}>
+        <div
+          id="element"
+          className="absolute w-12 h-12 bg-black rounded-full top-0 left-0"
+        ></div>
 
-      <section id="cd-timeline" className="relative mx-auto w-[90%] max-w-[1170px]">
-        
-        {/* Vertical line */}
-        <div className="absolute left-1/2 top-0 h-full w-[2px] bg-gray-300 hidden lg:block"></div>
+        <section
+          id="cd-timeline"
+          className="relative mx-auto w-[90%] max-w-[1170px]"
+        >
+          {/* Vertical line */}
+          <div className="absolute left-1/2 top-0 h-full w-[2px] bg-gray-300 hidden lg:block"></div>
 
-        {/* Section 1 (Left Aligned) */}
-        <div className="cd-timeline-block relative my-8 flex lg:flex-row-reverse">
-        <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
-          <img
-              src="../images/starbullet.svg"
-              alt="Location"
-              className="w-15 h-15"
-            />
+          {/* Section 1 (Left Aligned) */}
+          <div className="cd-timeline-block relative my-8 flex lg:flex-row-reverse">
+            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
+              <img
+                src="../images/starbullet.svg"
+                alt="Location"
+                className="w-15 h-15"
+              />
+            </div>
+            <div
+              className="py-10 cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] p-4 "
+              style={{
+                background:
+                  "linear-gradient(183deg, hsla(240, 9%, 98%, 0.4) 26.79%, rgba(233, 237, 245, 0.4))",
+                backdropFilter: "blur(3px)",
+                WebkitBackdropFilter: "blur(3px)",
+                borderRadius: "6px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+              }}
+            >
+              <h2 className="text-3xl text-center font-oakes-regular ">
+                Complimentary Consultation
+              </h2>
+              <p className="text-gray-700 text-md text-center my-4">
+                Initial consultations are always free of charge
+              </p>
+              <a
+                href="#0"
+                className="float-right text-white bg-black px-4 py-2 rounded-full hover:bg-gray-300"
+              >
+                Book Now
+              </a>
+              <span className="block text-gray-400 text-sm mt-2"></span>
+            </div>
           </div>
-          <div className="cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold text-blue-900">Complimentary Consultation</h2>
-            <p className="text-gray-700 text-sm my-4">Initial consultations are always free of charge</p>
-            <a href="#0" className="float-right text-blue-500 bg-gray-200 px-4 py-2 rounded-full hover:bg-gray-300">
-              Read more
-            </a>
-            <span className="block text-gray-400 text-sm mt-2"></span>
-          </div>
-        </div>
 
-        {/* Section 2 (Right Aligned) */}
-        <div className="cd-timeline-block relative my-8 flex lg:flex-row">
-        <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
-        <img
-              src="../images/starbullet.svg"
-              alt="Location"
-              className="w-15 h-15"
-            />
-          </div>
-          <div className="cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold text-blue-900">Choose how you would like to pay</h2>
-            <p className="text-gray-700 text-sm my-4">We offer a variety of payment plans OR pay up front with 10% off total treatment</p>
-            <a 
-    href="https://www.klarna.com" 
-    target="_blank" 
-    rel="noopener noreferrer"
-    className="float-right"
-  >
-    <img 
-      src="../images/klarna.svg" 
-      alt="Klarna" 
-      className="w-12 h-auto"
-    />
-  </a>
+          {/* Section 2 (Right Aligned) */}
+          <div className="cd-timeline-block relative my-8 flex lg:flex-row">
+            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10 flex items-center justify-center">
+              <img
+                src="../images/starbullet.svg"
+                alt="Location"
+                className="w-15 h-15"
+              />
+            </div>
 
-          </div>
-        </div>
+            <div
+              className="py-10 cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] p-4 "
+              style={{
+                background:
+                  "linear-gradient(183deg, hsla(240, 9%, 98%, 0.4) 26.79%, rgba(233, 237, 245, 0.4))",
+                backdropFilter: "blur(3px)",
+                WebkitBackdropFilter: "blur(3px)",
+                borderRadius: "6px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+              }}
+            >
+              <h2 className="text-3xl  font-oakes-regular text-center ">
+                Explore Flexible Ways to Pay
+              </h2>
+              <p className="text-gray-700 text-md text-center my-4">
+                Choose from flexible payment plans or enjoy 10% off when you pay
+                in full prior to starting treatment
+              </p>
 
-        {/* Section 3 (Left Aligned) */}
-        <div className="cd-timeline-block relative my-8 flex lg:flex-row-reverse">
-          <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
-            <img
-              src="../images/starbullet.svg"
-              alt="Location"
-              className="w-15 h-15"
-            />
+              <a
+                href="https://www.klarna.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="float-right"
+              >
+                <img
+                  src="../images/klarna.svg"
+                  alt="Klarna"
+                  className="w-12 h-auto"
+                />
+              </a>
+            </div>
           </div>
-          <div className="cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold text-blue-900">Caring Tradition </h2>
-            <p className="text-gray-700 text-sm my-4">Successive family members always receive the same excellent care. Ask about our family courtesies</p>
-            <a href="#0" className="float-right text-blue-500 bg-gray-200 px-4 py-2 rounded-full hover:bg-gray-300">
-              Read more
-            </a>
-            <span className="block text-gray-400 text-sm mt-2"></span>
-          </div>
-        </div>
 
-        {/* Section 4 (Right Aligned) */}
-        <div className="cd-timeline-block relative my-8 flex lg:flex-row">
-        <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
-          <img
-              src="../images/starbullet.svg"
-              alt="Location"
-              className="w-15 h-15"
-            />
+          {/* Section 3 (Left Aligned) */}
+          <div className="cd-timeline-block relative my-8 flex lg:flex-row-reverse">
+            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
+              <img
+                src="../images/starbullet.svg"
+                alt="Location"
+                className="w-15 h-15"
+              />
+            </div>
+            <div
+              className="py-10 cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] p-4 "
+              style={{
+                background:
+                  "linear-gradient(183deg, hsla(240, 9%, 98%, 0.4) 26.79%, rgba(233, 237, 245, 0.4))",
+                backdropFilter: "blur(3px)",
+                WebkitBackdropFilter: "blur(3px)",
+                borderRadius: "6px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+              }}
+            >
+              <h2 className="text-3xl text-center font-oakes-regular">
+                Caring Tradition{" "}
+              </h2>
+              <p className="text-gray-700 text-md my-4 text-center">
+                Successive family members always receive the same excellent
+                care. Ask about our family courtesies
+              </p>
+              <a
+                href="#0"
+                className="float-right text-blue-500 bg-gray-200 px-4 py-2 rounded-full hover:bg-gray-300"
+              >
+                Read more
+              </a>
+              <span className="block text-gray-400 text-sm mt-2"></span>
+            </div>
           </div>
-          <div className="cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold text-blue-900">Post-Op Care</h2>
-            <p className="text-gray-700 text-sm my-4">One Year Follow Up Included</p>
-            <span className="block text-gray-400 text-sm mt-2"></span>
-          </div>
-        </div>
 
-      </section>
+          {/* Section 4 (Right Aligned) */}
+          <div className="cd-timeline-block relative my-8 flex lg:flex-row">
+            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
+              <img
+                src="../images/starbullet.svg"
+                alt="Location"
+                className="w-15 h-15"
+              />
+            </div>
+            <div
+              className="py-10 cd-timeline-content relative ml-16 lg:ml-0 lg:w-[45%] p-4 "
+              style={{
+                background:
+                  "linear-gradient(183deg, hsla(240, 9%, 98%, 0.4) 26.79%, rgba(233, 237, 245, 0.4))",
+                backdropFilter: "blur(3px)",
+                WebkitBackdropFilter: "blur(3px)",
+                borderRadius: "6px",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+              }}
+            >
+              <h2 className="text-3xl text-center font-oakes-regular">
+                Post-Op Care
+              </h2>
+              <p className="text-gray-700 text-md text-center my-4">
+                Your treatment includes one year of follow-up care
+              </p>
+              <span className="block text-gray-400 text-sm mt-2"></span>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
-
-          </div>
   );
 };
 
