@@ -123,13 +123,16 @@
 // export default ScrollPath;
 
 "use client";
-import React, { useEffect } from "react";
+import React, {useState, useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger, MotionPathPlugin } from "gsap/all";
 
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
 
+
 const HeaderBanner = () => {
+  const [hover, setHover] = useState(false);
+
   useEffect(() => {
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -193,7 +196,7 @@ const HeaderBanner = () => {
 
   return (
     <div>
-      <div className="bg-[#F6F3F1] flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32 relative">
+      <div className="bg-gray-50 flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32 relative">
         {/* Centered Cylinder Image */}
         {/* <img
     className="absolute left-1/2 transform -translate-x-1/2 object-contain w-1/2 h-1/2 opacity-90"
@@ -205,69 +208,62 @@ const HeaderBanner = () => {
         <div className="max-w-lg z-10">
           {" "}
           {/* Add z-10 to bring the content above the image */}
-          <h1 className="text-4xl font-bold text-gray-900 leading-snug">
+          <h1 className="text-4xl font-bold font-neue-montreal text-gray-900 leading-snug">
             Your care plan is tailored{" "}
             <span className="text-gray-500 italic">to your needs,</span> and
             biology
           </h1>
-          <ul className="mt-6 space-y-4">
-            <li className="flex items-center">
-              <svg
-                className="w-6 h-6 text-green-500 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <span className="text-gray-700">Effective</span>
-            </li>
-            <li className="flex items-center">
-              <svg
-                className="w-6 h-6 text-green-500 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <span className="text-gray-700">
-                Expert, virtual clinical care
-              </span>
-            </li>
-            <li className="flex items-center">
-              <svg
-                className="w-6 h-6 text-green-500 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <span className="text-gray-700">Plan personalized for you</span>
-            </li>
-          </ul>
-          <button className="mt-8 px-6 py-3 bg-black text-white rounded-full shadow-lg hover:bg-gray-800">
-            Get started
-          </button>
+          <ul className="font-neue-montreal mt-6 flex space-x-8">
+      <li className="flex items-center justify-center">
+        <div className="flex items-center justify-center w-28 h-28 border border-gray-400 rounded-full">
+          <span className="text-center text-sm text-gray-700">Effective</span>
+        </div>
+      </li>
+
+      <li className="flex items-center justify-center">
+        <div className="flex items-center justify-center w-28 h-28 border border-gray-400 rounded-full">
+          <span className="text-center text-sm text-gray-700">Virtual Care</span>
+        </div>
+      </li>
+
+      <li className="flex items-center justify-center">
+        <div className="flex items-center justify-center w-28 h-28 border border-gray-400 rounded-full">
+          <span className="text-center text-sm text-gray-700">Personalized</span>
+        </div>
+      </li>
+    </ul>
+
+    <div className="font-neue-montreal text-lg flex items-center space-x-4 mt-8">
+  <button className="px-6 py-3">
+    Get started
+  </button>
+
+  <svg
+    className="cursor-pointer w-12" 
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 13"
+    onMouseEnter={() => setHover(true)}
+    onMouseLeave={() => setHover(false)}
+  >
+    <path
+      d="M19.4 6.4L13 0l-1.4 1.4 4 4H4.8v2h10.8l-4 4 1.4 1.4 6.4-6.4z"
+      className="head"
+      style={{
+        transform: hover ? 'translateX(0)' : 'translateX(-3px)',
+        transition: 'all 0.35s ease',
+      }}
+    />
+    <path
+      d="M0 5.4h9.7v2H0z"
+      className="tail"
+      style={{
+        transform: hover ? 'translateX(0)' : 'translateX(5px)',
+        transition: 'all 0.35s ease',
+      }}
+    />
+  </svg>
+</div>
+
         </div>
 
         {/* Right Section - Image */}
