@@ -10,7 +10,6 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother, Flip);
 
 export default function Home() {
   useEffect(() => {
-    // Initialize ScrollSmoother for smooth scrolling
     const smoother = ScrollSmoother.create({
       smooth: 2,
       effects: true,
@@ -20,22 +19,21 @@ export default function Home() {
     const animateHeader = () => {
       gsap.fromTo(
         "#logo",
-        { scale: 10, y: "80vh" }, // Starting scale and position
+        { scale: 10, y: "80vh" },
         {
-          scale: 1, // Scale down to original size
-          y: 0, // Move back to original position
+          scale: 1,
+          y: 0,
           scrollTrigger: {
-            trigger: "#smooth-wrapper", // Trigger based on scrolling inside the wrapper
-            start: "top top", // When the top of the page reaches the top of the viewport
-            end: "bottom top", // End when bottom of the page hits the top
-            scrub: true, // Smoothly sync animation with scroll
-            markers: true, // Markers for debugging
+            trigger: "#smooth-wrapper",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+            markers: true,
           },
         }
       );
     };
 
-    // Section animation with Flip plugin
     const animateSection = () => {
       let timeline = gsap.timeline({
         scrollTrigger: {
@@ -66,22 +64,16 @@ export default function Home() {
         });
     };
 
-    // Run animations
     animateHeader();
     animateSection();
 
-    // Cleanup ScrollTrigger instances on unmount
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);
-
   return (
     <>
-      {/* Header */}
 
-
-      {/* Smooth Wrapper */}
       <div id="smooth-wrapper" className="w-full">
       <header className="flex flex-row w-full py-8 justify-center items-center fixed top-0 left-0 bg-slate-950 z-10">
         <div className="flex items-center justify-center max-w-6xl w-full">
@@ -106,7 +98,7 @@ export default function Home() {
               style={{
                 display: "grid",
                 placeItems: "center",
-                gridTemplateColumns: "1fr", // Initial layout, single column
+                gridTemplateColumns: "1fr", 
               }}
             >
               <a
@@ -114,8 +106,8 @@ export default function Home() {
                 href="https://www.google.com"
                 className="grid-image block w-full aspect-square max-w-[400px]"
                 style={{
-                  gridColumn: "1 / 2", // Set grid-column for initial state
-                  gridRow: "1 / 2", // Set grid-row for initial state
+                  gridColumn: "1 / 2", 
+                  gridRow: "1 / 2", 
                 }}
               >
                 <img
@@ -130,8 +122,8 @@ export default function Home() {
                 href="https://www.google.com"
                 className="grid-image block w-full aspect-square max-w-[400px]"
                 style={{
-                  gridColumn: "1 / 2", // Set grid-column for initial state
-                  gridRow: "1 / 2", // Set grid-row for initial state
+                  gridColumn: "1 / 2", 
+                  gridRow: "1 / 2", 
                 }}
               >
                 <img
@@ -146,8 +138,8 @@ export default function Home() {
                 href="https://www.google.com"
                 className="grid-image block w-full aspect-square max-w-[400px]"
                 style={{
-                  gridColumn: "1 / 2", // Set grid-column for initial state
-                  gridRow: "1 / 2", // Set grid-row for initial state
+                  gridColumn: "1 / 2", 
+                  gridRow: "1 / 2", 
                 }}
               >
                 <img
@@ -162,7 +154,7 @@ export default function Home() {
               id="section-2-heading"
               className="text-5xl font-sans font-bold text-slate-50 max-w-[32rem] text-center share-grid"
               style={{
-                gridRow: "1 / 2", // Pin heading to the same grid position
+                gridRow: "1 / 2", 
                 gridColumn: "1 / 2",
               }}
             >
