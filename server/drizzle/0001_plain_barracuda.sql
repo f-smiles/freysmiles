@@ -1,0 +1,1 @@
+ALTER TABLE "productVariants" ALTER COLUMN "updated" SET NOT NULL;

@@ -1,6 +1,6 @@
 {
-  "id": "609698ad-f245-47d4-8118-c1e1ff6cf0e2",
-  "prevId": "b5245745-9c9a-4f5c-8736-3c9b32fb7dd8",
+  "id": "bfb87ede-8c19-425f-b913-a5541bfe329f",
+  "prevId": "618c5a93-7cc0-43cd-82a7-cde238261404",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -102,18 +102,24 @@
       },
       "uniqueConstraints": {}
     },
-    "public.session": {
-      "name": "session",
+    "public.email_tokens": {
+      "name": "email_tokens",
       "schema": "",
       "columns": {
-        "sessionToken": {
-          "name": "sessionToken",
+        "id": {
+          "name": "id",
           "type": "text",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true
         },
-        "userId": {
-          "name": "userId",
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -126,13 +132,104 @@
         }
       },
       "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "email_tokens_id_token_pk": {
+          "name": "email_tokens_id_token_pk",
+          "columns": [
+            "id",
+            "token"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.password_reset_tokens": {
+      "name": "password_reset_tokens",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "password_reset_tokens_id_token_pk": {
+          "name": "password_reset_tokens_id_token_pk",
+          "columns": [
+            "id",
+            "token"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.productVariants": {
+      "name": "productVariants",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "productID": {
+          "name": "productID",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "variantName": {
+          "name": "variantName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated": {
+          "name": "updated",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
       "foreignKeys": {
-        "session_userId_user_id_fk": {
-          "name": "session_userId_user_id_fk",
-          "tableFrom": "session",
-          "tableTo": "user",
+        "productVariants_productID_products_id_fk": {
+          "name": "productVariants_productID_products_id_fk",
+          "tableFrom": "productVariants",
+          "tableTo": "products",
           "columnsFrom": [
-            "userId"
+            "productID"
           ],
           "columnsTo": [
             "id"
@@ -142,6 +239,89 @@
         }
       },
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.products": {
+      "name": "products",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price": {
+          "name": "price",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created": {
+          "name": "created",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.two_factor_tokens": {
+      "name": "two_factor_tokens",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "two_factor_tokens_id_token_pk": {
+          "name": "two_factor_tokens_id_token_pk",
+          "columns": [
+            "id",
+            "token"
+          ]
+        }
+      },
       "uniqueConstraints": {}
     },
     "public.user": {
@@ -166,6 +346,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "emailVerified": {
           "name": "emailVerified",
           "type": "timestamp",
@@ -177,6 +363,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "twoFactorEnabled": {
+          "name": "twoFactorEnabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         },
         "roles": {
           "name": "roles",
@@ -199,6 +392,108 @@
           ]
         }
       }
+    },
+    "public.variantImages": {
+      "name": "variantImages",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "variantID": {
+          "name": "variantID",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size": {
+          "name": "size",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "number": {
+          "name": "number",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "variantImages_variantID_productVariants_id_fk": {
+          "name": "variantImages_variantID_productVariants_id_fk",
+          "tableFrom": "variantImages",
+          "tableTo": "productVariants",
+          "columnsFrom": [
+            "variantID"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.variantTags": {
+      "name": "variantTags",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "variantID": {
+          "name": "variantID",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tag": {
+          "name": "tag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "variantTags_variantID_productVariants_id_fk": {
+          "name": "variantTags_variantID_productVariants_id_fk",
+          "tableFrom": "variantTags",
+          "tableTo": "productVariants",
+          "columnsFrom": [
+            "variantID"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     }
   },
   "enums": {
