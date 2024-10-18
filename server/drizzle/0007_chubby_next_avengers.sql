@@ -1,1 +1,0 @@
-ALTER TABLE "two_factor_tokens" ALTER COLUMN "userId" DROP NOT NULL;
