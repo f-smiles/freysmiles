@@ -4,7 +4,7 @@ export const SignInButton = () => {
   return (
     <button className={`
       relative z-0 px-3 py-1.5 flex items-center gap-2 overflow-hidden whitespace-nowrap
-      border-[1px] border-primary rounded-lg
+      border-[1px] border-primary rounded-full
       font-medium text-primary
       transition-all duration-300
       before:transition-transform before:duration-1000

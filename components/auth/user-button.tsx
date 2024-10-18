@@ -20,11 +20,11 @@ export default function UserButton({ user }: Session) {
     <DropdownMenu>
       <DropdownMenuTrigger className="border rounded-full shadow-sm">
         <Avatar>
-          {user?.image && user?.name ? (
+          {user.image && user.name ? (
             <Image src={user.image} alt={user.name} fill={true} />
           ) : (
             <AvatarFallback className="bg-primary text-primary-foreground">
-              {user.name.charAt(0).toUpperCase()}
+              {user?.name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           )}
         </Avatar>
