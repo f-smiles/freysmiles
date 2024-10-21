@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt"
-import NextAuth, { type DefaultSession } from "next-auth"
+import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import Google from "next-auth/providers/google"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
@@ -8,19 +8,6 @@ import { db } from "@/server/db"
 import { accounts, users } from "@/server/schema"
 import { LoginSchema } from "@/types/login-schema"
 
-
-// extending the token to add additional properties
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string
-      role: string
-      image: string
-      twoFactorEnabled: boolean
-      isOAuth: boolean
-    } & DefaultSession["user"]
-  }
-}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
