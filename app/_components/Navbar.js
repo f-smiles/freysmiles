@@ -1,17 +1,17 @@
-'use client'
-import Link from 'next/link'
-import { Fragment, useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
-import { gsap } from "gsap"
-import { useGSAP } from "@gsap/react"
-import { selectBag, removeFromBag } from '../_store/reducers/bagReducer'
-import BagIcon from './ui/BagIcon'
-import Bars2Icon from './ui/Bars2Icon'
-import XIcon from './ui/XIcon'
+"use client";
+import Link from "next/link";
+import { Fragment, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import { selectBag, removeFromBag } from "../_store/reducers/bagReducer";
+import BagIcon from "./ui/BagIcon";
+import Bars2Icon from "./ui/Bars2Icon";
+import XIcon from "./ui/XIcon";
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 
 export default function Navbar() {
@@ -27,57 +27,56 @@ export default function Navbar() {
       setIsTransitioning(false); // Reset transition state
     }, 1000); // Adjust the delay to match your animation duration
   };
-  
-  const dispatch = useDispatch()
 
-  const bag = useSelector(selectBag)
+  const dispatch = useDispatch();
 
-  const [isBagOpen, setIsBagOpen] = useState(false)
-  const [about, setAbout] = useState(false)
-  const [patient, setPatient] = useState(false)
-  const [treatments, setTreatments] = useState(false)
+  const bag = useSelector(selectBag);
+
+  const [isBagOpen, setIsBagOpen] = useState(false);
+  const [about, setAbout] = useState(false);
+  const [patient, setPatient] = useState(false);
+  const [treatments, setTreatments] = useState(false);
 
   const about_us_links = [
     { name: "Our Team", href: "/our-team" },
     { name: "Why Choose Us", href: "/why-choose-us" },
     { name: "Testimonials", href: "/testimonials" },
-  ]
+  ];
 
   const patient_links = [
     { name: "Your Care", href: "/your-care" },
     { name: "Financing Treatment", href: "/financing-treatment" },
-
-  ]
+  ];
 
   const treatments_links = [
     { name: "Invisalign", href: "/invisalign" },
     { name: "Braces", href: "/braces" },
     { name: "Early & Adult Orthodontics", href: "/early-adult-orthodontics" },
-  ]
+  ];
 
   const handleToggleBagPanel = () => {
-    setIsBagOpen(!isBagOpen)
-  }
+    setIsBagOpen(!isBagOpen);
+  };
 
   const handleToggleAbout = () => {
-    setAbout(!about)
-  }
+    setAbout(!about);
+  };
 
   const handleTogglePatient = () => {
-    setPatient(!patient)
-  }
+    setPatient(!patient);
+  };
 
   const handleToggleTreatments = () => {
-    setTreatments(!treatments)
-  }
+    setTreatments(!treatments);
+  };
 
   const calculateSubtotal = () => {
-    let subtotal = 0
+    let subtotal = 0;
     subtotal = bag
-      .map((item) => (item.product.price) * item.quantity)
-      .reduce((acc, cur) => acc + cur, 0)
-    return subtotal
-  }
+      .map((item) => item.product.price * item.quantity)
+      .reduce((acc, cur) => acc + cur, 0);
+    return subtotal;
+  };
 
   // const calculateItemsQuantity = () => {
   //   let itemsQuantity = 0
@@ -88,36 +87,42 @@ export default function Navbar() {
   // }
 
   const handleCheckout = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/checkout/checkout-sessions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(bag)
-    })
-    const data = await res.json()
-    window.location.assign(data)
-  }
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/checkout/checkout-sessions`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bag),
+      }
+    );
+    const data = await res.json();
+    window.location.assign(data);
+  };
 
-   /* mobile nav */
-   const [show, setShow] = useState(null)
-   const handleToggleMobileNav = () => {
-     // setShow((prevState) => !prevState)
-     setShow(!show)
-   }
+  /* mobile nav */
+  const [show, setShow] = useState(null);
+  const handleToggleMobileNav = () => {
+    // setShow((prevState) => !prevState)
+    setShow(!show);
+  };
 
   useGSAP(() => {
-    const isTouchDevice = 'ontouchstart' in window
+    const isTouchDevice = "ontouchstart" in window;
 
     const createCustomCursor = () => {
-      const desktopNavbar = document.querySelector("#desktop-nav")
-      const customCursor = document.querySelector('.custom-navbar-cursor')
+      const desktopNavbar = document.querySelector("#desktop-nav");
+      const customCursor = document.querySelector(".custom-navbar-cursor");
 
       // Each time the mouse coordinates are updated, we need to pass the values to gsap in order to animate the element
-      desktopNavbar.addEventListener('mousemove', (e) => {
-        const { target, x, y } = e
+      desktopNavbar.addEventListener("mousemove", (e) => {
+        const { target, x, y } = e;
 
-        const isTargetLinkOrButton = target?.closest('a') || target?.closest('button') || target?.closest('.target-link')
+        const isTargetLinkOrButton =
+          target?.closest("a") ||
+          target?.closest("button") ||
+          target?.closest(".target-link");
 
         gsap.to(customCursor, {
           x: x + 3,
@@ -126,23 +131,22 @@ export default function Navbar() {
           ease: "power4",
           opacity: isTargetLinkOrButton ? 0.6 : 1,
           transform: `scale(${isTargetLinkOrButton ? 4 : 1})`,
-        })
-      })
+        });
+      });
 
-      desktopNavbar.addEventListener('mouseleave', (e) => {
+      desktopNavbar.addEventListener("mouseleave", (e) => {
         gsap.to(customCursor, {
           duration: 0.7,
           opacity: 0,
-        })
-      })
-
-    }
+        });
+      });
+    };
 
     // Only create the custom cursor if device isn't touchable
     if (!isTouchDevice) {
-      createCustomCursor()
+      createCustomCursor();
     }
-  })
+  });
   const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
@@ -154,54 +158,42 @@ export default function Navbar() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  
   return (
-    <header className='overflow-hidden'>
-      <div className="flex w-full h-80 items-center p-8">
-      {/* Left Section */}
-      {/* <div className="bg-purple-200 w-1/6 h-full rounded-3xl flex flex-col items-center justify-center p-4">
-        <div className="text-green-800 font-semibold text-xl mb-2">ABOUT</div>
-   
-      </div> */}
-
-      {/* Center Section */}
-      {/* <div className="bg-pink-500 w-1/3 h-full rounded-3xl flex items-center justify-center p-4">
-        <div className="flex flex-col items-center">
-          <div className="text-gray-800 text-xl font-light">Patient</div>
-          <div className="mt-4 text-gray-800 text-4xl font-light">✳️</div> 
-        </div>
-      </div> */}
-
-      {/* Right Section */}
-      {/* <div className="bg-[#F5FF7D] w-4/5 h-full rounded-3xl flex flex-col items-center justify-center p-4">
-        <h1 className="text-green-900 text-5xl font-extrabold">FREY SMILES</h1>
-
-      </div> */}
-    </div>
+    <header className="overflow-hidden">
       {/* DESKTOP NAVBAR */}
-      <nav id="desktop-nav" className="fixed top-10 left-0 z-40 hidden w-full mb-[6vh] lg:block">
+      <nav
+        id="desktop-nav"
+        className="fixed top-10 left-0 z-40 hidden w-full mb-[6vh] lg:block"
+      >
         <div className="custom-navbar-cursor" />
         <div
-      className={`text-[#FFF] p-4 mx-auto text-sm transition duration-300 ease-in-out border border-gray-100 rounded-full justify-evenly max-w-max ${
-        hasScrolled ? 'bg-gray-100/60 backdrop-blur-md hover:bg-[#CFFFB1]/70 hover:shadow-sm' : 'hover:bg-[#CFFFB1]/70'
-      }`}
-    >
+          className={`text-[#FFF] p-4 mx-auto text-sm transition duration-300 ease-in-out border border-gray-100 rounded-full justify-evenly max-w-max ${
+            hasScrolled
+              ? "bg-gray-100/60 backdrop-blur-md hover:bg-[#CFFFB1]/70 hover:shadow-sm"
+              : "hover:bg-[#CFFFB1]/70"
+          }`}
+        >
           <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
             <li className="flex items-center font-medium tracking-wider transition duration-300 ease-in-out    active:bg-primary-50/80">
-
               <Link href="/" className="inline-block p-4">
-                <img className="w-4 h-4" src="images/logo_icon.png" alt="FreySmiles Orthodontics" />
+                <img
+                  className="w-4 h-4"
+                  src="images/logo_icon.png"
+                  alt="FreySmiles Orthodontics"
+                />
               </Link>
             </li>
 
             <li onClick={handleToggleAbout} className="target-link">
-              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">About</p>
+              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+                About
+              </p>
             </li>
             {/* ABOUT PANEL */}
             <Transition.Root show={about} as={Fragment}>
@@ -259,30 +251,25 @@ export default function Navbar() {
                               </Dialog.Title>
                             </div> */}
                             <div className="relative flex-1 px-4 mt-6 sm:px-6">
-                            <ul className="px-4 space-y-2">
-      {about_us_links.map((link) => (
-        <li key={link.name}>
-   
-          <Link
-            href={link.href}
-            className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
-            onClick={
-              link.name === "Testimonials"
-                ? (e) => handleTestimonialsClick(e, link.href)
-                : null
-            }
-          >
-            <h4>{link.name}</h4>
-          </Link>
-        </li>
-      ))}
+                              <ul className="px-4 space-y-2">
+                                {about_us_links.map((link) => (
+                                  <li key={link.name}>
+                                    <Link
+                                      href={link.href}
+                                      className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
+                                      onClick={(e) => {
+                                        if (link.name === "Testimonials") {
+                                          handleTestimonialsClick(e, link.href);
+                                        }
+                                        setAbout(false);
+                                      }}
+                                    >
+                                      <h4>{link.name}</h4>
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
 
-{/* <div
-        className={`fixed inset-0 bg-black z-50 transform transition-transform duration-1000 ${
-          isTransitioning ? "translate-y-0" : "translate-y-full"
-        }`}
-      ></div> */}
-    </ul>
                               {/* <Sphere /> */}
                             </div>
                           </div>
@@ -295,7 +282,9 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleTogglePatient} className="target-link">
-              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Patient</p>
+              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+                Patient
+              </p>
             </li>
             {/* PATIENT PANEL */}
             <Transition.Root show={patient} as={Fragment}>
@@ -354,17 +343,18 @@ export default function Navbar() {
                             </div> */}
                             <div className="relative flex-1 px-4 mt-6 sm:px-6">
                               <ul className="px-4 space-y-2">
-                                {patient_links && patient_links.map((link, index) => (
-                                  <li key={link.name}>
-                                    <Link
-                                      href={link.href}
-                                      className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
-                                      onClick={handleTogglePatient}
-                                    >
-                                      <h4>{link.name}</h4>
-                                    </Link>
-                                  </li>
-                                ))}
+                                {patient_links &&
+                                  patient_links.map((link, index) => (
+                                    <li key={link.name}>
+                                      <Link
+                                        href={link.href}
+                                        className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
+                                        onClick={handleTogglePatient}
+                                      >
+                                        <h4>{link.name}</h4>
+                                      </Link>
+                                    </li>
+                                  ))}
                               </ul>
                               {/* <Sphere /> */}
                             </div>
@@ -378,11 +368,17 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleToggleTreatments} className="target-link">
-              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">Treatments</p>
+              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+                Treatments
+              </p>
             </li>
             {/* TREATMENTS PANEL */}
             <Transition.Root show={treatments} as={Fragment}>
-              <Dialog as="div" className="relative z-50" onClose={setTreatments}>
+              <Dialog
+                as="div"
+                className="relative z-50"
+                onClose={setTreatments}
+              >
                 <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-500"
@@ -437,17 +433,18 @@ export default function Navbar() {
                             </div> */}
                             <div className="relative flex-1 px-4 mt-6 sm:px-6">
                               <ul className="px-4 space-y-2">
-                                {treatments_links && treatments_links.map((link, index) => (
-                                  <li key={link.name}>
-                                    <Link
-                                      href={link.href}
-                                      className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
-                                      onClick={handleToggleTreatments}
-                                    >
-                                      <h4>{link.name}</h4>
-                                    </Link>
-                                  </li>
-                                ))}
+                                {treatments_links &&
+                                  treatments_links.map((link, index) => (
+                                    <li key={link.name}>
+                                      <Link
+                                        href={link.href}
+                                        className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
+                                        onClick={handleToggleTreatments}
+                                      >
+                                        <h4>{link.name}</h4>
+                                      </Link>
+                                    </li>
+                                  ))}
                               </ul>
                               {/* <Sphere /> */}
                             </div>
@@ -478,18 +475,18 @@ export default function Navbar() {
               </Link>
             </li>
 
-						{bag.length > 0 && (
+            {bag.length > 0 && (
               <li onClick={handleToggleBagPanel}>
-          		  <p className="inline-flex">
+                <p className="inline-flex">
                   <BagIcon className="w-6 h-6 ml-1" />
                   {bag.length}
                 </p>
               </li>
             )}
-						{/* BagSidePanel */}
+            {/* BagSidePanel */}
             <Transition.Root show={isBagOpen} as={Fragment}>
-            	<Dialog as="div" className="relative z-50" onClose={setIsBagOpen}>
-            		<Transition.Child
+              <Dialog as="div" className="relative z-50" onClose={setIsBagOpen}>
+                <Transition.Child
                   as={Fragment}
                   enter="ease-in-out duration-500"
                   enterFrom="opacity-0"
@@ -500,7 +497,7 @@ export default function Navbar() {
                 >
                   <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
                 </Transition.Child>
-            		<div className="fixed inset-0 overflow-hidden">
+                <div className="fixed inset-0 overflow-hidden">
                   <div className="absolute inset-0 overflow-hidden">
                     <div className="fixed inset-y-0 right-0 flex max-w-full pl-10 pointer-events-none">
                       <Transition.Child
@@ -544,47 +541,86 @@ export default function Navbar() {
                               <ul className="space-y-6 divide-y divide-gray-200">
                                 {bag.length === 0 ? (
                                   <li className="px-4 space-y-8 sm:px-0">
-                                    <p className='text-sm leading-6 text-gray-500'>You currently do not have any items in your bag.</p>
+                                    <p className="text-sm leading-6 text-gray-500">
+                                      You currently do not have any items in
+                                      your bag.
+                                    </p>
                                   </li>
-                                  ) : (
-																		bag.length > 0 && bag.map((item, index) => (
-            	                        <li key={index} className="flex py-6">
-            	                          <div className="flex-shrink-0 w-24 h-24 overflow-hidden border border-gray-200 rounded-md">
-            	                            <img
-            	                              src={item.product.images[0]}
-            	                              alt={item.product.name}    className="object-cover object-center w-full h-full" />
-            														</div>
-            	                          <div className="flex flex-col flex-1 ml-4">
-                                          <span className="flex justify-between text-base font-medium text-gray-900">
-                                            <p><Link href={`/products/${item.product.id}`}>{item.product.name}</Link></p>
-            	                              <p className="ml-4">${item.product.price * item.quantity}</p>
-                                          </span>
-                                          <p className="text-gray-500">${item.product.price}</p>
-                                          <span className="flex items-center justify-between flex-1 text-sm">
-            																<p className="text-gray-500">Qty: {item.quantity}</p>
-                                        		<div className="flex">
-                                            	<button type="button" className="font-medium text-secondary-50 hover:underline hover:underline-offset-4" onClick={() => dispatch(removeFromBag(item))}>Remove</button>
-                                            </div>
-                                          </span>
-                                        </div>
-                                      </li>
-                                  )))}
-                                 </ul>
-                               </div>
-                               <div className="px-4 py-6 border-t border-gray-200 sm:px-6">
-                                <div className="flex justify-between text-base font-medium text-gray-900">
-                                  <p>Subtotal: ({bag.length} items)</p>
-                                  <p>${calculateSubtotal()}</p>
-                               	</div>
-                                <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
-                                <div className="mt-6">
-                                  <button className="flex items-center justify-center w-full px-6 py-3 text-base font-medium text-white transition-colors duration-300 ease-in-out border border-transparent rounded-md shadow-sm bg-primary-50 hover:bg-primary-30"
+                                ) : (
+                                  bag.length > 0 &&
+                                  bag.map((item, index) => (
+                                    <li key={index} className="flex py-6">
+                                      <div className="flex-shrink-0 w-24 h-24 overflow-hidden border border-gray-200 rounded-md">
+                                        <img
+                                          src={item.product.images[0]}
+                                          alt={item.product.name}
+                                          className="object-cover object-center w-full h-full"
+                                        />
+                                      </div>
+                                      <div className="flex flex-col flex-1 ml-4">
+                                        <span className="flex justify-between text-base font-medium text-gray-900">
+                                          <p>
+                                            <Link
+                                              href={`/products/${item.product.id}`}
+                                            >
+                                              {item.product.name}
+                                            </Link>
+                                          </p>
+                                          <p className="ml-4">
+                                            $
+                                            {item.product.price * item.quantity}
+                                          </p>
+                                        </span>
+                                        <p className="text-gray-500">
+                                          ${item.product.price}
+                                        </p>
+                                        <span className="flex items-center justify-between flex-1 text-sm">
+                                          <p className="text-gray-500">
+                                            Qty: {item.quantity}
+                                          </p>
+                                          <div className="flex">
+                                            <button
+                                              type="button"
+                                              className="font-medium text-secondary-50 hover:underline hover:underline-offset-4"
+                                              onClick={() =>
+                                                dispatch(removeFromBag(item))
+                                              }
+                                            >
+                                              Remove
+                                            </button>
+                                          </div>
+                                        </span>
+                                      </div>
+                                    </li>
+                                  ))
+                                )}
+                              </ul>
+                            </div>
+                            <div className="px-4 py-6 border-t border-gray-200 sm:px-6">
+                              <div className="flex justify-between text-base font-medium text-gray-900">
+                                <p>Subtotal: ({bag.length} items)</p>
+                                <p>${calculateSubtotal()}</p>
+                              </div>
+                              <p className="mt-0.5 text-sm text-gray-500">
+                                Shipping and taxes calculated at checkout.
+                              </p>
+                              <div className="mt-6">
+                                <button
+                                  className="flex items-center justify-center w-full px-6 py-3 text-base font-medium text-white transition-colors duration-300 ease-in-out border border-transparent rounded-md shadow-sm bg-primary-50 hover:bg-primary-30"
                                   onClick={handleCheckout}
-                                  >Checkout</button>
-                                </div>
-                                <div className="mt-6">
-                                  <Link href="/checkout" className="flex items-center justify-center px-6 py-3 text-base font-medium transition-colors duration-300 ease-in-out border rounded-md shadow-sm border-primary-50 text-primary-50 hover:text-white hover:bg-primary-30" onClick={handleToggleBagPanel}>View Bag</Link>
-            	                  </div>
+                                >
+                                  Checkout
+                                </button>
+                              </div>
+                              <div className="mt-6">
+                                <Link
+                                  href="/checkout"
+                                  className="flex items-center justify-center px-6 py-3 text-base font-medium transition-colors duration-300 ease-in-out border rounded-md shadow-sm border-primary-50 text-primary-50 hover:text-white hover:bg-primary-30"
+                                  onClick={handleToggleBagPanel}
+                                >
+                                  View Bag
+                                </Link>
+                              </div>
                             </div>
                           </div>
                         </Dialog.Panel>
@@ -595,16 +631,15 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-						<li
+            <li
               className="px-6 py-3 transition duration-300 ease-in-out "
               // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
             >
-              <Link href="/book-now"
-                className="inline-block"
-              >
-                <p className="text-sm font-medium tracking-wider text-center uppercase ">Book Now</p>
+              <Link href="/book-now" className="inline-block">
+                <p className="text-sm font-medium tracking-wider text-center uppercase ">
+                  Book Now
+                </p>
                 {/* Book Now */}
-
               </Link>
             </li>
           </ul>
@@ -612,8 +647,19 @@ export default function Navbar() {
       </nav>
 
       {/* MOBILE NAVBAR */}
-      <nav id="mobile-nav" className={`${show ? "top-0 flex flex-col-reverse gap-6 justify-between h-full bg-white" : "bottom-0 max-w-[75vw] rounded-full bg-gray-100/60"} fixed left-0 right-0 mb-[4vh] p-4 w-full mx-auto text-gray-600 backdrop-blur-md shadow-md z-50 lg:hidden`}>
-        <section className={`${show ? "px-4 py-6" : ""} flex items-center justify-between`}>
+      <nav
+        id="mobile-nav"
+        className={`${
+          show
+            ? "top-0 flex flex-col-reverse gap-6 justify-between h-full bg-white"
+            : "bottom-0 max-w-[75vw] rounded-full bg-gray-100/60"
+        } fixed left-0 right-0 mb-[4vh] p-4 w-full mx-auto text-gray-600 backdrop-blur-md shadow-md z-50 lg:hidden`}
+      >
+        <section
+          className={`${
+            show ? "px-4 py-6" : ""
+          } flex items-center justify-between`}
+        >
           <Link href="/">
             <img
               src="/../../../logo_full.png"
@@ -641,63 +687,70 @@ export default function Navbar() {
                   <Link href="/">Home</Link>
                 </li> */}
                 <li className="py-2 border-b border-secondary-50/30">
-                {/* <li className="py-2 border-b border-secondary-50/30" onClick={() => setAbout(!about)}> */}
-                  <span className="flex items-center gap-2 uppercase">About</span>
+                  {/* <li className="py-2 border-b border-secondary-50/30" onClick={() => setAbout(!about)}> */}
+                  <span className="flex items-center gap-2 uppercase">
+                    About
+                  </span>
                   {/* About <ChevronDownIcon className="w-4 h-4" /> */}
                   {/* {about && ( */}
-                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
-                      {about_us_links &&
-                        about_us_links.map((link) => (
-                          <Link
-                            key={link.name}
-                            href={link.href}
-                            className="mx-6 text-xl text-secondary-50"
-                            onClick={() => setShow(!show)}
-                          >
-                            {link.name}
-                          </Link>
-                        ))}
-                    </div>
+                  <div className="flex flex-col w-full my-4 space-y-1 capitalize">
+                    {about_us_links &&
+                      about_us_links.map((link) => (
+                        <Link
+                          key={link.name}
+                          href={link.href}
+                          className="mx-6 text-xl text-secondary-50"
+                          onClick={() => setShow(!show)}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                  </div>
                   {/* )} */}
                 </li>
                 <li className="py-2 border-b border-secondary-50/30">
-                  <span className="flex items-center gap-2 uppercase">Patient</span>
+                  <span className="flex items-center gap-2 uppercase">
+                    Patient
+                  </span>
                   {/* {patient && ( */}
-                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
-                      {patient_links &&
-                        patient_links.map((link) => (
-                          <Link
-                            key={link.name}
-                            href={link.href}
-                            className="mx-6 text-xl text-secondary-50"
-                            onClick={() => setShow(!show)}
-                          >
-                            {link.name}
-                          </Link>
-                        ))}
-                    </div>
+                  <div className="flex flex-col w-full my-4 space-y-1 capitalize">
+                    {patient_links &&
+                      patient_links.map((link) => (
+                        <Link
+                          key={link.name}
+                          href={link.href}
+                          className="mx-6 text-xl text-secondary-50"
+                          onClick={() => setShow(!show)}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                  </div>
                   {/* )} */}
                 </li>
                 <li className="py-2 border-b border-secondary-50/30">
-                  <span className="flex items-center gap-2 uppercase">Treatments</span>
+                  <span className="flex items-center gap-2 uppercase">
+                    Treatments
+                  </span>
                   {/* {treatments && ( */}
-                    <div className="flex flex-col w-full my-4 space-y-1 capitalize">
-                      {treatments_links &&
-                        treatments_links.map((link) => (
-                          <Link
-                            key={link.name}
-                            href={link.href}
-                            className="mx-6 text-xl text-secondary-50"
-                            onClick={() => setShow(!show)}
-                          >
-                            {link.name}
-                          </Link>
-                        ))}
-                    </div>
+                  <div className="flex flex-col w-full my-4 space-y-1 capitalize">
+                    {treatments_links &&
+                      treatments_links.map((link) => (
+                        <Link
+                          key={link.name}
+                          href={link.href}
+                          className="mx-6 text-xl text-secondary-50"
+                          onClick={() => setShow(!show)}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                  </div>
                   {/* )} */}
                 </li>
               </div>
-              <div className="px-4 mt-10 space-y-2 cursor-pointer"
+              <div
+                className="px-4 mt-10 space-y-2 cursor-pointer"
                 onClick={() => setShow(!show)}
               >
                 <li>
@@ -709,10 +762,7 @@ export default function Navbar() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    className="block text-secondary-50"
-                    href="/products"
-                  >
+                  <Link className="block text-secondary-50" href="/products">
                     Shop
                   </Link>
                 </li>
@@ -725,7 +775,9 @@ export default function Navbar() {
                     <div className="relative">
                       <BagIcon className="w-10 h-10" />
                       <span className="absolute top-0 right-0 p-3 bg-black rounded-full -translate-y-1/4 translate-x-2/4">
-                        <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{bag.length}</p>
+                        <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">
+                          {bag.length}
+                        </p>
                         {/* <p className="absolute text-sm text-white -translate-x-2/4 -translate-y-2/4">{calculateItemsQuantity()}</p> */}
                       </span>
                     </div>
@@ -747,7 +799,7 @@ export default function Navbar() {
         </section>
       </nav>
     </header>
-  )
+  );
 }
 
 // function useMobileNavAnimation(show) {

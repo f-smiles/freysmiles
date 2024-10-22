@@ -1,127 +1,3 @@
-// "use client";
-// import React, { useEffect, useRef } from 'react';
-// import { gsap } from 'gsap';
-// import { ScrollTrigger } from 'gsap/ScrollTrigger';
-// import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-
-// gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
-
-// const ScrollPath = () => {
-//   const ballRef = useRef(null);
-
-//   useEffect(() => {
-//     gsap.to(ballRef.current, {
-//       scrollTrigger: {
-//         trigger: ".sections-container",
-//         start: "top top",
-//         end: "bottom bottom",
-//         scrub: 1,
-//       },
-//       motionPath: {
-//         path: "#path",
-//         align: "#path",
-//         autoRotate: true,
-//         alignOrigin: [0.5, 0.5],
-//       },
-//     });
-//   }, []);
-
-//   return (
-//     <div className="">
-//         <header>
-//     <h1 class="page-title">
-//       <div class='revealer'>
-//         <div class='revealer-inner'>Cassie Evans</div>
-//       </div>
-//       <div class='page-title-secondary revealer'>
-//         <div class='revealer-inner'>Keyframers</div>
-//       </div>
-//     </h1>
-//   </header>
-//   <figure>
-//       <figcaption class='revealer'>
-//         <div class='revealer-inner'>And this dress</div>
-//       </figcaption>
-//       <div class="revealer">
-//         <img class='revealer-img' src="https://images.unsplash.com/photo-1602741070475-fc55f644c3f7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTYyMTA4ODI5MA&ixlib=rb-1.2.1&q=80&w=400" alt="" />
-//       </div>
-//     </figure>
-
-//     <figure>
-//       <figcaption class='revealer'>
-//         <div class='revealer-inner'>Also this blouse</div>
-//       </figcaption>
-//       <div class="revealer">
-//         <img class='revealer-img' src='https://images.unsplash.com/photo-1614282860993-c9f7e9acdf44?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTYyMTA4Nzk2OQ&ixlib=rb-1.2.1&q=80&w=400' alt=''/>
-//       </div>
-//     </figure>
-
-//     <figure>
-//       <figcaption class='revealer'>
-//         <div class='revealer-inner'>The table, actually</div>
-//       </figcaption>
-
-//       <div class="revealer">
-//         <img class='revealer-img' src='https://images.unsplash.com/photo-1614283232994-7f56849e2359?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTYyMTA4Nzk2OQ&ixlib=rb-1.2.1&q=80&w=400' alt=''/>
-//       </div>
-//     </figure>
-
-//     <figure>
-//       <figcaption class='revealer'>
-//         <div class='revealer-inner'>Whatever she's holding</div>
-//       </figcaption>
-
-//       <div class="revealer">
-//         <img class='revealer-img' src='https://images.unsplash.com/photo-1620916927285-21c5218d64a4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxNDU4OXwwfDF8cmFuZG9tfHx8fHx8fHx8MTYyMTA4ODI5MA&ixlib=rb-1.2.1&q=80&w=400' alt=''/>
-//       </div>
-//     </figure>
-// <svg  style={{
-//     display: 'block',
-//     position: 'absolute',
-//     top: 0,
-//     left: 0,
-//     width: '100%',
-//     height: '100%',
-//   }}
-//   preserveAspectRatio="xMidYMid slice"
-//   fillRule="evenodd"
-//   strokeMiterlimit="1.5"
-//   clipRule="evenodd"
-//   viewBox="0 0 2132 5344">
-//      <defs>
-//     <mask id="stroke-mask">
-//       <path
-//         id="path"
-//         fill="none"
-//         stroke="white"
-//         strokeWidth="5"
-//         d="M324.813-52.135C204.651 65.523 458.362 173.469 601.765 189.285c169.887 18.737 410.22-29.224 520.966-82.617 100.731-48.564 154.809-138.521 101.624-165.772-55.127-28.247-560.763 155.569-415.777 300.554 49.997 49.998 502.244 145.465 784.213 38.725 155.512-58.87 188.43-160.067 172.708-189.71-27.518-51.882-247.239 28.961-305.985 65.473-276.859 172.073-515.191 899.522-201.638 1338.54 206.052 288.502 827.828 487.908 785.773 164.706-17.293-132.902-272.903-149.223-367.935-88.64-113.522 72.37-335.863 193.745-231.163 504.727 88.882 264 678.637 273.92 544.444 558.087-147.028 311.346-586.597 149.888-757.298 124.559-379.379-56.295-803.402-136.829-955.247 297.618-59.843 171.216-44.961 489.493 70.837 631.153 162.443 198.723 459.583-129.982 369.648-294.59-96.415-176.467-322.65 22.711-396.282 105.313-97.708 109.612-166.931 399.956-39.123 502.579 267.219 214.564 622.086-28.76 831.909 21.963 561.219 135.67 235.391 679.206 457.463 917.719 221.323 237.708 654.322-95.359 407.084-266.334-358.912-248.2-527.841 403.197-687.761 495.191-241.38 138.854-374.262-119.763-602.689-142.606-73.378-7.337-157.751-.818-224.685 31.794-15.142 7.378-52.177 37.97-69.586 37.97"
-//       />
-//     </mask>
-//   </defs>
-
-//   <path
-//     id="path"
-//     stroke="grey"
-//     mask="url(#stroke-mask)"
-//     strokeDasharray="20"
-//     strokeDashoffset="var(--dashOffset)"
-//     fill="none"
-//     strokeWidth="5"
-//     d="M324.813-52.135C204.651 65.523 458.362 173.469 601.765 189.285c169.887 18.737 410.22-29.224 520.966-82.617 100.731-48.564 154.809-138.521 101.624-165.772-55.127-28.247-560.763 155.569-415.777 300.554 49.997 49.998 502.244 145.465 784.213 38.725 155.512-58.87 188.43-160.067 172.708-189.71-27.518-51.882-247.239 28.961-305.985 65.473-276.859 172.073-515.191 899.522-201.638 1338.54 206.052 288.502 827.828 487.908 785.773 164.706-17.293-132.902-272.903-149.223-367.935-88.64-113.522 72.37-335.863 193.745-231.163 504.727 88.882 264 678.637 273.92 544.444 558.087-147.028 311.346-586.597 149.888-757.298 124.559-379.379-56.295-803.402-136.829-955.247 297.618-59.843 171.216-44.961 489.493 70.837 631.153 162.443 198.723 459.583-129.982 369.648-294.59-96.415-176.467-322.65 22.711-396.282 105.313-97.708 109.612-166.931 399.956-39.123 502.579 267.219 214.564 622.086-28.76 831.909 21.963 561.219 135.67 235.391 679.206 457.463 917.719 221.323 237.708 654.322-95.359 407.084-266.334-358.912-248.2-527.841 403.197-687.761 495.191-241.38 138.854-374.262-119.763-602.689-142.606-73.378-7.337-157.751-.818-224.685 31.794-15.142 7.378-52.177 37.97-69.586 37.97"
-//   />
-
-// </svg>
-//       <div
-//         ref={ballRef}
-//         className="absolute w-10 h-10 bg-blue-500 rounded-full"
-//         style={{ top: 0, left: '90px' }}
-//       />
-//     </div>
-//   );
-// };
-// export default ScrollPath;
-
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -206,28 +82,89 @@ const HeaderBanner = () => {
           block
             .querySelector(".cd-timeline-content")
             .classList.add("bounce-in");
+        } else {
+          block.querySelector(".cd-timeline-img").classList.add("is-hidden");
+          block.querySelector(".cd-timeline-img").classList.remove("bounce-in");
+          block
+            .querySelector(".cd-timeline-content")
+            .classList.add("is-hidden");
+          block
+            .querySelector(".cd-timeline-content")
+            .classList.remove("bounce-in");
         }
       });
     };
-
-    const timelineBlocks = document.querySelectorAll(".cd-timeline-block");
-    timelineBlocks.forEach((block) => {
-      const top = block.getBoundingClientRect().top;
-      if (top > window.innerHeight * 0.75) {
-        block.querySelector(".cd-timeline-img").classList.add("is-hidden");
-        block.querySelector(".cd-timeline-content").classList.add("is-hidden");
-      }
-    });
-
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
+  useEffect(() => {
+    const firstSection = {
+      section: "#first-color",
+      bgColor: "#EDE7E6",
+      // fontColor: "#2F796D",
+    };
+
+    const secondSection = {
+      section: "#second-color",
+      bgColor: "#D9D2D6 ",
+      fontColor: "#2F796D ",
+    };
+
+    const thirdSection = {
+      section: ".third-color",
+      bgColor: "#D8EBE3",
+      // fontColor: "#233329",
+    };
+
+    const setColors = (curr, next) => {
+      let tl = gsap.timeline({ ease: "power2.inOut" });
+
+      tl.to(".colorcontainer", {
+        duration: 1.5,
+        backgroundColor: next.bgColor,
+        color: next.fontColor,
+      });
+    };
+
+    gsap.set(".colorcontainer", {
+      backgroundColor: firstSection.bgColor,
+      color: firstSection.fontColor,
+    });
+
+    gsap.to(secondSection.section, {
+      duration: 1,
+      scrollTrigger: {
+        trigger: secondSection.section,
+        start: "top 70%",
+        end: "bottom 30%",
+        scrub: true,
+        onEnter: () => setColors(firstSection, secondSection),
+        onLeaveBack: () => setColors(secondSection, firstSection),
+      },
+    });
+
+    gsap.to(thirdSection.section, {
+      duration: 1,
+      scrollTrigger: {
+        trigger: thirdSection.section,
+        start: "top 70%",
+        end: "bottom 30%",
+        scrub: true,
+        onEnter: () => setColors(secondSection, thirdSection),
+        onLeaveBack: () => setColors(thirdSection, secondSection),
+      },
+    });
+  }, []);
+
   return (
-    <div className="">
-      <div className="bg-[#efefef] flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32 relative">
+    <div className="colorcontainer">
+      <div
+        id="first-color"
+        className=" flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32 relative"
+      >
         {/* Centered Cylinder Image */}
         {/* <img
     className="absolute left-1/2 transform -translate-x-1/2 object-contain w-1/2 h-1/2 opacity-90"
@@ -236,7 +173,7 @@ const HeaderBanner = () => {
   /> */}
 
         {/* Left Section */}
-        <div className="max-w-lg z-10">
+        <div className=" max-w-lg z-10">
           {" "}
           <h1 className="text-4xl font-bold font-neue-montreal text-gray-900 leading-snug">
             Your care plan is tailored{" "}
@@ -269,37 +206,41 @@ const HeaderBanner = () => {
             </li>
           </ul>
           <div className="font-neue-montreal text-lg flex justify-end items-center space-x-4 mt-8">
-            <Link href="/book-now">
-              <button className="px-6 py-3">Get started</button>
-            </Link>
+  <Link href="/book-now" className="flex items-center space-x-2">
+    <button
+      className="px-6 py-3"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      Get started
+    </button>
+    <svg
+      className="cursor-pointer w-12"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 13"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <path
+        d="M19.4 6.4L13 0l-1.4 1.4 4 4H4.8v2h10.8l-4 4 1.4 1.4 6.4-6.4z"
+        className="head"
+        style={{
+          transform: hover ? "translateX(0)" : "translateX(-3px)",
+          transition: "all 0.35s ease",
+        }}
+      />
+      <path
+        d="M0 5.4h9.7v2H0z"
+        className="tail"
+        style={{
+          transform: hover ? "translateX(0)" : "translateX(5px)",
+          transition: "all 0.35s ease",
+        }}
+      />
+    </svg>
+  </Link>
+</div>
 
-            <Link href="/book-now">
-              <svg
-                className="cursor-pointer w-12"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 13"
-                onMouseEnter={() => setHover(true)}
-                onMouseLeave={() => setHover(false)}
-              >
-                <path
-                  d="M19.4 6.4L13 0l-1.4 1.4 4 4H4.8v2h10.8l-4 4 1.4 1.4 6.4-6.4z"
-                  className="head"
-                  style={{
-                    transform: hover ? "translateX(0)" : "translateX(-3px)",
-                    transition: "all 0.35s ease",
-                  }}
-                />
-                <path
-                  d="M0 5.4h9.7v2H0z"
-                  className="tail"
-                  style={{
-                    transform: hover ? "translateX(0)" : "translateX(5px)",
-                    transition: "all 0.35s ease",
-                  }}
-                />
-              </svg>
-            </Link>
-          </div>
         </div>
 
         {/* Right Section - Image */}
@@ -309,7 +250,7 @@ const HeaderBanner = () => {
         </div>
       </div>
 
-      <div className=" bg-[#efefef] w-full py-4">
+      <div id="second-color" className="w-full py-4">
         <div
           ref={marqueeRef}
           className="inline-block text-6xl font-sans whitespace-nowrap"
@@ -318,7 +259,7 @@ const HeaderBanner = () => {
         </div>
       </div>
 
-      <div className="bg-[#efefef] min-h-screen">
+      <div id="second-color" className="min-h-screen">
         <div className="grid grid-cols-2 max-w-6xl w-full mx-auto">
           {/* Left Column - Gif (Sticky) */}
           <div className="sticky top-0  h-[100vh] p-8">
@@ -423,9 +364,9 @@ const HeaderBanner = () => {
         </div>
       </div>
       <div
-        className="py-16 px-8 bg-cover bg-center"
+        className="third-color py-16 px-8 bg-cover bg-center"
         id="tracking-section"
-        style={{ backgroundImage: "url('../images/background_min.png')" }}
+        // style={{ backgroundImage: "url('../images/background_min.png')" }}
       >
         <div
           id="element"
@@ -572,7 +513,7 @@ const HeaderBanner = () => {
                 />
 
                 <h3 className="text-4xl font-bold text-[#212353] mb-4">
-                  Our Support Doesn't End When Treatment Does.
+                  Our Support Doesn't End When Treatment Does
                 </h3>
 
                 <p className="text-md text-[#4B5D68] mb-6">
