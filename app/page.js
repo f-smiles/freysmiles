@@ -1,6 +1,8 @@
 "use client";
 import { Curtains, Plane } from "curtainsjs";
 import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
+import { Navigation} from 'swiper/modules';
 import Link from "next/link";
 import Matter from "matter-js";
 import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
@@ -988,42 +990,48 @@ function Hero() {
 //     </main>
 //   )
 // }
+SwiperCore.use([Keyboard, Mousewheel]);
 
 const About = () => {
   const timelineRef = useRef(null);
-  const [swiper, setSwiper] = useState(null); //(vertical) swiper
-  const [swiper2, setSwiper2] = useState(null); //(horizontal) swiper
-
+  const [swiper, setSwiper] = useState(null); // (vertical) swiper
+  const [swiper2, setSwiper2] = useState(null); // (horizontal) swiper
+  
   useEffect(() => {
+    if (swiper2) {
+      swiper2.slideTo(2, 0);
+    }
+  
     const handleScroll = () => {
       const timelineElement = timelineRef.current;
       if (timelineElement) {
         const offset = timelineElement.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-
-        if (offset.top < windowHeight && offset.bottom > 0) {
-          const scrollPercentage =
-            ((windowHeight - offset.top) / (offset.height + windowHeight)) *
-            100;
-
-          if (scrollPercentage < 33) {
+    
+        if (offset.top < 0 && offset.bottom - windowHeight > 0) {
+          const perc = Math.round(
+            (100 * Math.abs(offset.top)) / (offset.height - windowHeight)
+          );
+    
+          if (perc > 10 && perc < 30) {
             swiper?.slideTo(0, 1000);
             swiper2?.slideTo(0, 1000);
-          } else if (scrollPercentage >= 33 && scrollPercentage < 66) {
+          } else if (perc >= 30 && perc < 55) {
             swiper?.slideTo(1, 1000);
             swiper2?.slideTo(1, 1000);
-          } else if (scrollPercentage >= 66) {
+          } else if (perc >= 55) {
             swiper?.slideTo(2, 1000);
             swiper2?.slideTo(2, 1000);
           }
         }
       }
     };
-
+    
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [swiper, swiper2]);
-
+  
+  
   return (
     <section
       className="timeline-section timeline-section--timeline"
@@ -1038,25 +1046,28 @@ const About = () => {
             </div>
           </div>
 
-          {/* Timeline Years (Horizontal Swiper) */}
+          {/* (Horizontal Swiper) */}
           <div className="timeline-grid mod--timeline w-layout-grid">
-            <div className="timeline__col mod--2">
+            <div className="timeline__col mod--2" >
               <Swiper
-                onSwiper={setSwiper2}
+                onSwiper={(swiper) => setSwiper2(swiper)}
+                mousewheel={true}
                 slidesPerView={1}
-                spaceBetween={0}
+                spaceBetween={20}
                 speed={800}
                 allowTouchMove={false}
-                initialSlide={0}
+                initialSlide={2}
+                wrapperClass="horizontal-wrapper" 
+                className="swiper swiper-reviews-numb"
               >
                 <SwiperSlide className="swiper-slide slide--reviews-numb">
-                  <div className="timeline__year">2005</div>
+                  <div className="timeline__year">2001</div>
                 </SwiperSlide>
                 <SwiperSlide className="swiper-slide slide--reviews-numb">
                   <div className="timeline__year">2009</div>
                 </SwiperSlide>
                 <SwiperSlide className="swiper-slide slide--reviews-numb">
-                  <div className="timeline__year">2021</div>
+                  <div className="timeline__year">2024</div>
                 </SwiperSlide>
               </Swiper>
             </div>
@@ -1065,11 +1076,13 @@ const About = () => {
           <div className="timeline__line2"></div>
           <Swiper
             onSwiper={setSwiper}
+            mousewheel={true}
             slidesPerView={1}
             speed={1000}
             allowTouchMove={false}
             initialSlide={0}
             direction="vertical"
+            wrapperClass="vertical-wrapper" 
             breakpoints={{
               992: {
                 spaceBetween: 0,
@@ -1084,34 +1097,32 @@ const About = () => {
             }}
             className="swiper swiper--reviews"
           >
-            {/* First Slide - Urban Renewal (2005) */}
+            {/* First Slide - Renovation (2005) */}
             <SwiperSlide className="swiper-slide slide--reviews">
               <div className="timeline-grid mod--timeline2">
                 <div className="timeline__col mod--1">
-                  <img
+                  {/* <img
                     src="images/ico_building-01.svg"
                     loading="lazy"
                     alt=""
                     className="timeline__ico"
-                  />
+                  /> */}
                   <div className="timeline__ico-title">
-                    Urban <br />
-                    Renewal
+                    Invisalign <br />
+                    Pioneers
                   </div>
                 </div>
                 <div className="timeline__col mod--4">
                   <div className="timeline__txt-block">
                     <p className="timeline__p">
-                      The evening features a mix of surprises, new information
-                      about the Council’s housing affordability strategy, and
-                      plenty of enthusiasm about action.
+                    Lehigh Valley's first Invisalign provider. Continuing to hone our skill-set while testing new aligner systems.
                     </p>
                     <div className="timeline__tags">
                       <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Building a park
+                        <span className="btn-tag__star"></span>i-Tero
                       </div>
                       <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Lounge zone
+                        <span className="btn-tag__star"></span>Diamond Plus
                       </div>
                     </div>
                   </div>
@@ -1119,76 +1130,73 @@ const About = () => {
               </div>
             </SwiperSlide>
 
-            {/* Second Slide - Residential Buildings (2009) */}
+            {/* Second Slide - Innovation () */}
+       
             <SwiperSlide className="swiper-slide slide--reviews">
               <div className="timeline-grid mod--timeline2">
                 <div className="timeline__col mod--1">
-                  <img
-                    src="images/ico_builing-02.svg"
-                    loading="lazy"
-                    alt=""
-                    className="timeline__ico"
-                  />
-                  <div className="timeline__ico-title">
-                    Residential <br />
-                    Buildings
-                  </div>
-                </div>
-                <div className="timeline__col mod--4">
-                  <div className="timeline__txt-block">
-                    <p className="timeline__p">
-                      It’s always good to see excitement around British Columbia
-                      housing developments, an opportunity to see what our
-                      politicians and community leaders are working on.
-                    </p>
-                    <div className="timeline__tags">
-                      <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Lodging
-                      </div>
-                      <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Building
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
-
-            {/* Third Slide - Seaside Gardens (2021) */}
-            <SwiperSlide className="swiper-slide slide--reviews">
-              <div className="timeline-grid mod--timeline2">
-                <div className="timeline__col mod--1">
-                  <img
+                  {/* <img
                     src="images/ico_builing-03.svg"
                     loading="lazy"
                     alt=""
                     className="timeline__ico"
-                  />
+                  /> */}
                   <div className="timeline__ico-title">
-                    Seaside <br />
-                    Gardens
+                    Expertise <br />
+                    Defined
                   </div>
                 </div>
                 <div className="timeline__col mod--4">
                   <div className="timeline__txt-block">
                     <p className="timeline__p">
-                      Workshops for Realtors in the Maritime Provinces were held
-                      in the last three months to provide tools, guidance, and
-                      information to help Realtors work more efficiently with
-                      our partners in the housing sector.
+                    Our doctors bring a combined 60 years of experience.
                     </p>
                     <div className="timeline__tags">
                       <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Seaside
+                        <span className="btn-tag__star"></span>Lorem
                       </div>
                       <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Provinces
+                        <span className="btn-tag__star"></span>Ipsum
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </SwiperSlide>
+            {/* Third Slide - Board Certification (1995) */}
+            <SwiperSlide className="swiper-slide slide--reviews">
+              <div className="timeline-grid mod--timeline2">
+                <div className="timeline__col mod--1">
+                  {/* <img
+                    src="images/ico_builing-02.svg"
+                    loading="lazy"
+                    alt=""
+                    className="timeline__ico"
+                  /> */}
+                  <div className="timeline__ico-title">
+                    Leading <br />
+                    Recognition
+                  </div>
+                </div>
+                <div className="timeline__col mod--4">
+                  <div className="timeline__txt-block">
+                    <p className="timeline__p">
+                    We’ve had more patients featured on the cover of the American Journal of Orthodontics than any other practice.
+                   
+                    </p>
+                    <div className="timeline__tags">
+                      <div className="btn-tag">
+                        <span className="btn-tag__star"></span>i-Tero
+                      </div>
+                      <div className="btn-tag">
+                        <span className="btn-tag__star"></span>3D Fabrication
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
+         
           </Swiper>
         </div>
       </div>
