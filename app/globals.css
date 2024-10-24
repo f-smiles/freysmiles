@@ -3711,23 +3711,6 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   overflow: hidden;
 }
 
-.lines {
-  background-position: 50%;
-  background-repeat: no-repeat;
-  background-size: contain;
-  justify-content: center;
-  align-items: center;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  position: absolute;
-  top: auto;
-  bottom: 0;
-}
-
-.lines.mod--timeline {
-  inset: 0 auto auto 320px;
-}
 
 
 .w-layout-grid {
@@ -3760,6 +3743,25 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   overflow: hidden;
 }
 
+.lines {
+  background-image: url('/images/ico_star2.svg');
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: contain;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  position: absolute;
+  top: auto;
+  bottom: 0;
+}
+
+.lines.mod--timeline {
+  inset: 0 auto auto 320px;
+}
+
 .lines__line {
   background-color: #101010;
   width: 1px;
@@ -3770,7 +3772,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
 }
 
 .lines__line.mod--timeline-1 {
-  width: 340px;
+  width: 980px;
 }
 
 .lines__line.mod--timeline-2 {
@@ -3842,10 +3844,11 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
 }
 
 .timeline__line2 {
-  background-color: var(--black);
+  background-color: #000;
   width: 100%;
   height: 1px;
   padding: 0;
+  margin: 10px 0;
 }
 
 .timeline__tags {
