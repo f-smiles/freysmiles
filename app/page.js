@@ -2,7 +2,7 @@
 import { Curtains, Plane } from "curtainsjs";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
-import { Navigation} from 'swiper/modules';
+import { Navigation } from "swiper/modules";
 import Link from "next/link";
 import Matter from "matter-js";
 import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
@@ -996,23 +996,67 @@ const About = () => {
   const timelineRef = useRef(null);
   const [swiper, setSwiper] = useState(null); // (vertical) swiper
   const [swiper2, setSwiper2] = useState(null); // (horizontal) swiper
-  
+
+  useEffect(() => {
+    gsap.fromTo(
+      ".lines__line.mod--timeline-1",
+      { width: "0" },
+      {
+        width: "340px",
+        duration: 1,
+        scrollTrigger: {
+          trigger: ".timeline-section",
+          start: "top center",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+
+    gsap.fromTo(
+      ".lines__line.mod--timeline-2",
+      { width: "0" },
+      {
+        width: "980px",
+        duration: 1,
+        scrollTrigger: {
+          trigger: ".timeline-section",
+          start: "top center",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+
+    gsap.fromTo(
+      ".timeline__line2",
+      { width: "0" },
+      {
+        width: "100%",
+        duration: 1,
+        scrollTrigger: {
+          trigger: ".timeline-section",
+          start: "top center",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+  }, []);
+
   useEffect(() => {
     if (swiper2) {
       swiper2.slideTo(2, 0);
     }
-  
+
     const handleScroll = () => {
       const timelineElement = timelineRef.current;
       if (timelineElement) {
         const offset = timelineElement.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-    
+
         if (offset.top < 0 && offset.bottom - windowHeight > 0) {
           const perc = Math.round(
             (100 * Math.abs(offset.top)) / (offset.height - windowHeight)
           );
-    
+
           if (perc > 10 && perc < 30) {
             swiper?.slideTo(0, 1000);
             swiper2?.slideTo(0, 1000);
@@ -1026,12 +1070,11 @@ const About = () => {
         }
       }
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [swiper, swiper2]);
-  
-  
+
   return (
     <section
       className="timeline-section timeline-section--timeline"
@@ -1048,7 +1091,7 @@ const About = () => {
 
           {/* (Horizontal Swiper) */}
           <div className="timeline-grid mod--timeline w-layout-grid">
-            <div className="timeline__col mod--2" >
+            <div className="timeline__col mod--2">
               <Swiper
                 onSwiper={(swiper) => setSwiper2(swiper)}
                 mousewheel={true}
@@ -1057,7 +1100,7 @@ const About = () => {
                 speed={800}
                 allowTouchMove={false}
                 initialSlide={2}
-                wrapperClass="horizontal-wrapper" 
+                wrapperClass="horizontal-wrapper"
                 className="swiper swiper-reviews-numb"
               >
                 <SwiperSlide className="swiper-slide slide--reviews-numb">
@@ -1082,7 +1125,7 @@ const About = () => {
             allowTouchMove={false}
             initialSlide={0}
             direction="vertical"
-            wrapperClass="vertical-wrapper" 
+            wrapperClass="vertical-wrapper"
             breakpoints={{
               992: {
                 spaceBetween: 0,
@@ -1115,7 +1158,8 @@ const About = () => {
                 <div className="timeline__col mod--4">
                   <div className="timeline__txt-block">
                     <p className="timeline__p">
-                    Lehigh Valley's first Invisalign provider. Continuing to hone our skill-set while testing new aligner systems.
+                      Lehigh Valley's first Invisalign provider. Continuing to
+                      hone our skill-set while testing new aligner systems.
                     </p>
                     <div className="timeline__tags">
                       <div className="btn-tag">
@@ -1131,7 +1175,7 @@ const About = () => {
             </SwiperSlide>
 
             {/* Second Slide - Innovation () */}
-       
+
             <SwiperSlide className="swiper-slide slide--reviews">
               <div className="timeline-grid mod--timeline2">
                 <div className="timeline__col mod--1">
@@ -1149,7 +1193,7 @@ const About = () => {
                 <div className="timeline__col mod--4">
                   <div className="timeline__txt-block">
                     <p className="timeline__p">
-                    Our doctors bring a combined 60 years of experience.
+                      Our doctors bring a combined 60 years of experience.
                     </p>
                     <div className="timeline__tags">
                       <div className="btn-tag">
@@ -1181,8 +1225,8 @@ const About = () => {
                 <div className="timeline__col mod--4">
                   <div className="timeline__txt-block">
                     <p className="timeline__p">
-                    We’ve had more patients featured on the cover of the American Journal of Orthodontics than any other practice.
-                   
+                      We’ve had more patients featured on the cover of the
+                      American Journal of Orthodontics than any other practice.
                     </p>
                     <div className="timeline__tags">
                       <div className="btn-tag">
@@ -1196,7 +1240,6 @@ const About = () => {
                 </div>
               </div>
             </SwiperSlide>
-         
           </Swiper>
         </div>
       </div>
