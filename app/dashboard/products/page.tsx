@@ -1,7 +1,7 @@
 import { db } from "@/server/db"
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
-import placeholderImage from "@/public/images/placeholder-image.jpg"
+import placeholderImage from "@/public/images/shop/placeholder-image.jpg"
 
 export default async function DashboardProducts() {
 
