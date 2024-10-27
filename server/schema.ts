@@ -14,6 +14,7 @@ export const users = pgTable("user", {
   image: text("image"),
   twoFactorEnabled: boolean("twoFactorEnabled").default(false),
   role: RoleEnum("roles").default("user"),
+  customerID: text("customerID"),
 })
 
 export const accounts = pgTable(
