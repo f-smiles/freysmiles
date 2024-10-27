@@ -7,12 +7,28 @@ import { eq } from "drizzle-orm"
 import { db } from "@/server/db"
 import { accounts, users } from "@/server/schema"
 import { LoginSchema } from "@/types/login-schema"
+import Stripe from "stripe"
 
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
   secret: process.env.AUTH_SECRET,
   session: { strategy: "jwt" },
+  events: {
+    createUser: async ({ user }) => {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: "2023-08-16",
+      })
+      const stripeCustomer = await stripe.customers.create({
+        email: user.email!,
+        name: user.name!,
+      })
+      await db
+        .update(users)
+        .set({ customerID: stripeCustomer.id })
+        .where(eq(users.id, user.id!))
+    },
+  },
   callbacks: {
     // extending the token to add additional properties
     async jwt({ token }) {

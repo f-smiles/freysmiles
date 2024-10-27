@@ -1,6 +1,7 @@
 'use server'
 
 import crypto from "crypto"
+import Stripe from "stripe"
 import { eq } from "drizzle-orm"
 import { db } from "@/server/db"
 import { emailTokens, passwordResetTokens, twoFactorTokens, users } from "@/server/schema"
@@ -83,9 +84,18 @@ export const newVerification = async (token: string) => {
     })
     if (!existingUser) return { error: "Email does not exist." }
 
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2023-08-16",
+    })
+    const stripeCustomer = await stripe.customers.create({
+      email: existingUser.email!,
+      name: existingUser.name!,
+    })
+
     await db.update(users).set({
       email: existingToken.email,
       emailVerified: new Date(),
+      customerID: stripeCustomer.id,
     })
 
     await db.delete(emailTokens).where(eq(emailTokens.id, existingToken.id))
