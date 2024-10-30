@@ -3808,6 +3808,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   margin-left: 350px;
   font-size: 202px;
   transition: all 0.5s;
+  font-family: "NeueMontrealMedium";
 }
 
 .timeline__col {
@@ -3836,8 +3837,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
 
 .timeline__ico-title {
   letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-family: neue-haas-grotesk-display;
+  font-family: "NeueMontrealBook";
   font-size: 22px;
   font-weight: 600;
   line-height: 1.2em;
@@ -3861,6 +3861,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
 .timeline__p {
   margin-bottom: 0;
   font-size: 22px;
+  font-family: "NeueMontrealBook";
 }
 
 .timeline__txt-block {
@@ -3961,4 +3962,63 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   transition: all .2s;
   display: block;
 }
+
+.overflow-hidden {
+  z-index: 2;
+  position: relative;
+  overflow: hidden;
+}
+
+.overflow-hidden.mod--hero-desc-01 {
+  left: .4rem;
+}
+.overflow-hidden.mod--hero-desc-02 {
+  margin-left: 3.3rem;
+}
+
+.overflow-hidden.mod--hero-desc-03 {
+  margin-left: 9.8rem;
+}
+
+.heading-small {
+font-family: "NovelaRegular";
+  font-size: 3.4375rem;
+  font-weight: 300;
+  line-height: 1.05;
+}
+
+
+.text-wrap.mod--hero-desc {
+  letter-spacing: .02em;
+  background-image: url('/images/bg-text-01.svg');
+  background-position: center; 
+  background-repeat: no-repeat;
+  background-size: cover; 
+  padding-left: 1.5rem;
+  padding-right: 2rem;
+  font-size: 3.5rem;
+  font-weight: 400;
+  position: absolute;
+  inset: 4.375rem 0% auto auto;
+}
+
+
+.text-wrap.mod--receive {
+  grid-column-gap: 3rem;
+  grid-row-gap: 3rem;
+  align-items: center;
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.text-wrap.mod--bag {
+  grid-column-gap: 1.0625rem;
+  grid-row-gap: 1.0625rem;
+  justify-content: flex-end;
+  align-items: center;
+  display: flex;
+}
+
 
