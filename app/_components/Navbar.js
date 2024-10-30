@@ -18,15 +18,14 @@ export default function Navbar() {
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleTestimonialsClick = (e, href) => {
-    e.preventDefault(); // Prevent default navigation
-    setIsTransitioning(true); // Start the transition
+    e.preventDefault();
+    setIsTransitioning(true);
 
-    // Delay navigation until the animation completes
     setTimeout(() => {
-      window.location.href = href; // Use `window.location.href` for a delayed navigation
-      setIsTransitioning(false); // Reset transition state
-    }, 1000); // Adjust the delay to match your animation duration
-  };
+      window.location.href = href;
+      setIsTransitioning(false);
+    }, 1000);
+};
 
   const dispatch = useDispatch();
 
@@ -168,31 +167,24 @@ export default function Navbar() {
     <header className="overflow-hidden">
       {/* DESKTOP NAVBAR */}
       <nav
-        id="desktop-nav"
-        className="fixed top-10 left-0 z-40 hidden w-full mb-[6vh] lg:block"
-      >
-        <div className="custom-navbar-cursor" />
-        <div
-          className={`text-[#FFF] p-4 mx-auto text-sm transition duration-300 ease-in-out border border-gray-100 rounded-full justify-evenly max-w-max ${
-            hasScrolled
-              ? "bg-gray-100/60 backdrop-blur-md hover:bg-[#CFFFB1]/70 hover:shadow-sm"
-              : "hover:bg-[#CFFFB1]/70"
-          }`}
-        >
-          <ul className="relative flex items-center gap-8 lg:gap-10 justify-evenly">
-            <li className="flex items-center font-medium tracking-wider transition duration-300 ease-in-out    active:bg-primary-50/80">
-              <Link href="/" className="inline-block p-4">
-                <img
-                  className="w-4 h-4"
-                  src="images/logo_icon.png"
-                  alt="FreySmiles Orthodontics"
-                />
-              </Link>
-            </li>
+    id="desktop-nav"
+    className="fixed top-10 left-0 z-40 hidden w-full mb-[6vh] lg:block"
+  >
+    <div className="custom-navbar-cursor" />
+    <div className="bg-white text-[#00314F] py-6 px-4 mx-auto text-sm transition duration-300 ease-in-out border-b border-gray-200 max-w-screen-xl flex justify-between items-center">
+
+<div className="flex justify-start items-center space-x-2">
+        <Link href="/">
+          <img src="images/logo_icon.png" alt="FreySmiles Orthodontics" className="w-6 h-6" />
+        </Link>
+      </div>
+      <div className="absolute left-1/2 transform -translate-x-1/2">
+          <ul className=" flex items-center gap-8 lg:gap-10 justify-evenly">
+          
 
             <li onClick={handleToggleAbout} className="target-link">
               <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
-                About
+                ABOUT
               </p>
             </li>
             {/* ABOUT PANEL */}
@@ -283,7 +275,7 @@ export default function Navbar() {
 
             <li onClick={handleTogglePatient} className="target-link">
               <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
-                Patient
+                PATIENT
               </p>
             </li>
             {/* PATIENT PANEL */}
@@ -368,8 +360,8 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleToggleTreatments} className="target-link">
-              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
-                Treatments
+              <p className="text-sm font-medium  transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+                TREATMENTS
               </p>
             </li>
             {/* TREATMENTS PANEL */}
@@ -459,19 +451,19 @@ export default function Navbar() {
 
             <li>
               <Link href="https://my.orthoblink.com/bLink/Login">
-                <p className="text-sm leading-4 text-center">Patient Login</p>
+                <p className="text-sm leading-4 text-center">PATIENT LOGIN</p>
               </Link>
             </li>
 
             <li>
               <Link href="/#locations-section">
-                <p className="text-sm leading-4 text-center">Our Locations</p>
+                <p className="text-sm leading-4 text-center">LOCATIONS</p>
               </Link>
             </li>
 
             <li>
               <Link href="/products">
-                <p className="text-sm">Shop</p>
+                <p className="text-sm">SHOP</p>
               </Link>
             </li>
 
@@ -631,18 +623,18 @@ export default function Navbar() {
               </Dialog>
             </Transition.Root>
 
-            <li
-              className="px-6 py-3 transition duration-300 ease-in-out "
-              // onMouseEnter={hoverEnter} onMouseLeave={hoverLeave}
-            >
-              <Link href="/book-now" className="inline-block">
-                <p className="text-sm font-medium tracking-wider text-center uppercase ">
-                  Book Now
-                </p>
-                {/* Book Now */}
-              </Link>
-            </li>
+         
           </ul>
+          </div>
+
+          <div className="flex items-center">
+        <Link href="/book-now">
+          <button className="px-4 py-2 text-white bg-[#00314F] font-semibold rounded-md hover:bg-[#002640]">
+            Book Now
+          </button>
+        </Link>
+      </div>
+            
         </div>
       </nav>
 

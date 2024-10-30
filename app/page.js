@@ -124,14 +124,14 @@ export default function LandingComponent() {
         {
           start: transitionStart,
           end: transitionEnd * 0.25,
-          colorStart: [239, 233, 232],
-          colorEnd: [229, 222, 224],
+          colorStart: [245,244,253],
+          colorEnd: [245,244,253],
         },
         {
           start: transitionEnd * 0.25,
           end: transitionEnd * 0.5,
-          colorStart: [229, 222, 224],
-          colorEnd: [211, 202, 210],
+          colorStart: [245,244,253],
+          colorEnd: [245,244,253],
         },
         {
           start: transitionEnd * 0.5,
@@ -778,7 +778,7 @@ function Hero() {
     <section
       className="relative pt-10 overflow-hidden bg-center bg-cover"
       // style={{ backgroundImage: 'url(../images/purplepeach.jpg)' }}
-      style={{ backgroundImage: "url(../images/gradient2.jpeg)" }}
+      // style={{ backgroundImage: "url(../images/gradient2.jpeg)" }}
     >
       <div ref={pixiContainerRef} id="pixi-container"></div>
       <div className="px-8 isolate lg:px-8">
@@ -928,22 +928,34 @@ function Hero() {
           </div>
         </div>
       </div>
-      {/* <div>
-      <section id="header" className="h-screen overflow-hidden bg-header-yellow"></section>
-      <section id="sep" className="h-screen overflow-hidden"></section>
-      <section id="about" className="h-screen overflow-hidden bg-about-brown"></section>
-      <div id="mouse" ref={mouseRef} className="absolute top-0 left-0 w-[300px] h-[300px]">
-        {Array.from({ length: 30 }).map((_, index) => (
-          <span key={index} style={{
-            borderRadius: '100%',
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            background: 'radial-gradient(circle, rgba(227, 255, 27, 1) 0%, rgba(227, 255, 27, 0) 100%)'
-          }}></span>
-        ))}
-      </div>
-    </div> */}
+      <div
+  className="font-editorial-new relative bg-no-repeat bg-contain pl-6 pr-8"
+  style={{ backgroundImage: "url('/images/bg-text-01.svg')", height: "auto", minHeight: "8rem" }}
+>
+  <div className="overflow-hidden mod--hero-desc-01">
+    <div className="heading-small anim-load-down">
+      Confidence <span className="text-blue-700">Starts </span> 
+    </div>
+  </div>
+
+  <div className="overflow-hidden mod--hero-desc-02">
+    <div className="heading-small anim-load-down2">
+      <span className="text-black-500"></span> with Results <br />
+    </div>
+  </div>
+
+  <div className="overflow-hidden mod--hero-desc-03">
+    <div className="heading-small anim-load-down3">That Speak For</div>
+  </div>
+
+  <div className="overflow-hidden">
+    <div className="heading-small anim-load-down4">
+      <span className="text-blue-500">THEMSELVES</span>
+    </div>
+  </div>
+</div>
+
+
     </section>
   );
 }
