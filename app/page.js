@@ -113,7 +113,7 @@ export default function LandingComponent() {
   const [backgroundColor, setBackgroundColor] = useState("transparent");
 
   useEffect(() => {
-    setBackgroundColor("rgb(239,233,232)");
+    setBackgroundColor("rgb(255, 248, 237)");
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const transitionStart = 40;
@@ -124,14 +124,14 @@ export default function LandingComponent() {
         {
           start: transitionStart,
           end: transitionEnd * 0.25,
-          colorStart: [245,244,253],
-          colorEnd: [245,244,253],
+          colorStart: [255, 248, 237],
+          colorEnd: [245, 244, 253],
         },
         {
           start: transitionEnd * 0.25,
           end: transitionEnd * 0.5,
-          colorStart: [245,244,253],
-          colorEnd: [245,244,253],
+          colorStart: [245, 244, 253],
+          colorEnd: [245, 244, 253],
         },
         {
           start: transitionEnd * 0.5,
@@ -268,12 +268,12 @@ export default function LandingComponent() {
 
   return (
     <>
-      <div style={{ backgroundColor }} className="bg-[#EFE9E8] bg-[#E0D175]">
-        <Hero />
-        {/* <Mask /> */}
-        <About />
+      <div style={{ backgroundColor }} className="bg-[#E0D175]">
+      <Hero     className="sticky top-0  z-2 "/>
+      <About lassName="sticky top-0  z-2 " />
         <GSAPAnimateScrollSections />
         <ImageGrid />
+               {/* <Mask /> */}
 
         <div
           ref={sectionOneRef}
@@ -302,6 +302,7 @@ export default function LandingComponent() {
     </>
   );
 }
+
 
 function Hero() {
   const containerRef = useRef(null);
@@ -773,192 +774,181 @@ function Hero() {
   //     });
   //   };
   // }, []);
+  const paragraphRef = useRef(null);
+
+  useEffect(() => {
+    const splitParent = new SplitText(paragraphRef.current, {
+      type: "lines",
+      linesClass: "lineParent",
+    });
+    const splitChild = new SplitText(paragraphRef.current, {
+      type: "lines",
+      linesClass: "lineChild",
+    });
+
+    const tl = gsap.timeline();
+
+    tl.from(".lineChild", {
+      yPercent: 100,
+      autoAlpha: 0,
+      delay: 0.5,
+      duration: 0.65,
+      stagger: 0.25,
+      ease: "back",
+    });
+
+    return () => {
+      splitParent.revert();
+      splitChild.revert();
+    };
+  }, []);
+
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+
+      const options = {
+        timeZone: "America/New_York",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      };
+      const easternTime = new Intl.DateTimeFormat("en-US", options).format(now);
+      setTime(`${easternTime}`);
+    };
+
+    updateTime();
+    const intervalId = setInterval(updateTime, 60000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const colors = [
+    ["#E64627", "#00BFFF", "#FF5A5A", "#C084FC"],
+    ["#00FFC6", "#2F2F2F", "#FF70A6", "#FF5A5A"],
+    ["#C084FC", "#0F0E45", "#E64627", "#0F0E45"],
+    ["#3D0075", "#0F0E45", "#808080", "#2F2F2F"]
+  ];
 
   return (
-    <section
-      className="relative pt-10 overflow-hidden bg-center bg-cover"
-      // style={{ backgroundImage: 'url(../images/purplepeach.jpg)' }}
-      // style={{ backgroundImage: "url(../images/gradient2.jpeg)" }}
-    >
-      <div ref={pixiContainerRef} id="pixi-container"></div>
-      <div className="px-8 isolate lg:px-8">
-        <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <svg>
-              <defs>
-                <clipPath
-                  id="myClipPath"
-                  clipPathUnits="objectBoundingBox"
-                  transform="scale(0.0004 0.0007)"
-                >
-                  <path d="M1746.43,38.94C849.17-212.65-120.14,825.24,12.19,1135.81c101.84,239,679.67,189.43,1132.31,162.51,448.32-26.66,958.25,402.35,1298.59-122.64C2733.65,727.5,2258.09,182.41,1746.43,38.94Z" />
-                </clipPath>
-              </defs>
-            </svg>
-          </div>
-
-          <div className="relative z-10 w-full mx-auto lg:mt-0">
-            <div className="flex flex-wrap items-center justify-center">
-              <div className="relative">
-                <div className="hero">
-                  <div className="hero-content " ref={heroContentRef}>
-                    <div className=" marquee_features">
-                      <div className="marquee__inner first ">
-                        <span>Because</span>
-                        <span>Every</span>
-                        <span>Smile</span>
-                        <span>Is</span>
-                        <span>Unique</span>
-                      </div>
-                      <div className="marquee__inner second">
-                        <span>Because</span>
-                        <span>Every</span>
-                        <span>Smile</span>
-                        <span>Is</span>
-                        <span>Unique</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative flex items-center justify-center">
-            <div
-              className={`absolute z-20 inline-block ${
-                isScaled ? "scale-up" : "scale-100"
-              }`}
-              onClick={handleClick}
-              style={{ top: "10%", left: "-20%" }}
-            >
-              {/* <a href="/book-now" className="inline-flex items-center justify-center">
-    <svg id="circlepath" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="300px" height="300px" viewBox="0 0 300 300" xmlSpace="preserve" className="book-svg">
-        <defs>
-            <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"/>
-            <filter id="frostyFilter" x="-10%" y="-10%" width="120%" height="120%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
-                <feComponentTransfer>
-                    <feFuncA type="linear" slope="0.4"/>
-                </feComponentTransfer>
-                <feMerge>
-                    <feMergeNode/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
-        </defs>
-        <circle cx="150" cy="150" r="135" fill="rgba(255, 255, 255, 0.6)" filter="url(#frostyFilter)"/>
-        <g>
-            <text className="book-text">
-                <textPath xlinkHref="#circlePath">
-                    BOOK NOW → BOOK NOW →
-                </textPath>
-            </text>
-        </g>
-    </svg>
-</a> */}
-
-              <a href="#" class="custom-link custom-link--alt">
-                <svg
-                  viewBox="0 0 200 200"
-                  width="200"
-                  height="200"
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="custom-link__svg"
-                  aria-labelledby="custom-link2-title custom-link2-desc"
-                >
-                  <title id="custom-link2-title">click here to book now</title>
-
-                  <path
-                    id="custom-link-circle-alt"
-                    class="custom-link__path"
-                    d="M 35, 100 a 65,65 0 1,1 130,0 a 65,65 0 1,1 -130,0"
-                    stroke="none"
-                    fill="none"
-                  />
-
-                  <path
-                    class="custom-link__cloud"
-                    d="M88.964,9.111C89.997,4.612 94.586,0.999 100,0.999C105.413,0.999 110.002,4.612 111.036,9.111C113.115,4.991 118.435,2.581 123.692,3.878C128.948,5.172 132.54,9.78 132.466,14.393C135.472,10.891 141.214,9.824 146.008,12.341C150.801,14.855 153.185,20.189 152.01,24.651C155.766,21.968 161.597,22.307 165.648,25.899C169.7,29.488 170.741,35.235 168.53,39.286C172.818,37.583 178.4,39.307 181.474,43.761C184.551,48.217 184.183,54.047 181.068,57.451C185.641,56.823 190.646,59.834 192.567,64.894C194.486,69.955 192.735,75.529 188.895,78.09C193.486,78.573 197.626,82.693 198.278,88.067C198.93,93.441 195.898,98.433 191.556,100C195.898,101.567 198.93,106.56 198.278,111.934C197.626,117.307 193.486,121.427 188.895,121.91C192.735,124.472 194.486,130.045 192.567,135.106C190.646,140.167 185.641,143.177 181.068,142.549C184.183,145.954 184.551,151.783 181.474,156.239C178.4,160.693 172.818,162.418 168.53,160.712C170.741,164.766 169.7,170.512 165.648,174.102C161.597,177.691 155.766,178.032 152.01,175.349C153.185,179.812 150.801,185.145 146.008,187.66C141.214,190.176 135.472,189.109 132.466,185.607C132.54,190.221 128.948,194.828 123.692,196.123C118.435,197.419 113.115,195.009 111.036,190.889C110.002,195.388 105.413,199.001 100,199.001C94.586,199.001 89.997,195.388 88.964,190.889C86.884,195.009 81.564,197.419 76.307,196.123C71.051,194.828 67.461,190.221 67.533,185.607C64.529,189.109 58.785,190.176 53.992,187.66C49.2,185.145 46.815,179.812 47.989,175.349C44.233,178.032 38.402,177.691 34.351,174.102C30.299,170.512 29.259,164.766 31.469,160.712C27.181,162.418 21.599,160.693 18.525,156.239C15.449,151.783 15.816,145.954 18.931,142.549C14.359,143.177 9.353,140.167 7.434,135.106C5.513,130.045 7.264,124.472 11.104,121.91C6.514,121.427 2.374,117.307 1.722,111.934C1.07,106.56 4.103,101.567 8.443,100C4.103,98.433 1.07,93.441 1.722,88.067C2.374,82.693 6.514,78.573 11.104,78.09C7.264,75.529 5.513,69.955 7.434,64.894C9.353,59.834 14.359,56.823 18.931,57.451C15.816,54.047 15.449,48.217 18.525,43.761C21.599,39.307 27.181,37.583 31.469,39.286C29.259,35.235 30.299,29.488 34.351,25.899C38.402,22.307 44.233,21.968 47.989,24.651C46.815,20.189 49.2,14.855 53.992,12.341C58.785,9.824 64.529,10.891 67.533,14.393C67.461,9.78 71.051,5.172 76.307,3.878C81.564,2.581 86.884,4.991 88.964,9.111Z"
-                    fill="none"
-                  />
-
-                  <g class="custom-link__face">
-                    <path d="M 95 102 Q 100 107 105 102" fill="none" />
-                    <ellipse
-                      class=""
-                      cx="90"
-                      cy="100"
-                      rx="2"
-                      ry="2"
-                      stroke="none"
-                    />
-                    <ellipse
-                      class=""
-                      cx="110"
-                      cy="100"
-                      rx="2"
-                      ry="2"
-                      stroke="none"
-                    />
-                    <ellipse
-                      class=""
-                      cx="100"
-                      cy="100"
-                      rx="35"
-                      ry="35"
-                      fill="none"
-                    />
-                  </g>
-
-                  <text class="custom-link__text">
-                    <textPath href="#custom-link-circle-alt" stroke="none">
-                      • click here to book • click here to book
-                    </textPath>
-                  </text>
-                </svg>
-              </a>
-            </div>
-            {/* <canvas className="z-10 rounded-full" ref={canvasRef}></canvas> */}
-            <img
-              className="z-10 max-w-md rounded-full"
-              src="../../images/mainsectionimage.jpg"
-              alt="girl smiling"
-            />
-          </div>
-        </div>
+<section className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black">
+  <div className="flex flex-row h-full relative">
+    {/* Left Column */}
+    <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start" style={{ minHeight: "60vh" }}>
+      <div className="overflow-hidden mt-[20vh]">
+        <p ref={paragraphRef} className="animate font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
+          A confident smile begins with effective care tailored to each patient.<br />
+          At our practice, we’re dedicated to providing treatments that are<br />
+          not only scientifically sound but also crafted to bring out your<br />
+          best smile.
+        </p>
       </div>
-      <div
-  className="font-editorial-new relative bg-no-repeat bg-contain pl-6 pr-8"
-  style={{ backgroundImage: "url('/images/bg-text-01.svg')", height: "auto", minHeight: "8rem" }}
->
-  <div className="overflow-hidden mod--hero-desc-01">
-    <div className="heading-small anim-load-down">
-      Confidence <span className="text-blue-700">Starts </span> 
+    </div>
+
+   
+    <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
+
+      <div className="flex flex-col justify-center items-center h-full space-y-0">
+        {colors.map((row, rowIndex) => (
+          <div key={rowIndex} className="flex space-x-0">
+            {row.map((color, circleIndex) => (
+              <div
+                key={circleIndex}
+                className={`w-[125px] h-[125px] ${
+                  (rowIndex + circleIndex) % 3 === 0 ? 'rounded-[40px]' : 'rounded-full'
+                } transition-transform duration-300 ease-in-out hover:scale-75`}
+                style={{ backgroundColor: color }}
+              ></div>
+            ))}
+          </div>
+        ))}
+      </div>
+   
+    </div>
+
+  </div>
+
+  {/* Bottom Content */}
+  <div className="flex justify-between items-end text-sm mt-8">
+    <div className="text-[#808080]">
+      <p>{time}</p>
+    </div>
+
+    <div className="flex flex-col items-end text-right font-light lg:w-1/3 w-full">
+      <h2 className="text-[3em] font-bold mb-4 leading-tight inline-block">
+        We know<br />what works.
+      </h2>
+      {/* <p className="mt-2">[SCROLL TO DISCOVER]</p> */}
     </div>
   </div>
-
-  <div className="overflow-hidden mod--hero-desc-02">
-    <div className="heading-small anim-load-down2">
-      <span className="text-black-500"></span> with Results <br />
-    </div>
-  </div>
-
-  <div className="overflow-hidden mod--hero-desc-03">
-    <div className="heading-small anim-load-down3">That Speak For</div>
-  </div>
-
-  <div className="overflow-hidden">
-    <div className="heading-small anim-load-down4">
-      <span className="text-blue-500">THEMSELVES</span>
-    </div>
-  </div>
-</div>
+</section>
 
 
-    </section>
+
   );
 }
+const About = () => {
+  return (
+    <section className="bg-white hero relative h-screen flex flex-col justify-between">
+      <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
+
+        <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">
+          <div className="hero-header flex flex-col items-center text-center relative z-10 gap-4">
+            <div
+              className="heading opacity-0 transform translate-y-[10vh]"
+              style={{
+                transform: "translate3d(0, 10vh, 0) scale3d(1, 1, 1)",
+                transition: "all 0.5s",
+              }}
+            >
+          
+            </div>
+          </div>
+        </div>
+
+        <section className="hero relative flex justify-center items-center h-screen">
+          <div className="hero-grid absolute inset-0 flex justify-center items-center z-0">
+            <img
+              src="../images/Hero-Background-Grid.svg"
+              alt="Hero Grid"
+              loading="lazy"
+              className="w-[320vw] max-w-[1000px]" 
+            />
+          </div>
+
+          <div className="z-20 hero-interaction-wrapper relative flex justify-center items-center z-20 space-x-2">
+            <div className="hero-card bg-transparent z-30 rotate-[-4deg]">
+              <img
+                src="../images/freysmilepatient.jpg"
+                alt="Hero Image 1"
+                className="object-cover w-[45vh] h-[55vh]"
+                loading="lazy"
+              />
+            </div>
+            <div className="hero-card bg-transparent z-20 rotate-[-2deg]">
+              <img
+                src="../images/blueorange.png"
+                alt="Hero Image 2"
+                className="object-cover w-[45vh] h-[55vh]"
+                loading="lazy"
+              />
+            </div>
+            <div className="hero-card bg-transparent z-10 rotate-[2deg]">
+              <img
+                src="../images/gradientbg.jpeg"
+                alt="Hero Image 3"
+                className="object-cover w-[45vh] h-[55vh]"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  );
+};
 
 // function Mask() {
 //   const useMousePosition = () => {
@@ -1003,261 +993,6 @@ function Hero() {
 //   )
 // }
 SwiperCore.use([Keyboard, Mousewheel]);
-
-const About = () => {
-  const timelineRef = useRef(null);
-  const [swiper, setSwiper] = useState(null); // (vertical) swiper
-  const [swiper2, setSwiper2] = useState(null); // (horizontal) swiper
-
-  useEffect(() => {
-    gsap.fromTo(
-      ".lines__line.mod--timeline-1",
-      { width: "0" },
-      {
-        width: "340px",
-        duration: 1,
-        scrollTrigger: {
-          trigger: ".timeline-section",
-          start: "top center",
-          toggleActions: "play none none none",
-        },
-      }
-    );
-
-    gsap.fromTo(
-      ".lines__line.mod--timeline-2",
-      { width: "0" },
-      {
-        width: "980px",
-        duration: 1,
-        scrollTrigger: {
-          trigger: ".timeline-section",
-          start: "top center",
-          toggleActions: "play none none none",
-        },
-      }
-    );
-
-    gsap.fromTo(
-      ".timeline__line2",
-      { width: "0" },
-      {
-        width: "100%",
-        duration: 1,
-        scrollTrigger: {
-          trigger: ".timeline-section",
-          start: "top center",
-          toggleActions: "play none none none",
-        },
-      }
-    );
-  }, []);
-
-  useEffect(() => {
-    if (swiper2) {
-      swiper2.slideTo(2, 0);
-    }
-
-    const handleScroll = () => {
-      const timelineElement = timelineRef.current;
-      if (timelineElement) {
-        const offset = timelineElement.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-
-        if (offset.top < 0 && offset.bottom - windowHeight > 0) {
-          const perc = Math.round(
-            (100 * Math.abs(offset.top)) / (offset.height - windowHeight)
-          );
-
-          if (perc > 10 && perc < 30) {
-            swiper?.slideTo(0, 1000);
-            swiper2?.slideTo(0, 1000);
-          } else if (perc >= 30 && perc < 55) {
-            swiper?.slideTo(1, 1000);
-            swiper2?.slideTo(1, 1000);
-          } else if (perc >= 55) {
-            swiper?.slideTo(2, 1000);
-            swiper2?.slideTo(2, 1000);
-          }
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [swiper, swiper2]);
-
-  return (
-    <section
-      className="timeline-section timeline-section--timeline"
-      ref={timelineRef}
-    >
-      <div className="timeline_sticky">
-        <div className="content-timeline">
-          <div className="timeline__lines-wrap">
-            <div className="lines mod--timeline">
-              <div className="lines__line mod--timeline-1"></div>
-              <div className="lines__line mod--timeline-2"></div>
-            </div>
-          </div>
-
-          {/* (Horizontal Swiper) */}
-          <div className="timeline-grid mod--timeline w-layout-grid">
-            <div className="timeline__col mod--2">
-              <Swiper
-                onSwiper={(swiper) => setSwiper2(swiper)}
-                mousewheel={true}
-                slidesPerView={1}
-                spaceBetween={20}
-                speed={800}
-                allowTouchMove={false}
-                initialSlide={2}
-                wrapperClass="horizontal-wrapper"
-                className="swiper swiper-reviews-numb"
-              >
-                <SwiperSlide className="swiper-slide slide--reviews-numb">
-                  <div className="timeline__year">2001</div>
-                </SwiperSlide>
-                <SwiperSlide className="swiper-slide slide--reviews-numb">
-                  <div className="timeline__year">2009</div>
-                </SwiperSlide>
-                <SwiperSlide className="swiper-slide slide--reviews-numb">
-                  <div className="timeline__year">2024</div>
-                </SwiperSlide>
-              </Swiper>
-            </div>
-          </div>
-
-          <div className="timeline__line2"></div>
-          <Swiper
-            onSwiper={setSwiper}
-            mousewheel={true}
-            slidesPerView={1}
-            speed={1000}
-            allowTouchMove={false}
-            initialSlide={0}
-            direction="vertical"
-            wrapperClass="vertical-wrapper"
-            breakpoints={{
-              992: {
-                spaceBetween: 0,
-                centeredSlides: false,
-                slidesPerView: 1,
-              },
-              320: {
-                spaceBetween: 48,
-                centeredSlides: true,
-                slidesPerView: 1,
-              },
-            }}
-            className="swiper swiper--reviews"
-          >
-            {/* First Slide - Renovation (2005) */}
-            <SwiperSlide className="swiper-slide slide--reviews">
-              <div className="timeline-grid mod--timeline2">
-                <div className="timeline__col mod--1">
-                  {/* <img
-                    src="images/ico_building-01.svg"
-                    loading="lazy"
-                    alt=""
-                    className="timeline__ico"
-                  /> */}
-                  <div className="timeline__ico-title">
-                    Invisalign <br />
-                    Pioneers
-                  </div>
-                </div>
-                <div className="timeline__col mod--4">
-                  <div className="timeline__txt-block">
-                    <p className="timeline__p">
-                      Lehigh Valley's first Invisalign provider. Continuing to
-                      hone our skill-set while testing new aligner systems.
-                    </p>
-                    <div className="timeline__tags">
-                      <div className="btn-tag">
-                        <span className="btn-tag__star"></span>i-Tero
-                      </div>
-                      <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Diamond Plus
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
-
-            {/* Second Slide - Innovation () */}
-
-            <SwiperSlide className="swiper-slide slide--reviews">
-              <div className="timeline-grid mod--timeline2">
-                <div className="timeline__col mod--1">
-                  {/* <img
-                    src="images/ico_builing-03.svg"
-                    loading="lazy"
-                    alt=""
-                    className="timeline__ico"
-                  /> */}
-                  <div className="timeline__ico-title">
-                    Expertise <br />
-                    Defined
-                  </div>
-                </div>
-                <div className="timeline__col mod--4">
-                  <div className="timeline__txt-block">
-                    <p className="timeline__p">
-                      Our doctors bring a combined 60 years of experience.
-                    </p>
-                    <div className="timeline__tags">
-                      <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Lorem
-                      </div>
-                      <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Ipsum
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
-            {/* Third Slide - Board Certification (1995) */}
-            <SwiperSlide className="swiper-slide slide--reviews">
-              <div className="timeline-grid mod--timeline2">
-                <div className="timeline__col mod--1">
-                  {/* <img
-                    src="images/ico_builing-02.svg"
-                    loading="lazy"
-                    alt=""
-                    className="timeline__ico"
-                  /> */}
-                  <div className="timeline__ico-title">
-                    Leading <br />
-                    Recognition
-                  </div>
-                </div>
-                <div className="timeline__col mod--4">
-                  <div className="timeline__txt-block">
-                    <p className="timeline__p">
-                      We’ve had more patients featured on the cover of the
-                      American Journal of Orthodontics than any other practice.
-                    </p>
-                    <div className="timeline__tags">
-                      <div className="btn-tag">
-                        <span className="btn-tag__star"></span>i-Tero
-                      </div>
-                      <div className="btn-tag">
-                        <span className="btn-tag__star"></span>3D Fabrication
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
-          </Swiper>
-        </div>
-      </div>
-    </section>
-  );
-};
 
 function GSAPAnimateScrollSections() {
   // const listRef = useRef(null);
