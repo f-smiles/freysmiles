@@ -67,8 +67,87 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    gsap.fromTo(
+      ".logo",
+      { y: "50vh", scale: 6, yPercent: -50 },
+      {
+        y: 0,
+        scale: 1,
+        scrollTrigger: {
+          trigger: ".content",
+          start: "top bottom",
+          end: "top center",
+          scrub: true,
+        }
+      }
+    );
+  }, []);
   return (
-    <div>
+    <div style={{ margin: 0, padding: 0, boxSizing: 'border-box' }}>
+    <div
+      className="logo__container"
+      style={{
+        position: 'fixed',
+        top: 40,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 1000,
+      }}
+    >
+      <h1 className="logo" style={{
+        margin: 0,
+        padding: '1em',
+        fontFamily: 'NeueMontrealMedium',
+        fontWeight: 400,
+        textTransform: 'uppercase',
+        letterSpacing: '-2px',
+        color: '#000',
+        background: 'none', 
+      }}>
+        REVIEWS
+      </h1>
+    </div>
+
+    <div
+      className="container"
+      style={{
+        width: '100%',
+        height: '100vh',
+        backgroundColor: '#fff',
+        margin: 0,
+        padding: 0,
+        boxSizing: 'border-box',
+      }}
+    ></div>
+
+    <div
+      className="content"
+      style={{
+        position: 'relative',
+        padding: '0 4em',
+        width: '100%',
+        height: '100vh',
+        backgroundColor: '#fff',
+        boxSizing: 'border-box',
+      }}
+    >
+      <img
+        src="https://images.unsplash.com/photo-1722185128411-456d36207767?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        alt=""
+        style={{
+          marginBottom: '4em',
+          width: '100%',
+        }}
+      />
+    </div>
+  </div>
+  
+  );
+}
+
+
+{/* <div>
       <header className="flex flex-row w-full py-8 justify-center items-center fixed top-0 left-0 bg-slate-950 z-10">
         <div className="flex items-center justify-center max-w-6xl w-full">
           <a href="/" className="text-3xl text-slate-50" id="testimonials">
@@ -79,7 +158,7 @@ export default function Home() {
 
       <div id="smooth-wrapper" className="w-full">
         <main id="smooth-content">
-          {/* First Section */}
+
           <section className="h-[100vh] w-full grid place-items-center bg-slate-950"></section>
 
     
@@ -137,12 +216,10 @@ export default function Home() {
             </h1>
           </section>
 
-          {/* Third Section */}
+       
           <section className="h-screen w-full grid place-items-center bg-yellow-100">
             <h1 className="text-5xl font-sans font-bold">Eh? World</h1>
           </section>
         </main>
       </div>
-    </div>
-  );
-}
+    </div> */}

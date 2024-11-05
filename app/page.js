@@ -836,7 +836,8 @@ function Hero() {
 <section className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black">
   <div className="flex flex-row h-full relative">
     {/* Left Column */}
-    <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start" style={{ minHeight: "60vh" }}>
+    <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start" style={{ minHeight: "0vh" }}>
+    <div className="flex-grow"></div>
       <div className="overflow-hidden mt-[20vh]">
         <p ref={paragraphRef} className="animate font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
           A confident smile begins with effective care tailored to each patient.<br />
@@ -845,6 +846,7 @@ function Hero() {
           best smile.
         </p>
       </div>
+      <div className="flex-grow"></div>
     </div>
 
    
@@ -903,7 +905,9 @@ const About = () => {
                 transition: "all 0.5s",
               }}
             >
-          
+              <h1 className="heading-1 text-4xl lg:text-6xl font-bold tracking-tight">
+                Elevate your brand with creative solutions
+              </h1>
             </div>
           </div>
         </div>
