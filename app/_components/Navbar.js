@@ -168,7 +168,7 @@ export default function Navbar() {
       {/* DESKTOP NAVBAR */}
       <nav
     id="desktop-nav"
-    className="fixed top-10 left-0 z-999 hidden w-full mb-[6vh] lg:block"
+    className=" fixed top-10 left-0 hidden w-full mb-[6vh] lg:block"
   >
     <div className="custom-navbar-cursor" />
     <div className="border border-black text-[#00314F] py-6 px-4 mx-auto text-sm transition duration-300 ease-in-out max-w-screen-xl flex justify-between items-center">
@@ -184,8 +184,8 @@ export default function Navbar() {
           
 
             <li onClick={handleToggleAbout} className="target-link">
-              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
-                About
+              <p className="text-sm font-medium font-helvetica-neue transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+                ABOUT
               </p>
             </li>
             {/* ABOUT PANEL */}
@@ -275,8 +275,8 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleTogglePatient} className="target-link">
-              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
-                Patient
+              <p className="text-sm font-helvetica-neue font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+                PATIENT
               </p>
             </li>
             {/* PATIENT PANEL */}
@@ -361,7 +361,7 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleToggleTreatments} className="target-link">
-              <p className="text-sm font-medium  transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="text-sm font-medium font-helvetica-neue uppercase  transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
                 Treatments
               </p>
             </li>
@@ -452,19 +452,19 @@ export default function Navbar() {
 
             <li>
               <Link href="https://my.orthoblink.com/bLink/Login">
-                <p className="text-sm leading-4 text-center">Patient Login</p>
+                <p className="text-sm leading-4 text-center uppercase font-helvetica-neue">Patient Login</p>
               </Link>
             </li>
 
             <li>
               <Link href="/#locations-section">
-                <p className="text-sm leading-4 text-center">Locations</p>
+                <p className="text-sm leading-4 text-center font-helvetica-neue uppercase">Locations</p>
               </Link>
             </li>
 
             <li>
               <Link href="/products">
-                <p className="text-sm">SHOP</p>
+                <p className="text-sm font-helvetica-neue">SHOP</p>
               </Link>
             </li>
 
@@ -630,7 +630,7 @@ export default function Navbar() {
 
           <div className="flex items-center">
         <Link href="/book-now">
-          <button className="px-4 py-2 text-white bg-[#00314F] font-semibold rounded-md hover:bg-[#002640]">
+          <button className="font-helvetica-neue px-4 py-2">
             BOOK
           </button>
         </Link>
