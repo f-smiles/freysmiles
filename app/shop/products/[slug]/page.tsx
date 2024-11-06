@@ -7,8 +7,9 @@ import { Separator } from "@/components/ui/separator"
 import VariantName from "@/components/products/variant-name"
 import SelectColor from "@/components/products/select-color"
 import ProductCarousel from "@/components/products/product-carousel"
-import AddToCart from "@/components/cart/add-cart"
+import AddToCart from "@/components/cart/add-to-cart"
 
+export const revalidate = 60
 
 export async function generateStaticParams() {
   const data = await db.query.productVariants.findMany({
@@ -56,7 +57,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           <ProductCarousel variants={variant.product.productVariants} />
         </div>
 
-        <div className="flex flex-col flex-1 gap-2 space-y-4">
+        <div className="flex flex-col flex-1 gap-2 pb-16 space-y-4">
           <div className="space-y-1">
             <h1 className="text-2xl">{variant?.product.title}</h1>
             <VariantName variants={variant.product.productVariants} />
@@ -77,7 +78,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
             </span>
           </div>
 
-          <AddToCart productTitle={variant.product.title} variantName={variant.variantName} price={variant.product.price} image={variantImage} />
+          <AddToCart price={variant.product.price} image={variantImage} />
 
         </div>
       </section>
