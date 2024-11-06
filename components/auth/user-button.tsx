@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Session } from "next-auth"
-import { ShoppingBag, Settings } from "lucide-react"
+import { ShoppingBag, Settings, ReceiptText } from "lucide-react"
 
 import { SignOutButton } from "./signout-button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -52,7 +52,12 @@ export default function UserButton({ user }: Session) {
         <div className="mt-4 space-y-2">
           <DropdownMenuItem onClick={() => router.push("/dashboard/orders")} className="px-2 cursor-pointer group">
             <ShoppingBag className="w-5 mr-3 transition-all duration-300 group-hover:translate-x-1" />
-            My Orders
+            Orders
+          </DropdownMenuItem>
+
+          <DropdownMenuItem onClick={() => router.push("/dashboard/orders")} className="px-2 cursor-pointer group">
+            <ReceiptText className="w-5 mr-3 transition-all duration-300 group-hover:translate-x-1" />
+            Invoices
           </DropdownMenuItem>
 
           <DropdownMenuItem onClick={() => router.push("/dashboard/settings")} className="px-2 cursor-pointer group">
