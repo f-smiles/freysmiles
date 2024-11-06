@@ -26,8 +26,9 @@ export default function App({ children }) {
         <main>
           {children}
         </main>
-        <Footer />
+
       </PersistGate>
+      <Footer />
     </Provider>
   )
 }
