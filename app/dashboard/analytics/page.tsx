@@ -4,6 +4,7 @@ import { orderItem } from "@/server/schema"
 import { desc } from "drizzle-orm"
 import Sales from "./sales"
 
+export const revalidate = 0
 
 export default async function DashboardAnalytics() {
   const totalOrders = await db.query.orderItem.findMany({
