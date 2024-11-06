@@ -8,7 +8,7 @@ import Navbar from './_components/Navbar'
 import Footer from './_components/Footer'
 import { Toast } from '@/components/ui/toaster'
 
-export default function App({ children }) {
+export default function App({ children, user }) {
   useEffect( () => {
     const lenis = new Lenis()
 
@@ -23,7 +23,7 @@ export default function App({ children }) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <Navbar />
+        <Navbar user={user} />
         <main>
           <Toast />
           {children}
