@@ -3,7 +3,8 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { ShoppingBagIcon } from "lucide-react"
 import { useCartStore } from "@/lib/cart-store"
-import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from "@/components/ui/drawer"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import CartHeader from "./cart-header"
 import CartItems from "./cart-items"
 import CartProgress from "./cart-progress"
@@ -15,9 +16,8 @@ export default function CartComponent() {
   const { cart, checkoutProgress, cartOpen, setCartOpen } = useCartStore()
 
   return (
-    <Drawer open={cartOpen} onOpenChange={setCartOpen}>
-
-      <DrawerTrigger>
+    <Sheet open={cartOpen} onOpenChange={setCartOpen}>
+      <SheetTrigger>
         <div className="relative">
           <AnimatePresence>
             {cart.length > 0 && (
@@ -33,23 +33,22 @@ export default function CartComponent() {
             <ShoppingBagIcon className="w-6 h-6 text-primary" strokeWidth={1.5} />
           </AnimatePresence>
         </div>
-      </DrawerTrigger>
+      </SheetTrigger>
 
-      <DrawerContent className="fixed bottom-0 left-0 max-h-[80vh] min-h-[50vh] p-4">
-        <DrawerHeader>
+      <SheetContent className="w-[400px] sm:w-[640px] md:w-[768px] bg-white flex flex-col">
+        <SheetHeader>
           <CartHeader />
-        </DrawerHeader>
+        </SheetHeader>
 
         {cart.length > 0 && (
           <CartProgress />
         )}
-
-        <div className="overflow-auto">
+        <ScrollArea>
           {checkoutProgress === "cart-page" && <CartItems />}
           {checkoutProgress === "pickup-location" && <PickupLocation />}
           {checkoutProgress === "cart-summary" && <CartSummary />}
-        </div>
-      </DrawerContent>
-    </Drawer>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   )
 }

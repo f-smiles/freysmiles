@@ -56,7 +56,7 @@ export default function CartSummary() {
 
 
   return (
-    <div className="flex flex-col items-center max-w-2xl pb-8 mx-auto overflow-auto md:pb-12">
+    <div className="flex flex-col items-center w-full">
       <form onSubmit={handleSubmit} className="flex flex-col items-center w-full gap-8">
         <Table>
           <TableHeader>
