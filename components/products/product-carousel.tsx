@@ -35,11 +35,11 @@ export default function ProductCarousel({ variants }: { variants: VariantsWithIm
           variant.variantName === selectedVariant &&
           variant.variantImages.map((img, index) => {
             return (
-              <CarouselItem key={img.url}>
+              <CarouselItem key={img.url} className="flex flex-col justify-center">
                 {img.url ? (
                   <Image
                     priority
-                    className="w-full h-full rounded-md"
+                    className="w-full h-auto rounded-md"
                     width={1280}
                     height={720}
                     src={img.url}

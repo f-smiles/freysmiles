@@ -18,7 +18,7 @@ export default function Variants({ variants }: ProductVariantsProps) {
           key={variant.id}
           href={`/shop/products/${variant.id}?id=${variant.id}&title=${variant.product.title}&variant=${variant.variantName}&prodId=${variant.productID}`} className="text-sm group"
         >
-          <figure className="w-full overflow-hidden bg-gray-100 rounded-md aspect-h-1 aspect-w-1 group-hover:opacity-75">
+          <figure className="w-full overflow-hidden rounded-md aspect-h-1 aspect-w-1 group-hover:opacity-75">
             <Image
               className="object-cover object-center w-full h-full"
               src={variant.variantImages[0].url}
