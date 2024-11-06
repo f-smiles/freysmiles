@@ -96,7 +96,7 @@ export const newVerification = async (token: string) => {
       email: existingToken.email,
       emailVerified: new Date(),
       customerID: stripeCustomer.id,
-    })
+    }).where(eq(users.email, existingToken.email!))
 
     await db.delete(emailTokens).where(eq(emailTokens.id, existingToken.id))
 
