@@ -1,6 +1,6 @@
 import DashboardNav from '@/components/dashboard/dashboard-nav'
 import { auth } from '@/server/auth'
-import { ChartColumnIncreasing, Package, PackagePlus, Settings, ShoppingBag } from 'lucide-react'
+import { ChartColumnIncreasing, Package, PackagePlus, ReceiptText, ScrollTextIcon, Settings, ShoppingBag } from 'lucide-react'
 import { redirect } from 'next/navigation'
 
 
@@ -16,6 +16,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
       icon: <ShoppingBag className="w-5 h-5" />
     },
     {
+      label: 'Invoices',
+      href: '/dashboard/invoices',
+      icon: <ReceiptText className="w-5 h-5" />
+    },
+    {
       label: 'Settings',
       href: '/dashboard/settings',
       icon: <Settings className="w-5 h-5" />
@@ -27,6 +32,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
       label: 'Analytics',
       href: '/dashboard/analytics',
       icon: <ChartColumnIncreasing className="w-5 h-5" />
+    },
+    {
+      label: 'Billing',
+      href: '/dashboard/billing',
+      icon: <ScrollTextIcon className="w-5 h-5" />
     },
     {
       label: 'Add Product',
