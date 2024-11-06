@@ -148,3 +148,61 @@ export const variantTagsRelations = relations(variantTags, ({ one }) => ({
     references: [productVariants.id],
   }),
 }))
+
+export const userRelations = relations(users, ({ many }) => ({
+  orders: many(orders),
+}))
+
+export const invoices = pgTable("invoices", {
+  id: serial("id").primaryKey(),
+  userID: text("userID").notNull().references(() => users.id, { onDelete: "cascade" }),
+  total: real("total").notNull(),
+  status: text("status").notNull(),
+  description: text("description").notNull(),
+  created: timestamp("created").defaultNow(),
+  updated: timestamp("updated").defaultNow().notNull(),
+  receiptURL: text("receiptURL"),
+  paymentIntentID: text("paymentIntentID"),
+})
+
+export const orders = pgTable("orders", {
+  id: serial("id").primaryKey(),
+  userID: text("userID").notNull().references(() => users.id, { onDelete: "cascade" }),
+  total: real("total").notNull(),
+  status: text("status").notNull(),
+  created: timestamp("created").defaultNow(),
+  receiptURL: text("receiptURL"),
+  paymentIntentID: text("paymentIntentID"),
+  pickupLocation: text("pickupLocation"),
+})
+
+export const orderItem = pgTable("orderItem", {
+  id: serial("id").primaryKey(),
+  productVariantID: serial("productVariantID").notNull().references(() => productVariants.id, { onDelete: "cascade" }),
+  productID: serial("productID").notNull().references(() => products.id, { onDelete: "cascade" }),
+  orderID: serial("orderID").notNull().references(() => orders.id, { onDelete: "cascade" }),
+  quantity: integer("quantity").notNull(),
+})
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  user: one(users, {
+    fields: [orders.userID],
+    references: [users.id]
+  }),
+  orderItem: many(orderItem)
+}))
+
+export const orderItemRelations = relations(orderItem, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItem.orderID],
+    references: [orders.id],
+  }),
+  product: one(products, {
+    fields: [orderItem.productID],
+    references: [products.id],
+  }),
+  productVariant: one(productVariants, {
+    fields: [orderItem.productVariantID],
+    references: [productVariants.id],
+  }),
+}))
