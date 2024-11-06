@@ -16,8 +16,10 @@ export type CartItem = {
 
 export type CartState = {
   cart: CartItem[];
-  checkoutProgress: "cart-page" | "payment-page" | "confirmation-page";
-  setCheckoutProgress: (status: "cart-page" | "payment-page" | "confirmation-page") => void;
+  checkoutProgress: "cart-page" | "pickup-location" | "cart-summary" | "redirect-message" | "payment-page" | "confirmation-page";
+  pickupLocation: "" | "Allentown" | "Bethlehem" | "Schnecksville" | "Lehighton";
+  setCheckoutProgress: (status: "cart-page" | "pickup-location" | "cart-summary" | "redirect-message" | "payment-page" | "confirmation-page") => void;
+  setPickupLocation: (location: "" | "Allentown" | "Bethlehem" | "Schnecksville" | "Lehighton") => void;
   addToCart: (item: CartItem) => void;
   removeFromCart: (item: CartItem) => void;
   clearCart: () => void;
@@ -31,8 +33,10 @@ export const useCartStore = create<CartState>()(
       cart: [],
       cartOpen: false,
       checkoutProgress: "cart-page",
+      pickupLocation: "",
       setCartOpen: (value) => set({ cartOpen: value }),
       setCheckoutProgress: (status) => set((state) => ({ checkoutProgress: status })),
+      setPickupLocation: (location) => set((state) => ({ pickupLocation: location })),
       clearCart: () => set({ cart: [] }),
       addToCart: (item) => set((state) => {
         const existingItem = state.cart.find((i) => i.variant.variantID === item.variant.variantID)
@@ -75,7 +79,10 @@ export const useCartStore = create<CartState>()(
           }
           return i
         })
-        return { cart: updateCart.filter((item) => item.variant.quantity > 0) }
+        return {
+          cart: updateCart.filter((item) => item.variant.quantity > 0),
+          pickupLocation: "",
+        }
       }),
     }),
     { name: "cart" },
