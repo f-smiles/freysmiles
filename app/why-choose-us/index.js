@@ -3,6 +3,8 @@
 // import { Curtains, useCurtains, Plane } from "react-curtains";
 // import { Vec2 } from "curtainsjs";
 // import SimplePlane from "./curtains"
+import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
 import React, { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -27,6 +29,7 @@ export default function WhyChooseUs() {
       <MarqueeAnimation />
       <StackCards />
       <ScrollTextReveal />
+      <About />
       <CTA />
       <VennDiagram />
       <GridLayout />
@@ -41,6 +44,261 @@ export default function WhyChooseUs() {
   );
 }
 
+
+const About = () => {
+  const timelineRef = useRef(null);
+  const [swiper, setSwiper] = useState(null); // (vertical) swiper
+  const [swiper2, setSwiper2] = useState(null); // (horizontal) swiper
+
+  useEffect(() => {
+    gsap.fromTo(
+      ".lines__line.mod--timeline-1",
+      { width: "0" },
+      {
+        width: "340px",
+        duration: 1,
+        scrollTrigger: {
+          trigger: ".timeline-section",
+          start: "top center",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+
+    gsap.fromTo(
+      ".lines__line.mod--timeline-2",
+      { width: "0" },
+      {
+        width: "980px",
+        duration: 1,
+        scrollTrigger: {
+          trigger: ".timeline-section",
+          start: "top center",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+
+    gsap.fromTo(
+      ".timeline__line2",
+      { width: "0" },
+      {
+        width: "100%",
+        duration: 1,
+        scrollTrigger: {
+          trigger: ".timeline-section",
+          start: "top center",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (swiper2) {
+      swiper2.slideTo(2, 0);
+    }
+
+    const handleScroll = () => {
+      const timelineElement = timelineRef.current;
+      if (timelineElement) {
+        const offset = timelineElement.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+
+        if (offset.top < 0 && offset.bottom - windowHeight > 0) {
+          const perc = Math.round(
+            (100 * Math.abs(offset.top)) / (offset.height - windowHeight)
+          );
+
+          if (perc > 10 && perc < 30) {
+            swiper?.slideTo(0, 1000);
+            swiper2?.slideTo(0, 1000);
+          } else if (perc >= 30 && perc < 55) {
+            swiper?.slideTo(1, 1000);
+            swiper2?.slideTo(1, 1000);
+          } else if (perc >= 55) {
+            swiper?.slideTo(2, 1000);
+            swiper2?.slideTo(2, 1000);
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [swiper, swiper2]);
+
+  return (
+    <section
+      className="timeline-section timeline-section--timeline"
+      ref={timelineRef}
+    >
+      <div className="timeline_sticky">
+        <div className="content-timeline">
+          <div className="timeline__lines-wrap">
+            <div className="lines mod--timeline">
+              <div className="lines__line mod--timeline-1"></div>
+              <div className="lines__line mod--timeline-2"></div>
+            </div>
+          </div>
+
+          {/* (Horizontal Swiper) */}
+          <div className="timeline-grid mod--timeline w-layout-grid">
+            <div className="timeline__col mod--2">
+              <Swiper
+                onSwiper={(swiper) => setSwiper2(swiper)}
+                mousewheel={true}
+                slidesPerView={1}
+                spaceBetween={20}
+                speed={800}
+                allowTouchMove={false}
+                initialSlide={2}
+                wrapperClass="horizontal-wrapper"
+                className="swiper swiper-reviews-numb"
+              >
+                <SwiperSlide className="swiper-slide slide--reviews-numb">
+                  <div className="timeline__year">2001</div>
+                </SwiperSlide>
+                <SwiperSlide className="swiper-slide slide--reviews-numb">
+                  <div className="timeline__year">2009</div>
+                </SwiperSlide>
+                <SwiperSlide className="swiper-slide slide--reviews-numb">
+                  <div className="timeline__year">2024</div>
+                </SwiperSlide>
+              </Swiper>
+            </div>
+          </div>
+
+          <div className="timeline__line2"></div>
+          <Swiper
+            onSwiper={setSwiper}
+            mousewheel={true}
+            slidesPerView={1}
+            speed={1000}
+            allowTouchMove={false}
+            initialSlide={0}
+            direction="vertical"
+            wrapperClass="vertical-wrapper"
+            breakpoints={{
+              992: {
+                spaceBetween: 0,
+                centeredSlides: false,
+                slidesPerView: 1,
+              },
+              320: {
+                spaceBetween: 48,
+                centeredSlides: true,
+                slidesPerView: 1,
+              },
+            }}
+            className="swiper swiper--reviews"
+          >
+            {/* First Slide - Renovation (2005) */}
+            <SwiperSlide className="swiper-slide slide--reviews">
+              <div className="timeline-grid mod--timeline2">
+                <div className="timeline__col mod--1">
+                  {/* <img
+                    src="images/ico_building-01.svg"
+                    loading="lazy"
+                    alt=""
+                    className="timeline__ico"
+                  /> */}
+                  <div className="timeline__ico-title">
+                    Invisalign <br />
+                    Pioneers
+                  </div>
+                </div>
+                <div className="timeline__col mod--4">
+                  <div className="timeline__txt-block">
+                    <p className="timeline__p">
+                      Lehigh Valley's first Invisalign provider. Continuing to
+                      hone our skill-set while testing new aligner systems.
+                    </p>
+                    <div className="timeline__tags">
+                      <div className="btn-tag">
+                        <span className="btn-tag__star"></span>i-Tero
+                      </div>
+                      <div className="btn-tag">
+                        <span className="btn-tag__star"></span>Diamond Plus
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
+
+            {/* Second Slide - Innovation () */}
+
+            <SwiperSlide className="swiper-slide slide--reviews">
+              <div className="timeline-grid mod--timeline2">
+                <div className="timeline__col mod--1">
+                  {/* <img
+                    src="images/ico_builing-03.svg"
+                    loading="lazy"
+                    alt=""
+                    className="timeline__ico"
+                  /> */}
+                  <div className="timeline__ico-title">
+                    Expertise <br />
+                    Defined
+                  </div>
+                </div>
+                <div className="timeline__col mod--4">
+                  <div className="timeline__txt-block">
+                    <p className="timeline__p">
+                      Our doctors bring a combined 60 years of experience.
+                    </p>
+                    <div className="timeline__tags">
+                      <div className="btn-tag">
+                        <span className="btn-tag__star"></span>Lorem
+                      </div>
+                      <div className="btn-tag">
+                        <span className="btn-tag__star"></span>Ipsum
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
+            {/* Third Slide - Board Certification (1995) */}
+            <SwiperSlide className="swiper-slide slide--reviews">
+              <div className="timeline-grid mod--timeline2">
+                <div className="timeline__col mod--1">
+                  {/* <img
+                    src="images/ico_builing-02.svg"
+                    loading="lazy"
+                    alt=""
+                    className="timeline__ico"
+                  /> */}
+                  <div className="timeline__ico-title">
+                    Leading <br />
+                    Recognition
+                  </div>
+                </div>
+                <div className="timeline__col mod--4">
+                  <div className="timeline__txt-block">
+                    <p className="timeline__p">
+                      We’ve had more patients featured on the cover of the
+                      American Journal of Orthodontics than any other practice.
+                    </p>
+                    <div className="timeline__tags">
+                      <div className="btn-tag">
+                        <span className="btn-tag__star"></span>i-Tero
+                      </div>
+                      <div className="btn-tag">
+                        <span className="btn-tag__star"></span>3D Fabrication
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
+          </Swiper>
+        </div>
+      </div>
+    </section>
+  );
+};
 const TextSection = () => {
   const circleRef = useRef(null);
 

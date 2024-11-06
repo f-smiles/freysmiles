@@ -1,29 +1,119 @@
 "use client";
+import { Curtains, Plane } from "curtainsjs";
+import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
+import { Navigation } from "swiper/modules";
 import Link from "next/link";
-import * as THREE from "three";
 import Matter from "matter-js";
-import { useRef, useEffect, useLayoutEffect, useState, useCallback } from "react";
+import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
+import * as THREE from "three";
+import { GUI } from "dat.gui";
+import { OrbitControls, shaderMaterial } from "@react-three/drei";
+import React, {
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useCallback,
+} from "react";
 // framer motion
-import { motion, stagger,  useAnimate, useInView } from 'framer-motion'
+import { motion, stagger, useAnimate, useInView } from "framer-motion";
 // headless ui
 import { Disclosure, Transition } from "@headlessui/react";
 // gsap
-import { gsap } from 'gsap';
-import { useGSAP } from "@gsap/react"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin"
-import { SplitText } from "gsap-trial/SplitText"
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
+import { SplitText } from "gsap-trial/SplitText";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText, useGSAP)
+  gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText, useGSAP);
 }
 
 export default function LandingComponent() {
+  // const canvasRef = useRef(null);
+  // const mouseCanvasRef = useRef(null);
+  // const planeRef = useRef(null);
+  // const mouseAttr = useRef([]);
+  // const mouseInertia = useRef([]);
+
+  // useEffect(() => {
+  //   const pixelRatio = window.devicePixelRatio || 1.0;
+  //   let mousePosition = { x: -10000, y: -10000 };
+
+  //   const curtains = new Curtains({
+  //     container: canvasRef.current,
+  //     watchScroll: false,
+  //   });
+
+  //   const planeElements = document.getElementsByClassName("curtain");
+
+  //   const params = {
+  //     vertexShader: vertexShader,
+  //     fragmentShader: fragmentShader,
+  //     uniforms: {
+  //       resolution: {
+  //         name: "uResolution",
+  //         type: "2f",
+  //         value: [pixelRatio * planeElements[0].clientWidth, pixelRatio * planeElements[0].clientHeight],
+  //       },
+  //       mousePosition: {
+  //         name: "uMousePosition",
+  //         type: "2f",
+  //         value: [mousePosition.x, mousePosition.y],
+  //       },
+  //     },
+  //   };
+
+  //   const plane = new Plane(curtains, planeElements[0], params);
+  //   planeRef.current = plane;
+
+  //   const resizeCanvas = () => {
+  //     const canvas = mouseCanvasRef.current;
+  //     canvas.width = planeElements[0].clientWidth * pixelRatio;
+  //     canvas.height = planeElements[0].clientHeight * pixelRatio;
+
+  //     const ctx = canvas.getContext("2d");
+  //     ctx.scale(pixelRatio, pixelRatio);
+  //   };
+
+  //   resizeCanvas();
+
+  //   const handleMovement = (e) => {
+  //     mousePosition.x = e.clientX;
+  //     mousePosition.y = e.clientY;
+
+  //     const mouseAttributes = {
+  //       x: mousePosition.x - planeElements[0].getBoundingClientRect().left,
+  //       y: mousePosition.y - planeElements[0].getBoundingClientRect().top,
+  //       opacity: 1,
+  //       velocity: { x: 0, y: 0 },
+  //     };
+
+  //     if (mouseAttr.current.length > 1) {
+  //       mouseAttributes.velocity = {
+  //         x: mouseAttributes.x - mouseAttr.current[mouseAttr.current.length - 1].x,
+  //         y: mouseAttributes.y - mouseAttr.current[mouseAttr.current.length - 1].y,
+  //       };
+  //     }
+
+  //     mouseAttr.current.push(mouseAttributes);
+  //   };
+
+  //   document.addEventListener("mousemove", handleMovement);
+
+  //   return () => {
+  //     document.removeEventListener("mousemove", handleMovement);
+  //     curtains.dispose();
+  //   };
+  // }, []);
+
   const [backgroundColor, setBackgroundColor] = useState("transparent");
 
   useEffect(() => {
-    setBackgroundColor("rgb(239,233,232)");
+    setBackgroundColor("rgb(255, 248, 237)");
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const transitionStart = 40;
@@ -34,26 +124,26 @@ export default function LandingComponent() {
         {
           start: transitionStart,
           end: transitionEnd * 0.25,
-          colorStart: [239,233,232],
-          colorEnd: [229,222,224],
+          colorStart: [255, 248, 237],
+          colorEnd: [245, 244, 253],
         },
         {
           start: transitionEnd * 0.25,
           end: transitionEnd * 0.5,
-          colorStart: [229,222,224],
-          colorEnd: [211,202,210],
+          colorStart: [245, 244, 253],
+          colorEnd: [245, 244, 253],
         },
         {
           start: transitionEnd * 0.5,
           end: transitionEnd * 0.75,
-          colorStart: [ 211,202,210],
-          colorEnd: [211,202,210],
+          colorStart: [211, 202, 210],
+          colorEnd: [211, 202, 210],
         },
         {
           start: transitionEnd * 0.75,
           end: transitionEnd,
-          colorStart: [211,202,210],
-          colorEnd: [211,202,210],
+          colorStart: [211, 202, 210],
+          colorEnd: [211, 202, 210],
         },
       ];
 
@@ -152,36 +242,38 @@ export default function LandingComponent() {
   const sectionThreeRef = useRef(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const scaleValue = 0.8 + 0.2 * entry.intersectionRatio;
-            entry.target.style.transform = `scale(${scaleValue})`;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const scaleValue = 0.8 + 0.2 * entry.intersectionRatio;
+          entry.target.style.transform = `scale(${scaleValue})`;
         });
-    }, {
-        threshold: Array.from({ length: 20 }, (_, i) => i * 0.05)  //
-    });
+      },
+      {
+        threshold: Array.from({ length: 20 }, (_, i) => i * 0.05), //
+      }
+    );
 
     const sections = [sectionOneRef, sectionTwoRef, sectionThreeRef];
-    sections.forEach(ref => {
-        if (ref.current) observer.observe(ref.current);
+    sections.forEach((ref) => {
+      if (ref.current) observer.observe(ref.current);
     });
 
     return () => {
-        sections.forEach(ref => {
-            if (ref.current) observer.unobserve(ref.current);
-        });
+      sections.forEach((ref) => {
+        if (ref.current) observer.unobserve(ref.current);
+      });
     };
-}, []);
-
+  }, []);
 
   return (
     <>
-      <div style={{ backgroundColor }} className="bg-[#EFE9E8] bg-[#E0D175]">
-        <Hero />
-        <Mask />
-        {/* <About /> */}
+      <div style={{ backgroundColor }} className="bg-[#E0D175]">
+      <Hero     className="sticky top-0  z-2 "/>
+      <About lassName="sticky top-0  z-2 " />
         <GSAPAnimateScrollSections />
         <ImageGrid />
+               {/* <Mask /> */}
 
         <div
           ref={sectionOneRef}
@@ -210,6 +302,7 @@ export default function LandingComponent() {
     </>
   );
 }
+
 
 function Hero() {
   const containerRef = useRef(null);
@@ -500,7 +593,7 @@ function Hero() {
     }
     `;
 
-    const fragmentSrc = `
+  const fragmentSrc = `
     precision mediump float;
     uniform float uTrans;
     uniform sampler2D uTexture0;
@@ -518,12 +611,12 @@ function Hero() {
         vec4 color1 = texture2D(uTexture1, vec2(0.5 + sin((1. - trans) * 0.1), 0.5) + (vUv - vec2(0.5)) * (0.9 + 0.1 * trans));
         gl_FragColor = mix(color0, color1 , trans);
     }
-    `
+    `;
 
   const assetUrls = [
-    '../images/1024mainsectionimage.jpg',
-    '../images/smilegirl.jpg',
-    'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1600187/waterTemp.jpg'
+    "../images/1024mainsectionimage.jpg",
+    "../images/smilegirl.jpg",
+    "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1600187/waterTemp.jpg",
   ];
 
   const canvasRef = useRef(null);
@@ -538,7 +631,6 @@ function Hero() {
 
   //   let program = gl.createProgram();
 
-
   //   const vShader = gl.createShader(gl.VERTEX_SHADER);
   //   gl.shaderSource(vShader, vertexSrc);
   //   gl.compileShader(vShader);
@@ -546,7 +638,6 @@ function Hero() {
   //   const fShader = gl.createShader(gl.FRAGMENT_SHADER);
   //   gl.shaderSource(fShader, fragmentSrc);
   //   gl.compileShader(fShader);
-
 
   //   gl.attachShader(program, vShader);
   //   gl.deleteShader(vShader);
@@ -568,7 +659,6 @@ function Hero() {
   //   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
   //   const vertexLocation = gl.getAttribLocation(program, 'position');
   //   gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
 
   //   const uTransLoc = gl.getUniformLocation(program, 'uTrans');
   //   const textureLocArr = [
@@ -630,7 +720,6 @@ function Hero() {
   //     canvas.height = height;
   // }
 
-
   //   function loadImages() {
   //     assetUrls.forEach ((url, index) => {
   //       let img = new Image();
@@ -655,7 +744,6 @@ function Hero() {
   //       console.log(img)
   //     });
   //   }
-
 
   //   canvas.addEventListener('mouseenter', () => {
   //     gsap.killTweensOf(obj);
@@ -686,265 +774,229 @@ function Hero() {
   //     });
   //   };
   // }, []);
+  const paragraphRef = useRef(null);
 
-  return (
-    <section
-    className="relative pt-10 overflow-hidden bg-center bg-cover"
-    style={{ backgroundImage: 'url(../images/purplepeach.jpg)' }}
-  >
+  useEffect(() => {
+    const splitParent = new SplitText(paragraphRef.current, {
+      type: "lines",
+      linesClass: "lineParent",
+    });
+    const splitChild = new SplitText(paragraphRef.current, {
+      type: "lines",
+      linesClass: "lineChild",
+    });
 
-      <div ref={pixiContainerRef} id="pixi-container"></div>
-      <div className="px-8 isolate lg:px-8">
-        <div className="relative grid max-w-screen-xl grid-cols-1 mx-auto rounded-lg sm:py-10 place-items-center lg:grid-cols-2">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <svg>
-              <defs>
-                <clipPath
-                  id="myClipPath"
-                  clipPathUnits="objectBoundingBox"
-                  transform="scale(0.0004 0.0007)"
-                >
-                  <path d="M1746.43,38.94C849.17-212.65-120.14,825.24,12.19,1135.81c101.84,239,679.67,189.43,1132.31,162.51,448.32-26.66,958.25,402.35,1298.59-122.64C2733.65,727.5,2258.09,182.41,1746.43,38.94Z" />
-                </clipPath>
-              </defs>
-            </svg>
-          </div>
+    const tl = gsap.timeline();
 
-          <div className="relative z-10 w-full mx-auto lg:mt-0">
-            <div className="flex flex-wrap items-center justify-center">
-              <div className="relative">
-                <div className="hero">
-                  <div className="hero-content " ref={heroContentRef}>
-                    <div className=" marquee_features">
-                      <div className="marquee__inner first ">
-                        <span>Because</span>
-                        <span>Every</span>
-                        <span>Smile</span>
-                        <span>Is</span>
-                        <span>Unique</span>
-                      </div>
-                      <div className="marquee__inner second">
-                        <span>Because</span>
-                        <span>Every</span>
-                        <span>Smile</span>
-                        <span>Is</span>
-                        <span>Unique</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    tl.from(".lineChild", {
+      yPercent: 100,
+      autoAlpha: 0,
+      delay: 0.5,
+      duration: 0.65,
+      stagger: 0.25,
+      ease: "back",
+    });
 
-          <div className="relative flex items-center justify-center">
-            <div
-              className={`absolute z-20 inline-block ${
-                isScaled ? "scale-up" : "scale-100"
-              }`}
-              onClick={handleClick}
-              style={{ top: "10%", left: "-20%" }}
-            >
+    return () => {
+      splitParent.revert();
+      splitChild.revert();
+    };
+  }, []);
 
-{/* <a href="/book-now" className="inline-flex items-center justify-center">
-    <svg id="circlepath" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="300px" height="300px" viewBox="0 0 300 300" xmlSpace="preserve" className="book-svg">
-        <defs>
-            <path id="circlePath" d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"/>
-            <filter id="frostyFilter" x="-10%" y="-10%" width="120%" height="120%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
-                <feComponentTransfer>
-                    <feFuncA type="linear" slope="0.4"/>
-                </feComponentTransfer>
-                <feMerge>
-                    <feMergeNode/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
-        </defs>
-        <circle cx="150" cy="150" r="135" fill="rgba(255, 255, 255, 0.6)" filter="url(#frostyFilter)"/>
-        <g>
-            <text className="book-text">
-                <textPath xlinkHref="#circlePath">
-                    BOOK NOW → BOOK NOW →
-                </textPath>
-            </text>
-        </g>
-    </svg>
-</a> */}
-  <a href="/book-now" class="circlebutton right black">
-    <svg viewBox="0 0 240 240">
-      <text class="circle-text" data-bs-circle>
-        <textPath class="circle-text-path" aria-label="Day" data-max-char="60"></textPath>
-      </text>
-    </svg>
-    <span>BOOK NOW</span>
-  </a>
-  <svg> 
-  <def>
-    <path id="circleButton" d="M225,120c0,58-47,105-105,105S15,178,15,120S62,15,120,15S225,62,225,120z" />
-  </def>
-</svg>
+  const [time, setTime] = useState("");
 
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
 
-            </div>
-            {/* <canvas className="z-10 rounded-full" ref={canvasRef}></canvas> */}
-            <img
-              className="z-10 max-w-md rounded-full"
-              src="../../images/mainsectionimage.jpg"
-              alt="girl smiling"
-            />
-
-          </div>
-        </div>
-      </div>
-      {/* <div>
-      <section id="header" className="h-screen overflow-hidden bg-header-yellow"></section>
-      <section id="sep" className="h-screen overflow-hidden"></section>
-      <section id="about" className="h-screen overflow-hidden bg-about-brown"></section>
-      <div id="mouse" ref={mouseRef} className="absolute top-0 left-0 w-[300px] h-[300px]">
-        {Array.from({ length: 30 }).map((_, index) => (
-          <span key={index} style={{
-            borderRadius: '100%',
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            background: 'radial-gradient(circle, rgba(227, 255, 27, 1) 0%, rgba(227, 255, 27, 0) 100%)'
-          }}></span>
-        ))}
-      </div>
-    </div> */}
-    </section>
-  );
-}
-
-function Mask() {
-  const useMousePosition = () => {
-    const [mousePosition, setMousePosition] = useState({ x: null, y: null });
-    const updateMousePosition = e => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      const options = {
+        timeZone: "America/New_York",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      };
+      const easternTime = new Intl.DateTimeFormat("en-US", options).format(now);
+      setTime(`${easternTime}`);
     };
 
-    useEffect(() => {
-      window.addEventListener("mousemove", updateMousePosition);
-      return () => window.removeEventListener("mousemove", updateMousePosition);
-    }, []);
+    updateTime();
+    const intervalId = setInterval(updateTime, 60000);
 
-    return mousePosition;
-  };
+    return () => clearInterval(intervalId);
+  }, []);
 
-  const [isHovered, setIsHovered] = useState(false);
-
-  const { x, y } = useMousePosition();
-
-  const size = isHovered ? 400 : 40;
+  const colors = [
+    ["#E64627", "#00BFFF", "#FF5A5A", "#C084FC"],
+    ["#00FFC6", "#2F2F2F", "#FF70A6", "#FF5A5A"],
+    ["#C084FC", "#0F0E45", "#E64627", "#0F0E45"],
+    ["#3D0075", "#0F0E45", "#808080", "#2F2F2F"]
+  ];
 
   return (
-    <main className="uniqueMain">
-      <motion.div
-        className="uniqueMask"
-        animate={{
-          WebkitMaskPosition: `${x - (size/2)}px ${y - (size/2)}px`,
-          WebkitMaskSize: `${size}px`,
-        }}
-        transition={{ type: "tween", ease: "backOut", duration: 0.5}}
-      >
-        <p onMouseEnter={() => {setIsHovered(true)}} onMouseLeave={() => {setIsHovered(false)}}>
-          INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
+<section className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black">
+  <div className="flex flex-row h-full relative">
+    {/* Left Column */}
+    <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start" style={{ minHeight: "0vh" }}>
+    <div className="flex-grow"></div>
+      <div className="overflow-hidden mt-[20vh]">
+        <p ref={paragraphRef} className="animate font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
+          A confident smile begins with effective care tailored to each patient.<br />
+          At our practice, we’re dedicated to providing treatments that are<br />
+          not only scientifically sound but also crafted to bring out your<br />
+          best smile.
         </p>
-      </motion.div>
-
-      <div className="uniqueBody">
-        <p> We are your  <span>go-to provider </span> for advanced and discerning orthodontic care.</p>
       </div>
-    </main>
-  )
+      <div className="flex-grow"></div>
+    </div>
+
+   
+    <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
+
+      <div className="flex flex-col justify-center items-center h-full space-y-0">
+        {colors.map((row, rowIndex) => (
+          <div key={rowIndex} className="flex space-x-0">
+            {row.map((color, circleIndex) => (
+              <div
+                key={circleIndex}
+                className={`w-[125px] h-[125px] ${
+                  (rowIndex + circleIndex) % 3 === 0 ? 'rounded-[40px]' : 'rounded-full'
+                } transition-transform duration-300 ease-in-out hover:scale-75`}
+                style={{ backgroundColor: color }}
+              ></div>
+            ))}
+          </div>
+        ))}
+      </div>
+   
+    </div>
+
+  </div>
+
+  {/* Bottom Content */}
+  <div className="flex justify-between items-end text-sm mt-8">
+    <div className="text-[#808080]">
+      <p>{time}</p>
+    </div>
+
+    <div className="flex flex-col items-end text-right font-light lg:w-1/3 w-full">
+      <h2 className="text-[3em] font-bold mb-4 leading-tight inline-block">
+        We know<br />what works.
+      </h2>
+      {/* <p className="mt-2">[SCROLL TO DISCOVER]</p> */}
+    </div>
+  </div>
+</section>
+
+
+
+  );
 }
+const About = () => {
+  return (
+    <section className="bg-white hero relative h-screen flex flex-col justify-between">
+      <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
-// function About() {
+        <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">
+          <div className="hero-header flex flex-col items-center text-center relative z-10 gap-4">
+            <div
+              className="heading opacity-0 transform translate-y-[10vh]"
+              style={{
+                transform: "translate3d(0, 10vh, 0) scale3d(1, 1, 1)",
+                transition: "all 0.5s",
+              }}
+            >
+              <h1 className="heading-1 text-4xl lg:text-6xl font-bold tracking-tight">
+                Elevate your brand with creative solutions
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        <section className="hero relative flex justify-center items-center h-screen">
+          <div className="hero-grid absolute inset-0 flex justify-center items-center z-0">
+            <img
+              src="../images/Hero-Background-Grid.svg"
+              alt="Hero Grid"
+              loading="lazy"
+              className="w-[320vw] max-w-[1000px]" 
+            />
+          </div>
+
+          <div className="z-20 hero-interaction-wrapper relative flex justify-center items-center z-20 space-x-2">
+            <div className="hero-card bg-transparent z-30 rotate-[-4deg]">
+              <img
+                src="../images/freysmilepatient.jpg"
+                alt="Hero Image 1"
+                className="object-cover w-[45vh] h-[55vh]"
+                loading="lazy"
+              />
+            </div>
+            <div className="hero-card bg-transparent z-20 rotate-[-2deg]">
+              <img
+                src="../images/blueorange.png"
+                alt="Hero Image 2"
+                className="object-cover w-[45vh] h-[55vh]"
+                loading="lazy"
+              />
+            </div>
+            <div className="hero-card bg-transparent z-10 rotate-[2deg]">
+              <img
+                src="../images/gradientbg.jpeg"
+                alt="Hero Image 3"
+                className="object-cover w-[45vh] h-[55vh]"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  );
+};
+
+// function Mask() {
+//   const useMousePosition = () => {
+//     const [mousePosition, setMousePosition] = useState({ x: null, y: null });
+//     const updateMousePosition = e => {
+//       setMousePosition({ x: e.clientX, y: e.clientY });
+//     };
+
+//     useEffect(() => {
+//       window.addEventListener("mousemove", updateMousePosition);
+//       return () => window.removeEventListener("mousemove", updateMousePosition);
+//     }, []);
+
+//     return mousePosition;
+//   };
+
+//   const [isHovered, setIsHovered] = useState(false);
+
+//   const { x, y } = useMousePosition();
+
+//   const size = isHovered ? 400 : 40;
+
 //   return (
-//     <div>
+//     <main className="uniqueMain">
+//       <motion.div
+//         className="uniqueMask"
+//         animate={{
+//           WebkitMaskPosition: `${x - (size/2)}px ${y - (size/2)}px`,
+//           WebkitMaskSize: `${size}px`,
+//         }}
+//         transition={{ type: "tween", ease: "backOut", duration: 0.5}}
+//       >
+//         <p onMouseEnter={() => {setIsHovered(true)}} onMouseLeave={() => {setIsHovered(false)}}>
+//           INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
+//         </p>
+//       </motion.div>
 
-//       <style jsx>{`
-//         :global(:root) {
-//           --padding: 15vh;
-//           --nav: 80px;
-//           --fixer: hsl(25 90% 50%);
-//           --clipped: hsl(310 80% 70%);
-//           --marge: hsl(250 80% 70%);
-//         }
-//         header {
-//           background: var(--white);
-//           clip-path: inset(0 0 4px 0);
-//         }
-//         h1 {
-//           margin: 0;
-//           text-transform: uppercase;
-//           text-align: center;
-//           z-index: 2;
-//           font-size: 14em;
-
-//           line-height: 0.75;
-//           font-weight: 120;
-//           position: sticky;
-//           top: calc(var(--padding) + var(--nav));
-//           mix-blend-mode: difference;
-//           color: white;
-//         }
-//         video {
-//           width: 100%;
-//           height: 100vh;
-//           object-fit: cover;
-//           // filter: contrast(0.75) grayscale(1);
-//           margin-top: calc(var(--padding) + var(--nav) + var(--nav));
-//         }
-
-//         .content {
-//           margin: 0 auto;
-//           max-width: 100%;
-//           width: 80ch;
-//         }
-//         section {
-//           background: var(--text);
-//           min-height: 100vh;
-//           position: relative;
-//           overflow: hidden;
-//         }
-//         nav div,
-//         main div {
-//           width: 100vw;
-//           background: var(--white);
-//         }
-//         main > section {
-//           background: var(--white);
-//           display: grid;
-//           place-items: center;
-//           padding: 0 1rem;
-//         }
-
-//       `}</style>
-//       <header>
-//         <h1 className="font-Lato">about</h1>
-
-// <video
-//                   autoPlay
-//                   loop
-//                   muted
-//                   style={{
-
-//                     objectFit: "contain",
-//                   }}
-
-//                 >
-//                   <source
-//                     src="../images/exam.mp4"
-//                     type="video/mp4"
-//                   />
-//                   Your browser does not support the video tag.
-//                 </video>
-//       </header>
-//     </div>
-//   );
+//       <div className="uniqueBody">
+//         <p> We are your  <span>go-to provider </span> for advanced and discerning orthodontic care.</p>
+//       </div>
+//     </main>
+//   )
 // }
+SwiperCore.use([Keyboard, Mousewheel]);
 
 function GSAPAnimateScrollSections() {
   // const listRef = useRef(null);
@@ -1144,79 +1196,113 @@ function GSAPAnimateScrollSections() {
     useGSAP(() => {
       let tl = gsap.timeline({
         scrollTrigger: {
-          trigger: '#stats-section',
-          start: 'top 50%',
-          end: 'bottom 100%',
+          trigger: "#stats-section",
+          start: "top 50%",
+          end: "bottom 100%",
           scrub: 1,
         },
-        defaults: { ease: 'power1.in' },
-      })
+        defaults: { ease: "power1.in" },
+      });
 
-      tl.to('.middle-circle', {
-        scale: 1,
+      tl.to(
+        ".middle-circle",
+        {
+          scale: 1,
+          opacity: 1,
+          filter: "blur(0px)",
+          duration: 4,
+        },
+        0
+      )
+        .to(
+          ".middle-circle-text",
+          {
+            scale: 1,
+            opacity: 1,
+            filter: "blur(0px)",
+            duration: 6,
+          },
+          0
+        )
+        .to(
+          ".left-circle",
+          {
+            opacity: 1,
+            filter: "blur(0px)",
+            transform: "translate(0%, 0%)",
+            duration: 6,
+          },
+          3
+        );
+      tl.to(
+        ".right-circle",
+        {
+          opacity: 1,
+          filter: "blur(0px)",
+          transform: "translate(0%, 0%)",
+          duration: 6,
+        },
+        3
+      ).to("#stats-heading", {
         opacity: 1,
-        filter: "blur(0px)",
+        transform: "translate(0%, 0%)",
         duration: 4,
-      }, 0)
-      .to('.middle-circle-text', {
-        scale: 1,
-        opacity: 1,
-        filter: "blur(0px)",
-        duration: 6,
-      }, 0)
-      .to('.left-circle', {
-        opacity: 1,
-        filter: "blur(0px)",
-        transform: "translate(0%, 0%)",
-        duration: 6,
-      }, 3)
-      tl.to('.right-circle', {
-        opacity: 1,
-        filter: "blur(0px)",
-        transform: "translate(0%, 0%)",
-        duration: 6,
-      }, 3)
-      .to('#stats-heading', {
-        opacity: 1,
-        transform: "translate(0%, 0%)",
-        duration: 4,
-      })
-    })
+      });
+    });
 
     return (
-      <section id='stats-section' className='relative block w-full h-[50vh] md:h-screen place-content-center place-items-center xl:hidden'>
-        <div className='container flex items-center justify-center gap-2 px-8 py-4 mx-auto'>
-          <figure className='translate-x-1/2 opacity-0 blur-sm left-circle'>
-            <span className='block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square'>
-              <p className='text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]'>60+ yrs</p>
+      <section
+        id="stats-section"
+        className="relative block w-full h-[50vh] md:h-screen place-content-center place-items-center xl:hidden"
+      >
+        <div className="container flex items-center justify-center gap-2 px-8 py-4 mx-auto">
+          <figure className="translate-x-1/2 opacity-0 blur-sm left-circle">
+            <span className="block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square">
+              <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
+                60+ yrs
+              </p>
             </span>
-            <p className='leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]'>experience</p>
+            <p className="leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
+              experience
+            </p>
           </figure>
-          <figure className='scale-0 opacity-0 blur-sm middle-circle'>
-            <span className='block w-40 h-40 md:w-60 md:h-60 mb-4 rounded-full place-content-center place-items-center aspect-square shadow-[inset_0_0_20px_rgba(255,255,255,1)] md:shadow-[inset_0_0_30px_rgba(255,255,255,1)] middle-circle-text opacity-0 blur-sm'>
-              <p className='text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]'>25,000</p>
+          <figure className="scale-0 opacity-0 blur-sm middle-circle">
+            <span className="block w-40 h-40 md:w-60 md:h-60 mb-4 rounded-full place-content-center place-items-center aspect-square shadow-[inset_0_0_20px_rgba(255,255,255,1)] md:shadow-[inset_0_0_30px_rgba(255,255,255,1)] middle-circle-text opacity-0 blur-sm">
+              <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
+                25,000
+              </p>
             </span>
-            <p className='leading-4 tracking-wide text-center capitalize opacity-0 middle-circle-text blur-sm font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]'>patients</p>
+            <p className="leading-4 tracking-wide text-center capitalize opacity-0 middle-circle-text blur-sm font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
+              patients
+            </p>
           </figure>
-          <figure className='-translate-x-1/2 opacity-0 blur-sm right-circle'>
-            <span className='block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square'>
-              <p className='text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]'>4</p>
+          <figure className="-translate-x-1/2 opacity-0 blur-sm right-circle">
+            <span className="block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square">
+              <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
+                4
+              </p>
             </span>
-            <p className='leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]'>locations</p>
+            <p className="leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
+              locations
+            </p>
           </figure>
         </div>
-        <div id='stats-heading' className='container w-full mx-auto translate-y-1/2 opacity-0 place-content-center'>
-          <h2 className='w-full tracking-tighter text-center uppercase text-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] leading-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] font-agrandir-grandheavy text-zinc-100'>About</h2>
+        <div
+          id="stats-heading"
+          className="container w-full mx-auto translate-y-1/2 opacity-0 place-content-center"
+        >
+          <h2 className="w-full tracking-tighter text-center uppercase text-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] leading-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] font-agrandir-grandheavy text-zinc-100">
+            About
+          </h2>
         </div>
       </section>
-    )
-  }
+    );
+  };
 
   return (
     <>
       <section className="relative hidden home-main xl:block">
         <div className="home-main__content">
-
           <div className="home-main__content-sphere">
             <ul className="container mx-auto">
               <li
@@ -1265,7 +1351,6 @@ function GSAPAnimateScrollSections() {
             ></div>
           </div>
         </div>
-  
       </section>
 
       <MobileLayout />
@@ -1328,7 +1413,7 @@ function GSAPAnimateScrollSections() {
   );
 }
 
-const HorizontalGrid =() =>{
+const HorizontalGrid = () => {
   return (
     <div className="relative">
       <div class="containerH">
@@ -1371,7 +1456,7 @@ const HorizontalGrid =() =>{
       </div>
     </div>
   );
-}
+};
 
 const ImageGrid = () => {
   const bodyRef = useRef(null);
@@ -1485,8 +1570,6 @@ const ImageGrid = () => {
       url: "/why-choose-us",
     },
   ];
-
-
 
   return (
     <div>
@@ -1784,18 +1867,17 @@ const LogoGrid = () => {
       const canvasSphereWrapp = document.querySelector("#ballcanvas");
 
       if (navigator.userAgentData) {
-
         try {
-
           if (navigator.userAgentData.platform === "Windows") {
-            let ua = await navigator.userAgentData.getHighEntropyValues(["platformVersion"]);
+            let ua = await navigator.userAgentData.getHighEntropyValues([
+              "platformVersion",
+            ]);
             majorPlatformVersion = parseInt(ua.platformVersion.split(".")[0]);
           }
         } catch (error) {
           console.error("version", error);
 
           majorPlatformVersion = undefined;
-
         }
       }
 
@@ -1991,8 +2073,8 @@ const LogoGrid = () => {
       {/* MARQUEE  */}
       <div className="bg-[#20282D] w-full absolute top-0">
         <h1 className="text-3xl font-bold tracking-wide text-white uppercase animate-locationsCardMarquee font-neue-montreal">
-          &bull; COME SEE US AT ANY OF OUR FOUR LOCATIONS &bull; COME SEE US
-          AT ANY OF OUR FOUR LOCATIONS &bull;
+          &bull; COME SEE US AT ANY OF OUR FOUR LOCATIONS &bull; COME SEE US AT
+          ANY OF OUR FOUR LOCATIONS &bull;
         </h1>
       </div>
       {/* <div className="grid grid-cols-2 gap-4">
@@ -2011,7 +2093,10 @@ const LogoGrid = () => {
         ))}
       </div> */}
       <div className="container flex flex-col-reverse items-center justify-center h-full gap-4 py-32 mx-auto overflow-hidden lg:py-0 lg:flex-row lg:overflow-visible">
-        <div id="ballcanvas" className="z-10 w-full h-full lg:w-1/2 horizontal-item" />
+        <div
+          id="ballcanvas"
+          className="z-10 w-full h-full lg:w-1/2 horizontal-item"
+        />
 
         <div className="lg:w-1/2">
           <p className="font-bold uppercase leading-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]  text-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]">
@@ -2221,11 +2306,11 @@ function LocationGallery() {
 }
 
 function Locations() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: false })
-  const [scope, animate] = useAnimate()
-  const [selectedLocation, setSelectedLocation] = useState("All")
-  const [activeDisclosurePanel, setActiveDisclosurePanel] = useState(null)
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false });
+  const [scope, animate] = useAnimate();
+  const [selectedLocation, setSelectedLocation] = useState("All");
+  const [activeDisclosurePanel, setActiveDisclosurePanel] = useState(null);
 
   function toggleDisclosurePanels(newPanel) {
     if (activeDisclosurePanel) {
@@ -2233,13 +2318,13 @@ function Locations() {
         activeDisclosurePanel.key !== newPanel.key &&
         activeDisclosurePanel.open
       ) {
-        activeDisclosurePanel.close()
+        activeDisclosurePanel.close();
       }
     }
     setActiveDisclosurePanel({
       ...newPanel,
       open: !newPanel.open,
-    })
+    });
   }
 
   const locations = [
@@ -2285,25 +2370,35 @@ function Locations() {
       mapbox_iframe_url: process.env.NEXT_PUBLIC_MAPBOX_IFRAME_URL_LEHIGHTON,
       hours: [{ Mon: "11:00 AM - 7:00 PM" }, { Thu: "7:00 AM - 4:30 PM" }],
     },
-  ]
+  ];
 
   const handleShowAllLocations = () => {
-    activeDisclosurePanel.close()
-    setSelectedLocation("All")
-  }
+    activeDisclosurePanel.close();
+    setSelectedLocation("All");
+  };
 
   useEffect(() => {
     animate(
       "div",
       isInView
-        ? { opacity: 1, transform: "translateX(0px)", scale: 1, filter: "blur(0px)"}
-        : { opacity: 0, transform: "translateX(-50px)", scale: 0.3, filter: "blur(2px)" },
+        ? {
+            opacity: 1,
+            transform: "translateX(0px)",
+            scale: 1,
+            filter: "blur(0px)",
+          }
+        : {
+            opacity: 0,
+            transform: "translateX(-50px)",
+            scale: 0.3,
+            filter: "blur(2px)",
+          },
       {
         duration: 0.2,
         delay: isInView ? stagger(0.1, { startDelay: 0.15 }) : 0,
       }
-    )
-  }, [isInView])
+    );
+  }, [isInView]);
 
   const DrawEllipse = (props) => {
     useGSAP(() => {
@@ -2337,94 +2432,107 @@ function Locations() {
           strokeLinecap="round"
         />
       </svg>
-    )
-  }
+    );
+  };
 
   const BezierCurve = () => {
-    const container = useRef(null)
-    const path = useRef(null)
-    let progress = 0
-    let time = Math.PI / 2 // want the initial time value to be 1; in sine graph y = 1 when x = pi / 2
-    let reqId = null // everytime mouse enters and leaves line's bounding box, animation gets called causing simultaneous chains of it being called (this is bad), only want one request animation running at the same time
-    let x = 0.5 // middle point is 1/2
+    const container = useRef(null);
+    const path = useRef(null);
+    let progress = 0;
+    let time = Math.PI / 2; // want the initial time value to be 1; in sine graph y = 1 when x = pi / 2
+    let reqId = null; // everytime mouse enters and leaves line's bounding box, animation gets called causing simultaneous chains of it being called (this is bad), only want one request animation running at the same time
+    let x = 0.5; // middle point is 1/2
 
     useEffect(() => {
-      setPath(progress)
-      window.addEventListener('resize', () => {
-        setPath(progress)
-      })
-    }, [])
+      setPath(progress);
+      window.addEventListener("resize", () => {
+        setPath(progress);
+      });
+    }, []);
 
-    {/*
+    {
+      /*
       use svg container's width to get control point (center point) of quadratic bezier curve; control point = svg container's width / 2
       30 ==> svg height(60) divided by 2 to align the path within the center of the svg
-    */}
+    */
+    }
     const setPath = (progress) => {
       if (container.current) {
-        const width = container.current.offsetWidth
-        path.current.setAttributeNS(null, "d", `M 0 30 Q${width * x} ${30 + progress} ${width} 30`)
+        const width = container.current.offsetWidth;
+        path.current.setAttributeNS(
+          null,
+          "d",
+          `M 0 30 Q${width * x} ${30 + progress} ${width} 30`
+        );
       }
-    }
+    };
 
     const manageMouseEnter = () => {
       if (reqId) {
-        window.cancelAnimationFrame(reqId)
-        resetAnimation()
+        window.cancelAnimationFrame(reqId);
+        resetAnimation();
       }
-    }
+    };
 
     const manageMouseMove = (e) => {
-      const { movementY, clientX } = e
-      const { left, width } = path.current.getBoundingClientRect()
+      const { movementY, clientX } = e;
+      const { left, width } = path.current.getBoundingClientRect();
       // get value of x depending on where mouse is on the x-axis of the line
-      x = (clientX - left) / width
-      progress += movementY
-      setPath(progress)
-    }
+      x = (clientX - left) / width;
+      progress += movementY;
+      setPath(progress);
+    };
 
     const manageMouseLeave = () => {
-      animateOut()
-    }
+      animateOut();
+    };
 
-    {/*
+    {
+      /*
       linear interpolation
       x: The value we want to interpolate from (start) => 10
       y: The target value we want to interpolate to (end) => 0
       a: The amount by which we want x to be closer to y => 10% or 0.1
       ex: value = lerp(value, 0, 0.1)
       if value = 10, bring that value close to 0 by 10% which will give 9
-    */}
-    const lerp = (x, y, a) => x * (1 - a) + y * a
+    */
+    }
+    const lerp = (x, y, a) => x * (1 - a) + y * a;
 
     // sine function, linear interpolation, recursivity
     const animateOut = () => {
       // sine function creates the "wobbly" line animation when mouse leaves the line
-      const newProgress = progress * Math.sin(time)
-      time += 0.25 // speed of bounce animation
-      setPath(newProgress)
-      progress = lerp(progress, 0, 0.05) // change 3rd lerp argument to change curve's bounce exaggeration
+      const newProgress = progress * Math.sin(time);
+      time += 0.25; // speed of bounce animation
+      setPath(newProgress);
+      progress = lerp(progress, 0, 0.05); // change 3rd lerp argument to change curve's bounce exaggeration
 
       // exit condition
       if (Math.abs(progress) > 0.75) {
-        reqId = window.requestAnimationFrame(animateOut)
+        reqId = window.requestAnimationFrame(animateOut);
       } else {
-        resetAnimation()
+        resetAnimation();
       }
-    }
+    };
 
     const resetAnimation = () => {
-      time = Math.PI / 2
-      progress = 0
-    }
+      time = Math.PI / 2;
+      progress = 0;
+    };
 
     return (
       <>
         {/* line */}
-        <div ref={container} className="mb-[30px] col-span-12 row-start-2 h-[1px] w-full relative">
+        <div
+          ref={container}
+          className="mb-[30px] col-span-12 row-start-2 h-[1px] w-full relative"
+        >
           {/* box for event listeners overlays the svg element */}
           <div
             onMouseEnter={manageMouseEnter}
-            onMouseMove={(e) => {manageMouseMove(e)}}
+            onMouseMove={(e) => {
+              manageMouseMove(e);
+            }}
             onMouseLeave={manageMouseLeave}
             className="h-[30px] relative -top-[15px] z-10 hover:h-[60px] hover:-top-[30px]"
           />
@@ -2433,8 +2541,8 @@ function Locations() {
           </svg>
         </div>
       </>
-    )
-  }
+    );
+  };
 
   useEffect(() => {
     const title = document.querySelector(".content__title");
@@ -2515,7 +2623,10 @@ function Locations() {
   return (
     <>
       <section id="locations-section" className="relative bg-[#f8f1de]">
-        <div id="locations-heading" className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32">
+        <div
+          id="locations-heading"
+          className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32"
+        >
           <h1 className="lg:text-6xl font-agrandir-bold text-[#171616]">
             Come see us at any of our{" "}
             <span className="relative inline-block my-8 leading-tight lowercase font-editorial-new underline-offset-8">
@@ -2524,11 +2635,23 @@ function Locations() {
               <DrawEllipse className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" />
             </span>{" "}
             or opt for a{" "}
-            <span className="relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#147b5d] underline inline-block">virtual consultation</span>
+            <span className="relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#147b5d] underline inline-block">
+              virtual consultation
+            </span>
           </h1>
           {/* arrow */}
-          <svg className="hidden lg:block absolute bottom-0 translate-y-1/2 left-0 translate-x-64 w-36 h-36 rotate-[120deg] text-[#ff6432]" viewBox="0 0 77 85" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1.33755 84.3973C0.297616 62.7119 2.93494 39.8181 19.4192 23.8736C28.2211 15.3599 42.4944 12.5723 47.6281 26.2359C51.1245 35.5419 51.542 51.9945 41.0605 57.0865C29.486 62.7095 40.2945 35.2221 41.9942 32.4952C49.9497 19.7313 59.7772 11.6122 72.2699 3.78281C76.9496 0.849879 73.7108 0.477284 70.0947 1.13476C66.9572 1.7052 63.4035 2.43717 60.5291 3.81975C59.6524 4.24143 65.7349 2.73236 66.6827 2.44768C70.7471 1.22705 75.4874 -0.0219285 75.9527 5.60812C76.0274 6.5127 75.9956 14.9844 74.7481 15.2963C74.099 15.4586 71.0438 10.27 70.4642 9.65288C66.6996 5.64506 63.5835 4.42393 58.2726 5.11792" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <svg
+            className="hidden lg:block absolute bottom-0 translate-y-1/2 left-0 translate-x-64 w-36 h-36 rotate-[120deg] text-[#ff6432]"
+            viewBox="0 0 77 85"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M1.33755 84.3973C0.297616 62.7119 2.93494 39.8181 19.4192 23.8736C28.2211 15.3599 42.4944 12.5723 47.6281 26.2359C51.1245 35.5419 51.542 51.9945 41.0605 57.0865C29.486 62.7095 40.2945 35.2221 41.9942 32.4952C49.9497 19.7313 59.7772 11.6122 72.2699 3.78281C76.9496 0.849879 73.7108 0.477284 70.0947 1.13476C66.9572 1.7052 63.4035 2.43717 60.5291 3.81975C59.6524 4.24143 65.7349 2.73236 66.6827 2.44768C70.7471 1.22705 75.4874 -0.0219285 75.9527 5.60812C76.0274 6.5127 75.9956 14.9844 74.7481 15.2963C74.099 15.4586 71.0438 10.27 70.4642 9.65288C66.6996 5.64506 63.5835 4.42393 58.2726 5.11792"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
           </svg>
         </div>
 
@@ -2593,7 +2716,7 @@ function Locations() {
                       } px-4 py-6 transition-all duration-300 ease-linear cursor-pointer hover:text-white group text-white`}
                     >
                       {(panel) => {
-                        const { open, close } = panel
+                        const { open, close } = panel;
                         return (
                           <>
                             <BezierCurve />
@@ -2601,13 +2724,15 @@ function Locations() {
                             <Disclosure.Button
                               className="grid w-full grid-cols-12 grid-rows-1 text-left sm:px-0"
                               onClick={() => {
-                                if (!open) close()
-                                toggleDisclosurePanels({ ...panel, key: i })
-                                setSelectedLocation(l.location)
+                                if (!open) close();
+                                toggleDisclosurePanels({ ...panel, key: i });
+                                setSelectedLocation(l.location);
                               }}
                             >
                               <dt className="col-span-5 row-start-1">
-                                <h6 className="text-xl text-[#171616] uppercase font-agrandir-bold">{l.location}</h6>
+                                <h6 className="text-xl text-[#171616] uppercase font-agrandir-bold">
+                                  {l.location}
+                                </h6>
                               </dt>
                               <dd className="col-span-7 row-start-1">
                                 <span className="flex items-center justify-between">
@@ -2647,7 +2772,7 @@ function Locations() {
                               </Disclosure.Panel>
                             </Transition>
                           </>
-                        )
+                        );
                       }}
                     </Disclosure>
                   ))}
