@@ -1,5 +1,7 @@
+import { withUt } from "uploadthing/tw"
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+module.exports = withUt({
   darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -178,9 +180,10 @@ module.exports = {
     require("autoprefixer"),
     require("tailwindcss"), // Tailwind CSS framework
     require("tailwindcss/nesting"), // Handles CSS nesting
+    require('@tailwindcss/aspect-ratio'),
     require("@headlessui/tailwindcss")({ prefix: "ui" }),
     require("tw-elements/dist/plugin.cjs"),
     require("@tailwindcss/forms"),
     require("tailwindcss-animate"),
   ],
-};
+});
