@@ -9,12 +9,15 @@ import { selectBag, removeFromBag } from "../_store/reducers/bagReducer";
 import BagIcon from "./ui/BagIcon";
 import Bars2Icon from "./ui/Bars2Icon";
 import XIcon from "./ui/XIcon";
+import CartComponent from "@/components/cart/cart-component";
+import UserButton from "@/components/auth/user-button";
+import { SignInButton } from "@/components/auth/signin-button";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar() {
+export default function Navbar({ user }) {
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleTestimonialsClick = (e, href) => {
@@ -174,17 +177,17 @@ export default function Navbar() {
     <div className="border border-black text-[#00314F] py-6 px-4 mx-auto text-sm transition duration-300 ease-in-out max-w-screen-xl flex justify-between items-center">
 
 
-<div className="flex justify-start items-center space-x-2">
+<div className="flex items-center justify-start space-x-2">
         <Link href="/">
           <img src="images/logo_icon.png" alt="FreySmiles Orthodontics" className="w-6 h-6" />
         </Link>
       </div>
-      <div className="absolute left-1/2 transform -translate-x-1/2">
-          <ul className=" flex items-center gap-8 lg:gap-10 justify-evenly">
-          
+      <div className="absolute transform -translate-x-1/2 left-1/2">
+          <ul className="flex items-center gap-8 lg:gap-10 justify-evenly">
+
 
             <li onClick={handleToggleAbout} className="target-link">
-              <p className="text-sm font-medium font-helvetica-neue transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer font-helvetica-neue hover:text-primary-40 group">
                 ABOUT
               </p>
             </li>
@@ -275,7 +278,7 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleTogglePatient} className="target-link">
-              <p className="text-sm font-helvetica-neue font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer font-helvetica-neue hover:text-primary-40 group">
                 PATIENT
               </p>
             </li>
@@ -361,7 +364,7 @@ export default function Navbar() {
             </Transition.Root>
 
             <li onClick={handleToggleTreatments} className="target-link">
-              <p className="text-sm font-medium font-helvetica-neue uppercase  transition-all duration-500 ease-linear rounded-full cursor-pointer hover:text-primary-40 group">
+              <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer font-helvetica-neue hover:text-primary-40 group">
                 Treatments
               </p>
             </li>
@@ -458,184 +461,38 @@ export default function Navbar() {
 
             <li>
               <Link href="/#locations-section">
-                <p className="text-sm leading-4 text-center font-helvetica-neue uppercase">Locations</p>
+                <p className="text-sm leading-4 text-center uppercase font-helvetica-neue">Locations</p>
               </Link>
             </li>
 
             <li>
-              <Link href="/products">
+              <Link href="/shop/products">
                 <p className="text-sm font-helvetica-neue">SHOP</p>
               </Link>
             </li>
 
-            {bag.length > 0 && (
-              <li onClick={handleToggleBagPanel}>
-                <p className="inline-flex">
-                  <BagIcon className="w-6 h-6 ml-1" />
-                  {bag.length}
-                </p>
-              </li>
-            )}
-            {/* BagSidePanel */}
-            <Transition.Root show={isBagOpen} as={Fragment}>
-              <Dialog as="div" className="relative z-50" onClose={setIsBagOpen}>
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-in-out duration-500"
-                  enterFrom="opacity-0"
-                  enterTo="opacity-100"
-                  leave="ease-in-out duration-500"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
-                </Transition.Child>
-                <div className="fixed inset-0 overflow-hidden">
-                  <div className="absolute inset-0 overflow-hidden">
-                    <div className="fixed inset-y-0 right-0 flex max-w-full pl-10 pointer-events-none">
-                      <Transition.Child
-                        as={Fragment}
-                        enter="transform transition ease-in-out duration-500 sm:duration-700"
-                        enterFrom="translate-x-full"
-                        enterTo="translate-x-0"
-                        leave="transform transition ease-in-out duration-500 sm:duration-700"
-                        leaveFrom="translate-x-0"
-                        leaveTo="translate-x-full"
-                      >
-                        <Dialog.Panel className="relative w-screen max-w-md pointer-events-auto">
-                          <Transition.Child
-                            as={Fragment}
-                            enter="ease-in-out duration-500"
-                            enterFrom="opacity-0"
-                            enterTo="opacity-100"
-                            leave="ease-in-out duration-500"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0"
-                          >
-                            <div className="absolute top-0 left-0 flex pt-4 pr-2 -ml-8 sm:-ml-10 sm:pr-4">
-                              <button
-                                type="button"
-                                className="relative text-gray-300 rounded-md bg-primary-40 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                                onClick={() => setIsBagOpen(false)}
-                              >
-                                <span className="absolute -inset-2.5" />
-                                <span className="sr-only">Close panel</span>
-                                <XIcon aria-hidden="true" />
-                              </button>
-                            </div>
-                          </Transition.Child>
-                          <div className="flex flex-col h-full py-6 overflow-y-scroll bg-white shadow-xl">
-                            <div className="px-4 sm:px-6">
-                              <Dialog.Title className="pb-4 text-gray-900 border-b border-gray-200">
-                                Shopping Bag
-                              </Dialog.Title>
-                            </div>
-                            <div className="relative flex-1 px-4 mt-6 sm:px-6">
-                              <ul className="space-y-6 divide-y divide-gray-200">
-                                {bag.length === 0 ? (
-                                  <li className="px-4 space-y-8 sm:px-0">
-                                    <p className="text-sm leading-6 text-gray-500">
-                                      You currently do not have any items in
-                                      your bag.
-                                    </p>
-                                  </li>
-                                ) : (
-                                  bag.length > 0 &&
-                                  bag.map((item, index) => (
-                                    <li key={index} className="flex py-6">
-                                      <div className="flex-shrink-0 w-24 h-24 overflow-hidden border border-gray-200 rounded-md">
-                                        <img
-                                          src={item.product.images[0]}
-                                          alt={item.product.name}
-                                          className="object-cover object-center w-full h-full"
-                                        />
-                                      </div>
-                                      <div className="flex flex-col flex-1 ml-4">
-                                        <span className="flex justify-between text-base font-medium text-gray-900">
-                                          <p>
-                                            <Link
-                                              href={`/products/${item.product.id}`}
-                                            >
-                                              {item.product.name}
-                                            </Link>
-                                          </p>
-                                          <p className="ml-4">
-                                            $
-                                            {item.product.price * item.quantity}
-                                          </p>
-                                        </span>
-                                        <p className="text-gray-500">
-                                          ${item.product.price}
-                                        </p>
-                                        <span className="flex items-center justify-between flex-1 text-sm">
-                                          <p className="text-gray-500">
-                                            Qty: {item.quantity}
-                                          </p>
-                                          <div className="flex">
-                                            <button
-                                              type="button"
-                                              className="font-medium text-secondary-50 hover:underline hover:underline-offset-4"
-                                              onClick={() =>
-                                                dispatch(removeFromBag(item))
-                                              }
-                                            >
-                                              Remove
-                                            </button>
-                                          </div>
-                                        </span>
-                                      </div>
-                                    </li>
-                                  ))
-                                )}
-                              </ul>
-                            </div>
-                            <div className="px-4 py-6 border-t border-gray-200 sm:px-6">
-                              <div className="flex justify-between text-base font-medium text-gray-900">
-                                <p>Subtotal: ({bag.length} items)</p>
-                                <p>${calculateSubtotal()}</p>
-                              </div>
-                              <p className="mt-0.5 text-sm text-gray-500">
-                                Shipping and taxes calculated at checkout.
-                              </p>
-                              <div className="mt-6">
-                                <button
-                                  className="flex items-center justify-center w-full px-6 py-3 text-base font-medium text-white transition-colors duration-300 ease-in-out border border-transparent rounded-md shadow-sm bg-primary-50 hover:bg-primary-30"
-                                  onClick={handleCheckout}
-                                >
-                                  Checkout
-                                </button>
-                              </div>
-                              <div className="mt-6">
-                                <Link
-                                  href="/checkout"
-                                  className="flex items-center justify-center px-6 py-3 text-base font-medium transition-colors duration-300 ease-in-out border rounded-md shadow-sm border-primary-50 text-primary-50 hover:text-white hover:bg-primary-30"
-                                  onClick={handleToggleBagPanel}
-                                >
-                                  View Bag
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </Dialog.Panel>
-                      </Transition.Child>
-                    </div>
-                  </div>
-                </div>
-              </Dialog>
-            </Transition.Root>
+            <li className='flex items-center gap-4 md:gap-6'>
+            </li>
 
-         
           </ul>
           </div>
 
-          <div className="flex items-center">
-        <Link href="/book-now">
-          <button className="font-helvetica-neue px-4 py-2">
-            BOOK
-          </button>
-        </Link>
-      </div>
-            
+          <div className="flex items-center gap-2">
+            <CartComponent />
+
+            {user?.id && user?.email ? (
+              <UserButton user={user} />
+            ) : (
+              <SignInButton />
+            )}
+
+            <Link href="/book-now">
+              <button className="px-4 py-2 font-helvetica-neue">
+                BOOK
+              </button>
+            </Link>
+          </div>
+
         </div>
       </nav>
 
