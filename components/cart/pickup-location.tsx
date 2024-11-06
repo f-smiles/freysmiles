@@ -18,7 +18,7 @@ export default function PickupLocation() {
   ]
 
   return (
-    <div className="flex flex-col items-center max-w-2xl pb-8 mx-auto overflow-auto md:pb-12">
+    <div className="flex flex-col items-center w-full">
       <div className="flex flex-col items-center w-full mt-4 space-y-6">
         <RadioGroup
           defaultValue={pickupLocation}

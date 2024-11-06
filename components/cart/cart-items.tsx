@@ -27,7 +27,7 @@ export default function CartItems() {
   }, [total])
 
   return (
-    <div className="flex flex-col items-center max-w-2xl pb-8 mx-auto overflow-auto md:pb-12">
+    <div className="flex flex-col items-center w-full">
       {cart.length === 0 && (
         <>
           <motion.figure className="text-center"

@@ -8,7 +8,7 @@ export default function CartHeader() {
   const { checkoutProgress, setCheckoutProgress } = useCartStore()
 
   return (
-    <div className="my-2 space-y-2 text-center text-primary">
+    <div className="pb-4 my-2 space-y-2 text-center text-primary">
       <DrawerTitle>
         {checkoutProgress === "cart-page" ? "Cart" : null}
         {checkoutProgress === "pickup-location" ? "Choose a pickup location" : null}
