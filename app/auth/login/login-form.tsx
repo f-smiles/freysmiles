@@ -63,6 +63,7 @@ export const LoginForm = () => {
       backButtonHref="/auth/signup"
       backButtonLabel="Don't have an account? Sign up now"
       showOAuthProviders
+      mode="login"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
