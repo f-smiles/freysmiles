@@ -11,6 +11,7 @@ type AuthCardProps = {
   backButtonHref: string,
   backButtonLabel: string,
   showOAuthProviders?: boolean,
+  mode: "login" | "signup",
 }
 
 export const AuthCard = ({
@@ -19,7 +20,8 @@ export const AuthCard = ({
   description,
   backButtonHref,
   backButtonLabel,
-  showOAuthProviders
+  showOAuthProviders,
+  mode,
 }: AuthCardProps) => {
   return (
     <Card>
@@ -31,7 +33,7 @@ export const AuthCard = ({
       <CardContent>
         {children}
         {showOAuthProviders && (
-          <OAuthProviders />
+          <OAuthProviders mode={mode} />
         )}
       </CardContent>
 

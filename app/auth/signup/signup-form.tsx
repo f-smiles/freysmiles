@@ -56,6 +56,8 @@ export default function SignupForm() {
       description="Sign up to manage your orders, preferences, and more"
       backButtonHref="/auth/login"
       backButtonLabel="Already have an account? Login now"
+      showOAuthProviders
+      mode="signup"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

@@ -5,8 +5,9 @@
 import { signIn } from "next-auth/react"
 import { FcGoogle } from "react-icons/fc"
 import { Button } from "@/components/ui/button"
+import { useParams } from "next/navigation"
 
-export const OAuthProviders = () => {
+export const OAuthProviders = ({ mode }: { mode: "login" | "signup" }) => {
   return (
     <Button
       onClick={() => signIn("google", { redirect: false, callbackUrl: "/" })}
@@ -14,7 +15,7 @@ export const OAuthProviders = () => {
       className="flex items-center w-full gap-2 mt-4"
     >
       <FcGoogle className="w-6 h-6" />
-      Sign in with Google
+      {mode ==="login" ? "Sign in with Google" : "Sign up with Google"}
     </Button>
   )
 }
