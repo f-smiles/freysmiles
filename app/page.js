@@ -32,6 +32,8 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText, useGSAP);
 }
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function LandingComponent() {
   // const canvasRef = useRef(null);
   // const mouseCanvasRef = useRef(null);
@@ -266,35 +268,53 @@ export default function LandingComponent() {
     };
   }, []);
 
+  const heroRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const parallaxSpeed = 0.5;
+      if (heroRef.current) {
+        heroRef.current.style.transform = `translateY(${scrollY * parallaxSpeed}px)`;
+      }
+    };
+  
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
   return (
     <>
-      <div style={{ backgroundColor }} className="bg-[#E0D175]">
-      <Hero     className="sticky top-0  z-2 "/>
-      <About lassName="sticky top-0  z-2 " />
-        <GSAPAnimateScrollSections />
-        <ImageGrid />
-               {/* <Mask /> */}
+      <div style={{ backgroundColor }} className="relative bg-[#E0D175]">
+      <div ref={heroRef} className="min-h-screen bg-[#E0D175]">
+        <Hero />
+      </div>
 
-        <div
-          ref={sectionOneRef}
-          className="sticky top-0 transition-transform duration-300 ease-in-out transform z-2 scale-80"
-        >
-          <LocationGallery />
-        </div>
-        <div
-          ref={sectionTwoRef}
-          className="sticky bg-[#D8BFD7] top-0 h-screen z-3 transform scale-80 transition-transform duration-300 ease-in-out"
-          id="logoGrid"
-        >
-          <LogoGrid />
-        </div>
-        <div
-          ref={sectionThreeRef}
-          className="bg-[#F1F1F1] sticky top-0 z-1 transform scale-80 transition-transform duration-300 ease-in-out"
-          id="locationGallery"
-        >
-          <ParallaxOutline />
-        </div>
+      <div  className="relative bg-white">
+        <About />
+      </div>
+  <div className="relative">
+    <GSAPAnimateScrollSections />
+    <ImageGrid />
+  </div>
+               {/* <Mask /> */}
+         
+<div
+  ref={sectionTwoRef}
+  className="sticky bg-[#D8BFD7] top-0 h-screen z-3 transform scale-80 transition-transform duration-300 ease-in-out"
+  id="logoGrid"
+>
+  <LogoGrid />
+</div>
+
+<div
+  ref={sectionThreeRef}
+  className="bg-[#F1F1F1] sticky top-0 z-1 transform scale-80 transition-transform duration-300 ease-in-out"
+  id="locationGallery"
+>
+  <ParallaxOutline />
+</div>
+
 
         <Locations />
         <GiftCards />
@@ -846,7 +866,7 @@ function Hero() {
           best smile.
         </p>
       </div>
-      <div className="flex-grow"></div>
+       <div className="flex-grow"></div>
     </div>
 
    
@@ -892,12 +912,70 @@ function Hero() {
   );
 }
 const About = () => {
+  // const pathRef = useRef(null);
+
+  // useEffect(() => {
+  //   const path = pathRef.current.querySelector('path');
+  //   const pathLength = path.getTotalLength();
+
+  //   // Set initial stroke properties
+  //   gsap.set(path, {
+  //     strokeDasharray: pathLength,
+  //     strokeDashoffset: pathLength,
+  //   });
+
+  //   // Animate the stroke as the user scrolls
+  //   gsap.to(path, {
+  //     strokeDashoffset: 0,
+  //     ease: 'power2.out',
+  //     scrollTrigger: {
+  //       trigger: pathRef.current,
+  //       start: 'top bottom',
+  //       end: 'bottom top',
+  //       scrub: 1,
+  //     },
+  //   });
+  // }, []);
   return (
     <section className="bg-white hero relative h-screen flex flex-col justify-between">
-      <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
+      
+    {/* <svg
+      ref={pathRef}
+      viewBox="0 0 800 600"
+      xmlns="http://www.w3.org/2000/svg"
+      className="neon-line"
+    >
+      <path
+        d="M 100 500 Q 300 100 500 500 T 900 500"
+        stroke="#FFFF00"
+        fill="none"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg> */}
+    <section style={{ marginTop: '12rem' }}>
+    <div className="w-layout-blockcontainer textimagecontainer">
+  <div className="text-images-wrapper">
+    <div className="text-images">
+      <h2 className="heading-2 text-weight-regular">
+      #1 Diamond and {' '}
+        <div className="spanimage one"></div>
+        Invisalign Providers in Lehigh Valley. We've treated the most Invisalign cases{' '}
+        <div className="spanimage two"></div>
+        delivering straighter smiles in 12-16 months{' '}
+        <div className="spanimage three"></div>
+        without wires
+      </h2>
+    </div>
+  </div>
+</div>
+
+    </section>
+      {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
         <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">
-          <div className="hero-header flex flex-col items-center text-center relative z-10 gap-4">
+          <div className="hero-header flex flex-col items-center text-center relative gap-4">
             <div
               className="heading opacity-0 transform translate-y-[10vh]"
               style={{
@@ -905,9 +983,7 @@ const About = () => {
                 transition: "all 0.5s",
               }}
             >
-              <h1 className="heading-1 text-4xl lg:text-6xl font-bold tracking-tight">
-                Elevate your brand with creative solutions
-              </h1>
+            
             </div>
           </div>
         </div>
@@ -949,7 +1025,7 @@ const About = () => {
             </div>
           </div>
         </section>
-      </div>
+      </div> */}
     </section>
   );
 };

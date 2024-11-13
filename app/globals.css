@@ -1713,6 +1713,7 @@ header h1 {
 :root {
   --color-primary: #00083d;
   --color-secondary: #8452e4;
+
 }
 
 body {
@@ -3598,6 +3599,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
 }
 
 :root {
+  
   --rotation-duration-custom: 20s;
   --hover-duration-custom: 0.3s;
   --ease-in-custom: cubic-bezier(0.32, 0, 0.67, 0);
@@ -4030,30 +4032,6 @@ font-family: "NovelaRegular";
 
 
 
-.w-layout-blockcontainer {
-  max-width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-}
-
-.container {
-  width: 100%;
-  max-width: 110rem;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 2.5rem;
-  padding-right: 2.5rem;
-}
-
-.container-small {
-  max-width: 80rem;
-}
-
-.container-large {
-  width: 90vw;
-  max-width: none;
-}
 
 .hero-wrapper {
   flex-flow: column;
@@ -4186,11 +4164,12 @@ font-family: "NovelaRegular";
 }
 
 
-
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+:root {
+  --color--background: #efefef;
+  --color--font: #151515;
+  --text-size--regular: 1rem;
+  --heading--h1: 5rem;
+  --heading--h2: 3.5rem; 
 }
 
 .hero-card {
@@ -4244,68 +4223,103 @@ font-family: "NovelaRegular";
   }
 }
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-  }
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
+
+.w-layout-blockcontainer {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+.textimagecontainer {
+  width: 100%;
+  max-width: 110rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
 }
 
+.container.container-small {
+  max-width: 80rem;
+}
+
+.container.container-large {
+  width: 90vw;
+  max-width: none;
+}
+
+.text-images-wrapper {
+  grid-column-gap: 8rem;
+  grid-row-gap: 8rem;
+  text-align: center;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 0;
+  display: flex;
+}
+
+.text-images {
+  max-width: 112ch;
+}
+
+h2.heading-2 {
+  font-size: var(--heading--h2);
+  font-weight: 500;
+  line-height: 1;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: "NeueMontrealBook";
+}
+
+
+.text-weight-regular {
+  font-weight: 400;
+}
+
+.spanimage {
+  text-align: left;
+  white-space: nowrap;
+  vertical-align: bottom;
+  object-fit: cover;
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: 3.75rem 3.75rem;
+  border: 2px solid #0000;
+  border-radius: 4.75rem;
+  width: 6.5rem;
+  height: 4rem;
+  font-size: .875rem;
+  line-height: .5;
+  text-decoration: none;
+  display: inline-block;
+  position: relative;
+}
+
+.spanimage.one {
+  pointer-events: none;
+  white-space: nowrap;
+  cursor: default;
+  background-image: url('/images/Xray.jpg');
+  background-position: 50%;
+  background-size: cover;
+  border-radius: 5rem;
+}
+
+.spanimage.two {
+  pointer-events: none;
+  cursor: default;
+  background-image: url('/images/GettyImages-2.jpg');
+  background-size: cover;
+  border-radius: 5rem;
+}
+
+.spanimage.three {
+  pointer-events: none;
+  cursor: default;
+  background-image: url('/images/freysmilepatient.jpg');
+  background-size: cover;
+  border-radius: 5rem;
+}
