@@ -275,46 +275,48 @@ export default function LandingComponent() {
       const scrollY = window.scrollY;
       const parallaxSpeed = 0.5;
       if (heroRef.current) {
-        heroRef.current.style.transform = `translateY(${scrollY * parallaxSpeed}px)`;
+        heroRef.current.style.transform = `translateY(${
+          scrollY * parallaxSpeed
+        }px)`;
       }
     };
-  
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
   
+
   return (
     <>
       <div style={{ backgroundColor }} className="relative bg-[#E0D175]">
-      <div ref={heroRef} className="min-h-screen bg-[#E0D175]">
-        <Hero />
-      </div>
+        <div ref={heroRef} className="min-h-screen bg-[#E0D175]">
+          <Hero />
+        </div>
 
-      <div  className="relative bg-white">
-        <About />
-      </div>
-  <div className="relative">
-    <GSAPAnimateScrollSections />
-    <ImageGrid />
-  </div>
-               {/* <Mask /> */}
-         
-<div
-  ref={sectionTwoRef}
-  className="sticky bg-[#D8BFD7] top-0 h-screen z-3 transform scale-80 transition-transform duration-300 ease-in-out"
-  id="logoGrid"
->
-  <LogoGrid />
-</div>
+        <div className="relative bg-white">
+          <About />
+        </div>
+        <div className="relative">
+          <GSAPAnimateScrollSections />
+          <ImageGrid />
+        </div>
+        {/* <Mask /> */}
 
-<div
-  ref={sectionThreeRef}
-  className="bg-[#F1F1F1] sticky top-0 z-1 transform scale-80 transition-transform duration-300 ease-in-out"
-  id="locationGallery"
->
-  <ParallaxOutline />
-</div>
+        <div
+          ref={sectionTwoRef}
+          className="sticky bg-[#D8BFD7] top-0 h-screen z-3 transform scale-80 transition-transform duration-300 ease-in-out"
+          id="logoGrid"
+        >
+          <LogoGrid />
+        </div>
 
+        <div
+          ref={sectionThreeRef}
+          className="bg-[#F1F1F1] sticky top-0 z-1 transform scale-80 transition-transform duration-300 ease-in-out"
+          id="locationGallery"
+        >
+          <ParallaxOutline />
+        </div>
 
         <Locations />
         <GiftCards />
@@ -322,7 +324,6 @@ export default function LandingComponent() {
     </>
   );
 }
-
 
 function Hero() {
   const containerRef = useRef(null);
@@ -849,69 +850,78 @@ function Hero() {
     ["#E64627", "#00BFFF", "#FF5A5A", "#C084FC"],
     ["#00FFC6", "#2F2F2F", "#FF70A6", "#FF5A5A"],
     ["#C084FC", "#0F0E45", "#E64627", "#0F0E45"],
-    ["#3D0075", "#0F0E45", "#808080", "#2F2F2F"]
+    ["#3D0075", "#0F0E45", "#808080", "#2F2F2F"],
   ];
 
   return (
-<section className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black">
-  <div className="flex flex-row h-full relative">
-    {/* Left Column */}
-    <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start" style={{ minHeight: "0vh" }}>
-    <div className="flex-grow"></div>
-      <div className="overflow-hidden mt-[20vh]">
-        <p ref={paragraphRef} className="animate font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
-          A confident smile begins with effective care tailored to each patient.<br />
-          At our practice, we’re dedicated to providing treatments that are<br />
-          not only scientifically sound but also crafted to bring out your<br />
-          best smile.
-        </p>
-      </div>
-       <div className="flex-grow"></div>
-    </div>
+    <section className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black">
+      <div className="flex flex-row h-full relative">
+        {/* Left Column */}
+        <div
+          className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start"
+          style={{ minHeight: "0vh" }}
+        >
+          <div className="flex-grow"></div>
+          <div className="overflow-hidden mt-[20vh]">
+            <p
+              ref={paragraphRef}
+              className="animate font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed"
+            >
+              A confident smile begins with effective care tailored to each
+              patient.
+              <br />
+              At our practice, we’re dedicated to providing treatments that are
+              <br />
+              not only scientifically sound but also crafted to bring out your
+              <br />
+              best smile.
+            </p>
+          </div>
+          <div className="flex-grow"></div>
+        </div>
 
-   
-    <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
-
-      <div className="flex flex-col justify-center items-center h-full space-y-0">
-        {colors.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex space-x-0">
-            {row.map((color, circleIndex) => (
-              <div
-                key={circleIndex}
-                className={`w-[125px] h-[125px] ${
-                  (rowIndex + circleIndex) % 3 === 0 ? 'rounded-[40px]' : 'rounded-full'
-                } transition-transform duration-300 ease-in-out hover:scale-75`}
-                style={{ backgroundColor: color }}
-              ></div>
+        <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
+          <div className="flex flex-col justify-center items-center h-full space-y-0">
+            {colors.map((row, rowIndex) => (
+              <div key={rowIndex} className="flex space-x-0">
+                {row.map((color, circleIndex) => (
+                  <div
+                    key={circleIndex}
+                    className={`w-[125px] h-[125px] ${
+                      (rowIndex + circleIndex) % 3 === 0
+                        ? "rounded-[40px]"
+                        : "rounded-full"
+                    } transition-transform duration-300 ease-in-out hover:scale-75`}
+                    style={{ backgroundColor: color }}
+                  ></div>
+                ))}
+              </div>
             ))}
           </div>
-        ))}
+        </div>
       </div>
-   
-    </div>
 
-  </div>
+      {/* Bottom Content */}
+      <div className="flex justify-between items-end text-sm mt-8">
+        <div className="text-[#808080]">
+          <p>{time}</p>
+        </div>
 
-  {/* Bottom Content */}
-  <div className="flex justify-between items-end text-sm mt-8">
-    <div className="text-[#808080]">
-      <p>{time}</p>
-    </div>
-
-    <div className="flex flex-col items-end text-right font-light lg:w-1/3 w-full">
-      <h2 className="text-[3em] font-bold mb-4 leading-tight inline-block">
-        We know<br />what works.
-      </h2>
-      {/* <p className="mt-2">[SCROLL TO DISCOVER]</p> */}
-    </div>
-  </div>
-</section>
-
-
-
+        <div className="flex flex-col items-end text-right font-light lg:w-1/3 w-full">
+          <h2 className="text-[3em] font-bold mb-4 leading-tight inline-block">
+            We know
+            <br />
+            what works.
+          </h2>
+          {/* <p className="mt-2">[SCROLL TO DISCOVER]</p> */}
+        </div>
+      </div>
+    </section>
   );
 }
 const About = () => {
+
+  
   // const pathRef = useRef(null);
 
   // useEffect(() => {
@@ -936,10 +946,32 @@ const About = () => {
   //     },
   //   });
   // }, []);
+  const aboutRef = useRef(null);
+  const isInView = useInView(aboutRef, { once: true, margin: '-50px 0px' });
+  const textVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 0.6, ease: 'easeInOut' },
+    },
+  };
+  
+  const spanVariants = {
+    hidden: { opacity: 0, width: '0rem', originX: 0.5 },
+    visible: {
+      opacity: 1,
+      width: '6.5rem',
+      transition: {
+        duration: 1.2, 
+        ease: [0.22, 1, 0.36, 1], 
+      },
+    },
+  };
+  
+  
   return (
     <section className="bg-white hero relative h-screen flex flex-col justify-between">
-      
-    {/* <svg
+      {/* <svg
       ref={pathRef}
       viewBox="0 0 800 600"
       xmlns="http://www.w3.org/2000/svg"
@@ -954,24 +986,74 @@ const About = () => {
         strokeLinejoin="round"
       />
     </svg> */}
-    <section style={{ marginTop: '12rem' }}>
-    <div className="w-layout-blockcontainer textimagecontainer">
+  <section style={{marginTop:"12rem"}}ref={aboutRef} className="bg-white hero relative h-screen flex flex-col justify-between">
+  <motion.div
+  className="w-layout-blockcontainer textimagecontainer"
+  initial="hidden"
+  animate={isInView ? 'visible' : 'hidden'}
+  variants={textVariants}
+>
   <div className="text-images-wrapper">
     <div className="text-images">
       <h2 className="heading-2 text-weight-regular">
-      #1 Diamond and {' '}
-        <div className="spanimage one"></div>
+        #1 Diamond and{' '}
+        <motion.div
+          className="spanimage one"
+          variants={spanVariants}
+          style={{ display: 'inline-block', overflow: 'hidden' }}
+        ></motion.div>
         Invisalign Providers in Lehigh Valley. We've treated the most Invisalign cases{' '}
-        <div className="spanimage two"></div>
+        <motion.div
+          className="spanimage two"
+          variants={spanVariants}
+          style={{ display: 'inline-block', overflow: 'hidden' }}
+        ></motion.div>
         delivering straighter smiles in 12-16 months{' '}
-        <div className="spanimage three"></div>
+        <motion.div
+          className="spanimage three"
+          variants={spanVariants}
+          style={{ display: 'inline-block', overflow: 'hidden' }}
+        ></motion.div>
         without wires
       </h2>
     </div>
   </div>
-</div>
+</motion.div>
 
-    </section>
+
+
+        <div className="big-numbers-wrapper flex justify-around items-center space-x-8 mt-8">
+  {/* Card 1 */}
+  <div
+    id="w-node-_1af93a0f-02ae-0fb1-39b8-a79c00b212e1"
+    data-w-id="1af93a0f-02ae-0fb1-39b8-a79c00b212e1"
+    className="big-numbers-card  transition-opacity duration-500 ease-in-out"
+  >
+    <div className="big-numbers text-5xl font-bold ">60+</div>
+    <p className="text-size-medium text-gray-600">Years of experience</p>
+  </div>
+
+  {/* Card 2 */}
+  <div
+    id="w-node-_1af93a0f-02ae-0fb1-39b8-a79c00b212e6"
+    data-w-id="1af93a0f-02ae-0fb1-39b8-a79c00b212e6"
+    className="big-numbers-card transition-opacity duration-500 ease-in-out"
+  >
+    <div className="big-numbers text-5xl font-bold ">25k+</div>
+    <p className="text-size-medium text-gray-600">Satisfied patients</p>
+  </div>
+
+  {/* Card 3 */}
+  <div
+    id="w-node-_1af93a0f-02ae-0fb1-39b8-a79c00b212eb"
+    data-w-id="1af93a0f-02ae-0fb1-39b8-a79c00b212eb"
+    className="big-numbers-card transition-opacity duration-500 ease-in-out"
+  >
+    <div className="big-numbers text-5xl font-bold ">4+</div>
+    <p className="text-size-medium text-gray-600">Locations</p>
+  </div>
+</div>
+      </section>
       {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
         <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">

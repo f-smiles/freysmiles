@@ -4323,3 +4323,29 @@ h2.heading-2 {
   background-size: cover;
   border-radius: 5rem;
 }
+
+
+.big-numbers {
+  font-size: 5.3vw;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.big-numbers-card {
+  grid-column-gap: .3125rem;
+  grid-row-gap: .3125rem;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  display: flex;
+}
+
+.big-numbers-wrapper {
+  grid-column-gap: 10.5rem;
+  grid-row-gap: 10.5rem;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-content: center;
+  place-items: center;
+  display: flex;
+}
