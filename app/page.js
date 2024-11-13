@@ -18,7 +18,86 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText, useGSAP);
 }
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function LandingComponent() {
+  // const canvasRef = useRef(null);
+  // const mouseCanvasRef = useRef(null);
+  // const planeRef = useRef(null);
+  // const mouseAttr = useRef([]);
+  // const mouseInertia = useRef([]);
+
+  // useEffect(() => {
+  //   const pixelRatio = window.devicePixelRatio || 1.0;
+  //   let mousePosition = { x: -10000, y: -10000 };
+
+  //   const curtains = new Curtains({
+  //     container: canvasRef.current,
+  //     watchScroll: false,
+  //   });
+
+  //   const planeElements = document.getElementsByClassName("curtain");
+
+  //   const params = {
+  //     vertexShader: vertexShader,
+  //     fragmentShader: fragmentShader,
+  //     uniforms: {
+  //       resolution: {
+  //         name: "uResolution",
+  //         type: "2f",
+  //         value: [pixelRatio * planeElements[0].clientWidth, pixelRatio * planeElements[0].clientHeight],
+  //       },
+  //       mousePosition: {
+  //         name: "uMousePosition",
+  //         type: "2f",
+  //         value: [mousePosition.x, mousePosition.y],
+  //       },
+  //     },
+  //   };
+
+  //   const plane = new Plane(curtains, planeElements[0], params);
+  //   planeRef.current = plane;
+
+  //   const resizeCanvas = () => {
+  //     const canvas = mouseCanvasRef.current;
+  //     canvas.width = planeElements[0].clientWidth * pixelRatio;
+  //     canvas.height = planeElements[0].clientHeight * pixelRatio;
+
+  //     const ctx = canvas.getContext("2d");
+  //     ctx.scale(pixelRatio, pixelRatio);
+  //   };
+
+  //   resizeCanvas();
+
+  //   const handleMovement = (e) => {
+  //     mousePosition.x = e.clientX;
+  //     mousePosition.y = e.clientY;
+
+  //     const mouseAttributes = {
+  //       x: mousePosition.x - planeElements[0].getBoundingClientRect().left,
+  //       y: mousePosition.y - planeElements[0].getBoundingClientRect().top,
+  //       opacity: 1,
+  //       velocity: { x: 0, y: 0 },
+  //     };
+
+  //     if (mouseAttr.current.length > 1) {
+  //       mouseAttributes.velocity = {
+  //         x: mouseAttributes.x - mouseAttr.current[mouseAttr.current.length - 1].x,
+  //         y: mouseAttributes.y - mouseAttr.current[mouseAttr.current.length - 1].y,
+  //       };
+  //     }
+
+  //     mouseAttr.current.push(mouseAttributes);
+  //   };
+
+  //   document.addEventListener("mousemove", handleMovement);
+
+  //   return () => {
+  //     document.removeEventListener("mousemove", handleMovement);
+  //     curtains.dispose();
+  //   };
+  // }, []);
+
   const [backgroundColor, setBackgroundColor] = useState("transparent");
 
   useEffect(() => {
@@ -175,33 +254,53 @@ export default function LandingComponent() {
     };
   }, []);
 
+  const heroRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const parallaxSpeed = 0.5;
+      if (heroRef.current) {
+        heroRef.current.style.transform = `translateY(${scrollY * parallaxSpeed}px)`;
+      }
+    };
+  
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
   return (
     <>
-      <div style={{ backgroundColor }} className="bg-[#E0D175]">
-      <Hero className="sticky top-0 z-2 "/>
-      <About className="sticky top-0 z-2 " />
-        <GSAPAnimateScrollSections />
-        <ImageGrid />
-        <div
-          ref={sectionOneRef}
-          className="sticky top-0 transition-transform duration-300 ease-in-out transform z-2 scale-80"
-        >
-          <LocationGallery />
-        </div>
-        <div
-          ref={sectionTwoRef}
-          className="sticky bg-[#D8BFD7] top-0 h-screen z-3 transform scale-80 transition-transform duration-300 ease-in-out"
-          id="logoGrid"
-        >
-          <LogoGrid />
-        </div>
-        <div
-          ref={sectionThreeRef}
-          className="bg-[#F1F1F1] sticky top-0 z-1 transform scale-80 transition-transform duration-300 ease-in-out"
-          id="locationGallery"
-        >
-          <ParallaxOutline />
-        </div>
+      <div style={{ backgroundColor }} className="relative bg-[#E0D175]">
+      <div ref={heroRef} className="min-h-screen bg-[#E0D175]">
+        <Hero />
+      </div>
+
+      <div  className="relative bg-white">
+        <About />
+      </div>
+  <div className="relative">
+    <GSAPAnimateScrollSections />
+    <ImageGrid />
+  </div>
+               {/* <Mask /> */}
+         
+<div
+  ref={sectionTwoRef}
+  className="sticky bg-[#D8BFD7] top-0 h-screen z-3 transform scale-80 transition-transform duration-300 ease-in-out"
+  id="logoGrid"
+>
+  <LogoGrid />
+</div>
+
+<div
+  ref={sectionThreeRef}
+  className="bg-[#F1F1F1] sticky top-0 z-1 transform scale-80 transition-transform duration-300 ease-in-out"
+  id="locationGallery"
+>
+  <ParallaxOutline />
+</div>
+
 
         <Locations />
         <GiftCards />
@@ -535,21 +634,21 @@ function Hero() {
   ];
 
   return (
-    <section className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black">
-      <div className="flex flex-row h-full relative">
-        {/* Left Column */}
-        <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start" style={{ minHeight: "0vh" }}>
-        <div className="flex-grow"></div>
-          <div className="overflow-hidden mt-[20vh]">
-            <p ref={paragraphRef} className="animate font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
-              A confident smile begins with effective care tailored to each patient.<br />
-              At our practice, we’re dedicated to providing treatments that are<br />
-              not only scientifically sound but also crafted to bring out your<br />
-              best smile.
-            </p>
-          </div>
-          <div className="flex-grow"></div>
-        </div>
+<section className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black">
+  <div className="flex flex-row h-full relative">
+    {/* Left Column */}
+    <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start" style={{ minHeight: "0vh" }}>
+    <div className="flex-grow"></div>
+      <div className="overflow-hidden mt-[20vh]">
+        <p ref={paragraphRef} className="animate font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
+          A confident smile begins with effective care tailored to each patient.<br />
+          At our practice, we’re dedicated to providing treatments that are<br />
+          not only scientifically sound but also crafted to bring out your<br />
+          best smile.
+        </p>
+      </div>
+       <div className="flex-grow"></div>
+    </div>
 
 
         <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
@@ -591,12 +690,70 @@ function Hero() {
   );
 }
 const About = () => {
+  // const pathRef = useRef(null);
+
+  // useEffect(() => {
+  //   const path = pathRef.current.querySelector('path');
+  //   const pathLength = path.getTotalLength();
+
+  //   // Set initial stroke properties
+  //   gsap.set(path, {
+  //     strokeDasharray: pathLength,
+  //     strokeDashoffset: pathLength,
+  //   });
+
+  //   // Animate the stroke as the user scrolls
+  //   gsap.to(path, {
+  //     strokeDashoffset: 0,
+  //     ease: 'power2.out',
+  //     scrollTrigger: {
+  //       trigger: pathRef.current,
+  //       start: 'top bottom',
+  //       end: 'bottom top',
+  //       scrub: 1,
+  //     },
+  //   });
+  // }, []);
   return (
     <section className="bg-white hero relative h-screen flex flex-col justify-between">
-      <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
+      
+    {/* <svg
+      ref={pathRef}
+      viewBox="0 0 800 600"
+      xmlns="http://www.w3.org/2000/svg"
+      className="neon-line"
+    >
+      <path
+        d="M 100 500 Q 300 100 500 500 T 900 500"
+        stroke="#FFFF00"
+        fill="none"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg> */}
+    <section style={{ marginTop: '12rem' }}>
+    <div className="w-layout-blockcontainer textimagecontainer">
+  <div className="text-images-wrapper">
+    <div className="text-images">
+      <h2 className="heading-2 text-weight-regular">
+      #1 Diamond and {' '}
+        <div className="spanimage one"></div>
+        Invisalign Providers in Lehigh Valley. We've treated the most Invisalign cases{' '}
+        <div className="spanimage two"></div>
+        delivering straighter smiles in 12-16 months{' '}
+        <div className="spanimage three"></div>
+        without wires
+      </h2>
+    </div>
+  </div>
+</div>
+
+    </section>
+      {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
         <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">
-          <div className="hero-header flex flex-col items-center text-center relative z-10 gap-4">
+          <div className="hero-header flex flex-col items-center text-center relative gap-4">
             <div
               className="heading opacity-0 transform translate-y-[10vh]"
               style={{
@@ -604,9 +761,7 @@ const About = () => {
                 transition: "all 0.5s",
               }}
             >
-              <h1 className="heading-1 text-4xl lg:text-6xl font-bold tracking-tight">
-                Elevate your brand with creative solutions
-              </h1>
+            
             </div>
           </div>
         </div>
@@ -648,7 +803,7 @@ const About = () => {
             </div>
           </div>
         </section>
-      </div>
+      </div> */}
     </section>
   );
 };
