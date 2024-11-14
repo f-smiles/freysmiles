@@ -165,95 +165,6 @@ export default function LandingComponent() {
     };
   }, []);
 
-  const logoGrid = document.getElementById("logoGrid");
-  let initialScale = 0.8;
-  let maxScale = 1;
-
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: logoGrid,
-      start: "top bottom",
-      end: "bottom bottom",
-      scrub: 0.8,
-
-      onLeaveBack: () => gsap.set(logoGrid, { clearProps: "transform" }),
-    },
-  });
-
-  tl.fromTo(
-    logoGrid,
-    { scale: initialScale },
-    { scale: maxScale, ease: "power1.out" }
-  );
-
-  gsap.set(logoGrid, { clearProps: "transform" });
-  const locationGallery = document.getElementById("locationGallery");
-  const tlLocationGallery = gsap.timeline({
-    scrollTrigger: {
-      trigger: locationGallery,
-      start: "top bottom",
-      end: "bottom bottom",
-      scrub: 0.8,
-      onLeaveBack: () => gsap.set(locationGallery, { clearProps: "transform" }),
-    },
-  });
-
-  tlLocationGallery.fromTo(
-    locationGallery,
-    { scale: 0.8 },
-    { scale: maxScale, ease: "power1.out" }
-  );
-
-  gsap.set(locationGallery, { clearProps: "transform" });
-
-  const locations = document.getElementById("locations");
-  const tlLocations = gsap.timeline({
-    scrollTrigger: {
-      trigger: locations,
-      start: "top bottom",
-      end: "bottom bottom",
-      scrub: 0.8,
-      onLeaveBack: () => gsap.set(locations, { clearProps: "transform" }),
-    },
-  });
-
-  tlLocations.fromTo(
-    locations,
-    { scale: 0.8 },
-    { scale: maxScale, ease: "power1.out" }
-  );
-
-  gsap.set(locations, { clearProps: "transform" });
-
-  const sectionOneRef = useRef(null);
-  const sectionTwoRef = useRef(null);
-  const sectionThreeRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const scaleValue = 0.8 + 0.2 * entry.intersectionRatio;
-          entry.target.style.transform = `scale(${scaleValue})`;
-        });
-      },
-      {
-        threshold: Array.from({ length: 20 }, (_, i) => i * 0.05), //
-      }
-    );
-
-    const sections = [sectionOneRef, sectionTwoRef, sectionThreeRef];
-    sections.forEach((ref) => {
-      if (ref.current) observer.observe(ref.current);
-    });
-
-    return () => {
-      sections.forEach((ref) => {
-        if (ref.current) observer.unobserve(ref.current);
-      });
-    };
-  }, []);
-
   const heroRef = useRef(null);
 
   useEffect(() => {
@@ -270,12 +181,11 @@ export default function LandingComponent() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
 
   return (
     <>
-      <div style={{ backgroundColor }} className="relative bg-[#E0D175]">
-        <div ref={heroRef} className="min-h-screen bg-[#E0D175]">
+      <div className="relative ">
+        <div ref={heroRef} className="min-h-screen ">
           <Hero />
         </div>
 
@@ -287,23 +197,16 @@ export default function LandingComponent() {
           <ImageGrid />
         </div>
         {/* <Mask /> */}
-
+        <div className="sticky top-0 z-1">
+          <ParallaxOutline />
+        </div>
         <div
-          ref={sectionTwoRef}
-          className="sticky bg-[#D8BFD7] top-0 h-screen z-3 transform scale-80 transition-transform duration-300 ease-in-out"
-          id="logoGrid"
+          // ref={sectionTwoRef}
+          className="sticky bg-[#D8BFD7] top-0 h-screen z-3"
+          // id="logoGrid"
         >
           <LogoGrid />
         </div>
-
-        <div
-          ref={sectionThreeRef}
-          className="bg-[#F1F1F1] sticky top-0 z-1 transform scale-80 transition-transform duration-300 ease-in-out"
-          id="locationGallery"
-        >
-          <ParallaxOutline />
-        </div>
-
         <Locations />
         <GiftCards />
       </div>
@@ -701,8 +604,6 @@ function Hero() {
   );
 }
 const About = () => {
-
-  
   // const pathRef = useRef(null);
 
   // useEffect(() => {
@@ -728,30 +629,29 @@ const About = () => {
   //   });
   // }, []);
   const aboutRef = useRef(null);
-  const isInView = useInView(aboutRef, { once: true, margin: '-50px 0px' });
+  const isInView = useInView(aboutRef, { once: true, margin: "-50px 0px" });
   const textVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { duration: 0.6, ease: 'easeInOut' },
+      transition: { duration: 0.6, ease: "easeInOut" },
     },
   };
-  
+
   const spanVariants = {
-    hidden: { opacity: 0, width: '0rem', originX: 0.5 },
+    hidden: { opacity: 0, width: "0rem", originX: 0.5 },
     visible: {
       opacity: 1,
-      width: '6.5rem',
+      width: "6.5rem",
       transition: {
-        duration: 1.2, 
-        ease: [0.22, 1, 0.36, 1], 
+        duration: 1.2,
+        ease: [0.22, 1, 0.36, 1],
       },
     },
   };
-  
-  
+
   return (
-    <section className="bg-white hero relative h-screen flex flex-col justify-between">
+    <section className="bg-[#FBFBFB] hero relative h-screen flex flex-col justify-between">
       {/* <svg
       ref={pathRef}
       viewBox="0 0 800 600"
@@ -767,64 +667,69 @@ const About = () => {
         strokeLinejoin="round"
       />
     </svg> */}
-  <section style={{marginTop:"12rem"}} ref={aboutRef} >
-  <motion.div
-  className="w-layout-blockcontainer textimagecontainer"
-  initial="hidden"
-  animate={isInView ? 'visible' : 'hidden'}
-  variants={textVariants}
->
-  <div className="text-images-wrapper">
-    <div className="text-images">
-      <h2 className="heading-2 text-weight-regular">
-        #1 Diamond and{' '}
+      <section style={{ marginTop: "12rem" }} ref={aboutRef}>
         <motion.div
-          className="spanimage one"
-          variants={spanVariants}
-          style={{ display: 'inline-block', overflow: 'hidden' }}
-        ></motion.div>
-        Invisalign Providers in Lehigh Valley. We've treated the most Invisalign cases{' '}
-        <motion.div
-          className="spanimage two"
-          variants={spanVariants}
-          style={{ display: 'inline-block', overflow: 'hidden' }}
-        ></motion.div>
-        delivering straighter smiles in 12-16 months{' '}
-        <motion.div
-          className="spanimage three"
-          variants={spanVariants}
-          style={{ display: 'inline-block', overflow: 'hidden' }}
-        ></motion.div>
-        without wires
-      </h2>
-    </div>
-  </div>
-</motion.div>
+          className="w-layout-blockcontainer textimagecontainer"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={textVariants}
+        >
+          <div className="text-images-wrapper">
+            <div className="text-images">
+              <h2 className="heading-2 text-weight-regular">
+                #1 Diamond and{" "}
+                <motion.div
+                  className="spanimage one"
+                  variants={spanVariants}
+                  style={{ display: "inline-block", overflow: "hidden" }}
+                ></motion.div>
+                Invisalign Providers in Lehigh Valley. We've treated the most
+                Invisalign cases{" "}
+                <motion.div
+                  className="spanimage two"
+                  variants={spanVariants}
+                  style={{ display: "inline-block", overflow: "hidden" }}
+                ></motion.div>
+                delivering straighter smiles in 12-16 months{" "}
+                <motion.div
+                  className="spanimage three"
+                  variants={spanVariants}
+                  style={{ display: "inline-block", overflow: "hidden" }}
+                ></motion.div>
+                without wires
+              </h2>
+            </div>
+          </div>
+        </motion.div>
 
+        <div
+          style={{ marginTop: "8rem" }}
+          className="big-numbers-wrapper flex justify-around items-center "
+        >
+          {/* Card 1 */}
+          <div className="big-numbers-card  transition-opacity duration-500 ease-in-out">
+            <div className="big-numbers text-5xl font-bold ">60+</div>
+            <p className="text-size-medium font-neue-montreal  text-gray-600">
+              Years of experience
+            </p>
+          </div>
 
+          {/* Card 2 */}
+          <div className="big-numbers-card transition-opacity duration-500 ease-in-out">
+            <div className="big-numbers text-5xl font-bold ">25k+</div>
+            <p className="font-neue-montreal text-size-medium text-gray-600">
+              Satisfied patients
+            </p>
+          </div>
 
-        <div style={{marginTop:"8rem"}} className="big-numbers-wrapper flex justify-around items-center ">
-  {/* Card 1 */}
-  <div className="big-numbers-card  transition-opacity duration-500 ease-in-out"
-  >
-    <div className="big-numbers text-5xl font-bold ">60+</div>
-    <p className="text-size-medium font-neue-montreal  text-gray-600">Years of experience</p>
-  </div>
-
-  {/* Card 2 */}
-  <div className="big-numbers-card transition-opacity duration-500 ease-in-out"
-  >
-    <div className="big-numbers text-5xl font-bold ">25k+</div>
-    <p className="font-neue-montreal text-size-medium text-gray-600">Satisfied patients</p>
-  </div>
-
-  {/* Card 3 */}
-  <div className="big-numbers-card transition-opacity duration-500 ease-in-out"
-  >
-    <div className="big-numbers text-5xl font-bold ">4+</div>
-    <p className="font-neue-montreal text-size-medium text-gray-600">Locations</p>
-  </div>
-</div>
+          {/* Card 3 */}
+          <div className="big-numbers-card transition-opacity duration-500 ease-in-out">
+            <div className="big-numbers text-5xl font-bold ">4+</div>
+            <p className="font-neue-montreal text-size-medium text-gray-600">
+              Locations
+            </p>
+          </div>
+        </div>
       </section>
       {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
@@ -1107,7 +1012,7 @@ function GSAPAnimateScrollSections() {
 
   return (
     <>
-      <section className="relative hidden home-main xl:block">
+      {/* <section className="relative hidden home-main xl:block">
         <div className="home-main__content">
           <div className="home-main__content-sphere">
             <ul className="container mx-auto">
@@ -1157,7 +1062,7 @@ function GSAPAnimateScrollSections() {
             ></div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <MobileLayout />
     </>
@@ -1272,48 +1177,89 @@ const ImageGrid = () => {
     },
   ];
 
+  const projects = [
+    {
+      title: "Clear Aligners",
+      subtitle: "INVISALIGN",
+      image: "../images/handaligner.jpeg",
+    },
+    {
+      title: "Braces",
+      subtitle: "DAMON",
+      image: "/path/to/image2.jpg",
+    },
+    {
+      title: "Made for you",
+      subtitle: "",
+      image: "/path/to/image3.jpg",
+    },
+  ];
+
   return (
-    <div>
-      <div
-        className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
-        ref={bodyRef}
-      >
-        <div
-          className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
-          style={{
-            left: `${cursorPos.x}px`,
-            top: `${cursorPos.y}px`,
-            opacity: isHovering ? 1 : 0,
-          }}
-        >
-          <p>CHECK </p>
-          <p>IT OUT</p>
+    <section className="bg-[#FBFBFB]">
+      <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12">
+            <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
+            <span className="text-6xl font-cursive italic text-gray-700 block mt-2 font-autumnchant">
+              best
+            </span>
+
+            {/* Adjusting the SVG */}
+            <img
+              src="../images/home.svg"
+              className="max-w-full h-auto mx-auto"
+              alt="Home SVG"
+            />
+          </div>
         </div>
-        <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
-          {images.map((image, index) => (
-            <a
+      </section>
+
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {projects.map((project, index) => (
+            <motion.div
               key={index}
-              href={image.url}
-              className={`group image-card relative flex items-center justify-center mb-20 ${
-                image.className === "image-portrait"
-                  ? "mx-4 w-[27vw] h-[37vw]"
-                  : "mx-4 w-[40vw] h-[27vw]"
-              }`}
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
+              style={{ height: "36rem" }}
+              className="bg-white rounded-lg p-8 flex flex-col justify-between transform transition-transform hover:scale-105"
             >
-              <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
-                {image.title}
+              {/* Image Container */}
+              <motion.div
+                className="relative mx-auto rounded-full overflow-hidden flex items-center justify-center transition-all duration-500"
+                style={{
+                  width: "16rem",
+                  height: "16rem",
+                }}
+                whileHover={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "0%",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                }}
+              >
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="object-cover w-full h-full"
+                />
+              </motion.div>
+
+              {/* Text Section */}
+              <div className="text-left mt-auto pt-4">
+                <h3 className="text-[2rem] font-neue-montreal mb-2">
+                  {project.title}
+                </h3>
+                <p className="text-gray-500 uppercase tracking-wider">
+                  {project.subtitle}
+                </p>
               </div>
-              <img
-                src={image.src}
-                className="block object-cover w-full h-full"
-              />
-            </a>
+            </motion.div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
@@ -1333,143 +1279,189 @@ const ParallaxOutline = () => {
     }
   };
 
+  const marqueeRef = useRef(null);
+  const marqueeInnerRef = useRef(null);
+
+  useEffect(() => {
+    const marqueeContainer = marqueeRef.current;
+    const marqueeInner = marqueeInnerRef.current;
+    const marqueeWidth = marqueeInner.scrollWidth;
+    const windowWidth = marqueeContainer.offsetWidth;
+
+    const numClones = Math.ceil(windowWidth / marqueeWidth) + 2;
+
+    let innerContent = marqueeInner.innerHTML;
+    for (let i = 0; i < numClones; i++) {
+      innerContent += marqueeInner.innerHTML;
+    }
+    marqueeInner.innerHTML = innerContent;
+
+    gsap.to(marqueeInner, {
+      x: `-${marqueeWidth}px`,
+      duration: 50,
+      repeat: -1,
+      ease: "linear",
+      modifiers: {
+        x: (x) => gsap.utils.wrap(-marqueeWidth, 0, parseFloat(x)) + "px",
+      },
+    });
+  }, []);
   return (
-    <div className="flex flex-col items-center justify-center h-screen ">
-      <div className="flex justify-center tracking-widest uppercase tracking">
+    <div className="relative flex flex-col items-center justify-center h-screen bg-[#FBFBFB]">
+      {/* Marquee */}
+      <div
+        ref={marqueeRef}
+        className="font-neue-montreal overflow-hidden whitespace-nowrap py-4"
+      >
+        <div
+          ref={marqueeInnerRef}
+          className="inline-block text-4xl text-gray-800"
+        >
+          <span className="mx-4">Your Dream Smile Starts Here</span>
+          <span className="mx-4">Your Dream Smile Starts Here</span>
+          <span className="mx-4">Your Dream Smile Starts Here</span>
+        </div>
+      </div>
+
+      <div className="font-neue-montreal mt-32 mb-10 flex justify-center text-4xl tracking-widest uppercase">
         Testimonials
       </div>
-      <div className="flex flex-col items-center justify-center h-screen ">
-        <div className="relative flex items-center">
-          <div className="absolute top-0 right-0 z-20 flex">
-            <button
-              onClick={() => scroll("left")}
-              className="p-4"
-              aria-label="Previous"
+
+      {/* Carousel Section */}
+      <div className="relative flex items-center justify-center">
+        <div className="absolute top-0 right-0 z-20 flex space-x-4">
+          <button
+            onClick={() => scroll("left")}
+            className="p-4"
+            aria-label="Previous"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="13"
+              viewBox="0 0 40 13"
+              fill="none"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="13"
-                viewBox="0 0 40 13"
-                fill="none"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
-                  fill="white"
-                />
-              </svg>
-            </button>
-            <button
-              onClick={() => scroll("right")}
-              className="p-4 "
-              aria-label="Next"
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
+                fill="white"
+              />
+            </svg>
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            className="p-4"
+            aria-label="Next"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="13"
+              viewBox="0 0 40 13"
+              fill="none"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="13"
-                viewBox="0 0 40 13"
-                fill="none"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
-                  fill="white"
-                />
-              </svg>
-            </button>
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L0 6.98637V6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
+                fill="white"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div
+          ref={carouselRef}
+          className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
+          style={{ width: "60vw" }}
+        >
+          {/* Slide 1 */}
+          <div
+            className="flex items-center justify-center w-full snap-start shrink-0"
+            style={{
+              height: "500px",
+              backgroundImage:
+                "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
+            }}
+          >
+            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
+              <p className="font-helvetica-now-thin text-[24px] text-center">
+                You will receive top notch orthodontic care at Frey Smiles. Dr.
+                Frey and his entire staff make every visit a pleasure. It is
+                apparent at each appointment that Dr. Frey truly cares about his
+                patients. He has treated both of our kids and my husband, and
+                they all have beautiful smiles! I highly recommend!
+              </p>
+              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                Lisa Moyer
+              </p>
+            </div>
           </div>
-          <div className="relative flex items-center justify-center">
-            <div
-              ref={carouselRef}
-              className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
-              style={{ width: "60vw", height: "auto" }}
-            >
-              <div
-                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
-                style={{
-                  height: "500px",
-                  backgroundImage:
-                    "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
-                }}
-              >
-                <div className="flex flex-col justify-center items-center mx-[7vw] ">
-                  <p className="font-helvetica-now-thin text-[24px] text-center">
-                    You will receive top notch orthodontic care at Frey Smiles.
-                    Dr. Frey and his entire staff make every visit a pleasure.
-                    It is apparent at each appointment that Dr. Frey truly cares
-                    about his patients. He has treated both of our kids and my
-                    husband, and they all have beautiful smiles! I highly
-                    recommend!
-                  </p>
-                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
-                    Lisa Moyer
-                  </p>
-                </div>
-              </div>
-              <div
-                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
-                style={{
-                  height: "500px",
-                  backgroundImage:
-                    "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0",
-                }}
-              >
-                <div className=" flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                  <p className="font-helvetica-now-thin text-[24px] text-center">
-                    My experience at FreySmiles has been amazing! I recently
-                    just completed my Invisalign and my teeth look perfect! Dr.
-                    Frey truly cares about his patients and the staff are always
-                    friendly, as well as always accommodating to my schedule.
-                    They&apos;re the best around!
-                  </p>
-                  <p className="font-helvetica-now-thin text-[20px] mt-10  text-center">
-                    Kailee
-                  </p>
-                </div>
-              </div>
-              <div
-                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
-                style={{
-                  height: "500px",
-                  backgroundImage:
-                    "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
-                }}
-              >
-                <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                  <p className="text-2xl text-center">
-                    I had an open bite and misaligned teeth most of my life. Dr
-                    Frey fixed it and in record time. 1 1/2 yrs with
-                    Invisalign&apos;s. Highly recommended! Friendly staff and easy to
-                    make appointments!
-                  </p>
-                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
-                    Karen Oneill
-                  </p>
-                </div>
-              </div>
-              <div
-                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
-                style={{
-                  height: "500px",
-                  backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
-                }}
-              >
-                <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
-                  <h1 className="font-helvetica-now-thin text-[24px] text-center">
-                    Dr. Frey was my orthodontist when I was 11 years old, Im now
-                    42. I still talk about how amazing he was and the great work
-                    he did with my teeth. Thank you so much for giving the most
-                    beautiful smile!
-                  </h1>
-                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
-                    Tanya Burnhauser
-                  </p>
-                </div>
-              </div>
+
+          {/* Slide 2 */}
+          <div
+            className="flex items-center justify-center w-full snap-start shrink-0"
+            style={{
+              height: "500px",
+              backgroundImage:
+                "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0)",
+            }}
+          >
+            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
+              <p className="font-helvetica-now-thin text-[24px] text-center">
+                My experience at FreySmiles has been amazing! I recently just
+                completed my Invisalign and my teeth look perfect! Dr. Frey
+                truly cares about his patients and the staff are always
+                friendly, as well as always accommodating to my schedule.
+                They're the best around!
+              </p>
+              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                Kailee
+              </p>
+            </div>
+          </div>
+
+          {/* Slide 3 */}
+          <div
+            className="flex items-center justify-center w-full snap-start shrink-0"
+            style={{
+              height: "500px",
+              backgroundImage:
+                "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
+            }}
+          >
+            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
+              <p className="text-2xl text-center">
+                I had an open bite and misaligned teeth most of my life. Dr Frey
+                fixed it and in record time. 1 1/2 yrs with Invisalign's. Highly
+                recommended! Friendly staff and easy to make appointments!
+              </p>
+              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                Karen Oneill
+              </p>
+            </div>
+          </div>
+
+          {/* Slide 4 */}
+          <div
+            className="flex items-center justify-center w-full snap-start shrink-0"
+            style={{
+              height: "500px",
+              backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
+            }}
+          >
+            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
+              <h1 className="font-helvetica-now-thin text-[24px] text-center">
+                Dr. Frey was my orthodontist when I was 11 years old, Im now 42.
+                I still talk about how amazing he was and the great work he did
+                with my teeth. Thank you so much for giving the most beautiful
+                smile!
+              </h1>
+              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                Tanya Burnhauser
+              </p>
             </div>
           </div>
         </div>
@@ -1717,14 +1709,22 @@ const LogoGrid = () => {
   }, []);
 
   return (
-    <div className="bg-[#DDDCDC] relative h-screen overflow-hidden">
-      {/* MARQUEE  */}
-      <div className="bg-[#20282D] w-full absolute top-0">
-        <h1 className="text-3xl font-bold tracking-wide text-white uppercase animate-locationsCardMarquee font-neue-montreal">
-          &bull; COME SEE US AT ANY OF OUR FOUR LOCATIONS &bull; COME SEE US AT
-          ANY OF OUR FOUR LOCATIONS &bull;
-        </h1>
-      </div>
+    <div className="bg-[#20282D] relative h-screen overflow-hidden">
+      {/* <div className="grid grid-cols-2 gap-4">
+        {logos.map((columnLogos, columnIndex) => (
+          <div key={columnIndex} className="flex flex-col items-center">
+            {columnLogos.map((logo, logoIndex) => (
+              <div key={logoIndex} className="p-2">
+                <img
+                  src={logo}
+                  alt={`Logo ${logoIndex + 1}`}
+                  className="w-auto h-14"
+                />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div> */}
       <div className="container flex flex-col-reverse items-center justify-center h-full gap-4 py-32 mx-auto overflow-hidden lg:py-0 lg:flex-row lg:overflow-visible">
         <div
           id="ballcanvas"
@@ -1732,12 +1732,12 @@ const LogoGrid = () => {
         />
 
         <div className="lg:w-1/2">
-          <p className="font-bold uppercase leading-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]  text-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]">
+          <p className="font-helvetica-neue-light text-white leading-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]  text-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]">
             Awards & Recognition
           </p>
           <div className="flex items-center mt-10">
-            <div className="w-48 h-px bg-gray-700"></div>
-            <p className="text-[15px] pl-4">
+            <div className="w-48 h-px bg-white"></div>
+            <p className="text-white font-neue-montreal text-[15px] pl-4">
               Our greatest award is the success of our patients
             </p>
           </div>
@@ -1746,197 +1746,6 @@ const LogoGrid = () => {
     </div>
   );
 };
-
-function LocationGallery() {
-  useEffect(() => {
-    let revealContainers = document.querySelectorAll(".reveal");
-    revealContainers.forEach((container) => {
-      let image = container.querySelector("img");
-      let tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: container,
-          toggleActions: "restart none none reset",
-        },
-      });
-
-      tl.set(container, { autoAlpha: 1 })
-        .from(container, { xPercent: -100, duration: 1.5, ease: "power2.out" })
-        .from(image, {
-          xPercent: 100,
-          scale: 1.3,
-          duration: 1.5,
-          ease: "power2.out",
-          delay: -1.5,
-        });
-    });
-  }, []);
-
-  return (
-    <div className="bg-[#161818]">
-      <section className="sliderMainPage-projects">
-        <div className="sliderMainPage-container w-dyn-list">
-          <div
-            role="list"
-            className="sliderMainPage-wrapper mainProjects w-dyn-items"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(9, 1fr)",
-              gap: "20px",
-            }}
-          >
-            {/* First Project Item (Odd) */}
-            <div
-              role="listitem"
-              className="sliderMainPage-item sliderMainPage-projectItem"
-              style={{ gridColumn: "1 / 3", gridRow: "1", marginTop: "100px" }}
-            >
-              <div className="sliderMainPage-labelGroup">
-                <div className="text-white sliderMainPage-textSmall sliderMainPage-label">
-                  01 — 01
-                </div>
-              </div>
-              <div className="sliderMainPage-imageContainer">
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  style={{
-                    width: "100%",
-                    height: "200px",
-                    objectFit: "cover",
-                  }}
-                  className="sliderMainPage-images sliderMainPage-projectImage"
-                >
-                  <source
-                    src="../images/invisalignglowup.mp4"
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-              <div className="sliderMainPage-descr">
-                <div className="sliderMainPage-text">2023</div>
-                <div className="sliderMainPage-info">
-                  <div className="sliderMainPage-text">
-                    Real estate — Chyrnaya Rechka, 41
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Second Project Item (Even) */}
-            <div
-              role="listitem"
-              className="sliderMainPage-item sliderMainPage-projectItem"
-              style={{
-                gridColumn: "5 / -1",
-                gridRow: "1",
-                marginLeft: "1.3vw",
-              }}
-            >
-              <div className="sliderMainPage-labelGroup">
-                <div className="text-white sliderMainPage-textSmall sliderMainPage-label">
-                  02 — 02
-                </div>
-              </div>
-              <div className="sliderMainPage-imageContainer">
-                <img
-                  src="../images/sch.png"
-                  loading="lazy"
-                  alt="Brand identity concept, Vladivostok"
-                  className="sliderMainPage-images sliderMainPage-projectImage"
-                  style={{ width: "100%", height: "450px", objectFit: "cover" }}
-                />
-              </div>
-              <div className="sliderMainPage-descr">
-                <div className="text-white sliderMainPage-text">est. 2023</div>
-                <div className="sliderMainPage-info">
-                  <div className="text-white sliderMainPage-text">
-                    Schnecksville
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-start mt-4 space-x-4">
-            <button id="next" className="sliderMainPage-buttonRight">
-              {/* SVG Right Arrow */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="13"
-                viewBox="0 0 40 13"
-                fill="none"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
-                  fill="white"
-                />
-              </svg>
-            </button>
-            <button id="prev" className="sliderMainPage-buttonLeft">
-              {/* SVG Left Arrow */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="13"
-                viewBox="0 0 40 13"
-                fill="none"
-              >
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L5.25728e-07 6.98637L6.10769e-07 6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
-                  fill="white"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </section>
-      <div
-        className="container"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          width: "100%",
-          position: "relative",
-          // background: "#20282D",
-          // background: '#b6916d'
-        }}
-      >
-        <div
-          className="reveal"
-          style={{
-            visibility: "hidden",
-            position: "relative",
-            width: "80%",
-            height: "80%",
-            maxWidth: "500px",
-            overflow: "hidden",
-          }}
-        >
-          <img
-            src="../images/sch.png"
-            style={{
-              height: "100%",
-              width: "100%",
-              objectFit: "cover",
-              transformOrigin: "left",
-            }}
-            alt="Description"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function Locations() {
   const ref = useRef(null);
@@ -2255,12 +2064,12 @@ function Locations() {
 
   return (
     <>
-      <section id="locations-section" className="relative bg-[#f8f1de]">
+      <section id="locations-section" className="relative bg-[#F1FEBC]">
         <div
           id="locations-heading"
           className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32"
         >
-          <h1 className="lg:text-6xl font-agrandir-bold text-[#171616]">
+          <h1 className="lg:text-6xl font-neue-montreal text-[#032D42]">
             Come see us at any of our{" "}
             <span className="relative inline-block my-8 leading-tight lowercase font-editorial-new underline-offset-8">
               four convenient locations
@@ -2288,7 +2097,7 @@ function Locations() {
           </svg>
         </div>
 
-        <div ref={ref}>
+        <div className="font-neue-montreal text-[#171616]" ref={ref}>
           <motion.div
             id="locations-map"
             className="h-[60vh] overflow-hidden lg:absolute lg:right-0 lg:h-full lg:w-1/2"
@@ -2317,7 +2126,10 @@ function Locations() {
             />
           </motion.div>
 
-          <div id="locations-details">
+          <div
+            className="font-neue-montreal text-[#171616]"
+            id="locations-details"
+          >
             <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:mt-0 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 xl:gap-x-24">
               {/* LOCATIONS LIST */}
               <motion.div
@@ -2331,7 +2143,7 @@ function Locations() {
                 <button
                   className={`${
                     selectedLocation === "All" ? "text-[#147b5d]" : ""
-                  } self-end transition-all duration-300 ease-linear w-max mr-6 mb-6 underline underline-offset-4 hover:text-[#147b5d]`}
+                  } self-end transition-all duration-300 ease-linear w-max mr-6 mb-6 underline-offset-4 hover:text-[#147b5d]`}
                   onClick={handleShowAllLocations}
                 >
                   {selectedLocation === "All"
@@ -2363,13 +2175,13 @@ function Locations() {
                               }}
                             >
                               <dt className="col-span-5 row-start-1">
-                                <h6 className="text-xl text-[#171616] uppercase font-agrandir-bold">
+                                <h6 className="text-xl font-neue-montreal text-[#171616]">
                                   {l.location}
                                 </h6>
                               </dt>
                               <dd className="col-span-7 row-start-1">
                                 <span className="flex items-center justify-between">
-                                  <p className="text-[#171616]">
+                                  <p className="font-neue-montreal text-[#171616]">
                                     {l.addressLine1}
                                     <br />
                                     {l.addressLine2}

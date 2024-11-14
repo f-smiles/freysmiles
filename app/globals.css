@@ -8,6 +8,12 @@
   font-family: "Aileron-Black";
   src: url("/fonts/Aileron-Black.otf") format("opentype");
 }
+
+@font-face {
+  font-family: "Autumn Chant";
+  src: url("/fonts/Autumn Chant.otf") format("opentype");
+}
+
 @font-face {
   font-family: "Novela-Regular";
   src: url("/fonts/Novela-Regular.otf") format("opentype");
@@ -4350,3 +4356,4 @@ h2.heading-2 {
   place-items: center;
   display: flex;
 }
+
