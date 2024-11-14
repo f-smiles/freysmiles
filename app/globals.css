@@ -4223,7 +4223,6 @@ font-family: "NovelaRegular";
   }
 }
 
-
 .w-layout-blockcontainer {
   max-width: 940px;
   margin-left: auto;
@@ -4238,6 +4237,7 @@ font-family: "NovelaRegular";
   margin-right: auto;
   padding-left: 2.5rem;
   padding-right: 2.5rem;
+  
 }
 
 .container.container-small {
@@ -4338,6 +4338,7 @@ h2.heading-2 {
   justify-content: flex-start;
   align-items: flex-start;
   display: flex;
+  font-family: "NeueMontrealBook";
 }
 
 .big-numbers-wrapper {
