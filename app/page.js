@@ -165,6 +165,42 @@ export default function LandingComponent() {
     };
   }, []);
 
+  return (
+    <>
+      <div>
+        <div>
+          <Hero />
+        </div>
+        <div>
+          <MarqueeSection />
+        </div>
+        <div>
+          <About />
+        </div>
+        <div className="relative">
+          <GSAPAnimateScrollSections />
+          <ImageGrid />
+        </div>
+        {/* <Mask /> */}
+        <div>
+          <ParallaxOutline />
+        </div>
+        <div
+          // ref={sectionTwoRef}
+          className="sticky bg-[#D8BFD7] top-0 h-screen z-3"
+          // id="logoGrid"
+        >
+          <LogoGrid />
+        </div>
+        <Testimonials />
+        <Locations />
+        <GiftCards />
+      </div>
+    </>
+  );
+}
+
+function Hero() {
   const heroRef = useRef(null);
 
   useEffect(() => {
@@ -182,39 +218,6 @@ export default function LandingComponent() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return (
-    <>
-      <div className="relative ">
-        <div ref={heroRef} className="min-h-screen ">
-          <Hero />
-        </div>
-
-        <div className="relative bg-white">
-          <About />
-        </div>
-        <div className="relative">
-          <GSAPAnimateScrollSections />
-          <ImageGrid />
-        </div>
-        {/* <Mask /> */}
-        <div className="sticky top-0 z-1">
-          <ParallaxOutline />
-        </div>
-        <div
-          // ref={sectionTwoRef}
-          className="sticky bg-[#D8BFD7] top-0 h-screen z-3"
-          // id="logoGrid"
-        >
-          <LogoGrid />
-        </div>
-        <Locations />
-        <GiftCards />
-      </div>
-    </>
-  );
-}
-
-function Hero() {
   const containerRef = useRef(null);
   const div1Ref = useRef(null);
   const div2Ref = useRef(null);
@@ -538,7 +541,10 @@ function Hero() {
   ];
 
   return (
-    <section className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black">
+    <section
+      ref={heroRef}
+      className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black"
+    >
       <div className="flex flex-row h-full relative">
         {/* Left Column */}
         <div
@@ -603,6 +609,59 @@ function Hero() {
     </section>
   );
 }
+
+const MarqueeSection = () => {
+  const marqueeRef = useRef(null);
+  const marqueeContentRef = useRef(null);
+
+  useEffect(() => {
+    ScrollTrigger.create({
+      trigger: marqueeRef.current,
+      start: "top top",
+      end: "+=100%",
+      scrub: 1,
+      pin: true,
+      pinSpacing: false,
+    });
+
+    gsap.to(marqueeContentRef.current, {
+      yPercent: -50,
+      scrollTrigger: {
+        trigger: marqueeRef.current,
+        start: "top top",
+        end: "+=100%",
+        scrub: 1,
+      },
+    });
+  }, []);
+
+  return (
+    <div
+      ref={marqueeRef}
+      className="uppercase rounded-tl-[40px] rounded-tr-[40px] font-agrandir-bold relative h-[40vh] text-white overflow-hidden bg-[#004D43] flex items-center"
+    >
+      <div
+        ref={marqueeContentRef}
+        className="marqueeHome"
+        style={{
+          fontSize: "144px",
+          fontWeight: "bold",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+        }}
+      >
+        <div className="trackHome">
+          <div className="content">
+            Clinical Excellence <span className="separator">●</span>{" "}
+            Unparalleled Precision <span className="separator">●</span>{" "}
+            Customized Care
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const About = () => {
   // const pathRef = useRef(null);
 
@@ -629,6 +688,19 @@ const About = () => {
   //   });
   // }, []);
   const aboutRef = useRef(null);
+
+  useEffect(() => {
+    gsap.to(aboutRef.current, {
+      yPercent: -50,
+      scrollTrigger: {
+        trigger: aboutRef.current,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 1,
+      },
+    });
+  }, []);
+
   const isInView = useInView(aboutRef, { once: true, margin: "-50px 0px" });
   const textVariants = {
     hidden: { opacity: 0 },
@@ -651,7 +723,10 @@ const About = () => {
   };
 
   return (
-    <section className="bg-[#FBFBFB] hero relative h-screen flex flex-col justify-between">
+    <section
+      ref={aboutRef}
+      className="rounded-tl-[40px] rounded-tr-[40px] bg-[#FBFBFB] hero relative h-screen flex flex-col justify-between z-20"
+    >
       {/* <svg
       ref={pathRef}
       viewBox="0 0 800 600"
@@ -788,6 +863,108 @@ const About = () => {
     </section>
   );
 };
+
+const ParallaxOutline = () => {
+  const parallaxRef = useRef(null);
+
+  return (
+    <div className="relative flex flex-col items-center justify-center bg-[#FBFBFB]">
+      {/* Marquee */}
+
+      {/* Main Content Section */}
+      <section
+        ref={parallaxRef}
+        className="py-20 px-8 flex flex-col lg:flex-row max-w-7xl mx-auto space-y-12 lg:space-y-0 lg:space-x-8"
+      >
+        {/* Left Text Section */}
+        <div className="flex-1 flex flex-col items-start space-y-6 relative z-20">
+          <h1 className="font-oakes-regular text-[3rem] leading-tight">
+            <span className="block">
+              Initial <span>Consultations</span>
+            </span>
+            <span className="block">
+              Are{" "}
+              <span className="font-autumnchant bg-[#d7fa2c] text-black px-4 py-2 inline-block rounded-lg">
+                always
+              </span>{" "}
+              Complimentary
+            </span>
+          </h1>
+          <p className="text-[2rem] font-editorial-new-italic">
+            Find out which treatment plan suits you best.
+          </p>
+        </div>
+
+        {/* Right Image Section */}
+        <div className="flex-1 flex items-center justify-center relative z-10">
+          <div className="w-[360px] h-[660px]">
+            <img
+              src="../images/mainsectionimage.jpg"
+              alt="Consultation"
+              className="object-cover w-full h-full rounded-xl"
+            />
+          </div>
+          {/* Green Circle */}
+          <div className="absolute -left-28 top-48 bg-[#d7fa2c] z-10 w-56 h-56 rounded-full"></div>
+        </div>
+
+        {/* Third Column with Buttons */}
+        <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
+          <button className="font-helvetica-neue-light bg-[#e0cbe8] text-black text-2xl py-6 px-12 rounded-lg">
+            NEED MORE INFO? <br /> TAKE OUR QUIZ
+          </button>
+          <button className="font-helvetica-neue-light py-4 px-24 bg-[#d7fa2c] text-black text-lg rounded-full shadow-md">
+            BOOK HERE
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+// function Mask() {
+//   const useMousePosition = () => {
+//     const [mousePosition, setMousePosition] = useState({ x: null, y: null });
+//     const updateMousePosition = e => {
+//       setMousePosition({ x: e.clientX, y: e.clientY });
+//     };
+
+//     useEffect(() => {
+//       window.addEventListener("mousemove", updateMousePosition);
+//       return () => window.removeEventListener("mousemove", updateMousePosition);
+//     }, []);
+
+//     return mousePosition;
+//   };
+
+//   const [isHovered, setIsHovered] = useState(false);
+
+//   const { x, y } = useMousePosition();
+
+//   const size = isHovered ? 400 : 40;
+
+//   return (
+//     <main className="uniqueMain">
+//       <motion.div
+//         className="uniqueMask"
+//         animate={{
+//           WebkitMaskPosition: `${x - (size/2)}px ${y - (size/2)}px`,
+//           WebkitMaskSize: `${size}px`,
+//         }}
+//         transition={{ type: "tween", ease: "backOut", duration: 0.5}}
+//       >
+//         <p onMouseEnter={() => {setIsHovered(true)}} onMouseLeave={() => {setIsHovered(false)}}>
+//           INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
+//         </p>
+//       </motion.div>
+
+//       <div className="uniqueBody">
+//         <p> We are your  <span>go-to provider </span> for advanced and discerning orthodontic care.</p>
+//       </div>
+//     </main>
+//   )
+// }
+SwiperCore.use([Keyboard, Mousewheel]);
 
 function GSAPAnimateScrollSections() {
 
@@ -1189,7 +1366,7 @@ const ImageGrid = () => {
       image: "/path/to/image2.jpg",
     },
     {
-      title: "Made for you",
+      title: "All Ages",
       subtitle: "",
       image: "/path/to/image3.jpg",
     },
@@ -1747,6 +1924,170 @@ const LogoGrid = () => {
   );
 };
 
+function Testimonials() {
+  const carouselRef = useRef(null);
+
+  const scroll = (direction) => {
+    if (carouselRef.current) {
+      const { current: carousel } = carouselRef;
+      const scrollAmount = carousel.offsetWidth;
+      if (direction === "left") {
+        carousel.scrollLeft -= scrollAmount;
+      } else {
+        carousel.scrollLeft += scrollAmount;
+      }
+    }
+  };
+
+  return (
+    <div>
+      <div className="font-neue-montreal mt-32 mb-10 flex justify-center text-4xl tracking-widest uppercase">
+        Testimonials
+      </div>
+
+      {/* Carousel Section */}
+      <div className="relative flex items-center justify-center">
+        <div className="absolute top-0 right-0 z-20 flex space-x-4">
+          <button
+            onClick={() => scroll("left")}
+            className="p-4"
+            aria-label="Previous"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="13"
+              viewBox="0 0 40 13"
+              fill="none"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
+                fill="white"
+              />
+            </svg>
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            className="p-4"
+            aria-label="Next"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="13"
+              viewBox="0 0 40 13"
+              fill="none"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L0 6.98637V6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
+                fill="white"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div
+          ref={carouselRef}
+          className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
+          style={{ width: "60vw" }}
+        >
+          {/* Slide 1 */}
+          <div
+            className="flex items-center justify-center w-full snap-start shrink-0"
+            style={{
+              height: "500px",
+              backgroundImage:
+                "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
+            }}
+          >
+            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
+              <p className="font-helvetica-now-thin text-[24px] text-center">
+                You will receive top notch orthodontic care at Frey Smiles. Dr.
+                Frey and his entire staff make every visit a pleasure. It is
+                apparent at each appointment that Dr. Frey truly cares about his
+                patients. He has treated both of our kids and my husband, and
+                they all have beautiful smiles! I highly recommend!
+              </p>
+              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                Lisa Moyer
+              </p>
+            </div>
+          </div>
+
+          {/* Slide 2 */}
+          <div
+            className="flex items-center justify-center w-full snap-start shrink-0"
+            style={{
+              height: "500px",
+              backgroundImage:
+                "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0)",
+            }}
+          >
+            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
+              <p className="font-helvetica-now-thin text-[24px] text-center">
+                My experience at FreySmiles has been amazing! I recently just
+                completed my Invisalign and my teeth look perfect! Dr. Frey
+                truly cares about his patients and the staff are always
+                friendly, as well as always accommodating to my schedule.
+                They're the best around!
+              </p>
+              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                Kailee
+              </p>
+            </div>
+          </div>
+
+          {/* Slide 3 */}
+          <div
+            className="flex items-center justify-center w-full snap-start shrink-0"
+            style={{
+              height: "500px",
+              backgroundImage:
+                "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
+            }}
+          >
+            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
+              <p className="text-2xl text-center">
+                I had an open bite and misaligned teeth most of my life. Dr Frey
+                fixed it and in record time. 1 1/2 yrs with Invisalign's. Highly
+                recommended! Friendly staff and easy to make appointments!
+              </p>
+              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                Karen Oneill
+              </p>
+            </div>
+          </div>
+
+          {/* Slide 4 */}
+          <div
+            className="flex items-center justify-center w-full snap-start shrink-0"
+            style={{
+              height: "500px",
+              backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
+            }}
+          >
+            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
+              <h1 className="font-helvetica-now-thin text-[24px] text-center">
+                Dr. Frey was my orthodontist when I was 11 years old, Im now 42.
+                I still talk about how amazing he was and the great work he did
+                with my teeth. Thank you so much for giving the most beautiful
+                smile!
+              </h1>
+              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                Tanya Burnhauser
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Locations() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false });
@@ -2064,7 +2405,7 @@ function Locations() {
 
   return (
     <>
-      <section id="locations-section" className="relative bg-[#F1FEBC]">
+      <section id="locations-section" className="relative bg-[#FF9831]">
         <div
           id="locations-heading"
           className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32"
