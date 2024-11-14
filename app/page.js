@@ -986,7 +986,7 @@ const About = () => {
         strokeLinejoin="round"
       />
     </svg> */}
-  <section style={{marginTop:"12rem"}}ref={aboutRef} className="bg-white hero relative h-screen flex flex-col justify-between">
+  <section style={{marginTop:"12rem"}} ref={aboutRef} >
   <motion.div
   className="w-layout-blockcontainer textimagecontainer"
   initial="hidden"
@@ -1022,35 +1022,26 @@ const About = () => {
 
 
 
-        <div className="big-numbers-wrapper flex justify-around items-center space-x-8 mt-8">
+        <div style={{marginTop:"8rem"}} className="big-numbers-wrapper flex justify-around items-center ">
   {/* Card 1 */}
-  <div
-    id="w-node-_1af93a0f-02ae-0fb1-39b8-a79c00b212e1"
-    data-w-id="1af93a0f-02ae-0fb1-39b8-a79c00b212e1"
-    className="big-numbers-card  transition-opacity duration-500 ease-in-out"
+  <div className="big-numbers-card  transition-opacity duration-500 ease-in-out"
   >
     <div className="big-numbers text-5xl font-bold ">60+</div>
-    <p className="text-size-medium text-gray-600">Years of experience</p>
+    <p className="text-size-medium font-neue-montreal  text-gray-600">Years of experience</p>
   </div>
 
   {/* Card 2 */}
-  <div
-    id="w-node-_1af93a0f-02ae-0fb1-39b8-a79c00b212e6"
-    data-w-id="1af93a0f-02ae-0fb1-39b8-a79c00b212e6"
-    className="big-numbers-card transition-opacity duration-500 ease-in-out"
+  <div className="big-numbers-card transition-opacity duration-500 ease-in-out"
   >
     <div className="big-numbers text-5xl font-bold ">25k+</div>
-    <p className="text-size-medium text-gray-600">Satisfied patients</p>
+    <p className="font-neue-montreal text-size-medium text-gray-600">Satisfied patients</p>
   </div>
 
   {/* Card 3 */}
-  <div
-    id="w-node-_1af93a0f-02ae-0fb1-39b8-a79c00b212eb"
-    data-w-id="1af93a0f-02ae-0fb1-39b8-a79c00b212eb"
-    className="big-numbers-card transition-opacity duration-500 ease-in-out"
+  <div className="big-numbers-card transition-opacity duration-500 ease-in-out"
   >
     <div className="big-numbers text-5xl font-bold ">4+</div>
-    <p className="text-size-medium text-gray-600">Locations</p>
+    <p className="font-neue-montreal text-size-medium text-gray-600">Locations</p>
   </div>
 </div>
       </section>
