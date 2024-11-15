@@ -534,9 +534,9 @@ function Hero() {
   }, []);
 
   const colors = [
-    ["#E64627", "#00BFFF", "#FF5A5A", "#C084FC"],
-    ["#00FFC6", "#2F2F2F", "#FF70A6", "#FF5A5A"],
-    ["#C084FC", "#0F0E45", "#E64627", "#0F0E45"],
+    ["#FAFF7E", "#E3EB91", "#D8E19A", "#EFF588"],
+    ["#EFF588", "#EFF588", "#F9DDDF", "#FF5A5A"],
+    ["#C084FC", "#0F0E45", "#F9DDDF", "#0F0E45"],
     ["#3D0075", "#0F0E45", "#808080", "#2F2F2F"],
   ];
 
@@ -593,8 +593,8 @@ function Hero() {
 
       {/* Bottom Content */}
       <div className="flex justify-between items-end mt-8">
-        <div >
-        <p className="font-neue-montreal font-bold text-sm">• EST {time}</p>
+        <div>
+          <p className="font-neue-montreal font-bold text-sm">• EST {time}</p>
         </div>
 
         <div className="flex flex-col items-end text-right font-light lg:w-1/3 w-full">
@@ -685,7 +685,7 @@ const About = () => {
   //     },
   //   });
   // }, []);
-  
+
   const aboutRef = useRef(null);
 
   useEffect(() => {
@@ -735,7 +735,7 @@ const About = () => {
     {
       title: "All Ages",
       subtitle: "",
-      image: "/path/to/image3.jpg",
+      image: "../images/elizabethaao.png",
     },
   ];
 
@@ -748,7 +748,6 @@ const About = () => {
   const handleMouseLeave = () => {
     setHoveredCard(null);
   };
-
 
   return (
     <section
@@ -771,172 +770,195 @@ const About = () => {
       />
     </svg> */}
       <section style={{ marginTop: "12rem" }} ref={aboutRef}>
-        <motion.div
-          className="w-layout-blockcontainer textimagecontainer"
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          variants={textVariants}
-        >
-          <div className="text-images-wrapper">
-            <div className="text-images">
-              <h2 className="heading-2 text-weight-regular">
-                #1 Diamond and{" "}
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {projects.map((project, index) => (
+              <motion.div
+                key={index}
+                style={{ height: "36rem" }}
+                className="bg-white relative rounded-lg p-8 flex flex-col justify-between overflow-hidden"
+              >
                 <motion.div
-                  className="spanimage one"
-                  variants={spanVariants}
-                  style={{ display: "inline-block", overflow: "hidden" }}
-                ></motion.div>
-                Invisalign Providers in Lehigh Valley. We've treated the most
-                Invisalign cases{" "}
-                <motion.div
-                  className="spanimage two"
-                  variants={spanVariants}
-                  style={{ display: "inline-block", overflow: "hidden" }}
-                ></motion.div>
-                delivering straighter smiles in 12-16 months{" "}
-                <motion.div
-                  className="spanimage three"
-                  variants={spanVariants}
-                  style={{ display: "inline-block", overflow: "hidden" }}
-                ></motion.div>
-                without wires
-              </h2>
-            </div>
+                  className="relative overflow-hidden flex items-center justify-center w-full h-full"
+                  initial={{
+                    clipPath: "circle(25% at 50% 50%)",
+                    borderRadius: "50%",
+                  }}
+                  whileHover={{
+                    clipPath: "inset(0% 0% 0% 0%)",
+                    borderRadius: "0%",
+                  }}
+                  transition={{ duration: 0.7, ease: "easeInOut" }}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    mixBlendMode: "multiply",
+                  }}
+                >
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="object-cover w-full h-full"
+                  />
+                </motion.div>
+
+                <div className="text-left mt-auto pt-4 relative z-10 pointer-events-none">
+                  <h3 className="text-[2rem] font-neue-montreal mb-2 text-gray-800">
+                    {project.title}
+                  </h3>
+                  <p className="text-gray-600 uppercase tracking-wider">
+                    {project.subtitle}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </div>
-        </motion.div>
-
-     <div
-      style={{ marginTop: '8rem' }}
-      className="big-numbers-wrapper flex justify-around items-center"
-    >
-      <div
-        className="big-numbers-card group transition-all duration-500 ease-in-out"
-        onMouseEnter={() => handleMouseEnter(1)}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div
-          className={`big-numbers text-5xl font-bold ${
-            hoveredCard && hoveredCard !== 1 ? 'text-gray-400' : 'text-gray-900'
-          }`}
-        >
-          60+
         </div>
-        <p
-          className={`text-size-medium font-neue-montreal ${
-            hoveredCard && hoveredCard !== 1 ? 'text-gray-400' : 'text-gray-900'
-          }`}
-        >
-          Years of experience
-        </p>
-      </div>
 
-   
-      <div
-        className="big-numbers-card group transition-all duration-500 ease-in-out"
-        onMouseEnter={() => handleMouseEnter(2)}
-        onMouseLeave={handleMouseLeave}
-      >
         <div
-          className={`big-numbers text-5xl font-bold ${
-            hoveredCard === 2 ? 'text-gray-900' : 'text-gray-400'
-          }`}
+          style={{ marginTop: "8rem" }}
+          className="big-numbers-wrapper flex justify-around items-center"
         >
-          25k+
-        </div>
-        <p
-          className={`text-size-medium font-neue-montreal ${
-            hoveredCard === 2 ? 'text-gray-900' : 'text-gray-400'
-          }`}
-        >
-          Satisfied patients
-        </p>
-      </div>
+          <div
+            className="big-numbers-card group transition-all duration-500 ease-in-out"
+            onMouseEnter={() => handleMouseEnter(1)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div
+              className={`big-numbers text-5xl font-bold ${
+                hoveredCard && hoveredCard !== 1
+                  ? "text-gray-400"
+                  : "text-gray-900"
+              }`}
+            >
+              60+
+            </div>
+            <p
+              className={`text-size-medium font-neue-montreal ${
+                hoveredCard && hoveredCard !== 1
+                  ? "text-gray-400"
+                  : "text-gray-900"
+              }`}
+            >
+              Years of experience
+            </p>
+          </div>
 
- 
-      <div
-        className="big-numbers-card group transition-all duration-500 ease-in-out"
-        onMouseEnter={() => handleMouseEnter(3)}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div
-          className={`big-numbers text-5xl font-bold ${
-            hoveredCard === 3 ? 'text-gray-900' : 'text-gray-400'
-          }`}
-        >
-          4+
+          <div
+            className="big-numbers-card group transition-all duration-500 ease-in-out"
+            onMouseEnter={() => handleMouseEnter(2)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div
+              className={`big-numbers text-5xl font-bold ${
+                hoveredCard === 2 ? "text-gray-900" : "text-gray-400"
+              }`}
+            >
+              25k+
+            </div>
+            <p
+              className={`text-size-medium font-neue-montreal ${
+                hoveredCard === 2 ? "text-gray-900" : "text-gray-400"
+              }`}
+            >
+              Satisfied patients
+            </p>
+          </div>
+
+          <div
+            className="big-numbers-card group transition-all duration-500 ease-in-out"
+            onMouseEnter={() => handleMouseEnter(3)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div
+              className={`big-numbers text-5xl font-bold ${
+                hoveredCard === 3 ? "text-gray-900" : "text-gray-400"
+              }`}
+            >
+              4+
+            </div>
+            <p
+              className={`text-size-medium font-neue-montreal ${
+                hoveredCard === 3 ? "text-gray-900" : "text-gray-400"
+              }`}
+            >
+              Locations
+            </p>
+          </div>
         </div>
-        <p
-          className={`text-size-medium font-neue-montreal ${
-            hoveredCard === 3 ? 'text-gray-900' : 'text-gray-400'
-          }`}
-        >
-          Locations
-        </p>
-      </div>
-    </div>
 
         <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-12">
-            <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
-            <span className="text-6xl font-cursive italic text-gray-700 block mt-2 font-autumnchant">
-              best
-            </span>
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-12">
+              <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
+              <span className="text-6xl font-cursive italic text-gray-700 block mt-2 font-autumnchant">
+                best
+              </span>
 
-          
-            <img
-              src="../images/home.svg"
-              className="max-w-full h-auto mx-auto"
-              alt="Home SVG"
-            />
+              <img
+                src="../images/home.svg"
+                className="max-w-full h-auto mx-auto"
+                alt="Home SVG"
+              />
+            </div>
+          </div>
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {projects.map((project, index) => (
+              <motion.div
+                key={index}
+                style={{ height: "36rem" }}
+                className="bg-white rounded-lg p-8 flex flex-col justify-between transform transition-transform hover:scale-105"
+              >
+                {/* Image Container */}
+                <motion.div
+                  className="relative mx-auto rounded-full overflow-hidden flex items-center justify-center"
+                  style={{
+                    width: "16rem",
+                    height: "16rem",
+                    transition: "all 0.4s ease-in-out",
+                  }}
+                  whileHover="expanded"
+                  variants={{
+                    expanded: {
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "0%",
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                    },
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="object-cover w-full h-full"
+                  />
+                </motion.div>
+
+                {/* Text Section */}
+                <div className="text-left mt-auto pt-4">
+                  <h3 className="text-[2rem] font-neue-montreal mb-2">
+                    {project.title}
+                  </h3>
+                  <p className="text-gray-500 uppercase tracking-wider">
+                    {project.subtitle}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </section>
-
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {projects.map((project, index) => (
-            <motion.div
-              key={index}
-              style={{ height: "36rem" }}
-              className="bg-white rounded-lg p-8 flex flex-col justify-between transform transition-transform hover:scale-105"
-            >
-              {/* Image Container */}
-              <motion.div
-                className="relative mx-auto rounded-full overflow-hidden flex items-center justify-center transition-all duration-500"
-                style={{
-                  width: "16rem",
-                  height: "16rem",
-                }}
-                whileHover={{
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: "0%",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                }}
-              >
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="object-cover w-full h-full"
-                />
-              </motion.div>
-
-              {/* Text Section */}
-              <div className="text-left mt-auto pt-4">
-                <h3 className="text-[2rem] font-neue-montreal mb-2">
-                  {project.title}
-                </h3>
-                <p className="text-gray-500 uppercase tracking-wider">
-                  {project.subtitle}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
       </section>
       {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
@@ -1001,7 +1023,6 @@ const ParallaxOutline = () => {
 
   return (
     <div className="relative flex flex-col items-center justify-center bg-[#FBFBFB]">
-
       {/* Main Content Section */}
       <section
         ref={parallaxRef}
@@ -1032,7 +1053,7 @@ const ParallaxOutline = () => {
             <img
               src="../images/mainsectionimage.jpg"
               alt="Consultation"
-              className="object-cover w-full h-full rounded-xl"
+              className="object-cover w-full h-full rounded-full"
             />
           </div>
           {/* Green Circle */}
@@ -1044,7 +1065,7 @@ const ParallaxOutline = () => {
           <button className="font-helvetica-neue-light bg-[#e0cbe8] text-black text-2xl py-6 px-12 rounded-lg">
             NEED MORE INFO? <br /> TAKE OUR QUIZ
           </button>
-          <button className="font-helvetica-neue-light py-4 px-24 bg-[#d7fa2c] text-black text-lg rounded-full shadow-md">
+          <button className="font-helvetica-neue-light py-4 px-24 bg-[#d7fa2c] text-black text-lg rounded-full">
             BOOK HERE
           </button>
         </div>
@@ -1269,8 +1290,6 @@ function GSAPAnimateScrollSections() {
       });
     });
 
-    
-
     return (
       <section
         id="stats-section"
@@ -1487,12 +1506,7 @@ const ImageGrid = () => {
     },
   ];
 
- 
-  return (
-    <section className="bg-[#FBFBFB]">
-
-    </section>
-  );
+  return <section className="bg-[#FBFBFB]"></section>;
 };
 
 const ParallaxOutline = () => {
