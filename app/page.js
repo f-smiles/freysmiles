@@ -592,9 +592,9 @@ function Hero() {
       </div>
 
       {/* Bottom Content */}
-      <div className="flex justify-between items-end text-sm mt-8">
-        <div className="text-[#808080]">
-          <p>{time}</p>
+      <div className="flex justify-between items-end mt-8">
+        <div >
+        <p className="font-neue-montreal font-bold text-sm">• EST {time}</p>
         </div>
 
         <div className="flex flex-col items-end text-right font-light lg:w-1/3 w-full">
@@ -638,13 +638,13 @@ const MarqueeSection = () => {
   return (
     <div
       ref={marqueeRef}
-      className="uppercase rounded-tl-[40px] rounded-tr-[40px] font-agrandir-bold relative h-[40vh] text-white overflow-hidden bg-[#004D43] flex items-center"
+      className="uppercase rounded-tl-[40px] rounded-tr-[40px] font-altero relative h-[40vh] text-white overflow-hidden bg-[#004D43] flex items-center"
     >
       <div
         ref={marqueeContentRef}
         className="marqueeHome"
         style={{
-          fontSize: "144px",
+          fontSize: "180px",
           fontWeight: "bold",
           whiteSpace: "nowrap",
           overflow: "hidden",
@@ -669,13 +669,11 @@ const About = () => {
   //   const path = pathRef.current.querySelector('path');
   //   const pathLength = path.getTotalLength();
 
-  //   // Set initial stroke properties
   //   gsap.set(path, {
   //     strokeDasharray: pathLength,
   //     strokeDashoffset: pathLength,
   //   });
 
-  //   // Animate the stroke as the user scrolls
   //   gsap.to(path, {
   //     strokeDashoffset: 0,
   //     ease: 'power2.out',
@@ -687,6 +685,7 @@ const About = () => {
   //     },
   //   });
   // }, []);
+  
   const aboutRef = useRef(null);
 
   useEffect(() => {
@@ -722,10 +721,39 @@ const About = () => {
     },
   };
 
+  const projects = [
+    {
+      title: "Clear Aligners",
+      subtitle: "INVISALIGN",
+      image: "../images/handaligner.jpeg",
+    },
+    {
+      title: "Braces",
+      subtitle: "DAMON",
+      image: "/path/to/image2.jpg",
+    },
+    {
+      title: "All Ages",
+      subtitle: "",
+      image: "/path/to/image3.jpg",
+    },
+  ];
+
+  const [hoveredCard, setHoveredCard] = useState(null);
+
+  const handleMouseEnter = (cardIndex) => {
+    setHoveredCard(cardIndex);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredCard(null);
+  };
+
+
   return (
     <section
       ref={aboutRef}
-      className="rounded-tl-[40px] rounded-tr-[40px] bg-[#FBFBFB] hero relative h-screen flex flex-col justify-between z-20"
+      className="rounded-tl-[40px] rounded-tr-[40px] bg-[#FBFBFB] hero relative flex flex-col justify-between z-20"
     >
       {/* <svg
       ref={pathRef}
@@ -777,34 +805,138 @@ const About = () => {
           </div>
         </motion.div>
 
+     <div
+      style={{ marginTop: '8rem' }}
+      className="big-numbers-wrapper flex justify-around items-center"
+    >
+      <div
+        className="big-numbers-card group transition-all duration-500 ease-in-out"
+        onMouseEnter={() => handleMouseEnter(1)}
+        onMouseLeave={handleMouseLeave}
+      >
         <div
-          style={{ marginTop: "8rem" }}
-          className="big-numbers-wrapper flex justify-around items-center "
+          className={`big-numbers text-5xl font-bold ${
+            hoveredCard && hoveredCard !== 1 ? 'text-gray-400' : 'text-gray-900'
+          }`}
         >
-          {/* Card 1 */}
-          <div className="big-numbers-card  transition-opacity duration-500 ease-in-out">
-            <div className="big-numbers text-5xl font-bold ">60+</div>
-            <p className="text-size-medium font-neue-montreal  text-gray-600">
-              Years of experience
-            </p>
-          </div>
+          60+
+        </div>
+        <p
+          className={`text-size-medium font-neue-montreal ${
+            hoveredCard && hoveredCard !== 1 ? 'text-gray-400' : 'text-gray-900'
+          }`}
+        >
+          Years of experience
+        </p>
+      </div>
 
-          {/* Card 2 */}
-          <div className="big-numbers-card transition-opacity duration-500 ease-in-out">
-            <div className="big-numbers text-5xl font-bold ">25k+</div>
-            <p className="font-neue-montreal text-size-medium text-gray-600">
-              Satisfied patients
-            </p>
-          </div>
+   
+      <div
+        className="big-numbers-card group transition-all duration-500 ease-in-out"
+        onMouseEnter={() => handleMouseEnter(2)}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div
+          className={`big-numbers text-5xl font-bold ${
+            hoveredCard === 2 ? 'text-gray-900' : 'text-gray-400'
+          }`}
+        >
+          25k+
+        </div>
+        <p
+          className={`text-size-medium font-neue-montreal ${
+            hoveredCard === 2 ? 'text-gray-900' : 'text-gray-400'
+          }`}
+        >
+          Satisfied patients
+        </p>
+      </div>
 
-          {/* Card 3 */}
-          <div className="big-numbers-card transition-opacity duration-500 ease-in-out">
-            <div className="big-numbers text-5xl font-bold ">4+</div>
-            <p className="font-neue-montreal text-size-medium text-gray-600">
-              Locations
-            </p>
+ 
+      <div
+        className="big-numbers-card group transition-all duration-500 ease-in-out"
+        onMouseEnter={() => handleMouseEnter(3)}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div
+          className={`big-numbers text-5xl font-bold ${
+            hoveredCard === 3 ? 'text-gray-900' : 'text-gray-400'
+          }`}
+        >
+          4+
+        </div>
+        <p
+          className={`text-size-medium font-neue-montreal ${
+            hoveredCard === 3 ? 'text-gray-900' : 'text-gray-400'
+          }`}
+        >
+          Locations
+        </p>
+      </div>
+    </div>
+
+        <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12">
+            <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
+            <span className="text-6xl font-cursive italic text-gray-700 block mt-2 font-autumnchant">
+              best
+            </span>
+
+          
+            <img
+              src="../images/home.svg"
+              className="max-w-full h-auto mx-auto"
+              alt="Home SVG"
+            />
           </div>
         </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {projects.map((project, index) => (
+            <motion.div
+              key={index}
+              style={{ height: "36rem" }}
+              className="bg-white rounded-lg p-8 flex flex-col justify-between transform transition-transform hover:scale-105"
+            >
+              {/* Image Container */}
+              <motion.div
+                className="relative mx-auto rounded-full overflow-hidden flex items-center justify-center transition-all duration-500"
+                style={{
+                  width: "16rem",
+                  height: "16rem",
+                }}
+                whileHover={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "0%",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                }}
+              >
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="object-cover w-full h-full"
+                />
+              </motion.div>
+
+              {/* Text Section */}
+              <div className="text-left mt-auto pt-4">
+                <h3 className="text-[2rem] font-neue-montreal mb-2">
+                  {project.title}
+                </h3>
+                <p className="text-gray-500 uppercase tracking-wider">
+                  {project.subtitle}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
       </section>
       {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
@@ -869,7 +1001,6 @@ const ParallaxOutline = () => {
 
   return (
     <div className="relative flex flex-col items-center justify-center bg-[#FBFBFB]">
-      {/* Marquee */}
 
       {/* Main Content Section */}
       <section
@@ -1138,6 +1269,8 @@ function GSAPAnimateScrollSections() {
       });
     });
 
+    
+
     return (
       <section
         id="stats-section"
@@ -1354,88 +1487,10 @@ const ImageGrid = () => {
     },
   ];
 
-  const projects = [
-    {
-      title: "Clear Aligners",
-      subtitle: "INVISALIGN",
-      image: "../images/handaligner.jpeg",
-    },
-    {
-      title: "Braces",
-      subtitle: "DAMON",
-      image: "/path/to/image2.jpg",
-    },
-    {
-      title: "All Ages",
-      subtitle: "",
-      image: "/path/to/image3.jpg",
-    },
-  ];
-
+ 
   return (
     <section className="bg-[#FBFBFB]">
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-12">
-            <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
-            <span className="text-6xl font-cursive italic text-gray-700 block mt-2 font-autumnchant">
-              best
-            </span>
 
-            {/* Adjusting the SVG */}
-            <img
-              src="../images/home.svg"
-              className="max-w-full h-auto mx-auto"
-              alt="Home SVG"
-            />
-          </div>
-        </div>
-      </section>
-
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {projects.map((project, index) => (
-            <motion.div
-              key={index}
-              style={{ height: "36rem" }}
-              className="bg-white rounded-lg p-8 flex flex-col justify-between transform transition-transform hover:scale-105"
-            >
-              {/* Image Container */}
-              <motion.div
-                className="relative mx-auto rounded-full overflow-hidden flex items-center justify-center transition-all duration-500"
-                style={{
-                  width: "16rem",
-                  height: "16rem",
-                }}
-                whileHover={{
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: "0%",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                }}
-              >
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="object-cover w-full h-full"
-                />
-              </motion.div>
-
-              {/* Text Section */}
-              <div className="text-left mt-auto pt-4">
-                <h3 className="text-[2rem] font-neue-montreal mb-2">
-                  {project.title}
-                </h3>
-                <p className="text-gray-500 uppercase tracking-wider">
-                  {project.subtitle}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
     </section>
   );
 };
