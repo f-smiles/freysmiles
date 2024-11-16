@@ -725,12 +725,12 @@ const About = () => {
     {
       title: "Clear Aligners",
       subtitle: "INVISALIGN",
-      image: "../images/handaligner.jpeg",
+      image: "../images/hand.jpeg",
     },
     {
       title: "Braces",
       subtitle: "DAMON",
-      image: "/path/to/image2.jpg",
+      image: "../images/maledamonbraces.png",
     },
     {
       title: "All Ages",
