@@ -725,7 +725,7 @@ const About = () => {
     {
       title: "Clear Aligners",
       subtitle: "INVISALIGN",
-      image: "../images/hand.jpeg",
+      image: "../images/handbreakout.png",
     },
     {
       title: "Braces",
@@ -748,6 +748,7 @@ const About = () => {
   const handleMouseLeave = () => {
     setHoveredCard(null);
   };
+
 
 
   return (
@@ -884,11 +885,13 @@ const About = () => {
             </span>
 
           
-            <img
-              src="../images/home.svg"
-              className="max-w-full h-auto mx-auto"
+            {/* <img
+              src="../images/handbreakout.png"
+              className="breakout-container"
               alt="Home SVG"
-            />
+            /> */}
+
+            
           </div>
         </div>
       </section>
@@ -906,34 +909,49 @@ const About = () => {
               onMouseLeave={() => setIsHovered(false)}
               style={{ height: "36rem" }}
             >
-              <motion.div
-                className="relative overflow-hidden flex items-center justify-center w-full h-full"
-                animate={{
-                  clipPath: isHovered
-                    ? 'inset(0% 0% 0% 0%)'
-                    : 'circle(25% at 50% 50%)',
-                  borderRadius: isHovered ? '0%' : '50%',
-                }}
-                transition={{ duration: 0.8, ease: 'easeInOut' }}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  mixBlendMode: "multiply",
-                }}
-              >
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="object-cover w-full h-full"
-                />
-              </motion.div>
+<motion.div
+  className="relative overflow-hidden flex items-center justify-center w-full h-full"
+  animate={{
+    clipPath: isHovered
+      ? "circle(150% at 50% 50%)"
+      : "circle(25% at 50% 50%)",
+  }}
+  transition={{
+    duration: 1.2,
+    ease: [0.3, 0.0, 0.2, 1],
+  }}
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+  }}
+>
+  <motion.img
+    src={project.image}
+    alt={project.title}
+    className="object-cover w-full h-full"
+    style={{
+      transform: isHovered
+        ? "translate(0%, 0%) scale(1)"
+        : "translate(-5%, -5%) scale(1.1)",
+      transition: "transform 1.2s cubic-bezier(0.3, 0.0, 0.2, 1)",
+    }}
+  />
+</motion.div>
 
-              {/* Text Section */}
+
+
+
+
+
+
+
+
+  
               <div className="text-left mt-auto pt-4 relative z-10 pointer-events-none">
-                <h3 className="text-[2rem] font-neue-montreal mb-2 text-gray-800">
+                <h3 className="text-[2rem] font-neue-montreal tracking-wider mb-2 text-gray-800">
                   {project.title}
                 </h3>
                 <p className="text-gray-600 uppercase tracking-wider">
@@ -1009,8 +1027,6 @@ const ParallaxOutline = () => {
 
   return (
     <div className="relative flex flex-col items-center justify-center bg-[#FBFBFB]">
-
-      {/* Main Content Section */}
       <section
         ref={parallaxRef}
         className="py-20 px-8 flex flex-col lg:flex-row max-w-7xl mx-auto space-y-12 lg:space-y-0 lg:space-x-8"
@@ -1040,21 +1056,40 @@ const ParallaxOutline = () => {
             <img
               src="../images/mainsectionimage.jpg"
               alt="Consultation"
-              className="object-cover w-full h-full rounded-xl"
+              className="object-cover w-full h-full rounded-full"
             />
           </div>
-          {/* Green Circle */}
+
           <div className="absolute -left-28 top-48 bg-[#d7fa2c] z-10 w-56 h-56 rounded-full"></div>
         </div>
 
-        {/* Third Column with Buttons */}
+      
         <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
           <button className="font-helvetica-neue-light bg-[#e0cbe8] text-black text-2xl py-6 px-12 rounded-lg">
             NEED MORE INFO? <br /> TAKE OUR QUIZ
           </button>
-          <button className="font-helvetica-neue-light py-4 px-24 bg-[#d7fa2c] text-black text-lg rounded-full shadow-md">
-            BOOK HERE
-          </button>
+          <div
+      data-remodal-target="form"
+      className="img-wrap mod--round transform"
+      style={{
+        transform: 'translate3d(-8rem, 0, 0) rotateZ(-120deg)',
+      }}
+    >
+      {/* Inner text wrapper */}
+      <div className="img-wrap mod--round-text3">
+        <div className="img-wrap mod--round-text2">
+          <img
+            src="/images/circlep-text.svg"
+            loading="eager"
+            alt="Circle Text"
+            className="img mod--round-text"
+          />
+        </div>
+      </div>
+      
+      {/* Arrow */}
+      <div className="img mod--round-arrow"></div>
+    </div>
         </div>
       </section>
     </div>
