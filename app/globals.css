@@ -4390,3 +4390,83 @@ h2.heading-2 {
   line-height: 1; 
   transform: translateY(-10%); 
 }
+
+.book-cursor {
+  background-color: var(--blue);
+  opacity: 0;
+  color: #fff;
+  text-align: center;
+  letter-spacing: .08em;
+  border-radius: 100%;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 1.125rem;
+  display: flex;
+}
+
+.book-cursor-wrap {
+  width: 9.75rem;
+  height: 9.75rem;
+  transition: all .5s cubic-bezier(.215, .61, .355, 1);
+  transform: scale(0);
+}
+
+.img.mod--round-arrow {
+  background-image: url('/images/circle-arrow.svg');
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: 1.8125rem;
+  transition: all .5s cubic-bezier(.215, .61, .355, 1);
+  position: absolute;
+  inset: 0%;
+}
+
+.img.mod--round-text {
+  width: 100%;
+  height: 100%;
+  transition: all .5s ease-in-out;
+  display: block;
+  position: relative;
+}
+
+.img-wrap.mod--round {
+  background-color: var(--blue);
+  cursor: pointer;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  width: 9.75rem;
+  height: 9.75rem;
+  display: flex;
+  position: absolute;
+  inset: 0 auto auto 2.875rem;
+}
+
+.img.mod--btn-arrow {
+  width: 1.5rem;
+  display: block;
+}
+
+.img.mod--btn-arrow.mod--absolute {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-150%);
+}
+
+.img-wrap.mod--round-text3 {
+  position: absolute;
+  inset: 0%;
+}
+
+.img-wrap.mod--round-text2 {
+  justify-content: center;
+  align-items: center;
+  padding: .7rem;
+  transition: all .5s cubic-bezier(.215, .61, .355, 1);
+  display: flex;
+  position: absolute;
+  inset: 0%;
+}
