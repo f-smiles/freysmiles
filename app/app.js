@@ -28,8 +28,8 @@ export default function App({ children, user }) {
           <Toast />
           {children}
         </main>
+        <Footer />
       </PersistGate>
-      <Footer />
     </Provider>
   )
 }
