@@ -788,7 +788,20 @@ function Hero() {
           </div>
           <div className="flex-grow"></div>
         </div>
-
+        {/* <div class="parent">
+  <div class="child div1"> </div>
+  <div class="child div2"> </div>
+  <div class="child div3"> </div>
+  <div class="child div4"> </div>
+  <div class="child div5"> </div>
+  <div class="child div6"> </div>
+  <div class="child div7"> </div>
+  <div class="child div8"> </div>
+  <div class="child div9"> </div>
+  <div class="child div10"> </div>
+  <div class="child div11"> </div>
+  <div class="child div12"> </div>
+</div> */}
         <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
           <div className="flex flex-col justify-center items-center h-full space-y-0">
             {colors.map((row, rowIndex) => (
@@ -1103,7 +1116,7 @@ const About = () => {
               best
             </span>
 
-          
+
             {/* <img
               src="../images/handbreakout.png"
               className="breakout-container"
@@ -1116,72 +1129,68 @@ const About = () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-        {projects.map((project, index) => {
-          const [isHovered, setIsHovered] = useState(false);
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+    {projects.map((project, index) => {
+      const [isHovered, setIsHovered] = useState(false);
 
-          return (
-            <motion.div
-              key={index}
-              className="bg-white relative rounded-lg p-8 flex flex-col justify-between overflow-hidden"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              style={{ height: "36rem" }}
-            >
-<motion.div
-  className="relative overflow-hidden flex items-center justify-center w-full h-full"
-  animate={{
-    clipPath: isHovered
-      ? "circle(150% at 50% 50%)"
-      : "circle(25% at 50% 50%)",
-  }}
-  transition={{
-    duration: 1.2,
-    ease: [0.3, 0.0, 0.2, 1],
-  }}
-  style={{
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-  }}
->
-  <motion.img
-    src={project.image}
-    alt={project.title}
-    className="object-cover w-full h-full"
-    style={{
-      transform: isHovered
-        ? "translate(0%, 0%) scale(1)"
-        : "translate(-5%, -5%) scale(1.1)",
-      transition: "transform 1.2s cubic-bezier(0.3, 0.0, 0.2, 1)",
-    }}
-  />
-</motion.div>
+      return (
+        <motion.div
+          key={index}
+          className="bg-white relative rounded-lg p-8 flex flex-col justify-between overflow-hidden"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{ height: "36rem" }}
+        >
+          <motion.div
+            className="relative overflow-hidden flex items-center justify-center w-full h-full"
+            animate={{
+              clipPath: isHovered
+                ? "circle(150% at 50% 50%)" 
+                : "circle(25% at 50% 50%)", 
+            }}
+            transition={{
+              duration: isHovered ? 1.2 : 0.6, 
+              ease: [0.3, 0.0, 0.2, 1],
+            }}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              clipPath: "circle(25% at 50% 50%)", 
+            }}
+          >
+            <motion.img
+              src={project.image}
+              alt={project.title}
+              className="object-cover w-full h-full"
+              animate={{
+                transform: isHovered
+                  ? "translate(0%, 0%) scale(1)" 
+                  : "translate(-5%, -5%) scale(1.1)", 
+              }}
+              transition={{
+                duration: isHovered ? 1.2 : 0.6, 
+                ease: [0.3, 0.0, 0.2, 1],
+              }}
+            />
+          </motion.div>
 
+          <div className="text-left mt-auto pt-4 relative z-10 pointer-events-none">
+            <h3 className="text-[2rem] font-neue-montreal tracking-wider mb-2 text-gray-800">
+              {project.title}
+            </h3>
+            <p className="text-gray-600 uppercase tracking-wider">
+              {project.subtitle}
+            </p>
+          </div>
+        </motion.div>
+      );
+    })}
+  </div>
+</div>
 
-
-
-
-
-
-
-
-  
-              <div className="text-left mt-auto pt-4 relative z-10 pointer-events-none">
-                <h3 className="text-[2rem] font-neue-montreal tracking-wider mb-2 text-gray-800">
-                  {project.title}
-                </h3>
-                <p className="text-gray-600 uppercase tracking-wider">
-                  {project.subtitle}
-                </p>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
-    </div>
       </section>
       {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
@@ -1892,7 +1901,47 @@ const ImageGrid = () => {
  
   return (
     <section className="bg-[#FBFBFB]">
-
+   <div>
+      <div
+        className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
+        ref={bodyRef}
+      >
+        <div
+          className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
+          style={{
+            left: `${cursorPos.x}px`,
+            top: `${cursorPos.y}px`,
+            opacity: isHovering ? 1 : 0,
+          }}
+        >
+          <p>CHECK </p>
+          <p>IT OUT</p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
+          {images.map((image, index) => (
+            <a
+              key={index}
+              href={image.url}
+              className={`group image-card relative flex items-center justify-center mb-20 ${
+                image.className === "image-portrait"
+                  ? "mx-4 w-[27vw] h-[37vw]"
+                  : "mx-4 w-[40vw] h-[27vw]"
+              }`}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+                {image.title}
+              </div>
+              <img
+                src={image.src}
+                className="block object-cover w-full h-full"
+              />
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
     </section>
   );
 };
