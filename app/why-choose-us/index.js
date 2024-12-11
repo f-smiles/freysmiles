@@ -211,7 +211,7 @@ const About = () => {
                 <div className="timeline__col mod--4">
                   <div className="timeline__txt-block">
                     <p className="timeline__p">
-                      Lehigh Valley's first Invisalign provider. Continuing to
+                      Lehigh Valley&apos;s first Invisalign provider. Continuing to
                       hone our skill-set while testing new aligner systems.
                     </p>
                     <div className="timeline__tags">

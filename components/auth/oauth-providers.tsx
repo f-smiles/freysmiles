@@ -7,7 +7,7 @@ import { FcGoogle } from "react-icons/fc"
 import { Button } from "@/components/ui/button"
 import { useParams } from "next/navigation"
 
-export const OAuthProviders = ({ mode }: { mode: "login" | "signup" }) => {
+export const OAuthProviders = ({ mode }: { mode: "login" | "signup" | undefined }) => {
   return (
     <Button
       onClick={() => signIn("google", { redirect: false, callbackUrl: "/" })}

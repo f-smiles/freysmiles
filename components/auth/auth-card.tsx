@@ -11,7 +11,7 @@ type AuthCardProps = {
   backButtonHref: string,
   backButtonLabel: string,
   showOAuthProviders?: boolean,
-  mode: "login" | "signup",
+  mode?: "login" | "signup",
 }
 
 export const AuthCard = ({
