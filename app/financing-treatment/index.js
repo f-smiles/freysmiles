@@ -513,11 +513,11 @@ const HeaderBanner = () => {
                 />
 
                 <h3 className="text-4xl font-bold text-[#212353] mb-4">
-                  Our Support Doesn't End When Treatment Does
+                  Our Support Doesn&apos;t End When Treatment Does
                 </h3>
 
                 <p className="text-md text-[#4B5D68] mb-6">
-                  Your treatment includes one year of follow-up care. We're
+                  Your treatment includes one year of follow-up care. We&apos;re
                   never cheap with our energy.
                 </p>
               </div>
@@ -595,13 +595,13 @@ const HeaderBanner = () => {
               </div>
 
               <p className="text-lg text-gray-700 mb-8">
-                "Frey Smiles has made the whole process from start to finish
+                &quot;Frey Smiles has made the whole process from start to finish
                 incredibly pleasant and sooo easy on my kids to follow. They
-                were able to make a miracle happen with my son's tooth that was
-                coming in sideways. He now has a perfect smile and I couldn't be
+                were able to make a miracle happen with my son&apos;s tooth that was
+                coming in sideways. He now has a perfect smile and I couldn&apos;t be
                 happier. My daughter is halfway through her treatment and the
                 difference already has been great. I 100% recommend this place
-                to anyone!!!"
+                to anyone!!!&quot;
               </p>
 
               <div className="mt-8">

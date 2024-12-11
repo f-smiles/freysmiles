@@ -338,7 +338,7 @@ useEffect(() => {
                     lineHeight: "1.4",
                   }}
                 >
-                  We're the leading experts and top providers in the area of
+                  We&apos;re the leading experts and top providers in the area of
                   this passive, self-ligating system. Damon braces use a slide
                   mechanism to hold the archwire, reducing the amount of
                   pressure exerted on the teeth and allowing the teeth to move
@@ -357,7 +357,7 @@ useEffect(() => {
         userSelect: 'none',
         boxSizing: 'border-box' // Applying box-sizing to this element; typically, this would be globally set
       }} className="scrolle" ref={scrollContainerRef} data-scroll>
- 
+
  <div class="scrollHorizontal-content" data-scroll-content>
     <article className="horizontalSlide horizontalSlide--1 js-slide">
      <div className="horizontalSlide__inner">
@@ -368,7 +368,7 @@ useEffect(() => {
        </div>
      </div>
    </article>
-   
+
    <article className="horizontalSlide horizontalSlide--2 js-slide">
      <div className="horizontalSlide__inner">
        <div className="horizontalSlide__img js-transition-img">
@@ -378,7 +378,7 @@ useEffect(() => {
        </div>
      </div>
    </article>
-   
+
    <article className="horizontalSlide horizontalSlide--3 js-slide">
      <div className="horizontalSlide__inner">
        <div className="horizontalSlide__img">
@@ -397,7 +397,7 @@ useEffect(() => {
        </div>
      </div>
    </article>
-   
+
    <article className="horizontalSlide horizontalSlide--2 js-slide">
      <div className="horizontalSlide__inner">
        <div className="horizontalSlide__img js-transition-img">
@@ -407,7 +407,7 @@ useEffect(() => {
        </div>
      </div>
    </article>
-   
+
    <article className="horizontalSlide horizontalSlide--3 js-slide">
      <div className="horizontalSlide__inner">
        <div className="horizontalSlide__img">
@@ -417,11 +417,11 @@ useEffect(() => {
        </div>
      </div>
    </article>
- </div>  
- 
+ </div>
+
 
  <div class="scrollHorizontal-content scrollHorizontal-content--last" data-scroll-content>
-   
+
  <article className="horizontalSlide horizontalSlide--1 js-slide">
      <div className="horizontalSlide__inner">
        <div className="horizontalSlide__sub-title"><span>Project</span></div>
@@ -430,7 +430,7 @@ useEffect(() => {
        <div className="horizontalSlide__project">Corpus Studio</div>
      </div>
    </article>
-   
+
    <article className="horizontalSlide horizontalSlide--2 js-slide">
      <div className="horizontalSlide__inner">
        <div className="horizontalSlide__sub-title"><span>Project</span></div>
@@ -439,7 +439,7 @@ useEffect(() => {
        <div className="horizontalSlide__project">Ro Rocket Design</div>
      </div>
    </article>
-   
+
    <article className="horizontalSlide horizontalSlide--3 js-slide">
      <div className="horizontalSlide__inner">
        <div className="horizontalSlide__sub-title"><span>Project</span></div>
@@ -456,7 +456,7 @@ useEffect(() => {
        <div className="horizontalSlide__project">Corpus Studio</div>
      </div>
    </article>
-   
+
    <article className="horizontalSlide horizontalSlide--2 js-slide">
      <div className="horizontalSlide__inner">
        <div className="horizontalSlide__sub-title"><span>Project</span></div>
@@ -465,7 +465,7 @@ useEffect(() => {
        <div className="horizontalSlide__project">Ro Rocket Design</div>
      </div>
    </article>
-   
+
    <article className="horizontalSlide horizontalSlide--3 js-slide">
      <div className="horizontalSlide__inner">
        <div className="horizontalSlide__sub-title"><span>Project</span></div>
@@ -474,13 +474,13 @@ useEffect(() => {
        <div className="horizontalSlide__project">Corpus Studio</div>
      </div>
    </article>
-   
+
  </div>
- 
+
  <div class="scrollbar" data-scrollbar>
    <div class="scrollbar__handle js-scrollbar__handle"></div>
  </div>
- 
+
 </div>
 
         {/* <main data-scroll-container >

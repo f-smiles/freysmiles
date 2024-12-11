@@ -218,7 +218,7 @@ function AdultOrthoGrid() {
               Experience a beautiful smile{" "}
             </span>
             without goopy gagging impressions thanks to
-            <span className="font-agrandir-bold"> iTero's digital scanner</span>
+            <span className="font-agrandir-bold"> iTero&apos;s digital scanner</span>
           </p>
         </div>
       </div>
