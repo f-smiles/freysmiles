@@ -1366,7 +1366,7 @@ const ParallaxOutline = () => {
 //     </main>
 //   )
 // }
-SwiperCore.use([Keyboard, Mousewheel]);
+// SwiperCore.use([Keyboard, Mousewheel]);
 
 function GSAPAnimateScrollSections() {
   // const listRef = useRef(null);
