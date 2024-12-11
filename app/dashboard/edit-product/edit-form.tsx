@@ -45,7 +45,7 @@ export default function EditProductForm() {
       form.setValue("title", data.success.title)
       form.setValue("description", data.success.description)
       form.setValue("price", data.success.price)
-      form.setValue("id", parseInt(productId))
+      form.setValue("id", parseInt(productId!))
     }
   }
 
