@@ -550,7 +550,7 @@ const YourCare = () => {
     });
   }, []);
   const horizontalScrollTrackRef = useRef(null);
-  
+
 
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -560,7 +560,7 @@ const YourCare = () => {
       scrollTrigger: {
         trigger: horizontalScrollTrackRef.current,
         scrub: true,
-   
+
       },
     })
     .to(horizontalScrollTrackRef.current, {
@@ -582,9 +582,9 @@ const YourCare = () => {
 
   const stageRef = useRef(null);
 
-  
+
   const baseUrl = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/";
-  
+
   return (
     <>
       <Layout>
@@ -607,12 +607,12 @@ const YourCare = () => {
               </div>
             </div>
           </div>
-         
+
         <div className="horizontal-scroll-section" ref={sectionRef}>
-   
+
 
           <div className="section-wrapper">
-            
+
           <div id="stage" />
             <div className="bg-[#F1F1F1] relative pagesection">
 <img className="py-40 px-40 rounded-full" src="../images/skyclouds.jpeg"></img>
@@ -773,7 +773,7 @@ const YourCare = () => {
                       <span>comes to discussing</span>{" "}
                       <span className="highlight"> personalized </span>
                       <span>
-                        treatment plans. That's why we kindly request that all{" "}
+                        treatment plans. That&apos;s why we kindly request that all{" "}
                       </span>
                     </p>
                     <p className="three text-xl">
@@ -814,7 +814,7 @@ const YourCare = () => {
   <div className="stripe st2 flex-grow h-0 bg-[#FAA916]"></div>
   <div className="stripe st3 flex-grow h-0 bg-[#FBFFFE]"></div>
   <div className="stripe st4 flex-grow h-0 bg-[#6D676E]"></div>
-  
+
 </footer> */}
 
           {/* <section
