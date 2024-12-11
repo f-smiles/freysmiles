@@ -4516,3 +4516,10 @@ body {
 .div10 { grid-area: 3 / 3 / 4 / 4; }
 .div11 { grid-area: 3 / 4 / 4 / 5; }
 .div12 { grid-area: 3 / 5 / 4 / 6; } */
+
+
+.hero__middle-line {
+  position: absolute;
+  left: 5%;
+  will-change: transform;
+}
