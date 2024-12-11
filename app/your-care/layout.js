@@ -1,21 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Footer from '../_components/Footer';
-
-
-const Layout = ({ children, backgroundColor = 'white' }) => {
-    console.log("Background Color: ", backgroundColor);
-    return (
-      <div style={{ backgroundColor: backgroundColor, minHeight: '100vh', position: 'relative' }}>
-        {children}
-        {/* <Footer backgroundColor={backgroundColor} />  */}
-      </div>
-    );
+export default function YourCareLayout({ children }) {
+  // console.log("Background Color: ", backgroundColor);
+  return (
+    <div style={{ backgroundColor: 'white', minHeight: '100vh', position: 'relative' }}>
+      {children}
+    </div>
+  );
 };
 
-Layout.propTypes = {
-  children: PropTypes.node.isRequired,
-  backgroundColor: PropTypes.string,
-};
+// import React from 'react';
+// import PropTypes from 'prop-types';
 
-export default Layout;
+// Layout.propTypes = {
+//   children: PropTypes.node.isRequired,
+//   backgroundColor: PropTypes.string,
+// };
+
+// export default Layout;
