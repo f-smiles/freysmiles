@@ -849,7 +849,7 @@ function Hero() {
       <div className="flex-grow"></div>
     </div>
 
-   
+
     <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
 
       <div className="flex flex-col justify-center items-center h-full space-y-0">
@@ -867,7 +867,7 @@ function Hero() {
           </div>
         ))}
       </div>
-   
+
     </div>
 
   </div>
@@ -918,7 +918,7 @@ const About = () => {
               src="../images/Hero-Background-Grid.svg"
               alt="Hero Grid"
               loading="lazy"
-              className="w-[320vw] max-w-[1000px]" 
+              className="w-[320vw] max-w-[1000px]"
             />
           </div>
 
@@ -996,7 +996,7 @@ const About = () => {
 //     </main>
 //   )
 // }
-SwiperCore.use([Keyboard, Mousewheel]);
+// SwiperCore.use([Keyboard, Mousewheel]);
 
 function GSAPAnimateScrollSections() {
   // const listRef = useRef(null);
@@ -1750,7 +1750,7 @@ const ParallaxOutline = () => {
                     just completed my Invisalign and my teeth look perfect! Dr.
                     Frey truly cares about his patients and the staff are always
                     friendly, as well as always accommodating to my schedule.
-                    They're the best around!
+                    They&apos;re the best around!
                   </p>
                   <p className="font-helvetica-now-thin text-[20px] mt-10  text-center">
                     Kailee
@@ -1769,7 +1769,7 @@ const ParallaxOutline = () => {
                   <p className="text-2xl text-center">
                     I had an open bite and misaligned teeth most of my life. Dr
                     Frey fixed it and in record time. 1 1/2 yrs with
-                    Invisalign's. Highly recommended! Friendly staff and easy to
+                    Invisalign&apos;s. Highly recommended! Friendly staff and easy to
                     make appointments!
                   </p>
                   <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
