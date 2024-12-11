@@ -36,6 +36,7 @@ export const emailLogin = actionClient
 
       if (!existingUser.emailVerified) {
         const token = await generateEmailVerificationToken(email)
+        if ("error" in token) return { error: token.error }
         await sendVerificationEmail(token[0].email, token[0].token)
         return { success: "Confirmation email resent!" }
       }
@@ -55,7 +56,7 @@ export const emailLogin = actionClient
         } else {
           const token = await generateTwoFactorToken(existingUser.email)
           if (!token) return { error: "Failed to generate token." }
-
+          if ("error" in token) return { error: token.error }
           await sendTwoFactorTokenByEmail(token[0].email, token[0].token)
           return { twoFactor: "Two-factor code was sent to your inbox. Please check your email." }
         }

@@ -40,7 +40,14 @@ export const getVerificationTokenByEmail = async (email: string) => {
  * @returns {Promise<object>} - A promise that resolves to the newly generated token object.
  * On failure: { error: string }
  */
-export const generateEmailVerificationToken = async (email: string) => {
+export const generateEmailVerificationToken = async (email: string): Promise<{
+  id: string;
+  email: string;
+  token: string;
+  expires: Date;
+}[] | {
+  error: string;
+}> => {
   try {
     const existingToken = await getVerificationTokenByEmail(email)
 
@@ -123,7 +130,14 @@ export const getTwoFactorTokenByEmail = async (email: string) => {
  * @param {string} email - The email address of the user for whom the 2FA token is generated.
  * @returns {Promise<object|null>} - A promise that resolves to the generated 2FA token object or null if an error occurs.
 */
-export const generateTwoFactorToken = async (email: string) => {
+export const generateTwoFactorToken = async (email: string): Promise<{
+  id: string;
+  email: string;
+  token: string;
+  expires: Date;
+}[] | {
+  error: string;
+} | null> => {
   try {
     const existingToken = await getTwoFactorTokenByEmail(email)
     if (existingToken) {
@@ -135,16 +149,15 @@ export const generateTwoFactorToken = async (email: string) => {
     })
     if (!existingUser) return { error: "User not found" }
 
-    const token = await db.insert(twoFactorTokens).values({
+    const twoFactorToken = await db.insert(twoFactorTokens).values({
       email,
       token: crypto.randomInt(100_000, 1_000_000).toString(), // generate 6-digit code
       expires: new Date(new Date().getTime() + 3600 * 1000), // set token to expire in 1 hour
     }).returning()
 
-    return token
-
+    return twoFactorToken
   } catch (error) {
-    return null
+    return { error: "Failed to generate two factor token." }
   }
 }
 
