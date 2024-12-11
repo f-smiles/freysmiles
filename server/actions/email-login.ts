@@ -27,6 +27,9 @@ export const emailLogin = actionClient
       const existingUser = await db.query.users.findFirst({
         where: eq(users.email, email)
       })
+
+      if (!existingUser) return { error: "User not found" }
+
       if (existingUser.email !== email) {
         return { error: "Email not found." }
       }
