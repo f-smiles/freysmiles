@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     // Retrieve the Stripe signature from the headers
     const sig = request.headers.get('stripe-signature')
     const signingSecret = process.env.STRIPE_WEBHOOK_SECRET as string
-    if (!sig) {
+    if (!sig || !signingSecret) {
       console.error('Stripe signature is null');
       return NextResponse.json({ error: 'Webhook error' }, { status: 400 })
     }
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
           where: eq(users.customerID, completedSession.customer as string)
         })
 
-        if (!user) return { error: "Failed to find user" }
+        if (!user) return NextResponse.json({ error: 'Failed to find user' }, { status: 400 })
 
         if (completedSession.payment_status === "paid") {
           const newOrder = await db
