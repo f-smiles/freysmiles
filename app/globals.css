@@ -2235,7 +2235,7 @@ img:nth-child(6) {
 }
 
 .contentTeam {
-  transition: opacity 1s ease, visibility 1s ease;
+  transition: opacity 1s ease, visibility .5s ease;
   opacity: 0;
 }
 

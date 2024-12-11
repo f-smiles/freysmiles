@@ -174,7 +174,7 @@ export default function Navbar({ user }) {
     className=" fixed top-10 left-0 hidden w-full mb-[6vh] lg:block"
   >
     <div className="custom-navbar-cursor" />
-    <div className="border border-black text-[#00314F] py-6 px-4 mx-auto text-sm transition duration-300 ease-in-out max-w-screen-xl flex justify-between items-center">
+    <div className="border border-black rounded-full text-[#00314F] py-6 px-4 mx-auto text-sm transition duration-300 ease-in-out max-w-screen-xl flex justify-between items-center">
 
 
 <div className="flex items-center justify-start space-x-2">
