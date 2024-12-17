@@ -4605,7 +4605,7 @@ ion-icon{
 
 .showcase_navigation_nav-link {
   flex: none;
-  font-size: 1.125rem;
+  font-size: .9rem;
   font-weight: 500;
   display: inline-block;
   transform-origin: center;

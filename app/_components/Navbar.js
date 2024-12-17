@@ -51,11 +51,13 @@ export default function Navbar({ user }) {
     { name: "Our Team", href: "/our-team" },
     { name: "Why Choose Us", href: "/why-choose-us" },
     { name: "Testimonials", href: "/testimonials" },
+    { name: "Locations", href: "/#locations-section", hashLink: true },
   ];
 
   const patient_links = [
     { name: "Your Care", href: "/your-care" },
     { name: "Financing Treatment", href: "/financing-treatment" },
+    { name: "Patient Login", href: "https://my.orthoblink.com/bLink/Login", external: true },
   ];
 
   const treatments_links = [
@@ -241,12 +243,17 @@ export default function Navbar({ user }) {
                     TREATMENTS
                   </a>
                 </div>
+                <div className="showcase_navigation_nav-link_wrapper">
+                  <a href="#" className="showcase_navigation_nav-link">
+                    SHOP
+                  </a>
+                </div>
               </div>
 
               <div className="showcase_navigation_action">
                 <div className="b--icon-32x32 w-embed">
                   <img
-                    src="images/logo_icon.png"
+                    src="../images/logo_icon.png"
                     alt="Logo Icon"
                     class="icon-replacement"
                   />
@@ -266,7 +273,7 @@ export default function Navbar({ user }) {
           <div className="flex items-center justify-start space-x-2">
             <Link href="/">
               <img
-                src="images/logo_icon.png"
+                src="../images/logo_icon.png"
                 alt="FreySmiles Orthodontics"
                 className="w-6 h-6"
               />
@@ -553,21 +560,6 @@ export default function Navbar({ user }) {
                 </Dialog>
               </Transition.Root>
 
-              <li>
-                <Link href="https://my.orthoblink.com/bLink/Login">
-                  <p className="text-sm leading-4 text-center uppercase font-helvetica-neue">
-                    Patient Login
-                  </p>
-                </Link>
-              </li>
-
-              <li>
-                <Link href="/#locations-section">
-                  <p className="text-sm leading-4 text-center uppercase font-helvetica-neue">
-                    Locations
-                  </p>
-                </Link>
-              </li>
 
               <li>
                 <Link href="/shop/products">
