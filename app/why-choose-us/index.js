@@ -207,7 +207,7 @@ const About = () => {
             }}
             className="swiper swiper--reviews"
           >
-            {/* First Slide - Renovation (2005) */}
+   
             <SwiperSlide className="swiper-slide slide--reviews">
               <div className="timeline-grid mod--timeline2">
                 <div className="timeline__col mod--1">
@@ -368,68 +368,21 @@ function Hero() {
 
   return (
     <div className="h-screen bg-212121">
-      <div className="bg-[#DFFF00] min-h-screen min-w-full flex justify-center items-center">
-        <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
-          <h2 className="absolute top-20 left-[5vw] m-0 text-[10vw] uppercase text-center">
-            {title}
-          </h2>
-          <img
-            src={imageUrl}
-            alt={title}
-            className="block object-cover w-full h-full"
-          />
-        </div>
-      </div>
+<div className="bg-[#DFFF00]  min-w-full flex justify-center items-center">
+  <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
 
-      <section>
-        <video
-          autoPlay
-          loop
-          muted
-          preload="true"
-          className="absolute inset-0 object-cover object-center w-full h-full -z-10"
-        >
-          {/* undulating waves */}
-          {/* <source src="/../../videos/production_id_4779866.mp4" type="video/mp4" /> */}
-          {/* sharp waves */}
-          {/* <source src="/../../videos/pexels-rostislav-uzunov-9150545.mp4" type="video/mp4" /> */}
-          {/* shutterstock */}
-          <source
-            src="/../../videos/shutterstock_1111670177.mp4"
-            type="video/mp4"
-          />
-        </video>
+    <h2 className="absolute top-20 left-[5vw] m-0 text-[10vw] uppercase text-center">
+      {title}
+    </h2>
 
-        <section className="absolute w-full mx-auto my-16 text-center top-60 md:h-16 md:flex-row">
-          <div className="h-full overflow-hidden">
-            <ul
-              style={{
-                animation: "scroll-text-up 5s infinite",
-              }}
-            >
-              <li className="py-1 ">
-                <h1 className="font-neue-montreal text-7xl">Invisalign</h1>
-              </li>
-              <li className="py-1 ">
-                <h1 className="font-neue-montreal text-7xl">Damon Braces</h1>
-              </li>
-              <li className="py-1 ">
-                <h1 className="font-neue-montreal text-7xl">
-                  Accelerated Orthodontic Treatment
-                </h1>
-              </li>
-              <li className="py-1 ">
-                <h1 className="font-neue-montreal text-7xl">
-                  low-dose 3D Digital Radiographs
-                </h1>
-              </li>
-              <li className="py-1">
-                <h1 className="font-neue-montreal text-7xl">Invisalign</h1>
-              </li>
-            </ul>
-          </div>
+   
+    <img
+      src={imageUrl}
+      alt={title}
+      className="block object-cover w-full h-full"
+    />
 
-          <div className="relative" style={{ left: "20rem" }}>
+    <div className="relative" style={{ bottom:"5", right: "5" }}>
             <svg
               ref={svgRef}
               id="spinscroll"
@@ -497,6 +450,60 @@ function Hero() {
               />
             </svg>
           </div>
+
+
+  </div>
+</div>
+
+
+      <section>
+        <video
+          autoPlay
+          loop
+          muted
+          preload="true"
+          className="absolute inset-0 object-cover object-center w-full h-full -z-10"
+        >
+          {/* undulating waves */}
+          {/* <source src="/../../videos/production_id_4779866.mp4" type="video/mp4" /> */}
+          {/* sharp waves */}
+          {/* <source src="/../../videos/pexels-rostislav-uzunov-9150545.mp4" type="video/mp4" /> */}
+          {/* shutterstock */}
+          <source
+            src="/../../videos/shutterstock_1111670177.mp4"
+            type="video/mp4"
+          />
+        </video>
+
+        <section className="absolute w-full mx-auto my-16 text-center top-60 md:h-16 md:flex-row">
+          <div className="h-full overflow-hidden">
+            <ul
+              style={{
+                animation: "scroll-text-up 5s infinite",
+              }}
+            >
+              <li className="py-1 ">
+                <h1 className="font-neue-montreal text-7xl">Invisalign</h1>
+              </li>
+              <li className="py-1 ">
+                <h1 className="font-neue-montreal text-7xl">Damon Braces</h1>
+              </li>
+              <li className="py-1 ">
+                <h1 className="font-neue-montreal text-7xl">
+                  Accelerated Orthodontic Treatment
+                </h1>
+              </li>
+              <li className="py-1 ">
+                <h1 className="font-neue-montreal text-7xl">
+                  low-dose 3D Digital Radiographs
+                </h1>
+              </li>
+              <li className="py-1">
+                <h1 className="font-neue-montreal text-7xl">Invisalign</h1>
+              </li>
+            </ul>
+          </div>
+
         </section>
       </section>
 
