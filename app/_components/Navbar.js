@@ -236,21 +236,39 @@ export default function Navbar({ user }) {
 
         <nav className="h2-navbar w-nav" role="banner">
           <div className="h2-navbar-container">
-            <div>
-              <button
-                onClick={toggleMenu}
-                style={{
-                  cursor: "pointer",
-                  position: "absolute",
-                  top: "20px",
-                  left: "20px",
-                  padding: "10px",
-                  zIndex: 9999,
-                }}
-              >
-                {isMenuOpen ? "Close" : "Menu"}
-              </button>
-            </div>
+          <div>
+  <a
+    href="#"
+    className="h2-navbar-menu-button w-inline-block"
+    onClick={toggleMenu}
+    style={{
+      position: "absolute",
+      top: "20px",
+      left: "20px",
+      cursor: "pointer",
+      zIndex: 9999,
+      textDecoration: "none",
+    }}
+  >
+    <p
+      className="h2-navbar-text-absolute"
+      style={{
+        display: isMenuOpen ? "block" : "none",
+      }}
+    >
+      Close
+    </p>
+    <p
+      className="h2-navbar-text"
+      style={{
+        display: isMenuOpen ? "none" : "block", 
+      }}
+    >
+      Menu
+    </p>
+  </a>
+</div>
+
           </div>
         </nav>
 
