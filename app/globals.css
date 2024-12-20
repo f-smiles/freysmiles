@@ -4857,20 +4857,62 @@ a {
   transition: transform 0.3s ease-in-out;
 }
 
-.h2-menu-row-1:hover .h2-menu-image {
+.h2-menu-row-1:hover .h2-menu-image,
+.h2-menu-row-5:hover .h2-menu-image, 
+.h2-menu-row-3:hover .h2-menu-image{
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+}
+
+.h2-menu-row-2:hover .h2-menu-image,
+.h2-menu-row-4:hover .h2-menu-image{
   transform: translate3d(0, 0, 0);
   opacity: 1;
 }
 
 
-.h2-menu-row-1:hover .h2-menu-heading {
+.h2-menu-row-1:hover .h2-menu-heading,
+.h2-menu-row-3:hover .h2-menu-heading,
+.h2-menu-row-5:hover .h2-menu-heading {
   transform: translate3d(10px, 0, 0);
 }
+
+.h2-menu-row-2:hover .h2-menu-heading {
+  transform: translate3d(-10px, 0, 0);
+}
+
+.h2-menu-row-4:hover .h2-menu-heading {
+  transform: translate3d(-10px, 0, 0);
+}
+
+
+.h2-menu-row-2,
+.h2-menu-row-4 {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.h2-menu-row-2 .h2-menu-image,
+.h2-menu-row-4 .h2-menu-image {
+  transform: translate3d(-100%, 0, 0);
+}
+
+.h2-menu-row:hover .h2-menu-image {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+}
+
+.h2-menu-row:hover .h2-menu-heading {
+  transform: translate3d(10px, 0, 0);
+  transition: transform 0.3s ease;
+}
+
 
 
 .h2-menu-row-1 {
   color: #000;
   cursor: none;
+  font-family: "HelveticaNeue-Light";
   border-bottom: 1px solid #fff;
   justify-content: space-between;
   align-items: center;
@@ -4886,8 +4928,9 @@ a {
 .h2-menu-row-2 {
   color: red;
   cursor: none;
+  font-family: "Didot";
+  font-style: italic;
   border-bottom: 1px solid #fff;
-  justify-content: flex-end; 
   width: 100%;
   padding-top: 22px;
   padding-bottom: 22px;
@@ -4897,8 +4940,8 @@ a {
 
 .h2-menu-row-3 {
   grid-column-gap: 40px;
-  color: #c98e8e;
   cursor: none;
+  font-family: "HelveticaNeue-Light";
   border-bottom: 1px solid #fff;
   justify-content: space-between;
   align-items: center;
@@ -4913,8 +4956,8 @@ a {
 .h2-menu-row-4 {
   color: #fff;
   cursor: none;
+  font-family: "HelveticaNeue-Light";
   border-bottom: 1px solid #fff;
-  justify-content: flex-end; 
   width: 100%;
   padding-top: 22px;
   padding-bottom: 22px;
@@ -4925,6 +4968,7 @@ a {
 .h2-menu-row-5 {
   color: #fff;
   cursor: none;
+  font-family: "HelveticaNeue-Light";
   border-bottom: 1px solid #fff;
   justify-content: space-between;
   align-items: center;
@@ -4936,16 +4980,6 @@ a {
   display: flex;
 }
 
-.h2-menu-heading-custom {
-  color: #fff;
-  margin-top: 0;
-  margin-bottom: 0;
-  font-family: Montgrove, sans-serif;
-  font-size: 83px;
-  font-style: italic;
-  font-weight: 400;
-  line-height: 1.1;
-}
 
 
 
