@@ -234,7 +234,7 @@ export default function Navbar({ user }) {
           ></div>
         </div>
 
-        <nav className="h2-navbar w-nav" role="banner">
+        <nav className="h2-navbar">
           <div className="h2-navbar-container">
           <div>
   <a
@@ -287,20 +287,16 @@ export default function Navbar({ user }) {
               "Locations",
               "Patient Login",
             ].map((heading, index) => (
-              <a
-                key={index}
-                href="#"
-                className={`h2-menu-row-${index + 1} w-inline-block`}
-                style={{
-                  transform: isMenuOpen
-                    ? "translate3d(0, 0, 0)"
-                    : "translate3d(0, -101vh, 0)",
-                  transition: `transform 0.5s ease-in-out ${
-                    index * 0.1
-                  }s, opacity 0.5s ease`,
-                  opacity: isMenuOpen ? 1 : 0,
-                }}
-              >
+               <a
+            key={index}
+            href="#"
+            className={`h2-menu-row h2-menu-row-${index + 1} ${
+              isMenuOpen ? "open" : ""
+            }`}
+            style={{
+              animationDelay: isMenuOpen ? `${index * 0.1}s` : "0s",
+            }}
+          >
                 <div className="h2-menu-wrapper-top">
                   <p className="h2-menu-text-number">{`0${index + 1}`}</p>
                   <h1 className="h2-menu-heading">{heading}</h1>
