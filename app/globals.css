@@ -4421,6 +4421,13 @@ h2.heading-2 {
   transition: all .5s cubic-bezier(.215, .61, .355, 1);
   position: absolute;
   inset: 0%;
+  will-change: transform;
+
+  
+}
+
+.overflow-hidden:hover .mod--round-arrow {
+  transform: rotate(0deg); /* Rotate to align straight */
 }
 
 .img.mod--round-text {
@@ -4456,40 +4463,26 @@ h2.heading-2 {
   transform: translate(-150%);
 }
 
-.mod--round-text3 {
+.textcircle text {
+  fill: white;
+  font-size: 38px;
+}
+
+.img-wrap.mod--round-text3 {
   position: absolute;
   inset: 0%;
 }
 
-.circular-text-svg {
-  max-width: 80vmin;
-  transition: transform 0.4s ease-in-out;
+.img-wrap.mod--round-text2 {
+  justify-content: center;
+  align-items: center;
+  padding: .7rem;
+  transition: all .5s cubic-bezier(.215, .61, .355, 1);
+  display: flex;
+  position: absolute;
+  inset: 0%;
 }
 
-.circular-text-svg:hover .textcircle {
-  transform: scale(1.2) rotate(90deg);
-}
-
-
-.textcircle {
-  transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1);
-  transform-origin: 250px 250px;
-}
-
-text {
-  font-size: 22px;
-  font-weight: 700;
-  text-transform: uppercase;
-  fill: white;
-  animation: rotate 25s linear infinite;
-  transform-origin: 250px 250px;
-}
-
-@keyframes rotate {
-  to {
-    transform: rotate(360deg);
-  }
-}
 
 /* 
 * {
@@ -4545,15 +4538,7 @@ body {
   will-change: transform;
 }
 
-/* .circular-text{
-  bottom: 5%;
-  right: 5%;
 
-  color: #000;
-  font-size: 24px;
-  font-weight: bolder;
-  transition: 0.5s ease-out;
-} */
 .arrow{
   position: fixed;
   top: 50%;

@@ -1041,13 +1041,13 @@ const ParallaxOutline = () => {
       >
         {/* Left Text Section */}
         <div className="flex-1 flex flex-col items-start space-y-6 relative z-20">
-          <h1 className="font-oakes-regular text-[3rem] leading-tight">
+          <h1 className="font-saol text-[3rem] leading-tight">
             <span className="block">
               Initial <span>Consultations</span>
             </span>
             <span className="block">
               Are{" "}
-              <span className="font-autumnchant bg-[#d7fa2c] text-black px-4 py-2 inline-block rounded-lg">
+              <span className="font-autumnchant  text-black px-4 py-2 inline-block rounded-lg">
                 always
               </span>{" "}
               Complimentary
@@ -1068,14 +1068,7 @@ const ParallaxOutline = () => {
             />
           </div>
 
-          <div className="absolute -left-28 top-48 bg-[#d7fa2c] z-10 w-56 h-56 rounded-full"></div>
-        </div>
-
-      
-        <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
-          <button className="font-helvetica-neue-light bg-[#e0cbe8] text-black text-2xl py-6 px-12 rounded-lg">
-            NEED MORE INFO? <br /> TAKE OUR QUIZ
-          </button>
+          <div className="absolute -left-28 top-48">
           <div
       data-remodal-target="form"
       className="img-wrap mod--round transform"
@@ -1086,7 +1079,6 @@ const ParallaxOutline = () => {
       {/* Inner text wrapper */}
       <div className="img-wrap mod--round-text3">
         <svg
-         className="circular-text-svg"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 500 500"
       aria-labelledby="circular-text"
@@ -1103,20 +1095,29 @@ const ParallaxOutline = () => {
         <text style={{ fontSize: "38px" }}>
           <textPath
             xlinkHref="#textcirclenew"
-            aria-label="Open for Business"
+            aria-label="BOOK"
             textLength="880"
           >
-            BOOK HERE TO LEARN MORE
+            BOOK NOW TO GET STARTED
           </textPath>
         </text>
       </g>
     </svg>
-       
+     
       </div>
       
       {/* Arrow */}
       <div className="img mod--round-arrow"></div>
     </div>
+          </div>
+        </div>
+
+      
+        <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
+          <button className="font-helvetica-neue-light bg-[#e0cbe8] text-black text-2xl py-6 px-12 rounded-lg">
+            NEED MORE INFO? <br /> TAKE OUR QUIZ
+          </button>
+     
         </div>
       </section>
     </div>
