@@ -168,16 +168,12 @@ export default function LandingComponent() {
   return (
     <>
       <div>
-        <div>
-          <Hero />
-        </div>
-        <div>
-          <MarqueeSection />
-        </div>
-        <div>
-          <About />
-        </div>
-        <div className="relative">
+      <div>
+  <Hero />
+  <MarqueeSection />
+  <About />
+</div>
+        <div >
           <GSAPAnimateScrollSections />
           <ImageGrid />
         </div>
@@ -232,6 +228,8 @@ function Hero() {
     pin: true,
     pinSpacing: false,
   });
+  
+  
 
   useEffect(() => {
     gsap.set(div1Ref.current, { x: -100, y: -100 });
@@ -482,6 +480,7 @@ function Hero() {
     });
   }, []);
 
+
   const paragraphRef = useRef(null);
 
   useEffect(() => {
@@ -543,7 +542,7 @@ function Hero() {
   return (
     <section
       ref={heroRef}
-      className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black"
+      className="font-editorial-new bg-[#E1F672] flex flex-col justify-between p-8 text-black"
     >
       <div className="flex flex-row h-full relative">
         {/* Left Column */}
@@ -1081,19 +1080,38 @@ const ParallaxOutline = () => {
       data-remodal-target="form"
       className="img-wrap mod--round transform"
       style={{
-        transform: 'translate3d(-8rem, 0, 0) rotateZ(-120deg)',
+        transform: 'transform: translate3d(0, 0, 0) rotateZ(-120deg);',
       }}
     >
       {/* Inner text wrapper */}
       <div className="img-wrap mod--round-text3">
-        <div className="img-wrap mod--round-text2">
-          <img
-            src="/images/circlep-text.svg"
-            loading="eager"
-            alt="Circle Text"
-            className="img mod--round-text"
-          />
-        </div>
+        <svg
+         className="circular-text-svg"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 500 500"
+      aria-labelledby="circular-text"
+      lang="en"
+    >
+      <defs>
+        <path
+          id="textcirclenew"
+          d="M250,400 a150,150 0 0,1 0,-300a150,150 0 0,1 0,300Z"
+          transform="rotate(12,250,250)"
+        />
+      </defs>
+      <g className="textcircle">
+        <text style={{ fontSize: "38px" }}>
+          <textPath
+            xlinkHref="#textcirclenew"
+            aria-label="Open for Business"
+            textLength="880"
+          >
+            BOOK HERE TO LEARN MORE
+          </textPath>
+        </text>
+      </g>
+    </svg>
+       
       </div>
       
       {/* Arrow */}
