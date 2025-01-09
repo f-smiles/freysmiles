@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import Lottie from "lottie-react";
+
 import {
   motion,
   useScroll,
