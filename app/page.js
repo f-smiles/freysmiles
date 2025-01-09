@@ -22,6 +22,7 @@ import { motion, stagger, useAnimate, useInView } from "framer-motion";
 import { Disclosure, Transition } from "@headlessui/react";
 // gsap
 import { gsap } from "gsap";
+import {CustomEase} from "gsap/CustomEase";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
@@ -29,7 +30,7 @@ import { SplitText } from "gsap-trial/SplitText";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText, useGSAP);
+  gsap.registerPlugin(DrawSVGPlugin, ScrollTrigger, SplitText, useGSAP, CustomEase);
 }
 
 gsap.registerPlugin(ScrollTrigger);
@@ -1046,7 +1047,103 @@ const About = () => {
 
 const ParallaxOutline = () => {
   const parallaxRef = useRef(null);
+  const wrapperRef = useRef(null);
+  const imgRef = useRef(null);
 
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    const img = imgRef.current;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: wrapper,
+        start: "top 85%",
+        end: "top 15%",
+        scrub: false,
+        markers: false,
+      },
+    });
+
+    tl.set(img, { opacity: 1 })
+      .fromTo(wrapper, { height: "0px" }, { height: "660px", duration: 2, ease: "expo.out" })
+      .fromTo(
+        img,
+        { scale: 1.4, opacity: 1, transformOrigin: "50% 0%" },
+        { scale: 1, opacity: 1, duration: 2.5, ease: "power3.out" },
+        "<0.3"
+      );
+
+    return () => {
+      tl.kill();
+      ScrollTrigger.refresh();
+    };
+  }, []);
+
+  const textContainerRef = useRef(null);
+  const splitTextInstances = useRef([]); // To store all SplitText instances for cleanup
+  useEffect(() => {
+    CustomEase.create("ease_pop", "M0,0 C0,0.24 0.08,1 1,1");
+
+    const lines = textContainerRef.current.querySelectorAll("span.block");
+
+    lines.forEach((line) => {
+      const splitLine = new SplitText(line, { type: "words" });
+      splitTextInstances.current.push(splitLine);
+
+      gsap.fromTo(
+        splitLine.words,
+        { y: 50, opacity: 0 }, // Start farther down for more dramatic movement
+        {
+          y: 0,
+          opacity: 1,
+          duration: 2, // Make the animation slower for more emphasis
+          ease: "power3.inOut",
+          stagger: 0.1, // Increase stagger for a more noticeable wave-like effect
+          scrollTrigger: {
+            trigger: line,
+            start: "top 85%",
+            end: "top 40%",
+            once: true,
+            markers: false,
+          },
+        }
+      );
+    });
+
+    return () => {
+      splitTextInstances.current.forEach((splitInstance) => splitInstance.revert());
+    };
+  }, []);
+
+  useEffect(() => {
+    const buttonText = new SplitText("#buttonText", { type: "chars" });
+    const button = document.querySelector("button");
+  
+    const buttonHoverOn_tl = gsap.timeline({ paused: true });
+    buttonHoverOn_tl
+    .to(button, { y: -8, ease: "back.out(4)", duration: 1.2 }, 0)
+      .to(buttonText.chars, { y: 3, stagger: 0.02, duration: 0.8, ease: "back.out(4)" }, 0)
+      .to(buttonText.chars, { y: 1, stagger: 0.02, duration: 0.8, ease: "back.out(0)" }, 0.6);
+  
+    const buttonHoverOff_tl = gsap.timeline({ paused: true });
+    buttonHoverOff_tl.to(button, { y: 0, duration: 2, ease: "circ.out" }, 0);
+  
+    button.addEventListener("mouseenter", () => {
+      buttonHoverOff_tl.pause();
+      buttonHoverOn_tl.restart();
+    });
+  
+    button.addEventListener("mouseleave", () => {
+      buttonHoverOn_tl.pause();
+      buttonHoverOff_tl.restart();
+    });
+  
+    return () => {
+      buttonHoverOn_tl.kill();
+      buttonHoverOff_tl.kill();
+    };
+  }, []);
+  
   return (
     <div className="relative flex flex-col items-center justify-center bg-[#FBFBFB]">
       <section
@@ -1054,84 +1151,120 @@ const ParallaxOutline = () => {
         className="py-20 px-8 flex flex-col lg:flex-row max-w-7xl mx-auto space-y-12 lg:space-y-0 lg:space-x-8"
       >
         {/* Left Text Section */}
-        <div className="flex-1 flex flex-col items-start space-y-6 relative z-20">
-          <h1 className="font-saol text-[3rem] leading-tight">
-            <span className="block">
-              Initial <span>Consultations</span>
-            </span>
-            <span className="block">
-              Are{" "}
-              <span className="font-autumnchant  text-black px-4 py-2 inline-block rounded-lg">
-                always
-              </span>{" "}
-              Complimentary
-            </span>
-          </h1>
-          <p className="text-[2rem] font-editorial-new-italic">
-            Find out which treatment plan suits you best.
-          </p>
-        </div>
+        <div className="flex-1 flex flex-col justify-center items-start space-y-8 relative z-20" ref={textContainerRef}>
+  <h1 className="font-saol text-[3rem] leading-tight">
+    <span className="block">
+      Initial <span>Consultations</span>
+    </span>
+    <span className="block">
+      Are{" "}
+      <span className="font-autumnchant text-black px-4 py-2 inline-block rounded-lg">
+        always
+      </span>{" "}
+      Complimentary
+    </span>
+  </h1>
+  <span className="block text-[2rem] font-editorial-new-italic">
+    Find out which treatment plan suits you best.
+  </span>
+  <div className="mt-6 button_wrapper">
+    <button className="px-8 py-4 rounded-full">
+      <p id="buttonText">Book Now</p>
+    </button>
+  </div>
+</div>
 
-        {/* Right Image Section */}
         <div className="flex-1 flex items-center justify-center relative z-10">
-          <div className="w-[360px] h-[660px]">
-            <img
-              src="../images/mainsectionimage.jpg"
-              alt="Consultation"
-              className="object-cover w-full h-full rounded-full"
-            />
-          </div>
-
-          <div className="absolute -left-28 top-48">
-          <div
-      data-remodal-target="form"
-      className="img-wrap mod--round transform"
-      style={{
-        transform: 'transform: translate3d(0, 0, 0) rotateZ(-120deg);',
-      }}
-    >
-      {/* Inner text wrapper */}
-      <div className="img-wrap mod--round-text3">
-        <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 500 500"
-      aria-labelledby="circular-text"
-      lang="en"
-    >
-      <defs>
-        <path
-          id="textcirclenew"
-          d="M250,400 a150,150 0 0,1 0,-300a150,150 0 0,1 0,300Z"
-          transform="rotate(12,250,250)"
+      <div
+        ref={wrapperRef}
+        className="w-[360px] h-[660px] overflow-hidden bg-transparent rounded-full"
+        style={{
+          overflow: "hidden",
+        }}
+      >
+        <img
+          ref={imgRef}
+          src="../images/mainsectionimage.jpg"
+          alt="Consultation"
+          className="object-cover w-full h-full rounded-full"
         />
-      </defs>
-      <g className="textcircle">
-        <text style={{ fontSize: "38px" }}>
-          <textPath
-            xlinkHref="#textcirclenew"
-            aria-label="BOOK"
-            textLength="880"
-          >
-            BOOK NOW TO GET STARTED
-          </textPath>
-        </text>
-      </g>
-    </svg>
-     
       </div>
-      
-      {/* Arrow */}
-      <div className="img mod--round-arrow"></div>
-    </div>
+
+      {/* "Book Now" Section */}
+      {/* <div className="absolute -left-28 top-48">
+        <a href="/book-now" className="block">
+          <div
+            data-remodal-target="form"
+            className="img-wrap mod--round transform"
+            style={{
+              transform: "translate3d(0, 0, 0) rotateZ(-120deg)",
+            }}
+          >
+            <div className="img-wrap mod--round-text3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 500 500"
+                aria-labelledby="circular-text"
+                lang="en"
+              >
+                <defs>
+                  <path
+                    id="textcirclenew"
+                    d="M250,400 a150,150 0 0,1 0,-300a150,150 0 0,1 0,300Z"
+                    transform="rotate(12,250,250)"
+                  />
+                </defs>
+                <g className="textcircle">
+                  <text style={{ fontSize: "38px" }}>
+                    <textPath
+                      xlinkHref="#textcirclenew"
+                      aria-label="BOOK"
+                      textLength="880"
+                    >
+                      BOOK NOW TO GET STARTED
+                    </textPath>
+                  </text>
+                </g>
+              </svg>
+            </div>
+            <div className="img mod--round-arrow"></div>
           </div>
-        </div>
+        </a>
+      </div> */}
+    </div>
 
       
         <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
           <button className="font-helvetica-neue-light bg-[#e0cbe8] text-black text-2xl py-6 px-12 rounded-lg">
             NEED MORE INFO? <br /> TAKE OUR QUIZ
           </button>
-     
+          <svg
+      id="svg"
+      viewBox="0 20 1040 700"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-labelledby="curve-marquee"
+    >
+      <path
+        id="curve"
+        d="M 0,7000 C 0,7000 0,350 -50,350 C 152.13333333333333,306 304.26666666666665,262 445,298 C 585.7333333333333,334 715.0666666666668,450 879,472 C 1042.9333333333332,494 1241.4666666666667,422 1440,350 C 1440,350 1440,700 1440,700 Z"
+      ></path>
+      <text x="-2000">
+        <textPath href="#curve">
+          CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE
+          MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE
+          • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE
+          MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE
+          • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE
+          MARQUEE •
+        </textPath>
+        <animate
+          attributeName="x"
+          dur="30s"
+          values="-4000;0"
+          repeatCount="indefinite"
+        ></animate>
+      </text>
+    </svg>
         </div>
       </section>
     </div>
