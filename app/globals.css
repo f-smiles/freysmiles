@@ -4432,7 +4432,7 @@ h2.heading-2 {
 }
 
 .img-wrap.mod--round {
-  background-color: var(--blue);
+  background-color: #4732d4;
   cursor: pointer;
   border-radius: 50%;
   justify-content: center;
@@ -4456,20 +4456,41 @@ h2.heading-2 {
   transform: translate(-150%);
 }
 
-.img-wrap.mod--round-text3 {
+.mod--round-text3 {
   position: absolute;
   inset: 0%;
 }
 
-.img-wrap.mod--round-text2 {
-  justify-content: center;
-  align-items: center;
-  padding: .7rem;
-  transition: all .5s cubic-bezier(.215, .61, .355, 1);
-  display: flex;
-  position: absolute;
-  inset: 0%;
+.circular-text-svg {
+  max-width: 80vmin;
+  transition: transform 0.4s ease-in-out;
 }
+
+.circular-text-svg:hover .textcircle {
+  transform: scale(1.2) rotate(90deg);
+}
+
+
+.textcircle {
+  transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1);
+  transform-origin: 250px 250px;
+}
+
+text {
+  font-size: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+  fill: white;
+  animation: rotate 25s linear infinite;
+  transform-origin: 250px 250px;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* 
 * {
   margin: 0;
@@ -4545,12 +4566,15 @@ ion-icon{
 }
 
 .section_showcase {
-  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100vh;
-  display: flex;
+  padding: 1rem 0;
 }
 
 .showcase_navigation {
@@ -4564,10 +4588,11 @@ ion-icon{
   padding: 0.5rem;
   display: flex;
   overflow: hidden;
+  backdrop-filter: blur(8px); 
 }
 
 .showcase_navigation_start {
-  
+
   justify-content: center;
   align-items: center;
   padding: 0.5rem;
@@ -4646,12 +4671,10 @@ a {
 
 .h2-page-wrapper {
   cursor: none;
-  background-color: #949186;
-  height: 100vh;
-  font-family: Satoshi, sans-serif;
-  overflow: hidden;
-}
+  /* background-color: #949186; */
+  /* height: 100vh; */
 
+}
 
 .h2-navbar {
   background-color: #ddd0;
