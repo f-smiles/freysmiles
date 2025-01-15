@@ -5022,42 +5022,18 @@ a {
   display: flex;
 }
 
+.svg-curvedmarquee {
+  font-size: 6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 
-
-body{
-  background:#f8f3ed;
-  margin:0;
-  padding:0;
-  overflow:hidden;
-}
-svg{
-    font-size: 6rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
 }
 
-svg path {
-    fill: transparent;
+.svg-curvedmarquee path {
+  fill: transparent;
 }
 
 
-.rising {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  height: 100vh;
-  gap: 4rem;
-}
-
-.spand {
-  font-family: "Fraunces", serif;
-  font-size: 1.75rem;
-  line-height: 110%;
-  padding-bottom: 1.5rem;
-  text-align: center;
-}
 
 .button_wrapper {
   button {
