@@ -159,8 +159,12 @@ const HeaderBanner = () => {
     });
   }, []);
 
+
+  
+  
+
   return (
-    <div className="colorcontainer">
+    <div className="colorcontainer max-w-[100vw]">
       <div
         id="first-color"
         className=" flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32 relative"
@@ -250,7 +254,7 @@ const HeaderBanner = () => {
         </div>
       </div>
 
-      <div id="second-color" className="w-full py-4">
+      <div id="second-color" className="overflow-hidden w-full py-4">
         <div
           ref={marqueeRef}
           className="inline-block text-6xl font-sans whitespace-nowrap"
@@ -258,111 +262,49 @@ const HeaderBanner = () => {
           <span>Expert Clinical Care, Personalized Just for You&nbsp;</span>
         </div>
       </div>
+      <section class="section-home-services">
+  <div class="home-services-grid">
 
-      <div id="second-color" className="min-h-screen">
-        <div className="grid grid-cols-2 max-w-6xl w-full mx-auto">
-          {/* Left Column - Gif (Sticky) */}
-          <div className="sticky top-0  h-[100vh] p-8">
-            <img
-              src="../../images/testimonial.gif"
-              alt="Logo"
-              className="w-full h-auto"
-            />
-          </div>
-
-          {/* Right Column - Scrollable */}
-          <div className="font-neue-montreal p-16 h-auto overflow-y-auto flex flex-col justify-center items-center">
-            {/* Coverage */}
-            <div className="w-full max-w-md border border-green-300 p-16 mb-24">
-              <div className="flex flex-col items-center">
-                <div className="flex items-center space-x-4 mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-
-                <h2 className=" text-3xl font-bold text-gray-700">Coverage</h2>
-
-                <p className="font-neue-montreal mt-4 text-center text-gray-500">
-                  If you have orthodontic insurance, we’ll help you maximize
-                  your lifetime benefits.
-                </p>
-              </div>
-            </div>
-
-            {/* HSA/FSA Box */}
-            <div className="w-full max-w-md border border-green-300 p-16 mb-24">
-              <div className="flex flex-col items-center">
-                <div className="flex items-center space-x-4 mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-
-                <h2 className="text-3xl font-bold text-gray-700">HSA/FSA</h2>
-
-                <p className="font-neue-montreal mt-4 text-center text-gray-500">
-                  We accept HSA/FSA to help you save on your orthodontic
-                  treatment.
-                </p>
-              </div>
-            </div>
-
-            {/* Out of Network */}
-            <div className="w-full max-w-md border border-green-300 p-16">
-              <div className="flex flex-col items-center">
-                <div className="flex items-center space-x-4 mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-
-                <h2 className="text-3xl font-bold text-gray-700">
-                  Out-of-network
-                </h2>
-
-                <p className="font-neue-montreal mt-4 text-center text-gray-500">
-                  We will help you submit claims for reimbursement based on your
-                  insurance plan’s guidelines
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="home-services-grid-left">
+      <div class="home-services-grid-left-inner">
+     <img src="../images/testimonial.gif" />
       </div>
+    </div>
+
+    <div class="home-services-grid-right">
+  <div class="home-services-card-wrapper">
+    <div class="home-services-card">
+      <h2>Coverage</h2>
+      <p>
+
+      </p>
+    </div>
+  </div>
+
+  <div class="home-services-card-wrapper">
+    <div class="home-services-card">
+      <h2>FSA/HSA</h2>
+      <p>
+    
+      </p>
+    </div>
+  </div>
+
+  <div class="home-services-card-wrapper">
+    <div class="home-services-card">
+      <h2>INSURANCE</h2>
+      <p>
+  
+      </p>
+    </div>
+  </div>
+
+</div>
+
+  </div>
+</section>
+
+
       <div
         className="third-color py-16 px-8 bg-cover bg-center"
         id="tracking-section"
