@@ -1,5 +1,8 @@
 "use client";
 import { Curtains, Plane } from "curtainsjs";
+import LocomotiveScroll from "locomotive-scroll";
+import "locomotive-scroll/dist/locomotive-scroll.css";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
 import { Navigation } from "swiper/modules";
@@ -8,8 +11,9 @@ import Matter from "matter-js";
 import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { GUI } from "dat.gui";
-import { OrbitControls, shaderMaterial } from "@react-three/drei";
+import { OrbitControls, Scroll, shaderMaterial } from "@react-three/drei";
 import React, {
+  forwardRef,
   useRef,
   useEffect,
   useLayoutEffect,
@@ -27,6 +31,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
 import { SplitText } from "gsap-trial/SplitText";
+import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 
 if (typeof window !== "undefined") {
@@ -39,7 +44,7 @@ if (typeof window !== "undefined") {
   );
 }
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 export default function LandingComponent() {
   // const canvasRef = useRef(null);
@@ -186,54 +191,47 @@ export default function LandingComponent() {
     };
   }, []);
 
+
+
+
+
   return (
     <>
-      <Hero />
-      <MarqueeSection />
-      <Stats />
-      <GSAPAnimateScrollSections />
-      {/* <ImageGrid /> */}
 
-      {/* <Mask /> */}
-      <BookNowSection />
-      <div
-      // ref={sectionTwoRef}
-      // className="sticky bg-[#D8BFD7] top-0 h-screen z-3"
-      // id="logoGrid"
-      >
-        <LogoGrid />
-      </div>
-      <Testimonials />
+      <div>
+        <div >
+          <section >
+            <Hero />
+          </section>
+          <section>
+            <MarqueeSection />
+          </section>
+          <section>
+            <Stats />
+          </section>
+          <BookNowSection />
+        </div>
+        {/* <GSAPAnimateScrollSections /> */}
+        {/* <ImageGrid /> */}
+
+        {/* <Mask /> */}
+       
+        {/* <div
+        ref={sectionTwoRef}
+        className="sticky bg-[#D8BFD7] top-0 h-screen z-3"
+        id="logoGrid"
+        >
+          <LogoGrid />
+        </div> */}
+         <Testimonials />
       <Locations />
-      <GiftCards />
+      <GiftCards /> 
+      </div>
     </>
   );
 }
 
-function Hero() {
-  const heroRef = useRef(null);
-
-useEffect(() => {
-  let ticking = false;
-
-  const handleScroll = () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        const scrollY = window.scrollY;
-        const parallaxSpeed = 0.5;
-        if (heroRef.current) {
-          heroRef.current.style.transform = `translateY(${scrollY * parallaxSpeed}px)`;
-        }
-        ticking = false;
-      });
-      ticking = true;
-    }
-  };
-
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, []);
-
+const Hero = () => {
 
   const containerRef = useRef(null);
   const div1Ref = useRef(null);
@@ -241,14 +239,6 @@ useEffect(() => {
   const div3Ref = useRef(null);
   const div4Ref = useRef(null);
   const listItemsRef = useRef(null);
-
-  ScrollTrigger.create({
-    trigger: listItemsRef.current,
-    start: "top top",
-    end: "+=100%",
-    pin: true,
-    pinSpacing: false,
-  });
 
   useEffect(() => {
     gsap.set(div1Ref.current, { x: -100, y: -100 });
@@ -558,22 +548,13 @@ useEffect(() => {
   ];
 
   return (
-    <section
-      ref={heroRef}
-      className="font-editorial-new bg-[#E1F672] flex flex-col justify-between p-8 text-black"
-    >
+    <section className="relative font-editorial-new bg-[#E1F672] flex flex-col justify-between p-8 text-black min-h-screen ">
       <div className="flex flex-row h-full relative">
         {/* Left Column */}
-        <div
-          className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start"
-          style={{ minHeight: "0vh" }}
-        >
+        <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start">
           <div className="flex-grow"></div>
           <div className="overflow-hidden mt-[20vh]">
-            <p
-              ref={paragraphRef}
-              className="animate font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed"
-            >
+            <p className="font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
               A confident smile begins with effective care tailored to each
               patient.
               <br />
@@ -586,21 +567,12 @@ useEffect(() => {
           </div>
           <div className="flex-grow"></div>
         </div>
-        {/* <div class="parent">
-  <div class="child div1"> </div>
-  <div class="child div2"> </div>
-  <div class="child div3"> </div>
-  <div class="child div4"> </div>
-  <div class="child div5"> </div>
-  <div class="child div6"> </div>
-  <div class="child div7"> </div>
-  <div class="child div8"> </div>
-  <div class="child div9"> </div>
-  <div class="child div10"> </div>
-  <div class="child div11"> </div>
-  <div class="child div12"> </div>
-</div> */}
-        <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
+
+        {/* Right Column with Circles */}
+        <div
+          className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]"
+          data-speed="1"
+        >
           <div className="flex flex-col justify-center items-center h-full space-y-0">
             {colors.map((row, rowIndex) => (
               <div key={rowIndex} className="flex space-x-0">
@@ -633,45 +605,17 @@ useEffect(() => {
             <br />
             what works.
           </h2>
-          {/* <p className="mt-2">[SCROLL TO DISCOVER]</p> */}
         </div>
       </div>
     </section>
   );
-}
+};
 
 const MarqueeSection = () => {
-  const marqueeRef = useRef(null);
-  const marqueeContentRef = useRef(null);
-
-  useEffect(() => {
-    ScrollTrigger.create({
-      trigger: marqueeRef.current,
-      start: "top top",
-      end: "+=100%",
-      scrub: 1,
-      pin: false,
-      pinSpacing: false,
-    });
-
-    gsap.to(marqueeContentRef.current, {
-      yPercent: -50,
-      scrollTrigger: {
-        trigger: marqueeRef.current,
-        start: "top top",
-        end: "+=100%",
-        scrub: 1,
-      },
-    });
-  }, []);
 
   return (
-    <div
-      ref={marqueeRef}
-      className="uppercase rounded-tl-[40px] rounded-tr-[40px] font-altero relative h-[40vh] text-white overflow-hidden bg-[#004D43] flex items-center"
-    >
+    <section className="relative min-h-screen uppercase rounded-tl-[40px] rounded-tr-[40px] font-altero text-white bg-[#20282D]  flex items-center">
       <div
-        ref={marqueeContentRef}
         className="marqueeHome"
         style={{
           fontSize: "180px",
@@ -688,49 +632,12 @@ const MarqueeSection = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
 const Stats = () => {
-  // const pathRef = useRef(null);
 
-  // useEffect(() => {
-  //   const path = pathRef.current.querySelector('path');
-  //   const pathLength = path.getTotalLength();
-
-  //   gsap.set(path, {
-  //     strokeDasharray: pathLength,
-  //     strokeDashoffset: pathLength,
-  //   });
-
-  //   gsap.to(path, {
-  //     strokeDashoffset: 0,
-  //     ease: 'power2.out',
-  //     scrollTrigger: {
-  //       trigger: pathRef.current,
-  //       start: 'top bottom',
-  //       end: 'bottom top',
-  //       scrub: 1,
-  //     },
-  //   });
-  // }, []);
-
-  const aboutRef = useRef(null);
-
-  useEffect(() => {
-    gsap.to(aboutRef.current, {
-      yPercent: -50,
-      scrollTrigger: {
-        trigger: aboutRef.current,
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 1,
-      },
-    });
-  }, []);
-
-  const isInView = useInView(aboutRef, { once: true, margin: "-50px 0px" });
   const textVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -779,31 +686,17 @@ const Stats = () => {
     setHoveredCard(null);
   };
 
+
   return (
-    <section
-      ref={aboutRef}
-      className="rounded-tl-[40px] p-8 rounded-tr-[40px] bg-[#FBFBFB] hero relative flex flex-col justify-between z-20"
-    >
-      {/* <svg
-      ref={pathRef}
-      viewBox="0 0 800 600"
-      xmlns="http://www.w3.org/2000/svg"
-      className="neon-line"
-    >
-      <path
-        d="M 100 500 Q 300 100 500 500 T 900 500"
-        stroke="#FFFF00"
-        fill="none"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg> */}
-      <section style={{ marginTop: "12rem" }} ref={aboutRef}>
+    <section className=" relative bg-[#FBFBFB] flex flex-col justify-between ">
+      <section
+        style={{
+          transform: "translateY(-20vh)",
+        }}
+      >
         <motion.div
           className="w-layout-blockcontainer textimagecontainer"
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
           variants={textVariants}
         >
           <div className="text-images-wrapper">
@@ -921,7 +814,6 @@ const Stats = () => {
             /> */}
             </div>
           </div>
-          
         </section>
 
         <div className="max-w-7xl mx-auto px-6">
@@ -1041,6 +933,27 @@ const Stats = () => {
           </div>
         </section>
       </div> */}
+    </section>
+  );
+};
+const NewSection = () => {
+  return (
+    <section
+      className="bg-[#004D43] min-h-screen flex items-center justify-center text-white"
+      data-scroll-section
+      data-scroll
+      data-scroll-speed="1.2"
+    >
+      <div className="flex flex-col items-center">
+        <div className="eyes-container flex space-x-4">
+          <div className="eye bg-white rounded-full w-[150px] h-[150px] flex items-center justify-center">
+            <span className="text-black font-bold">PLAY</span>
+          </div>
+          <div className="eye bg-white rounded-full w-[150px] h-[150px] flex items-center justify-center">
+            <span className="text-black font-bold">PLAY</span>
+          </div>
+        </div>
+      </div>
     </section>
   );
 };
@@ -1263,7 +1176,7 @@ const BookNowSection = () => {
           </button>
 
           <svg
-          className="svg-curvedmarquee"
+            className="svg-curvedmarquee"
             id="svg"
             viewBox="0 20 1040 700"
             xmlns="http://www.w3.org/2000/svg"
@@ -1290,7 +1203,6 @@ const BookNowSection = () => {
               ></animate>
             </text>
           </svg>
-          
         </div>
       </section>
     </div>
@@ -2155,7 +2067,7 @@ const LogoGrid = () => {
   }, []);
 
   return (
-    <div className="bg-[#20282D] relative h-screen overflow-hidden">
+    <div className="relative h-screen overflow-hidden">
       {/* <div className="grid grid-cols-2 gap-4">
         {logos.map((columnLogos, columnIndex) => (
           <div key={columnIndex} className="flex flex-col items-center">
@@ -2178,12 +2090,12 @@ const LogoGrid = () => {
         />
 
         <div className="lg:w-1/2">
-          <p className="font-helvetica-neue-light text-white leading-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]  text-[clamp(1rem,_-0.4503rem_+_7.7348vw,_4.5rem)]">
+          <p className="font-neue-montreal text-center text-[px]">
             Awards & Recognition
           </p>
           <div className="flex items-center mt-10">
             <div className="w-48 h-px bg-white"></div>
-            <p className="text-white font-neue-montreal text-[15px] pl-4">
+            <p className=" font-neue-montreal text-[15px] pl-4">
               Our greatest award is the success of our patients
             </p>
           </div>
@@ -2210,28 +2122,33 @@ function Testimonials() {
 
   const headingRef = useRef(null);
 
-  
   useEffect(() => {
     const split = new SplitText(headingRef.current, {
-      type: 'words, chars',
-      charsClass: 'char',
-      wordsClass: 'word',
+      type: "words, chars",
+      charsClass: "char",
+      wordsClass: "word",
+      specialChars: ["TE", "MO", "AL"],
     });
 
-    document.querySelectorAll('.word').forEach((word) => {
-      word.style.overflow = 'hidden';
-      word.style.display = 'inline-block';
+    document.querySelectorAll(".word").forEach((word) => {
+      word.style.overflow = "hidden";
+      word.style.display = "inline-block";
     });
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: headingRef.current,
-        start: 'top 75%',
-        toggleActions: 'play none none reverse',
+        start: "top 75%",
+        toggleActions: "play none none reverse",
       },
     });
 
-    tl.from('.char', { y: '100%', stagger: 0.1, duration: 0.8, ease: 'power2.out' });
+    tl.from(".char", {
+      y: "100%",
+      stagger: 0.1,
+      duration: 0.8,
+      ease: "power2.out",
+    });
 
     return () => {
       split.revert();
@@ -2241,13 +2158,14 @@ function Testimonials() {
   return (
     <div className="min-h-screen">
       <h1
-      ref={headingRef}
-       style={{
-        fontSize: '3rem',
-        lineHeight: '80%',
-        textTransform: 'uppercase'
-      }} 
-      className="font-neue-montreal mt-32 mb-10 flex justify-center tracking-wider uppercase">
+        ref={headingRef}
+        style={{
+          fontSize: "3rem",
+          lineHeight: "80%",
+          textTransform: "uppercase",
+        }}
+        className="font-neue-montreal mt-32 mb-10 flex justify-center tracking-wider uppercase"
+      >
         Testimonials
       </h1>
 
