@@ -196,27 +196,27 @@ const HeaderBanner = () => {
           <div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="flex flex-col items-start">
-                <div className="w-12 h-12 bg-green-800 rounded-full flex items-center justify-center text-white">
-                  <span>💧</span>
+                <div className=" flex items-center justify-center text-white">
+                  <span><img src="../images/appts.svg"/></span>
                 </div>
-                <p className="mt-4 text-green-900 text-sm">
+                <p className="font-neue-montreal mt-4 text-green-900 text-md">
                 10 medical visits so all your concerns are heard
                 </p>
               </div>
               <div className="flex flex-col items-start">
-                <div className="w-12 h-12 bg-green-800 rounded-full flex items-center justify-center text-white">
-                  <span>📋</span>
+                <div className="w-16 h-16 flex items-center justify-center text-white">
+                <span><img src="../images/tech.svg"/></span>
                 </div>
-                <p className="mt-4 text-green-900 text-sm">
+                <p className="font-neue-montreal mt-4 text-green-900 text-md">
                 Access to advanced technology others don’t offer
                 </p>
               </div>
               <div className="flex flex-col items-start">
-                <div className="w-12 h-12 bg-green-800 rounded-full flex items-center justify-center text-white">
-                  <span>♻️</span>
+                <div className="w-12 h-12 flex items-center justify-center text-white">
+                <span><img src="../images/paperwork.svg"/></span>
                 </div>
-                <p className="mt-4 text-green-900 text-sm">
-                No Hidden Costs. We do not up charge for ceramic braces or any “special braces” including Invisalign, and fees are all inclusive.
+                <p className="font-neue-montreal mt-4 text-green-900 text-md">
+                No Hidden Costs. We do not up charge for “special braces” including Invisalign, and fees are all inclusive.
                 </p>
               </div>
             </div>
@@ -224,7 +224,7 @@ const HeaderBanner = () => {
           <div></div>
         </div>
         <div className="mt-48">
-  <h1 className="text-green-900 text-6xl font-bold">
+  <h1 className="font-helvetica-neue-light text-green-900 text-6xl">
     Your plan is tailored<br />to your needs
   </h1>
 </div>
