@@ -28,6 +28,8 @@ function classNames(...classes) {
 }
 
 export default function Navbar({ user }) {
+
+  
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleTestimonialsClick = (e, href) => {
@@ -144,8 +146,9 @@ export default function Navbar({ user }) {
   }, []);
   const [isVisible, setIsVisible] = useState(false);
 
+  const [isNavbarExpanded, setIsNavbarExpanded] = useState(true);
   useEffect(() => {
-    const tl = gsap.timeline();
+    const tl = gsap.timeline({ paused: true });
     tl.fromTo(
       ".showcase_navigation",
       { width: "5rem" },
@@ -167,9 +170,30 @@ export default function Navbar({ user }) {
         { width: 0 },
         { width: "auto", duration: 0.6, ease: "power1.inOut", stagger: 0.2 }
       );
-  }, []);
-
-
+  
+    if (isNavbarExpanded) {
+      tl.play();
+    } else {
+      tl.reverse();
+    }
+  }, [isNavbarExpanded]);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0 && isNavbarExpanded) {
+        setIsNavbarExpanded(false);
+      } else if (window.scrollY === 0 && !isNavbarExpanded) {
+        setIsNavbarExpanded(true);
+      }
+    };
+  
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isNavbarExpanded]);
+  
+  
 
 
   const [isMenuOpen, setMenuOpen] = useState(false);

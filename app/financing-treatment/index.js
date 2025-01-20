@@ -160,14 +160,80 @@ const HeaderBanner = () => {
   }, []);
 
 
+  const cardRefs = useRef([]);
+  const sectionRef = useRef(null);
+  useEffect(() => {
+    const cards = cardRefs.current;
+  
+    cards.forEach((card, index) => {
+      if (card) {
+        gsap.to(card, {
+          height: 0,
+          ease: "power1.out",
+          scrollTrigger: {
+            trigger: sectionRef.current, // Use the entire section as the trigger
+            start: `top+=${index * 100} top`, // Cards collapse sequentially
+            end: `+=100`, // Collapse each card over 100px
+            scrub: true,
+          },
+        });
+      }
+    });
+  
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+  
   
   
 
   return (
-    <div className="colorcontainer max-w-[100vw]">
+    <div className="max-w-[100vw]">
+       <div className="flex justify-center py-16 px-4 bg-neutral-50">
+      <div className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="flex flex-col items-start">
+                <div className="w-12 h-12 bg-green-800 rounded-full flex items-center justify-center text-white">
+                  <span>💧</span>
+                </div>
+                <p className="mt-4 text-green-900 text-sm">
+                10 medical visits so all your concerns are heard
+                </p>
+              </div>
+              <div className="flex flex-col items-start">
+                <div className="w-12 h-12 bg-green-800 rounded-full flex items-center justify-center text-white">
+                  <span>📋</span>
+                </div>
+                <p className="mt-4 text-green-900 text-sm">
+                Access to advanced technology others don’t offer
+                </p>
+              </div>
+              <div className="flex flex-col items-start">
+                <div className="w-12 h-12 bg-green-800 rounded-full flex items-center justify-center text-white">
+                  <span>♻️</span>
+                </div>
+                <p className="mt-4 text-green-900 text-sm">
+                No Hidden Costs. We do not up charge for ceramic braces or any “special braces” including Invisalign, and fees are all inclusive.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <div className="mt-48">
+  <h1 className="text-green-900 text-6xl font-bold">
+    Your plan is tailored<br />to your needs
+  </h1>
+</div>
+      </div>
+
+    </div>
       <div
         id="first-color"
-        className=" flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32 relative"
+        className=" flex items-center justify-between bg-yellow-100 py-16 px-8 lg:px-16 xl:px-24 lg:py-32 relative"
       >
         {/* Centered Cylinder Image */}
         {/* <img
@@ -262,48 +328,50 @@ const HeaderBanner = () => {
           <span>Expert Clinical Care, Personalized Just for You&nbsp;</span>
         </div>
       </div>
-      <section class="section-home-services">
-  <div class="home-services-grid">
-
-    <div class="home-services-grid-left">
-      <div class="home-services-grid-left-inner">
-     <img src="../images/testimonial.gif" />
+      <section ref={sectionRef} className="section-home-services">
+  <div className="home-services-grid">
+    <div className="home-services-grid-left">
+      <div className="home-services-grid-left-inner">
+        <img src="../images/testimonial.gif" alt="Testimonial" />
       </div>
     </div>
+    <div className="home-services-grid-right">
 
-    <div class="home-services-grid-right">
-  <div class="home-services-card-wrapper">
-    <div class="home-services-card">
-      <h2>Coverage</h2>
-      <p>
-
-      </p>
-    </div>
-  </div>
-
-  <div class="home-services-card-wrapper">
-    <div class="home-services-card">
-      <h2>FSA/HSA</h2>
-      <p>
-    
-      </p>
-    </div>
-  </div>
-
-  <div class="home-services-card-wrapper">
-    <div class="home-services-card">
-      <h2>INSURANCE</h2>
-      <p>
-  
-      </p>
-    </div>
-  </div>
-
+      {[
+        {
+          title: "Coverage",
+          description:
+            "If you have orthodontic insurance, we’ll help you maximize your lifetime benefits",
+        },
+        {
+          title: "FSA/HSA",
+          description:
+            "We accept HSA/FSA to help you save on your orthodontic treatment",
+        },
+        {
+          title: "INSURANCE",
+          description:
+            "We will help you submit claims for reimbursement based on your insurance plan’s guidelines",
+        },
+        
+      ].map((card, index) => (
+        <div
+          key={index}
+          className="home-services-card-wrapper"
+          ref={(el) => (cardRefs.current[index] = el)}
+        >
+          <div className="home-services-card">
+          <div className="home-services-card-title-wrapper">
+          <img src="../images/star.png" alt="Star" className="home-services-card-star" />
+  <h2 className="home-services-card-title">{card.title}</h2>
 </div>
-
+  <p className="home-services-card-description">{card.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
   </div>
 </section>
-
 
       <div
         className="third-color py-16 px-8 bg-cover bg-center"
