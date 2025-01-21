@@ -185,140 +185,147 @@ const HeaderBanner = () => {
     };
   }, []);
   
+  const svgRef = useRef(null);
+
+  useEffect(() => {
+    const circles = svgRef.current.querySelectorAll("circle");
   
+    circles.forEach((circle, index) => {
+      gsap.to(circle, {
+        scrollTrigger: {
+          trigger: circle,
+          start: "top 80%",
+          end: "bottom 20%",
+          scrub: 1,
+        },
+        attr: {
+          cy: 400 + index * 50,
+        },
+        duration: 1,
+        ease: "power1.inOut",
+      });
+    });
   
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
 
   return (
     <div className="max-w-[100vw]">
-       <div className="flex justify-center py-16 px-4 bg-neutral-50">
-      <div className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-start">
-                <div className=" flex items-center justify-center text-white">
-                  <span><img src="../images/appts.svg"/></span>
-                </div>
-                <p className="font-neue-montreal mt-4 text-green-900 text-md">
-                10 medical visits so all your concerns are heard
-                </p>
-              </div>
-              <div className="flex flex-col items-start">
-                <div className="w-16 h-16 flex items-center justify-center text-white">
-                <span><img src="../images/tech.svg"/></span>
-                </div>
-                <p className="font-neue-montreal mt-4 text-green-900 text-md">
-                Access to advanced technology others don’t offer
-                </p>
-              </div>
-              <div className="flex flex-col items-start">
-                <div className="w-12 h-12 flex items-center justify-center text-white">
-                <span><img src="../images/paperwork.svg"/></span>
-                </div>
-                <p className="font-neue-montreal mt-4 text-green-900 text-md">
-                No Hidden Costs. We do not up charge for “special braces” including Invisalign, and fees are all inclusive.
-                </p>
-              </div>
+     <div className="flex justify-center py-16 px-4">
+  <div className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Left Column */}
+      <div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="flex flex-col items-start">
+            <div className="flex items-center justify-center text-white">
+              <span>
+                <img src="../images/appts.svg" />
+              </span>
             </div>
+            <p className="font-neue-montreal mt-4 text-green-900 text-md">
+              10 medical visits so all your concerns are heard
+            </p>
           </div>
-          <div></div>
+          <div className="flex flex-col items-start">
+            <div className="w-16 h-16 flex items-center justify-center text-white">
+              <span>
+                <img src="../images/tech.svg" />
+              </span>
+            </div>
+            <p className="font-neue-montreal mt-4 text-green-900 text-md">
+              Access to advanced technology others don’t offer
+            </p>
+          </div>
+          <div className="flex flex-col items-start">
+            <div className="w-12 h-12 flex items-center justify-center text-white">
+              <span>
+                <img src="../images/paperwork.svg" />
+              </span>
+            </div>
+            <p className="font-neue-montreal mt-4 text-green-900 text-md">
+              No Hidden Costs. We do not upcharge for “special braces,” including Invisalign, and fees are all inclusive.
+            </p>
+          </div>
         </div>
-        <div className="mt-48">
-  <h1 className="font-helvetica-neue-light text-green-900 text-6xl">
-    Your plan is tailored<br />to your needs
-  </h1>
-</div>
       </div>
 
+      {/* Right Column */}
+      <div className="flex flex-col items-end space-y-8">
+        {/* Circle */}
+        <svg
+              ref={svgRef}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 400 600"
+              className="w-64 h-auto"
+            >
+              {[...Array(5)].map((_, index) => (
+                <circle
+                  key={index}
+                  cx="200"
+                  cy={150 + index * 50} 
+                  r="196"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2"
+                />
+              ))}
+            </svg>
+
+
+
+        {/* <div className="font-neue-montreal text-lg flex items-center space-x-4">
+          <Link href="/book-now" className="flex items-center space-x-2">
+            <button
+              className="px-6 py-3"
+              onMouseEnter={() => setHover(true)}
+              onMouseLeave={() => setHover(false)}
+            >
+              Get started
+            </button>
+            <svg
+              className="cursor-pointer w-12"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 13"
+              onMouseEnter={() => setHover(true)}
+              onMouseLeave={() => setHover(false)}
+            >
+              <path
+                d="M19.4 6.4L13 0l-1.4 1.4 4 4H4.8v2h10.8l-4 4 1.4 1.4 6.4-6.4z"
+                className="head"
+                style={{
+                  transform: hover ? "translateX(0)" : "translateX(-3px)",
+                  transition: "all 0.35s ease",
+                }}
+              />
+              <path
+                d="M0 5.4h9.7v2H0z"
+                className="tail"
+                style={{
+                  transform: hover ? "translateX(0)" : "translateX(5px)",
+                  transition: "all 0.35s ease",
+                }}
+              />
+            </svg>
+          </Link>
+        </div> */}
+      </div>
     </div>
-      <div
-        id="first-color"
-        className=" flex items-center justify-between bg-yellow-100 py-16 px-8 lg:px-16 xl:px-24 lg:py-32 relative"
-      >
-        {/* Centered Cylinder Image */}
-        {/* <img
-    className="absolute left-1/2 transform -translate-x-1/2 object-contain w-1/2 h-1/2 opacity-90"
-    src="../../images/orangecylinder.svg"
-    alt="Cylinder"
-  /> */}
 
-        {/* Left Section */}
-        <div className=" max-w-lg z-10">
-          {" "}
-          <h1 className="text-4xl font-bold font-neue-montreal text-gray-900 leading-snug">
-            Your care plan is tailored{" "}
-            <span className="text-gray-500 italic">to your needs,</span> and
-            biology
-          </h1>
-          <ul className="font-neue-montreal mt-6 flex space-x-8">
-            <li className="flex items-center justify-center">
-              <div className="flex items-center justify-center w-28 h-28 border border-gray-400 rounded-full">
-                <span className="text-center text-sm text-gray-700">
-                  Effective
-                </span>
-              </div>
-            </li>
-
-            <li className="flex items-center justify-center">
-              <div className="flex items-center justify-center w-28 h-28 border border-gray-400 rounded-full">
-                <span className="text-center text-sm text-gray-700">
-                  Virtual Care
-                </span>
-              </div>
-            </li>
-
-            <li className="flex items-center justify-center">
-              <div className="flex items-center justify-center w-28 h-28 border border-gray-400 rounded-full">
-                <span className="text-center text-sm text-gray-700">
-                  Personalized
-                </span>
-              </div>
-            </li>
-          </ul>
-          <div className="font-neue-montreal text-lg flex justify-end items-center space-x-4 mt-8">
-  <Link href="/book-now" className="flex items-center space-x-2">
-    <button
-      className="px-6 py-3"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      Get started
-    </button>
-    <svg
-      className="cursor-pointer w-12"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 13"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <path
-        d="M19.4 6.4L13 0l-1.4 1.4 4 4H4.8v2h10.8l-4 4 1.4 1.4 6.4-6.4z"
-        className="head"
-        style={{
-          transform: hover ? "translateX(0)" : "translateX(-3px)",
-          transition: "all 0.35s ease",
-        }}
-      />
-      <path
-        d="M0 5.4h9.7v2H0z"
-        className="tail"
-        style={{
-          transform: hover ? "translateX(0)" : "translateX(5px)",
-          transition: "all 0.35s ease",
-        }}
-      />
-    </svg>
-  </Link>
+    {/* Bottom Section */}
+    <div className="mt-48">
+      <h1 className="font-helvetica-neue-light text-green-900 text-6xl">
+        Your plan is tailored
+        <br />
+        to your needs
+      </h1>
+    </div>
+  </div>
 </div>
 
-        </div>
 
-        {/* Right Section - Image */}
-        <div className="hidden lg:block z-10">
-          {" "}
-          <img src="../images/budget.png" alt="Product" className="max-w-md" />
-        </div>
-      </div>
 
       <div id="second-color" className="overflow-hidden w-full py-4">
         <div
