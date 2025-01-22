@@ -5034,7 +5034,6 @@ a {
 }
 
 
-
 .button_wrapper {
   button {
     padding: 1.7rem 3rem;
@@ -5050,13 +5049,8 @@ a {
   }
 }
 
-.section-home-services {
-  display: flex;
-  justify-content: center;
-  padding: 100px 20px;
-}
 
-.home-services-grid {
+.payment-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 50px;
@@ -5064,14 +5058,14 @@ a {
   width: 100%;
 }
 
-.home-services-grid-left {
+.payment-services-grid-left {
   position: sticky;
   top: 50px;
   align-self: flex-start;
+  height: 100vh;
 }
 
-.home-services-grid-right {
-  position: sticky;
+.payment-grid-right {
   top: 0;
   height: 300vh;
   display: flex;
@@ -5080,7 +5074,7 @@ a {
   overflow: hidden;
 }
 
-.home-services-card-wrapper {
+.payment-card-wrapper {
   position: relative;
   overflow: hidden;
   z-index: 1;
@@ -5088,7 +5082,7 @@ a {
   margin-bottom: 20px;
 }
 
-.home-services-card {
+.payment-card {
   background: #fbfbfb;
   padding: 20px;
   height: 300px;
@@ -5098,22 +5092,18 @@ a {
   justify-content: flex-start;
   align-items: flex-start;
 }
-.home-services-card-title-wrapper {
+.payment-title-wrapper {
   display: flex;
   align-items: center;
   gap: 8px; 
 }
-.home-services-card-title {
-  font-size: 2rem;
-  margin: 0 0 10px;
-  color: #000; 
-}
-.home-services-card-star {
+
+.card-star {
   width: 60px; 
   height: 60px; 
 }
 
-.home-services-card-description {
+.card-description {
   font-size: 1rem;
   margin: 0;
   flex-grow: 1;
@@ -5122,4 +5112,18 @@ a {
   align-items: center;
   text-align: center;
   color: #000; 
+}
+
+
+.gsap-heading {
+  font-size: 4rem;
+  position: relative;
+  overflow: hidden;
+  height: 4.5rem;
+  margin: 0;
+}
+
+.gsap-hidden-text {
+  position: absolute;
+  color: #ff5722; 
 }
