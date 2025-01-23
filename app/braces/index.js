@@ -57,59 +57,6 @@ const Braces = () => {
     },
   ];
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const container = containerRef.current;
-    const image = imageRef.current;
-    const bounds = image.getBoundingClientRect();
-
-    const handleMouseMove = (e) => {
-      const target = e.target.closest(".slide-item");
-      const imageSrc = target ? target.getAttribute("data-image") : null;
-
-      if (imageSrc) {
-        image.src = imageSrc;
-
-        const xMovement = Math.min(Math.max(parseInt(e.movementX), -20), 20);
-        const yMovement = Math.min(Math.max(parseInt(e.movementY), -20), 20);
-
-        gsap.to(image, {
-          autoAlpha: 1,
-          x: e.clientX - bounds.left,
-          y: e.clientY - bounds.top - bounds.height / 2,
-          transformOrigin: "center",
-          rotation: xMovement,
-          skewX: xMovement,
-          skewY: yMovement,
-          ease: "power1.out",
-          force3D: true,
-        });
-      } else {
-        gsap.set(image, { autoAlpha: 0 });
-      }
-    };
-
-    const handleMouseLeave = () => {
-      gsap.to(image, {
-        autoAlpha: 0,
-        duration: 0.5,
-        ease: "power2.inOut",
-      });
-    };
-
-    container.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
-
-  const toggleAccordion = (index) => {
-    setActiveAccordionIndex(activeAccordionIndex === index ? null : index);
-  };
 
   return (
     <>
