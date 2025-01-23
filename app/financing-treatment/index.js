@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
-import { ScrollTrigger, MotionPathPlugin } from "gsap/all";
+import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap-trial/all";
 
-gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
+gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText);
 
 const HeaderBanner = () => {
   const marqueeRef = useRef(null);
@@ -159,98 +159,178 @@ const HeaderBanner = () => {
     });
   }, []);
 
+  const cardRefs = useRef([]);
+  const sectionRef = useRef(null);
+  const leftColumnRef = useRef(null);
+
+  useEffect(() => {
+    const cards = cardRefs.current;
+
+    gsap.to(leftColumnRef.current, {
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "bottom top",
+        pin: true,
+        pinSpacing: true,
+      },
+    });
+    cards.forEach((card) => {
+      if (card) {
+        gsap.to(card, {
+          height: 0,
+          ease: "power1.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "0% 40%",
+            end: "bottom center",
+            scrub: true,
+          },
+        });
+      }
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
+  //circle
+
+  // const svgRef = useRef(null);
+
+  // useEffect(() => {
+  //   const circles = svgRef.current.querySelectorAll("circle");
+
+  //   circles.forEach((circle, index) => {
+  //     gsap.to(circle, {
+  //       scrollTrigger: {
+  //         trigger: circle,
+  //         start: "top 80%",
+  //         end: "bottom 20%",
+  //         scrub: 1,
+  //       },
+  //       attr: {
+  //         cy: 400 + index * 50,
+  //       },
+  //       duration: 1,
+  //       ease: "power1.inOut",
+  //     });
+  //   });
+
+  //   return () => {
+  //     ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+  //   };
+  // }, []);
+
+  //line
+  const pathRef = useRef(null);
+
+  // useEffect(() => {
+  //   const path = pathRef.current;
+
+  //   const pathLength = path.getTotalLength();
+
+  //   gsap.set(path, {
+  //     strokeDasharray: pathLength,
+  //     strokeDashoffset: pathLength,
+  //   });
+
+  //   gsap.to(path, {
+  //     strokeDashoffset: 0,
+  //     duration: 3,
+  //     ease: "power2.out",
+  //     onComplete: () => {
+  //       gsap.to(path, {
+  //         strokeDashoffset: pathLength,
+  //         duration: 3,
+  //         ease: "power2.in",
+  //       });
+  //     },
+  //   });
+
+  // }, []);
+
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const tl = gsap.timeline();
+    tl.fromTo(
+      ".gsap-hidden-text",
+      { y: "100%" },
+      { y: "0%", duration: 1.5, ease: "power4.out", stagger: 0.15 }
+    );
+  }, []);
+
   return (
-    <div className="colorcontainer">
-      <div
-        id="first-color"
-        className=" flex items-center justify-between px-8 py-16 lg:px-16 xl:px-24 lg:py-32 relative"
-      >
-        {/* Centered Cylinder Image */}
-        {/* <img
-    className="absolute left-1/2 transform -translate-x-1/2 object-contain w-1/2 h-1/2 opacity-90"
-    src="../../images/orangecylinder.svg"
-    alt="Cylinder"
-  /> */}
-
-        {/* Left Section */}
-        <div className=" max-w-lg z-10">
-          {" "}
-          <h1 className="text-4xl font-bold font-neue-montreal text-gray-900 leading-snug">
-            Your care plan is tailored{" "}
-            <span className="text-gray-500 italic">to your needs,</span> and
-            biology
-          </h1>
-          <ul className="font-neue-montreal mt-6 flex space-x-8">
-            <li className="flex items-center justify-center">
-              <div className="flex items-center justify-center w-28 h-28 border border-gray-400 rounded-full">
-                <span className="text-center text-sm text-gray-700">
-                  Effective
-                </span>
+    <div>
+      <div className="flex justify-center py-16 px-4">
+        <div className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12 relative">
+          <div className="grid grid-cols-1 h-full md:grid-cols-2 gap-8">
+            <div className="col-span-1">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="flex flex-col items-start fade-in">
+                  <div className="flex items-center justify-center">
+                    <img src="../images/appts.svg" alt="Appointments Icon" />
+                  </div>
+                  <p className="font-neue-montreal mt-4  text-[#ff5722] text-md">
+                    10 medical visits so all your concerns are heard
+                  </p>
+                </div>
+                <div className="flex flex-col items-start fade-in">
+                  <div className="w-16 h-16 flex items-center justify-center text-white">
+                    <img src="../images/tech.svg" alt="Tech Icon" />
+                  </div>
+                  <p className="font-neue-montreal mt-4 text-[#ff5722]  text-md">
+                    Access to advanced technology others don’t offer
+                  </p>
+                </div>
+                <div className="flex flex-col items-start fade-in">
+                  <div className="w-12 h-12 flex items-center justify-center text-white">
+                    <img src="../images/paperwork.svg" alt="Paperwork Icon" />
+                  </div>
+                  <p className="font-neue-montreal mt-4 text-[#ff5722] text-md">
+                    No Hidden Costs. We do not upcharge for “special braces,”
+                    including Invisalign, and fees are all inclusive.
+                  </p>
+                </div>
               </div>
-            </li>
 
-            <li className="flex items-center justify-center">
-              <div className="flex items-center justify-center w-28 h-28 border border-gray-400 rounded-full">
-                <span className="text-center text-sm text-gray-700">
-                  Virtual Care
-                </span>
+              <div className="mt-64 font-neue-montreal">
+                <h1 className="gsap-heading">
+                  <span className="gsap-hidden-text">
+                    Your plan is tailored
+                  </span>
+                </h1>
+                <h1 className="gsap-heading">
+                  <span className="gsap-hidden-text">to your needs</span>
+                </h1>
               </div>
-            </li>
+            </div>
 
-            <li className="flex items-center justify-center">
-              <div className="flex items-center justify-center w-28 h-28 border border-gray-400 rounded-full">
-                <span className="text-center text-sm text-gray-700">
-                  Personalized
-                </span>
-              </div>
-            </li>
-          </ul>
-          <div className="font-neue-montreal text-lg flex justify-end items-center space-x-4 mt-8">
-  <Link href="/book-now" className="flex items-center space-x-2">
-    <button
-      className="px-6 py-3"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      Get started
-    </button>
-    <svg
-      className="cursor-pointer w-12"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 13"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <path
-        d="M19.4 6.4L13 0l-1.4 1.4 4 4H4.8v2h10.8l-4 4 1.4 1.4 6.4-6.4z"
-        className="head"
-        style={{
-          transform: hover ? "translateX(0)" : "translateX(-3px)",
-          transition: "all 0.35s ease",
-        }}
-      />
-      <path
-        d="M0 5.4h9.7v2H0z"
-        className="tail"
-        style={{
-          transform: hover ? "translateX(0)" : "translateX(5px)",
-          transition: "all 0.35s ease",
-        }}
-      />
-    </svg>
-  </Link>
-</div>
-
-        </div>
-
-        {/* Right Section - Image */}
-        <div className="hidden lg:block z-10">
-          {" "}
-          <img src="../images/budget.png" alt="Product" className="max-w-md" />
+            <div className="col-span-1 flex items-center justify-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 951 367"
+                fill="none"
+                className="w-full max-w-lg h-auto"
+              >
+                <path
+                  ref={pathRef}
+                  d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
+                  stroke="#0C0EFE"
+                  strokeWidth="40"
+                  strokeMiterlimit="10"
+                  strokeLinejoin="round"
+                  style={{ strokeDasharray: "3202.1", strokeDashoffset: "0px" }}
+                />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div id="second-color" className="w-full py-4">
+      <div className="overflow-hidden w-full py-4">
         <div
           ref={marqueeRef}
           className="inline-block text-6xl font-sans whitespace-nowrap"
@@ -258,110 +338,94 @@ const HeaderBanner = () => {
           <span>Expert Clinical Care, Personalized Just for You&nbsp;</span>
         </div>
       </div>
-
-      <div id="second-color" className="min-h-screen">
-        <div className="grid grid-cols-2 max-w-6xl w-full mx-auto">
-          {/* Left Column - Gif (Sticky) */}
-          <div className="sticky top-0  h-[100vh] p-8">
-            <img
-              src="../../images/testimonial.gif"
-              alt="Logo"
-              className="w-full h-auto"
-            />
+      <section
+        ref={sectionRef}
+        className="font-neue-montreal"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          padding: "100px 20px",
+        }}
+      >
+        <div className="payment-grid">
+          <div className="payment-grid-left" ref={leftColumnRef}>
+            <div>
+              <img src="../images/testimonial.gif" alt="Testimonial" />
+            </div>
           </div>
-
-          {/* Right Column - Scrollable */}
-          <div className="font-neue-montreal p-16 h-auto overflow-y-auto flex flex-col justify-center items-center">
-            {/* Coverage */}
-            <div className="w-full max-w-md border border-green-300 p-16 mb-24">
-              <div className="flex flex-col items-center">
-                <div className="flex items-center space-x-4 mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
+          <div className="payment-grid-right">
+            {[
+              {
+                title: "Coverage",
+                description:
+                  "If you have orthodontic insurance, we’ll help you maximize your lifetime benefits",
+              },
+              {
+                title: "FSA/HSA",
+                description:
+                  "We accept HSA/FSA to help you save on your orthodontic treatment",
+              },
+              {
+                title: "INSURANCE",
+                description:
+                  "We will help you submit claims for reimbursement based on your insurance plan’s guidelines",
+              },
+            ].map((card, index) => (
+              <div
+                key={index}
+                className="payment-card-wrapper"
+                ref={(el) => (cardRefs.current[index] = el)}
+              >
+                <div className="payment-card">
+                  <div className="payment-title-wrapper">
+                    <img
+                      src="../images/star.png"
+                      alt="Star"
+                      className="card-star"
                     />
-                  </svg>
+                    <h2>{card.title}</h2>
+                  </div>
+                  <p className="font-neue-montreal card-description">
+                    {card.description}
+                  </p>
                 </div>
-
-                <h2 className=" text-3xl font-bold text-gray-700">Coverage</h2>
-
-                <p className="font-neue-montreal mt-4 text-center text-gray-500">
-                  If you have orthodontic insurance, we’ll help you maximize
-                  your lifetime benefits.
-                </p>
               </div>
-            </div>
-
-            {/* HSA/FSA Box */}
-            <div className="w-full max-w-md border border-green-300 p-16 mb-24">
-              <div className="flex flex-col items-center">
-                <div className="flex items-center space-x-4 mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-
-                <h2 className="text-3xl font-bold text-gray-700">HSA/FSA</h2>
-
-                <p className="font-neue-montreal mt-4 text-center text-gray-500">
-                  We accept HSA/FSA to help you save on your orthodontic
-                  treatment.
-                </p>
-              </div>
-            </div>
-
-            {/* Out of Network */}
-            <div className="w-full max-w-md border border-green-300 p-16">
-              <div className="flex flex-col items-center">
-                <div className="flex items-center space-x-4 mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-
-                <h2 className="text-3xl font-bold text-gray-700">
-                  Out-of-network
-                </h2>
-
-                <p className="font-neue-montreal mt-4 text-center text-gray-500">
-                  We will help you submit claims for reimbursement based on your
-                  insurance plan’s guidelines
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
+      </section>
+      <div className="font-neue-montreal text-lg flex space-x-4 mt-8">
+        <Link href="/book-now" className="flex items-center space-x-2">
+          <button
+            className="px-6 py-3"
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+          >
+            Get started
+          </button>
+          <svg
+            className="cursor-pointer w-12"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 13"
+          >
+            <path
+              d="M19.4 6.4L13 0l-1.4 1.4 4 4H4.8v2h10.8l-4 4 1.4 1.4 6.4-6.4z"
+              className="head"
+              style={{
+                transform: hover ? "translateX(0)" : "translateX(-3px)",
+                transition: "all 0.35s ease",
+              }}
+            />
+            <path
+              d="M0 5.4h9.7v2H0z"
+              className="tail"
+              style={{
+                transform: hover ? "translateX(0)" : "translateX(5px)",
+                transition: "all 0.35s ease",
+              }}
+            />
+          </svg>
+        </Link>
       </div>
       <div
         className="third-color py-16 px-8 bg-cover bg-center"

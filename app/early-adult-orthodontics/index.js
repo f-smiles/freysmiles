@@ -114,7 +114,7 @@ function EarlyOrthoGrid() {
             preload="true"
             className="absolute inset-0 object-cover object-center w-full h-full media"
           >
-            <source src="/../../videos/stock_preview.mp4" type="video/mp4" />
+            <source src="/../../videos/boyholdingaligner.mp4" type="video/mp4" />
           </video>
         </div>
       </div>
@@ -185,7 +185,7 @@ function AdultOrthoGrid() {
             preload="true"
             className="absolute inset-0 object-cover object-center w-full h-full media"
           >
-            <source src="/../../videos/stock_preview.mp4" type="video/mp4" />
+            <source src="/../../videos/boyholdingaligner.mp4" type="video/mp4" />
           </video>
         </div>
       </div>

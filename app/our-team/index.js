@@ -543,10 +543,14 @@ export default function OurTeam() {
     zIndex: 9999,
   };
 
+
+  
   return (
     <div className="relative w-full min-h-screen wrapper">
       <div
-        className="fixed top-0 left-0 z-10 w-full h-full layer gradient-green"
+        className="fixed top-0 left-0 z-10 w-full h-full layer gradient-green "
+ 
+        
         style={{ width: "100vw", height: "100vh" }}
         ref={circleRef}
       />
@@ -563,14 +567,24 @@ export default function OurTeam() {
                 </div>
               </div>
               <div className="flex items-center">
-                <div className="w-24 h-px bg-gray-700 "></div>
-                <span className="text-[13px] block w-3/5 ml-4">
-                  Our experience spans over 50 years, a testament to the
-                  precision, accuracy, and relevance of our vision,
-                  demonstrating our ability to adapt to the ever-changing nature
-                  of our industry.
-                </span>
-              </div>
+              <motion.div
+            className="h-px bg-gray-700"
+            initial={{ width: 0 }}
+            animate={{ width: "6rem" }}
+            transition={{
+              duration: 1, 
+              ease: "easeInOut",
+              delay: 2, 
+            }}
+          ></motion.div>
+
+   
+      <span className="text-[13px] block w-3/5 ml-4">
+        Our experience spans over 50 years, a testament to the precision,
+        accuracy, and relevance of our vision, demonstrating our ability to
+        adapt to the ever-changing nature of our industry.
+      </span>
+    </div>
             </div>
           </div>
 
