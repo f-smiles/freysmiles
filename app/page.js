@@ -2800,17 +2800,17 @@ const ContactUs = () => {
 
 function GiftCards() {
   return (
-    <section className="z-10 h-[60dvh] relative group overflow-hidden hover:cursor-pointer">
+    <section className="min-h-screen z-10 relative group overflow-hidden hover:cursor-pointer">
       <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-primary-30 bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
       <Link
         href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`}
         target="_blank"
-        className="text-2xl font-editorial-new absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white"
+        className="text-2xl font-neue-montreal absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white"
       >
         Send a Gift Card
       </Link>
       <img
-        src="/../../images/giftcards/gift_cards_mockup.jpg"
+        src="../images/giftcardbg.png"
         alt="gift cards mockup"
         className="absolute inset-0 object-cover object-center w-full h-full -z-10"
       />
