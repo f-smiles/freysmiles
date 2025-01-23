@@ -14,7 +14,7 @@ export const editProduct = actionClient
   .action(async ({ parsedInput: { id, title, description, price } }) => {
     try {
       const existingProduct = await db.query.products.findFirst({
-        where: eq(products.id, id),
+        where: eq(products.id, id!),
       })
 
       if (!existingProduct) return { error: "Product does not exist." }

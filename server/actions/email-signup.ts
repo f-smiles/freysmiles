@@ -29,6 +29,7 @@ export const emailSignup = actionClient
       if (existingUser) {
         if (!existingUser.emailVerified) {
           const token = await generateEmailVerificationToken(email)
+          if ("error" in token) return { error: token.error }
           await sendVerificationEmail(token[0].email, token[0].token)
           return { success: "Email confirmation resent" }
         }
@@ -44,6 +45,7 @@ export const emailSignup = actionClient
       })
 
       const token = await generateEmailVerificationToken(email)
+      if ("error" in token) return { error: token.error }
       await sendVerificationEmail(token[0].email, token[0].token)
 
       return { success: "Confirmation email was sent to your inbox." }
