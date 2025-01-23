@@ -184,3 +184,5 @@ export const ProductVariant = forwardRef<HTMLDivElement, VariantProps>(({ childr
     </Dialog>
   )
 })
+
+ProductVariant.displayName = "ProductVariant"

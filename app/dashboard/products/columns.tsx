@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useAction } from "next-safe-action/hooks"
 import { toast } from "sonner"
-import { ColumnDef } from "@tanstack/react-table"
+import { ColumnDef, Row } from "@tanstack/react-table"
 import { formatPrice } from "@/lib/format-price"
 import { VariantsWithImagesTags } from "@/lib/infer-type"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -23,6 +23,41 @@ export type ProductColumns = {
   price: number
   image: string
   variants: VariantsWithImagesTags[],
+}
+
+export const ActionCell = ({ row }: { row: Row<ProductColumns> }) => {
+  const product = row.original
+
+  const { execute, status } = useAction(deleteProduct, {
+    onSuccess({ data }) {
+      if (data?.error) toast.error(data.error)
+      if (data?.success) toast.success(data.success)
+    },
+  })
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="w-8 h-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontalIcon className="w-4 h-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="center">
+        <DropdownMenuItem className="focus:bg-[hsl(208,_100%,_97%)] focus:border focus:border-[hsl(221,_91%,_91%)] focus:text-[hsl(210,_92%,_45%)] dark:focus:bg-[hsl(215,_100%,_16%)] dark:focus:border dark:focus:border-[hsl(223,_100%,_32%)] dark:focus:text-[hsl(216,_87%,_85%)]">
+          <Link href={`/dashboard/edit-product?id=${product.id}`}>
+            Edit Product
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="focus:bg-[hsl(359,_100%,_97%)] focus:border focus:border-[hsl(359,_100%,_94%)] focus:text-[hsl(360,_100%,_45%)] dark:focus:bg-[hsl(358,_76%,_10%)] dark:focus:border dark:focus:border-[hsl(357,_89%,_16%)] dark:focus:text-[hsl(358,_100%,_81%)]"
+          onClick={() => execute({ id: product.id })}
+        >
+          Delete Product
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 export const columns: ColumnDef<ProductColumns>[] = [
@@ -113,40 +148,6 @@ export const columns: ColumnDef<ProductColumns>[] = [
   {
     accessorKey: "actions",
     header: "Actions",
-    cell: ({ row }) => {
-
-      const product = row.original
-
-      const { execute, status } = useAction(deleteProduct, {
-        onSuccess({ data }) {
-          if (data?.error) toast.error(data.error)
-          if (data?.success) toast.success(data.success)
-        },
-      })
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="w-8 h-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontalIcon className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center">
-            <DropdownMenuItem className="focus:bg-[hsl(208,_100%,_97%)] focus:border focus:border-[hsl(221,_91%,_91%)] focus:text-[hsl(210,_92%,_45%)] dark:focus:bg-[hsl(215,_100%,_16%)] dark:focus:border dark:focus:border-[hsl(223,_100%,_32%)] dark:focus:text-[hsl(216,_87%,_85%)]">
-              <Link href={`/dashboard/edit-product?id=${product.id}`}>
-                Edit Product
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="focus:bg-[hsl(359,_100%,_97%)] focus:border focus:border-[hsl(359,_100%,_94%)] focus:text-[hsl(360,_100%,_45%)] dark:focus:bg-[hsl(358,_76%,_10%)] dark:focus:border dark:focus:border-[hsl(357,_89%,_16%)] dark:focus:text-[hsl(358,_100%,_81%)]"
-              onClick={() => execute({ id: product.id })}
-            >
-              Delete Product
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
+    cell: ActionCell,
   },
 ]

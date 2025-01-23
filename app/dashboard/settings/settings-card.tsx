@@ -20,11 +20,7 @@ import { FormSuccess } from "@/components/auth/form-success"
 import { UploadButton } from "@/app/api/uploadthing/uploadthing"
 import { EyeIcon, EyeOffIcon } from "lucide-react"
 
-type SettingsCardProps = {
-  session: Session
-}
-
-export const SettingsCard = (session: SettingsCardProps) => {
+export const SettingsCard = ({ session }: { session: Session }) => {
 
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
@@ -37,12 +33,12 @@ export const SettingsCard = (session: SettingsCardProps) => {
   const form = useForm<z.infer<typeof SettingsSchema>>({
     resolver: zodResolver(SettingsSchema),
     defaultValues: {
-      name: session.session.user?.name || undefined,
-      email: session.session.user?.email || undefined,
+      name: session.user.name || undefined,
+      email: session.user.email || undefined,
       password: undefined,
       newPassword: undefined,
-      image: session.session.user.image || undefined,
-      twoFactorEnabled: session.session.user?.twoFactorEnabled || undefined,
+      image: session.user.image || undefined,
+      twoFactorEnabled: session.user.twoFactorEnabled || undefined,
     },
   })
 
@@ -100,7 +96,7 @@ export const SettingsCard = (session: SettingsCardProps) => {
 
                   {!form.getValues("image") && (
                     <span className="flex items-center justify-center rounded-full w-28 h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 bg-primary text-primary-foreground">
-                      <p className="text-xl font-bold md:text-2xl lg:text-4xl">{session.session.user.name.charAt(0).toUpperCase()}</p>
+                      <p className="text-xl font-bold md:text-2xl lg:text-4xl">{session.user.name?.charAt(0).toUpperCase()}</p>
                     </span>
                   )}
                   {form.getValues("image") && (
@@ -160,7 +156,7 @@ export const SettingsCard = (session: SettingsCardProps) => {
                       <Input
                         type={showCurrentPassword ? "text" : "password"}
                         placeholder="• • • • • • • •"
-                        disabled={status === "executing" || session?.session?.user?.isOAuth}
+                        disabled={status === "executing" || session.user.isOAuth}
                         className="hide-password-toggle"
                         {...field}
                       />
@@ -197,7 +193,7 @@ export const SettingsCard = (session: SettingsCardProps) => {
                       <Input
                         type={showNewPassword ? "text" : "password"}
                         placeholder="• • • • • • • •"
-                        disabled={status === "executing" || session?.session?.user?.isOAuth}
+                        disabled={status === "executing" || session.user.isOAuth}
                         className="hide-password-toggle"
                         {...field}
                       />
@@ -240,7 +236,7 @@ export const SettingsCard = (session: SettingsCardProps) => {
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      disabled={status === "executing" || session.session.user.isOAuth === true}
+                      disabled={status === "executing" || session.user.isOAuth}
                     />
                   </FormControl>
                 </FormItem>

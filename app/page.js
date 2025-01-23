@@ -568,6 +568,7 @@ const Hero = () => {
           <div className="flex-grow"></div>
         </div>
 
+
         {/* Right Column with Circles */}
         <div
           className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]"
@@ -588,10 +589,31 @@ const Hero = () => {
                   ></div>
                 ))}
               </div>
+
+
+    <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
+
+      <div className="flex flex-col justify-center items-center h-full space-y-0">
+        {colors.map((row, rowIndex) => (
+          <div key={rowIndex} className="flex space-x-0">
+            {row.map((color, circleIndex) => (
+              <div
+                key={circleIndex}
+                className={`w-[125px] h-[125px] ${
+                  (rowIndex + circleIndex) % 3 === 0 ? 'rounded-[40px]' : 'rounded-full'
+                } transition-transform duration-300 ease-in-out hover:scale-75`}
+                style={{ backgroundColor: color }}
+              ></div>
+
             ))}
           </div>
         </div>
       </div>
+
+
+
+    </div>
+
 
       {/* Bottom Content */}
       <div className="flex justify-between items-end mt-8">
@@ -901,7 +923,7 @@ const Stats = () => {
               src="../images/Hero-Background-Grid.svg"
               alt="Hero Grid"
               loading="lazy"
-              className="w-[320vw] max-w-[1000px]" 
+              className="w-[320vw] max-w-[1000px]"
             />
           </div>
 
@@ -1799,6 +1821,7 @@ const ImageGrid = () => {
             <p>CHECK </p>
             <p>IT OUT</p>
           </div>
+
           <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
             {images.map((image, index) => (
               <a
@@ -1811,6 +1834,83 @@ const ImageGrid = () => {
                 }`}
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
+
+          <div className="relative flex items-center justify-center">
+            <div
+              ref={carouselRef}
+              className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
+              style={{ width: "60vw", height: "auto" }}
+            >
+              <div
+                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+                style={{
+                  height: "500px",
+                  backgroundImage:
+                    "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
+                }}
+              >
+                <div className="flex flex-col justify-center items-center mx-[7vw] ">
+                  <p className="font-helvetica-now-thin text-[24px] text-center">
+                    You will receive top notch orthodontic care at Frey Smiles.
+                    Dr. Frey and his entire staff make every visit a pleasure.
+                    It is apparent at each appointment that Dr. Frey truly cares
+                    about his patients. He has treated both of our kids and my
+                    husband, and they all have beautiful smiles! I highly
+                    recommend!
+                  </p>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                    Lisa Moyer
+                  </p>
+                </div>
+              </div>
+              <div
+                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+                style={{
+                  height: "500px",
+                  backgroundImage:
+                    "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0",
+                }}
+              >
+                <div className=" flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                  <p className="font-helvetica-now-thin text-[24px] text-center">
+                    My experience at FreySmiles has been amazing! I recently
+                    just completed my Invisalign and my teeth look perfect! Dr.
+                    Frey truly cares about his patients and the staff are always
+                    friendly, as well as always accommodating to my schedule.
+                    They&apos;re the best around!
+                  </p>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10  text-center">
+                    Kailee
+                  </p>
+                </div>
+              </div>
+              <div
+                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+                style={{
+                  height: "500px",
+                  backgroundImage:
+                    "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
+                }}
+              >
+                <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] ">
+                  <p className="text-2xl text-center">
+                    I had an open bite and misaligned teeth most of my life. Dr
+                    Frey fixed it and in record time. 1 1/2 yrs with
+                    Invisalign&apos;s. Highly recommended! Friendly staff and easy to
+                    make appointments!
+                  </p>
+                  <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
+                    Karen Oneill
+                  </p>
+                </div>
+              </div>
+              <div
+                className="flex items-center justify-center w-full h-48 snap-start shrink-0 "
+                style={{
+                  height: "500px",
+                  backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
+                }}
+
               >
                 <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
                   {image.title}

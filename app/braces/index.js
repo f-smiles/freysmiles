@@ -60,6 +60,7 @@ const Braces = () => {
 
   return (
     <>
+
       <div className="flex h-screen">
         <div className="flex flex-col w-1/3">
           <img
@@ -127,17 +128,9 @@ const Braces = () => {
             </div>
           </div>
 
-          <div className="mt-10">
-            <p className="text-[20px] font-neue-montreal">
-              We're the leading experts and top providers in the area of this
-              passive, self-ligating system. Damon braces use a slide mechanism
-              to hold the archwire, reducing the amount of pressure exerted on
-              the teeth and allowing the teeth to move more freely, quickly, and
-              comfortably.
-            </p>
-          </div>
-        </div>
-      </div>
+      
+
+
     </>
   );
 };
