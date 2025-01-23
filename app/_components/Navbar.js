@@ -1,9 +1,19 @@
 "use client";
 import Link from "next/link";
-import { Fragment, useState, useEffect } from "react";
+
+import {
+  motion,
+  useScroll,
+  AnimatePresence,
+  useTransform,
+  stagger,
+  useAnimate,
+  useInView,
+} from "framer-motion";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
-import { gsap } from "gsap";
+import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { selectBag, removeFromBag } from "../_store/reducers/bagReducer";
 import BagIcon from "./ui/BagIcon";
@@ -18,6 +28,8 @@ function classNames(...classes) {
 }
 
 export default function Navbar({ user }) {
+
+  
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleTestimonialsClick = (e, href) => {
@@ -28,7 +40,7 @@ export default function Navbar({ user }) {
       window.location.href = href;
       setIsTransitioning(false);
     }, 1000);
-};
+  };
 
   const dispatch = useDispatch();
 
@@ -43,11 +55,17 @@ export default function Navbar({ user }) {
     { name: "Our Team", href: "/our-team" },
     { name: "Why Choose Us", href: "/why-choose-us" },
     { name: "Testimonials", href: "/testimonials" },
+    { name: "Locations", href: "/#locations-section", hashLink: true },
   ];
 
   const patient_links = [
     { name: "Your Care", href: "/your-care" },
     { name: "Financing Treatment", href: "/financing-treatment" },
+    {
+      name: "Patient Login",
+      href: "https://my.orthoblink.com/bLink/Login",
+      external: true,
+    },
   ];
 
   const treatments_links = [
@@ -110,45 +128,6 @@ export default function Navbar({ user }) {
     setShow(!show);
   };
 
-  useGSAP(() => {
-    const isTouchDevice = "ontouchstart" in window;
-
-    const createCustomCursor = () => {
-      const desktopNavbar = document.querySelector("#desktop-nav");
-      const customCursor = document.querySelector(".custom-navbar-cursor");
-
-      // Each time the mouse coordinates are updated, we need to pass the values to gsap in order to animate the element
-      desktopNavbar.addEventListener("mousemove", (e) => {
-        const { target, x, y } = e;
-
-        const isTargetLinkOrButton =
-          target?.closest("a") ||
-          target?.closest("button") ||
-          target?.closest(".target-link");
-
-        gsap.to(customCursor, {
-          x: x + 3,
-          y: y + 3,
-          duration: 0.7,
-          ease: "power4",
-          opacity: isTargetLinkOrButton ? 0.6 : 1,
-          transform: `scale(${isTargetLinkOrButton ? 4 : 1})`,
-        });
-      });
-
-      desktopNavbar.addEventListener("mouseleave", (e) => {
-        gsap.to(customCursor, {
-          duration: 0.7,
-          opacity: 0,
-        });
-      });
-    };
-
-    // Only create the custom cursor if device isn't touchable
-    if (!isTouchDevice) {
-      createCustomCursor();
-    }
-  });
   const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
@@ -165,336 +144,271 @@ export default function Navbar({ user }) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const [isNavbarExpanded, setIsNavbarExpanded] = useState(true);
+  useEffect(() => {
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo(
+      ".showcase_navigation",
+      { width: "5rem" },
+      { width: "30rem", duration: 1.5, ease: "power2.inOut" }
+    )
+      .fromTo(
+        ".showcase_navigation_start",
+        { rotation: 0 },
+        { rotation: 360, duration: 1.5, ease: "power1.inOut" },
+        0
+      )
+      .fromTo(
+        ".showcase_navigation_action",
+        { scale: 0 },
+        { scale: 1, duration: 0.5, ease: "back.out(1.7)" }
+      )
+      .fromTo(
+        ".showcase_navigation_nav-link_wrapper",
+        { width: 0 },
+        { width: "auto", duration: 0.6, ease: "power1.inOut", stagger: 0.2 }
+      );
+  
+    if (isNavbarExpanded) {
+      tl.play();
+    } else {
+      tl.reverse();
+    }
+  }, [isNavbarExpanded]);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0 && isNavbarExpanded) {
+        setIsNavbarExpanded(false);
+      } else if (window.scrollY === 0 && !isNavbarExpanded) {
+        setIsNavbarExpanded(true);
+      }
+    };
+  
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isNavbarExpanded]);
+  
+  
+
+
+  const [isMenuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen((prev) => {
+      return !prev;
+    });
+  };
+
+  const cursorBigRef = useRef(null);
+  const cursorSmallRef = useRef(null);
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      const { clientX: x, clientY: y } = e;
+
+      if (cursorBigRef.current) {
+        cursorBigRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+      if (cursorSmallRef.current) {
+        cursorSmallRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   return (
     <header className="overflow-hidden">
-      {/* DESKTOP NAVBAR */}
-      <nav
-    id="desktop-nav"
-    className=" fixed top-10 left-0 hidden w-full mb-[6vh] lg:block"
-  >
-    <div className="custom-navbar-cursor" />
-    <div className="border border-black text-[#00314F] py-6 px-4 mx-auto text-sm transition duration-300 ease-in-out max-w-screen-xl flex justify-between items-center">
-
-
-<div className="flex items-center justify-start space-x-2">
-        <Link href="/">
-          <img src="images/logo_icon.png" alt="FreySmiles Orthodontics" className="w-6 h-6" />
-        </Link>
-      </div>
-      <div className="absolute transform -translate-x-1/2 left-1/2">
-          <ul className="flex items-center gap-8 lg:gap-10 justify-evenly">
-
-
-            <li onClick={handleToggleAbout} className="target-link">
-              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer font-helvetica-neue hover:text-primary-40 group">
-                ABOUT
-              </p>
-            </li>
-            {/* ABOUT PANEL */}
-            <Transition.Root show={about} as={Fragment}>
-              <Dialog as="div" className="relative z-50" onClose={setAbout}>
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-in-out duration-500"
-                  enterFrom="opacity-0"
-                  enterTo="opacity-100"
-                  leave="ease-in-out duration-500"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
-                </Transition.Child>
-
-                <div className="fixed inset-0 overflow-hidden">
-                  <div className="absolute inset-0 overflow-hidden">
-                    <div className="fixed inset-y-0 right-0 flex max-w-full pl-10 pointer-events-none">
-                      <Transition.Child
-                        as={Fragment}
-                        enter="transform transition ease-in-out duration-500 sm:duration-700"
-                        enterFrom="translate-x-full"
-                        enterTo="translate-x-0"
-                        leave="transform transition ease-in-out duration-500 sm:duration-700"
-                        leaveFrom="translate-x-0"
-                        leaveTo="translate-x-full"
-                      >
-                        <Dialog.Panel className="relative w-screen max-w-md pointer-events-auto">
-                          <Transition.Child
-                            as={Fragment}
-                            enter="ease-in-out duration-500"
-                            enterFrom="opacity-0"
-                            enterTo="opacity-100"
-                            leave="ease-in-out duration-500"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0"
-                          >
-                            <div className="absolute top-0 left-0 flex pt-4 pr-2 -ml-8 sm:-ml-10 sm:pr-4">
-                              <button
-                                type="button"
-                                className="relative text-gray-300 rounded-md hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                                onClick={() => setAbout(false)}
-                              >
-                                <span className="absolute -inset-2.5" />
-                                <span className="sr-only">Close panel</span>
-                                <XIcon className="w-6 h-6" aria-hidden="true" />
-                              </button>
-                            </div>
-                          </Transition.Child>
-                          <div className="flex flex-col h-full py-6 overflow-y-auto bg-white shadow-xl">
-                            {/* <div className="px-4 sm:px-6">
-                              <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
-                                Panel title
-                              </Dialog.Title>
-                            </div> */}
-                            <div className="relative flex-1 px-4 mt-6 sm:px-6">
-                              <ul className="px-4 space-y-2">
-                                {about_us_links.map((link) => (
-                                  <li key={link.name}>
-                                    <Link
-                                      href={link.href}
-                                      className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
-                                      onClick={(e) => {
-                                        if (link.name === "Testimonials") {
-                                          handleTestimonialsClick(e, link.href);
-                                        }
-                                        setAbout(false);
-                                      }}
-                                    >
-                                      <h4>{link.name}</h4>
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-
-                              {/* <Sphere /> */}
-                            </div>
-                          </div>
-                        </Dialog.Panel>
-                      </Transition.Child>
-                    </div>
-                  </div>
-                </div>
-              </Dialog>
-            </Transition.Root>
-
-            <li onClick={handleTogglePatient} className="target-link">
-              <p className="text-sm font-medium transition-all duration-500 ease-linear rounded-full cursor-pointer font-helvetica-neue hover:text-primary-40 group">
-                PATIENT
-              </p>
-            </li>
-            {/* PATIENT PANEL */}
-            <Transition.Root show={patient} as={Fragment}>
-              <Dialog as="div" className="relative z-50" onClose={setPatient}>
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-in-out duration-500"
-                  enterFrom="opacity-0"
-                  enterTo="opacity-100"
-                  leave="ease-in-out duration-500"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
-                </Transition.Child>
-
-                <div className="fixed inset-0 overflow-hidden">
-                  <div className="absolute inset-0 overflow-hidden">
-                    <div className="fixed inset-y-0 right-0 flex max-w-full pl-10 pointer-events-none">
-                      <Transition.Child
-                        as={Fragment}
-                        enter="transform transition ease-in-out duration-500 sm:duration-700"
-                        enterFrom="translate-x-full"
-                        enterTo="translate-x-0"
-                        leave="transform transition ease-in-out duration-500 sm:duration-700"
-                        leaveFrom="translate-x-0"
-                        leaveTo="translate-x-full"
-                      >
-                        <Dialog.Panel className="relative w-screen max-w-md pointer-events-auto">
-                          <Transition.Child
-                            as={Fragment}
-                            enter="ease-in-out duration-500"
-                            enterFrom="opacity-0"
-                            enterTo="opacity-100"
-                            leave="ease-in-out duration-500"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0"
-                          >
-                            <div className="absolute top-0 left-0 flex pt-4 pr-2 -ml-8 sm:-ml-10 sm:pr-4">
-                              <button
-                                type="button"
-                                className="relative text-gray-300 rounded-md hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                                onClick={() => setPatient(false)}
-                              >
-                                <span className="absolute -inset-2.5" />
-                                <span className="sr-only">Close panel</span>
-                                <XIcon className="w-6 h-6" aria-hidden="true" />
-                              </button>
-                            </div>
-                          </Transition.Child>
-                          <div className="flex flex-col h-full py-6 overflow-y-auto bg-white shadow-xl">
-                            {/* <div className="px-4 sm:px-6">
-                              <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
-                                Panel title
-                              </Dialog.Title>
-                            </div> */}
-                            <div className="relative flex-1 px-4 mt-6 sm:px-6">
-                              <ul className="px-4 space-y-2">
-                                {patient_links &&
-                                  patient_links.map((link, index) => (
-                                    <li key={link.name}>
-                                      <Link
-                                        href={link.href}
-                                        className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
-                                        onClick={handleTogglePatient}
-                                      >
-                                        <h4>{link.name}</h4>
-                                      </Link>
-                                    </li>
-                                  ))}
-                              </ul>
-                              {/* <Sphere /> */}
-                            </div>
-                          </div>
-                        </Dialog.Panel>
-                      </Transition.Child>
-                    </div>
-                  </div>
-                </div>
-              </Dialog>
-            </Transition.Root>
-
-            <li onClick={handleToggleTreatments} className="target-link">
-              <p className="text-sm font-medium uppercase transition-all duration-500 ease-linear rounded-full cursor-pointer font-helvetica-neue hover:text-primary-40 group">
-                Treatments
-              </p>
-            </li>
-            {/* TREATMENTS PANEL */}
-            <Transition.Root show={treatments} as={Fragment}>
-              <Dialog
-                as="div"
-                className="relative z-50"
-                onClose={setTreatments}
-              >
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-in-out duration-500"
-                  enterFrom="opacity-0"
-                  enterTo="opacity-100"
-                  leave="ease-in-out duration-500"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
-                </Transition.Child>
-
-                <div className="fixed inset-0 overflow-hidden">
-                  <div className="absolute inset-0 overflow-hidden">
-                    <div className="fixed inset-y-0 right-0 flex max-w-full pl-10 pointer-events-none">
-                      <Transition.Child
-                        as={Fragment}
-                        enter="transform transition ease-in-out duration-500 sm:duration-700"
-                        enterFrom="translate-x-full"
-                        enterTo="translate-x-0"
-                        leave="transform transition ease-in-out duration-500 sm:duration-700"
-                        leaveFrom="translate-x-0"
-                        leaveTo="translate-x-full"
-                      >
-                        <Dialog.Panel className="relative w-screen max-w-md pointer-events-auto">
-                          <Transition.Child
-                            as={Fragment}
-                            enter="ease-in-out duration-500"
-                            enterFrom="opacity-0"
-                            enterTo="opacity-100"
-                            leave="ease-in-out duration-500"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0"
-                          >
-                            <div className="absolute top-0 left-0 flex pt-4 pr-2 -ml-8 sm:-ml-10 sm:pr-4">
-                              <button
-                                type="button"
-                                className="relative text-gray-300 rounded-md hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                                onClick={() => setTreatments(false)}
-                              >
-                                <span className="absolute -inset-2.5" />
-                                <span className="sr-only">Close panel</span>
-                                <XIcon className="w-6 h-6" aria-hidden="true" />
-                              </button>
-                            </div>
-                          </Transition.Child>
-                          <div className="flex flex-col h-full py-6 overflow-y-auto bg-white shadow-xl">
-                            {/* <div className="px-4 sm:px-6">
-                              <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
-                                Panel title
-                              </Dialog.Title>
-                            </div> */}
-                            <div className="relative flex-1 px-4 mt-6 sm:px-6">
-                              <ul className="px-4 space-y-2">
-                                {treatments_links &&
-                                  treatments_links.map((link, index) => (
-                                    <li key={link.name}>
-                                      <Link
-                                        href={link.href}
-                                        className="block transition-all duration-300 ease-in-out cursor-pointer text-primary-50 hover:text-secondary-60 hover:pl-8"
-                                        onClick={handleToggleTreatments}
-                                      >
-                                        <h4>{link.name}</h4>
-                                      </Link>
-                                    </li>
-                                  ))}
-                              </ul>
-                              {/* <Sphere /> */}
-                            </div>
-                          </div>
-                        </Dialog.Panel>
-                      </Transition.Child>
-                    </div>
-                  </div>
-                </div>
-              </Dialog>
-            </Transition.Root>
-
-            <li>
-              <Link href="https://my.orthoblink.com/bLink/Login">
-                <p className="text-sm leading-4 text-center uppercase font-helvetica-neue">Patient Login</p>
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/#locations-section">
-                <p className="text-sm leading-4 text-center uppercase font-helvetica-neue">Locations</p>
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/shop/products">
-                <p className="text-sm font-helvetica-neue">SHOP</p>
-              </Link>
-            </li>
-
-            <li className='flex items-center gap-4 md:gap-6'>
-            </li>
-
-          </ul>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <CartComponent />
-
-            {user?.id && user?.email ? (
-              <UserButton user={user} />
-            ) : (
-              <SignInButton />
-            )}
-
-            <Link href="/book-now">
-              <button className="px-4 py-2 font-helvetica-neue">
-                BOOK
-              </button>
-            </Link>
-          </div>
-
+      <div className="h2-page-wrapper">
+        <div
+          className="h2-hero-cursor-wrapper"
+          style={{ pointerEvents: "none" }}
+        >
+          <div
+            ref={cursorBigRef}
+            className="h2-hero-cursor-big"
+            style={{
+              width: "50px",
+              height: "50px",
+              borderRadius: "50%",
+              backgroundColor: "rgba(255, 255, 0, 0.7)",
+              position: "absolute",
+              transform: "translate3d(0, 0, 0)",
+              transition: "transform 0.1s ease-out",
+            }}
+          ></div>
+          <div
+            ref={cursorSmallRef}
+            className="h2-hero-cursor-small"
+            style={{
+              width: "10px",
+              height: "10px",
+              borderRadius: "50%",
+              backgroundColor: "rgba(255, 255, 0, 0.7)",
+              position: "absolute",
+              transform: "translate3d(0, 0, 0)",
+              transition: "transform 0.05s ease-out",
+            }}
+          ></div>
         </div>
-      </nav>
+
+        <nav className="h2-navbar">
+          <div className="h2-navbar-container">
+          <div>
+  <a
+    href="#"
+    className="h2-navbar-menu-button w-inline-block"
+    onClick={toggleMenu}
+    style={{
+      position: "absolute",
+      top: "20px",
+      left: "20px",
+      cursor: "pointer",
+      zIndex: 9999,
+      textDecoration: "none",
+    }}
+  >
+    <p
+      className="h2-navbar-text-absolute"
+      style={{
+        display: isMenuOpen ? "block" : "none",
+      }}
+    >
+      Close
+    </p>
+    <p
+      className="h2-navbar-text"
+      style={{
+        display: isMenuOpen ? "none" : "block", 
+      }}
+    >
+      Menu
+    </p>
+  </a>
+</div>
+
+          </div>
+        </nav>
+
+        <div
+          className="h2-menu"
+          style={{
+            opacity: isMenuOpen ? 1 : 0,
+            visibility: isMenuOpen ? "visible" : "hidden",
+          }}
+        >
+          <div className="h2-menu-container">
+            {[
+              "Team",
+              "Manifesto",
+              "Testimonials",
+              "Locations",
+              "Patient Login",
+            ].map((heading, index) => (
+               <a
+            key={index}
+            href="#"
+            className={`h2-menu-row h2-menu-row-${index + 1} ${
+              isMenuOpen ? "open" : ""
+            }`}
+            style={{
+              animationDelay: isMenuOpen ? `${index * 0.1}s` : "0s",
+            }}
+          >
+                <div className="h2-menu-wrapper-top">
+                  <p className="h2-menu-text-number">{`0${index + 1}`}</p>
+                  <h1 className="h2-menu-heading">{heading}</h1>
+                </div>
+                <div
+                  className="h2-menu-wrapper-center"
+                  style={{
+                    opacity: isMenuOpen ? 1 : 0,
+                    transition: "opacity 0.5s ease",
+                  }}
+                >
+                  <img
+                    src="../images/greyblue.png"
+                    loading="lazy"
+                    alt=""
+                    className="h2-menu-image"
+                  />
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <section className="section_showcase">
+          <div className="containernav">
+            <div className="showcase_navigation">
+              <div className="showcase_navigation_start">
+                <div class="b--icon-40x40 w-embed">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 13 12"
+                    width="100%"
+                    height="100%"
+                    preserveAspectRatio="xMidYMid meet"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M7.1831 3.1236L6.41346 0L5.64383 3.12359C5.49365 3.73311 5.41855 4.03787 5.26216 4.28585C5.12382 4.50521 4.94023 4.69149 4.72404 4.83185C4.47963 4.99053 4.17927 5.06672 3.57854 5.2191L0.5 6L3.57854 6.7809C4.17927 6.93328 4.47963 7.00947 4.72404 7.16815C4.94023 7.30851 5.12383 7.49479 5.26216 7.71415C5.41856 7.96213 5.49365 8.26689 5.64383 8.87641L6.41346 12L7.1831 8.87641C7.33328 8.26689 7.40837 7.96213 7.56476 7.71415C7.7031 7.49479 7.8867 7.30851 8.10289 7.16815C8.3473 7.00947 8.64766 6.93328 9.24838 6.7809L12.3269 6L9.24838 5.2191C8.64766 5.06672 8.3473 4.99053 8.10289 4.83185C7.8867 4.69149 7.7031 4.50521 7.56476 4.28585C7.40837 4.03787 7.33328 3.73311 7.1831 3.1236Z"
+                      fill="#03450B"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+
+              <div className="showcase_navigation_nav">
+                <div className="showcase_navigation_nav-link_wrapper">
+                  <a
+                    href="#"
+                    className="showcase_navigation_nav-link"
+                    onClick={() => toggleMenu("submenu-about")}
+                  >
+                    ABOUT
+                  </a>
+                </div>
+                <div className="showcase_navigation_nav-link_wrapper">
+                  <a href="#" className="showcase_navigation_nav-link">
+                    PATIENT
+                  </a>
+                </div>
+                <div className="showcase_navigation_nav-link_wrapper">
+                  <a href="#" className="showcase_navigation_nav-link">
+                    TREATMENTS
+                  </a>
+                </div>
+                <div className="showcase_navigation_nav-link_wrapper">
+                  <a href="#" className="showcase_navigation_nav-link">
+                    SHOP
+                  </a>
+                </div>
+              </div>
+
+              <div className="showcase_navigation_action">
+                <div className="b--icon-32x32 w-embed">
+                  <img
+                    src="../images/logo_icon.png"
+                    alt="Logo Icon"
+                    class="icon-replacement"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      {/* DESKTOP NAVBAR */}
 
       {/* MOBILE NAVBAR */}
       <nav
