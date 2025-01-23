@@ -191,16 +191,11 @@ export default function LandingComponent() {
     };
   }, []);
 
-
-
-
-
   return (
     <>
-
       <div>
-        <div >
-          <section >
+        <div>
+          <section>
             <Hero />
           </section>
           <section>
@@ -215,7 +210,7 @@ export default function LandingComponent() {
         {/* <ImageGrid /> */}
 
         {/* <Mask /> */}
-       
+
         {/* <div
         ref={sectionTwoRef}
         className="sticky bg-[#D8BFD7] top-0 h-screen z-3"
@@ -223,17 +218,16 @@ export default function LandingComponent() {
         >
           <LogoGrid />
         </div> */}
-         <Testimonials />
-      <Locations />
-      <ContactUs />
-      <GiftCards /> 
+        <Testimonials />
+        <Locations />
+        <ContactUs />
+        <GiftCards />
       </div>
     </>
   );
 }
 
 const Hero = () => {
-
   const containerRef = useRef(null);
   const div1Ref = useRef(null);
   const div2Ref = useRef(null);
@@ -613,7 +607,6 @@ const Hero = () => {
 };
 
 const MarqueeSection = () => {
-
   return (
     <section className="relative min-h-screen uppercase rounded-tl-[40px] rounded-tr-[40px] font-altero text-white bg-[#20282D]  flex items-center">
       <div
@@ -638,7 +631,6 @@ const MarqueeSection = () => {
 };
 
 const Stats = () => {
-
   const textVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -686,7 +678,6 @@ const Stats = () => {
   const handleMouseLeave = () => {
     setHoveredCard(null);
   };
-
 
   return (
     <section className=" relative bg-[#FBFBFB] flex flex-col justify-between ">
@@ -1175,8 +1166,6 @@ const BookNowSection = () => {
           <button className="font-helvetica-neue-light bg-[#e0cbe8] text-black text-2xl py-6 px-12 rounded-lg">
             NEED MORE INFO? <br /> TAKE OUR QUIZ
           </button>
-
-    
         </div>
       </section>
     </div>
@@ -2129,160 +2118,141 @@ function Testimonials() {
     };
   }, []);
 
+  const items = [
+    {
+      name: "Lisa Moyer",
+      year: "2023",
+      description:
+        "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!",
+    },
+    {
+      name: "Karen Oneill",
+      year: "2022",
+      description:
+        "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
+    },
+    {
+      name: "Tanya Burnhauser",
+      year: "2021",
+      description:
+        "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!",
+    },
+  ];
+
+  const [selectedDescription, setSelectedDescription] = useState(items[0].description);
+  
   return (
-    <div className="min-h-screen">
+    <div className="w-full h-screen flex">
+    <div className="w-1/3">
       <h1
-        ref={headingRef}
         style={{
           fontSize: "3rem",
-          lineHeight: "80%",
-          letterSpacing: "0.1rem",
+          lineHeight: "100%",
         }}
-        className="font-neue-montreal mt-32 mb-10 flex justify-center tracking"
+        className="font-helvetica-neue-light mt-32 mb-10 flex justify-center"
       >
         Testimonials
       </h1>
-
-      {/* Carousel Section */}
-      <div className="relative flex items-center justify-center">
-        <div className="absolute top-0 right-0 z-20 flex space-x-4">
-          <button
-            onClick={() => scroll("left")}
-            className="p-4"
-            aria-label="Previous"
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          gap: "50px",
+          padding: "20px",
+          maxWidth: "800px",
+          margin: "auto",
+        }}
+      >
+        {items.map((item, index) => (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              width: "100%",
+            }}
+            key={index}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="40"
-              height="13"
-              viewBox="0 0 40 13"
-              fill="none"
+            <div
+              style={{
+                width: "100%",
+                height: "1px",
+                backgroundColor: "#000",
+                marginBottom: "10px",
+              }}
+            ></div>
+            <div
+              style={{
+                justifyContent: "space-between",
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                padding: "10px 0",
+              }}
             >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M0.1483 6.84393C-0.0494335 6.65398 -0.0494335 6.34602 0.1483 6.15608L6.40853 0.142458C6.60627 -0.0474861 6.92686 -0.0474861 7.12459 0.142458C7.32233 0.332403 7.32233 0.640364 7.12459 0.830308L1.72872 6.01362L40 6.01362V6.98639L1.72872 6.98638L7.12459 12.1697C7.32233 12.3596 7.32233 12.6676 7.12459 12.8575C6.92686 13.0475 6.60627 13.0475 6.40853 12.8575L0.1483 6.84393Z"
-                fill="white"
-              />
-            </svg>
-          </button>
-          <button
-            onClick={() => scroll("right")}
-            className="p-4"
-            aria-label="Next"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="40"
-              height="13"
-              viewBox="0 0 40 13"
-              fill="none"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M39.8517 6.15607C40.0494 6.34602 40.0494 6.65398 39.8517 6.84392L33.5915 12.8575C33.3937 13.0475 33.0731 13.0475 32.8754 12.8575C32.6777 12.6676 32.6777 12.3596 32.8754 12.1697L38.2713 6.98638L0 6.98637V6.01361L38.2713 6.01362L32.8754 0.830304C32.6777 0.64036 32.6777 0.332401 32.8754 0.142457C33.0731 -0.0474879 33.3937 -0.0474878 33.5915 0.142457L39.8517 6.15607Z"
-                fill="white"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <div
-          ref={carouselRef}
-          className="flex overflow-hidden scroll-smooth snap-x snap-mandatory"
-          style={{ width: "60vw" }}
-        >
-          {/* Slide 1 */}
-          <div
-            className="flex items-center justify-center w-full snap-start shrink-0"
-            style={{
-              height: "500px",
-              backgroundImage:
-                "linear-gradient(to right, #bccdcd,#c2d6d6, #92B9AB)",
-            }}
-          >
-            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
-              <p className="font-helvetica-now-thin text-[24px] text-center">
-                You will receive top notch orthodontic care at Frey Smiles. Dr.
-                Frey and his entire staff make every visit a pleasure. It is
-                apparent at each appointment that Dr. Frey truly cares about his
-                patients. He has treated both of our kids and my husband, and
-                they all have beautiful smiles! I highly recommend!
-              </p>
-              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
-                Lisa Moyer
-              </p>
+              <span
+                style={{
+                  fontFamily: "NeueMontrealBook",
+                  fontSize: "24px",
+                  fontWeight: "bold",
+                  color: "#333",
+                  cursor: "pointer",
+                }}
+                onClick={() => setSelectedDescription(item.description)}
+              >
+                {item.name}
+              </span>
+              <span
+                style={{
+                  fontSize: "14px",
+                  fontFamily: "NeueMontrealBook",
+                  fontWeight: "normal",
+                  color: "#999",
+                  marginTop: "5px",
+                }}
+              >
+                {item.year}
+              </span>
             </div>
           </div>
-
-          {/* Slide 2 */}
-          <div
-            className="flex items-center justify-center w-full snap-start shrink-0"
-            style={{
-              height: "500px",
-              backgroundImage:
-                "linear-gradient(to right, #92B9AB, #94ACB1,#98A6B0)",
-            }}
-          >
-            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
-              <p className="font-helvetica-now-thin text-[24px] text-center">
-                My experience at FreySmiles has been amazing! I recently just
-                completed my Invisalign and my teeth look perfect! Dr. Frey
-                truly cares about his patients and the staff are always
-                friendly, as well as always accommodating to my schedule.
-                They're the best around!
-              </p>
-              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
-                Kailee
-              </p>
-            </div>
-          </div>
-
-          {/* Slide 3 */}
-          <div
-            className="flex items-center justify-center w-full snap-start shrink-0"
-            style={{
-              height: "500px",
-              backgroundImage:
-                "linear-gradient(to right, #98A6B0,#A6A19C, #C59573)",
-            }}
-          >
-            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
-              <p className="text-2xl text-center">
-                I had an open bite and misaligned teeth most of my life. Dr Frey
-                fixed it and in record time. 1 1/2 yrs with Invisalign's. Highly
-                recommended! Friendly staff and easy to make appointments!
-              </p>
-              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
-                Karen Oneill
-              </p>
-            </div>
-          </div>
-
-          {/* Slide 4 */}
-          <div
-            className="flex items-center justify-center w-full snap-start shrink-0"
-            style={{
-              height: "500px",
-              backgroundImage: "linear-gradient(to right, #C59573,#D7844F)",
-            }}
-          >
-            <div className="flex flex-col justify-center items-center mx-[7vw] text-white">
-              <h1 className="font-helvetica-now-thin text-[24px] text-center">
-                Dr. Frey was my orthodontist when I was 11 years old, Im now 42.
-                I still talk about how amazing he was and the great work he did
-                with my teeth. Thank you so much for giving the most beautiful
-                smile!
-              </h1>
-              <p className="font-helvetica-now-thin text-[20px] mt-10 text-center">
-                Tanya Burnhauser
-              </p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
+    <div className="w-2/3 flex items-center justify-center">
+  <div
+    style={{
+      fontFamily: "NeueMontrealBook",
+      fontSize: "20px",
+      color: "#333",
+      padding: "20px",
+      maxWidth: "700px",
+    }}
+    className="flex flex-col"
+  >
+
+    <div className="w-[160px] mb-4 flex justify-start">
+      <img
+        src="https://images.prismic.io/twentysix/0d406ac0-f1c6-4363-995c-688ed4743614_ornament+%E2%80%93+8.png?auto=compress,format"
+        alt="First Ornament"
+      />
+    </div>
+
+
+    <div className="text-center">{selectedDescription}</div>
+
+
+    <div className="w-full flex justify-end mt-4">
+      <img
+        className="w-[160px]"
+        src="https://images.prismic.io/twentysix/6a93b1e2-74b9-4209-838e-6160326caa99_ornament+%E2%80%93+1.png?auto=compress,format"
+        alt="Second Ornament"
+      />
+    </div>
+  </div>
+</div>
+
+  </div>
   );
 }
 
@@ -2770,9 +2740,7 @@ function Locations() {
   );
 }
 
-
 const ContactUs = () => {
-
   useEffect(() => {
     const buttonText = new SplitText("#buttonText", { type: "chars" });
     const button = document.querySelector("button");
@@ -2812,36 +2780,33 @@ const ContactUs = () => {
 
   return (
     <section
-    className="min-h-screen flex items-center justify-center text-white relative"
-    data-scroll-section
-    data-scroll
-    data-scroll-speed="1.2"
-  >
-    <div className="flex justify-center relative h-[600px]">
-      <video 
-        src="../images/holographic.mp4" 
-        autoPlay 
-        loop 
-        muted 
-        className="w-full h-full object-cover"
-      />
+      className="min-h-screen flex items-center justify-center text-white relative"
+      data-scroll-section
+      data-scroll
+      data-scroll-speed="1.2"
+    >
+      <div className="flex justify-center relative h-[600px]">
+        <video
+          src="../images/holographic.mp4"
+          autoPlay
+          loop
+          muted
+          className="w-full h-full object-cover"
+        />
 
-<a href="mailto:info@freysmiles.com">
-  
-  <button
-    className="font-helvetica-neue-light text-black absolute text-lg bg-white w-[150px] h-[150px] rounded-full transform -translate-x-1/2 -translate-y-1/2"
-    style={{
-      top: "50%",
-      left: "50%",
-    }}
-  >
-    Contact Us
-  </button>
-</a>
-
-
-    </div>
-  </section>
+        <a href="mailto:info@freysmiles.com">
+          <button
+            className="font-helvetica-neue-light text-black absolute text-lg bg-white w-[150px] h-[150px] rounded-full transform -translate-x-1/2 -translate-y-1/2"
+            style={{
+              top: "50%",
+              left: "50%",
+            }}
+          >
+            Contact Us
+          </button>
+        </a>
+      </div>
+    </section>
   );
 };
 
