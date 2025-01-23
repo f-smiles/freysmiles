@@ -73,7 +73,7 @@ const Braces = () => {
             className="w-full h-1/3 object-cover"
           />
           <img
-            src="../images/soreness.jpg"
+            src="../images/toothbw.png"
             alt="Placeholder 2"
             className="w-full h-1/3 object-cover"
           />
@@ -87,10 +87,11 @@ const Braces = () => {
           </header>
 
           <div className="flex justify-end mt-10">
-            <div className="space-y-10 text-right w-1/3">
-              <div className="relative">
+      
+            <div className="font-neue-montreal space-y-10 text-right w-1/3">
+              <div className="relative ">
                 <div className="flex justify-between">
-                  <span className="text-sm ">01</span>
+                  <span className="text-sm font-neue-montreal">01</span>
                   <span className="text-sm ml-4">
                     Precise control for faster results
                   </span>
@@ -99,7 +100,7 @@ const Braces = () => {
               </div>
               <div className="relative">
                 <div className="flex justify-between">
-                  <span className="text-sm ">02</span>
+                  <span className="text-sm font-neue-montreal">02</span>
                   <span className="text-sm ml-4">
                     Door design minimizes discomfort
                   </span>
@@ -108,7 +109,7 @@ const Braces = () => {
               </div>
               <div className="relative">
                 <div className="flex justify-between">
-                  <span className="text-sm ">03</span>
+                  <span className="text-sm font-neue-montreal">03</span>
                   <span className="text-sm ml-4">
                     Decreased chair time, faster finishing
                   </span>
@@ -117,7 +118,7 @@ const Braces = () => {
               </div>
               <div className="relative">
                 <div className="flex justify-between">
-                  <span className="text-sm ">04</span>
+                  <span className="text-sm font-neue-montreal">04</span>
                   <span className="text-sm ml-4">
                     Trusted by professionals worldwide
                   </span>
@@ -126,8 +127,12 @@ const Braces = () => {
               </div>
             </div>
           </div>
+          {/* <div className="w-36 h-36">
+  <img src="../images/pointystar.svg" alt="Pointy Star" className="w-full h-full object-contain" />
+</div> */}
 
           <div className="mt-10">
+            
             <p className="text-[20px] font-neue-montreal">
               We're the leading experts and top providers in the area of this
               passive, self-ligating system. Damon braces use a slide mechanism
@@ -136,7 +141,17 @@ const Braces = () => {
               comfortably.
             </p>
           </div>
+          
         </div>
+      </div>
+      <div>
+      <div className="left-[90px] w-48 h-48">
+    <img
+      src="../images/pointystar.svg"
+      alt="Pointy Star"
+      className="w-full h-full object-contain"
+    />
+  </div>
       </div>
     </>
   );

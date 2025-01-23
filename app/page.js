@@ -225,6 +225,7 @@ export default function LandingComponent() {
         </div> */}
          <Testimonials />
       <Locations />
+      <ContactUs />
       <GiftCards /> 
       </div>
     </>
@@ -1175,34 +1176,7 @@ const BookNowSection = () => {
             NEED MORE INFO? <br /> TAKE OUR QUIZ
           </button>
 
-          <svg
-            className="svg-curvedmarquee"
-            id="svg"
-            viewBox="0 20 1040 700"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-labelledby="curve-marquee"
-          >
-            <path
-              id="curve"
-              d="M 0,7000 C 0,7000 0,350 -50,350 C 152.13333333333333,306 304.26666666666665,262 445,298 C 585.7333333333333,334 715.0666666666668,450 879,472 C 1042.9333333333332,494 1241.4666666666667,422 1440,350 C 1440,350 1440,700 1440,700 Z"
-            ></path>
-            <text x="-2000">
-              <textPath href="#curve">
-                CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE •
-                CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE •
-                CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE •
-                CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE •
-                CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE •
-                CURVE MARQUEE • CURVE MARQUEE • CURVE MARQUEE •
-              </textPath>
-              <animate
-                attributeName="x"
-                dur="30s"
-                values="-4000;0"
-                repeatCount="indefinite"
-              ></animate>
-            </text>
-          </svg>
+    
         </div>
       </section>
     </div>
@@ -2194,7 +2168,7 @@ function Testimonials() {
       type: "words, chars",
       charsClass: "char",
       wordsClass: "word",
-      specialChars: ["TE", "MO", "AL"],
+      specialChars: ["Te", "mo", "al"],
     });
 
     document.querySelectorAll(".word").forEach((word) => {
@@ -2229,9 +2203,9 @@ function Testimonials() {
         style={{
           fontSize: "3rem",
           lineHeight: "80%",
-          textTransform: "uppercase",
+          letterSpacing: "0.1rem",
         }}
-        className="font-neue-montreal mt-32 mb-10 flex justify-center tracking-wider uppercase"
+        className="font-neue-montreal mt-32 mb-10 flex justify-center tracking"
       >
         Testimonials
       </h1>
@@ -2862,6 +2836,81 @@ function Locations() {
     </>
   );
 }
+
+
+const ContactUs = () => {
+
+  useEffect(() => {
+    const buttonText = new SplitText("#buttonText", { type: "chars" });
+    const button = document.querySelector("button");
+
+    const buttonHoverOn_tl = gsap.timeline({ paused: true });
+    buttonHoverOn_tl
+      .to(button, { y: -8, ease: "back.out(4)", duration: 1.2 }, 0)
+      .to(
+        buttonText.chars,
+        { y: 3, stagger: 0.02, duration: 0.8, ease: "back.out(4)" },
+        0
+      )
+      .to(
+        buttonText.chars,
+        { y: 1, stagger: 0.02, duration: 0.8, ease: "back.out(0)" },
+        0.6
+      );
+
+    const buttonHoverOff_tl = gsap.timeline({ paused: true });
+    buttonHoverOff_tl.to(button, { y: 0, duration: 2, ease: "circ.out" }, 0);
+
+    button.addEventListener("mouseenter", () => {
+      buttonHoverOff_tl.pause();
+      buttonHoverOn_tl.restart();
+    });
+
+    button.addEventListener("mouseleave", () => {
+      buttonHoverOn_tl.pause();
+      buttonHoverOff_tl.restart();
+    });
+
+    return () => {
+      buttonHoverOn_tl.kill();
+      buttonHoverOff_tl.kill();
+    };
+  }, []);
+
+  return (
+    <section
+    className="min-h-screen flex items-center justify-center text-white relative"
+    data-scroll-section
+    data-scroll
+    data-scroll-speed="1.2"
+  >
+    <div className="flex justify-center relative h-[600px]">
+      <video 
+        src="../images/holographic.mp4" 
+        autoPlay 
+        loop 
+        muted 
+        className="w-full h-full object-cover"
+      />
+
+<a href="mailto:info@freysmiles.com">
+  
+  <button
+    className="font-helvetica-neue-light text-black absolute text-lg bg-white w-[150px] h-[150px] rounded-full transform -translate-x-1/2 -translate-y-1/2"
+    style={{
+      top: "50%",
+      left: "50%",
+    }}
+  >
+    Contact Us
+  </button>
+</a>
+
+
+    </div>
+  </section>
+  );
+};
 
 function GiftCards() {
   return (
