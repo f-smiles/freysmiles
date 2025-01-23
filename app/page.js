@@ -654,18 +654,18 @@ const Stats = () => {
   const projects = [
     {
       title: "Clear Aligners",
-      subtitle: "INVISALIGN",
-      image: "../images/handbreakout.png",
+      subtitle: "Invisalign",
+      image: "../images/handgrid.png",
     },
     {
       title: "Braces",
-      subtitle: "DAMON",
-      image: "../images/maledamonbraces.png",
+      subtitle: "Damon Ultima",
+      image: "../images/damonlaptop.png",
     },
     {
-      title: "All Ages",
-      subtitle: "",
-      image: "../images/purplefloss.jpeg",
+      title: "Advanced Technology",
+      subtitle: "3D i-Cat Imaging, Digital Scans",
+      image: "../images/handbackground.png",
     },
   ];
 
@@ -858,10 +858,10 @@ const Stats = () => {
                   </motion.div>
 
                   <div className="text-left mt-auto pt-4 relative z-10 pointer-events-none">
-                    <h3 className="text-[2rem] font-neue-montreal tracking-wider mb-2 text-gray-800">
+                    <h3 className="text-[2rem] font-neue-montreal mb-2 text-gray-800">
                       {project.title}
                     </h3>
-                    <p className="text-gray-600 uppercase tracking-wider">
+                    <p className="font-neue-montreal text-gray-600 ">
                       {project.subtitle}
                     </p>
                   </div>
@@ -1038,7 +1038,7 @@ const BookNowSection = () => {
     const handleMouseEnter = () => {
       gsap.to([span1, span2], {
         yPercent: -100,
-        duration: 0.5,
+        duration: 0.8,
         ease: "power4.inOut",
       });
     };
@@ -1046,7 +1046,7 @@ const BookNowSection = () => {
     const handleMouseLeave = () => {
       gsap.to([span1, span2], {
         yPercent: 0,
-        duration: 0.4,
+        duration: 0.8,
         ease: "power4.inOut",
       });
     };
@@ -1129,11 +1129,7 @@ const BookNowSection = () => {
   </span>
 </a>
 </div>
-          {/* <div className="mt-6 button_wrapper">
-            <button className="font-helvetica-neue-light px-8 py-4 border border-black rounded-full">
-              <p className="font-helvetica-neue-light" id="buttonText">Book Now</p>
-            </button>
-          </div> */}
+         
         </div>
 
         <div className="flex-1 flex items-center justify-center relative">
@@ -2186,8 +2182,8 @@ function Testimonials() {
               <span
                 style={{
                   fontFamily: "NeueMontrealBook",
-                  fontSize: "24px",
-                  fontWeight: "bold",
+                  fontSize: "20px",
+                
                   color: "#333",
                   cursor: "pointer",
                 }}
@@ -2199,7 +2195,7 @@ function Testimonials() {
                 style={{
                   fontSize: "14px",
                   fontFamily: "NeueMontrealBook",
-                  fontWeight: "normal",
+                
                   color: "#999",
                   marginTop: "5px",
                 }}
