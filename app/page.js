@@ -1,21 +1,7 @@
 "use client";
-import { Curtains, Plane } from "curtainsjs";
-import { Swiper, SwiperSlide } from "swiper/react";
-import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
-import { Navigation } from "swiper/modules";
 import Link from "next/link";
 import Matter from "matter-js";
-import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
-import * as THREE from "three";
-import { GUI } from "dat.gui";
-import { OrbitControls, shaderMaterial } from "@react-three/drei";
-import React, {
-  useRef,
-  useEffect,
-  useLayoutEffect,
-  useState,
-  useCallback,
-} from "react";
+import { useRef, useEffect, useLayoutEffect, useState } from "react";
 // framer motion
 import { motion, stagger, useAnimate, useInView } from "framer-motion";
 // headless ui
@@ -33,83 +19,6 @@ if (typeof window !== "undefined") {
 }
 
 export default function LandingComponent() {
-  // const canvasRef = useRef(null);
-  // const mouseCanvasRef = useRef(null);
-  // const planeRef = useRef(null);
-  // const mouseAttr = useRef([]);
-  // const mouseInertia = useRef([]);
-
-  // useEffect(() => {
-  //   const pixelRatio = window.devicePixelRatio || 1.0;
-  //   let mousePosition = { x: -10000, y: -10000 };
-
-  //   const curtains = new Curtains({
-  //     container: canvasRef.current,
-  //     watchScroll: false,
-  //   });
-
-  //   const planeElements = document.getElementsByClassName("curtain");
-
-  //   const params = {
-  //     vertexShader: vertexShader,
-  //     fragmentShader: fragmentShader,
-  //     uniforms: {
-  //       resolution: {
-  //         name: "uResolution",
-  //         type: "2f",
-  //         value: [pixelRatio * planeElements[0].clientWidth, pixelRatio * planeElements[0].clientHeight],
-  //       },
-  //       mousePosition: {
-  //         name: "uMousePosition",
-  //         type: "2f",
-  //         value: [mousePosition.x, mousePosition.y],
-  //       },
-  //     },
-  //   };
-
-  //   const plane = new Plane(curtains, planeElements[0], params);
-  //   planeRef.current = plane;
-
-  //   const resizeCanvas = () => {
-  //     const canvas = mouseCanvasRef.current;
-  //     canvas.width = planeElements[0].clientWidth * pixelRatio;
-  //     canvas.height = planeElements[0].clientHeight * pixelRatio;
-
-  //     const ctx = canvas.getContext("2d");
-  //     ctx.scale(pixelRatio, pixelRatio);
-  //   };
-
-  //   resizeCanvas();
-
-  //   const handleMovement = (e) => {
-  //     mousePosition.x = e.clientX;
-  //     mousePosition.y = e.clientY;
-
-  //     const mouseAttributes = {
-  //       x: mousePosition.x - planeElements[0].getBoundingClientRect().left,
-  //       y: mousePosition.y - planeElements[0].getBoundingClientRect().top,
-  //       opacity: 1,
-  //       velocity: { x: 0, y: 0 },
-  //     };
-
-  //     if (mouseAttr.current.length > 1) {
-  //       mouseAttributes.velocity = {
-  //         x: mouseAttributes.x - mouseAttr.current[mouseAttr.current.length - 1].x,
-  //         y: mouseAttributes.y - mouseAttr.current[mouseAttr.current.length - 1].y,
-  //       };
-  //     }
-
-  //     mouseAttr.current.push(mouseAttributes);
-  //   };
-
-  //   document.addEventListener("mousemove", handleMovement);
-
-  //   return () => {
-  //     document.removeEventListener("mousemove", handleMovement);
-  //     curtains.dispose();
-  //   };
-  // }, []);
-
   const [backgroundColor, setBackgroundColor] = useState("transparent");
 
   useEffect(() => {
@@ -269,12 +178,10 @@ export default function LandingComponent() {
   return (
     <>
       <div style={{ backgroundColor }} className="bg-[#E0D175]">
-      <Hero     className="sticky top-0  z-2 "/>
-      <About lassName="sticky top-0  z-2 " />
+      <Hero className="sticky top-0 z-2 "/>
+      <About className="sticky top-0 z-2 " />
         <GSAPAnimateScrollSections />
         <ImageGrid />
-               {/* <Mask /> */}
-
         <div
           ref={sectionOneRef}
           className="sticky top-0 transition-transform duration-300 ease-in-out transform z-2 scale-80"
@@ -569,211 +476,6 @@ function Hero() {
     });
   }, []);
 
-  const pixiContainerRef = useRef();
-  // const mouseRef = useRef(null);
-
-  // useEffect(() => {
-  //   document.body.addEventListener('mousemove', (e) => {
-  //     gsap.to("#mouse > span", {
-  //       duration: 1,
-  //       x: e.pageX - 150,
-  //       y: e.pageY - 150,
-  //       ease: "expo.out",
-  //       stagger: 0.005
-  //     });
-  //   });
-  // }, []);
-  const vertexSrc = `
-    precision mediump float;
-    attribute vec4 position;
-    varying vec2 vUv;
-    void main() {
-        gl_Position = position;
-        vUv = vec2((position.x + 1.)/2., (-position.y + 1.)/2.);
-    }
-    `;
-
-  const fragmentSrc = `
-    precision mediump float;
-    uniform float uTrans;
-    uniform sampler2D uTexture0;
-    uniform sampler2D uTexture1;
-    uniform sampler2D uDisp;
-    varying vec2 vUv;
-    float quarticInOut(float t) {
-        return t < 0.5 ? +8.0 * pow(t, 4.0) : -8.0 * pow(t - 1.0, 4.0) + 1.0;
-    }
-    void main() {
-        vec4 disp = texture2D(uDisp, vec2(0., 0.5) + (vUv - vec2(0., 0.5)) * (0.2 + 0.8 * (1.0 - uTrans)));
-        float trans = clamp(1.6 * uTrans - disp.r * 0.4 - vUv.x * 0.2, 0.0, 1.0);
-        trans = quarticInOut(trans);
-        vec4 color0 = texture2D(uTexture0, vec2(0.5 - 0.3 * trans, 0.5) + (vUv - vec2(0.5)) * (1.0 - 0.2 * trans));
-        vec4 color1 = texture2D(uTexture1, vec2(0.5 + sin((1. - trans) * 0.1), 0.5) + (vUv - vec2(0.5)) * (0.9 + 0.1 * trans));
-        gl_FragColor = mix(color0, color1 , trans);
-    }
-    `;
-
-  const assetUrls = [
-    "../images/1024mainsectionimage.jpg",
-    "../images/smilegirl.jpg",
-    "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1600187/waterTemp.jpg",
-  ];
-
-  const canvasRef = useRef(null);
-  const obj = useRef({ trans: 0 });
-
-  // useEffect(() => {
-  //   const canvas = canvasRef.current;
-  //   canvas.style.width = 1024
-  //   const gl = canvas.getContext('webgl');
-  //   let cnt = 0;
-  //   let textureArr = [];
-
-  //   let program = gl.createProgram();
-
-  //   const vShader = gl.createShader(gl.VERTEX_SHADER);
-  //   gl.shaderSource(vShader, vertexSrc);
-  //   gl.compileShader(vShader);
-
-  //   const fShader = gl.createShader(gl.FRAGMENT_SHADER);
-  //   gl.shaderSource(fShader, fragmentSrc);
-  //   gl.compileShader(fShader);
-
-  //   gl.attachShader(program, vShader);
-  //   gl.deleteShader(vShader);
-  //   gl.attachShader(program, fShader);
-  //   gl.deleteShader(fShader);
-  //   gl.linkProgram(program);
-
-  //   const vertices = new Float32Array([
-  //     -1, -1,
-  //     1, -1,
-  //     -1, 1,
-  //     1, -1,
-  //     -1, 1,
-  //     1, 1,
-  //   ]);
-
-  //   const vertexBuffer = gl.createBuffer();
-  //   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  //   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-  //   const vertexLocation = gl.getAttribLocation(program, 'position');
-  //   gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-  //   const uTransLoc = gl.getUniformLocation(program, 'uTrans');
-  //   const textureLocArr = [
-  //     gl.getUniformLocation(program, 'uTexture0'),
-  //     gl.getUniformLocation(program, 'uTexture1'),
-  //     gl.getUniformLocation(program, 'uDisp')
-  //   ];
-
-  //   const obj = { trans: 0 };
-
-  //   function start() {
-  //     loop();
-  //   }
-
-  //   function loop() {
-  //     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-  //     gl.clearColor(0.0, 0.0, 0.0, 1.0);
-  //     gl.clear(gl.COLOR_BUFFER_BIT);
-
-  //     gl.useProgram(program);
-
-  //     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  //     gl.vertexAttribPointer(
-  //       vertexLocation, 2, gl.FLOAT, false, 0, 0)
-  //     gl.enableVertexAttribArray(vertexLocation);
-
-  //     textureArr.forEach((texture, index) => {
-  //       gl.activeTexture(gl.TEXTURE0 + index);
-  //       gl.bindTexture(gl.TEXTURE_2D, texture);
-  //       gl.uniform1i(textureLocArr[index], index);
-  //     })
-
-  //     gl.uniform1f(uTransLoc, obj.trans);
-
-  //     gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-  //     requestAnimationFrame(loop);
-  //   }
-
-  //   function resize() {
-  //     const aspectRatio = 1 / 2;
-  //     const maxWidth = 512;
-  //     const minHeight = 300;
-
-  //     let width = Math.min(window.innerWidth, window.innerHeight * aspectRatio);
-  //     let height = width / aspectRatio;
-
-  //     if (height < minHeight) {
-  //         height = minHeight;
-  //         width = height * aspectRatio;
-  //     }
-
-  //     if (width > maxWidth) {
-  //         width = maxWidth;
-  //         height = width / aspectRatio;
-  //     }
-
-  //     canvas.width = width;
-  //     canvas.height = height;
-  // }
-
-  //   function loadImages() {
-  //     assetUrls.forEach ((url, index) => {
-  //       let img = new Image();
-
-  //       let texture = gl.createTexture();
-  //       textureArr.push(texture);
-
-  //  img.onload =  function (_index, _img) {
-  //         let texture = textureArr[_index];
-
-  //         gl.bindTexture(gl.TEXTURE_2D, texture);
-  //         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, _img);
-  //         gl.generateMipmap(gl.TEXTURE_2D);
-
-  //         cnt++;
-  //         if (cnt === 3) start();
-  //       }.bind(this, index, img);
-
-  //       img.crossOrigin = ' Anonymous';
-  //       img.src = url;
-
-  //       console.log(img)
-  //     });
-  //   }
-
-  //   canvas.addEventListener('mouseenter', () => {
-  //     gsap.killTweensOf(obj);
-  //     gsap.to(obj, 1.5, { trans: 1 });
-  //   });
-
-  //   canvas.addEventListener('mouseleave', () => {
-  //     gsap.killTweensOf(obj);
-  //     gsap.to(obj, 1.5, { trans: 0 });
-  //   });
-
-  //   window.addEventListener('resize', () => {
-  //     resize();
-  //   });
-
-  //   loadImages();
-  //   resize();
-
-  //   return () => {
-  //     window.removeEventListener('resize', resize);
-  //     canvas.removeEventListener('mouseenter', () => {
-  //       gsap.killTweensOf(obj);
-  //       gsap.to(obj, 1.5, { trans: 1 });
-  //     });
-  //     canvas.removeEventListener('mouseleave', () => {
-  //       gsap.killTweensOf(obj);
-  //       gsap.to(obj, 1.5, { trans: 0 });
-  //     });
-  //   };
-  // }, []);
   const paragraphRef = useRef(null);
 
   useEffect(() => {
@@ -833,62 +535,59 @@ function Hero() {
   ];
 
   return (
-<section className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black">
-  <div className="flex flex-row h-full relative">
-    {/* Left Column */}
-    <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start" style={{ minHeight: "0vh" }}>
-    <div className="flex-grow"></div>
-      <div className="overflow-hidden mt-[20vh]">
-        <p ref={paragraphRef} className="animate font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
-          A confident smile begins with effective care tailored to each patient.<br />
-          At our practice, we’re dedicated to providing treatments that are<br />
-          not only scientifically sound but also crafted to bring out your<br />
-          best smile.
-        </p>
-      </div>
-      <div className="flex-grow"></div>
-    </div>
+    <section className="font-editorial-new min-h-screen bg-[#E1F672] flex flex-col justify-between p-8 text-black">
+      <div className="flex flex-row h-full relative">
+        {/* Left Column */}
+        <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start" style={{ minHeight: "0vh" }}>
+        <div className="flex-grow"></div>
+          <div className="overflow-hidden mt-[20vh]">
+            <p ref={paragraphRef} className="animate font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
+              A confident smile begins with effective care tailored to each patient.<br />
+              At our practice, we’re dedicated to providing treatments that are<br />
+              not only scientifically sound but also crafted to bring out your<br />
+              best smile.
+            </p>
+          </div>
+          <div className="flex-grow"></div>
+        </div>
 
 
-    <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
+        <div className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]">
 
-      <div className="flex flex-col justify-center items-center h-full space-y-0">
-        {colors.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex space-x-0">
-            {row.map((color, circleIndex) => (
-              <div
-                key={circleIndex}
-                className={`w-[125px] h-[125px] ${
-                  (rowIndex + circleIndex) % 3 === 0 ? 'rounded-[40px]' : 'rounded-full'
-                } transition-transform duration-300 ease-in-out hover:scale-75`}
-                style={{ backgroundColor: color }}
-              ></div>
+          <div className="flex flex-col justify-center items-center h-full space-y-0">
+            {colors.map((row, rowIndex) => (
+              <div key={rowIndex} className="flex space-x-0">
+                {row.map((color, circleIndex) => (
+                  <div
+                    key={circleIndex}
+                    className={`w-[125px] h-[125px] ${
+                      (rowIndex + circleIndex) % 3 === 0 ? 'rounded-[40px]' : 'rounded-full'
+                    } transition-transform duration-300 ease-in-out hover:scale-75`}
+                    style={{ backgroundColor: color }}
+                  ></div>
+                ))}
+              </div>
             ))}
           </div>
-        ))}
+
+        </div>
+
       </div>
 
-    </div>
+      {/* Bottom Content */}
+      <div className="flex justify-between items-end text-sm mt-8">
+        <div className="text-[#808080]">
+          <p>{time}</p>
+        </div>
 
-  </div>
-
-  {/* Bottom Content */}
-  <div className="flex justify-between items-end text-sm mt-8">
-    <div className="text-[#808080]">
-      <p>{time}</p>
-    </div>
-
-    <div className="flex flex-col items-end text-right font-light lg:w-1/3 w-full">
-      <h2 className="text-[3em] font-bold mb-4 leading-tight inline-block">
-        We know<br />what works.
-      </h2>
-      {/* <p className="mt-2">[SCROLL TO DISCOVER]</p> */}
-    </div>
-  </div>
-</section>
-
-
-
+        <div className="flex flex-col items-end text-right font-light lg:w-1/3 w-full">
+          <h2 className="text-[3em] font-bold mb-4 leading-tight inline-block">
+            We know<br />what works.
+          </h2>
+          {/* <p className="mt-2">[SCROLL TO DISCOVER]</p> */}
+        </div>
+      </div>
+    </section>
   );
 }
 const About = () => {
@@ -954,122 +653,8 @@ const About = () => {
   );
 };
 
-// function Mask() {
-//   const useMousePosition = () => {
-//     const [mousePosition, setMousePosition] = useState({ x: null, y: null });
-//     const updateMousePosition = e => {
-//       setMousePosition({ x: e.clientX, y: e.clientY });
-//     };
-
-//     useEffect(() => {
-//       window.addEventListener("mousemove", updateMousePosition);
-//       return () => window.removeEventListener("mousemove", updateMousePosition);
-//     }, []);
-
-//     return mousePosition;
-//   };
-
-//   const [isHovered, setIsHovered] = useState(false);
-
-//   const { x, y } = useMousePosition();
-
-//   const size = isHovered ? 400 : 40;
-
-//   return (
-//     <main className="uniqueMain">
-//       <motion.div
-//         className="uniqueMask"
-//         animate={{
-//           WebkitMaskPosition: `${x - (size/2)}px ${y - (size/2)}px`,
-//           WebkitMaskSize: `${size}px`,
-//         }}
-//         transition={{ type: "tween", ease: "backOut", duration: 0.5}}
-//       >
-//         <p onMouseEnter={() => {setIsHovered(true)}} onMouseLeave={() => {setIsHovered(false)}}>
-//           INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
-//         </p>
-//       </motion.div>
-
-//       <div className="uniqueBody">
-//         <p> We are your  <span>go-to provider </span> for advanced and discerning orthodontic care.</p>
-//       </div>
-//     </main>
-//   )
-// }
-// SwiperCore.use([Keyboard, Mousewheel]);
-
 function GSAPAnimateScrollSections() {
-  // const listRef = useRef(null);
 
-  // useEffect(() => {
-  //   gsap.registerPlugin(ScrollTrigger);
-
-  //   const items = listRef.current.querySelectorAll(".list__item");
-
-  //   items.forEach((item) => {
-  //     const itemTitle = item.querySelector(".list__item__title");
-  //     const itemTitleOutline = item.querySelector(".list__item__titleOutline");
-  //     const itemImg = item.querySelector("img");
-
-  //     gsap
-  //       .timeline({
-  //         scrollTrigger: {
-  //           trigger: item,
-  //           start: "0% 75%",
-  //           end: "25% 50%",
-  //           scrub: 3,
-  //         },
-  //       })
-  //       .fromTo(
-  //         [itemTitle, itemTitleOutline],
-  //         { scale: 2, y: "100%" },
-  //         { scale: 1, y: "0%", ease: "power2.inOut" }
-  //       );
-
-  //     gsap
-  //       .timeline({
-  //         scrollTrigger: {
-  //           trigger: item,
-  //           start: "50% 100%",
-  //           end: "100% 50%",
-  //           scrub: 3,
-  //           onEnter: () =>
-  //             gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
-  //           onLeave: () =>
-  //             gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
-  //           onEnterBack: () =>
-  //             gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
-  //           onLeaveBack: () =>
-  //             gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
-  //         },
-  //       })
-  //       .fromTo(
-  //         itemImg,
-  //         { x: "60vw", y: "60vh", rotate: -30 },
-  //         {
-  //           x: "-60vw",
-  //           y: "-60vh",
-  //           rotate: 30,
-  //           ease: "none",
-  //         }
-  //       );
-  //   });
-  // }, []);
-
-  // const imageItems = [
-  //   {
-  //     imgSrc: "/images/patient25k.png",
-  //     text: "25k+ Patients",
-  //   },
-  //   {
-  //     imgSrc: "/images/lehighvalley.jpg",
-  //     text: "4 Bespoke Locations",
-  //   },
-  //   {
-  //     imgSrc: "/images/experiencedoctor.png",
-  //     text: "50+ Years Experience",
-  //   },
-  // ];
   useEffect(() => {
     const viewHeight = window.innerHeight;
 
@@ -1103,16 +688,6 @@ function GSAPAnimateScrollSections() {
       });
     });
   }, []);
-  const textItems = [
-    { title1: "50+ Years of ", title2: " Experience" },
-    { title1: "4 Bespoke Locations", title2: "4 Bespoke Locations" },
-    { title1: "25k Patients", title2: "25k Patients" },
-  ];
-  const imageStyles = [
-    { width: "32vw", height: "48vw" },
-    { width: "70vw", height: "auto" },
-    { width: "32vw", height: "48vw" },
-  ];
 
   useEffect(() => {
     gsap.defaults({ ease: "none" });
@@ -1355,108 +930,8 @@ function GSAPAnimateScrollSections() {
 
       <MobileLayout />
     </>
-    // <section
-    //   ref={listRef}
-    //   className="flex flex-col items-center justify-center"
-    // >
-    //   {imageItems &&
-    //     imageItems.map((item, index) => (
-    //       <div
-    //         key={index}
-    //         className="relative flex items-end w-full h-screen pb-10 list__item"
-    //       >
-    //         <img
-    //           src={item.imgSrc}
-    //           alt={`Description ${index + 1}`}
-    //           className="absolute z-20 object-cover"
-    //           style={{
-    //             top: "50%",
-    //             left: "50%",
-    //             width: "33%",
-    //             height: "auto",
-    //             aspectRatio: "10 / 14",
-    //             transform: "translate(-50%, -50%)",
-    //           }}
-    //         />
-    //         <div
-    //           className="absolute z-10 font-bold transform -translate-x-1/2 -translate-y-1/2 list__item__title top-1/2 left-1/2 text-8xl"
-    //           style={{
-    //             top: "50%",
-    //             left: "50%",
-    //             transform: "translate(-50%, -50%)",
-    //             fontSize: "12vw",
-    //             fontFamily: '"Playfair Display"',
-    //             lineHeight: "80%",
-    //             color: "#221608",
-    //           }}
-    //         >
-    //           {item.text}
-    //         </div>
-    //         <div
-    //           className="absolute z-30 font-bold transform -translate-x-1/2 -translate-y-1/2 list__item__titleOutline top-1/2 left-1/2 text-8xl"
-    //           style={{
-    //             top: "50%",
-    //             left: "50%",
-    //             transform: "translate(-50%, -50%)",
-    //             fontSize: "12vw",
-    //             fontFamily: '"Playfair Display"',
-    //             lineHeight: "80%",
-    //             color: "transparent",
-    //             WebkitTextStroke: "2px #221608",
-    //           }}
-    //         >
-    //           {item.text}
-    //         </div>
-    //       </div>
-    //     ))}
-    // </section>
   );
 }
-
-const HorizontalGrid = () => {
-  return (
-    <div className="relative">
-      <div class="containerH">
-        <div class="content-wrapper">
-          <div class="childCon">
-            <h1>CSS-only horizontal scroll tentative</h1>
-            <p>
-              The idea is to create an horizontal scroll layout and to allow the
-              user to scroll up/down the mouse to scroll left/right.
-            </p>
-            <p>
-              So… please scroll <strong>down</strong> with your mouse.
-            </p>
-          </div>
-
-          <div class="childCon">
-            <h2>The trick</h2>
-            <p>Rotate -90deg the container, and 90deg its children blocks.</p>
-            <p>You have to fix container and children dimensions. :(</p>
-            <p>See CSS for rather correct positioning.</p>
-          </div>
-
-          <div class="childCon">
-            <h2>Desktop browsers</h2>
-            <p>Vertical scroll… scrolls. :)</p>
-            <p>But horizontal scroll (e.g. with a trackpad) doesn’t. :(</p>
-          </div>
-
-          <div class="childCon">
-            <h2>Mobile browsers</h2>
-            <p>Only horizontal touchmove works on Chrome. :)</p>
-            <p>Only vertical touchmove works on Safari and Firefox.</p>
-          </div>
-
-          <div class="childCon">
-            <h2>Conclusion</h2>
-            <p>Without JavaScript: no good idea.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const ImageGrid = () => {
   const bodyRef = useRef(null);
@@ -1536,11 +1011,6 @@ const ImageGrid = () => {
           "-=0.75"
         );
 
-      // const scroll = new LocomotiveScroll({
-      //   el: bodyRef.current,
-      //   smooth: true,
-      // });
-
       setTimeout(() => {
         scroll.update();
       }, 1000);
@@ -1617,34 +1087,7 @@ const ImageGrid = () => {
 };
 
 const ParallaxOutline = () => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const ref = useRef(null);
 
-  const onMouseDown = (e) => {
-    setIsDragging(true);
-    ref.current.style.cursor = "grabbing";
-    ref.current.style.userSelect = "none";
-    setPosition({
-      x: e.clientX - ref.current.getBoundingClientRect().left,
-      y: e.clientY - ref.current.getBoundingClientRect().top,
-    });
-  };
-
-  const onMouseMove = (e) => {
-    if (isDragging) {
-      const left = e.clientX - position.x;
-      const top = e.clientY - position.y;
-      ref.current.style.left = `${left}px`;
-      ref.current.style.top = `${top}px`;
-    }
-  };
-
-  const onMouseUp = () => {
-    setIsDragging(false);
-    ref.current.style.cursor = "grab";
-    ref.current.style.userSelect = "auto";
-  };
   const carouselRef = useRef(null);
 
   const scroll = (direction) => {
@@ -1799,32 +1242,6 @@ const ParallaxOutline = () => {
             </div>
           </div>
         </div>
-
-        {/* <span className="absolute text-white font-serif text-[10vw] custom-text" data-text="Happy Patients">
- Happy Patients
-    </span>
-    <div className="w-full overflow-hidden custom-marquee">
-    <div className="flex w-max animate-marquee" style={{ '--offset': '20vw' }}>
-  {[...Array(4)].map((_, i) => (
-  <div key={i} className="flex">
-  <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] bg-gray-300">
-    <p className="text-center">You will receive top notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!</p>
-    <p className="text-center">Lisa Moyer</p>
-  </div>
-  <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] bg-gray-300">
-    <p className="text-center">My experience at FreySmiles has been amazing! I recently just completed my Invisalign and my teeth look perfect! Dr. Frey truly cares about his patients and the staff are always friendly, as well as always accommodating to my schedule. They're the best around!</p>
-    <p className="text-center">Kailee</p>
-  </div>
-  <div className="flex flex-col justify-center items-center w-[40vw] h-[28vw] mx-[7vw] bg-gray-300">
-    <p className="text-center">Text Block 1</p>
-    <p className="text-center">Text Block 2</p>
-  </div>
-</div>
-
-  ))}
-</div>
-
-    </div> */}
       </div>
     </div>
   );
@@ -2077,21 +1494,6 @@ const LogoGrid = () => {
           ANY OF OUR FOUR LOCATIONS &bull;
         </h1>
       </div>
-      {/* <div className="grid grid-cols-2 gap-4">
-        {logos.map((columnLogos, columnIndex) => (
-          <div key={columnIndex} className="flex flex-col items-center">
-            {columnLogos.map((logo, logoIndex) => (
-              <div key={logoIndex} className="p-2">
-                <img
-                  src={logo}
-                  alt={`Logo ${logoIndex + 1}`}
-                  className="w-auto h-14"
-                />
-              </div>
-            ))}
-          </div>
-        ))}
-      </div> */}
       <div className="container flex flex-col-reverse items-center justify-center h-full gap-4 py-32 mx-auto overflow-hidden lg:py-0 lg:flex-row lg:overflow-visible">
         <div
           id="ballcanvas"
