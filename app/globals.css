@@ -5022,17 +5022,6 @@ a {
   display: flex;
 }
 
-.svg-curvedmarquee {
-  font-size: 6rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-
-}
-
-.svg-curvedmarquee path {
-  fill: transparent;
-}
-
 
 .button_wrapper {
   button {
@@ -5152,4 +5141,61 @@ a {
 }
 .fade-in:nth-child(3) {
   animation-delay: 0.6s;
+}
+
+.feature-jacket {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.feature-cards {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0;
+  display: grid;
+  grid-template-rows: repeat(4, 600px);
+  gap: 16.666vw;
+  position: relative;
+}
+
+.feature-card {
+  position: sticky;
+  top: 50%; 
+  transform: translateY(-50%); 
+  z-index: 1;
+  font-family: "NeueMontrealBook";
+}
+
+.feature-card div {
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 16px; 
+  background: #E7E7FD;
+  color: black;
+  border-radius: 36px;
+  padding: 48px 24px;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+
+}
+
+
+
+.feature-card-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.feature-card img {
+  width: 100%; 
+  height: auto; 
+  border-radius: 16px; 
+  margin-bottom: 16px;
 }
