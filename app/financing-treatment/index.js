@@ -165,7 +165,6 @@ const HeaderBanner = () => {
 
   useEffect(() => {
     const cards = cardRefs.current;
-  
 
     gsap.to(leftColumnRef.current, {
       scrollTrigger: {
@@ -183,20 +182,19 @@ const HeaderBanner = () => {
           ease: "power1.out",
           scrollTrigger: {
             trigger: card,
-            start: "top center",
+            start: "0% 40%",
             end: "bottom center",
             scrub: true,
-            markers: true,
           },
         });
       }
     });
-    
+
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
-  
+
   //circle
 
   // const svgRef = useRef(null);
@@ -228,22 +226,30 @@ const HeaderBanner = () => {
   //line
   const pathRef = useRef(null);
 
-  useEffect(() => {
-    const path = pathRef.current;
+  // useEffect(() => {
+  //   const path = pathRef.current;
 
-    const pathLength = path.getTotalLength();
+  //   const pathLength = path.getTotalLength();
 
-    gsap.set(path, {
-      strokeDasharray: pathLength,
-      strokeDashoffset: pathLength,
-    });
+  //   gsap.set(path, {
+  //     strokeDasharray: pathLength,
+  //     strokeDashoffset: pathLength,
+  //   });
 
-    gsap.to(path, {
-      strokeDashoffset: 0,
-      duration: 3,
-      ease: "power2.out",
-    });
-  }, []);
+  //   gsap.to(path, {
+  //     strokeDashoffset: 0,
+  //     duration: 3,
+  //     ease: "power2.out",
+  //     onComplete: () => {
+  //       gsap.to(path, {
+  //         strokeDashoffset: pathLength,
+  //         duration: 3,
+  //         ease: "power2.in",
+  //       });
+  //     },
+  //   });
+
+  // }, []);
 
   const containerRef = useRef(null);
 
@@ -256,29 +262,22 @@ const HeaderBanner = () => {
     );
   }, []);
 
-  const [showFirstSet, setShowFirstSet] = useState(true);
-
-  const handleTransition = () => {
-    setShowFirstSet(!showFirstSet);
-  };
-
   return (
     <div>
       <div className="flex justify-center py-16 px-4">
         <div className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12 relative">
-
           <div className="grid grid-cols-1 h-full md:grid-cols-2 gap-8">
             <div className="col-span-1">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col items-start fade-in">
                   <div className="flex items-center justify-center">
-                    <img  src="../images/appts.svg" alt="Appointments Icon" />
+                    <img src="../images/appts.svg" alt="Appointments Icon" />
                   </div>
                   <p className="font-neue-montreal mt-4  text-[#ff5722] text-md">
                     10 medical visits so all your concerns are heard
                   </p>
                 </div>
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col items-start fade-in">
                   <div className="w-16 h-16 flex items-center justify-center text-white">
                     <img src="../images/tech.svg" alt="Tech Icon" />
                   </div>
@@ -286,7 +285,7 @@ const HeaderBanner = () => {
                     Access to advanced technology others don’t offer
                   </p>
                 </div>
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col items-start fade-in">
                   <div className="w-12 h-12 flex items-center justify-center text-white">
                     <img src="../images/paperwork.svg" alt="Paperwork Icon" />
                   </div>
@@ -296,18 +295,17 @@ const HeaderBanner = () => {
                   </p>
                 </div>
               </div>
-       
-      <div className="mt-64 font-neue-montreal">
-        <h1 className="gsap-heading">
-          <span className="gsap-hidden-text">Your plan is tailored</span>
-        </h1>
-        <h1 className="gsap-heading">
-          <span className="gsap-hidden-text">to your needs</span>
-        </h1>
-       
-      </div>
 
-
+              <div className="mt-64 font-neue-montreal">
+                <h1 className="gsap-heading">
+                  <span className="gsap-hidden-text">
+                    Your plan is tailored
+                  </span>
+                </h1>
+                <h1 className="gsap-heading">
+                  <span className="gsap-hidden-text">to your needs</span>
+                </h1>
+              </div>
             </div>
 
             <div className="col-span-1 flex items-center justify-center">
@@ -329,11 +327,10 @@ const HeaderBanner = () => {
               </svg>
             </div>
           </div>
-          
         </div>
       </div>
 
-      <div id="second-color" className="overflow-hidden w-full py-4">
+      <div className="overflow-hidden w-full py-4">
         <div
           ref={marqueeRef}
           className="inline-block text-6xl font-sans whitespace-nowrap"
@@ -351,8 +348,7 @@ const HeaderBanner = () => {
         }}
       >
         <div className="payment-grid">
-          <div className="payment-grid-left"
-               ref={leftColumnRef} >
+          <div className="payment-grid-left" ref={leftColumnRef}>
             <div>
               <img src="../images/testimonial.gif" alt="Testimonial" />
             </div>
@@ -380,7 +376,6 @@ const HeaderBanner = () => {
                 className="payment-card-wrapper"
                 ref={(el) => (cardRefs.current[index] = el)}
               >
-       
                 <div className="payment-card">
                   <div className="payment-title-wrapper">
                     <img
@@ -394,7 +389,6 @@ const HeaderBanner = () => {
                     {card.description}
                   </p>
                 </div>
-
               </div>
             ))}
           </div>
