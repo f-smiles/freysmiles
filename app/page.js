@@ -1026,81 +1026,114 @@ const BookNowSection = () => {
     };
   }, []);
 
+
+  const linkRef = useRef(null);
+
   useEffect(() => {
-    const buttonText = new SplitText("#buttonText", { type: "chars" });
-    const button = document.querySelector("button");
-
-    const buttonHoverOn_tl = gsap.timeline({ paused: true });
-    buttonHoverOn_tl
-      .to(button, { y: -8, ease: "back.out(4)", duration: 1.2 }, 0)
-      .to(
-        buttonText.chars,
-        { y: 3, stagger: 0.02, duration: 0.8, ease: "back.out(4)" },
-        0
-      )
-      .to(
-        buttonText.chars,
-        { y: 1, stagger: 0.02, duration: 0.8, ease: "back.out(0)" },
-        0.6
-      );
-
-    const buttonHoverOff_tl = gsap.timeline({ paused: true });
-    buttonHoverOff_tl.to(button, { y: 0, duration: 2, ease: "circ.out" }, 0);
-
-    button.addEventListener("mouseenter", () => {
-      buttonHoverOff_tl.pause();
-      buttonHoverOn_tl.restart();
-    });
-
-    button.addEventListener("mouseleave", () => {
-      buttonHoverOn_tl.pause();
-      buttonHoverOff_tl.restart();
-    });
-
+    const link = linkRef.current;
+  
+    const span1 = link.querySelector("[data-tha-span-1]");
+    const span2 = link.querySelector("[data-tha-span-2]");
+  
+    const handleMouseEnter = () => {
+      gsap.to([span1, span2], {
+        yPercent: -100,
+        duration: 0.5,
+        ease: "power4.inOut",
+      });
+    };
+  
+    const handleMouseLeave = () => {
+      gsap.to([span1, span2], {
+        yPercent: 0,
+        duration: 0.4,
+        ease: "power4.inOut",
+      });
+    };
+  
+    link.addEventListener("mouseenter", handleMouseEnter);
+    link.addEventListener("mouseleave", handleMouseLeave);
+  
     return () => {
-      buttonHoverOn_tl.kill();
-      buttonHoverOff_tl.kill();
+      link.removeEventListener("mouseenter", handleMouseEnter);
+      link.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, []);
 
   return (
     <div
       className="relative flex flex-col items-center justify-center bg-[#FBFBFB]"
-      style={{
-        backgroundImage: `url("../images/Sunellipse.svg")`,
-        backgroundSize: "60%",
-        backgroundRepeat: "no-repeat",
-      }}
+      // style={{
+      //   backgroundImage: `url("../images/Sunellipse.svg")`,
+      //   backgroundSize: "60%",
+      //   backgroundRepeat: "no-repeat",
+      // }}
     >
       <section
         ref={parallaxRef}
         className="py-20 px-8 flex flex-col lg:flex-row max-w-7xl mx-auto space-y-12 lg:space-y-0 lg:space-x-8"
       >
-        {/* Left Text Section */}
         <div
           className="flex-1 flex flex-col justify-center items-start space-y-8 relative"
           ref={textContainerRef}
         >
-          <h1 className="font-saol text-[3rem] leading-tight">
-            <span className="block">
-              Initial <span>Consultations</span>
+          <h1 className="">
+            <span className="text-[2.5rem] font-helvetica-neue-light block">
+              Your first <span>consultation</span>
             </span>
-            <span className="block">
-              Are{" "}
-              <span className="font-autumnchant text-black px-4 py-2 inline-block rounded-lg">
+            <span className="text-[2.5rem] font-helvetica-neue-light block">
+              is{" "}
+              <span className="text-[2.5rem] font-autumnchant text-black px-4 py-2 inline-block ">
                 always
-              </span>{" "}
-              Complimentary
+              </span >{" "}
+              on us
             </span>
           </h1>
-          <span className="block text-[2rem] font-editorial-new-italic">
+          <span className="block text-[1.5rem] font-helvetica-neue-light">
             Find out which treatment plan suits you best.
           </span>
-          <div className="mt-6 button_wrapper">
-            <button className="px-8 py-4 rounded-full">
-              <p id="buttonText">Book Now</p>
+          <div className="flex justify-center border border-black py-6 px-8">
+          <a
+  ref={linkRef}
+  href="/book-now"
+  data-tha
+  style={{
+    display: "inline-block",
+    position: "relative",
+    overflow: "hidden",
+  }}
+>
+  <span
+    data-tha-span-1
+    style={{
+      fontSize: "1.25rem",
+      fontFamily: "HelveticaNeue-Light",
+      display: "inline-block",
+      position: "relative",
+    }}
+  >
+    BOOK NOW
+  </span>
+  <span
+    data-tha-span-2
+    style={{
+      fontSize: "1.25rem",
+      fontFamily: "HelveticaNeue-Light",
+      display: "inline-block",
+      position: "absolute",
+      top: "100%",
+      left: "0",
+    }}
+  >
+    BOOK NOW
+  </span>
+</a>
+</div>
+          {/* <div className="mt-6 button_wrapper">
+            <button className="font-helvetica-neue-light px-8 py-4 border border-black rounded-full">
+              <p className="font-helvetica-neue-light" id="buttonText">Book Now</p>
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex-1 flex items-center justify-center relative">
@@ -1119,52 +1152,11 @@ const BookNowSection = () => {
             />
           </div>
 
-          {/* "Book Now" Section */}
-          {/* <div className="absolute -left-28 top-48">
-        <a href="/book-now" className="block">
-          <div
-            data-remodal-target="form"
-            className="img-wrap mod--round transform"
-            style={{
-              transform: "translate3d(0, 0, 0) rotateZ(-120deg)",
-            }}
-          >
-            <div className="img-wrap mod--round-text3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 500 500"
-                aria-labelledby="circular-text"
-                lang="en"
-              >
-                <defs>
-                  <path
-                    id="textcirclenew"
-                    d="M250,400 a150,150 0 0,1 0,-300a150,150 0 0,1 0,300Z"
-                    transform="rotate(12,250,250)"
-                  />
-                </defs>
-                <g className="textcircle">
-                  <text style={{ fontSize: "38px" }}>
-                    <textPath
-                      xlinkHref="#textcirclenew"
-                      aria-label="BOOK"
-                      textLength="880"
-                    >
-                      BOOK NOW TO GET STARTED
-                    </textPath>
-                  </text>
-                </g>
-              </svg>
-            </div>
-            <div className="img mod--round-arrow"></div>
-          </div>
-        </a>
-      </div> */}
         </div>
 
         <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
-          <button className="font-helvetica-neue-light bg-[#e0cbe8] text-black text-2xl py-6 px-12 rounded-lg">
-            NEED MORE INFO? <br /> TAKE OUR QUIZ
+          <button className="font-helvetica-neue-light border border-black text-black text-2xl py-6 px-12 rounded-lg">
+            Need more info? <br /> Take our quiz
           </button>
         </div>
       </section>

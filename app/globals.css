@@ -5026,12 +5026,12 @@ a {
 .button_wrapper {
   button {
     padding: 1.7rem 3rem;
-    background: #FFF6B2;
+
     border-radius: 10rem;
-    border: none;
+    border: 1px solid black;
     cursor: pointer;
     p {
-      font-weight: 400;
+
       font-size: 1.1rem;
       text-transform: uppercase;
     }
@@ -5201,23 +5201,5 @@ a {
 }
 
 
-
-
-
-
-button.trg-anima {
-  text-transform: uppercase;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  padding: 7px 15px;
-  border-radius: 50px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-button.trg-anima:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #000;
-}
 
 
