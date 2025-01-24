@@ -47,6 +47,8 @@ if (typeof window !== "undefined") {
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 export default function LandingComponent() {
+
+
   // const canvasRef = useRef(null);
   // const mouseCanvasRef = useRef(null);
   // const planeRef = useRef(null);
@@ -191,20 +193,45 @@ export default function LandingComponent() {
     };
   }, []);
 
+
+
+  const sectionsRef = useRef([]);
+
+  useEffect(() => {
+    const totalSections = sectionsRef.current.length; 
+    sectionsRef.current.forEach((section, index) => {
+      gsap.fromTo(
+        section,
+        {
+          yPercent: -100,
+        },
+        {
+          yPercent: 0,
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1 + (totalSections - index - 1) * 0.1,
+          },
+        }
+      );
+    });
+  }, []);
+  
   return (
     <>
       <div>
-        <div>
-          <section>
+        <div className="parallax-container"> 
+          <section ref={(el) => (sectionsRef.current[0] = el)}>
             <Hero />
           </section>
-          <section>
+          <section ref={(el) => (sectionsRef.current[1] = el)}>
             <MarqueeSection />
           </section>
-          <section>
+          <section ref={(el) => (sectionsRef.current[2] = el)}>
             <Stats />
-          </section>
-          <BookNowSection />
+          </section >
+          <BookNowSection  />
         </div>
         {/* <GSAPAnimateScrollSections /> */}
         {/* <ImageGrid /> */}
@@ -543,7 +570,7 @@ const Hero = () => {
   ];
 
   return (
-    <section className="relative font-editorial-new bg-[#E1F672] flex flex-col justify-between p-8 text-black min-h-screen ">
+    <section className="font-editorial-new bg-[#E1F672] flex flex-col justify-between p-8 text-black min-h-screen ">
       <div className="flex flex-row h-full relative">
         {/* Left Column */}
         <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start">
@@ -608,7 +635,7 @@ const Hero = () => {
 
 const MarqueeSection = () => {
   return (
-    <section className="relative min-h-screen uppercase rounded-tl-[40px] rounded-tr-[40px] font-altero text-white bg-[#20282D]  flex items-center">
+    <section className="h-[50vh] uppercase rounded-tl-[40px] rounded-tr-[40px] font-altero text-white bg-[#20282D]  flex items-start">
       <div
         className="marqueeHome"
         style={{
@@ -680,7 +707,7 @@ const Stats = () => {
   };
 
   return (
-    <section className=" relative bg-[#FBFBFB] flex flex-col justify-between ">
+    <section className="min-h-screen  bg-[#FBFBFB] flex flex-col justify-between ">
       <section
         style={{
           transform: "translateY(-20vh)",
@@ -1062,7 +1089,7 @@ const BookNowSection = () => {
 
   return (
     <div
-      className="relative flex flex-col items-center justify-center bg-[#FBFBFB]"
+      className=" flex flex-col items-center justify-center bg-[#FBFBFB]"
       // style={{
       //   backgroundImage: `url("../images/Sunellipse.svg")`,
       //   backgroundSize: "60%",
@@ -1135,10 +1162,8 @@ const BookNowSection = () => {
         <div className="flex-1 flex items-center justify-center relative">
           <div
             ref={wrapperRef}
-            className="w-[360px] h-[660px] overflow-hidden bg-transparent rounded-full"
-            style={{
-              overflow: "hidden",
-            }}
+            className="w-[360px] h-[660px]  rounded-full"
+           
           >
             <img
               ref={imgRef}
@@ -2566,7 +2591,7 @@ function Locations() {
           id="locations-heading"
           className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32"
         >
-          <h1 className="lg:text-6xl font-neue-montreal text-[#032D42]">
+          <h1 className="font-helvetica-neue-light lg:text-6xl text-[#032D42]">
             Come see us at any of our{" "}
             <span className="relative inline-block my-8 leading-tight lowercase font-editorial-new underline-offset-8">
               four convenient locations
@@ -2574,7 +2599,7 @@ function Locations() {
               <DrawEllipse className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" />
             </span>{" "}
             or opt for a{" "}
-            <span className="relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#147b5d] underline inline-block">
+            <span className=" relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#147b5d] underline inline-block">
               virtual consultation
             </span>
           </h1>
@@ -2800,12 +2825,13 @@ const ContactUs = () => {
 
 function GiftCards() {
   return (
-    <section className="min-h-screen z-10 relative group overflow-hidden hover:cursor-pointer">
-      <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-primary-30 bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
+    <>
+    <section className="min-h-screen relative group hover:cursor-pointer">
+      <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-[#FFF560] bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
       <Link
         href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`}
         target="_blank"
-        className="text-2xl font-neue-montreal absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s] text-white"
+        className="text-2xl font-neue-montreal absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s]"
       >
         Send a Gift Card
       </Link>
@@ -2815,5 +2841,6 @@ function GiftCards() {
         className="absolute inset-0 object-cover object-center w-full h-full -z-10"
       />
     </section>
+    </>
   );
 }

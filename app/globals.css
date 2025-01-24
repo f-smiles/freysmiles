@@ -5201,5 +5201,120 @@ a {
 }
 
 
+.parallax-container {
+  position: relative; 
+}
 
+.parallax-container > section {
+  position: relative; 
+}
+
+.shop-marquee {
+  border-top: .0666667px solid #000;
+  border-bottom: .0666667px solid #000;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 2.639vw;
+  padding-bottom: 2.639vw;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.shop-marquee.is--full {
+  border-left: .666667px solid #000;
+  border-right: .666667px solid #000;
+  width: 100%;
+  max-width: 97vw;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.shop-marquee-track {
+  align-items: center;
+  display: flex;
+}
+
+.shop-marquee-text {
+  margin-bottom: 0;
+  margin-left: 1vw;
+  margin-right: 1vw;
+  font-size: 1vw;
+  display: block;
+}
+
+.shop-marquee-track {
+  position: absolute;
+  width:100%;
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee 60s linear infinite;
+
+}
+.shop-marquee-track.is--full {
+  animation: marquee 60s linear infinite;
+
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+
+.products_title_container {
+  justify-content: flex-end;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+}
+
+
+
+.small_heading.light {
+  color: #2c425180;
+  display: block;
+  font-family: "NeueMontrealBook";
+  font-size: 16px;
+}
+
+
+.filter_wrapper {
+  background-color: #f7f4ee;
+  align-items: center;
+  padding: 16px;
+  display: flex;
+}
+
+.filter_links_container {
+  border-left: 1px solid #2c42514d;
+  margin-left: 16px;
+  padding-left: 16px;
+}
+
+
+.inner-link {
+  color: #6b7b85;
+  cursor: pointer;
+  line-height: 26px;
+  text-decoration: none;
+}
+
+.inner-link:hover {
+  opacity: .7;
+}
+
+.inner-link.filter {
+  border: 1px solid #0000;
+  margin-right: 16px;
+  padding: 8px 16px;
+  font-size: 16px;
+  display: inline-block;
+  font-family: "NeueMontrealBook";
+}
+
+.inner-link.filter.w--current {
+  color: #000;
+  border: 1px solid #000;
+}
 
