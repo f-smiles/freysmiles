@@ -31,7 +31,6 @@ export default function App({ children, user }) {
             <Footer /> 
           </div>
         </main>
-        <Footer />
       </PersistGate>
     </Provider>
   );
