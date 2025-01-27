@@ -226,30 +226,30 @@ const HeaderBanner = () => {
   //line
   const pathRef = useRef(null);
 
-  // useEffect(() => {
-  //   const path = pathRef.current;
+  useEffect(() => {
+    const path = pathRef.current;
 
-  //   const pathLength = path.getTotalLength();
+    const pathLength = path.getTotalLength();
 
-  //   gsap.set(path, {
-  //     strokeDasharray: pathLength,
-  //     strokeDashoffset: pathLength,
-  //   });
+    gsap.set(path, {
+      strokeDasharray: pathLength,
+      strokeDashoffset: pathLength,
+    });
 
-  //   gsap.to(path, {
-  //     strokeDashoffset: 0,
-  //     duration: 3,
-  //     ease: "power2.out",
-  //     onComplete: () => {
-  //       gsap.to(path, {
-  //         strokeDashoffset: pathLength,
-  //         duration: 3,
-  //         ease: "power2.in",
-  //       });
-  //     },
-  //   });
+    gsap.to(path, {
+      strokeDashoffset: 0,
+      duration: 3,
+      ease: "power2.out",
+      onComplete: () => {
+        gsap.to(path, {
+          strokeDashoffset: pathLength,
+          duration: 3,
+          ease: "power2.in",
+        });
+      },
+    });
 
-  // }, []);
+  }, []);
 
   const containerRef = useRef(null);
 
