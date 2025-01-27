@@ -1166,7 +1166,7 @@ header h1 {
   border: 5px solid white;
   border-radius: 5vw;
   box-sizing: border-box;
-  font-size: 2vw;
+  font-size: 1.5vw;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1174,11 +1174,13 @@ header h1 {
   height: 50vh;
   color: white;
   font-weight: normal;
+  font-family:"NeueMontrealBook";
   width: 50vw;
   z-index: 20;
 }
 .horizontalItem p {
-  font-size: 1.5vw;
+  font-size: 1.2vw;
+  font-family:"NeueMontrealBook";
 }
 
 .horizontalItem > p {
@@ -1186,7 +1188,8 @@ header h1 {
 }
 
 .horizontalBig {
-  font-size: 2vw;
+  font-size: 1.5vw;
+  font-family:"NeueMontrealBook";
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -5275,7 +5278,7 @@ a {
   color: #2c425180;
   display: block;
   font-family: "NeueMontrealBook";
-  font-size: 16px;
+  font-size: 14px;
 }
 
 
@@ -5308,7 +5311,7 @@ a {
   border: 1px solid #0000;
   margin-right: 16px;
   padding: 8px 16px;
-  font-size: 16px;
+  font-size: 14px;
   display: inline-block;
   font-family: "NeueMontrealBook";
 }
@@ -5316,5 +5319,14 @@ a {
 .inner-link.filter.w--current {
   color: #000;
   border: 1px solid #000;
+}
+
+.stagger-container {
+  display: inline-block; 
+}
+
+.stagger-word {
+  display: inline-block;
+  transform: translateY(0%); 
 }
 

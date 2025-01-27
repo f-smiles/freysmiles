@@ -57,11 +57,11 @@ const Braces = () => {
     },
   ];
 
-
   return (
     <>
       <div className="flex h-screen">
-        <div className="flex flex-col w-1/3">
+        <div><img src= "../images/radium-green.svg " /></div>
+        {/* <div className="flex flex-col w-1/3">
           <img
             src="../images/damon1.png"
             alt="Placeholder 1"
@@ -77,9 +77,9 @@ const Braces = () => {
             alt="Placeholder 2"
             className="w-full h-1/3 object-cover"
           />
-        </div>
+        </div> */}
 
-        <div className="w-2/3 bg-[#F1EFEB] flex flex-col justify-between p-10">
+        <div className="w-2/3  flex flex-col justify-between p-10">
           <header className="flex justify-between items-center">
             <h1 className="text-[80px] text-black font-neue-montreal">
               Damon Braces
@@ -87,13 +87,12 @@ const Braces = () => {
           </header>
 
           <div className="flex justify-end mt-10">
-      
             <div className="font-neue-montreal space-y-10 text-right w-1/3">
               <div className="relative ">
                 <div className="flex justify-between">
                   <span className="text-sm font-neue-montreal">01</span>
                   <span className="text-sm ml-4">
-                    Precise control for faster results
+                    Fewer appointments and faster results
                   </span>
                 </div>
                 <div className="absolute bottom-0 left-0 h-[1px] bg-black w-full"></div>
@@ -102,7 +101,7 @@ const Braces = () => {
                 <div className="flex justify-between">
                   <span className="text-sm font-neue-montreal">02</span>
                   <span className="text-sm ml-4">
-                    Door design minimizes discomfort
+                    Door design = more hygenic bracket
                   </span>
                 </div>
                 <div className="absolute bottom-0 left-0 h-[1px] bg-black w-full"></div>
@@ -111,7 +110,7 @@ const Braces = () => {
                 <div className="flex justify-between">
                   <span className="text-sm font-neue-montreal">03</span>
                   <span className="text-sm ml-4">
-                    Decreased chair time, faster finishing
+                    More precise bracket/wire interface for faster initial results
                   </span>
                 </div>
                 <div className="absolute bottom-0 left-0 h-[1px] bg-black w-full"></div>
@@ -120,7 +119,7 @@ const Braces = () => {
                 <div className="flex justify-between">
                   <span className="text-sm font-neue-montreal">04</span>
                   <span className="text-sm ml-4">
-                    Trusted by professionals worldwide
+                  Best type of bracket and best of its kind
                   </span>
                 </div>
                 <div className="absolute bottom-0 left-0 h-[1px] bg-black w-full"></div>
@@ -132,26 +131,29 @@ const Braces = () => {
 </div> */}
 
           <div className="mt-10">
-            
             <p className="text-[20px] font-neue-montreal">
-              We're the leading experts and top providers in the area of this
-              passive, self-ligating system. Damon braces use a slide mechanism
-              to hold the archwire, reducing the amount of pressure exerted on
-              the teeth and allowing the teeth to move more freely, quickly, and
-              comfortably.
+              We're the first office to adopt and implement self-ligating
+              brackets in the area. Our doctors will mix this technology with
+              clear aligners in order to achieve the most potent treatment
+              combination to reduce length in treatment and achieve the most
+              fantastic result. Damon braces utilize a more secure wire ligating
+              mechanism in the form of a door as opposed to rubber straps. Would
+              you prefer to move with bungees or a u-haul? But we still have
+              bungees for fun. You're gearing up for your big trip would you
+              prefer bungee-ing to the roof or securing your items in the back
+              of a truck?
             </p>
           </div>
-          
         </div>
       </div>
       <div>
-      <div className="left-[90px] w-48 h-48">
-    <img
-      src="../images/pointystar.svg"
-      alt="Pointy Star"
-      className="w-full h-full object-contain"
-    />
-  </div>
+        <div className="left-[90px] w-48 h-48">
+          <img
+            src="../images/pointystar.svg"
+            alt="Pointy Star"
+            className="w-full h-full object-contain"
+          />
+        </div>
       </div>
     </>
   );

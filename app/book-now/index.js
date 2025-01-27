@@ -4,33 +4,59 @@ import "tw-elements";
 
 const LeftColumn = () => {
   return (
-    <div className="my-auto lg:sticky lg:top-0 lg:pt-0 lg:col-span-1">
-      <div className="flex flex-col justify-center space-y-4">
-        <h1 className="font-bold text-center text-8xl font-aileron">LET&apos;S GO</h1>
+    <div className="flex justify-center items-center px-4">
+      <div className="w-full lg:text-left">
+        <div className="w-full flex justify-between items-center">
+          <h1 className="font-helvetica-neue-light text-[7rem] mb-6">
+            <span>Say </span>
+            <span className="text-[7rem]">hello</span>
+          </h1>
+        </div>
 
-        <a
-          href="facetime://6104374748"
-          className="text-lg text-center text-blue-500"
-        >
-          (610) 437-4748
-        </a>
+        <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 mb-10">
+          <p className="uppercase font-neue-montreal text-[1.5em]">
+            We look forward to hearing from you
+          </p>
 
-          <a className="text-lg text-center text-blue-500 hover:text-blue-500" href="mailto:info@freysmiles.com">
+          <a
+            href="#general"
+            className="font-neue-montreal inline-block px-10 py-3 border border-black rounded-full hover:bg-black hover:text-white transition whitespace-nowrap flex items-center"
+          >
+            General
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              className="size-4 ml-2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m4.5 4.5 15 15m0 0V8.25m0 11.25H8.25"
+              />
+            </svg>
+          </a>
+        </div>
+
+        <div className="text-end lg:text-right space-y-4">
+          <a
+            className="font-neue-montreal text-lg text-center hover:text-blue-500"
+            href="mailto:info@freysmiles.com"
+          >
             info@freysmiles.com
           </a>
-
-        <div className="w-full my-4 border-t border-gray-400"></div>
-
-        <div className="flex space-x-4">
-          <a href="#" className="text-lg">
-            <i className="fab fa-instagram"></i>
-          </a>
-          <a href="#" className="text-lg">
-            <i className="fab fa-facebook"></i>
-          </a>
-          <a href="#" className="text-lg">
-            <i className="fab fa-tiktok"></i>
-          </a>
+          <div className="flex text-end lg:justify-end gap-10">
+            <div>
+              <a
+                href="facetime://6104374748"
+                className="font-neue-montreal text-lg text-center hover:text-blue-500"
+              >
+                (610) 437-4748
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -40,10 +66,14 @@ const LeftColumn = () => {
 const RightColumn = () => {
   return (
     <div className="relative top-0 my-auto overflow-y-auto lg:col-span-2">
-      <iframe src="https://app.acuityscheduling.com/schedule.php?owner=33979021&ref=embedded_csp" title="Schedule Appointment" className="w-full min-h-[960px] max-h-[100vh] h-full"></iframe>
+      <iframe
+        src="https://app.acuityscheduling.com/schedule.php?owner=34613267"
+        title="Schedule Appointment"
+        className="w-full min-h-[960px] max-h-[100vh] h-full"
+      ></iframe>
     </div>
-  )
-}
+  );
+};
 
 export default function BookNow() {
   return (
@@ -60,5 +90,5 @@ export default function BookNow() {
         </div>
       </motion.div>
     </section>
-  )
+  );
 }

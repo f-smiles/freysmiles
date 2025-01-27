@@ -559,10 +559,10 @@ export default function OurTeam() {
           <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
             <div className="grid grid-cols-2 ">
               <div className="flex flex-col items-start justify-center">
-                <div className="font-saol text-[80px] tracking-tight relative z-10">
+                <div className="font-neue-montreal text-[80px] tracking-tight relative z-10">
                   Meet Our
                 </div>
-                <div className="font-saol italic text-[80px] tracking-tight relative z-10">
+                <div className="font-neue-montreal text-[80px] tracking-tight relative z-10">
                   Doctors
                 </div>
               </div>
@@ -593,13 +593,13 @@ export default function OurTeam() {
               {/* slider controls */}
               <div
                 id="controls"
-                className="flex items-center justify-start row-span-1 row-start-1 space-x-4 "
+                className="font-helvetica-now-thin flex items-center justify-start row-span-1 row-start-1 space-x-4 "
               >
                 <button
-                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full border-stone-600 hover:text-white hover:bg-black"
+                  className=" z-0 p-3 transition-all duration-200 ease-linear border rounded-full border-stone-600 hover:text-white hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
-                  <ArrowLeftIcon className="w-5 h-5 text-stone-600" />
+                  <ArrowLeftIcon className="w-5 h-5 text-stone-600 font-helvetica-now-thin" />
                 </button>
                 <span className="text-stone-600">
                   0{!switchDoctor ? index : index + 1} / 02
@@ -608,7 +608,7 @@ export default function OurTeam() {
                   className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white border-stone-600 hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
-                  <ArrowRightIcon className="w-5 h-5 text-stone-600" />
+                  <ArrowRightIcon className="w-5 h-5 text-stone-600 font-helvetica-now-thin" />
                 </button>
               </div>
               <div className="row-span-1 row-start-2">
@@ -686,10 +686,10 @@ export default function OurTeam() {
                 />
               </figure>
               <figcaption>
-                <h5 className="mt-5 font-helvetica-now-thin">
+                <h5 className="mt-5 font-neue-montreal text-[14px]">
                   {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
                 </h5>
-                <p className="font-helvetica-now-thin">
+                <p className="font-neue-montreal text-[14px]">
                   {!switchDoctor ? "DDS" : "DMD, MSD"}
                 </p>
               </figcaption>
@@ -767,7 +767,7 @@ export default function OurTeam() {
                     </a>
                   </div>
 
-                  <div className="horizontalItem horizontalFilled">
+                  <div className=" horizontalItem horizontalFilled">
                     <p>
                       {" "}
                       Fun fact-our team is made up of former FreySmiles

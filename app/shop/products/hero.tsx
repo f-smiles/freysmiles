@@ -51,7 +51,7 @@ const Hero: React.FC = () => {
   ];
 
   return (
-    <div>
+    <div className="bg-[#FCFAF5]">
        <div className="flex justify-center py-16 px-4">
   <div className="bg-black max-w-7xl w-full rounded-2xl relative flex">
 

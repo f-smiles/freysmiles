@@ -2244,24 +2244,11 @@ function Testimonials() {
     className="flex flex-col"
   >
 
-    <div className="w-[160px] mb-4 flex justify-start">
-      <img
-        src="https://images.prismic.io/twentysix/0d406ac0-f1c6-4363-995c-688ed4743614_ornament+%E2%80%93+8.png?auto=compress,format"
-        alt="First Ornament"
-      />
-    </div>
-
 
     <div className="text-center">{selectedDescription}</div>
 
 
-    <div className="w-full flex justify-end mt-4">
-      <img
-        className="w-[160px]"
-        src="https://images.prismic.io/twentysix/6a93b1e2-74b9-4209-838e-6160326caa99_ornament+%E2%80%93+1.png?auto=compress,format"
-        alt="Second Ornament"
-      />
-    </div>
+   
   </div>
 </div>
 
