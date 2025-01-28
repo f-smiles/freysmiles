@@ -117,7 +117,7 @@ export default function Footer() {
               </ul>
             </div>
             <div className="container flex flex-col-reverse md:flex-row gap-4 items-center justify-between px-4 py-8 mx-auto border-t border-white">
-              <p className="text-white font-neue-montreal lg:text-xl">&copy; Copyright 2025 - FreySmiles Orthodontics</p>
+              <p className="text-white font-neue-montreal lg:text-md">&copy; Copyright 2025 - FreySmiles Orthodontics</p>
               <ul className="flex items-center gap-4">
                 <Link href="https://www.facebook.com/FreySmiles/" className="border border-white/60 rounded-full p-4 transition duration-200 ease-in-out lg:p-4 hover:scale-110 hover:text-white hover:border-white text-white">
                   <Facebook className="w-4 h-4 lg:w-5 lg:h-5" />

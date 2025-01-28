@@ -4366,9 +4366,11 @@ h2.heading-2 {
   position: relative;
   width: 100vw;
   max-width: 100%;
-  height: 200px;
   overflow-x: hidden;
+  height: 100vh
 }
+
+
 
 .trackHome {
   position: absolute;
