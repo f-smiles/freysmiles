@@ -48,203 +48,62 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 export default function LandingComponent() {
 
-
-  // const canvasRef = useRef(null);
-  // const mouseCanvasRef = useRef(null);
-  // const planeRef = useRef(null);
-  // const mouseAttr = useRef([]);
-  // const mouseInertia = useRef([]);
-
-  // useEffect(() => {
-  //   const pixelRatio = window.devicePixelRatio || 1.0;
-  //   let mousePosition = { x: -10000, y: -10000 };
-
-  //   const curtains = new Curtains({
-  //     container: canvasRef.current,
-  //     watchScroll: false,
-  //   });
-
-  //   const planeElements = document.getElementsByClassName("curtain");
-
-  //   const params = {
-  //     vertexShader: vertexShader,
-  //     fragmentShader: fragmentShader,
-  //     uniforms: {
-  //       resolution: {
-  //         name: "uResolution",
-  //         type: "2f",
-  //         value: [pixelRatio * planeElements[0].clientWidth, pixelRatio * planeElements[0].clientHeight],
-  //       },
-  //       mousePosition: {
-  //         name: "uMousePosition",
-  //         type: "2f",
-  //         value: [mousePosition.x, mousePosition.y],
-  //       },
-  //     },
-  //   };
-
-  //   const plane = new Plane(curtains, planeElements[0], params);
-  //   planeRef.current = plane;
-
-  //   const resizeCanvas = () => {
-  //     const canvas = mouseCanvasRef.current;
-  //     canvas.width = planeElements[0].clientWidth * pixelRatio;
-  //     canvas.height = planeElements[0].clientHeight * pixelRatio;
-
-  //     const ctx = canvas.getContext("2d");
-  //     ctx.scale(pixelRatio, pixelRatio);
-  //   };
-
-  //   resizeCanvas();
-
-  //   const handleMovement = (e) => {
-  //     mousePosition.x = e.clientX;
-  //     mousePosition.y = e.clientY;
-
-  //     const mouseAttributes = {
-  //       x: mousePosition.x - planeElements[0].getBoundingClientRect().left,
-  //       y: mousePosition.y - planeElements[0].getBoundingClientRect().top,
-  //       opacity: 1,
-  //       velocity: { x: 0, y: 0 },
-  //     };
-
-  //     if (mouseAttr.current.length > 1) {
-  //       mouseAttributes.velocity = {
-  //         x: mouseAttributes.x - mouseAttr.current[mouseAttr.current.length - 1].x,
-  //         y: mouseAttributes.y - mouseAttr.current[mouseAttr.current.length - 1].y,
-  //       };
-  //     }
-
-  //     mouseAttr.current.push(mouseAttributes);
-  //   };
-
-  //   document.addEventListener("mousemove", handleMovement);
-
-  //   return () => {
-  //     document.removeEventListener("mousemove", handleMovement);
-  //     curtains.dispose();
-  //   };
-  // }, []);
-
-  const [backgroundColor, setBackgroundColor] = useState("transparent");
-
   useEffect(() => {
-    setBackgroundColor("rgb(255, 248, 237)");
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const transitionStart = 40;
-      const transitionEnd =
-        document.documentElement.scrollHeight - window.innerHeight;
-
-      const colorTransitions = [
-        {
-          start: transitionStart,
-          end: transitionEnd * 0.25,
-          colorStart: [255, 248, 237],
-          colorEnd: [245, 244, 253],
-        },
-        {
-          start: transitionEnd * 0.25,
-          end: transitionEnd * 0.5,
-          colorStart: [245, 244, 253],
-          colorEnd: [245, 244, 253],
-        },
-        {
-          start: transitionEnd * 0.5,
-          end: transitionEnd * 0.75,
-          colorStart: [211, 202, 210],
-          colorEnd: [211, 202, 210],
-        },
-        {
-          start: transitionEnd * 0.75,
-          end: transitionEnd,
-          colorStart: [211, 202, 210],
-          colorEnd: [211, 202, 210],
-        },
-      ];
-
-      const currentTransition = colorTransitions.find((transition) => {
-        return (
-          scrollPosition >= transition.start && scrollPosition < transition.end
-        );
-      });
-
-      if (currentTransition) {
-        const progress =
-          (scrollPosition - currentTransition.start) /
-          (currentTransition.end - currentTransition.start);
-        const scrollPercentage = Math.min(1, Math.max(0, progress));
-
-        const interpolatedColor = currentTransition.colorStart.map(
-          (start, i) => {
-            const end = currentTransition.colorEnd[i];
-            return Math.round(start + (end - start) * scrollPercentage);
-          }
-        );
-
-        setBackgroundColor(`rgb(${interpolatedColor.join(",")})`);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-
-
-  const sectionsRef = useRef([]);
-
-  useEffect(() => {
-    const totalSections = sectionsRef.current.length; 
-    sectionsRef.current.forEach((section, index) => {
-      gsap.fromTo(
-        section,
-        {
-          yPercent: -100,
-        },
-        {
-          yPercent: 0,
+    const parallaxItems = gsap.utils.toArray("[data-item]");
+    const tl = gsap.timeline();
+  
+    parallaxItems.forEach((item, index) => {
+      if (index > 0) {
+        tl.to(item, {
           scrollTrigger: {
-            trigger: section,
+            trigger: item,
             start: "top bottom",
-            end: "bottom top",
-            scrub: 1 + (totalSections - index - 1) * 0.1,
+            end: `+=${item.offsetHeight * index} top`,
+            scrub: 1,
+            markers: true,
           },
-        }
-      );
+          marginTop: `-${item.offsetHeight}`,
+          ease: "power1.out",
+        });
+      }
     });
+  
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
   }, []);
   
   return (
     <>
       <div>
-        <div className="parallax-container"> 
-          <section ref={(el) => (sectionsRef.current[0] = el)}>
-            <Hero />
-          </section>
-          <section ref={(el) => (sectionsRef.current[1] = el)}>
-            <MarqueeSection />
-          </section>
-          <section ref={(el) => (sectionsRef.current[2] = el)}>
-            <Stats />
-          </section >
-          <BookNowSection  />
-        </div>
-        {/* <GSAPAnimateScrollSections /> */}
-        {/* <ImageGrid /> */}
-
-        {/* <Mask /> */}
-
-        {/* <div
-        ref={sectionTwoRef}
-        className="sticky bg-[#D8BFD7] top-0 h-screen z-3"
-        id="logoGrid"
+        <section
+          className="relative"
+          style={{
+            height: "100vh",
+          }}
+          data-item
         >
-          <LogoGrid />
-        </div> */}
+          <Hero />
+        </section>
+        <section
+          className="relative"
+          style={{
+            height: "60vh",
+          }}
+          data-item
+        >
+          <MarqueeSection />
+        </section>
+        <section
+          className="relative"
+          style={{
+            height: "200vh",
+          }}
+          data-item
+        >
+          <Stats />
+        </section>
+
         <Testimonials />
         <Locations />
         <ContactUs />
@@ -569,28 +428,61 @@ const Hero = () => {
     ["#3D0075", "#0F0E45", "#808080", "#2F2F2F"],
   ];
 
+  useEffect(() => {
+    const lines = document.querySelectorAll(".stagger-line");
+
+    lines.forEach((line) => {
+      gsap.fromTo(
+        line.querySelectorAll(".stagger-word"),
+        {
+          yPercent: 100,
+          opacity: 0,
+        },
+        {
+          yPercent: 0,
+          opacity: 1,
+          stagger: 0.1,
+          duration: 1,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: line,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    });
+  }, []);
+
   return (
     <section className="font-editorial-new bg-[#E1F672] flex flex-col justify-between p-8 text-black min-h-screen ">
       <div className="flex flex-row h-full relative">
         {/* Left Column */}
         <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start">
           <div className="flex-grow"></div>
-          <div className="overflow-hidden mt-[20vh]">
-            <p className="font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
-              A confident smile begins with effective care tailored to each
-              patient.
+          <div className="stagger-line overflow-hidden mt-[20vh]">
+            <p className="font-helvetica-neue-light text-xl lg:text-3xl font-light leading-relaxed">
+              <span className="stagger-word">
+                A confident smile begins with effective care tailored to each
+                patient.
+              </span>
               <br />
-              At our practice, we’re dedicated to providing treatments that are
+              <span className="stagger-word">
+                At our practice, we’re dedicated to providing treatments that
+                are
+              </span>
               <br />
-              not only scientifically sound but also crafted to bring out your
+              <span className="stagger-word">
+                not only scientifically sound but also crafted to bring out your
+              </span>
               <br />
-              best smile.
+              <span className="stagger-word">best smile.</span>
             </p>
           </div>
+
           <div className="flex-grow"></div>
         </div>
 
-        {/* Right Column with Circles */}
         <div
           className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]"
           data-speed="1"
@@ -615,18 +507,17 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Bottom Content */}
       <div className="flex justify-between items-end mt-8">
         <div>
           <p className="font-neue-montreal font-bold text-sm">• EST {time}</p>
         </div>
 
-        <div className="flex flex-col items-end text-right font-light lg:w-1/3 w-full">
-          <h2 className="text-[3em] font-bold mb-4 leading-tight inline-block">
+        <div className="font-neue-montreal flex flex-col items-end text-right font-light lg:w-1/3 w-full">
+          <h1 className="text-[3em]  mb-4 leading-tight inline-block">
             We know
             <br />
-            what works.
-          </h2>
+            what works
+          </h1>
         </div>
       </div>
     </section>
@@ -635,18 +526,27 @@ const Hero = () => {
 
 const MarqueeSection = () => {
   return (
-    <section className="h-[50vh] uppercase rounded-tl-[40px] rounded-tr-[40px] font-altero text-white bg-[#20282D]  flex items-start">
+    <section
+      className="uppercase rounded-tl-[40px] rounded-tr-[40px] font-altero text-white bg-[#20282D] flex"
+      style={{
+        height: "60vh",
+      }}
+    >
       <div
-        className="marqueeHome"
         style={{
-          fontSize: "180px",
+          fontSize: "300px",
           fontWeight: "bold",
+          fontFamily: "NeueMontrealBook",
           whiteSpace: "nowrap",
           overflow: "hidden",
+          width: "100vw",
+          maxWidth: "100%",
+          display: "flex",
+          alignItems: "start",
         }}
       >
-        <div className="trackHome">
-          <div className="content">
+        <div>
+          <div className="trackHome ">
             Clinical Excellence <span className="separator">●</span>{" "}
             Unparalleled Precision <span className="separator">●</span>{" "}
             Customized Care
@@ -706,8 +606,115 @@ const Stats = () => {
     setHoveredCard(null);
   };
 
+  const wrapperRef = useRef(null);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    const img = imgRef.current;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: wrapper,
+        start: "top 85%",
+        end: "top 15%",
+        scrub: false,
+        markers: false,
+      },
+    });
+
+    tl.set(img, { opacity: 1 })
+      .fromTo(
+        wrapper,
+        { height: "0px" },
+        { height: "660px", duration: 2, ease: "expo.out" }
+      )
+      .fromTo(
+        img,
+        { scale: 1.4, opacity: 1, transformOrigin: "50% 0%" },
+        { scale: 1, opacity: 1, duration: 2.5, ease: "power3.out" },
+        "<0.3"
+      );
+
+    return () => {
+      tl.kill();
+      ScrollTrigger.refresh();
+    };
+  }, []);
+
+  const textContainerRef = useRef(null);
+  const splitTextInstances = useRef([]);
+  useEffect(() => {
+    CustomEase.create("ease_pop", "M0,0 C0,0.24 0.08,1 1,1");
+
+    const lines = textContainerRef.current.querySelectorAll("span.block");
+
+    lines.forEach((line) => {
+      const splitLine = new SplitText(line, { type: "words" });
+      splitTextInstances.current.push(splitLine);
+
+      gsap.fromTo(
+        splitLine.words,
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 2,
+          ease: "power3.inOut",
+          stagger: 0.1,
+          scrollTrigger: {
+            trigger: line,
+            start: "top 85%",
+            end: "top 40%",
+            once: true,
+            markers: false,
+          },
+        }
+      );
+    });
+
+    return () => {
+      splitTextInstances.current.forEach((splitInstance) =>
+        splitInstance.revert()
+      );
+    };
+  }, []);
+
+  const linkRef = useRef(null);
+
+  useEffect(() => {
+    const link = linkRef.current;
+
+    const span1 = link.querySelector("[data-tha-span-1]");
+    const span2 = link.querySelector("[data-tha-span-2]");
+
+    const handleMouseEnter = () => {
+      gsap.to([span1, span2], {
+        yPercent: -100,
+        duration: 0.8,
+        ease: "power4.inOut",
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to([span1, span2], {
+        yPercent: 0,
+        duration: 0.8,
+        ease: "power4.inOut",
+      });
+    };
+
+    link.addEventListener("mouseenter", handleMouseEnter);
+    link.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      link.removeEventListener("mouseenter", handleMouseEnter);
+      link.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
+
   return (
-    <section className="min-h-screen  bg-[#FBFBFB] flex flex-col justify-between ">
+    <section className=" rounded-tl-[40px] rounded-tr-[40px]  bg-[#FBFBFB] flex flex-col justify-between ">
       <section
         style={{
           transform: "translateY(-20vh)",
@@ -898,6 +905,92 @@ const Stats = () => {
           </div>
         </div>
       </section>
+
+      <div
+        className=" flex flex-col items-center justify-center bg-[#FBFBFB]"
+        // style={{
+        //   backgroundImage: `url("../images/Sunellipse.svg")`,
+        //   backgroundSize: "60%",
+        //   backgroundRepeat: "no-repeat",
+        // }}
+      >
+        <section className="py-20 px-8 flex flex-col lg:flex-row max-w-7xl mx-auto space-y-12 lg:space-y-0 lg:space-x-8">
+          <div
+            className="flex-1 flex flex-col justify-center items-start space-y-8 relative"
+            ref={textContainerRef}
+          >
+            <h1 className="">
+              <span className="text-[2.5rem] font-helvetica-neue-light block">
+                Your first <span>consultation</span>
+              </span>
+              <span className="text-[2.5rem] font-helvetica-neue-light block">
+                is{" "}
+                <span className="text-[2.5rem] font-autumnchant text-black px-4 py-2 inline-block ">
+                  always
+                </span>{" "}
+                on us
+              </span>
+            </h1>
+            <span className="block text-[1.5rem] font-helvetica-neue-light">
+              Find out which treatment plan suits you best.
+            </span>
+            <div className="flex justify-center border border-black py-6 px-8">
+              <a
+                ref={linkRef}
+                href="/book-now"
+                data-tha
+                style={{
+                  display: "inline-block",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <span
+                  data-tha-span-1
+                  style={{
+                    fontSize: "1.25rem",
+                    fontFamily: "HelveticaNeue-Light",
+                    display: "inline-block",
+                    position: "relative",
+                  }}
+                >
+                  BOOK NOW
+                </span>
+                <span
+                  data-tha-span-2
+                  style={{
+                    fontSize: "1.25rem",
+                    fontFamily: "HelveticaNeue-Light",
+                    display: "inline-block",
+                    position: "absolute",
+                    top: "100%",
+                    left: "0",
+                  }}
+                >
+                  BOOK NOW
+                </span>
+              </a>
+            </div>
+          </div>
+
+          <div className="flex-1 flex items-center justify-center relative">
+            <div ref={wrapperRef} className="w-[360px] h-[660px]  rounded-full">
+              <img
+                ref={imgRef}
+                src="../images/mainsectionimage.jpg"
+                alt="Consultation"
+                className="object-cover w-full h-full rounded-full"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
+            <button className="font-helvetica-neue-light border border-black text-black text-2xl py-6 px-12 rounded-lg">
+              Need more info? <br /> Take our quiz
+            </button>
+          </div>
+        </section>
+      </div>
       {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
         <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">
@@ -974,214 +1067,6 @@ const NewSection = () => {
         </div>
       </div>
     </section>
-  );
-};
-
-const BookNowSection = () => {
-  const parallaxRef = useRef(null);
-  const wrapperRef = useRef(null);
-  const imgRef = useRef(null);
-
-  useEffect(() => {
-    const wrapper = wrapperRef.current;
-    const img = imgRef.current;
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: wrapper,
-        start: "top 85%",
-        end: "top 15%",
-        scrub: false,
-        markers: false,
-      },
-    });
-
-    tl.set(img, { opacity: 1 })
-      .fromTo(
-        wrapper,
-        { height: "0px" },
-        { height: "660px", duration: 2, ease: "expo.out" }
-      )
-      .fromTo(
-        img,
-        { scale: 1.4, opacity: 1, transformOrigin: "50% 0%" },
-        { scale: 1, opacity: 1, duration: 2.5, ease: "power3.out" },
-        "<0.3"
-      );
-
-    return () => {
-      tl.kill();
-      ScrollTrigger.refresh();
-    };
-  }, []);
-
-  const textContainerRef = useRef(null);
-  const splitTextInstances = useRef([]);
-  useEffect(() => {
-    CustomEase.create("ease_pop", "M0,0 C0,0.24 0.08,1 1,1");
-
-    const lines = textContainerRef.current.querySelectorAll("span.block");
-
-    lines.forEach((line) => {
-      const splitLine = new SplitText(line, { type: "words" });
-      splitTextInstances.current.push(splitLine);
-
-      gsap.fromTo(
-        splitLine.words,
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 2,
-          ease: "power3.inOut",
-          stagger: 0.1,
-          scrollTrigger: {
-            trigger: line,
-            start: "top 85%",
-            end: "top 40%",
-            once: true,
-            markers: false,
-          },
-        }
-      );
-    });
-
-    return () => {
-      splitTextInstances.current.forEach((splitInstance) =>
-        splitInstance.revert()
-      );
-    };
-  }, []);
-
-
-  const linkRef = useRef(null);
-
-  useEffect(() => {
-    const link = linkRef.current;
-  
-    const span1 = link.querySelector("[data-tha-span-1]");
-    const span2 = link.querySelector("[data-tha-span-2]");
-  
-    const handleMouseEnter = () => {
-      gsap.to([span1, span2], {
-        yPercent: -100,
-        duration: 0.8,
-        ease: "power4.inOut",
-      });
-    };
-  
-    const handleMouseLeave = () => {
-      gsap.to([span1, span2], {
-        yPercent: 0,
-        duration: 0.8,
-        ease: "power4.inOut",
-      });
-    };
-  
-    link.addEventListener("mouseenter", handleMouseEnter);
-    link.addEventListener("mouseleave", handleMouseLeave);
-  
-    return () => {
-      link.removeEventListener("mouseenter", handleMouseEnter);
-      link.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
-
-  return (
-    <div
-      className=" flex flex-col items-center justify-center bg-[#FBFBFB]"
-      // style={{
-      //   backgroundImage: `url("../images/Sunellipse.svg")`,
-      //   backgroundSize: "60%",
-      //   backgroundRepeat: "no-repeat",
-      // }}
-    >
-      <section
-        ref={parallaxRef}
-        className="py-20 px-8 flex flex-col lg:flex-row max-w-7xl mx-auto space-y-12 lg:space-y-0 lg:space-x-8"
-      >
-        <div
-          className="flex-1 flex flex-col justify-center items-start space-y-8 relative"
-          ref={textContainerRef}
-        >
-          <h1 className="">
-            <span className="text-[2.5rem] font-helvetica-neue-light block">
-              Your first <span>consultation</span>
-            </span>
-            <span className="text-[2.5rem] font-helvetica-neue-light block">
-              is{" "}
-              <span className="text-[2.5rem] font-autumnchant text-black px-4 py-2 inline-block ">
-                always
-              </span >{" "}
-              on us
-            </span>
-          </h1>
-          <span className="block text-[1.5rem] font-helvetica-neue-light">
-            Find out which treatment plan suits you best.
-          </span>
-          <div className="flex justify-center border border-black py-6 px-8">
-          <a
-  ref={linkRef}
-  href="/book-now"
-  data-tha
-  style={{
-    display: "inline-block",
-    position: "relative",
-    overflow: "hidden",
-  }}
->
-  <span
-    data-tha-span-1
-    style={{
-      fontSize: "1.25rem",
-      fontFamily: "HelveticaNeue-Light",
-      display: "inline-block",
-      position: "relative",
-    }}
-  >
-    BOOK NOW
-  </span>
-  <span
-    data-tha-span-2
-    style={{
-      fontSize: "1.25rem",
-      fontFamily: "HelveticaNeue-Light",
-      display: "inline-block",
-      position: "absolute",
-      top: "100%",
-      left: "0",
-    }}
-  >
-    BOOK NOW
-  </span>
-</a>
-</div>
-         
-        </div>
-
-        <div className="flex-1 flex items-center justify-center relative">
-          <div
-            ref={wrapperRef}
-            className="w-[360px] h-[660px]  rounded-full"
-           
-          >
-            <img
-              ref={imgRef}
-              src="../images/mainsectionimage.jpg"
-              alt="Consultation"
-              className="object-cover w-full h-full rounded-full"
-            />
-          </div>
-
-        </div>
-
-        <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
-          <button className="font-helvetica-neue-light border border-black text-black text-2xl py-6 px-12 rounded-lg">
-            Need more info? <br /> Take our quiz
-          </button>
-        </div>
-      </section>
-    </div>
   );
 };
 
@@ -2152,107 +2037,103 @@ function Testimonials() {
     },
   ];
 
-  const [selectedDescription, setSelectedDescription] = useState(items[0].description);
-  
+  const [selectedDescription, setSelectedDescription] = useState(
+    items[0].description
+  );
+
   return (
     <div className="w-full h-screen flex">
-    <div className="w-1/3">
-      <h1
-        style={{
-          fontSize: "3rem",
-          lineHeight: "100%",
-        }}
-        className="font-helvetica-neue-light mt-32 mb-10 flex justify-center"
-      >
-        Testimonials
-      </h1>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          gap: "50px",
-          padding: "20px",
-          maxWidth: "800px",
-          margin: "auto",
-        }}
-      >
-        {items.map((item, index) => (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              width: "100%",
-            }}
-            key={index}
-          >
+      <div className="w-1/3">
+        <h1
+          style={{
+            fontSize: "3rem",
+            lineHeight: "100%",
+          }}
+          className="font-helvetica-neue-light mt-32 mb-10 flex justify-center"
+        >
+          Testimonials
+        </h1>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "50px",
+            padding: "20px",
+            maxWidth: "800px",
+            margin: "auto",
+          }}
+        >
+          {items.map((item, index) => (
             <div
               style={{
-                width: "100%",
-                height: "1px",
-                backgroundColor: "#000",
-                marginBottom: "10px",
-              }}
-            ></div>
-            <div
-              style={{
-                justifyContent: "space-between",
                 display: "flex",
-                alignItems: "center",
+                flexDirection: "column",
+                alignItems: "flex-start",
                 width: "100%",
-                padding: "10px 0",
               }}
+              key={index}
             >
-              <span
+              <div
                 style={{
-                  fontFamily: "NeueMontrealBook",
-                  fontSize: "20px",
-                
-                  color: "#333",
-                  cursor: "pointer",
+                  width: "100%",
+                  height: "1px",
+                  backgroundColor: "#000",
+                  marginBottom: "10px",
                 }}
-                onClick={() => setSelectedDescription(item.description)}
-              >
-                {item.name}
-              </span>
-              <span
+              ></div>
+              <div
                 style={{
-                  fontSize: "14px",
-                  fontFamily: "NeueMontrealBook",
-                
-                  color: "#999",
-                  marginTop: "5px",
+                  justifyContent: "space-between",
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  padding: "10px 0",
                 }}
               >
-                {item.year}
-              </span>
+                <span
+                  style={{
+                    fontFamily: "NeueMontrealBook",
+                    fontSize: "20px",
+
+                    color: "#333",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setSelectedDescription(item.description)}
+                >
+                  {item.name}
+                </span>
+                <span
+                  style={{
+                    fontSize: "14px",
+                    fontFamily: "NeueMontrealBook",
+
+                    color: "#999",
+                    marginTop: "5px",
+                  }}
+                >
+                  {item.year}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+      </div>
+      <div className="w-2/3 flex items-center justify-center">
+        <div
+          style={{
+            fontFamily: "NeueMontrealBook",
+            fontSize: "20px",
+            color: "#333",
+            padding: "20px",
+            maxWidth: "700px",
+          }}
+          className="flex flex-col"
+        >
+          <div className="text-center">{selectedDescription}</div>
+        </div>
       </div>
     </div>
-    <div className="w-2/3 flex items-center justify-center">
-  <div
-    style={{
-      fontFamily: "NeueMontrealBook",
-      fontSize: "20px",
-      color: "#333",
-      padding: "20px",
-      maxWidth: "700px",
-    }}
-    className="flex flex-col"
-  >
-
-
-    <div className="text-center">{selectedDescription}</div>
-
-
-   
-  </div>
-</div>
-
-  </div>
   );
 }
 
@@ -2813,21 +2694,21 @@ const ContactUs = () => {
 function GiftCards() {
   return (
     <>
-    <section className="min-h-screen relative group hover:cursor-pointer">
-      <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-[#FFF560] bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
-      <Link
-        href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`}
-        target="_blank"
-        className="text-2xl font-neue-montreal absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s]"
-      >
-        Send a Gift Card
-      </Link>
-      <img
-        src="../images/giftcardbg.png"
-        alt="gift cards mockup"
-        className="absolute inset-0 object-cover object-center w-full h-full -z-10"
-      />
-    </section>
+      <section className="min-h-screen relative group hover:cursor-pointer">
+        <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-[#FFF560] bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
+        <Link
+          href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`}
+          target="_blank"
+          className="text-2xl font-neue-montreal absolute inset-0 w-full h-full pl-[12%] pt-[18%] lg:pl-[6%] lg:pt-[8%] lg:group-hover:pl-[8%] lg:group-hover:pt-[12%] group-hover:duration-[1s]"
+        >
+          Send a Gift Card
+        </Link>
+        <img
+          src="../images/giftcardbg.png"
+          alt="gift cards mockup"
+          className="absolute inset-0 object-cover object-center w-full h-full -z-10"
+        />
+      </section>
     </>
   );
 }
