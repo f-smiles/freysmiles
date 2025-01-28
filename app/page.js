@@ -60,7 +60,6 @@ export default function LandingComponent() {
             start: "top bottom",
             end: `+=${item.offsetHeight * index} top`,
             scrub: 1,
-            markers: true,
           },
           marginTop: `-${item.offsetHeight}`,
           ease: "power1.out",
@@ -72,7 +71,7 @@ export default function LandingComponent() {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
-  
+
   return (
     <>
       <div>
@@ -455,7 +454,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="font-editorial-new bg-[#E1F672] flex flex-col justify-between p-8 text-black min-h-screen ">
+    <section className="font-editorial-new bg-[#CDEA67] flex flex-col justify-between p-8 text-black min-h-screen ">
       <div className="flex flex-row h-full relative">
         {/* Left Column */}
         <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start">
@@ -507,7 +506,7 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="flex justify-between items-end mt-8">
+      <div className="flex justify-between items-center mt-8">
         <div>
           <p className="font-neue-montreal font-bold text-sm">• EST {time}</p>
         </div>
@@ -527,32 +526,20 @@ const Hero = () => {
 const MarqueeSection = () => {
   return (
     <section
-      className="uppercase rounded-tl-[40px] rounded-tr-[40px] font-altero text-white bg-[#20282D] flex"
+      className="rounded-tl-[40px] rounded-tr-[40px] font-neue-montreal text-white bg-[#20282D] flex"
       style={{
         height: "60vh",
       }}
     >
       <div
-        style={{
-          fontSize: "300px",
-          fontWeight: "bold",
-          fontFamily: "NeueMontrealBook",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          width: "100vw",
-          maxWidth: "100%",
-          display: "flex",
-          alignItems: "start",
-        }}
       >
-        <div>
-          <div className="trackHome ">
-            Clinical Excellence <span className="separator">●</span>{" "}
-            Unparalleled Precision <span className="separator">●</span>{" "}
-            Customized Care
-          </div>
-        </div>
+  <div className="marquee-container">
+      <div className="marqueed">
+        <span>
+          Frey Smiles ● Frey Smiles ● Frey Smiles ● Frey Smiles ● Frey Smiles ● Frey Smiles ●
+        </span>
       </div>
+    </div>      </div>
     </section>
   );
 };
