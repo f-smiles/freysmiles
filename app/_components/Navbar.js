@@ -204,59 +204,11 @@ export default function Navbar({ user }) {
     });
   };
 
-  const cursorBigRef = useRef(null);
-  const cursorSmallRef = useRef(null);
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      const { clientX: x, clientY: y } = e;
 
-      if (cursorBigRef.current) {
-        cursorBigRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      }
-      if (cursorSmallRef.current) {
-        cursorSmallRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      }
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
 
   return (
     <header className="overflow-hidden">
       <div className="h2-page-wrapper">
-        <div
-          className="h2-hero-cursor-wrapper"
-          style={{ pointerEvents: "none" }}
-        >
-          <div
-            ref={cursorBigRef}
-            className="h2-hero-cursor-big"
-            style={{
-              width: "50px",
-              height: "50px",
-              borderRadius: "50%",
-              backgroundColor: "rgba(255, 255, 0, 0.7)",
-              position: "absolute",
-              transform: "translate3d(0, 0, 0)",
-              transition: "transform 0.1s ease-out",
-            }}
-          ></div>
-          <div
-            ref={cursorSmallRef}
-            className="h2-hero-cursor-small"
-            style={{
-              width: "10px",
-              height: "10px",
-              borderRadius: "50%",
-              backgroundColor: "rgba(255, 255, 0, 0.7)",
-              position: "absolute",
-              transform: "translate3d(0, 0, 0)",
-              transition: "transform 0.05s ease-out",
-            }}
-          ></div>
-        </div>
 
         <nav className="h2-navbar">
           <div className="h2-navbar-container">

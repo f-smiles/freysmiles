@@ -264,6 +264,7 @@ const HeaderBanner = () => {
 
   return (
     <div>
+      
       <div className="flex justify-center py-16 px-4">
         <div className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12 relative">
           <div className="grid grid-cols-1 h-full md:grid-cols-2 gap-8">
@@ -349,9 +350,16 @@ const HeaderBanner = () => {
       >
         <div className="payment-grid">
           <div className="payment-grid-left" ref={leftColumnRef}>
-            <div>
-              <img src="../images/testimonial.gif" alt="Testimonial" />
-            </div>
+          <div className="video-container">
+      <video
+        src="../images/financialgraph.mp4"
+        loop
+        autoPlay
+        muted
+        playsInline
+        className="w-full h-auto"
+      ></video>
+    </div>
           </div>
           <div className="payment-grid-right">
             {[
