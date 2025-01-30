@@ -351,14 +351,23 @@ const HeaderBanner = () => {
         <div className="payment-grid">
           <div className="payment-grid-left" ref={leftColumnRef}>
           <div className="video-container">
-      <video
+          <div className="w-full h-auto rounded-[40px] border border-black overflow-hidden">
+  <img
+    src="https://images.squarespace-cdn.com/content/v1/62a7d8d744b4180668563980/5eabcc0c-33b8-4967-835a-03046db10f7d/b89c2369-13d2-465a-9b20-9ce94a244bcf.gif?format=2500w"
+    alt="GIF Animation"
+    className="w-full h-auto"
+  />
+</div>
+
+
+      {/* <video
         src="../images/financialgraph.mp4"
         loop
         autoPlay
         muted
         playsInline
         className="w-full h-auto"
-      ></video>
+      ></video> */}
     </div>
           </div>
           <div className="payment-grid-right">

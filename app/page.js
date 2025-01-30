@@ -1,4 +1,5 @@
 "use client";
+import P5 from "react-p5";
 import { Curtains, Plane } from "curtainsjs";
 import LocomotiveScroll from "locomotive-scroll";
 import "locomotive-scroll/dist/locomotive-scroll.css";
@@ -47,11 +48,10 @@ if (typeof window !== "undefined") {
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 export default function LandingComponent() {
-
   useEffect(() => {
     const parallaxItems = gsap.utils.toArray("[data-item]");
     const tl = gsap.timeline();
-  
+
     parallaxItems.forEach((item, index) => {
       if (index > 0) {
         tl.to(item, {
@@ -66,44 +66,60 @@ export default function LandingComponent() {
         });
       }
     });
-  
+
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 
+  
   return (
     <>
       <div>
         <section
-          className="relative"
-          style={{
-            height: "100vh",
-          }}
-          data-item
+        className="relative"
+        style={{
+          height: "100vh",
+        }}
+        data-item
         >
           <Hero />
         </section>
         <section
-          className="relative"
-          style={{
-            height: "60vh",
-          }}
-          data-item
+        className="relative"
+        style={{
+          height: "60vh",
+        }}
+        data-item
         >
           <MarqueeSection />
         </section>
         <section
-          className="relative"
-          style={{
-            height: "200vh",
-          }}
-          data-item
+        className="relative"
+        style={{
+
+        }}
+        data-item
         >
           <Stats />
         </section>
-
-        <Testimonials />
+        <section>
+          <ImageGrid />
+        </section>
+        <section>
+          <NewSection />
+        </section>
+     
+        <section
+        // className="relative"
+        // style={{
+        //   height: "100vh",
+        // }}
+        // data-item
+        >
+          <Testimonials />
+        </section>
+        <LogoGrid />
         <Locations />
         <ContactUs />
         <GiftCards />
@@ -113,290 +129,290 @@ export default function LandingComponent() {
 }
 
 const Hero = () => {
-  const containerRef = useRef(null);
-  const div1Ref = useRef(null);
-  const div2Ref = useRef(null);
-  const div3Ref = useRef(null);
-  const div4Ref = useRef(null);
-  const listItemsRef = useRef(null);
+  // const containerRef = useRef(null);
+  // const div1Ref = useRef(null);
+  // const div2Ref = useRef(null);
+  // const div3Ref = useRef(null);
+  // const div4Ref = useRef(null);
+  // const listItemsRef = useRef(null);
 
-  useEffect(() => {
-    gsap.set(div1Ref.current, { x: -100, y: -100 });
-    gsap.set(div2Ref.current, { x: 100, y: -100 });
-    gsap.set(div3Ref.current, { x: -100, y: 100 });
-    gsap.set(div4Ref.current, { x: 100, y: 100 });
-    gsap.to(div1Ref.current, {
-      x: 0,
-      y: 0,
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top bottom",
-        end: "center center",
-        scrub: true,
-      },
-    });
+  // useEffect(() => {
+  //   gsap.set(div1Ref.current, { x: -100, y: -100 });
+  //   gsap.set(div2Ref.current, { x: 100, y: -100 });
+  //   gsap.set(div3Ref.current, { x: -100, y: 100 });
+  //   gsap.set(div4Ref.current, { x: 100, y: 100 });
+  //   gsap.to(div1Ref.current, {
+  //     x: 0,
+  //     y: 0,
+  //     scrollTrigger: {
+  //       trigger: containerRef.current,
+  //       start: "top bottom",
+  //       end: "center center",
+  //       scrub: true,
+  //     },
+  //   });
 
-    gsap.to(div2Ref.current, {
-      x: 0,
-      y: 0,
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top bottom",
-        end: "center center",
-        scrub: true,
-      },
-    });
+  //   gsap.to(div2Ref.current, {
+  //     x: 0,
+  //     y: 0,
+  //     scrollTrigger: {
+  //       trigger: containerRef.current,
+  //       start: "top bottom",
+  //       end: "center center",
+  //       scrub: true,
+  //     },
+  //   });
 
-    gsap.to(div3Ref.current, {
-      x: 0,
-      y: 0,
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top bottom",
-        end: "center center",
-        scrub: true,
-      },
-    });
-    gsap.to(div4Ref.current, {
-      x: 0,
-      y: 0,
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top bottom",
-        end: "center center",
-        scrub: true,
-      },
-    });
-  }, []);
+  //   gsap.to(div3Ref.current, {
+  //     x: 0,
+  //     y: 0,
+  //     scrollTrigger: {
+  //       trigger: containerRef.current,
+  //       start: "top bottom",
+  //       end: "center center",
+  //       scrub: true,
+  //     },
+  //   });
+  //   gsap.to(div4Ref.current, {
+  //     x: 0,
+  //     y: 0,
+  //     scrollTrigger: {
+  //       trigger: containerRef.current,
+  //       start: "top bottom",
+  //       end: "center center",
+  //       scrub: true,
+  //     },
+  //   });
+  // }, []);
 
-  const heroContentRef = useRef(null);
-  const bookButtonRef = useRef(null);
+  // const heroContentRef = useRef(null);
+  // const bookButtonRef = useRef(null);
 
-  function animateHeroContent() {
-    if (!heroContentRef.current) return;
-    const lines = heroContentRef.current.querySelectorAll(".hero-content-line");
-    lines.forEach((line, index) => {
-      gsap.fromTo(
-        line,
-        { y: 20, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1.5,
-          ease: "power3.out",
-          delay: index * 0.2,
-        }
-      );
-    });
-  }
+  // function animateHeroContent() {
+  //   if (!heroContentRef.current) return;
+  //   const lines = heroContentRef.current.querySelectorAll(".hero-content-line");
+  //   lines.forEach((line, index) => {
+  //     gsap.fromTo(
+  //       line,
+  //       { y: 20, opacity: 0 },
+  //       {
+  //         y: 0,
+  //         opacity: 1,
+  //         duration: 1.5,
+  //         ease: "power3.out",
+  //         delay: index * 0.2,
+  //       }
+  //     );
+  //   });
+  // }
 
-  function animateBookButton() {
-    if (!bookButtonRef.current) return;
+  // function animateBookButton() {
+  //   if (!bookButtonRef.current) return;
 
-    gsap.fromTo(
-      bookButtonRef.current,
-      { opacity: 0, y: 40 },
-      { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" }
-    );
-  }
+  //   gsap.fromTo(
+  //     bookButtonRef.current,
+  //     { opacity: 0, y: 40 },
+  //     { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" }
+  //   );
+  // }
 
-  useLayoutEffect(() => {
-    animateHeroContent();
-    animateBookButton();
-  }, []);
+  // useLayoutEffect(() => {
+  //   animateHeroContent();
+  //   animateBookButton();
+  // }, []);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            animateElement(entry.target);
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       entries.forEach((entry) => {
+  //         if (entry.isIntersecting) {
+  //           animateElement(entry.target);
+  //         }
+  //       });
+  //     },
+  //     { threshold: 0.5 }
+  //   );
 
-    if (heroContentRef.current) {
-      observer.observe(heroContentRef.current);
-    }
+  //   if (heroContentRef.current) {
+  //     observer.observe(heroContentRef.current);
+  //   }
 
-    if (bookButtonRef.current) {
-      observer.observe(bookButtonRef.current);
-    }
+  //   if (bookButtonRef.current) {
+  //     observer.observe(bookButtonRef.current);
+  //   }
 
-    return () => observer.disconnect();
-  }, []);
+  //   return () => observer.disconnect();
+  // }, []);
 
-  function animateElement(element) {
-    if (element === heroContentRef.current) {
-      const lines =
-        heroContentRef.current.querySelectorAll(".hero-content-line");
-      lines.forEach((line, index) => {
-        gsap.fromTo(
-          line,
-          { y: 64, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out",
-            delay: index * 0.2,
-          }
-        );
-      });
-    } else if (element === bookButtonRef.current) {
-      const button = bookButtonRef.current.querySelector(".book-button");
-      const arrowIcon = bookButtonRef.current.querySelector(".arrow-icon");
+  // function animateElement(element) {
+  //   if (element === heroContentRef.current) {
+  //     const lines =
+  //       heroContentRef.current.querySelectorAll(".hero-content-line");
+  //     lines.forEach((line, index) => {
+  //       gsap.fromTo(
+  //         line,
+  //         { y: 64, opacity: 0 },
+  //         {
+  //           y: 0,
+  //           opacity: 1,
+  //           duration: 1,
+  //           ease: "power3.out",
+  //           delay: index * 0.2,
+  //         }
+  //       );
+  //     });
+  //   } else if (element === bookButtonRef.current) {
+  //     const button = bookButtonRef.current.querySelector(".book-button");
+  //     const arrowIcon = bookButtonRef.current.querySelector(".arrow-icon");
 
-      gsap.fromTo(
-        button,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
-      );
+  //     gsap.fromTo(
+  //       button,
+  //       { opacity: 0, y: 20 },
+  //       { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
+  //     );
 
-      gsap.fromTo(
-        arrowIcon,
-        { scale: 0 },
-        { scale: 1, duration: 1, ease: "power3.out" }
-      );
-    }
-  }
+  //     gsap.fromTo(
+  //       arrowIcon,
+  //       { scale: 0 },
+  //       { scale: 1, duration: 1, ease: "power3.out" }
+  //     );
+  //   }
+  // }
 
-  const [isScaled, setIsScaled] = useState(false);
-  const [showBookNow, setShowBookNow] = useState(false);
+  // const [isScaled, setIsScaled] = useState(false);
+  // const [showBookNow, setShowBookNow] = useState(false);
 
-  const handleClick = () => {
-    setIsScaled(true);
+  // const handleClick = () => {
+  //   setIsScaled(true);
 
-    setTimeout(() => {
-      setShowBookNow(true);
-    }, 3500);
-  };
+  //   setTimeout(() => {
+  //     setShowBookNow(true);
+  //   }, 3500);
+  // };
 
-  const itemRefs = useRef([]);
-  itemRefs.current = [];
-  const setMultipleRefs = (element) => {
-    if (typeof listItemsRef === "function") {
-      listItemsRef(element);
-    } else if (listItemsRef) {
-      listItemsRef.current = element;
-    }
+  // const itemRefs = useRef([]);
+  // itemRefs.current = [];
+  // const setMultipleRefs = (element) => {
+  //   if (typeof listItemsRef === "function") {
+  //     listItemsRef(element);
+  //   } else if (listItemsRef) {
+  //     listItemsRef.current = element;
+  //   }
 
-    if (typeof addToRefs === "function") {
-      addToRefs(element);
-    } else if (addToRefs) {
-      addToRefs.current = element;
-    }
-  };
+  //   if (typeof addToRefs === "function") {
+  //     addToRefs(element);
+  //   } else if (addToRefs) {
+  //     addToRefs.current = element;
+  //   }
+  // };
 
-  const addToRefs = (el) => {
-    if (el && !itemRefs.current.includes(el)) {
-      itemRefs.current.push(el);
-    }
-  };
+  // const addToRefs = (el) => {
+  //   if (el && !itemRefs.current.includes(el)) {
+  //     itemRefs.current.push(el);
+  //   }
+  // };
 
-  const titleRef = useRef(null);
+  // const titleRef = useRef(null);
 
-  useEffect(() => {
-    if (!titleRef.current) return;
+  // useEffect(() => {
+  //   if (!titleRef.current) return;
 
-    const titleSpans = titleRef.current.querySelectorAll("h1 > span");
-    const titleSpansAfters = titleRef.current.querySelectorAll("h1 .after");
+  //   const titleSpans = titleRef.current.querySelectorAll("h1 > span");
+  //   const titleSpansAfters = titleRef.current.querySelectorAll("h1 .after");
 
-    const animSpanFrom = {
-      "will-change": "opacity, transform",
-      opacity: 0,
-    };
-    const animSpanTo = {
-      duration: 0.62,
-      opacity: 1,
-      rotationX: 0,
-      yPercent: 0,
-      ease: "power1.inOut",
-      stagger: {
-        each: 0.1,
-      },
-    };
+  //   const animSpanFrom = {
+  //     "will-change": "opacity, transform",
+  //     opacity: 0,
+  //   };
+  //   const animSpanTo = {
+  //     duration: 0.62,
+  //     opacity: 1,
+  //     rotationX: 0,
+  //     yPercent: 0,
+  //     ease: "power1.inOut",
+  //     stagger: {
+  //       each: 0.1,
+  //     },
+  //   };
 
-    gsap
-      .timeline()
-      .fromTo(
-        titleSpans[0],
-        { ...animSpanFrom, rotationX: 90, yPercent: -50 },
-        animSpanTo
-      )
-      .fromTo(
-        titleSpans[1],
-        { ...animSpanFrom, rotationX: -90, yPercent: 50 },
-        animSpanTo,
-        "<"
-      )
-      .fromTo(
-        titleSpansAfters,
-        { width: "100%" },
-        { duration: 0.72, ease: "expo.inOut", width: "0%" },
-        "end"
-      );
-  }, []);
+  //   gsap
+  //     .timeline()
+  //     .fromTo(
+  //       titleSpans[0],
+  //       { ...animSpanFrom, rotationX: 90, yPercent: -50 },
+  //       animSpanTo
+  //     )
+  //     .fromTo(
+  //       titleSpans[1],
+  //       { ...animSpanFrom, rotationX: -90, yPercent: 50 },
+  //       animSpanTo,
+  //       "<"
+  //     )
+  //     .fromTo(
+  //       titleSpansAfters,
+  //       { width: "100%" },
+  //       { duration: 0.72, ease: "expo.inOut", width: "0%" },
+  //       "end"
+  //     );
+  // }, []);
 
-  const marqueeRef = useRef(null);
+  // const marqueeRef = useRef(null);
 
-  useEffect(() => {
-    if (!marqueeRef.current) return;
+  // useEffect(() => {
+  //   if (!marqueeRef.current) return;
 
-    const marqueeSpans = marqueeRef.current.querySelectorAll(
-      ".marquee__inner > span"
-    );
+  //   const marqueeSpans = marqueeRef.current.querySelectorAll(
+  //     ".marquee__inner > span"
+  //   );
 
-    marqueeSpans.forEach((span, index) => {
-      gsap.fromTo(
-        span,
-        {
-          "will-change": "opacity, transform",
-          opacity: 0,
-          x: -50,
-        },
-        {
-          duration: 0.62,
-          opacity: 1,
-          x: 0,
-          ease: "power1.inOut",
-          stagger: 0.1,
-          delay: index * 0.1,
-        }
-      );
-    });
-  }, []);
+  //   marqueeSpans.forEach((span, index) => {
+  //     gsap.fromTo(
+  //       span,
+  //       {
+  //         "will-change": "opacity, transform",
+  //         opacity: 0,
+  //         x: -50,
+  //       },
+  //       {
+  //         duration: 0.62,
+  //         opacity: 1,
+  //         x: 0,
+  //         ease: "power1.inOut",
+  //         stagger: 0.1,
+  //         delay: index * 0.1,
+  //       }
+  //     );
+  //   });
+  // }, []);
 
-  const paragraphRef = useRef(null);
+  // const paragraphRef = useRef(null);
 
-  useEffect(() => {
-    const splitParent = new SplitText(paragraphRef.current, {
-      type: "lines",
-      linesClass: "lineParent",
-    });
-    const splitChild = new SplitText(paragraphRef.current, {
-      type: "lines",
-      linesClass: "lineChild",
-    });
+  // useEffect(() => {
+  //   const splitParent = new SplitText(paragraphRef.current, {
+  //     type: "lines",
+  //     linesClass: "lineParent",
+  //   });
+  //   const splitChild = new SplitText(paragraphRef.current, {
+  //     type: "lines",
+  //     linesClass: "lineChild",
+  //   });
 
-    const tl = gsap.timeline();
+  //   const tl = gsap.timeline();
 
-    tl.from(".lineChild", {
-      yPercent: 100,
-      autoAlpha: 0,
-      delay: 0.5,
-      duration: 0.65,
-      stagger: 0.25,
-      ease: "back",
-    });
+  //   tl.from(".lineChild", {
+  //     yPercent: 100,
+  //     autoAlpha: 0,
+  //     delay: 0.5,
+  //     duration: 0.65,
+  //     stagger: 0.25,
+  //     ease: "back",
+  //   });
 
-    return () => {
-      splitParent.revert();
-      splitChild.revert();
-    };
-  }, []);
+  //   return () => {
+  //     splitParent.revert();
+  //     splitChild.revert();
+  //   };
+  // }, []);
 
   const [time, setTime] = useState("");
 
@@ -453,93 +469,144 @@ const Hero = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const lines = document.querySelectorAll(".stagger-line");
+
+    lines.forEach((line) => {
+      gsap.fromTo(
+        line.querySelectorAll(".stagger-letter"),
+        {
+          y: "100%",
+          opacity: 0,
+        },
+        {
+          y: "0%",
+          opacity: 1,
+          stagger: 0.05,
+          duration: 1,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: line,
+            start: "top 80%",
+          },
+        }
+      );
+    });
+  }, []);
+
   return (
-    <section className="font-editorial-new bg-[#CDEA67] flex flex-col justify-between p-8 text-black min-h-screen ">
-      <div className="flex flex-row h-full relative">
-        {/* Left Column */}
-        <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start">
-          <div className="flex-grow"></div>
-          <div className="stagger-line overflow-hidden mt-[20vh]">
-            <p className="font-helvetica-neue-light text-xl lg:text-3xl font-light leading-relaxed">
-              <span className="stagger-word">
-                A confident smile begins with effective care tailored to each
-                patient.
-              </span>
-              <br />
-              <span className="stagger-word">
-                At our practice, we’re dedicated to providing treatments that
-                are
-              </span>
-              <br />
-              <span className="stagger-word">
-                not only scientifically sound but also crafted to bring out your
-              </span>
-              <br />
-              <span className="stagger-word">best smile.</span>
+    <div className="flex h-screen w-full">
+      {/* Left Section */}
+      <div className="flex-[3] flex flex-col justify-center p-8 border-r border-black">
+        <div className="w-full">
+          <div className="stagger-line overflow-hidden">
+            <h1 className="text-[10vw] font-extrabold font-neue-montreal leading-none w-full text-left">
+              <span className="stagger-letter">F</span>
+              <span className="stagger-letter">r</span>
+              <span className="stagger-letter">e</span>
+              <span className="stagger-letter">y</span>
+              <span className="stagger-letter">&nbsp;</span>
+              <span className="stagger-letter">S</span>
+              <span className="stagger-letter">m</span>
+              <span className="stagger-letter">i</span>
+              <span className="stagger-letter">l</span>
+              <span className="stagger-letter">e</span>
+              <span className="stagger-letter">s</span>
+            </h1>
+          </div>
+        </div>
+        <div className="mt-8">
+          <video
+            src="../videos/whitewaves.mp4"
+            className="object-cover w-full h-[50vh] rounded-md"
+            autoPlay
+            loop
+            muted
+            playsInline
+          ></video>
+        </div>
+      </div>
+
+      {/* Right Section */}
+      <div className="flex-[1] flex flex-col items-center justify-start  p-4">
+        <div className="mb-6">
+          <div
+            className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "
+            data-speed="1"
+          >
+            <div className="flex flex-col  h-full ">
+              {colors.map((row, rowIndex) => (
+                <div key={rowIndex} className="flex ">
+                  {row.map((color, circleIndex) => (
+                    <div
+                      key={circleIndex}
+                      className={`w-[100px] h-[100px] ${
+                        (rowIndex + circleIndex) % 3 === 0
+                          ? "rounded-[40px]"
+                          : "rounded-full"
+                      } transition-transform duration-300 ease-in-out hover:scale-75`}
+                      style={{ backgroundColor: color }}
+                    ></div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* <img
+        src="../images/ribbedimage.png"
+    
+        className="object-cover rounded-md"
+      /> */}
+        </div>
+        <div className="stagger-line overflow-hidden mt-[6vh]">
+          <p className="font-helvetica-neue-light text-xl lg:text-xl font-light leading-relaxed">
+            <span className="stagger-word">
+              A confident smile begins with effective care tailored to each
+              patient. At our practice, we’re dedicated to providing treatments
+              that are not only scientifically sound but also crafted to bring
+              out your best smile.
+            </span>
+            <br />
+          </p>
+        </div>
+        <div className="font-neue-montreal flex gap-4 mt-6">
+          <p className="font-neue-montreal text-sm uppercase tracking-widest">
+            28, Jan, 2025
+          </p>
+          <div>
+            <p className="font-neue-montreal text-sm tracking-widest">
+              • EST {time}
             </p>
           </div>
-
-          <div className="flex-grow"></div>
-        </div>
-
-        <div
-          className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]"
-          data-speed="1"
-        >
-          <div className="flex flex-col justify-center items-center h-full space-y-0">
-            {colors.map((row, rowIndex) => (
-              <div key={rowIndex} className="flex space-x-0">
-                {row.map((color, circleIndex) => (
-                  <div
-                    key={circleIndex}
-                    className={`w-[125px] h-[125px] ${
-                      (rowIndex + circleIndex) % 3 === 0
-                        ? "rounded-[40px]"
-                        : "rounded-full"
-                    } transition-transform duration-300 ease-in-out hover:scale-75`}
-                    style={{ backgroundColor: color }}
-                  ></div>
-                ))}
-              </div>
-            ))}
-          </div>
+          {/* <button className="px-6 py-2 border border-black text-black font-medium rounded-full">
+            Shop →
+          </button>
+          <button className="px-6 py-2 border border-black text-black font-medium rounded-full">
+            Learn More →
+          </button> */}
         </div>
       </div>
-
-      <div className="flex justify-between items-center mt-8">
-        <div>
-          <p className="font-neue-montreal font-bold text-sm">• EST {time}</p>
-        </div>
-
-        <div className="font-neue-montreal flex flex-col items-end text-right font-light lg:w-1/3 w-full">
-          <h1 className="text-[3em]  mb-4 leading-tight inline-block">
-            We know
-            <br />
-            what works
-          </h1>
-        </div>
-      </div>
-    </section>
+    </div>
   );
 };
 
 const MarqueeSection = () => {
   return (
     <section
-      className="rounded-tl-[40px] rounded-tr-[40px] font-neue-montreal text-white bg-[#20282D] flex"
+      className="bg-black rounded-tl-[40px] rounded-tr-[40px] font-neue-montreal text-white flex"
       style={{
         height: "60vh",
       }}
     >
-      <div
-      >
-  <div className="marquee-container">
-      <div className="marqueed">
-        <span>
-          Frey Smiles ● Frey Smiles ● Frey Smiles ● Frey Smiles ● Frey Smiles ● Frey Smiles ●
-        </span>
+      <div className="line"></div>
+      <div className="marquee-container">
+        <div className="marqueed uppercase">
+          <span>Your smile, our passion ✿</span>
+          <span>Your smile, our passion ✿</span>
+          <span>Your smile, our passion ✿</span>
+        </div>
       </div>
-    </div>      </div>
+      <div className="line"></div>
     </section>
   );
 };
@@ -565,23 +632,23 @@ const Stats = () => {
     },
   };
 
-  const projects = [
-    {
-      title: "Clear Aligners",
-      subtitle: "Invisalign",
-      image: "../images/handgrid.png",
-    },
-    {
-      title: "Braces",
-      subtitle: "Damon Ultima",
-      image: "../images/damonlaptop.png",
-    },
-    {
-      title: "Advanced Technology",
-      subtitle: "3D i-Cat Imaging, Digital Scans",
-      image: "../images/handbackground.png",
-    },
-  ];
+  // const projects = [
+  //   {
+  //     title: "Clear Aligners",
+  //     subtitle: "Invisalign",
+  //     image: "../images/handgrid.png",
+  //   },
+  //   {
+  //     title: "Braces",
+  //     subtitle: "Damon Ultima",
+  //     image: "../images/mainsectionimage.jpg",
+  //   },
+  //   {
+  //     title: "Advanced Technology",
+  //     subtitle: "3D i-Cat Imaging, Digital Scans",
+  //     image: "../images/handbackground.png",
+  //   },
+  // ];
 
   const [hoveredCard, setHoveredCard] = useState(null);
 
@@ -593,128 +660,26 @@ const Stats = () => {
     setHoveredCard(null);
   };
 
-  const wrapperRef = useRef(null);
-  const imgRef = useRef(null);
+  
 
-  useEffect(() => {
-    const wrapper = wrapperRef.current;
-    const img = imgRef.current;
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: wrapper,
-        start: "top 85%",
-        end: "top 15%",
-        scrub: false,
-        markers: false,
-      },
-    });
-
-    tl.set(img, { opacity: 1 })
-      .fromTo(
-        wrapper,
-        { height: "0px" },
-        { height: "660px", duration: 2, ease: "expo.out" }
-      )
-      .fromTo(
-        img,
-        { scale: 1.4, opacity: 1, transformOrigin: "50% 0%" },
-        { scale: 1, opacity: 1, duration: 2.5, ease: "power3.out" },
-        "<0.3"
-      );
-
-    return () => {
-      tl.kill();
-      ScrollTrigger.refresh();
-    };
-  }, []);
-
-  const textContainerRef = useRef(null);
-  const splitTextInstances = useRef([]);
-  useEffect(() => {
-    CustomEase.create("ease_pop", "M0,0 C0,0.24 0.08,1 1,1");
-
-    const lines = textContainerRef.current.querySelectorAll("span.block");
-
-    lines.forEach((line) => {
-      const splitLine = new SplitText(line, { type: "words" });
-      splitTextInstances.current.push(splitLine);
-
-      gsap.fromTo(
-        splitLine.words,
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 2,
-          ease: "power3.inOut",
-          stagger: 0.1,
-          scrollTrigger: {
-            trigger: line,
-            start: "top 85%",
-            end: "top 40%",
-            once: true,
-            markers: false,
-          },
-        }
-      );
-    });
-
-    return () => {
-      splitTextInstances.current.forEach((splitInstance) =>
-        splitInstance.revert()
-      );
-    };
-  }, []);
-
-  const linkRef = useRef(null);
-
-  useEffect(() => {
-    const link = linkRef.current;
-
-    const span1 = link.querySelector("[data-tha-span-1]");
-    const span2 = link.querySelector("[data-tha-span-2]");
-
-    const handleMouseEnter = () => {
-      gsap.to([span1, span2], {
-        yPercent: -100,
-        duration: 0.8,
-        ease: "power4.inOut",
-      });
-    };
-
-    const handleMouseLeave = () => {
-      gsap.to([span1, span2], {
-        yPercent: 0,
-        duration: 0.8,
-        ease: "power4.inOut",
-      });
-    };
-
-    link.addEventListener("mouseenter", handleMouseEnter);
-    link.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      link.removeEventListener("mouseenter", handleMouseEnter);
-      link.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
+ 
 
   return (
-    <section className=" rounded-tl-[40px] rounded-tr-[40px]  bg-[#FBFBFB] flex flex-col justify-between ">
+    <section className=" rounded-tl-[40px] rounded-tr-[40px]  bg-[#F0F0F0] flex flex-col justify-between ">
       <section
         style={{
-          transform: "translateY(-20vh)",
+          transform: "translateY(10vh)",
         }}
       >
         <motion.div
           className="w-layout-blockcontainer textimagecontainer"
           initial="hidden"
+          animate="visible"
           variants={textVariants}
         >
           <div className="text-images-wrapper">
             <div className="text-images">
-              <h2 className="heading-2 text-weight-regular">
+              <h2 className="heading-2">
                 #1 Diamond and{" "}
                 <motion.div
                   className="spanimage one"
@@ -828,156 +793,9 @@ const Stats = () => {
             </div>
           </div>
         </section>
-
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {projects.map((project, index) => {
-              const [isHovered, setIsHovered] = useState(false);
-
-              return (
-                <motion.div
-                  key={index}
-                  className="bg-white relative rounded-lg p-8 flex flex-col justify-between overflow-hidden"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                  style={{ height: "36rem" }}
-                >
-                  <motion.div
-                    className="relative overflow-hidden flex items-center justify-center w-full h-full"
-                    animate={{
-                      clipPath: isHovered
-                        ? "circle(150% at 50% 50%)"
-                        : "circle(25% at 50% 50%)",
-                    }}
-                    transition={{
-                      duration: isHovered ? 1.2 : 0.6,
-                      ease: [0.3, 0.0, 0.2, 1],
-                    }}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      clipPath: "circle(25% at 50% 50%)",
-                    }}
-                  >
-                    <motion.img
-                      src={project.image}
-                      alt={project.title}
-                      className="object-cover w-full h-full"
-                      animate={{
-                        transform: isHovered
-                          ? "translate(0%, 0%) scale(1)"
-                          : "translate(-5%, -5%) scale(1.1)",
-                      }}
-                      transition={{
-                        duration: isHovered ? 1.2 : 0.6,
-                        ease: [0.3, 0.0, 0.2, 1],
-                      }}
-                    />
-                  </motion.div>
-
-                  <div className="text-left mt-auto pt-4 relative z-10 pointer-events-none">
-                    <h3 className="text-[2rem] font-neue-montreal mb-2 text-gray-800">
-                      {project.title}
-                    </h3>
-                    <p className="font-neue-montreal text-gray-600 ">
-                      {project.subtitle}
-                    </p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
       </section>
 
-      <div
-        className=" flex flex-col items-center justify-center bg-[#FBFBFB]"
-        // style={{
-        //   backgroundImage: `url("../images/Sunellipse.svg")`,
-        //   backgroundSize: "60%",
-        //   backgroundRepeat: "no-repeat",
-        // }}
-      >
-        <section className="py-20 px-8 flex flex-col lg:flex-row max-w-7xl mx-auto space-y-12 lg:space-y-0 lg:space-x-8">
-          <div
-            className="flex-1 flex flex-col justify-center items-start space-y-8 relative"
-            ref={textContainerRef}
-          >
-            <h1 className="">
-              <span className="text-[2.5rem] font-helvetica-neue-light block">
-                Your first <span>consultation</span>
-              </span>
-              <span className="text-[2.5rem] font-helvetica-neue-light block">
-                is{" "}
-                <span className="text-[2.5rem] font-autumnchant text-black px-4 py-2 inline-block ">
-                  always
-                </span>{" "}
-                on us
-              </span>
-            </h1>
-            <span className="block text-[1.5rem] font-helvetica-neue-light">
-              Find out which treatment plan suits you best.
-            </span>
-            <div className="flex justify-center border border-black py-6 px-8">
-              <a
-                ref={linkRef}
-                href="/book-now"
-                data-tha
-                style={{
-                  display: "inline-block",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <span
-                  data-tha-span-1
-                  style={{
-                    fontSize: "1.25rem",
-                    fontFamily: "HelveticaNeue-Light",
-                    display: "inline-block",
-                    position: "relative",
-                  }}
-                >
-                  BOOK NOW
-                </span>
-                <span
-                  data-tha-span-2
-                  style={{
-                    fontSize: "1.25rem",
-                    fontFamily: "HelveticaNeue-Light",
-                    display: "inline-block",
-                    position: "absolute",
-                    top: "100%",
-                    left: "0",
-                  }}
-                >
-                  BOOK NOW
-                </span>
-              </a>
-            </div>
-          </div>
-
-          <div className="flex-1 flex items-center justify-center relative">
-            <div ref={wrapperRef} className="w-[360px] h-[660px]  rounded-full">
-              <img
-                ref={imgRef}
-                src="../images/mainsectionimage.jpg"
-                alt="Consultation"
-                className="object-cover w-full h-full rounded-full"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
-            <button className="font-helvetica-neue-light border border-black text-black text-2xl py-6 px-12 rounded-lg">
-              Need more info? <br /> Take our quiz
-            </button>
-          </div>
-        </section>
-      </div>
+  
       {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
         <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">
@@ -1036,24 +854,241 @@ const Stats = () => {
   );
 };
 const NewSection = () => {
+  //  const textContainerRef = useRef(null);
+  // const splitTextInstances = useRef([]);
+  // useEffect(() => {
+  //   CustomEase.create("ease_pop", "M0,0 C0,0.24 0.08,1 1,1");
+
+  //   const lines = textContainerRef.current.querySelectorAll("span.block");
+
+  //   lines.forEach((line) => {
+  //     const splitLine = new SplitText(line, { type: "words" });
+  //     splitTextInstances.current.push(splitLine);
+
+  //     gsap.fromTo(
+  //       splitLine.words,
+  //       { y: 50, opacity: 0 },
+  //       {
+  //         y: 0,
+  //         opacity: 1,
+  //         duration: 2,
+  //         ease: "power3.inOut",
+  //         stagger: 0.1,
+  //         scrollTrigger: {
+  //           trigger: line,
+  //           start: "top 85%",
+  //           end: "top 40%",
+  //           toggleActions: "play none none reset",
+  //           once: true,
+  //           markers: false,
+  //         },
+  //       }
+  //     );
+  //   });
+
+  //   return () => {
+  //     splitTextInstances.current.forEach((splitInstance) =>
+  //       splitInstance.revert()
+  //     );
+  //   };
+  // }, []);
+
+  const linkRef = useRef(null);
+
+  useEffect(() => {
+    const link = linkRef.current;
+
+    const span1 = link.querySelector("[data-tha-span-1]");
+    const span2 = link.querySelector("[data-tha-span-2]");
+
+    const handleMouseEnter = () => {
+      gsap.to([span1, span2], {
+        yPercent: -100,
+        duration: 0.8,
+        ease: "power4.inOut",
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to([span1, span2], {
+        yPercent: 0,
+        duration: 0.8,
+        ease: "power4.inOut",
+      });
+    };
+
+    link.addEventListener("mouseenter", handleMouseEnter);
+    link.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      link.removeEventListener("mouseenter", handleMouseEnter);
+      link.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
   return (
-    <section
-      className="bg-[#004D43] min-h-screen flex items-center justify-center text-white"
-      data-scroll-section
-      data-scroll
-      data-scroll-speed="1.2"
+    <>
+    <section className="flex items-center justify-center min-h-screen bg-black px-8 md:px-16">
+    <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Left Section */}
+      <div className="bg-[#CFF174] text-black p-8 md:p-16 rounded-md flex flex-col justify-center">
+        <h1 className="font-helvetica-neue-light text-5xl md:text-6xl mb-4">
+          A world of opportunity.
+        </h1>
+        <div className="tracking-widest flex justify-center border border-black py-6 px-8">
+              <a
+                ref={linkRef}
+                href="/book-now"
+                data-tha
+                style={{
+                  display: "inline-block",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <span
+                  data-tha-span-1
+                  style={{
+                    fontSize: "1.25rem",
+                    fontFamily: "HelveticaNeue-Light",
+                    display: "inline-block",
+                    position: "relative",
+                  }}
+                >
+                  BOOK NOW
+                </span>
+                <span
+                  data-tha-span-2
+                  style={{
+                    fontSize: "1.25rem",
+                    fontFamily: "HelveticaNeue-Light",
+                    display: "inline-block",
+                    position: "absolute",
+                    top: "100%",
+                    left: "0",
+                  }}
+                >
+                  BOOK NOW
+                </span>
+              </a>
+            </div>
+      
+      </div>
+
+      {/* Right Section */}
+      <div className="bg-black text-white border border-[#CFF174] p-8 md:p-16 rounded-md flex flex-col justify-between">
+      <svg
+      width="100%"
+      height="100%"
+      viewBox="0 0 200 200"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
     >
-      <div className="flex flex-col items-center">
-        <div className="eyes-container flex space-x-4">
-          <div className="eye bg-white rounded-full w-[150px] h-[150px] flex items-center justify-center">
-            <span className="text-black font-bold">PLAY</span>
-          </div>
-          <div className="eye bg-white rounded-full w-[150px] h-[150px] flex items-center justify-center">
-            <span className="text-black font-bold">PLAY</span>
-          </div>
+      <defs>
+        <clipPath id="clip0_224_605">
+          <path d="M50 50.5H50.5V50V49.5C23.2199 49.5 1.04241 27.6526 0.509799 0.5H199.491C198.957 27.6526 176.781 49.5 149.5 49.5V50V50.5H150C177.338 50.5 199.5 72.6619 199.5 100C199.5 125.033 180.918 145.726 156.795 149.038L156.791 150.028C180.949 153.556 199.5 174.363 199.5 199.5H0.5C0.5 174.363 19.0509 153.556 43.2094 150.028L43.2051 149.038C19.0823 145.726 0.5 125.033 0.5 100C0.5 72.6619 22.6619 50.5 50 50.5Z" />
+        </clipPath>
+      </defs>
+
+      {/* use href for image to put inside the clip path */}
+      <image
+        href="../images/nowbook.png"
+        width="200"
+        height="200"
+        clipPath="url(#clip0_224_605)"
+        preserveAspectRatio="xMidYMid slice"
+      />
+
+      {/* shape outline*/}
+      <path
+        d="M50 50.5H50.5V50V49.5C23.2199 49.5 1.04241 27.6526 0.509799 0.5H199.491C198.957 27.6526 176.781 49.5 149.5 49.5V50V50.5H150C177.338 50.5 199.5 72.6619 199.5 100C199.5 125.033 180.918 145.726 156.795 149.038L156.791 150.028C180.949 153.556 199.5 174.363 199.5 199.5H0.5C0.5 174.363 19.0509 153.556 43.2094 150.028L43.2051 149.038C19.0823 145.726 0.5 125.033 0.5 100C0.5 72.6619 22.6619 50.5 50 50.5Z"
+        fill="none"
+        stroke="black"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+
+
+        <div>
+          <p className="mb-4"></p>
+
+          
+            <button
+              type="submit"
+              className="font-neue-montreal rounded-full bg-[#CFF174] text-black font-medium px-6 py-3 hover:bg-lime-500"
+            >
+              Start a conversation
+            </button>
+      
+          {/* <p className="mt-6 text-sm text-gray-500">
+            © 2025 TVP, L.L.C.
+            <br />
+            <a
+              href="#privacy-policy"
+              className="underline hover:no-underline"
+            >
+              Privacy Policy
+            </a>{" "}
+            |{" "}
+            <a href="#terms" className="underline hover:no-underline">
+              Terms & Services
+            </a>
+          </p> */}
         </div>
       </div>
-    </section>
+    </div>
+  </section>
+     {/* <section
+      className="bg-[#C4CED2] min-h-screen flex items-center justify-center text-white"
+    >
+          <div className=" flex flex-col items-center justify-center ">
+        <section className="py-20 px-8 flex flex-col lg:flex-row max-w-7xl mx-auto space-y-12 lg:space-y-0 lg:space-x-8">
+          <div
+            className="flex-1 flex flex-col justify-center items-start space-y-8 relative"
+            ref={textContainerRef}
+          >
+            <h1 className="">
+              <span className="text-[2.5rem] font-helvetica-neue-light block">
+                Your first <span>consultation</span>
+              </span>
+              <span className="text-[2.5rem] font-helvetica-neue-light block">
+                is{" "}
+                <span className="text-[2.5rem] font-autumnchant text-black px-4 py-2 inline-block ">
+                  always
+                </span>{" "}
+                on us
+              </span>
+            </h1>
+            <span className="block text-[1.5rem] font-helvetica-neue-light">
+              Find out which treatment plan suits you best.
+            </span>
+            
+         
+          </div>
+
+          <div className="flex-1 flex items-center justify-center relative">
+            <div
+               ref={wrapperRef}
+              className="w-[360px] h-[660px]  rounded-full"
+            >
+              <img
+                ref={imgRef}
+                src="../images/mainsectionimage.jpg"
+                alt="Consultation"
+                className="object-cover w-full h-full rounded-full"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
+            <button className="font-helvetica-neue-light border border-black text-black text-2xl py-6 px-12 rounded-lg">
+              Need more info? <br /> Take our quiz
+            </button>
+          </div>
+        </section>
+      </div>
+   
+    </section> */}
+  </> 
   );
 };
 
@@ -1517,162 +1552,272 @@ function GSAPAnimateScrollSections() {
 }
 
 const ImageGrid = () => {
-  const bodyRef = useRef(null);
-  const headerRef = useRef(null);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
+  // const bodyRef = useRef(null);
+  // const headerRef = useRef(null);
+  // const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  // const [isHovering, setIsHovering] = useState(false);
 
-  useEffect(() => {
-    const moveCursor = (e) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
-    };
+  // useEffect(() => {
+  //   const moveCursor = (e) => {
+  //     setCursorPos({ x: e.clientX, y: e.clientY });
+  //   };
 
-    if (isHovering) {
-      window.addEventListener("mousemove", moveCursor);
-    }
+  //   if (isHovering) {
+  //     window.addEventListener("mousemove", moveCursor);
+  //   }
 
-    return () => {
-      window.removeEventListener("mousemove", moveCursor);
-    };
-  }, [isHovering]);
+  //   return () => {
+  //     window.removeEventListener("mousemove", moveCursor);
+  //   };
+  // }, [isHovering]);
 
-  useEffect(() => {
-    if (headerRef.current) {
-      const tl = gsap.timeline();
-      gsap.set(bodyRef.current, { autoAlpha: 1 });
+  // useEffect(() => {
+  //   if (headerRef.current) {
+  //     const tl = gsap.timeline();
+  //     gsap.set(bodyRef.current, { autoAlpha: 1 });
 
-      const pageHeading = headerRef.current.querySelector("h1");
-      const pageBody = headerRef.current.querySelector("p");
-      const separator = headerRef.current.querySelector("hr");
-      const imageCards = gsap.utils.toArray(".image-card");
+  //     const pageHeading = headerRef.current.querySelector("h1");
+  //     const pageBody = headerRef.current.querySelector("p");
+  //     const separator = headerRef.current.querySelector("hr");
+  //     const imageCards = gsap.utils.toArray(".image-card");
 
-      gsap.set(imageCards, { autoAlpha: 0 });
+  //     gsap.set(imageCards, { autoAlpha: 0 });
 
-      const childLines = new SplitText(pageHeading, {
-        type: "lines",
-        linesClass: "heading-line",
-      });
-      const parentLines = new SplitText(pageHeading, {
-        type: "lines",
-        linesClass: "heading-line-wrapper",
-      });
+  //     const childLines = new SplitText(pageHeading, {
+  //       type: "lines",
+  //       linesClass: "heading-line",
+  //     });
+  //     const parentLines = new SplitText(pageHeading, {
+  //       type: "lines",
+  //       linesClass: "heading-line-wrapper",
+  //     });
 
-      tl.from(childLines.lines, {
-        duration: 1,
-        y: 200,
-        stagger: 0.25,
-        delay: 1,
-        ease: "power4.out",
-      })
-        .from(
-          pageBody,
-          {
-            duration: 0.5,
-            opacity: 0,
-            x: -20,
-          },
-          "-=0.5"
-        )
-        .from(
-          separator,
-          {
-            duration: 2,
-            scale: 0,
-            ease: "expo.inOut",
-          },
-          "-=1.1"
-        )
-        .to(
-          imageCards,
-          {
-            duration: 0.75,
-            autoAlpha: 1,
-            y: -50,
-            stagger: 0.5,
-            ease: "power4.out",
-          },
-          "-=0.75"
-        );
+  //     tl.from(childLines.lines, {
+  //       duration: 1,
+  //       y: 200,
+  //       stagger: 0.25,
+  //       delay: 1,
+  //       ease: "power4.out",
+  //     })
+  //       .from(
+  //         pageBody,
+  //         {
+  //           duration: 0.5,
+  //           opacity: 0,
+  //           x: -20,
+  //         },
+  //         "-=0.5"
+  //       )
+  //       .from(
+  //         separator,
+  //         {
+  //           duration: 2,
+  //           scale: 0,
+  //           ease: "expo.inOut",
+  //         },
+  //         "-=1.1"
+  //       )
+  //       .to(
+  //         imageCards,
+  //         {
+  //           duration: 0.75,
+  //           autoAlpha: 1,
+  //           y: -50,
+  //           stagger: 0.5,
+  //           ease: "power4.out",
+  //         },
+  //         "-=0.75"
+  //       );
 
       // const scroll = new LocomotiveScroll({
       //   el: bodyRef.current,
       //   smooth: true,
       // });
 
-      setTimeout(() => {
-        scroll.update();
-      }, 1000);
-    }
-  }, []);
+  //     setTimeout(() => {
+  //       scroll.update();
+  //     }, 1000);
+  //   }
+  // }, []);
 
-  const images = [
-    {
-      title: "Top 1% of providers",
-      src: "../images/invis.png",
-      className: "image-portrait",
+  // const images = [
+  //   {
+  //     title: "Top 1% of providers",
+  //     src: "../images/invis.png",
+  //     className: "image-portrait",
 
-      url: "/invisalign",
-    },
-    {
-      title: "Faster treatment times with fewer appointments",
-      src: "../images/damon1.png",
-      className: "image-landscape",
+  //     url: "/invisalign",
+  //   },
+  //   {
+  //     title: "Faster treatment times with fewer appointments",
+  //     src: "../images/damon1.png",
+  //     className: "image-landscape",
 
-      url: "/braces",
-    },
-    {
-      title: "Pioneering the most comfortable appliances since 2005",
-      src: "../images/mountain.png",
-      className: "image-landscape",
+  //     url: "/braces",
+  //   },
+  //   {
+  //     title: "Pioneering the most comfortable appliances since 2005",
+  //     src: "../images/mountain.png",
+  //     className: "image-landscape",
 
-      url: "/why-choose-us",
-    },
-  ];
+  //     url: "/why-choose-us",
+  //   },
+  // ];
+
+  // const sections = [
+  //   {
+  //     id: 1,
+  //     image: "https://picsum.photos/600/400?random=1",
+  //     title: "Small Section",
+  //     description: "This is a smaller section",
+  //     bgColor: "bg-orange-600",
+  //     colSpan: 1,
+  //     rowSpan: 1, // Small section in the first column
+  //   },
+  //   {
+  //     id: 2,
+  //     image: "https://picsum.photos/600/400?random=2",
+  //     title: "Large Section",
+  //     description: "Expressing creativity by breaking the mold",
+  //     bgColor: "bg-gray-200",
+  //     colSpan: 1,
+  //     rowSpan: 2, // Large section in the first column
+  //   },
+  //   {
+  //     id: 3,
+  //     image: "https://picsum.photos/600/400?random=3",
+  //     title: "Section 3",
+  //     description: "A brief description for section 3",
+  //     bgColor: "bg-white",
+  //     colSpan: 1,
+  //     rowSpan: 1, // First section in the second column
+  //   },
+  //   {
+  //     id: 4,
+  //     image: "https://picsum.photos/600/400?random=4",
+  //     title: "Section 4",
+  //     description: "Another brief description",
+  //     bgColor: "bg-blue-600",
+  //     colSpan: 1,
+  //     rowSpan: 1, // Second section in the second column
+  //   },
+  // ];
+  
+
 
   return (
-    <section className="bg-[#FBFBFB]">
-      <div>
-        <div
-          className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
-          ref={bodyRef}
-        >
-          <div
-            className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
-            style={{
-              left: `${cursorPos.x}px`,
-              top: `${cursorPos.y}px`,
-              opacity: isHovering ? 1 : 0,
-            }}
-          >
-            <p>CHECK </p>
-            <p>IT OUT</p>
-          </div>
-          <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
-            {images.map((image, index) => (
-              <a
-                key={index}
-                href={image.url}
-                className={`group image-card relative flex items-center justify-center mb-20 ${
-                  image.className === "image-portrait"
-                    ? "mx-4 w-[27vw] h-[37vw]"
-                    : "mx-4 w-[40vw] h-[27vw]"
-                }`}
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              >
-                <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
-                  {image.title}
-                </div>
-                <img
-                  src={image.src}
-                  className="block object-cover w-full h-full"
-                />
-              </a>
-            ))}
-          </div>
-        </div>
+<div className="grid grid-cols-2 h-screen gap-4 p-4">
+  {/* Column 1 (Nested Grid) */}
+  <div className="grid grid-cols-2 gap-4">
+    {/* First Sub-Column */}
+    <div className="relative group overflow-hidden rounded-[60px] bg-[#5A8EFF]">
+      {/* Image */}
+      <img
+        src="../images/hand.jpeg"
+        alt="Left Sub-Column Image"
+        className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-20"
+      />
+      {/* Overlay (Text Reveal) */}
+      <div className="absolute inset-0  text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <h2 className="text-2xl font-neue-montreal">Clear Aligners</h2>
+        <p className="font-neue-montreal text-lg">Invisalign</p>
       </div>
-    </section>
+    </div>
+
+    {/* Second Sub-Column */}
+    <div className="relative group overflow-hidden rounded-[60px] bg-[#FFE0DB]">
+      {/* Image */}
+      <img
+        src="../images/mainsectionimage.jpg"
+        alt="Right Sub-Column Image"
+        className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10"
+      />
+      {/* Overlay (Text Reveal) */}
+      <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <h2 className="text-2xl font-neue-montreal">Braces</h2>
+        <p className="font-neue-montreal text-lg">Damon Ultima</p>
+      </div>
+    </div>
+    
+    {/* <div className="col-span-2 h-1/3 bg-[#FFCC00] rounded-[60px] flex items-center justify-center">
+    <p className="text-black text-lg font-neue-montreal">Awards and Recognition</p>
+  </div> */}
+  </div>
+
+  {/* Column 2 */}
+  <div className="flex flex-col gap-4">
+    {/* Top Section */}
+    <div className="h-1/3 bg-gray-200 rounded-[60px] relative flex items-center justify-center">
+      <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
+      <span className="text-6xl font-cursive italic text-gray-700 block mt-2 font-autumnchant">
+        best
+      </span>
+    </div>
+    {/* Large Image */}
+    <div className="flex-grow relative group overflow-hidden rounded-[60px] bg-[#F2BD4A]">
+      {/* Image */}
+      <img
+        src="../images/handbackground.png"
+        alt="Bottom Image Column 2"
+        className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10"
+      />
+      {/* Overlay (Text Reveal) */}
+      <div className="absolute inset-0  text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <h2 className="text-2xl font-neue-montreal">Advanced Technology</h2>
+        <p className="font-neue-montreal text-lg">3D i-Cat Imaging, Digital Scans</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+    // <section className="bg-[#FBFBFB]">
+    //   <div>
+    //     <div
+    //       className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
+    //       ref={bodyRef}
+    //     >
+    //       <div
+    //         className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
+    //         style={{
+    //           left: `${cursorPos.x}px`,
+    //           top: `${cursorPos.y}px`,
+    //           opacity: isHovering ? 1 : 0,
+    //         }}
+    //       >
+    //         <p>CHECK </p>
+    //         <p>IT OUT</p>
+    //       </div>
+    //       <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
+    //         {images.map((image, index) => (
+    //           <a
+    //             key={index}
+    //             href={image.url}
+    //             className={`group image-card relative flex items-center justify-center mb-20 ${
+    //               image.className === "image-portrait"
+    //                 ? "mx-4 w-[27vw] h-[37vw]"
+    //                 : "mx-4 w-[40vw] h-[27vw]"
+    //             }`}
+    //             onMouseEnter={() => setIsHovering(true)}
+    //             onMouseLeave={() => setIsHovering(false)}
+    //           >
+    //             <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+    //               {image.title}
+    //             </div>
+    //             <img
+    //               src={image.src}
+    //               className="block object-cover w-full h-full"
+    //             />
+    //           </a>
+    //         ))}
+    //       </div>
+    //     </div>
+    //   </div>
+    // </section>
   );
 };
 
@@ -1915,7 +2060,7 @@ const LogoGrid = () => {
   }, []);
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="bg-[#F1F7FF] relative h-screen overflow-hidden">
       {/* <div className="grid grid-cols-2 gap-4">
         {logos.map((columnLogos, columnIndex) => (
           <div key={columnIndex} className="flex flex-col items-center">
@@ -2028,10 +2173,158 @@ function Testimonials() {
     items[0].description
   );
 
+  const menuRefs = useRef([]);
+
+  useEffect(() => {
+    menuRefs.current.forEach((menuLink) => {
+      if (!menuLink) return;
+
+      const text1 = menuLink.querySelector("[hoverstagger='text']:first-child");
+      const text2 = menuLink.querySelector("[hoverstagger='text']:last-child");
+
+      if (!text1 || !text2) return;
+
+      const wrapCharacters = (element) => {
+        const words = element.innerText.split(" ");
+        element.innerHTML = words
+          .map(
+            (word) =>
+              `<span class="word">${word
+                .split("")
+                .map((char, i) => `<span class="char ${i % 2 === 0 ? "odd" : "even"}">${char}</span>`)
+                .join("")}</span>`
+          )
+          .join('<span class="space"> </span>'); 
+      };
+      
+
+      wrapCharacters(text1);
+      wrapCharacters(text2);
+
+      gsap.set(text1.querySelectorAll(".char"), { visibility: "visible" });
+      gsap.set(text2.querySelectorAll(".char"), { visibility: "visible" });
+
+      gsap.set(text1.querySelectorAll(".odd"), { yPercent: 100 });
+      gsap.set(text2.querySelectorAll(".odd"), { yPercent: 0 });
+      gsap.set(text1.querySelectorAll(".even"), { yPercent: 0 });
+      gsap.set(text2.querySelectorAll(".even"), { yPercent: -100 });
+
+      gsap.to(text1.querySelectorAll(".odd"), {
+        yPercent: 0,
+        duration: 0.6,
+        ease: "power2.out",
+      });
+      gsap.to(
+        text2.querySelectorAll(".odd"),
+        { yPercent: -100, duration: 0.6, ease: "power2.out" },
+        0
+      );
+      gsap.to(
+        text1.querySelectorAll(".even"),
+        { yPercent: 100, duration: 0.6, ease: "power2.out" },
+        0
+      );
+      gsap.to(
+        text2.querySelectorAll(".even"),
+        { yPercent: 0, duration: 0.6, ease: "power2.out" },
+        0
+      );
+
+      const tl = gsap.timeline({
+        paused: true,
+        defaults: { duration: 0.5, ease: "power2.out" },
+      });
+
+      tl.to(text1.querySelectorAll(".odd"), { yPercent: 0 });
+      tl.to(text2.querySelectorAll(".odd"), { yPercent: -100 }, 0);
+      tl.to(text1.querySelectorAll(".even"), { yPercent: 100 }, 0);
+      tl.to(text2.querySelectorAll(".even"), { yPercent: 0 }, 0);
+
+      menuLink.addEventListener("mouseenter", () => {
+        gsap.set(text1.querySelectorAll(".odd"), { yPercent: 100 });
+        gsap.set(text2.querySelectorAll(".odd"), { yPercent: 0 });
+        gsap.set(text1.querySelectorAll(".even"), { yPercent: 0 });
+        gsap.set(text2.querySelectorAll(".even"), { yPercent: -100 });
+
+        tl.restart();
+      });
+    });
+  }, []);
+
+
+
   return (
     <div className="w-full h-screen flex">
-      <div className="w-1/3">
-        <h1
+      <div className="bg-[#E8E2DA] w-1/3 flex flex-col justify-start  menu_link-wrap">
+      <img className=" w-1/2 h-auto mx-auto" src="../images/freysmilesbg.png" />
+        {[
+    { name: "Lisa Moyer", title: "2023" },
+    { name: "Karen Oneill", title: "2022" },
+    { name: "Tanya Burnhauser", title: "2021" },
+  ].map((item, index) => (
+          <a
+            key={index}
+            hoverstagger="link"
+            href="#"
+            className="menu_link w-inline-block"
+            ref={(el) => (menuRefs.current[index] = el)}
+          >
+            <div className="items-center menu_padding mb-10 ">
+              <div className=" border-t border-black flex justify-between pt-4">
+              <div className="menu_text-wrap">
+                <div hoverstagger="text" className="menu_link-text">
+                  {item.name}
+                </div>
+                <div hoverstagger="text" className="menu_link-text is-2">
+                  {item.name}
+                </div>
+              </div>
+              <div
+            hoverstagger="text"
+            className="menu_title"
+          >
+            [ {item.title} ]
+          </div>
+          </div>
+            </div>
+          </a>
+        ))}
+      </div>
+      <div className="bg-[#ECE4FF] w-2/3 flex flex-col h-screen">
+
+  <div className="h-1/3 flex items-center justify-center">
+  <div class="left-mid-block">
+          <div  class="movin-text-holder">
+            <h1 class="moving-text">Testimonials </h1>
+            <h1 class="moving-text">Testimonials</h1>
+            <h1 class="moving-text">Testimonials </h1>
+            <h1 class="moving-text">Testimonials </h1>
+            <h1 class="moving-text">Testimonials</h1>
+            <h1 class="moving-text">Testimonials </h1>
+          </div>
+        </div>
+  </div>
+
+
+  <div className="h-2/3 flex items-center justify-center border-t border-black">
+    <div
+      style={{
+        fontFamily: "NeueMontrealBook",
+        fontSize: "20px",
+        color: "#333",
+        padding: "20px",
+        maxWidth: "700px",
+      }}
+      className="flex flex-col"
+    >
+      <div className="text-center">{selectedDescription}</div>
+    </div>
+  </div>
+</div>
+
+      {/* <div  className="bg-[#FF6400] w-2/5">
+        
+        <h1 ref={headingRef}
           style={{
             fontSize: "3rem",
             lineHeight: "100%",
@@ -2106,7 +2399,7 @@ function Testimonials() {
           ))}
         </div>
       </div>
-      <div className="w-2/3 flex items-center justify-center">
+      <div className="bg-[#FF6400] w-3/5 flex items-center justify-center">
         <div
           style={{
             fontFamily: "NeueMontrealBook",
@@ -2119,7 +2412,7 @@ function Testimonials() {
         >
           <div className="text-center">{selectedDescription}</div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -2356,7 +2649,7 @@ function Locations() {
             className="h-[30px] relative -top-[15px] z-10 hover:h-[60px] hover:-top-[30px]"
           />
           <svg className="w-full h-[60px] -top-[30px] absolute">
-            <path ref={path} strokeWidth={1} stroke="#147b5d" fill="none" />
+            <path ref={path} strokeWidth={1} stroke="#FFF" fill="none" />
           </svg>
         </div>
       </>
@@ -2441,12 +2734,12 @@ function Locations() {
 
   return (
     <>
-      <section id="locations-section" className="relative bg-[#FF9831]">
+      <section id="locations-section" className="relative bg-[#0500F7]">
         <div
           id="locations-heading"
           className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32"
         >
-          <h1 className="font-helvetica-neue-light lg:text-6xl text-[#032D42]">
+          <h1 className="font-helvetica-neue-light lg:text-5xl text-[#FFF]">
             Come see us at any of our{" "}
             <span className="relative inline-block my-8 leading-tight lowercase font-editorial-new underline-offset-8">
               four convenient locations
@@ -2454,7 +2747,7 @@ function Locations() {
               <DrawEllipse className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" />
             </span>{" "}
             or opt for a{" "}
-            <span className=" relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#147b5d] underline inline-block">
+            <span className=" relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#FFF] underline inline-block">
               virtual consultation
             </span>
           </h1>
@@ -2519,8 +2812,8 @@ function Locations() {
               >
                 <button
                   className={`${
-                    selectedLocation === "All" ? "text-[#147b5d]" : ""
-                  } self-end transition-all duration-300 ease-linear w-max mr-6 mb-6 underline-offset-4 hover:text-[#147b5d]`}
+                    selectedLocation === "All" ? "text-[#FFF]" : ""
+                  } self-end transition-all duration-300 ease-linear w-max mr-6 mb-6 underline-offset-4 hover:text-[#FFF]`}
                   onClick={handleShowAllLocations}
                 >
                   {selectedLocation === "All"
@@ -2552,18 +2845,18 @@ function Locations() {
                               }}
                             >
                               <dt className="col-span-5 row-start-1">
-                                <h6 className="text-xl font-neue-montreal text-[#171616]">
+                                <h6 className="text-xl font-neue-montreal text-[#FFF]">
                                   {l.location}
                                 </h6>
                               </dt>
                               <dd className="col-span-7 row-start-1">
                                 <span className="flex items-center justify-between">
-                                  <p className="font-neue-montreal text-[#171616]">
+                                  <p className="font-neue-montreal text-[#FFF]">
                                     {l.addressLine1}
                                     <br />
                                     {l.addressLine2}
                                   </p>
-                                  <ChevronRightIcon className="w-6 h-6 ui-open:rotate-90 ui-open:transform text-[#ff6432]" />
+                                  <ChevronRightIcon className="w-6 h-6 ui-open:rotate-90 ui-open:transform text-[#FFF]" />
                                 </span>
                               </dd>
                             </Disclosure.Button>
@@ -2580,7 +2873,7 @@ function Locations() {
                                 as="div"
                                 className="grid grid-cols-12"
                               >
-                                <ul className="col-span-7 col-start-6 text-left text-[#147b5d] mt-4 mb-2">
+                                <ul className="col-span-7 col-start-6 text-left text-[#FFF] mt-4 mb-2">
                                   <h6 className="font-medium uppercase">
                                     Office Hours:
                                   </h6>

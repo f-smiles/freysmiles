@@ -1086,7 +1086,7 @@ function GridLayout() {
   return (
     <section>
       <div className="grid grid-cols-8 h-[60dvh]">
-        <div className="relative col-span-4 lg:col-span-5 h-full place-content-center place-items-center bg-[#6a7265] text-center flex gap-2 p-8">
+        <div className="relative col-span-4 lg:col-span-5 h-full place-content-center place-items-center bg-[#20282D] text-center flex gap-2 p-8">
           <h2 className="text-2xl break-words lg:text-4xl xl:text-6xl font-editorial-new text-[#1d1f1b]">
             <span
               className="text-4xl lg:text-6xl xl:text-8xl font-nautica"
