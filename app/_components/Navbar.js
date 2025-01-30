@@ -208,7 +208,7 @@ export default function Navbar({ user }) {
 
   return (
     <header className="overflow-hidden">
-      <div className="h2-page-wrapper">
+      {/* <div className="h2-page-wrapper">
 
         <nav className="h2-navbar">
           <div className="h2-navbar-container">
@@ -359,7 +359,7 @@ export default function Navbar({ user }) {
             </div>
           </div>
         </section>
-      </div>
+      </div> */}
       {/* DESKTOP NAVBAR */}
 
       {/* MOBILE NAVBAR */}

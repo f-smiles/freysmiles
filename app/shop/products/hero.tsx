@@ -112,7 +112,7 @@ const Hero: React.FC = () => {
                 loading="lazy"
                 
               />
-              <p className="font-neue-montreal shop-marquee-text">Click Here to Shop Gift Cards</p>
+              <p className="font-neue-montreal shop-marquee-text">Click Here to Shop Gift Cards </p>
             </React.Fragment>
           ))}
         </div>

@@ -5,6 +5,7 @@ import "tw-elements";
 const LeftColumn = () => {
   return (
     <div className="flex justify-center items-center px-4">
+      
       <div className="w-full lg:text-left">
         <div className="w-full flex justify-between items-center">
           <h1 className="font-helvetica-neue-light text-[7rem] mb-6">
