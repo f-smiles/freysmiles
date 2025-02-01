@@ -4244,7 +4244,7 @@ h2.heading-2 {
   line-height: 1;
   margin-top: 0;
   margin-bottom: 0;
-  font-family: "HelveticaNeue-Light";
+  font-family: "NeueMontrealBook";
 }
 
 .text-weight-regular {
@@ -5275,11 +5275,14 @@ a {
   }
 }
 .stagger-line {
-  position: relative;
+  position: relative; 
+
 }
 
 .stagger-letter {
   display: inline-block;
+  
+
 }
 
 .menu_link-wrap {
@@ -5351,11 +5354,12 @@ font-family: "NeueMontrealBook";
 
 .moving-text {
   text-transform: uppercase;
-  font-size: 260px;
-  font-weight: 700;
+  font-size: 220px;
+  /* font-weight: 700; */
   line-height: 120%;
   margin: 0;
   flex-shrink: 0;
+  font-family: "HorizonOutline";
 }
 
 
@@ -5367,5 +5371,4 @@ font-family: "NeueMontrealBook";
     transform: translateX(-100%);
   }
 }
-
 
