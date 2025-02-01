@@ -27,13 +27,13 @@ export default function Variants({ variants }: ProductVariantsProps) {
       {groupedVariants.map((group, index) => (
         <div key={index} className="space-y-4">
           <h2 className="text-xl text-zinc-900">{group.label}</h2>
-          <div className="border border-gray-800">
+          <div className="">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {group.variants.map((variant, variantIndex) => (
                 <div
                   key={variant.id}
                   className={`group text-sm p-4 flex flex-col justify-between ${
-                    variantIndex !== group.variants.length - 1 ? 'border-r border-gray-800' : ''
+                    variantIndex !== group.variants.length - 1 ? '' : ''
                   }`}
                 >
                   <Link

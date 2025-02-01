@@ -1,18 +1,14 @@
 "use client";
-import P5 from "react-p5";
 import { Curtains, Plane } from "curtainsjs";
-import LocomotiveScroll from "locomotive-scroll";
 import "locomotive-scroll/dist/locomotive-scroll.css";
-
+import { Vector2, Vector4 } from "three";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
 import { Navigation } from "swiper/modules";
 import Link from "next/link";
 import Matter from "matter-js";
-import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { GUI } from "dat.gui";
-import { OrbitControls, Scroll, shaderMaterial } from "@react-three/drei";
 import React, {
   forwardRef,
   useRef,
@@ -34,6 +30,9 @@ import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
 import { SplitText } from "gsap-trial/SplitText";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
+import * as OGL from "ogl";
+
+
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
@@ -72,34 +71,29 @@ export default function LandingComponent() {
     };
   }, []);
 
-  
   return (
     <>
       <div>
         <section
-        className="relative"
-        style={{
-          height: "100vh",
-        }}
-        data-item
+        // className="relative"
+        // style={{
+        //   height: "100vh",
+        // }}
+        // data-item
         >
           <Hero />
         </section>
         <section
-        className="relative"
-        style={{
-          height: "60vh",
-        }}
-        data-item
+        // className="relative"
+        // style={{
+        //   height: "60vh",
+        // }}
+        // data-item
         >
-          <MarqueeSection />
+          {/* <MarqueeSection /> */}
         </section>
         <section
-        className="relative"
-        style={{
-
-        }}
-        data-item
+        // className="relative" style={{}} data-item
         >
           <Stats />
         </section>
@@ -109,7 +103,7 @@ export default function LandingComponent() {
         <section>
           <NewSection />
         </section>
-     
+
         <section
         // className="relative"
         // style={{
@@ -127,6 +121,8 @@ export default function LandingComponent() {
     </>
   );
 }
+
+
 
 const Hero = () => {
   // const containerRef = useRef(null);
@@ -437,10 +433,14 @@ const Hero = () => {
   }, []);
 
   const colors = [
-    ["#FAFF7E", "#E3EB91", "#D8E19A", "#EFF588"],
-    ["#075043", "#2F2F2F", "#4732D5", "#FF5A5A"],
-    ["#C084FC", "#0F0E45", "#F9DDDF", "#0F0E45"],
-    ["#3D0075", "#0F0E45", "#808080", "#2F2F2F"],
+    ["#8ACBBA", "#E64627", "#AE74DC", "#2A286F"],
+    ["#2A286F", "#F9931F", "#FD5CD0", "#F9E132"],
+    ["#241F21", "#8ACBBA", "#E51932", "#006980"],
+    ["#FD5CD0", "#F9931F", "#2A286F", "#E51932"],
+    // ["#9BFFE3", "#C6FEF1", "#DAFFEF", "#F1FFEB"],
+    // ["#8BE5C9", "#B4E5D8", "#C5E5D6", "#D9E4D7"],
+    // ["#7FCCB7", "#A1CCBF", "#B1CCBE", "#C2CDC0"],
+    // ["#6DB29D", "#86AFA4", "#99B4A8", "#A7B2A7"],
   ];
 
   useEffect(() => {
@@ -480,7 +480,7 @@ const Hero = () => {
           opacity: 0,
         },
         {
-          y: "0%",
+          y: "-10%",
           opacity: 1,
           stagger: 0.05,
           duration: 1,
@@ -494,13 +494,192 @@ const Hero = () => {
     });
   }, []);
 
+
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const imgSize = [1250, 833];
+
+    const vertex = `
+      attribute vec2 uv;
+      attribute vec2 position;
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = vec4(position, 0, 1);
+      }
+    `;
+
+    const fragment = `
+      precision highp float;
+      uniform sampler2D tWater;
+      uniform sampler2D tFlow;
+      uniform float uTime;
+      varying vec2 vUv;
+      uniform vec4 res;
+      void main() {
+        vec3 flow = texture2D(tFlow, vUv).rgb;
+        vec2 uv = .5 * gl_FragCoord.xy / res.xy ;
+        vec2 myUV = (uv - vec2(0.5)) * res.zw + vec2(0.5);
+        myUV -= flow.xy * (0.15 * 0.7);
+        vec3 tex = texture2D(tWater, myUV).rgb;
+        gl_FragColor = vec4(tex, 1.0);
+      }
+    `;
+
+    const renderer = new OGL.Renderer({ dpr: 2 });
+    const gl = renderer.gl;
+    containerRef.current.appendChild(gl.canvas);
+
+    let aspect = 1;
+    const mouse = new OGL.Vec2(-1);
+    const velocity = new OGL.Vec2();
+
+    function resize() {
+      let a1, a2;
+      var imageAspect = imgSize[1] / imgSize[0];
+      if (window.innerHeight / window.innerWidth < imageAspect) {
+        a1 = 1;
+        a2 = window.innerHeight / window.innerWidth / imageAspect;
+      } else {
+        a1 = (window.innerWidth / window.innerHeight) * imageAspect;
+        a2 = 1;
+      }
+      mesh.program.uniforms.res.value = new OGL.Vec4(
+        window.innerWidth,
+        window.innerHeight,
+        a1,
+        a2
+      );
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      aspect = window.innerWidth / window.innerHeight;
+    }
+
+    const flowmap = new OGL.Flowmap(gl);
+
+    const geometry = new OGL.Geometry(gl, {
+      position: {
+        size: 2,
+        data: new Float32Array([-1, -1, 3, -1, -1, 3]),
+      },
+      uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
+    });
+
+    const texture = new OGL.Texture(gl, {
+      minFilter: gl.LINEAR,
+      magFilter: gl.LINEAR,
+    });
+
+    const img = new Image();
+    img.onload = () => (texture.image = img);
+    img.crossOrigin = "Anonymous";
+    img.src =
+      "../images/bubble.jpg";
+
+    let a1, a2;
+    var imageAspect = imgSize[1] / imgSize[0];
+    if (window.innerHeight / window.innerWidth < imageAspect) {
+      a1 = 1;
+      a2 = window.innerHeight / window.innerWidth / imageAspect;
+    } else {
+      a1 = (window.innerWidth / window.innerHeight) * imageAspect;
+      a2 = 1;
+    }
+
+    const program = new OGL.Program(gl, {
+      vertex,
+      fragment,
+      uniforms: {
+        uTime: { value: 0 },
+        tWater: { value: texture },
+        res: {
+          value: new OGL.Vec4(window.innerWidth, window.innerHeight, a1, a2),
+        },
+        tFlow: flowmap.uniform,
+      },
+    });
+
+    const mesh = new OGL.Mesh(gl, { geometry, program });
+
+    window.addEventListener("resize", resize, false);
+    resize();
+
+    const isTouchCapable = "ontouchstart" in window;
+    if (isTouchCapable) {
+      window.addEventListener("touchstart", updateMouse, true);
+      window.addEventListener("touchmove", updateMouse, { passive: true });
+    } else {
+      window.addEventListener("mousemove", updateMouse, true);
+    }
+
+    let lastTime;
+    const lastMouse = new OGL.Vec2();
+
+    function updateMouse(e) {
+      e.preventDefault();
+      if (e.changedTouches && e.changedTouches.length) {
+        e.x = e.changedTouches[0].pageX;
+        e.y = e.changedTouches[0].pageY;
+      }
+      if (e.x === undefined) {
+        e.x = e.pageX;
+        e.y = e.pageY;
+      }
+      mouse.set(e.x / gl.renderer.width, 1.0 - e.y / gl.renderer.height);
+
+      if (!lastTime) {
+        lastTime = performance.now();
+        lastMouse.set(e.x, e.y);
+      }
+
+      const deltaX = e.x - lastMouse.x;
+      const deltaY = e.y - lastMouse.y;
+      lastMouse.set(e.x, e.y);
+
+      let time = performance.now();
+      let delta = Math.max(10.4, time - lastTime);
+      lastTime = time;
+      velocity.x = deltaX / delta;
+      velocity.y = deltaY / delta;
+      velocity.needsUpdate = true;
+    }
+
+    function update(t) {
+      requestAnimationFrame(update);
+      if (!velocity.needsUpdate) {
+        mouse.set(-1);
+        velocity.set(0);
+      }
+      velocity.needsUpdate = false;
+      flowmap.aspect = aspect;
+      flowmap.mouse.copy(mouse);
+      flowmap.velocity.lerp(velocity, velocity.len ? 0.15 : 0.1);
+      flowmap.update();
+      program.uniforms.uTime.value = t * 0.01;
+      renderer.render({ scene: mesh });
+    }
+
+    requestAnimationFrame(update);
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", updateMouse);
+      window.removeEventListener("touchstart", updateMouse);
+      window.removeEventListener("touchmove", updateMouse);
+      containerRef.current.removeChild(gl.canvas);
+    };
+  }, []);
+
   return (
     <div className="flex h-screen w-full">
+
       {/* Left Section */}
       <div className="flex-[3] flex flex-col justify-center p-8 border-r border-black">
         <div className="w-full">
           <div className="stagger-line overflow-hidden">
-            <h1 className="text-[10vw] font-extrabold font-neue-montreal leading-none w-full text-left">
+            <h1 className="text-[10vw] font-semibold font-neue-montreal leading-none w-full text-left">
               <span className="stagger-letter">F</span>
               <span className="stagger-letter">r</span>
               <span className="stagger-letter">e</span>
@@ -515,16 +694,20 @@ const Hero = () => {
             </h1>
           </div>
         </div>
-        <div className="mt-8">
-          <video
-            src="../videos/whitewaves.mp4"
-            className="object-cover w-full h-[50vh] rounded-md"
-            autoPlay
-            loop
-            muted
-            playsInline
-          ></video>
-        </div>
+    
+        <div className=" " ref={containerRef} />
+
+        {/* <div className="">
+  <video
+    src="../videos/whitewavessvg.mp4"
+    className="object-cover w-3/4 max-h-[80vh] rounded-md"
+    autoPlay
+    loop
+    muted
+    playsInline
+  ></video>
+</div> */}
+
       </div>
 
       {/* Right Section */}
@@ -601,9 +784,9 @@ const MarqueeSection = () => {
       <div className="line"></div>
       <div className="marquee-container">
         <div className="marqueed uppercase">
-          <span>Your smile, our passion ✿</span>
-          <span>Your smile, our passion ✿</span>
-          <span>Your smile, our passion ✿</span>
+          <span>Because every smile is unique ✿</span>
+          <span>Because every smile is unique ✿</span>
+          <span>Because every smile is unique ✿</span>
         </div>
       </div>
       <div className="line"></div>
@@ -612,25 +795,25 @@ const MarqueeSection = () => {
 };
 
 const Stats = () => {
-  const textVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.6, ease: "easeInOut" },
-    },
-  };
+  // const textVariants = {
+  //   hidden: { opacity: 0 },
+  //   visible: {
+  //     opacity: 1,
+  //     transition: { duration: 0.6, ease: "easeInOut" },
+  //   },
+  // };
 
-  const spanVariants = {
-    hidden: { opacity: 0, width: "0rem", originX: 0.5 },
-    visible: {
-      opacity: 1,
-      width: "6.5rem",
-      transition: {
-        duration: 1.2,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    },
-  };
+  // const spanVariants = {
+  //   hidden: { opacity: 0, width: "0rem", originX: 0.5 },
+  //   visible: {
+  //     opacity: 1,
+  //     width: "6.5rem",
+  //     transition: {
+  //       duration: 1.2,
+  //       ease: [0.22, 1, 0.36, 1],
+  //     },
+  //   },
+  // };
 
   // const projects = [
   //   {
@@ -659,19 +842,84 @@ const Stats = () => {
   const handleMouseLeave = () => {
     setHoveredCard(null);
   };
+  const statRefs = useRef([]);
 
-  
-
- 
+  useEffect(() => {
+    statRefs.current.forEach((ref) => {
+      const targetValue = parseFloat(ref.dataset.target);
+      gsap.fromTo(
+        ref,
+        { innerText: 0 },
+        {
+          innerText: targetValue,
+          duration: 2,
+          ease: "power1.out",
+          snap: { innerText: 1 },
+          scrollTrigger: {
+            trigger: ref,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+          onUpdate: function () {
+            ref.innerText = Math.round(this.targets()[0].innerText);
+          },
+        }
+      );
+    });
+  }, []);
 
   return (
-    <section className=" rounded-tl-[40px] rounded-tr-[40px]  bg-[#F0F0F0] flex flex-col justify-between ">
-      <section
-        style={{
-          transform: "translateY(10vh)",
-        }}
-      >
-        <motion.div
+    <section className=" rounded-tl-[40px] rounded-tr-[40px] ">
+      <section className="min-h-screen grid grid-cols-12 px-12">
+        <div className="col-span-4 border-black border flex items-center justify-center"></div>
+        <div className="col-span-8 flex flex-col">
+          <div className="mt-10">
+            <p className="text-2xl font-light font-neue-montreal">
+              A confident smile begins with effective care tailored to each
+              patient. At our practice, we’re dedicated to providing treatments
+              that are not only scientifically sound but also crafted to bring
+              out your best smile.
+            </p>
+          </div>
+          <div className="my-24"></div>
+          <div className="flex justify-end mt-8 space-x-12">
+  <div className="text-center">
+    <p className="font-neue-montreal text-[15px] mb-10">
+      Years of Experience
+    </p>
+    <h2 className="font-neue-montreal text-[7rem] font-light">
+      <span data-target="60" ref={(el) => (statRefs.current[0] = el)}>
+        0
+      </span>
+      <span className="text-[4rem] align-top">+</span>
+    </h2>
+  </div>
+  <div className="text-center">
+    <p className="font-neue-montreal text-[15px] mb-10">
+      Satisfied Patients
+    </p>
+    <h2 className="font-neue-montreal text-[7rem] font-light">
+      <span data-target="25" ref={(el) => (statRefs.current[1] = el)}>
+        0
+      </span>
+      <span className="text-[4rem] align-top">k</span>
+    </h2>
+  </div>
+  <div className="text-center">
+    <p className="font-neue-montreal text-[15px] mb-10">
+      Locations
+    </p>
+    <h2 className="font-neue-montreal text-[7rem] font-light">
+      <span data-target="4" ref={(el) => (statRefs.current[2] = el)}>
+        0
+      </span>
+    </h2>
+  </div>
+</div>
+
+        </div>
+      </section>
+      {/* <motion.div
           className="w-layout-blockcontainer textimagecontainer"
           initial="hidden"
           animate="visible"
@@ -703,9 +951,9 @@ const Stats = () => {
               </h2>
             </div>
           </div>
-        </motion.div>
+        </motion.div> */}
 
-        <div
+      {/* <div
           style={{ marginTop: "8rem" }}
           className="big-numbers-wrapper flex justify-around items-center"
         >
@@ -775,9 +1023,9 @@ const Stats = () => {
               Locations
             </p>
           </div>
-        </div>
+        </div> */}
 
-        <section className="py-20 px-6">
+      {/* <section className="py-20 px-6">
           <div className="max-w-7xl mx-auto">
             <div className="mb-12">
               <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
@@ -785,17 +1033,11 @@ const Stats = () => {
                 best
               </span>
 
-              {/* <img
-              src="../images/handbreakout.png"
-              className="breakout-container"
-              alt="Home SVG"
-            /> */}
+        
             </div>
           </div>
-        </section>
-      </section>
+        </section> */}
 
-  
       {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
         <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">
@@ -925,16 +1167,192 @@ const NewSection = () => {
       link.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, []);
+
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    let engine;
+    let render;
+
+    const initSimulation = () => {
+      const Engine = Matter.Engine;
+      const Render = Matter.Render;
+      const World = Matter.World;
+      const Bodies = Matter.Bodies;
+      const Mouse = Matter.Mouse;
+      const MouseConstraint = Matter.MouseConstraint;
+
+      engine = Engine.create();
+      const world = engine.world;
+
+      const containerElement = canvasRef.current;
+      const containerWidth = containerElement.clientWidth;
+      const containerHeight = containerElement.clientHeight;
+
+      render = Render.create({
+        element: containerElement,
+        engine: engine,
+        options: {
+          width: containerWidth,
+          height: containerHeight,
+          pixelRatio: 2,
+          background: "transparent",
+          wireframes: false,
+        },
+      });
+
+      // wall boundaries
+      const ground = Bodies.rectangle(
+        containerWidth / 2,
+        containerHeight + 50,
+        containerWidth,
+        100,
+        {
+          isStatic: true,
+          render: {
+            fillStyle: "#000",
+          },
+        }
+      );
+      const wallLeft = Bodies.rectangle(
+        -50,
+        containerHeight / 2,
+        100,
+        containerHeight,
+        {
+          isStatic: true,
+          render: {
+            fillStyle: "#000",
+          },
+        }
+      );
+      const wallRight = Bodies.rectangle(
+        containerWidth + 50,
+        containerHeight / 2,
+        100,
+        containerHeight,
+        {
+          isStatic: true,
+          render: {
+            fillStyle: "#000",
+          },
+        }
+      );
+      const roof = Bodies.rectangle(
+        containerWidth / 2,
+        -50,
+        containerWidth,
+        100,
+        {
+          isStatic: true,
+          render: {
+            fillStyle: "#000",
+          },
+        }
+      );
+
+      const tags = [
+        {
+          x: 200,
+          y: 100,
+          w: 164,
+          h: 56,
+          texture: "../images/ico_star2.svg",
+        },
+        {
+          x: 200,
+          y: 100,
+          w: 164,
+          h: 56,
+          texture: "../images/240by56(01).svg",
+        },
+        {
+          x: 300,
+          y: 200,
+          w: 240,
+          h: 56,
+          texture: "../images/240by56(02).svg",
+        },
+        {
+          x: 400,
+          y: 300,
+          w: 200,
+          h: 56,
+          texture: "../images/240by56(03).svg",
+        },
+        {
+          x: 400,
+          y: 300,
+          w: 200,
+          h: 56,
+          texture: "../images/240by56(04).svg",
+        },
+      ];
+
+      const radius = 20;
+      const dynamicBodies = tags.map((tag) =>
+        Bodies.rectangle(tag.x, tag.y, tag.w, tag.h, {
+          chamfer: { radius },
+          render: {
+            sprite: {
+              texture: tag.texture,
+              xScale: 1,
+              yScale: 1,
+            },
+          },
+        })
+      );
+
+      // Add objects to world
+      World.add(world, [ground, wallLeft, wallRight, roof, ...dynamicBodies]);
+
+      // mouse dragging
+      const mouse = Mouse.create(render.canvas);
+      const mouseConstraint = MouseConstraint.create(engine, {
+        mouse: mouse,
+        constraint: {
+          stiffness: 0.2,
+          render: { visible: false },
+        },
+      });
+
+      World.add(world, mouseConstraint);
+      render.mouse = mouse;
+
+      Engine.run(engine);
+      Render.run(render);
+    };
+
+    initSimulation();
+
+    return () => {
+      if (engine) {
+        Matter.World.clear(engine.world);
+        Matter.Engine.clear(engine);
+      }
+      if (render) {
+        render.canvas.remove();
+        render.textures = {};
+      }
+    };
+  }, []);
+
+  const [hover, setHover] = useState(false);
+
   return (
     <>
-    <section className="flex items-center justify-center min-h-screen bg-black px-8 md:px-16">
-    <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
-      {/* Left Section */}
-      <div className="bg-[#CFF174] text-black p-8 md:p-16 rounded-md flex flex-col justify-center">
-        <h1 className="font-helvetica-neue-light text-5xl md:text-6xl mb-4">
-          A world of opportunity.
-        </h1>
-        <div className="tracking-widest flex justify-center border border-black py-6 px-8">
+      <section className="flex items-center justify-center min-h-screen bg-black px-8 md:px-16">
+        <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left Section */}
+          <div className="bg-[#CFF174] text-black p-8 md:p-16 rounded-md flex flex-col justify-center">
+            <h1 className="font-helvetica-neue-light text-5xl md:text-6xl mb-4">
+              A world of opportunity.
+            </h1>
+            <div
+              ref={canvasRef}
+              style={{ height: "400px", width: "500px" }}
+            ></div>
+            <div className="tracking-widest flex justify-center border border-black py-6 px-8">
               <a
                 ref={linkRef}
                 href="/book-now"
@@ -971,55 +1389,157 @@ const NewSection = () => {
                 </span>
               </a>
             </div>
-      
-      </div>
+          </div>
 
-      {/* Right Section */}
-      <div className="bg-black text-white border border-[#CFF174] p-8 md:p-16 rounded-md flex flex-col justify-between">
-      <svg
-      width="100%"
-      height="100%"
-      viewBox="0 0 200 200"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-    >
-      <defs>
-        <clipPath id="clip0_224_605">
-          <path d="M50 50.5H50.5V50V49.5C23.2199 49.5 1.04241 27.6526 0.509799 0.5H199.491C198.957 27.6526 176.781 49.5 149.5 49.5V50V50.5H150C177.338 50.5 199.5 72.6619 199.5 100C199.5 125.033 180.918 145.726 156.795 149.038L156.791 150.028C180.949 153.556 199.5 174.363 199.5 199.5H0.5C0.5 174.363 19.0509 153.556 43.2094 150.028L43.2051 149.038C19.0823 145.726 0.5 125.033 0.5 100C0.5 72.6619 22.6619 50.5 50 50.5Z" />
-        </clipPath>
-      </defs>
-
-      {/* use href for image to put inside the clip path */}
-      <image
-        href="../images/nowbook.png"
-        width="200"
-        height="200"
-        clipPath="url(#clip0_224_605)"
-        preserveAspectRatio="xMidYMid slice"
-      />
-
-      {/* shape outline*/}
-      <path
-        d="M50 50.5H50.5V50V49.5C23.2199 49.5 1.04241 27.6526 0.509799 0.5H199.491C198.957 27.6526 176.781 49.5 149.5 49.5V50V50.5H150C177.338 50.5 199.5 72.6619 199.5 100C199.5 125.033 180.918 145.726 156.795 149.038L156.791 150.028C180.949 153.556 199.5 174.363 199.5 199.5H0.5C0.5 174.363 19.0509 153.556 43.2094 150.028L43.2051 149.038C19.0823 145.726 0.5 125.033 0.5 100C0.5 72.6619 22.6619 50.5 50 50.5Z"
-        fill="none"
-        stroke="black"
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
-
-
-        <div>
-          <p className="mb-4"></p>
-
-          
-            <button
-              type="submit"
-              className="font-neue-montreal rounded-full bg-[#CFF174] text-black font-medium px-6 py-3 hover:bg-lime-500"
+          {/* Right Section */}
+          <div className="bg-black text-white border border-[#CFF174] p-8 md:p-16 rounded-md flex flex-col justify-between">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 200 200"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
             >
-              Start a conversation
-            </button>
-      
-          {/* <p className="mt-6 text-sm text-gray-500">
+              <defs>
+                <clipPath id="clip0_224_605">
+                  <path d="M50 50.5H50.5V50V49.5C23.2199 49.5 1.04241 27.6526 0.509799 0.5H199.491C198.957 27.6526 176.781 49.5 149.5 49.5V50V50.5H150C177.338 50.5 199.5 72.6619 199.5 100C199.5 125.033 180.918 145.726 156.795 149.038L156.791 150.028C180.949 153.556 199.5 174.363 199.5 199.5H0.5C0.5 174.363 19.0509 153.556 43.2094 150.028L43.2051 149.038C19.0823 145.726 0.5 125.033 0.5 100C0.5 72.6619 22.6619 50.5 50 50.5Z" />
+                </clipPath>
+              </defs>
+
+              {/* use href for image to put inside the clip path */}
+              <image
+                href="../images/nowbook.png"
+                width="200"
+                height="200"
+                clipPath="url(#clip0_224_605)"
+                preserveAspectRatio="xMidYMid slice"
+              />
+
+              {/* shape outline*/}
+              <path
+                d="M50 50.5H50.5V50V49.5C23.2199 49.5 1.04241 27.6526 0.509799 0.5H199.491C198.957 27.6526 176.781 49.5 149.5 49.5V50V50.5H150C177.338 50.5 199.5 72.6619 199.5 100C199.5 125.033 180.918 145.726 156.795 149.038L156.791 150.028C180.949 153.556 199.5 174.363 199.5 199.5H0.5C0.5 174.363 19.0509 153.556 43.2094 150.028L43.2051 149.038C19.0823 145.726 0.5 125.033 0.5 100C0.5 72.6619 22.6619 50.5 50 50.5Z"
+                fill="none"
+                stroke="black"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+
+            <div>
+              <p className="mb-4"></p>
+              <div className="container">
+                <button
+                  className={`circle circle1 ${hover ? "hover" : ""}`}
+                  onMouseEnter={() => setHover(true)}
+                  onMouseLeave={() => setHover(false)}
+                >
+                  Button 1
+                </button>
+                <button
+                  className={`circle circle2 ${hover ? "hover" : ""}`}
+                  onMouseEnter={() => setHover(true)}
+                  onMouseLeave={() => setHover(false)}
+                >
+                  Button 2
+                </button>
+
+                <svg>
+                  <filter id="fusion">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
+                    <feColorMatrix
+                      values="
+              1 0 0 0 0
+              0 1 0 0 0
+              0 0 1 0 0
+              0 0 0 20 -10
+            "
+                    />
+                  </filter>
+                </svg>
+
+                <style jsx>{`
+                  .container {
+                    position: relative;
+                    width: 800px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 20px;
+                    filter: url(#fusion);
+                    transition: gap 0.3s ease;
+                  }
+
+                  .circle {
+                    position: relative;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border: none;
+                    color: black;
+                    font-size: 16px;
+                    cursor: pointer;
+                  }
+
+                  .circle.circle1 {
+                    min-width: 150px;
+                    height: 50px;
+                    border-radius: 25px;
+                    background: linear-gradient(90deg, #f00, #0ff);
+                    transition: transform 0.3s ease;
+                  }
+
+                  .circle.circle1::before {
+                    --offset: -20px;
+                    content: "";
+                    position: absolute;
+                    top: var(--offset);
+                    left: var(--offset);
+                    right: var(--offset);
+                    bottom: var(--offset);
+                    border-radius: 50px;
+                    z-index: -1;
+                    filter: blur(2px);
+                  }
+
+                  .circle.circle2 {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    background: linear-gradient(90deg, #ffeb3b, #da00ff);
+                    transition: transform 0.3s ease;
+                  }
+
+                  .circle2.hover {
+                    transform: translateX(-20px);
+                  }
+
+                  .circle.circle2::before {
+                    --offset: -30px;
+                    content: "";
+                    position: absolute;
+                    top: var(--offset);
+                    left: var(--offset);
+                    right: var(--offset);
+                    bottom: var(--offset);
+                    border-radius: 50%;
+                    z-index: -1;
+                    filter: blur(30px);
+                  }
+
+                  svg {
+                    width: 0;
+                    height: 0;
+                  }
+                `}</style>
+              </div>
+
+              {/* <button
+                type="submit"
+                className="font-neue-montreal rounded-full bg-[#CFF174] text-black font-medium px-6 py-3 hover:bg-lime-500"
+              >
+                Start a conversation
+              </button> */}
+
+              {/* <p className="mt-6 text-sm text-gray-500">
             © 2025 TVP, L.L.C.
             <br />
             <a
@@ -1033,11 +1553,11 @@ const NewSection = () => {
               Terms & Services
             </a>
           </p> */}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
-     {/* <section
+      </section>
+      {/* <section
       className="bg-[#C4CED2] min-h-screen flex items-center justify-center text-white"
     >
           <div className=" flex flex-col items-center justify-center ">
@@ -1088,7 +1608,7 @@ const NewSection = () => {
       </div>
    
     </section> */}
-  </> 
+    </>
   );
 };
 
@@ -1629,10 +2149,10 @@ const ImageGrid = () => {
   //         "-=0.75"
   //       );
 
-      // const scroll = new LocomotiveScroll({
-      //   el: bodyRef.current,
-      //   smooth: true,
-      // });
+  // const scroll = new LocomotiveScroll({
+  //   el: bodyRef.current,
+  //   smooth: true,
+  // });
 
   //     setTimeout(() => {
   //       scroll.update();
@@ -1702,79 +2222,91 @@ const ImageGrid = () => {
   //     rowSpan: 1, // Second section in the second column
   //   },
   // ];
-  
+  const sectionRef = useRef(null);
+  const [isInView, setIsInView] = useState(true);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-<div className="grid grid-cols-2 h-screen gap-4 p-4">
-  {/* Column 1 (Nested Grid) */}
-  <div className="grid grid-cols-2 gap-4">
-    {/* First Sub-Column */}
-    <div className="relative group overflow-hidden rounded-[60px] bg-[#5A8EFF]">
-      {/* Image */}
-      <img
-        src="../images/hand.jpeg"
-        alt="Left Sub-Column Image"
-        className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-20"
-      />
-      {/* Overlay (Text Reveal) */}
-      <div className="absolute inset-0  text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <h2 className="text-2xl font-neue-montreal">Clear Aligners</h2>
-        <p className="font-neue-montreal text-lg">Invisalign</p>
-      </div>
-    </div>
+    <div ref={sectionRef}>
+      <div className="grid grid-cols-2 min-h-screen gap-4 p-4">
+        {/* Column 1 (Nested Grid) */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* First Sub-Column */}
+          <div className="relative group overflow-hidden rounded-[60px] bg-[#B2E7EB]">
+            {/* Image */}
+            <img
+              src="../images/hand.jpeg"
+              alt="Left Sub-Column Image"
+              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-20"
+            />
+            {/* Overlay (Text Reveal) */}
+            <div className="absolute inset-0  text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <h2 className="text-2xl font-neue-montreal">Clear Aligners</h2>
+              <p className="font-neue-montreal text-lg">Invisalign</p>
+            </div>
+          </div>
 
-    {/* Second Sub-Column */}
-    <div className="relative group overflow-hidden rounded-[60px] bg-[#FFE0DB]">
-      {/* Image */}
-      <img
-        src="../images/mainsectionimage.jpg"
-        alt="Right Sub-Column Image"
-        className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10"
-      />
-      {/* Overlay (Text Reveal) */}
-      <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <h2 className="text-2xl font-neue-montreal">Braces</h2>
-        <p className="font-neue-montreal text-lg">Damon Ultima</p>
-      </div>
-    </div>
-    
-    {/* <div className="col-span-2 h-1/3 bg-[#FFCC00] rounded-[60px] flex items-center justify-center">
+          {/* Second Sub-Column */}
+          <div className="relative group overflow-hidden rounded-[60px] bg-[#FFE0DB]">
+            {/* Image */}
+            <img
+              src="../images/mainsectionimage.jpg"
+              alt="Right Sub-Column Image"
+              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10"
+            />
+            {/* Overlay (Text Reveal) */}
+            <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <h2 className="text-2xl font-neue-montreal">Braces</h2>
+              <p className="font-neue-montreal text-lg">Damon Ultima</p>
+            </div>
+          </div>
+
+          {/* <div className="col-span-2 h-1/3 bg-[#FFCC00] rounded-[60px] flex items-center justify-center">
     <p className="text-black text-lg font-neue-montreal">Awards and Recognition</p>
   </div> */}
-  </div>
+        </div>
 
-  {/* Column 2 */}
-  <div className="flex flex-col gap-4">
-    {/* Top Section */}
-    <div className="h-1/3 bg-gray-200 rounded-[60px] relative flex items-center justify-center">
-      <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
-      <span className="text-6xl font-cursive italic text-gray-700 block mt-2 font-autumnchant">
-        best
-      </span>
-    </div>
-    {/* Large Image */}
-    <div className="flex-grow relative group overflow-hidden rounded-[60px] bg-[#F2BD4A]">
-      {/* Image */}
-      <img
-        src="../images/handbackground.png"
-        alt="Bottom Image Column 2"
-        className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10"
-      />
-      {/* Overlay (Text Reveal) */}
-      <div className="absolute inset-0  text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <h2 className="text-2xl font-neue-montreal">Advanced Technology</h2>
-        <p className="font-neue-montreal text-lg">3D i-Cat Imaging, Digital Scans</p>
+        {/* Column 2 */}
+        <div className="flex flex-col gap-4">
+          {/* Top Section */}
+          <div className="h-1/3 bg-[#EFFD47] rounded-[60px] relative flex items-center justify-center">
+            <div className="flex flex-col">
+              <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
+              <span className="text-6xl font-cursive italic text-gray-700 mt-2 font-autumnchant">
+                best
+              </span>
+            </div>
+          </div>
+          {/* Large Image */}
+          <div className="flex-grow relative group overflow-hidden rounded-[60px] bg-[#F2BD4A]">
+            {/* Image */}
+            <img
+              src="../images/handbackground.png"
+              alt="Bottom Image Column 2"
+              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10"
+            />
+            {/* Overlay (Text Reveal) */}
+            <div className="absolute inset-0  text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <h2 className="text-2xl font-neue-montreal">
+                Advanced Technology
+              </h2>
+              <p className="font-neue-montreal text-lg">
+                3D i-Cat Imaging, Digital Scans
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
-
-
-
-
-
     // <section className="bg-[#FBFBFB]">
     //   <div>
     //     <div
@@ -2191,12 +2723,16 @@ function Testimonials() {
             (word) =>
               `<span class="word">${word
                 .split("")
-                .map((char, i) => `<span class="char ${i % 2 === 0 ? "odd" : "even"}">${char}</span>`)
+                .map(
+                  (char, i) =>
+                    `<span class="char ${
+                      i % 2 === 0 ? "odd" : "even"
+                    }">${char}</span>`
+                )
                 .join("")}</span>`
           )
-          .join('<span class="space"> </span>'); 
+          .join('<span class="space"> </span>');
       };
-      
 
       wrapCharacters(text1);
       wrapCharacters(text2);
@@ -2251,17 +2787,18 @@ function Testimonials() {
     });
   }, []);
 
-
-
   return (
     <div className="w-full h-screen flex">
       <div className="bg-[#E8E2DA] w-1/3 flex flex-col justify-start  menu_link-wrap">
-      <img className=" w-1/2 h-auto mx-auto" src="../images/freysmilesbg.png" />
+        <img
+          className=" w-1/2 h-auto mx-auto"
+          src="../images/freysmilesbg.png"
+        />
         {[
-    { name: "Lisa Moyer", title: "2023" },
-    { name: "Karen Oneill", title: "2022" },
-    { name: "Tanya Burnhauser", title: "2021" },
-  ].map((item, index) => (
+          { name: "Lisa Moyer", title: "2023" },
+          { name: "Karen Oneill", title: "2022" },
+          { name: "Tanya Burnhauser", title: "2021" },
+        ].map((item, index) => (
           <a
             key={index}
             hoverstagger="link"
@@ -2271,56 +2808,51 @@ function Testimonials() {
           >
             <div className="items-center menu_padding mb-10 ">
               <div className=" border-t border-black flex justify-between pt-4">
-              <div className="menu_text-wrap">
-                <div hoverstagger="text" className="menu_link-text">
-                  {item.name}
+                <div className="menu_text-wrap">
+                  <div hoverstagger="text" className="menu_link-text">
+                    {item.name}
+                  </div>
+                  <div hoverstagger="text" className="menu_link-text is-2">
+                    {item.name}
+                  </div>
                 </div>
-                <div hoverstagger="text" className="menu_link-text is-2">
-                  {item.name}
+                <div hoverstagger="text" className="menu_title">
+                  [ {item.title} ]
                 </div>
               </div>
-              <div
-            hoverstagger="text"
-            className="menu_title"
-          >
-            [ {item.title} ]
-          </div>
-          </div>
             </div>
           </a>
         ))}
       </div>
       <div className="bg-[#ECE4FF] w-2/3 flex flex-col h-screen">
-
-  <div className="h-1/3 flex items-center justify-center">
-  <div class="left-mid-block">
-          <div  class="movin-text-holder">
-            <h1 class="moving-text">Testimonials </h1>
-            <h1 class="moving-text">Testimonials</h1>
-            <h1 class="moving-text">Testimonials </h1>
-            <h1 class="moving-text">Testimonials </h1>
-            <h1 class="moving-text">Testimonials</h1>
-            <h1 class="moving-text">Testimonials </h1>
+        <div className="h-1/3 flex items-center justify-center">
+          <div class="left-mid-block">
+            <div class="movin-text-holder">
+              <h1 class="moving-text">Testimonials </h1>
+              <h1 class="moving-text">Testimonials</h1>
+              <h1 class="moving-text">Testimonials </h1>
+              <h1 class="moving-text">Testimonials </h1>
+              <h1 class="moving-text">Testimonials</h1>
+              <h1 class="moving-text">Testimonials </h1>
+            </div>
           </div>
         </div>
-  </div>
 
-
-  <div className="h-2/3 flex items-center justify-center border-t border-black">
-    <div
-      style={{
-        fontFamily: "NeueMontrealBook",
-        fontSize: "20px",
-        color: "#333",
-        padding: "20px",
-        maxWidth: "700px",
-      }}
-      className="flex flex-col"
-    >
-      <div className="text-center">{selectedDescription}</div>
-    </div>
-  </div>
-</div>
+        <div className="h-2/3 flex items-center justify-center border-t border-black">
+          <div
+            style={{
+              fontFamily: "NeueMontrealBook",
+              fontSize: "20px",
+              color: "#333",
+              padding: "20px",
+              maxWidth: "700px",
+            }}
+            className="flex flex-col"
+          >
+            <div className="text-center">{selectedDescription}</div>
+          </div>
+        </div>
+      </div>
 
       {/* <div  className="bg-[#FF6400] w-2/5">
         
