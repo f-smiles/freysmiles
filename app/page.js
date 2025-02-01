@@ -25,6 +25,7 @@ import { Disclosure, Transition } from "@headlessui/react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { useGSAP } from "@gsap/react";
+import { MotionPathPlugin } from "gsap-trial/MotionPathPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
 import { SplitText } from "gsap-trial/SplitText";
@@ -32,15 +33,14 @@ import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 import * as OGL from "ogl";
 
-
-
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
     DrawSVGPlugin,
     ScrollTrigger,
     SplitText,
     useGSAP,
-    CustomEase
+    CustomEase,
+    MotionPathPlugin
   );
 }
 
@@ -121,8 +121,6 @@ export default function LandingComponent() {
     </>
   );
 }
-
-
 
 const Hero = () => {
   // const containerRef = useRef(null);
@@ -432,42 +430,9 @@ const Hero = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const colors = [
-    ["#8ACBBA", "#E64627", "#AE74DC", "#2A286F"],
-    ["#2A286F", "#F9931F", "#FD5CD0", "#F9E132"],
-    ["#241F21", "#8ACBBA", "#E51932", "#006980"],
-    ["#FD5CD0", "#F9931F", "#2A286F", "#E51932"],
-    // ["#9BFFE3", "#C6FEF1", "#DAFFEF", "#F1FFEB"],
-    // ["#8BE5C9", "#B4E5D8", "#C5E5D6", "#D9E4D7"],
-    // ["#7FCCB7", "#A1CCBF", "#B1CCBE", "#C2CDC0"],
-    // ["#6DB29D", "#86AFA4", "#99B4A8", "#A7B2A7"],
-  ];
 
-  useEffect(() => {
-    const lines = document.querySelectorAll(".stagger-line");
 
-    lines.forEach((line) => {
-      gsap.fromTo(
-        line.querySelectorAll(".stagger-word"),
-        {
-          yPercent: 100,
-          opacity: 0,
-        },
-        {
-          yPercent: 0,
-          opacity: 1,
-          stagger: 0.1,
-          duration: 1,
-          ease: "power4.out",
-          scrollTrigger: {
-            trigger: line,
-            start: "top 80%",
-            toggleActions: "play none none none",
-          },
-        }
-      );
-    });
-  }, []);
+
 
   useEffect(() => {
     const lines = document.querySelectorAll(".stagger-line");
@@ -493,7 +458,6 @@ const Hero = () => {
       );
     });
   }, []);
-
 
   const containerRef = useRef(null);
 
@@ -529,32 +493,29 @@ const Hero = () => {
       }
     `;
 
+    // const renderer = new OGL.Renderer({ dpr: 2 });
+    // const gl = renderer.gl;
+    // containerRef.current.appendChild(gl.canvas);
+
     const renderer = new OGL.Renderer({ dpr: 2 });
     const gl = renderer.gl;
     containerRef.current.appendChild(gl.canvas);
 
+    gl.canvas.style.borderRadius = "30px";
+    gl.canvas.style.clipPath = "inset(0% round 30px)";
+
+    renderer.setSize(window.innerWidth, 600);
     let aspect = 1;
     const mouse = new OGL.Vec2(-1);
     const velocity = new OGL.Vec2();
 
     function resize() {
-      let a1, a2;
-      var imageAspect = imgSize[1] / imgSize[0];
-      if (window.innerHeight / window.innerWidth < imageAspect) {
-        a1 = 1;
-        a2 = window.innerHeight / window.innerWidth / imageAspect;
-      } else {
-        a1 = (window.innerWidth / window.innerHeight) * imageAspect;
-        a2 = 1;
-      }
-      mesh.program.uniforms.res.value = new OGL.Vec4(
-        window.innerWidth,
-        window.innerHeight,
-        a1,
-        a2
-      );
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      aspect = window.innerWidth / window.innerHeight;
+      const width = 200;
+      const height = 250;
+
+      renderer.setSize(width, height);
+      program.uniforms.res.value = new OGL.Vec4(width, height, 1, 1);
+      aspect = width / height;
     }
 
     const flowmap = new OGL.Flowmap(gl);
@@ -575,8 +536,8 @@ const Hero = () => {
     const img = new Image();
     img.onload = () => (texture.image = img);
     img.crossOrigin = "Anonymous";
-    img.src =
-      "../images/bubble.jpg";
+    // img.src = "../images/bubble.jpg";
+    img.src = "../images/greencheckered.png";
 
     let a1, a2;
     var imageAspect = imgSize[1] / imgSize[0];
@@ -619,28 +580,28 @@ const Hero = () => {
 
     function updateMouse(e) {
       e.preventDefault();
-      if (e.changedTouches && e.changedTouches.length) {
-        e.x = e.changedTouches[0].pageX;
-        e.y = e.changedTouches[0].pageY;
-      }
-      if (e.x === undefined) {
-        e.x = e.pageX;
-        e.y = e.pageY;
-      }
-      mouse.set(e.x / gl.renderer.width, 1.0 - e.y / gl.renderer.height);
+
+      const rect = gl.canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      mouse.set(x / rect.width, 1 - y / rect.height);
+
+      const sensitivity = (Math.min(rect.width, rect.height) / 300) * 3;
 
       if (!lastTime) {
         lastTime = performance.now();
-        lastMouse.set(e.x, e.y);
+        lastMouse.set(x, y);
       }
 
-      const deltaX = e.x - lastMouse.x;
-      const deltaY = e.y - lastMouse.y;
-      lastMouse.set(e.x, e.y);
+      const deltaX = (x - lastMouse.x) * sensitivity;
+      const deltaY = (y - lastMouse.y) * sensitivity;
+      lastMouse.set(x, y);
 
-      let time = performance.now();
-      let delta = Math.max(10.4, time - lastTime);
+      const time = performance.now();
+      const delta = Math.max(5, time - lastTime);
       lastTime = time;
+
       velocity.x = deltaX / delta;
       velocity.y = deltaY / delta;
       velocity.needsUpdate = true;
@@ -648,19 +609,21 @@ const Hero = () => {
 
     function update(t) {
       requestAnimationFrame(update);
+
       if (!velocity.needsUpdate) {
         mouse.set(-1);
         velocity.set(0);
       }
       velocity.needsUpdate = false;
+
       flowmap.aspect = aspect;
       flowmap.mouse.copy(mouse);
-      flowmap.velocity.lerp(velocity, velocity.len ? 0.15 : 0.1);
+      flowmap.velocity.lerp(velocity, velocity.len ? 0.25 : 0.15);
       flowmap.update();
+
       program.uniforms.uTime.value = t * 0.01;
       renderer.render({ scene: mesh });
     }
-
     requestAnimationFrame(update);
 
     return () => {
@@ -671,13 +634,89 @@ const Hero = () => {
       containerRef.current.removeChild(gl.canvas);
     };
   }, []);
+  const rows = 3; 
+  const cols = 6; 
+  const dx = 80; 
+  const dy = 80; 
+  const circleRefs = useRef([]); 
+
+
+  useEffect(() => {
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 0 });
+
+    // forward Animation, each circle will animate from (0,0) to its grid position.
+    // each diagonal grouping is (row+col)*0.3 to animate together
+    circleRefs.current.forEach((circle) => {
+      const col = parseInt(circle.getAttribute("data-col"), 10);
+      const row = parseInt(circle.getAttribute("data-row"), 10);
+      const forwardDelay = (row + col) * 0.3;
+      
+      tl.to(
+        circle,
+        {
+          duration: 1.5,
+          x: col * dx,
+          y: row * dy,
+          ease: "power2.inOut",
+        },
+        forwardDelay 
+      );
+    });
+
+    // longest delay starts with circle from the highest row+col val.
+    const maxSum = rows + cols - 2; // maximum diagonal value (0-index)
+    const forwardTotalTime = maxSum * 0.3 + 1.5;
+
+    // reverse Animation: for each circle, reverse delay =  (maxSum - (row+col)) * 0.3. (highest=7)
+    circleRefs.current.forEach((circle) => {
+      const col = parseInt(circle.getAttribute("data-col"), 10);
+      const row = parseInt(circle.getAttribute("data-row"), 10);
+      const diagonal = row + col;
+      const reverseDelay = (maxSum - diagonal) * 0.3;
+      
+      tl.to(
+        circle,
+        {
+          duration: 1.5,
+          x: 0,
+          y: 0,
+          ease: "power2.inOut",
+        },
+        forwardTotalTime + reverseDelay 
+      );
+    });
+  }, [cols, rows, dx, dy]);
+
+
+  const circles = [];
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      circles.push({ id: `${row}-${col}`, row, col });
+    }
+  }
+
 
   return (
     <div className="flex h-screen w-full">
-
       {/* Left Section */}
       <div className="flex-[3] flex flex-col justify-center p-8 border-r border-black">
-        <div className="w-full">
+      <svg width="800" height="400" viewBox="-50 -50 800 400">
+      <g id="multiply-circles">
+        {circles.map((circle, index) => (
+          <circle
+            key={circle.id}
+            ref={(el) => (circleRefs.current[index] = el)}
+            cx={0} 
+            cy={0}
+            r={40} 
+            fill="#000"
+            data-row={circle.row} 
+            data-col={circle.col} 
+          />
+        ))}
+      </g>
+    </svg>
+        {/* <div className="mt-[300px] w-full">
           <div className="stagger-line overflow-hidden">
             <h1 className="text-[10vw] font-semibold font-neue-montreal leading-none w-full text-left">
               <span className="stagger-letter">F</span>
@@ -694,8 +733,26 @@ const Hero = () => {
             </h1>
           </div>
         </div>
-    
-        <div className=" " ref={containerRef} />
+     */}
+<div
+  style={{
+    position: "relative", 
+    width: "100%",
+    height: "600px",
+  }}
+>
+  <div
+    ref={containerRef}
+    style={{
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      borderRadius: "30px",
+      overflow: "hidden",
+    }}
+  />
+</div>
+
 
         {/* <div className="">
   <video
@@ -707,7 +764,6 @@ const Hero = () => {
     playsInline
   ></video>
 </div> */}
-
       </div>
 
       {/* Right Section */}
@@ -717,23 +773,7 @@ const Hero = () => {
             className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "
             data-speed="1"
           >
-            <div className="flex flex-col  h-full ">
-              {colors.map((row, rowIndex) => (
-                <div key={rowIndex} className="flex ">
-                  {row.map((color, circleIndex) => (
-                    <div
-                      key={circleIndex}
-                      className={`w-[100px] h-[100px] ${
-                        (rowIndex + circleIndex) % 3 === 0
-                          ? "rounded-[40px]"
-                          : "rounded-full"
-                      } transition-transform duration-300 ease-in-out hover:scale-75`}
-                      style={{ backgroundColor: color }}
-                    ></div>
-                  ))}
-                </div>
-              ))}
-            </div>
+          
           </div>
           {/* <img
         src="../images/ribbedimage.png"
@@ -741,7 +781,7 @@ const Hero = () => {
         className="object-cover rounded-md"
       /> */}
         </div>
-        <div className="stagger-line overflow-hidden mt-[6vh]">
+        {/* <div className="stagger-line overflow-hidden mt-[6vh]">
           <p className="font-helvetica-neue-light text-xl lg:text-xl font-light leading-relaxed">
             <span className="stagger-word">
               A confident smile begins with effective care tailored to each
@@ -751,7 +791,7 @@ const Hero = () => {
             </span>
             <br />
           </p>
-        </div>
+        </div> */}
         <div className="font-neue-montreal flex gap-4 mt-6">
           <p className="font-neue-montreal text-sm uppercase tracking-widest">
             28, Jan, 2025
@@ -795,6 +835,16 @@ const MarqueeSection = () => {
 };
 
 const Stats = () => {
+  const colors = [
+    ["#8ACBBA", "#E64627", "#AE74DC", "#2A286F"],
+    ["#2A286F", "#F9931F", "#FD5CD0", "#F9E132"],
+    ["#241F21", "#8ACBBA", "#E51932", "#006980"],
+    ["#FD5CD0", "#F9931F", "#2A286F", "#E51932"],
+    // ["#9BFFE3", "#C6FEF1", "#DAFFEF", "#F1FFEB"],
+    // ["#8BE5C9", "#B4E5D8", "#C5E5D6", "#D9E4D7"],
+    // ["#7FCCB7", "#A1CCBF", "#B1CCBE", "#C2CDC0"],
+    // ["#6DB29D", "#86AFA4", "#99B4A8", "#A7B2A7"],
+  ];
   // const textVariants = {
   //   hidden: { opacity: 0 },
   //   visible: {
@@ -868,55 +918,111 @@ const Stats = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const lines = document.querySelectorAll(".stagger-line");
+
+    lines.forEach((line) => {
+      gsap.fromTo(
+        line.querySelectorAll(".stagger-word"),
+        {
+          yPercent: 100,
+          opacity: 0,
+        },
+        {
+          yPercent: 0,
+          opacity: 1,
+          stagger: 0.1,
+          duration: 1,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: line,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    });
+  }, []);
+
   return (
     <section className=" rounded-tl-[40px] rounded-tr-[40px] ">
       <section className="min-h-screen grid grid-cols-12 px-12">
-        <div className="col-span-4 border-black border flex items-center justify-center"></div>
-        <div className="col-span-8 flex flex-col">
-          <div className="mt-10">
-            <p className="text-2xl font-light font-neue-montreal">
-              A confident smile begins with effective care tailored to each
-              patient. At our practice, we’re dedicated to providing treatments
-              that are not only scientifically sound but also crafted to bring
-              out your best smile.
-            </p>
+        <div className="col-span-4  flex">
+        <div
+            className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "
+            data-speed="1"
+          >
+            <div className="">
+              {colors.map((row, rowIndex) => (
+                <div key={rowIndex} className="flex ">
+                  {row.map((color, circleIndex) => (
+                    <div
+                      key={circleIndex}
+                      className={`w-[100px] h-[100px] ${
+                        (rowIndex + circleIndex) % 3 === 0
+                          ? "rounded-[40px]"
+                          : "rounded-full"
+                      } transition-transform duration-300 ease-in-out hover:scale-75`}
+                      style={{ backgroundColor: color }}
+                    ></div>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
+        </div>
+        <div className="col-span-8 flex flex-col">
+   <div className="stagger-line overflow-hidden mt-[6vh]">
+          <p className="font-helvetica-neue-light text-xl lg:text-2xl font-light leading-relaxed">
+            <span className="stagger-word">
+              A confident smile begins with effective care tailored to each
+              patient. 
+            </span>
+            <span className="stagger-word">
+             At our practice, we’re dedicated to providing treatments that are
+           
+            </span>
+            <span className="stagger-word">
+        
+               not only scientifically sound but also crafted to bring
+              out your best smile.
+            </span>
+            <br />
+          </p>
+        </div>
           <div className="my-24"></div>
           <div className="flex justify-end mt-8 space-x-12">
-  <div className="text-center">
-    <p className="font-neue-montreal text-[15px] mb-10">
-      Years of Experience
-    </p>
-    <h2 className="font-neue-montreal text-[7rem] font-light">
-      <span data-target="60" ref={(el) => (statRefs.current[0] = el)}>
-        0
-      </span>
-      <span className="text-[4rem] align-top">+</span>
-    </h2>
-  </div>
-  <div className="text-center">
-    <p className="font-neue-montreal text-[15px] mb-10">
-      Satisfied Patients
-    </p>
-    <h2 className="font-neue-montreal text-[7rem] font-light">
-      <span data-target="25" ref={(el) => (statRefs.current[1] = el)}>
-        0
-      </span>
-      <span className="text-[4rem] align-top">k</span>
-    </h2>
-  </div>
-  <div className="text-center">
-    <p className="font-neue-montreal text-[15px] mb-10">
-      Locations
-    </p>
-    <h2 className="font-neue-montreal text-[7rem] font-light">
-      <span data-target="4" ref={(el) => (statRefs.current[2] = el)}>
-        0
-      </span>
-    </h2>
-  </div>
-</div>
-
+            <div className="text-center">
+              <p className="font-neue-montreal text-[15px] mb-10">
+                Years of Experience
+              </p>
+              <h2 className="font-neue-montreal text-[7rem] font-light">
+                <span data-target="60" ref={(el) => (statRefs.current[0] = el)}>
+                  0
+                </span>
+                <span className="text-[4rem] align-top">+</span>
+              </h2>
+            </div>
+            <div className="text-center">
+              <p className="font-neue-montreal text-[15px] mb-10">
+                Satisfied Patients
+              </p>
+              <h2 className="font-neue-montreal text-[7rem] font-light">
+                <span data-target="25" ref={(el) => (statRefs.current[1] = el)}>
+                  0
+                </span>
+                <span className="text-[4rem] align-top">k</span>
+              </h2>
+            </div>
+            <div className="text-center">
+              <p className="font-neue-montreal text-[15px] mb-10">Locations</p>
+              <h2 className="font-neue-montreal text-[7rem] font-light">
+                <span data-target="4" ref={(el) => (statRefs.current[2] = el)}>
+                  0
+                </span>
+              </h2>
+            </div>
+          </div>
         </div>
       </section>
       {/* <motion.div
@@ -3266,7 +3372,7 @@ function Locations() {
 
   return (
     <>
-      <section id="locations-section" className="relative bg-[#0500F7]">
+      <section id="flex locations-section" className="relative bg-[#0500F7]">
         <div
           id="locations-heading"
           className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32"
