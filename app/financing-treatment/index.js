@@ -42,65 +42,6 @@ const HeaderBanner = () => {
   const [hover, setHover] = useState(false);
 
   useEffect(() => {
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: "#tracking-section",
-        start: "top center",
-        end: "bottom center",
-        scrub: true,
-      },
-    });
-
-    tl.fromTo(
-      "#element",
-      { x: 0, y: 0 },
-      {
-        ease: "none",
-        motionPath: {
-          path: [
-            { x: "50vw", y: "100vh" },
-            { x: "25vw", y: "200vh" },
-            { x: "75vw", y: "300vh" },
-            { x: "0vw", y: "400vh" },
-          ],
-        },
-      }
-    );
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const timelineBlocks = document.querySelectorAll(".cd-timeline-block");
-      timelineBlocks.forEach((block) => {
-        const top = block.getBoundingClientRect().top;
-        if (top <= window.innerHeight * 0.75) {
-          block.querySelector(".cd-timeline-img").classList.remove("is-hidden");
-          block.querySelector(".cd-timeline-img").classList.add("bounce-in");
-          block
-            .querySelector(".cd-timeline-content")
-            .classList.remove("is-hidden");
-          block
-            .querySelector(".cd-timeline-content")
-            .classList.add("bounce-in");
-        } else {
-          block.querySelector(".cd-timeline-img").classList.add("is-hidden");
-          block.querySelector(".cd-timeline-img").classList.remove("bounce-in");
-          block
-            .querySelector(".cd-timeline-content")
-            .classList.add("is-hidden");
-          block
-            .querySelector(".cd-timeline-content")
-            .classList.remove("bounce-in");
-        }
-      });
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
     const firstSection = {
       section: "#first-color",
       bgColor: "#EDE7E6",
@@ -175,18 +116,27 @@ const HeaderBanner = () => {
         pinSpacing: true,
       },
     });
-    cards.forEach((card) => {
+
+    let timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
+
+    cards.forEach((card, index) => {
       if (card) {
-        gsap.to(card, {
-          height: 0,
-          ease: "power1.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "0% 40%",
-            end: "bottom center",
-            scrub: true,
+        timeline.to(
+          card,
+          {
+            height: 0,
+            ease: "power1.out",
+            duration: 0.5,
           },
-        });
+          index * 0.5
+        );
       }
     });
 
@@ -195,7 +145,7 @@ const HeaderBanner = () => {
     };
   }, []);
 
-  //circle
+  // circle
 
   // const svgRef = useRef(null);
 
@@ -223,7 +173,7 @@ const HeaderBanner = () => {
   //   };
   // }, []);
 
-  //line
+  // line
   const pathRef = useRef(null);
 
   useEffect(() => {
@@ -248,7 +198,6 @@ const HeaderBanner = () => {
         });
       },
     });
-
   }, []);
 
   const containerRef = useRef(null);
@@ -263,21 +212,37 @@ const HeaderBanner = () => {
   }, []);
 
   const cardData = [
-    { id: 1, frontText: "Initial consultations are always free of charge.",     img: "../images/tarot1.png" },
+    {
+      id: 1,
+      frontText: "Initial consultations are always free of charge.",
+      img: "../images/tarot1.png",
+    },
     //  backText: "  Complimentary Consultation"
     //  },
-    { id: 2, frontText:"Choose from flexible payment plans or enjoy 10% off when you pay in full prior to starting treatment",  img: "../images/tarot1.png" 
-    // backText: "Flexible ways to pay" 
-  },
-    { id: 3, frontText: "Successive family members always receive the same excellent care. Ask about our family courtesies",  img: "../images/tarot1.png" 
-    // backText: "Caring Traditions" 
-   },
-    { id: 4, frontText: "Your treatment includes one year of follow-up care. We're never cheap with our energy.",  img: "../images/tarot1.png" 
-    //  backText: "Support after treatment"
-     },
+    {
+      id: 2,
+      frontText:
+        "Choose from flexible payment plans or enjoy 10% off when you pay in full prior to starting treatment",
+      img: "../images/tarot1.png",
+      // backText: "Flexible ways to pay"
+    },
+    {
+      id: 3,
+      frontText:
+        "Successive family members always receive the same excellent care. Ask about our family courtesies",
+      img: "../images/tarot1.png",
+      // backText: "Caring Traditions"
+    },
+    {
+      id: 4,
+      frontText:
+        "Your treatment includes one year of follow-up care. We're never cheap with our energy.",
+      img: "../images/tarot1.png",
+      //  backText: "Support after treatment"
+    },
   ];
 
-  const rotateCardsRef = useRef([]); 
+  const rotateCardsRef = useRef([]);
 
   const addToRefs = (el) => {
     if (el && !rotateCardsRef.current.includes(el)) {
@@ -307,13 +272,13 @@ const HeaderBanner = () => {
     rotateCardsRef.current.forEach((card, i) => {
       gsap.fromTo(
         card,
-        { y: 0 }, 
+        { y: 0 },
         {
-          y: i % 2 === 0 ? -15 : 15, 
+          y: i % 2 === 0 ? -15 : 15,
           duration: 2,
           ease: "sine.inOut",
-          repeat: -1, 
-          yoyo: true, 
+          repeat: -1,
+          yoyo: true,
         }
       );
     });
@@ -321,7 +286,6 @@ const HeaderBanner = () => {
 
   return (
     <div>
-      
       <div className="flex justify-center py-16 px-4">
         <div className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12 relative">
           <div className="grid grid-cols-1 h-full md:grid-cols-2 gap-8">
@@ -407,17 +371,16 @@ const HeaderBanner = () => {
       >
         <div className="payment-grid">
           <div className="payment-grid-left" ref={leftColumnRef}>
-          <div className="video-container">
-          <div className="w-full h-auto rounded-[40px] border border-black overflow-hidden">
-  <img
-    src="https://images.squarespace-cdn.com/content/v1/62a7d8d744b4180668563980/5eabcc0c-33b8-4967-835a-03046db10f7d/b89c2369-13d2-465a-9b20-9ce94a244bcf.gif?format=2500w"
-    alt="GIF Animation"
-    className="w-full h-auto"
-  />
-</div>
+            <div className="video-container">
+              <div className="w-full h-auto rounded-[40px] border border-black overflow-hidden">
+                <img
+                  src="https://images.squarespace-cdn.com/content/v1/62a7d8d744b4180668563980/5eabcc0c-33b8-4967-835a-03046db10f7d/b89c2369-13d2-465a-9b20-9ce94a244bcf.gif?format=2500w"
+                  alt="GIF Animation"
+                  className="w-full h-auto"
+                />
+              </div>
 
-
-      {/* <video
+              {/* <video
         src="../images/financialgraph.mp4"
         loop
         autoPlay
@@ -425,7 +388,7 @@ const HeaderBanner = () => {
         playsInline
         className="w-full h-auto"
       ></video> */}
-    </div>
+            </div>
           </div>
           <div className="payment-grid-right">
             {[
@@ -503,24 +466,19 @@ const HeaderBanner = () => {
       </div>
 
       <div className="cards-container">
-  {cardData.map((card, index) => (
-    <div
-      key={card.id}
-      ref={(el) => addToRefs(el)}
-      className="singlecard"
-      style={{ transform: "rotateY(180deg)" }}
-    >
-          <img src={card.img} alt={`Back of Card ${card.id}`} />
-      <div className="card-front">{card.frontText}</div>
-    </div>
-  ))}
-</div>
-      <div
-
-      >
-
-
-
+        {cardData.map((card, index) => (
+          <div
+            key={card.id}
+            ref={(el) => addToRefs(el)}
+            className="singlecard"
+            style={{ transform: "rotateY(180deg)" }}
+          >
+            <img src={card.img} alt={`Back of Card ${card.id}`} />
+            <div className="card-front">{card.frontText}</div>
+          </div>
+        ))}
+      </div>
+      <div>
         <div className="flex">
           <section className="relative p-8 w-1/2 ">
             <div className="flex w-2/3 items-center justify-center ">
@@ -583,18 +541,16 @@ const HeaderBanner = () => {
 
           <div className="flex  ">
             <div className="relative p-12 max-w-lg w-full">
-              <div className="flex items-center justify-center mb-8">
-              
-              </div>
+              <div className="flex items-center justify-center mb-8"></div>
 
               <p className="text-lg text-gray-700 mb-8">
-                &quot;Frey Smiles has made the whole process from start to finish
-                incredibly pleasant and sooo easy on my kids to follow. They
-                were able to make a miracle happen with my son&apos;s tooth that was
-                coming in sideways. He now has a perfect smile and I couldn&apos;t be
-                happier. My daughter is halfway through her treatment and the
-                difference already has been great. I 100% recommend this place
-                to anyone!!!&quot;
+                &quot;Frey Smiles has made the whole process from start to
+                finish incredibly pleasant and sooo easy on my kids to follow.
+                They were able to make a miracle happen with my son&apos;s tooth
+                that was coming in sideways. He now has a perfect smile and I
+                couldn&apos;t be happier. My daughter is halfway through her
+                treatment and the difference already has been great. I 100%
+                recommend this place to anyone!!!&quot;
               </p>
 
               <div className="mt-8">
@@ -604,26 +560,9 @@ const HeaderBanner = () => {
             </div>
           </div>
         </div>
-      
       </div>
     </div>
   );
 };
 
 export default HeaderBanner;
-
-{
-  /* <div className="flex items-center w-1/4 h-full justify-center bg-[#e5c2cc]">
-      <p className="text-2xl font-bold tracking-wider text-black transform -rotate-90">REVIEWS</p>
-    </div>
-
-
-    <div className="p-8">
-      <p className="text-gray-500">
-      "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!"
-      </p>
-      <p className="mt-4 font-bold text-black">
-   <a href="/testimonials" className="text-black underline">Read More</a>
-      </p>
-    </div> */
-}
