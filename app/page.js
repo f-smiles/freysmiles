@@ -430,10 +430,6 @@ const Hero = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-
-
-
-
   useEffect(() => {
     const lines = document.querySelectorAll(".stagger-line");
 
@@ -634,88 +630,11 @@ const Hero = () => {
       containerRef.current.removeChild(gl.canvas);
     };
   }, []);
-  const rows = 3; 
-  const cols = 6; 
-  const dx = 80; 
-  const dy = 80; 
-  const circleRefs = useRef([]); 
-
-
-  useEffect(() => {
-    const tl = gsap.timeline({ repeat: -1, repeatDelay: 0 });
-
-    // forward Animation, each circle will animate from (0,0) to its grid position.
-    // each diagonal grouping is (row+col)*0.3 to animate together
-    circleRefs.current.forEach((circle) => {
-      const col = parseInt(circle.getAttribute("data-col"), 10);
-      const row = parseInt(circle.getAttribute("data-row"), 10);
-      const forwardDelay = (row + col) * 0.3;
-      
-      tl.to(
-        circle,
-        {
-          duration: 1.5,
-          x: col * dx,
-          y: row * dy,
-          ease: "power2.inOut",
-        },
-        forwardDelay 
-      );
-    });
-
-    // longest delay starts with circle from the highest row+col val.
-    const maxSum = rows + cols - 2; // maximum diagonal value (0-index)
-    const forwardTotalTime = maxSum * 0.3 + 1.5;
-
-    // reverse Animation: for each circle, reverse delay =  (maxSum - (row+col)) * 0.3. (highest=7)
-    circleRefs.current.forEach((circle) => {
-      const col = parseInt(circle.getAttribute("data-col"), 10);
-      const row = parseInt(circle.getAttribute("data-row"), 10);
-      const diagonal = row + col;
-      const reverseDelay = (maxSum - diagonal) * 0.3;
-      
-      tl.to(
-        circle,
-        {
-          duration: 1.5,
-          x: 0,
-          y: 0,
-          ease: "power2.inOut",
-        },
-        forwardTotalTime + reverseDelay 
-      );
-    });
-  }, [cols, rows, dx, dy]);
-
-
-  const circles = [];
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      circles.push({ id: `${row}-${col}`, row, col });
-    }
-  }
-
 
   return (
     <div className="flex h-screen w-full">
       {/* Left Section */}
       <div className="flex-[3] flex flex-col justify-center p-8 border-r border-black">
-      <svg width="800" height="400" viewBox="-50 -50 800 400">
-      <g id="multiply-circles">
-        {circles.map((circle, index) => (
-          <circle
-            key={circle.id}
-            ref={(el) => (circleRefs.current[index] = el)}
-            cx={0} 
-            cy={0}
-            r={40} 
-            fill="#000"
-            data-row={circle.row} 
-            data-col={circle.col} 
-          />
-        ))}
-      </g>
-    </svg>
         {/* <div className="mt-[300px] w-full">
           <div className="stagger-line overflow-hidden">
             <h1 className="text-[10vw] font-semibold font-neue-montreal leading-none w-full text-left">
@@ -734,25 +653,24 @@ const Hero = () => {
           </div>
         </div>
      */}
-<div
-  style={{
-    position: "relative", 
-    width: "100%",
-    height: "600px",
-  }}
->
-  <div
-    ref={containerRef}
-    style={{
-      position: "absolute",
-      width: "100%",
-      height: "100%",
-      borderRadius: "30px",
-      overflow: "hidden",
-    }}
-  />
-</div>
-
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "600px",
+          }}
+        >
+          <div
+            ref={containerRef}
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              borderRadius: "30px",
+              overflow: "hidden",
+            }}
+          />
+        </div>
 
         {/* <div className="">
   <video
@@ -772,9 +690,7 @@ const Hero = () => {
           <div
             className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "
             data-speed="1"
-          >
-          
-          </div>
+          ></div>
           {/* <img
         src="../images/ribbedimage.png"
     
@@ -944,15 +860,110 @@ const Stats = () => {
     });
   }, []);
 
+  const rows = 3;
+  const cols = 6;
+  const dx = 100;
+  const dy = 100;
+  const circleRefs = useRef([]);
+
+  useEffect(() => {
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 0 });
+
+    // forward Animation, each circle will animate from (0,0) to its grid position.
+    // each diagonal grouping is (row+col)*0.3 to animate together
+    circleRefs.current.forEach((circle) => {
+      const col = parseInt(circle.getAttribute("data-col"), 10);
+      const row = parseInt(circle.getAttribute("data-row"), 10);
+      const forwardDelay = (row + col) * 0.3;
+
+      tl.to(
+        circle,
+        {
+          duration: 1.5,
+          x: col * dx,
+          y: row * dy,
+          ease: "power2.inOut",
+        },
+        forwardDelay
+      );
+    });
+
+    // longest delay starts with circle from the highest row+col val.
+    const maxSum = rows + cols - 2; // maximum diagonal value (0-index)
+    const forwardTotalTime = maxSum * 0.3 + 1.5;
+
+    // reverse Animation: for each circle, reverse delay =  (maxSum - (row+col)) * 0.3. (highest=7)
+    circleRefs.current.forEach((circle) => {
+      const col = parseInt(circle.getAttribute("data-col"), 10);
+      const row = parseInt(circle.getAttribute("data-row"), 10);
+      const diagonal = row + col;
+      const reverseDelay = (maxSum - diagonal) * 0.3;
+
+      tl.to(
+        circle,
+        {
+          duration: 1.5,
+          x: 0,
+          y: 0,
+          ease: "power2.inOut",
+        },
+        forwardTotalTime + reverseDelay
+      );
+    });
+  }, [cols, rows, dx, dy]);
+
+  const circles = [];
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      circles.push({ id: `${row}-${col}`, row, col });
+    }
+  }
+
+  const palette = [
+    "#DFC0FC",
+    "#E0FF65",
+    // "#034CFF",
+    // "#AE33FB",
+  ];
+  const getRandomColor = () =>
+    palette[Math.floor(Math.random() * palette.length)];
+
+  const paragraphRef = useRef(null);
+  const [lineWidth, setLineWidth] = useState(0);
+  const [lineFinished, setLineFinished] = useState(false);
+
+  useEffect(() => {
+    if (paragraphRef.current) {
+      setLineWidth(paragraphRef.current.offsetWidth);
+    }
+  }, []);
+
   return (
     <section className=" rounded-tl-[40px] rounded-tr-[40px] ">
       <section className="min-h-screen grid grid-cols-12 px-12">
         <div className="col-span-4  flex">
-        <div
+          <div
             className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "
             data-speed="1"
           >
-            <div className="">
+            <svg width="1000" height="500" viewBox="-50 -50 1000 500">
+              <g id="multiply-circles">
+                {circles.map((circle, index) => (
+                  <circle
+                    key={circle.id}
+                    ref={(el) => (circleRefs.current[index] = el)}
+                    cx={0}
+                    cy={0}
+                    r={50}
+                    fill={getRandomColor()}
+                    data-row={circle.row}
+                    data-col={circle.col}
+                  />
+                ))}
+              </g>
+            </svg>
+
+            {/* <div className="">
               {colors.map((row, rowIndex) => (
                 <div key={rowIndex} className="flex ">
                   {row.map((color, circleIndex) => (
@@ -968,29 +979,38 @@ const Stats = () => {
                   ))}
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
+
         <div className="col-span-8 flex flex-col">
-   <div className="stagger-line overflow-hidden mt-[6vh]">
-          <p className="font-helvetica-neue-light text-xl lg:text-2xl font-light leading-relaxed">
-            <span className="stagger-word">
+          <div className="overflow-hidden mt-[6vh] ml-auto max-w-2xl">
+            <motion.div
+              className="h-[1px] bg-black mt-2"
+              initial={{ width: 0 }}
+              animate={{ width: lineWidth }}
+              transition={{ duration: 2, ease: "easeInOut" }}
+              onAnimationComplete={() => setLineFinished(true)}
+            />
+
+            <div className="my-12"></div>
+
+            <motion.p
+              ref={paragraphRef}
+              className="font-neue-montreal lg:text-[20px] leading-relaxed text-right"
+              initial={{ opacity: 0, y: 40 }}
+              animate={lineFinished ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 2, ease: "easeOut" }}
+            >
               A confident smile begins with effective care tailored to each
-              patient. 
-            </span>
-            <span className="stagger-word">
-             At our practice, we’re dedicated to providing treatments that are
-           
-            </span>
-            <span className="stagger-word">
-        
-               not only scientifically sound but also crafted to bring
+              patient. At our practice, we’re dedicated to providing treatments
+              that are not only scientifically sound but also crafted to bring
               out your best smile.
-            </span>
-            <br />
-          </p>
-        </div>
-          <div className="my-24"></div>
+              <br />
+            </motion.p>
+          </div>
+          <div className="my-12"></div>
+          {/* Stats Section */}
           <div className="flex justify-end mt-8 space-x-12">
             <div className="text-center">
               <p className="font-neue-montreal text-[15px] mb-10">
@@ -1449,7 +1469,7 @@ const NewSection = () => {
     <>
       <section className="flex items-center justify-center min-h-screen bg-black px-8 md:px-16">
         <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Left Section */}
+          {/*left */}
           <div className="bg-[#CFF174] text-black p-8 md:p-16 rounded-md flex flex-col justify-center">
             <h1 className="font-helvetica-neue-light text-5xl md:text-6xl mb-4">
               A world of opportunity.
@@ -1497,7 +1517,7 @@ const NewSection = () => {
             </div>
           </div>
 
-          {/* Right Section */}
+          {/*right*/}
           <div className="bg-black text-white border border-[#CFF174] p-8 md:p-16 rounded-md flex flex-col justify-between">
             <svg
               width="100%"
@@ -2344,46 +2364,39 @@ const ImageGrid = () => {
   return (
     <div ref={sectionRef}>
       <div className="grid grid-cols-2 min-h-screen gap-4 p-4">
-        {/* Column 1 (Nested Grid) */}
+        {/* Column 1 */}
         <div className="grid grid-cols-2 gap-4">
-          {/* First Sub-Column */}
+          {/* first column */}
           <div className="relative group overflow-hidden rounded-[60px] bg-[#B2E7EB]">
-            {/* Image */}
             <img
               src="../images/hand.jpeg"
               alt="Left Sub-Column Image"
               className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-20"
             />
-            {/* Overlay (Text Reveal) */}
             <div className="absolute inset-0  text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <h2 className="text-2xl font-neue-montreal">Clear Aligners</h2>
               <p className="font-neue-montreal text-lg">Invisalign</p>
             </div>
           </div>
-
-          {/* Second Sub-Column */}
+          {/* 2nd sub column */}
           <div className="relative group overflow-hidden rounded-[60px] bg-[#FFE0DB]">
-            {/* Image */}
             <img
               src="../images/mainsectionimage.jpg"
               alt="Right Sub-Column Image"
               className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10"
             />
-            {/* Overlay (Text Reveal) */}
             <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <h2 className="text-2xl font-neue-montreal">Braces</h2>
               <p className="font-neue-montreal text-lg">Damon Ultima</p>
             </div>
           </div>
-
           {/* <div className="col-span-2 h-1/3 bg-[#FFCC00] rounded-[60px] flex items-center justify-center">
     <p className="text-black text-lg font-neue-montreal">Awards and Recognition</p>
   </div> */}
         </div>
-
-        {/* Column 2 */}
+        {/* column 2 */}
         <div className="flex flex-col gap-4">
-          {/* Top Section */}
+          {/* top */}
           <div className="h-1/3 bg-[#EFFD47] rounded-[60px] relative flex items-center justify-center">
             <div className="flex flex-col">
               <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
@@ -2392,15 +2405,13 @@ const ImageGrid = () => {
               </span>
             </div>
           </div>
-          {/* Large Image */}
           <div className="flex-grow relative group overflow-hidden rounded-[60px] bg-[#F2BD4A]">
-            {/* Image */}
             <img
               src="../images/handbackground.png"
               alt="Bottom Image Column 2"
               className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10"
             />
-            {/* Overlay (Text Reveal) */}
+
             <div className="absolute inset-0  text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <h2 className="text-2xl font-neue-montreal">
                 Advanced Technology
@@ -2725,7 +2736,7 @@ const LogoGrid = () => {
             Awards & Recognition
           </p>
           <div className="flex items-center mt-10">
-            <div className="w-48 h-px bg-white"></div>
+            <div className="w-48 h-px bg-black"></div>
             <p className=" font-neue-montreal text-[15px] pl-4">
               Our greatest award is the success of our patients
             </p>

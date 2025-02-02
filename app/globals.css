@@ -10,6 +10,16 @@
 }
 
 @font-face {
+  font-family: "GeneralSans-Regular";
+  src: url("/fonts/GeneralSans-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "GeneralSans-Medium";
+  src: url("/fonts/GeneralSans-Medium.otf") format("opentype");
+}
+
+@font-face {
   font-family: "Autumn Chant";
   src: url("/fonts/Autumn Chant.otf") format("opentype");
 }
