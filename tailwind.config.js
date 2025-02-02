@@ -12,6 +12,7 @@ module.exports = withUt({
   theme: {
   	fontFamily: {
   		aileron: 'Aileron-Black',
+		generalregular: "GeneralSans-Regular",
 		autumnchant: 'Autumn Chant',
   		cera: 'CeraProRegular',
   		horizon: 'HorizonSolid',
