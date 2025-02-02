@@ -5383,3 +5383,51 @@ font-family: "NeueMontrealBook";
 }
 
 
+.cards-container {
+  display: flex;
+  flex-direction: row;
+  align-items: top;
+  gap: 50px;
+  padding: 100px 20px;
+  perspective: 1200px; 
+}
+
+.singlecard {
+  width: 300px;
+  height: 450px;
+  background: white;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.card-back,
+.card-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-back {
+  background: pink;
+  color: black;
+  transform: rotateY(180deg); 
+  font-family: "NeueMontrealBook";
+  font-size: 1.5rem;
+}
+
+.card-front {
+  background: blue;
+  color: white;
+  font-family: "NeueMontrealBook";
+  font-size: 18px;
+}
+

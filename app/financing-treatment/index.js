@@ -262,6 +262,63 @@ const HeaderBanner = () => {
     );
   }, []);
 
+  const cardData = [
+    { id: 1, frontText: "Initial consultations are always free of charge.",     img: "../images/tarot1.png" },
+    //  backText: "  Complimentary Consultation"
+    //  },
+    { id: 2, frontText:"Choose from flexible payment plans or enjoy 10% off when you pay in full prior to starting treatment",  img: "../images/tarot1.png" 
+    // backText: "Flexible ways to pay" 
+  },
+    { id: 3, frontText: "Successive family members always receive the same excellent care. Ask about our family courtesies",  img: "../images/tarot1.png" 
+    // backText: "Caring Traditions" 
+   },
+    { id: 4, frontText: "Your treatment includes one year of follow-up care. We're never cheap with our energy.",  img: "../images/tarot1.png" 
+    //  backText: "Support after treatment"
+     },
+  ];
+
+  const rotateCardsRef = useRef([]); 
+
+  const addToRefs = (el) => {
+    if (el && !rotateCardsRef.current.includes(el)) {
+      rotateCardsRef.current.push(el);
+    }
+  };
+
+  useEffect(() => {
+    gsap.to(rotateCardsRef.current, {
+      rotationY: 0,
+      ease: "power2.out",
+      duration: 1,
+      stagger: {
+        each: 1,
+      },
+      scrollTrigger: {
+        trigger: ".cards-container",
+        start: "top top",
+        end: "+=300%",
+        scrub: true,
+        pin: true,
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    rotateCardsRef.current.forEach((card, i) => {
+      gsap.fromTo(
+        card,
+        { y: 0 }, 
+        {
+          y: i % 2 === 0 ? -15 : 15, 
+          duration: 2,
+          ease: "sine.inOut",
+          repeat: -1, 
+          yoyo: true, 
+        }
+      );
+    });
+  }, []);
+
   return (
     <div>
       
@@ -444,167 +501,26 @@ const HeaderBanner = () => {
           </svg>
         </Link>
       </div>
+
+      <div className="cards-container">
+  {cardData.map((card, index) => (
+    <div
+      key={card.id}
+      ref={(el) => addToRefs(el)}
+      className="singlecard"
+      style={{ transform: "rotateY(180deg)" }}
+    >
+          <img src={card.img} alt={`Back of Card ${card.id}`} />
+      <div className="card-front">{card.frontText}</div>
+    </div>
+  ))}
+</div>
       <div
-        className="third-color py-16 px-8 bg-cover bg-center"
-        id="tracking-section"
-        // style={{ backgroundImage: "url('../images/background_min.png')" }}
+
       >
-        <div
-          id="element"
-          className="absolute w-12 h-12 bg-black rounded-full top-0 left-0"
-        ></div>
 
-        <section
-          id="cd-timeline"
-          className="relative mx-auto w-[90%] max-w-[1170px]"
-        >
-          {/* Vertical line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 top-0 h-full w-[2px] bg-gray-300"></div>
 
-          {/* Section 1 (Left Aligned) */}
-          <div className="cd-timeline-block relative my-8 flex lg:flex-row-reverse">
-            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
-              <img
-                src="../images/starbullet.svg"
-                alt="Location"
-                className="w-15 h-15"
-              />
-            </div>
 
-            <div className="cd-timeline-content flex justify-end">
-              <div className="relative bg-[#68C9BA1A] p-12 rounded-3xl m-6 lg:w-[45%] min-w-[min-content]">
-                <img
-                  src="../images/consultgraphic.svg"
-                  alt="Consult Graphic"
-                  className="absolute left-[-100px] top-0 w-[150px] h-auto"
-                />
-
-                <h3 className="text-4xl font-bold text-[#212353] mb-4">
-                  Complimentary Consultation
-                </h3>
-
-                <p className="text-md text-[#4B5D68] mb-6">
-                  Initial consultations are always free of charge.
-                </p>
-
-                <a
-                  href="#0"
-                  className="float-right text-white bg-black px-4 py-2 rounded-full hover:bg-gray-300"
-                >
-                  Book Now
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 2 (Right Aligned) */}
-          <div className="cd-timeline-block relative my-8 flex lg:flex-row">
-            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10 flex items-center justify-center">
-              <img
-                src="../images/starbullet.svg"
-                alt="Location"
-                className="w-15 h-15"
-              />
-            </div>
-
-            <div className="cd-timeline-content">
-              <div className="relative bg-[#F063B81A] p-12 rounded-3xl m-6 lg:w-[45%]">
-                <img
-                  src="../../images/orangecylinder.svg"
-                  alt="Consult Graphic"
-                  className="absolute left-[-100px] top-0 w-[150px] h-auto"
-                />
-
-                <h3 className="text-4xl font-bold text-[#212353] mb-4">
-                  Explore Flexible Ways to Pay
-                </h3>
-
-                <p className="text-md text-[#4B5D68] mb-6">
-                  Choose from flexible payment plans or enjoy 10% off when you
-                  pay in full prior to starting treatment
-                </p>
-
-                <a
-                  href="https://www.klarna.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="float-right"
-                >
-                  <img
-                    src="../images/klarna.svg"
-                    alt="Klarna"
-                    className="w-12 h-auto"
-                  />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 3 (Left Aligned) */}
-          <div className="cd-timeline-block relative my-8 flex lg:flex-row-reverse">
-            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
-              <img
-                src="../images/starbullet.svg"
-                alt="Location"
-                className="w-15 h-15"
-              />
-            </div>
-            <div className="cd-timeline-content flex justify-end">
-              <div className="relative bg-[#9C69E21A] p-12 rounded-3xl m-6 lg:w-[45%] min-w-[min-content]">
-                <img
-                  src="../images/consultgraphic.svg"
-                  alt="Caring Tradition"
-                  className="absolute left-[-100px] top-0 w-[150px] h-auto"
-                />
-
-                <h3 className="text-4xl font-bold text-[#212353] mb-4">
-                  Caring Tradition
-                </h3>
-
-                <p className="text-md text-[#4B5D68] mb-6">
-                  Successive family members always receive the same excellent
-                  care. Ask about our family courtesies.
-                </p>
-
-                <a
-                  href="#0"
-                  className="float-right text-white bg-black px-4 py-2 rounded-full hover:bg-gray-300"
-                >
-                  Inquire
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 4 (Right Aligned) */}
-          <div className="cd-timeline-block relative my-8 flex lg:flex-row">
-            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
-              <img
-                src="../images/starbullet.svg"
-                alt="Location"
-                className="w-15 h-15"
-              />
-            </div>
-            <div className="cd-timeline-content flex justify-start">
-              <div className="relative bg-[#68C9BA1A] p-12 rounded-3xl m-6 lg:w-[45%] min-w-[min-content]">
-                <img
-                  src="../images/winky.svg"
-                  alt="Post-Op Care Graphic"
-                  className="absolute left-[-100px] top-0 w-[150px] h-auto"
-                />
-
-                <h3 className="text-4xl font-bold text-[#212353] mb-4">
-                  Our Support Doesn&apos;t End When Treatment Does
-                </h3>
-
-                <p className="text-md text-[#4B5D68] mb-6">
-                  Your treatment includes one year of follow-up care. We&apos;re
-                  never cheap with our energy.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
         <div className="flex">
           <section className="relative p-8 w-1/2 ">
             <div className="flex w-2/3 items-center justify-center ">
@@ -666,13 +582,9 @@ const HeaderBanner = () => {
           </section>
 
           <div className="flex  ">
-            <div className="relative bg-white bg-opacity-10 p-12 rounded-3xl m-6 backdrop-filter backdrop-blur-lg shadow-lg max-w-lg w-full">
+            <div className="relative p-12 max-w-lg w-full">
               <div className="flex items-center justify-center mb-8">
-                <img
-                  src="../../images/logo_icon.png"
-                  alt="Logo"
-                  className="w-20 h-20 mr-4"
-                />
+              
               </div>
 
               <p className="text-lg text-gray-700 mb-8">
@@ -692,64 +604,7 @@ const HeaderBanner = () => {
             </div>
           </div>
         </div>
-        {/* <section className="relative p-8 w-full ">
-          <div className="flex w-full items-center justify-center ">
-            <div
-              className="relative mx-2"
-              style={{ width: "300px", height: "240px" }}
-            >
-              <img
-                className="object-cover w-full h-full rounded-full opacity-90"
-                src="../../images/carepatient1.png"
-                alt="patient"
-                style={{ objectPosition: "40% 50%" }}
-              />
-            </div>
-            <div
-              className="relative mx-2"
-              style={{ width: "300px", height: "300px" }}
-            >
-              <img
-                className="object-cover w-full h-full rounded-full opacity-90"
-                src="../../images/carepatient2.png"
-                alt="patient"
-                style={{ objectPosition: "10% 50%" }}
-              />
-            </div>
-
-            <div
-              className="relative mx-2 "
-              style={{ width: "300px", height: "340px" }}
-            >
-              <img
-                className="object-cover w-full h-full rounded-full opacity-90"
-                src="../../images/carepatient3.png"
-                alt="patient"
-              />
-            </div>
-            <div
-              className="relative mx-2 "
-              style={{ width: "330px", height: "400px" }}
-            >
-              <img
-                className="object-cover w-full h-full rounded-full opacity-90"
-                src="../../images/carepatient4.png"
-                alt="patient"
-                style={{ objectPosition: "40% 50%" }}
-              />
-            </div>
-            <div
-              className="relative mx-2 "
-              style={{ width: "300px", height: "480px" }}
-            >
-              <img
-                className="object-cover w-full h-full rounded-full opacity-90"
-                src="../../images/freysmilepatient1.jpg"
-                alt="patient"
-              />
-            </div>
-          </div>
-        </section> */}
+      
       </div>
     </div>
   );
