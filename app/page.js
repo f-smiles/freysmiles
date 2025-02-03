@@ -812,25 +812,50 @@ const Stats = () => {
 
   useEffect(() => {
     statRefs.current.forEach((ref) => {
-      const targetValue = parseFloat(ref.dataset.target);
-      gsap.fromTo(
-        ref,
-        { innerText: 0 },
-        {
-          innerText: targetValue,
-          duration: 2,
-          ease: "power1.out",
-          snap: { innerText: 1 },
+      if (!ref) return;
+
+      const targetValue = parseInt(ref.dataset.target, 10);
+      const digits = targetValue.toString().split("");
+
+      ref.innerHTML = "";
+      const containers = [];
+
+      digits.forEach((digit) => {
+        const wrapper = document.createElement("div");
+        wrapper.style.overflow = "hidden";
+        wrapper.style.height = "1em";
+        wrapper.style.display = "inline-block";
+
+        const digitContainer = document.createElement("div");
+        digitContainer.style.position = "relative";
+        digitContainer.style.transform = "translateY(0)";
+        digitContainer.style.transition = "transform 0.5s ease-out";
+
+        for (let i = 0; i <= 9; i++) {
+          const digitElement = document.createElement("div");
+          digitElement.innerText = i;
+          digitElement.style.height = "1em";
+          digitElement.style.lineHeight = "1em";
+          digitElement.style.textAlign = "center";
+          digitContainer.appendChild(digitElement);
+        }
+        wrapper.appendChild(digitContainer);
+        ref.appendChild(wrapper);
+        containers.push({ container: digitContainer, value: digit });
+      });
+
+      containers.forEach(({ container, value }, index) => {
+        gsap.to(container, {
+          y: -value * 1 + "em",
+          duration: 4,
+          ease: "power3.out",
           scrollTrigger: {
             trigger: ref,
-            start: "top 80%",
+            start: "top 85%",
             toggleActions: "play none none none",
           },
-          onUpdate: function () {
-            ref.innerText = Math.round(this.targets()[0].innerText);
-          },
-        }
-      );
+        });
+      });
     });
   }, []);
 
@@ -1016,22 +1041,26 @@ const Stats = () => {
               <p className="font-neue-montreal text-[15px] mb-10">
                 Years of Experience
               </p>
-              <h2 className="font-neue-montreal text-[7rem] font-light">
+              <h2 className="font-neue-montreal text-[7rem] font-light flex items-center gap-2">
                 <span data-target="60" ref={(el) => (statRefs.current[0] = el)}>
                   0
                 </span>
-                <span className="text-[4rem] align-top">+</span>
+                <span className="text-[3rem] align-center">+</span>
               </h2>
             </div>
             <div className="text-center">
               <p className="font-neue-montreal text-[15px] mb-10">
                 Satisfied Patients
               </p>
-              <h2 className="font-neue-montreal text-[7rem] font-light">
-                <span data-target="25" ref={(el) => (statRefs.current[1] = el)}>
+              <h2 className="font-neue-montreal text-[7rem] font-light flex items-center gap-2">
+                <span
+                  data-target="25"
+                  ref={(el) => (statRefs.current[1] = el)}
+                  className="flex"
+                >
                   0
                 </span>
-                <span className="text-[4rem] align-top">k</span>
+                <span className="text-[3rem]">k</span>
               </h2>
             </div>
             <div className="text-center">

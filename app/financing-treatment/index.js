@@ -173,34 +173,51 @@ const HeaderBanner = () => {
   //   };
   // }, []);
 
-  // line
-  const pathRef = useRef(null);
 
-  useEffect(() => {
-    const path = pathRef.current;
 
-    const pathLength = path.getTotalLength();
+const pathRef = useRef(null);
+const cardsectionRef =useRef(null)
 
-    gsap.set(path, {
-      strokeDasharray: pathLength,
-      strokeDashoffset: pathLength,
-    });
+useEffect(() => {
+  const path = pathRef.current;
+  const pathLength = path.getTotalLength();
 
-    gsap.to(path, {
-      strokeDashoffset: 0,
-      duration: 3,
-      ease: "power2.out",
-      onComplete: () => {
-        gsap.to(path, {
-          strokeDashoffset: pathLength,
-          duration: 3,
-          ease: "power2.in",
-        });
-      },
-    });
-  }, []);
+  gsap.set(path, {
+    strokeDasharray: pathLength,
+    strokeDashoffset: pathLength,
+  });
 
-  const containerRef = useRef(null);
+
+  gsap.to(path, {
+    strokeDashoffset: 0,
+    duration: 3,
+    ease: "power2.out",
+    onComplete: () => {
+      gsap.to(path, {
+        strokeDashoffset: pathLength, 
+        ease: "none",
+        scrollTrigger: {
+          trigger: cardsectionRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1, 
+        },
+      });
+    },
+  });
+
+  // Pin section 
+  ScrollTrigger.create({
+    trigger: cardsectionRef.current,
+    start: "top top",
+    end: "+=150%", 
+    pin: true,
+    pinSpacing: true,
+  });
+
+}, []);
+
+
 
   useEffect(() => {
     const tl = gsap.timeline();
@@ -284,10 +301,13 @@ const HeaderBanner = () => {
     });
   }, []);
 
+
+  
   return (
     <div>
       <div className="flex justify-center py-16 px-4">
-        <div className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12 relative">
+        <div ref={cardsectionRef} className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12 relative">
+          
           <div className="grid grid-cols-1 h-full md:grid-cols-2 gap-8">
             <div className="col-span-1">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -349,6 +369,7 @@ const HeaderBanner = () => {
               </svg>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -403,7 +424,7 @@ const HeaderBanner = () => {
                   "We accept HSA/FSA to help you save on your orthodontic treatment",
               },
               {
-                title: "INSURANCE",
+                title: "Insurance",
                 description:
                   "We will help you submit claims for reimbursement based on your insurance plan’s guidelines",
               },
@@ -420,7 +441,7 @@ const HeaderBanner = () => {
                       alt="Star"
                       className="card-star"
                     />
-                    <h2>{card.title}</h2>
+                    <h2 className="font-neue-montreal card-title">{card.title}</h2>
                   </div>
                   <p className="font-neue-montreal card-description">
                     {card.description}
