@@ -4984,20 +4984,21 @@ a {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  height: 300px;
+  height: 240px;
   margin-bottom: 20px;
 }
 
 .payment-card {
-  background: #fbfbfb;
-  padding: 20px;
-  height: 300px;
+  background: #E8F724;
+ /* border-radius: 0px 20px 0px 20px;  */
+  height: 240px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
+  justify-content: flex-center;
+  align-items: flex-center;
 }
+
 .payment-title-wrapper {
   display: flex;
   align-items: center;
@@ -5007,6 +5008,14 @@ a {
 .card-star {
   width: 60px;
   height: 60px;
+}
+
+.card-title{
+  font-size: 1.6rem;
+  display: inline-block;
+  text-align: right;
+  /* justify-content: end; */
+  /* align-items: center; */
 }
 
 .card-description {
