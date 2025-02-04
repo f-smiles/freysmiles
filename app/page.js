@@ -98,7 +98,7 @@ export default function LandingComponent() {
           <Stats />
         </section>
         <section>
-          <ImageGrid />
+          {/* <ImageGrid /> */}
         </section>
         <section>
           <NewSection />
@@ -662,6 +662,7 @@ const Hero = () => {
         >
           <div
             ref={containerRef}
+            className="pointer-events-none"
             style={{
               position: "absolute",
               width: "100%",
@@ -672,16 +673,7 @@ const Hero = () => {
           />
         </div>
 
-        {/* <div className="">
-  <video
-    src="../videos/whitewavessvg.mp4"
-    className="object-cover w-3/4 max-h-[80vh] rounded-md"
-    autoPlay
-    loop
-    muted
-    playsInline
-  ></video>
-</div> */}
+
       </div>
 
       {/* Right Section */}
@@ -689,8 +681,19 @@ const Hero = () => {
         <div className="mb-6">
           <div
             className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "
-            data-speed="1"
+
           ></div>
+                  <div className="">
+  <video
+    // src="../videos/whitewavessvg.mp4"
+    src="../images/holographic.mp4"
+    className="object-cover w-3/4 max-h-[80vh] rounded-md"
+    autoPlay
+    loop
+    muted
+    playsInline
+  ></video>
+</div>
           {/* <img
         src="../images/ribbedimage.png"
     
@@ -709,9 +712,6 @@ const Hero = () => {
           </p>
         </div> */}
         <div className="font-neue-montreal flex gap-4 mt-6">
-          <p className="font-neue-montreal text-sm uppercase tracking-widest">
-            28, Jan, 2025
-          </p>
           <div>
             <p className="font-neue-montreal text-sm tracking-widest">
               • EST {time}
@@ -969,9 +969,8 @@ const Stats = () => {
         <div className="col-span-4  flex">
           <div
             className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "
-            data-speed="1"
           >
-            <svg width="1000" height="500" viewBox="-50 -50 1000 500">
+            <svg className="pointer-events-none" width="1000" height="500" viewBox="-50 -50 1000 500">
               <g id="multiply-circles">
                 {circles.map((circle, index) => (
                   <circle
@@ -983,6 +982,7 @@ const Stats = () => {
                     fill={getRandomColor()}
                     data-row={circle.row}
                     data-col={circle.col}
+       
                   />
                 ))}
               </g>
@@ -1009,9 +1009,9 @@ const Stats = () => {
         </div>
 
         <div className="col-span-8 flex flex-col">
-          <div className="overflow-hidden mt-[6vh] ml-auto max-w-2xl">
+          <div className="mt-[6vh] ml-auto max-w-2xl">
             <motion.div
-              className="h-[1px] bg-black mt-2"
+              className="pointer-events-none h-[1px] bg-black mt-2"
               initial={{ width: 0 }}
               animate={{ width: lineWidth }}
               transition={{ duration: 2, ease: "easeInOut" }}
@@ -1022,7 +1022,7 @@ const Stats = () => {
 
             <motion.p
               ref={paragraphRef}
-              className="font-neue-montreal lg:text-[20px] leading-relaxed text-right"
+              className="pointer-events-none font-neue-montreal lg:text-[20px] leading-relaxed text-right"
               initial={{ opacity: 0, y: 40 }}
               animate={lineFinished ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 2, ease: "easeOut" }}
@@ -1036,42 +1036,49 @@ const Stats = () => {
           </div>
           <div className="my-12"></div>
           {/* Stats Section */}
-          <div className="flex justify-end mt-8 space-x-12">
-            <div className="text-center">
-              <p className="font-neue-montreal text-[15px] mb-10">
-                Years of Experience
-              </p>
-              <h2 className="font-neue-montreal text-[7rem] font-light flex items-center gap-2">
-                <span data-target="60" ref={(el) => (statRefs.current[0] = el)}>
-                  0
-                </span>
-                <span className="text-[3rem] align-center">+</span>
-              </h2>
-            </div>
-            <div className="text-center">
-              <p className="font-neue-montreal text-[15px] mb-10">
-                Satisfied Patients
-              </p>
-              <h2 className="font-neue-montreal text-[7rem] font-light flex items-center gap-2">
-                <span
-                  data-target="25"
-                  ref={(el) => (statRefs.current[1] = el)}
-                  className="flex"
-                >
-                  0
-                </span>
-                <span className="text-[3rem]">k</span>
-              </h2>
-            </div>
-            <div className="text-center">
-              <p className="font-neue-montreal text-[15px] mb-10">Locations</p>
-              <h2 className="font-neue-montreal text-[7rem] font-light">
-                <span data-target="4" ref={(el) => (statRefs.current[2] = el)}>
-                  0
-                </span>
-              </h2>
-            </div>
-          </div>
+          <div className="flex flex-wrap sm:flex-nowrap justify-end mt-8 space-x-4 sm:space-x-6 md:space-x-12">
+  <div className="text-center">
+    <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">Years of Experience</p>
+    <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light flex items-center gap-1 sm:gap-2">
+      <span
+        data-target="60"
+        ref={(el) => (statRefs.current[0] = el)}
+        className="pointer-events-none"
+      >
+        0
+      </span>
+      <span className="text-[2rem] sm:text-[3rem] align-center">+</span>
+    </h2>
+  </div>
+  <div className="text-center">
+    <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">Satisfied Patients</p>
+    <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light flex items-center gap-1 sm:gap-2">
+      <span
+        data-target="25"
+        ref={(el) => (statRefs.current[1] = el)}
+        className="pointer-events-none flex"
+      >
+        0
+      </span>
+      <span className="text-[2rem] sm:text-[3rem]">k</span>
+    </h2>
+  </div>
+  <div className="text-center">
+    <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">Locations</p>
+    <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light">
+      <span
+        data-target="4"
+        ref={(el) => (statRefs.current[2] = el)}
+        className="pointer-events-none"
+      >
+        0
+      </span>
+    </h2>
+  </div>
+</div>
+
+
+
         </div>
       </section>
       {/* <motion.div
@@ -2391,68 +2398,69 @@ const ImageGrid = () => {
   }, []);
 
   return (
-    <div ref={sectionRef}>
-      <div className="grid grid-cols-2 min-h-screen gap-4 p-4">
-        {/* Column 1 */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* first column */}
-          <div className="relative group overflow-hidden rounded-[60px] bg-[#B2E7EB]">
-            <img
-              src="../images/hand.jpeg"
-              alt="Left Sub-Column Image"
-              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-20"
-            />
-            <div className="absolute inset-0  text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <h2 className="text-2xl font-neue-montreal">Clear Aligners</h2>
-              <p className="font-neue-montreal text-lg">Invisalign</p>
-            </div>
-          </div>
-          {/* 2nd sub column */}
-          <div className="relative group overflow-hidden rounded-[60px] bg-[#FFE0DB]">
-            <img
-              src="../images/mainsectionimage.jpg"
-              alt="Right Sub-Column Image"
-              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10"
-            />
-            <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <h2 className="text-2xl font-neue-montreal">Braces</h2>
-              <p className="font-neue-montreal text-lg">Damon Ultima</p>
-            </div>
-          </div>
-          {/* <div className="col-span-2 h-1/3 bg-[#FFCC00] rounded-[60px] flex items-center justify-center">
-    <p className="text-black text-lg font-neue-montreal">Awards and Recognition</p>
-  </div> */}
-        </div>
-        {/* column 2 */}
-        <div className="flex flex-col gap-4">
-          {/* top */}
-          <div className="h-1/3 bg-[#EFFD47] rounded-[60px] relative flex items-center justify-center">
-            <div className="flex flex-col">
-              <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
-              <span className="text-6xl font-cursive italic text-gray-700 mt-2 font-autumnchant">
-                best
-              </span>
-            </div>
-          </div>
-          <div className="flex-grow relative group overflow-hidden rounded-[60px] bg-[#F2BD4A]">
-            <img
-              src="../images/handbackground.png"
-              alt="Bottom Image Column 2"
-              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10"
-            />
+<div ref={sectionRef}>
+  <div className="grid grid-cols-2 h-screen gap-4 p-4">
+    {/* Column 1 */}
+    <div className="grid grid-cols-2 gap-4">
 
-            <div className="absolute inset-0  text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <h2 className="text-2xl font-neue-montreal">
-                Advanced Technology
-              </h2>
-              <p className="font-neue-montreal text-lg">
-                3D i-Cat Imaging, Digital Scans
-              </p>
-            </div>
-          </div>
+      <div className="relative rounded-[60px] bg-[#B2E7EB]">
+        <img
+          src="../images/hand.jpeg"
+          alt="Left Sub-Column Image"
+          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-20 pointer-events-none"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+          <h2 className="text-2xl font-neue-montreal">Clear Aligners</h2>
+          <p className="font-neue-montreal text-lg">Invisalign</p>
+        </div>
+      </div>
+
+      <div className="relative group  rounded-[60px] bg-[#FFE0DB]">
+        <img
+          src="../images/mainsectionimage.jpg"
+          alt="Right Sub-Column Image"
+          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10 pointer-events-none"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+          <h2 className="text-2xl font-neue-montreal">Braces</h2>
+          <p className="font-neue-montreal text-lg">Damon Ultima</p>
         </div>
       </div>
     </div>
+
+    {/* Column 2 */}
+    <div className="flex flex-col gap-4">
+      {/* Top */}
+      <div className="h-1/3 bg-[#EFFD47] rounded-[60px] relative flex items-center justify-center">
+        <div className="flex flex-col">
+          <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
+          <span className="text-6xl font-cursive italic text-gray-700 mt-2 font-autumnchant">
+            best
+          </span>
+        </div>
+      </div>
+
+      {/* Bottom */}
+      <div className="flex-grow relative group rounded-[60px] bg-[#F2BD4A]">
+        <img
+          src="../images/handbackground.png"
+          alt="Bottom Image Column 2"
+          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10 pointer-events-none"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+          <h2 className="text-2xl font-neue-montreal">Advanced Technology</h2>
+          <p className="font-neue-montreal text-lg">
+            3D i-Cat Imaging, Digital Scans
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
     // <section className="bg-[#FBFBFB]">
     //   <div>
     //     <div
@@ -2739,6 +2747,7 @@ const LogoGrid = () => {
 
   return (
     <div className="bg-[#F1F7FF] relative h-screen overflow-hidden">
+  
       {/* <div className="grid grid-cols-2 gap-4">
         {logos.map((columnLogos, columnIndex) => (
           <div key={columnIndex} className="flex flex-col items-center">
@@ -2760,7 +2769,8 @@ const LogoGrid = () => {
           className="z-10 w-full h-full lg:w-1/2 horizontal-item"
         />
 
-        <div className="lg:w-1/2">
+        <div className="lg:w-1/2"
+        >
           <p className="font-neue-montreal text-center text-[px]">
             Awards & Recognition
           </p>
@@ -3617,6 +3627,183 @@ const ContactUs = () => {
     };
   }, []);
 
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const imgSize = [1250, 833];
+
+    const vertex = `
+      attribute vec2 uv;
+      attribute vec2 position;
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = vec4(position, 0, 1);
+      }
+    `;
+
+    const fragment = `
+      precision highp float;
+      uniform sampler2D tWater;
+      uniform sampler2D tFlow;
+      uniform float uTime;
+      varying vec2 vUv;
+      uniform vec4 res;
+      void main() {
+        vec3 flow = texture2D(tFlow, vUv).rgb;
+        vec2 uv = .5 * gl_FragCoord.xy / res.xy ;
+        vec2 myUV = (uv - vec2(0.5)) * res.zw + vec2(0.5);
+        myUV -= flow.xy * (0.15 * 0.7);
+        vec3 tex = texture2D(tWater, myUV).rgb;
+        gl_FragColor = vec4(tex, 1.0);
+      }
+    `;
+
+    const renderer = new OGL.Renderer({ dpr: 2 });
+    const gl = renderer.gl;
+    containerRef.current.appendChild(gl.canvas);
+
+    let aspect = 1;
+    const mouse = new OGL.Vec2(-1);
+    const velocity = new OGL.Vec2();
+
+    function resize() {
+      let a1, a2;
+      var imageAspect = imgSize[1] / imgSize[0];
+      if (window.innerHeight / window.innerWidth < imageAspect) {
+        a1 = 1;
+        a2 = window.innerHeight / window.innerWidth / imageAspect;
+      } else {
+        a1 = (window.innerWidth / window.innerHeight) * imageAspect;
+        a2 = 1;
+      }
+      mesh.program.uniforms.res.value = new OGL.Vec4(
+        window.innerWidth,
+        window.innerHeight,
+        a1,
+        a2
+      );
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      aspect = window.innerWidth / window.innerHeight;
+    }
+
+    const flowmap = new OGL.Flowmap(gl);
+
+    const geometry = new OGL.Geometry(gl, {
+      position: {
+        size: 2,
+        data: new Float32Array([-1, -1, 3, -1, -1, 3]),
+      },
+      uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
+    });
+
+    const texture = new OGL.Texture(gl, {
+      minFilter: gl.LINEAR,
+      magFilter: gl.LINEAR,
+    });
+
+    const img = new Image();
+    img.onload = () => (texture.image = img);
+    img.crossOrigin = "Anonymous";
+    img.src =
+      "../images/whitesquiggle.png";
+
+    let a1, a2;
+    var imageAspect = imgSize[1] / imgSize[0];
+    if (window.innerHeight / window.innerWidth < imageAspect) {
+      a1 = 1;
+      a2 = window.innerHeight / window.innerWidth / imageAspect;
+    } else {
+      a1 = (window.innerWidth / window.innerHeight) * imageAspect;
+      a2 = 1;
+    }
+
+    const program = new OGL.Program(gl, {
+      vertex,
+      fragment,
+      uniforms: {
+        uTime: { value: 0 },
+        tWater: { value: texture },
+        res: {
+          value: new OGL.Vec4(window.innerWidth, window.innerHeight, a1, a2),
+        },
+        tFlow: flowmap.uniform,
+      },
+    });
+
+    const mesh = new OGL.Mesh(gl, { geometry, program });
+
+    window.addEventListener("resize", resize, false);
+    resize();
+
+    const isTouchCapable = "ontouchstart" in window;
+    if (isTouchCapable) {
+      window.addEventListener("touchstart", updateMouse, true);
+      window.addEventListener("touchmove", updateMouse, { passive: true });
+    } else {
+      window.addEventListener("mousemove", updateMouse, true);
+    }
+
+    let lastTime;
+    const lastMouse = new OGL.Vec2();
+
+    function updateMouse(e) {
+      e.preventDefault();
+      if (e.changedTouches && e.changedTouches.length) {
+        e.x = e.changedTouches[0].pageX;
+        e.y = e.changedTouches[0].pageY;
+      }
+      if (e.x === undefined) {
+        e.x = e.pageX;
+        e.y = e.pageY;
+      }
+      mouse.set(e.x / gl.renderer.width, 1.0 - e.y / gl.renderer.height);
+
+      if (!lastTime) {
+        lastTime = performance.now();
+        lastMouse.set(e.x, e.y);
+      }
+
+      const deltaX = e.x - lastMouse.x;
+      const deltaY = e.y - lastMouse.y;
+      lastMouse.set(e.x, e.y);
+
+      let time = performance.now();
+      let delta = Math.max(10.4, time - lastTime);
+      lastTime = time;
+      velocity.x = deltaX / delta;
+      velocity.y = deltaY / delta;
+      velocity.needsUpdate = true;
+    }
+
+    function update(t) {
+      requestAnimationFrame(update);
+      if (!velocity.needsUpdate) {
+        mouse.set(-1);
+        velocity.set(0);
+      }
+      velocity.needsUpdate = false;
+      flowmap.aspect = aspect;
+      flowmap.mouse.copy(mouse);
+      flowmap.velocity.lerp(velocity, velocity.len ? 0.15 : 0.1);
+      flowmap.update();
+      program.uniforms.uTime.value = t * 0.01;
+      renderer.render({ scene: mesh });
+    }
+
+    requestAnimationFrame(update);
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", updateMouse);
+      window.removeEventListener("touchstart", updateMouse);
+      window.removeEventListener("touchmove", updateMouse);
+      containerRef.current.removeChild(gl.canvas);
+    };
+  }, []);
+
   return (
     <section
       className="min-h-screen flex items-center justify-center text-white relative"
@@ -3625,13 +3812,14 @@ const ContactUs = () => {
       data-scroll-speed="1.2"
     >
       <div className="flex justify-center relative h-[600px]">
-        <video
+      <div ref={containerRef} />
+        {/* <video
           src="../images/holographic.mp4"
           autoPlay
           loop
           muted
           className="w-full h-full object-cover"
-        />
+        /> */}
 
         <a href="mailto:info@freysmiles.com">
           <button
