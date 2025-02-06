@@ -47,39 +47,33 @@ if (typeof window !== "undefined") {
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 export default function LandingComponent() {
-  useEffect(() => {
-    const parallaxItems = gsap.utils.toArray("[data-item]");
-    const tl = gsap.timeline();
 
-    parallaxItems.forEach((item, index) => {
-      if (index > 0) {
-        tl.to(item, {
-          scrollTrigger: {
-            trigger: item,
-            start: "top bottom",
-            end: `+=${item.offsetHeight * index} top`,
-            scrub: 1,
-          },
-          marginTop: `-${item.offsetHeight}`,
-          ease: "power1.out",
-        });
-      }
+  useEffect(() => {
+    // Set zIndex for panels
+    gsap.set(".pinreveal", {
+      zIndex: (i, target, targets) => targets.length - i,
     });
 
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
+    // GSAP animation
+    gsap.to(".pinreveal:not(:last-child)", {
+      yPercent: -100,
+      ease: "none",
+      stagger: 0.5,
+      scrollTrigger: {
+        trigger: "#heroontainer",
+        start: "top top",
+        end: "+=300%",
+        scrub: true,
+        pin: true,
+      },
+    });
   }, []);
 
   return (
     <>
-      <div>
+      <div    style={{position: "relative" }} className="herocontainer">
         <section
-        // className="relative"
-        // style={{
-        //   height: "100vh",
-        // }}
-        // data-item
+className="pinreveal"
         >
           <Hero />
         </section>
@@ -93,12 +87,12 @@ export default function LandingComponent() {
           {/* <MarqueeSection /> */}
         </section>
         <section
-        // className="relative" style={{}} data-item
+   className="pinreveal"
         >
-          <Stats />
+          <Stats  />
         </section>
         <section>
-          {/* <ImageGrid /> */}
+          <ImageGrid />
         </section>
         <section>
           <NewSection />
@@ -963,6 +957,12 @@ const Stats = () => {
     }
   }, []);
 
+  const lines = [
+    "A confident smile begins with effective care tailored to each patient.",
+    "At our practice, we’re dedicated to providing treatments that are not only ",
+    "scientifically sound but also crafted to bring out your best smile.",
+  ];
+
   return (
     <section className=" rounded-tl-[40px] rounded-tr-[40px] ">
       <section className="min-h-screen grid grid-cols-12 px-12">
@@ -1020,19 +1020,26 @@ const Stats = () => {
 
             <div className="my-12"></div>
 
-            <motion.p
-              ref={paragraphRef}
-              className="pointer-events-none font-neue-montreal lg:text-[20px] leading-relaxed text-right"
-              initial={{ opacity: 0, y: 40 }}
-              animate={lineFinished ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 2, ease: "easeOut" }}
-            >
-              A confident smile begins with effective care tailored to each
-              patient. At our practice, we’re dedicated to providing treatments
-              that are not only scientifically sound but also crafted to bring
-              out your best smile.
-              <br />
-            </motion.p>
+            <div ref={paragraphRef} className="text-right font-neue-montreal">
+      {lines.map((line, index) => (
+        <motion.div
+          key={index}
+          className="text-[14px] lg:text-[20px] overflow-hidden leading-relaxed"
+          initial={{
+            clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
+            y: 20,
+          }}
+          animate={lineFinished ? { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", y: 0 } : {}}
+          transition={{
+            duration: 0.8,
+            delay: index * 0.2,
+            ease: "easeOut",
+          }}
+        >
+          {line}
+        </motion.div>
+      ))}
+    </div>
           </div>
           <div className="my-12"></div>
           {/* Stats Section */}
@@ -2384,30 +2391,30 @@ const ImageGrid = () => {
   //     rowSpan: 1, // Second section in the second column
   //   },
   // ];
-  const sectionRef = useRef(null);
-  const [isInView, setIsInView] = useState(true);
+  // const sectionRef = useRef(null);
+  // const [isInView, setIsInView] = useState(true);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsInView(entry.isIntersecting),
-      { threshold: 0.3 }
-    );
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     ([entry]) => setIsInView(entry.isIntersecting),
+  //     { threshold: 0.3 }
+  //   );
 
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
+  //   if (sectionRef.current) observer.observe(sectionRef.current);
+  //   return () => observer.disconnect();
+  // }, []);
 
   return (
-<div ref={sectionRef}>
+<div >
   <div className="grid grid-cols-2 h-screen gap-4 p-4">
     {/* Column 1 */}
     <div className="grid grid-cols-2 gap-4">
 
-      <div className="relative rounded-[60px] bg-[#B2E7EB]">
+      <div className="relative group rounded-[60px] bg-[#B2E7EB]">
         <img
           src="../images/hand.jpeg"
           alt="Left Sub-Column Image"
-          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-20 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-200 group-hover:-translate-y-20 pointer-events-none"
           loading="lazy"
         />
         <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
@@ -2420,7 +2427,7 @@ const ImageGrid = () => {
         <img
           src="../images/mainsectionimage.jpg"
           alt="Right Sub-Column Image"
-          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-200 group-hover:-translate-y-10 pointer-events-none"
           loading="lazy"
         />
         <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
@@ -2447,7 +2454,7 @@ const ImageGrid = () => {
         <img
           src="../images/handbackground.png"
           alt="Bottom Image Column 2"
-          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 group-hover:-translate-y-10 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-500 group-hover:-translate-y-10 pointer-events-none"
           loading="lazy"
         />
         <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
@@ -2945,9 +2952,9 @@ function Testimonials() {
 
   return (
     <div className="w-full h-screen flex">
-      <div className="bg-[#E8E2DA] w-1/3 flex flex-col justify-start  menu_link-wrap">
+      <div className="bg-[#CABDFE] w-1/3 flex flex-col justify-start  menu_link-wrap">
         <img
-          className=" w-1/2 h-auto mx-auto"
+          className="w-1/2 h-auto mx-auto"
           src="../images/freysmilesbg.png"
         />
         {[
@@ -3803,6 +3810,38 @@ const ContactUs = () => {
       containerRef.current.removeChild(gl.canvas);
     };
   }, []);
+  const linkRef = useRef(null);
+
+  useEffect(() => {
+    const link = linkRef.current;
+
+    const span1 = link.querySelector("[data-tha-span-1]");
+    const span2 = link.querySelector("[data-tha-span-2]");
+
+    const handleMouseEnter = () => {
+      gsap.to([span1, span2], {
+        yPercent: -100,
+        duration: 0.8,
+        ease: "power4.inOut",
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to([span1, span2], {
+        yPercent: 0,
+        duration: 0.8,
+        ease: "power4.inOut",
+      });
+    };
+
+    link.addEventListener("mouseenter", handleMouseEnter);
+    link.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      link.removeEventListener("mouseenter", handleMouseEnter);
+      link.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
 
   return (
     <section
@@ -3821,17 +3860,44 @@ const ContactUs = () => {
           className="w-full h-full object-cover"
         /> */}
 
-        <a href="mailto:info@freysmiles.com">
-          <button
-            className="font-helvetica-neue-light text-black absolute text-lg bg-white w-[150px] h-[150px] rounded-full transform -translate-x-1/2 -translate-y-1/2"
-            style={{
-              top: "50%",
-              left: "50%",
-            }}
-          >
-            Contact Us
-          </button>
-        </a>
+<a
+    ref={linkRef}
+   href="mailto:info@freysmiles.com"
+    data-tha
+    className="absolute transform -translate-x-1/2 -translate-y-1/2 border border-black py-6 px-8"
+    style={{
+      top: "50%",
+      left: "50%",
+      display: "inline-block",
+      position: "absolute",
+      overflow: "hidden",
+    }}
+  >
+    <span
+      data-tha-span-1
+      style={{
+        fontSize: "1.25rem",
+        fontFamily: "HelveticaNeue-Light",
+        display: "inline-block",
+        position: "relative",
+      }}
+    >
+      Contact
+    </span>
+    <span
+      data-tha-span-2
+      style={{
+        fontSize: "1.25rem",
+        fontFamily: "HelveticaNeue-Light",
+        display: "inline-block",
+        position: "absolute",
+        top: "100%",
+        left: "0",
+      }}
+    >
+      Contact
+    </span>
+  </a>
       </div>
     </section>
   );

@@ -9,16 +9,6 @@ import Footer from './_components/Footer'
 import { Toast } from '@/components/ui/toaster'
 
 export default function App({ children, user }) {
-  useEffect( () => {
-    const lenis = new Lenis()
-
-    function raf(time) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
-
-    requestAnimationFrame(raf)
-  }, [])
 
   return (
     <Provider store={store}>

@@ -557,11 +557,11 @@ export default function OurTeam() {
         <section className="py-24 sm:py-32">
           <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
             <div className="grid grid-cols-2 ">
-              <div className="flex flex-col items-start justify-center">
+              <div className="flex flex-col items-start justify-center leading-none">
                 {textLines.map((line, index) => (
                   <div
                     key={index}
-                    className="stagger-line font-neue-montreal text-[80px] relative z-10"
+                    className="stagger-line font-neue-montreal text-[80px] relative"
                   >
                     {line.text.split(" ").map((word, wordIndex) => (
                       <span
