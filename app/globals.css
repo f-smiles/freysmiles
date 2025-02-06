@@ -1742,21 +1742,6 @@ header h1 {
   --color-secondary: #8452e4;
 }
 
-body {
-  height: 250vh;
-}
-
-@media screen and (max-width: 466px) {
-  body {
-    height: 150vh;
-  }
-}
-
-@media screen and (min-width: 467px) and (max-width: 767px) {
-  body {
-    height: 200vh;
-  }
-}
 
 .blend-mode-class {
   mix-blend-mode: multiply;
@@ -3327,7 +3312,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   position: relative;
   top: -25%;
   height: 500px;
-  width: 800px;
+  width: 600px;
   border-radius: 25px;
   padding: 50px;
   transform-origin: top;
@@ -5262,8 +5247,9 @@ a {
 }
 
 .menu_link-text {
-  font-size: 1.35em;
-  line-height: 1.2;
+  color: #FFF;
+  font-size: 1.1em;
+  line-height: 1.4;
   font-family: "NeueMontrealBook";
 }
 
@@ -5379,3 +5365,73 @@ font-family: "NeueMontrealBook";
   font-size: 18px;
 }
 
+.horizontalpin-thumbnail:nth-child(1) {
+  background-color: red;
+}
+
+.horizontalpin-thumbnail:nth-child(2) {
+  background-color: navy;
+}
+
+.horizontalpin-thumbnail:nth-child(3) {
+  background-color: gray;
+}
+
+.horizontalpin-thumbnail:nth-child(4) {
+  background-color: orange;
+}
+
+.horizontalpin-thumbnail:nth-child(5) {
+  background-color: purple;
+}
+
+.horizontalpin-thumbnail:nth-child(6) {
+  background-color: black;
+}
+
+.horizontalpin-thumbnail:nth-child(7) {
+  background-color: green;
+}
+
+.horizontalpin-thumbnail:nth-child(8) {
+  background-color: darkred;
+}
+
+.horizontalpin-thumbnail:nth-child(9) {
+  background-color: teal;
+}
+
+.horizontalpin-thumbnail:nth-child(10) {
+  background-color: steelblue;
+}
+
+.horizontalpin-thumbnail:nth-child(11) {
+  background-color: salmon;
+}
+
+.horizontalpin-thumbnail:last-child {
+  margin-right: 0px;
+}
+
+.full {
+  width: calc(100vw - 20px - 20px);
+}
+
+.horizontalpin-thumbnail {
+  display: inline-block;
+  float: left;
+  
+  height: 100vh;
+  
+  width: calc(800px - 20px);
+  color: white;
+
+  padding: 10px;
+  font-weight: 800;
+  
+  border-radius: 10px;
+  
+  margin-right: 10px;
+  
+
+}
