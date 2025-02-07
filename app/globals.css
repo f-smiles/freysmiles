@@ -10,6 +10,10 @@
 }
 
 @font-face {
+  font-family: "GeneralSans-Italic";
+  src: url("/fonts/GeneralSans-Italic.otf") format("opentype");
+}
+@font-face {
   font-family: "GeneralSans-Regular";
   src: url("/fonts/GeneralSans-Regular.otf") format("opentype");
 }
@@ -5366,19 +5370,19 @@ font-family: "NeueMontrealBook";
 }
 
 .horizontalpin-thumbnail:nth-child(1) {
-  background-color: red;
+  background-color: #fdfaf5;
 }
 
 .horizontalpin-thumbnail:nth-child(2) {
-  background-color: navy;
+  background-color: #CABDFE;
 }
 
 .horizontalpin-thumbnail:nth-child(3) {
-  background-color: gray;
+  background-color: #E49366;
 }
 
 .horizontalpin-thumbnail:nth-child(4) {
-  background-color: orange;
+  background-color: #CBD6C0;
 }
 
 .horizontalpin-thumbnail:nth-child(5) {
@@ -5418,20 +5422,13 @@ font-family: "NeueMontrealBook";
 }
 
 .horizontalpin-thumbnail {
+
   display: inline-block;
   float: left;
-  
   height: 100vh;
-  
-  width: calc(800px - 20px);
-  color: white;
-
+  width: calc(1100px - 20px);
   padding: 10px;
-  font-weight: 800;
-  
   border-radius: 10px;
-  
   margin-right: 10px;
   
-
 }
