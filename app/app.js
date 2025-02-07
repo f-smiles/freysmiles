@@ -4,7 +4,8 @@ import Lenis from '@studio-freight/lenis';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './_store/config';
-import Navbar from './_components/Navbar';
+// import Navbar from './_components/Navbar';
+import Navbar from '../components/nav/MainNav';
 import Footer from './_components/Footer';
 import { Toast } from '@/components/ui/toaster';
 
@@ -28,7 +29,7 @@ export default function App({ children, user }) {
           <div id="smooth-content">
             <Toast />
             {children}
-            <Footer /> 
+            <Footer />
           </div>
         </main>
         <Footer />
