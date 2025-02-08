@@ -80,9 +80,6 @@ const CaringForYourBraces = () => {
   //   };
   // }, []);
 
-
-
-
   const sectionsRef = useRef([]);
 
   useEffect(() => {
@@ -90,91 +87,94 @@ const CaringForYourBraces = () => {
       smooth: true,
       direction: "vertical",
     });
+
     const updateSections = (scrollY) => {
       const viewportHeight = window.innerHeight;
-    
-      sectionsRef.current.forEach((section, index) => {
-        //this calculates when the section starts appearing
-        const sectionStart = index * viewportHeight;
-    
-        // how far the section has been scrolled from 0 to 1
-        const progress = Math.min(
-          Math.max((scrollY - sectionStart) / viewportHeight, 0),
-          1
-        );
-    
-        const width = progress * 100; // expands from 0% to 100%
-    
-        // clip-path top right bottom left reveal section from right to left
-        section.style.clipPath = `inset(0 0 0 ${100 - width}%)`;
-        section.style.transformOrigin = "right"; 
 
+      sectionsRef.current.forEach((section, index) => {
+        if (index === 0) {
+          section.style.clipPath = `inset(0 0 0 0)`;
+        } else {
+          const sectionStart = index * viewportHeight;
+          const progress = Math.min(
+            Math.max((scrollY - sectionStart) / viewportHeight, 0),
+            1
+          );
+
+          const width = 100 - progress * 100;
+          section.style.clipPath = `inset(0 0 0 ${width}%)`; // reveal right to left
+          section.style.transformOrigin = "right";
+        }
       });
     };
-    
+
+    window.scrollTo(0, 0);
+
+    updateSections(0);
+
     lenis.on("scroll", ({ scroll }) => {
       updateSections(scroll);
     });
-  
+
     const raf = (time) => {
       lenis.raf(time);
       requestAnimationFrame(raf);
     };
-  
+
     requestAnimationFrame(raf);
-  
+
     return () => lenis.destroy();
   }, []);
-  
+
   return (
     <>
-   <div
-  style={{
-    height: "600vh", 
-    position: "relative",
-  }}
->
-  <div
-    style={{
-      position: "sticky",
-      top: 0,
-      height: "100vh",
-      overflow: "hidden", 
-    }}
-  >
-    {["#d3e0f4", "#f4d3e5", "#f5f5f5", "#f7e4d3", "#f4d4a0"].map(
-      (color, index) => (
+      <div
+        style={{
+          height: "600vh",
+          position: "relative",
+        }}
+      >
         <div
-          key={index}
-          ref={(el) => (sectionsRef.current[index] = el)}
           style={{
-            position: "absolute",
+            position: "sticky",
             top: 0,
-            left: 0,
             height: "100vh",
-            width: "100vw",
-            backgroundColor: color,
-            clipPath: "inset(0 100% 0 0)",
-            transition: "clip-path 0.1s ease-out",
+            overflow: "hidden",
           }}
         >
-          <div
-            style={{
-              padding: "20px",
-              color: "#333",
-              fontSize: "2rem",
-              fontWeight: "bold",
-              textAlign: "right", 
-              lineHeight: "90vh",
-            }}
-          >
-            Section {index + 1}
-          </div>
+          {["#d3e0f4", "#f4d3e5", "#f5f5f5", "#f7e4d3", "#f4d4a0"].map(
+            (color, index) => (
+              <div
+                key={index}
+                ref={(el) => (sectionsRef.current[index] = el)}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  height: "100vh",
+                  width: "100vw",
+                  backgroundColor: color,
+                  // clipPath: "inset(0 100% 0 0)",
+                  // transition: "clip-path 0.1s ease-out",
+                }}
+              >
+                <div
+                  style={{
+                    padding: "20px",
+                    color: "#333",
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    textAlign: "right",
+                    lineHeight: "90vh",
+                  }}
+                >
+                  Section {index + 1}
+                </div>
+              </div>
+            )
+          )}
         </div>
-      )
-    )}
-  </div>
-</div>
+      </div>
       {/* <div ref={containerRef} className="h-screen horizontalpin-container">
         <div
           ref={wrapperRef}
