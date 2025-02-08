@@ -8,6 +8,9 @@ import { store, persistor } from './_store/config';
 import Navbar from '../components/nav/MainNav';
 import Footer from './_components/Footer';
 import { Toast } from '@/components/ui/toaster';
+import DesktopNav from '@/components/nav/DesktopNav';
+
+import { usePathname } from 'next/navigation';
 
 export default function App({ children, user }) {
   useEffect(() => {
@@ -24,7 +27,8 @@ export default function App({ children, user }) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <Navbar user={user} />
+        <DesktopNav />
+        {/* <Navbar user={user} /> */}
         <main id="smooth-wrapper">
           <div id="smooth-content">
             <Toast />

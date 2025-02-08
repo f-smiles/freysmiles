@@ -9,37 +9,75 @@ import { AnimatePresence } from 'motion/react'
 import { background, height, opacity } from './anim'
 import { links } from './links'
 import styles from './style.module.css'
-
-
+import { useRouter } from "next/router";
+import { usePathname } from 'next/navigation';
 export default function DesktopNav({ user }) {
+  const pathname = usePathname();
+  
   const [isActive, setIsActive] = useState(false)
 
   const [selectedLink, setSelectedLink] = useState(null)
 
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger)
+  //old useEffect
+  // useEffect(() => {
+  //   gsap.registerPlugin(ScrollTrigger)
 
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".scroll-nav",
-        start: "top top",
-        end: "bottom 64px",
-        scrub: true,
-        // markers: true,
-      },
-    })
-    timeline.to(".scroll-nav", {
-      width: "80%",
-      padding: "0px",
-    })
+  //   const timeline = gsap.timeline({
+  //     scrollTrigger: {
+  //       trigger: ".scroll-nav",
+  //       start: "top top",
+  //       end: "bottom 64px",
+  //       scrub: true,
+  //     },
+  //   })
+  //   timeline.to(".scroll-nav", {
+  //     width: "80%",
+  //     padding: "0px",
+  //   })
 
-    return () => {
-      timeline.to(".scroll-nav", { width: "100%", padding: "16px" })
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
-    }
-  }, [])
+  //   return () => {
+  //     timeline.to(".scroll-nav", { width: "100%", padding: "16px" })
+  //     ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+  //   }
+  // }, [])
 
   // bg-[rgb(225,_246,_114)]
+
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+// make gsap wait until next loads new page before animating it.
+    const delayAnimation = setTimeout(() => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      // now make sure that element exists before applying gsap
+      const navbar = document.querySelector('.scroll-nav');
+      if (!navbar) {
+        return;
+      }
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: navbar,
+          start: 'top top',
+          end: 'bottom 64px',
+          scrub: true,
+        },
+      });
+
+      timeline.to(navbar, { width: '80%', padding: '0px' });
+
+    }, 250); // delay for next to finish rendering
+
+    return () => {
+      clearTimeout(delayAnimation); 
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill()); 
+    };
+  }, [pathname]); // rerun gsap on route change
+
+  // now reset navbar
+  useEffect(() => {
+    setIsActive(false);
+    setSelectedLink(null);
+  }, [pathname]);
 
   return (
     <motion.div
