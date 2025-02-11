@@ -1,150 +1,198 @@
 'use client';
-import { useEffect } from "react";
-import { gsap } from "gsap-trial";
-import { ScrollTrigger } from "gsap-trial/ScrollTrigger";
-import { Flip } from "gsap-trial/Flip";
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import gsap from "gsap";
 
-gsap.registerPlugin(ScrollTrigger, Flip);
-
-export default function Home() {
+const ThreeDCarousel = () => {
+  const mountRef = useRef(null);
   useEffect(() => {
-    const animateHeader = () => {
-      gsap.fromTo(
-        "#testimonials",
-        { scale: 10, y: "80vh" },
-        {
-          scale: 1,
-          y: 0,
-          scrollTrigger: {
-            trigger: "#smooth-wrapper",
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        }
-      );
-    };
-    animateHeader();
-
-    const animateSection = () => {
-        let timeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: "#section-2",
-            start: "top top",
-            end: "+=100%",
-            scrub: true,
-            pin: true,
-          },
-        });
-      
-        const updateImgContainerState = () => {
-          const gridImagesState = Flip.getState(".grid-image");
-          const imgContainer = document.querySelector("#img-container");
-          
-          imgContainer?.style.setProperty('min-height', '100vh');
-          imgContainer?.classList.remove("images-initial-grid");
-          imgContainer?.classList.add("images-after-grid");
-      
-          Flip.from(gridImagesState, { duration: 2, ease: "power1.inOut" });
-        };
-      
-        timeline
-          .from("#section-2-heading", { opacity: 0, duration: 1 })
-          .from("#image-1", { y: window.innerHeight, opacity: 1 }, ">")
-          .from("#image-2", { y: window.innerHeight, opacity: 1 }, ">")
-          .from("#image-3", {
-            y: window.innerHeight,
-            opacity: 1,
-            onComplete: updateImgContainerState,
-          });
-      };
-      
-      
-      animateSection();
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, []);
-
-  useEffect(() => {
-    gsap.fromTo(
-      ".logo",
-      { y: "50vh", scale: 6, yPercent: -50 },
-      {
-        y: 0,
-        scale: 1,
-        scrollTrigger: {
-          trigger: ".content",
-          start: "top bottom",
-          end: "top center",
-          scrub: true,
-        }
-      }
-    );
-  }, []);
-  return (
-    <div style={{ margin: 0, padding: 0, boxSizing: 'border-box' }}>
-    <div
-      className="logo__container"
-      style={{
-        position: 'fixed',
-        top: 40,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 1000,
-      }}
-    >
-      <h1 className="logo" style={{
-        margin: 0,
-        padding: '1em',
-        fontFamily: 'NeueMontrealMedium',
-        fontWeight: 400,
-        textTransform: 'uppercase',
-        letterSpacing: '-2px',
-        color: '#000',
-        background: 'none', 
-      }}>
-        REVIEWS
-      </h1>
-    </div>
-
-    <div
-      className="container"
-      style={{
-        width: '100%',
-        height: '100vh',
-        backgroundColor: '#fff',
-        margin: 0,
-        padding: 0,
-        boxSizing: 'border-box',
-      }}
-    ></div>
-
-    <div
-      className="content"
-      style={{
-        position: 'relative',
-        padding: '0 4em',
-        width: '100%',
-        height: '100vh',
-        backgroundColor: '#fff',
-        boxSizing: 'border-box',
-      }}
-    >
-      <img
-        src="https://images.unsplash.com/photo-1722185128411-456d36207767?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt=""
-        style={{
-          marginBottom: '4em',
-          width: '100%',
-        }}
-      />
-    </div>
-  </div>
+    const scene = new THREE.Scene();
   
-  );
-}
+    const camera = new THREE.PerspectiveCamera(
+      35,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+  
+    const carouselRadius = 1.7;
+    const desiredZoomLevel = 1.3;
+    const initialZ = carouselRadius * desiredZoomLevel;
+    camera.position.set(0, -5, initialZ);
+  
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    mountRef.current.appendChild(renderer.domElement);
+  
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.enableZoom = false;
+    controls.enablePan = false;
+    controls.minPolarAngle = Math.PI / 2;
+    controls.maxPolarAngle = Math.PI / 2;
+
+    const carouselGroup = new THREE.Group();
+    carouselGroup.position.y = 0.5;
+    scene.add(carouselGroup);
+  
+    const degToRad = (degrees) => degrees * (Math.PI / 180);
+    carouselGroup.rotation.x = degToRad(35);
+  
+    const numItems = 8;
+    const planes = [];
+  
+    const updateCurve = (geometry, curveRadius) => {
+      const scale = 0.15; // Reduce curve
+      let zOffset = 0;
+    
+      for (let j = 0; j < geometry.attributes.position.count; j++) {
+        const position = geometry.attributes.position;
+        const x = position.getX(j);
+    
+        const z = scale * (curveRadius > 0
+          ? Math.sqrt(Math.max(0, curveRadius ** 2 - x ** 2)) - curveRadius // Convex
+          : -(Math.sqrt(Math.max(0, curveRadius ** 2 - x ** 2)) - curveRadius)); // Concave
+    
+        position.setZ(j, z);
+        zOffset += z;
+      }
+    
+      zOffset /= geometry.attributes.position.count;
+    
+      for (let j = 0; j < geometry.attributes.position.count; j++) {
+        const position = geometry.attributes.position;
+        const z = position.getZ(j);
+        position.setZ(j, z - zOffset);
+      }
+    
+      geometry.attributes.position.needsUpdate = true;
+    };
+    
+    
+    for (let i = 0; i < numItems; i++) {
+      const geometry = new THREE.PlaneGeometry(1, 1.5, 32, 32);
+      const texture = new THREE.TextureLoader().load(`../images/freysmilepatient.jpg`);
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        side: THREE.DoubleSide,
+      });
+  
+      const curveRadius = 1.5; // initial convex
+      updateCurve(geometry, curveRadius);
+  
+      const plane = new THREE.Mesh(geometry, material);
+      const angle = (i / numItems) * Math.PI * 2;
+  
+      plane.position.x = Math.cos(angle) * carouselRadius;
+      plane.position.z = Math.sin(angle) * carouselRadius;
+      plane.position.y = 0;
+      plane.lookAt(new THREE.Vector3(0, 0, 0));
+  
+      plane.userData = {
+        originalPosition: plane.position.clone(),
+        curveRadius,
+      };
+  
+      planes.push(plane);
+      carouselGroup.add(plane);
+    }
+  
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+  
+    const onMouseMove = (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(planes);
+    
+      planes.forEach((plane) => {
+        if (intersects.find((intersect) => intersect.object === plane)) {
+
+          if (!plane.userData.hovering) {
+            plane.userData.hovering = true;
+    
+
+            gsap.to(plane.userData, {
+              curveRadius: .5, 
+              duration: 0.5,
+              ease: "power2.out",
+              onUpdate: () => {
+  
+                updateCurve(plane.geometry, plane.userData.curveRadius);
+              },
+            });
+          }
+        } else if (plane.userData.hovering) {
+
+          plane.userData.hovering = false;
+    
+          gsap.to(plane.userData, {
+            curveRadius: -1.5, 
+            duration: 0.5,
+            ease: "power2.inOut",
+            onUpdate: () => {
+
+              updateCurve(plane.geometry, plane.userData.curveRadius);
+            },
+          });
+        }
+      });
+    };
+    
+    
+    window.addEventListener("mousemove", onMouseMove);
+  
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener("resize", onResize);
+  
+    let scrollProgress = 0;
+    const onScroll = (event) => {
+      scrollProgress += event.deltaY * 0.002;
+      carouselGroup.rotation.y = scrollProgress;
+    };
+  
+    const preventDefault = (event) => {
+      event.preventDefault();
+    };
+  
+    window.addEventListener("wheel", onScroll);
+    renderer.domElement.addEventListener("wheel", preventDefault, { passive: false });
+  
+    const animate = () => {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    };
+    animate();
+  
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("wheel", onScroll);
+      renderer.domElement.removeEventListener("wheel", preventDefault);
+      mountRef.current.removeChild(renderer.domElement);
+      scene.traverse((object) => {
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) object.material.dispose();
+      });
+    };
+  }, []);
+  
+  
+  
+
+  return <div ref={mountRef} style={{ width: "100vw", height: "100vh", background: "white" }} />;
+};
+
+export default ThreeDCarousel;
 
 
 {/* <div>

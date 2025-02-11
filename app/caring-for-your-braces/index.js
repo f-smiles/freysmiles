@@ -1,306 +1,152 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
-import gsap from "gsap";
+import React, { useRef, useEffect } from "react";
+import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lenis from "@studio-freight/lenis";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const CaringForYourBraces = () => {
-  // const containerRef = useRef(null);
-  // const wrapperRef = useRef(null);
-
-  // useEffect(() => {
-  //   const scrubValue = 0.5;
-  //   const container = containerRef.current;
-  //   const wrapper = wrapperRef.current;
-
-  //   const scrollBar = gsap.to(".scrollbar", {
-  //     x: () => window.innerWidth - (150 + 20),
-  //     ease: "none",
-  //   });
-
-  //   ScrollTrigger.create({
-  //     trigger: container,
-  //     start: "top top",
-  //     end: () => wrapper.scrollWidth - window.innerWidth,
-  //     pin: true,
-  //     anticipatePin: 1,
-  //     scrub: scrubValue,
-  //     animation: scrollBar,
-  //     invalidateOnRefresh: true,
-  //   });
-
-  //   const thumbNails = gsap.utils.toArray(".horizontalpin-thumbnail");
-
-  //   thumbNails.forEach((thumb) => {
-  //     const getTotalWidthToMove = () => {
-  //       let totalWidthToMove = 0;
-  //       let prevElement = thumb.previousElementSibling;
-
-  //       while (prevElement) {
-  //         const style = window.getComputedStyle(prevElement);
-  //         const marginRight = parseInt(style.marginRight) || 0;
-  //         totalWidthToMove += prevElement.offsetWidth + marginRight;
-  //         prevElement = prevElement.previousElementSibling;
-  //       }
-
-  //       return totalWidthToMove;
-  //     };
-
-  //     if (thumb.classList.contains("fakePin")) {
-  //       gsap.to(thumb, {
-  //         x: () => -getTotalWidthToMove(),
-  //         ease: "none",
-  //         scrollTrigger: {
-  //           trigger: wrapper,
-  //           start: "top top",
-  //           scrub: scrubValue,
-  //           invalidateOnRefresh: true,
-  //           end: () => `+=${getTotalWidthToMove()}`,
-  //         },
-  //       });
-  //     } else {
-  //       gsap.to(thumb, {
-  //         x: () => -container.scrollWidth,
-  //         ease: "none",
-  //         scrollTrigger: {
-  //           trigger: wrapper,
-  //           start: "top top",
-  //           scrub: scrubValue,
-  //           invalidateOnRefresh: true,
-  //           end: () => `+=${container.scrollWidth}`,
-  //         },
-  //       });
-  //     }
-  //   });
-
-  //   return () => {
-  //     ScrollTrigger.getAll().forEach((t) => t.kill());
-  //   };
-  // }, []);
-
-  const sectionsRef = useRef([]);
+export default function MultiPhasePinWithOffscreenWhite() {
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    const lenis = new Lenis({
-      smooth: true,
-      direction: "vertical",
-    });
-
-    const updateSections = (scrollY) => {
-      const viewportHeight = window.innerHeight;
-
-      sectionsRef.current.forEach((section, index) => {
-        if (index === 0) {
-          section.style.clipPath = `inset(0 0 0 0)`;
-        } else {
-          const sectionStart = index * viewportHeight;
-          const progress = Math.min(
-            Math.max((scrollY - sectionStart) / viewportHeight, 0),
-            1
-          );
-
-          const width = 100 - progress * 100;
-          section.style.clipPath = `inset(0 0 0 ${width}%)`; // reveal right to left
-          section.style.transformOrigin = "right";
-        }
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "+=3000", 
+          scrub: 1,
+          pin: true,
+        },
       });
-    };
 
-    window.scrollTo(0, 0);
+      // part 1 is pink over blue
 
-    updateSections(0);
+      // Pink: from (left:70, width:20) → (left:0, width:70)
+      tl.to(".pinkSection", {
+        left: "0vw",
+        width: "70vw",
+        duration: 1,
+        ease: "none",
+      }, 0);
 
-    lenis.on("scroll", ({ scroll }) => {
-      updateSections(scroll);
-    });
+      // Green: from (left:90, width:10) → (left:70, width:20)
+      tl.to(".greenSection", {
+        left: "70vw",
+        width: "20vw",
+        duration: 1,
+        ease: "none",
+      }, 0);
 
-    const raf = (time) => {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    };
+      // White: from (left:100, width:0) → (left:90, width:10)
+      tl.to(".whiteSection", {
+        left: "90vw",
+        width: "10vw",
+        duration: 1,
+        ease: "none",
+      }, 0);
 
-    requestAnimationFrame(raf);
+      // part 2 green over pink pinned
 
-    return () => lenis.destroy();
+      tl.to(".greenSection", {
+        left: "0vw",
+        width: "70vw",
+        duration: 1,
+        ease: "none",
+      }, 1);
+
+      tl.to(".whiteSection", {
+        left: "70vw",
+        width: "30vw",
+        duration: 1,
+        ease: "none",
+      }, 1);
+
+
+      tl.set(".greenSection", { zIndex: 4 }, 1);
+
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <>
+    <section
+      ref={containerRef}
+      style={{
+        position: "relative",
+        height: "100vh",
+        overflow: "hidden",
+        border: "2px solid #ccc",
+      }}
+    >
+
       <div
+        className="blueSection"
         style={{
-          height: "600vh",
-          position: "relative",
+          position: "absolute",
+          top: 0,
+          left: "0vw",
+          width: "70vw",
+          height: "100%",
+          background: "#BFCCD8",
+          zIndex: 1,
         }}
       >
-        <div
-          style={{
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-            overflow: "hidden",
-          }}
-        >
-          {["#d3e0f4", "#f4d3e5", "#f5f5f5", "#f7e4d3", "#f4d4a0"].map(
-            (color, index) => (
-              <div
-                key={index}
-                ref={(el) => (sectionsRef.current[index] = el)}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  height: "100vh",
-                  width: "100vw",
-                  backgroundColor: color,
-                  // clipPath: "inset(0 100% 0 0)",
-                  // transition: "clip-path 0.1s ease-out",
-                }}
-              >
-                <div
-                  style={{
-                    padding: "20px",
-                    color: "#333",
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                    textAlign: "right",
-                    lineHeight: "90vh",
-                  }}
-                >
-                  Section {index + 1}
-                </div>
-              </div>
-            )
-          )}
-        </div>
+        <h2 style={{ textAlign: "center" }}>Blue</h2>
       </div>
-      {/* <div ref={containerRef} className="h-screen horizontalpin-container">
-        <div
-          ref={wrapperRef}
-          className="horizontalpin-wrapper"
-          style={{
-            display: "flex",
-            position: "relative",
-            height: "80vh",
-            width: "calc((800px * 8) + ((100vw - 20px) * 3) + (10px * 10))",
-            padding: "0px 10px",
-            borderTop: "10vh white solid",
-            borderBottom: "10vh white solid",
-          }}
-        >
-          <div className="horizontalpin-thumbnail fakePin flex flex-col h-screen">
-            <div className="flex items-center h-1/3 px-8 md:px-16 lg:px-24">
-              <h1 className="text-[72px] font-generalitalic ">Self-Care</h1>
-            </div>
 
-            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 px-8 md:px-16 lg:px-24">
-              <div className="md:w-1/2 flex flex-col justify-center">
-                <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
-                  Braces treatment time varies based on your unique case and how
-                  well you follow care instructions. At FreySmiles Orthodontics,
-                  most patients achieve their ideal smile in 12 to 22 months.
-                  Ready to get started? Let’s make it happen.
-                </p>
-                <hr className="border-t border-[#262626] mb-8" />
-                <div className="flex items-center space-x-2">
-                  <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
-                    • Learn More
-                  </h3>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    className="w-4 h-4"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
-                    />
-                  </svg>
-                </div>
-              </div>
 
-              <div className="absolute right-0 w-1/3 h-1/2 flex justify-end">
-                <div className="max-w-lg w-full h-auto overflow-hidden rounded-2xl">
-                  <video
-                    src="https://video.wixstatic.com/video/11062b_163d7539f7824eb895994a6460f0995b/720p/mp4/file.mp4"
-                    className="object-cover w-full h-full"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  ></video>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div
+        className="pinkSection"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: "70vw",
+          width: "20vw",
+          height: "100%",
+          background: "#B792A1",
+          zIndex: 2,
+        }}
+      >
+        <h2 style={{ textAlign: "center" }}>Pink</h2>
+      </div>
 
-          <div className="horizontalpin-thumbnail full fakePin">
-            <div className="flex items-center h-1/3 px-8 md:px-16 lg:px-24">
-              <h1 className="text-[72px] font-generalitalic ">Self-Care</h1>
-            </div>
 
-            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 px-8 md:px-16 lg:px-24">
-              <div className="md:w-1/2 flex flex-col justify-center">
-                <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
-                  Brushing and flossing during orthodontic treatment is more
-                  important than ever. Orthodontic appliances such as clear
-                  aligners, brackets, and wires interfere with normal
-                  self-cleansing mechanisms of the mouth. Research shows that
-                  only 10% of patients brush and floss consistently during
-                  active treatment. We're here to ensure you don't just get lost
-                  in the statistics.
-                </p>
-                <hr className="border-t border-[#262626] mb-8" />
-                <div className="flex items-center space-x-2">
-                  <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
-                    • Learn More
-                  </h3>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    className="w-4 h-4"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
-                    />
-                  </svg>
-                </div>
-              </div>
+      <div
+        className="greenSection"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: "90vw",
+          width: "10vw",
+          height: "100%",
+          background: "#798E7B",
+          zIndex: 3,
+        }}
+      >
+        <h2 style={{ textAlign: "center" }}>Green</h2>
+      </div>
 
-              <div className="absolute right-0 w-1/3 h-1/2 flex justify-end">
-                <div className="max-w-lg w-full h-auto overflow-hidden rounded-2xl">
-                  <img
-                    src="../images/purplefloss.jpeg"
-                    className="object-cover w-full h-full"
-               
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="horizontalpin-thumbnail fakePin"></div>
-          <div className="horizontalpin-thumbnail fakePin"></div>
-          <div className="horizontalpin-thumbnail fakePin"></div>
-          <div className="horizontalpin-thumbnail full fakePin"></div>
-          <div className="horizontalpin-thumbnail fakePin"></div>
-          <div className="horizontalpin-thumbnail fakePin"></div>
-        </div>
-      </div> */}
-    </>
+      
+      <div
+        className="whiteSection"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: "100vw",  
+          width: "0vw",   
+          height: "100%",
+          background: "white",
+          zIndex: 1,
+          overflow: "hidden", 
+        }}
+      >
+        <h2 style={{ textAlign: "center", color: "#333" }}>White</h2>
+      </div>
+    </section>
   );
-};
-
-export default CaringForYourBraces;
+}
 
 {
   /* <div ref={scrollContainerRef} className=" bg-[#1B1C1D] flex flex-row items-stretch"

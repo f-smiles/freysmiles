@@ -1,6 +1,5 @@
 "use client";
 import { Curtains, Plane } from "curtainsjs";
-import "locomotive-scroll/dist/locomotive-scroll.css";
 import { Vector2, Vector4 } from "three";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
