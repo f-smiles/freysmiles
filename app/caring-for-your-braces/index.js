@@ -14,72 +14,42 @@ export default function MultiPhasePinComplete() {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=6000",
-          scrub: 1,
+          end: "+=9000",
+          scrub: 2,
           pin: true,
         },
       });
-
-      // 1st: part is pink expands, green & white expand simutaneously
-      tl.to(
-        ".purpleSection",
-        { left: "0vw", width: "70vw", duration: 1, ease: "none" },
-        0
-      );
-      tl.to(
-        ".greenSection",
-        { left: "70vw", width: "20vw", duration: 1, ease: "none" },
-        0
-      );
-      tl.to(
-        ".whiteSection",
-        { left: "90vw", width: "10vw", duration: 1, ease: "none" },
-        0
-      );
-
-      // 2nd: green expands over pink, white continues expanding, orange appears
-      tl.to(
-        ".greenSection",
-        { left: "0vw", width: "70vw", duration: 1, ease: "none" },
-        1
-      );
-      tl.to(
-        ".whiteSection",
-        { left: "70vw", width: "15vw", duration: 1, ease: "none" },
-        1
-      );
-      tl.to(
-        ".orangeSection",
-        { left: "85vw", width: "15vw", duration: 1, ease: "none" },
-        1
-      );
+  
+      // 1st: purple expands, green & white expand together
+      tl.to(".purpleSection", { left: "0vw", width: "70vw", duration: 1, ease: "none" }, 0);
+      tl.to(".greenSection", { left: "70vw", width: "20vw", duration: 1, ease: "none" }, 0);
+      tl.to(".whiteSection", { left: "90vw", width: "10vw", duration: 1, ease: "none" }, 0);
+  
+      // 2nd: green expands over purple, white continues expanding, orange appears
+      tl.to(".greenSection", { left: "0vw", width: "70vw", duration: 1, ease: "none" }, 1);
+      tl.to(".whiteSection", { left: "70vw", width: "15vw", duration: 1, ease: "none" }, 1);
+      tl.to(".orangeSection", { left: "85vw", width: "15vw", duration: 1, ease: "none" }, 1);
       tl.set(".greenSection", { zIndex: 4 }, 1);
-
-      // 3rd: white moves over green, orange expands
-      tl.to(
-        ".whiteSection",
-        { left: "0vw", width: "70vw", duration: 1, ease: "none" },
-        2
-      );
-      tl.to(
-        ".orangeSection",
-        { left: "70vw", width: "30vw", duration: 1, ease: "none" },
-        2
-      );
+  
+      // 3rd: white moves over green, orange expands, red appears
+      tl.to(".whiteSection", { left: "0vw", width: "70vw", duration: 1, ease: "none" }, 2);
+      tl.to(".orangeSection", { left: "70vw", width: "20vw", duration: 1, ease: "none" }, 2);
+      tl.to(".redSection", { left: "90vw", width: "10vw", duration: 1, ease: "none" }, 2);
       tl.set(".whiteSection", { zIndex: 5 }, 2);
-
-      // 4th: orange moves over white
-      tl.to(
-        ".orangeSection",
-        { left: "0vw", width: "100vw", duration: 1, ease: "none" },
-        3
-      );
+  
+      // 4th: orange moves over white, red expands
+      tl.to(".orangeSection", { left: "0vw", width: "70vw", duration: 1, ease: "none" }, 3);
+      tl.to(".redSection", { left: "70vw", width: "30vw", duration: 1, ease: "none" }, 3);
       tl.set(".orangeSection", { zIndex: 6 }, 3);
+  
+      // 5th: red moves over orange as the final section
+      tl.to(".redSection", { left: "0vw", width: "100vw", duration: 1, ease: "none" }, 4);
+      tl.set(".redSection", { zIndex: 7 }, 4);
+  
     }, containerRef);
-
+  
     return () => ctx.revert();
   }, []);
-
   return (
     <>
       <div
@@ -112,6 +82,7 @@ export default function MultiPhasePinComplete() {
             left: "0vw",
             width: "70vw",
             height: "100%",
+            overflow: "hidden", 
             background: "#d3e0f4",
             zIndex: 1,
           }}
@@ -172,13 +143,22 @@ export default function MultiPhasePinComplete() {
             left: "70vw",
             width: "20vw",
             height: "100%",
-            background: "#CABDFE",
+            background: "#D9D1F1 ",
             zIndex: 2,
           }}
         >
           <div className="flex flex-col h-screen justify-center">
             <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 px-8 md:px-16 lg:px-24">
               <div className="md:w-1/2 flex flex-col justify-end">
+              <div
+    style={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "80%",
+    }}
+  >
                 <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
                   Brushing and flossing during orthodontic treatment is more
                   important than ever. Orthodontic appliances such as clear
@@ -188,6 +168,7 @@ export default function MultiPhasePinComplete() {
                   active treatment. We're here to ensure you don't just get lost
                   in the statistics.
                 </p>
+             
                 <hr className="border-t border-[#262626] mb-8" />
                 <div className="flex items-center space-x-2">
                   <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
@@ -208,6 +189,7 @@ export default function MultiPhasePinComplete() {
                     />
                   </svg>
                 </div>
+</div>
               </div>
 
               <div className="absolute right-0 bottom-[6%] w-1/3 h-1/2 flex justify-end">
@@ -242,7 +224,7 @@ export default function MultiPhasePinComplete() {
             left: "100vw",
             width: "0vw",
             height: "100%",
-            background: "white",
+            background: "#FCFCFC",
             zIndex: 1,
             overflow: "hidden",
           }}
@@ -257,11 +239,26 @@ export default function MultiPhasePinComplete() {
             left: "100vw",
             width: "0vw",
             height: "100%",
-            background: "#E8A872",
+            background: "#F0D0CD",
             zIndex: 1,
             overflow: "hidden",
           }}
         ></div>
+        <div
+  className="redSection"
+  style={{
+    position: "absolute",
+    top: 0,
+    left: "100vw",
+    width: "0vw",
+    height: "100%",
+    background: "#B7A7B9",
+    zIndex: 1,
+    overflow: "hidden",
+  }}
+>
+
+</div>
       </section>
     </>
   );
