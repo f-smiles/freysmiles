@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function MultiPhasePinWithOffscreenWhite() {
+export default function MultiPhasePinComplete() {
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -14,137 +14,256 @@ export default function MultiPhasePinWithOffscreenWhite() {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=3000", 
+          end: "+=6000",
           scrub: 1,
           pin: true,
         },
       });
 
-      // part 1 is pink over blue
+      // 1st: part is pink expands, green & white expand simutaneously
+      tl.to(
+        ".purpleSection",
+        { left: "0vw", width: "70vw", duration: 1, ease: "none" },
+        0
+      );
+      tl.to(
+        ".greenSection",
+        { left: "70vw", width: "20vw", duration: 1, ease: "none" },
+        0
+      );
+      tl.to(
+        ".whiteSection",
+        { left: "90vw", width: "10vw", duration: 1, ease: "none" },
+        0
+      );
 
-      // Pink: from (left:70, width:20) → (left:0, width:70)
-      tl.to(".pinkSection", {
-        left: "0vw",
-        width: "70vw",
-        duration: 1,
-        ease: "none",
-      }, 0);
-
-      // Green: from (left:90, width:10) → (left:70, width:20)
-      tl.to(".greenSection", {
-        left: "70vw",
-        width: "20vw",
-        duration: 1,
-        ease: "none",
-      }, 0);
-
-      // White: from (left:100, width:0) → (left:90, width:10)
-      tl.to(".whiteSection", {
-        left: "90vw",
-        width: "10vw",
-        duration: 1,
-        ease: "none",
-      }, 0);
-
-      // part 2 green over pink pinned
-
-      tl.to(".greenSection", {
-        left: "0vw",
-        width: "70vw",
-        duration: 1,
-        ease: "none",
-      }, 1);
-
-      tl.to(".whiteSection", {
-        left: "70vw",
-        width: "30vw",
-        duration: 1,
-        ease: "none",
-      }, 1);
-
-
+      // 2nd: green expands over pink, white continues expanding, orange appears
+      tl.to(
+        ".greenSection",
+        { left: "0vw", width: "70vw", duration: 1, ease: "none" },
+        1
+      );
+      tl.to(
+        ".whiteSection",
+        { left: "70vw", width: "15vw", duration: 1, ease: "none" },
+        1
+      );
+      tl.to(
+        ".orangeSection",
+        { left: "85vw", width: "15vw", duration: 1, ease: "none" },
+        1
+      );
       tl.set(".greenSection", { zIndex: 4 }, 1);
 
+      // 3rd: white moves over green, orange expands
+      tl.to(
+        ".whiteSection",
+        { left: "0vw", width: "70vw", duration: 1, ease: "none" },
+        2
+      );
+      tl.to(
+        ".orangeSection",
+        { left: "70vw", width: "30vw", duration: 1, ease: "none" },
+        2
+      );
+      tl.set(".whiteSection", { zIndex: 5 }, 2);
+
+      // 4th: orange moves over white
+      tl.to(
+        ".orangeSection",
+        { left: "0vw", width: "100vw", duration: 1, ease: "none" },
+        3
+      );
+      tl.set(".orangeSection", { zIndex: 6 }, 3);
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={containerRef}
-      style={{
-        position: "relative",
-        height: "100vh",
-        overflow: "hidden",
-        border: "2px solid #ccc",
-      }}
-    >
-
+    <>
       <div
-        className="blueSection"
         style={{
-          position: "absolute",
-          top: 0,
-          left: "0vw",
-          width: "70vw",
-          height: "100%",
-          background: "#BFCCD8",
-          zIndex: 1,
+          position: "fixed",
+          top: "10vh",
+          left: "0",
+          width: "100%",
+          paddingLeft: "16rem",
+          zIndex: 10,
+          pointerEvents: "none",
         }}
       >
-        <h2 style={{ textAlign: "center" }}>Blue</h2>
+        <h1 className="text-[72px] font-generalregular">Self-Care</h1>
       </div>
-
-
-      <div
-        className="pinkSection"
+      <section
+        ref={containerRef}
         style={{
-          position: "absolute",
-          top: 0,
-          left: "70vw",
-          width: "20vw",
-          height: "100%",
-          background: "#B792A1",
-          zIndex: 2,
+          position: "relative",
+          height: "100vh",
+          overflow: "hidden",
         }}
       >
-        <h2 style={{ textAlign: "center" }}>Pink</h2>
-      </div>
+        {/* blue */}
+        <div
+          className="blueSection"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "0vw",
+            width: "70vw",
+            height: "100%",
+            background: "#d3e0f4",
+            zIndex: 1,
+          }}
+        >
+          <div className="flex flex-col h-screen justify-center">
+            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 px-8 md:px-16 lg:px-24">
+              <div className="md:w-1/2 flex flex-col justify-end">
+                <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
+                  Braces treatment time varies based on your unique case and how
+                  well you follow care instructions. At FreySmiles Orthodontics,
+                  most patients achieve their ideal smile in 12 to 22 months.
+                  Ready to get started? Let’s make it happen.
+                </p>
+                <hr className="border-t border-[#262626] mb-8" />
+                <div className="flex items-center space-x-2">
+                  <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
+                    • Learn More
+                  </h3>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                    />
+                  </svg>
+                </div>
+              </div>
 
+              <div className="absolute right-0 bottom-[6%] w-1/3 h-1/2 flex justify-end">
+                <div className="max-w-lg w-full h-auto overflow-hidden rounded-2xl">
+                  <video
+                    src="https://video.wixstatic.com/video/11062b_163d7539f7824eb895994a6460f0995b/720p/mp4/file.mp4"
+                    className="object-cover w-full h-full"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  ></video>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <div
-        className="greenSection"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: "90vw",
-          width: "10vw",
-          height: "100%",
-          background: "#798E7B",
-          zIndex: 3,
-        }}
-      >
-        <h2 style={{ textAlign: "center" }}>Green</h2>
-      </div>
+        {/* purle */}
+        <div
+          className="purpleSection"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "70vw",
+            width: "20vw",
+            height: "100%",
+            background: "#CABDFE",
+            zIndex: 2,
+          }}
+        >
+          <div className="flex flex-col h-screen justify-center">
+            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 px-8 md:px-16 lg:px-24">
+              <div className="md:w-1/2 flex flex-col justify-end">
+                <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
+                  Brushing and flossing during orthodontic treatment is more
+                  important than ever. Orthodontic appliances such as clear
+                  aligners, brackets, and wires interfere with normal
+                  self-cleansing mechanisms of the mouth. Research shows that
+                  only 10% of patients brush and floss consistently during
+                  active treatment. We're here to ensure you don't just get lost
+                  in the statistics.
+                </p>
+                <hr className="border-t border-[#262626] mb-8" />
+                <div className="flex items-center space-x-2">
+                  <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
+                    • Learn More
+                  </h3>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                    />
+                  </svg>
+                </div>
+              </div>
 
-      
-      <div
-        className="whiteSection"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: "100vw",  
-          width: "0vw",   
-          height: "100%",
-          background: "white",
-          zIndex: 1,
-          overflow: "hidden", 
-        }}
-      >
-        <h2 style={{ textAlign: "center", color: "#333" }}>White</h2>
-      </div>
-    </section>
+              <div className="absolute right-0 bottom-[6%] w-1/3 h-1/2 flex justify-end">
+                <div className="max-w-lg w-full h-auto overflow-hidden rounded-2xl">
+                  <img src="../images/purplefloss.jpeg" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* green */}
+        <div
+          className="greenSection"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "90vw",
+            width: "10vw",
+            height: "100%",
+            background: "#DAE5D6",
+            zIndex: 3,
+          }}
+        ></div>
+
+        {/* white */}
+        <div
+          className="whiteSection"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "100vw",
+            width: "0vw",
+            height: "100%",
+            background: "white",
+            zIndex: 1,
+            overflow: "hidden",
+          }}
+        ></div>
+
+        {/* orange */}
+        <div
+          className="orangeSection"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "100vw",
+            width: "0vw",
+            height: "100%",
+            background: "#E8A872",
+            zIndex: 1,
+            overflow: "hidden",
+          }}
+        ></div>
+      </section>
+    </>
   );
 }
 
