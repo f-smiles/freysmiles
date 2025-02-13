@@ -12,6 +12,9 @@ module.exports = withUt({
   theme: {
   	fontFamily: {
   		aileron: 'Aileron-Black',
+		saolitalic:"SaolDisplay-LightItalic",
+		  didotmodernlight:'NNDidotModernTrial-Light',
+		didotmodern:'NNDidotModernTrial-LightItalic',
 		generalregular: "GeneralSans-Regular",
 		generalitalic: "GeneralSans-Italic",
 		autumnchant: 'Autumn Chant',

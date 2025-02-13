@@ -2978,7 +2978,7 @@ function Testimonials() {
                     {item.name}
                   </div>
                 </div>
-                <div hoverstagger="text" className="menu_title">
+                <div hoverstagger="text" className="font-neue-montreal">
                   [ {item.title} ]
                 </div>
               </div>

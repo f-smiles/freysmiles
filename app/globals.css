@@ -4,8 +4,24 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
 @import url("https://db.onlinewebfonts.com/c/4c4c08af466e9ad071b6d69cf44093df?family=SaolDisplay-Regular");
+@font-face {
+  font-family: "SaolDisplay-LightItalic";
+  src: url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.eot");
+  src: url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.eot?#iefix")format("embedded-opentype"),
+  url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.woff2")format("woff2"),
+  url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.woff")format("woff"),
+  url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.ttf")format("truetype"),
+  url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.svg#SaolDisplay-LightItalic")format("svg");
+}
 
-
+@font-face {
+  font-family: "NNDidotModernTrial-Light";
+  src: url("/fonts/NNDidotModernTrial-Light.otf") format("opentype");
+}
+@font-face {
+  font-family: "NNDidotModernTrial-LightItalic";
+  src: url("/fonts/NNDidotModernTrial-LightItalic.otf") format("opentype");
+}
 @font-face {
   font-family: "GeneralSans-Italic";
   src: url("/fonts/GeneralSans-Italic.otf") format("opentype");
@@ -1150,7 +1166,8 @@ header h1 {
 
 .horizontalContainer {
   width: 100%;
-  height: 100vh;
+  height: auto;
+  /* height: 100vh; */
   margin-top: 2em;
 }
 
@@ -1159,12 +1176,14 @@ header h1 {
   grid-template-rows: repeat(2, 1fr);
   gap: 5px;
   width: 100%;
-  height: 100vh;
+  height: auto;
 }
 
 .horizontalWrapper {
   width: 100%;
-  height: calc(100vh + 10vw);
+  height: auto;
+  margin: 2vh auto; 
+  padding-bottom: 10px;
 }
 
 .horizontalRow {
@@ -1174,6 +1193,7 @@ header h1 {
 }
 
 .horizontalItem {
+  transition: outline-width 0.4s ease-in-out;
   padding: 5vw;
   border: 5px solid white;
   border-radius: 5vw;
@@ -1183,14 +1203,20 @@ header h1 {
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  height: 50vh;
+  height: 48vh;
   color: white;
-  font-weight: normal;
   width: 50vw;
   z-index: 20;
 }
+
+.horizontalItem:hover {
+  outline: 6px solid rgb(210, 246, 90); 
+  
+}
+
 .horizontalItem p {
-  font-size: 1.5vw;
+  font-size: 1.3vw;
+  font-family: "NeueMontrealBook"
 }
 
 .horizontalItem > p {
@@ -1198,7 +1224,7 @@ header h1 {
 }
 
 .horizontalBig {
-  font-size: 2vw;
+  font-size: 1.3vw;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -3312,134 +3338,6 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
   animation-timing-function: linear;
 }
 
-.uniqueMain {
-  position: relative;
-  height: 100vh;
-  overflow: auto;
-}
-
-.uniqueMain .uniqueMask,
-.uniqueMain .uniqueBody {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #b7b1b1;
-
-  cursor: default;
-}
-
-.uniqueMain .uniqueMask p,
-.uniqueMain .uniqueBody p {
-  width: 1000px;
-  padding: 40px;
-  font-size: 48px;
-  font-family: "TerminaTest-Bold";
-  line-height: 66px;
-}
-
-.uniqueMain .uniqueMask span,
-.uniqueMain .uniqueBody span {
-  color: #ec4e39;
-  font-size: 64px;
-  line-height: 66px;
-}
-
-.uniqueMain .uniqueMask {
-  mask-image: url("../public/images/mask.svg");
-  mask-repeat: no-repeat;
-  mask-size: 36px;
-  background: #ec4e39;
-  position: absolute;
-  color: black;
-}
-
-.uniqueCardContainer {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: sticky;
-  top: 0px;
-}
-
-.uniqueCardContainer .uniqueCard {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  top: -25%;
-  height: 500px;
-  width: 800px;
-  border-radius: 25px;
-  padding: 50px;
-  transform-origin: top;
-}
-
-.uniqueCardContainer .uniqueCard h2 {
-  text-align: center;
-  margin: 0px;
-  font-size: 28px;
-}
-
-.uniqueCardContainer .uniqueCard .uniqueBody {
-  display: flex;
-  height: 100%;
-  margin-top: 50px;
-  gap: 50px;
-}
-
-.uniqueCardContainer .uniqueCard .uniqueBody .uniqueDescription {
-  width: 40%;
-  position: relative;
-  top: 10%;
-}
-
-.uniqueCardContainer .uniqueCard .uniqueBody .uniqueDescription p {
-  font-size: 16px;
-}
-
-.uniqueCardContainer
-  .uniqueCard
-  .uniqueBody
-  .uniqueDescription
-  p::first-letter {
-  font-size: 28px;
-  font-family: "Title";
-}
-
-.uniqueCardContainer .uniqueCard .uniqueBody .uniqueDescription span {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.uniqueCardContainer .uniqueCard .uniqueBody .uniqueDescription span a {
-  font-size: 12px;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.uniqueCardContainer .uniqueCard .uniqueBody .uniqueImageContainer {
-  position: relative;
-  width: 30%;
-  height: 100%;
-  border-radius: 25px;
-  overflow: hidden;
-}
-
-.uniqueCardContainer
-  .uniqueCard
-  .uniqueBody
-  .uniqueImageContainer
-  .uniqueInner {
-  width: 100%;
-  height: 100%;
-}
-
-.uniqueCardContainer .uniqueCard .uniqueBody .uniqueImageContainer img {
-  object-fit: cover;
-}
 
 .circled {
   position: relative;
@@ -5189,9 +5087,7 @@ a {
   overflow: hidden;
   width: 100%;
   height: 100%;
-
 }
-
 
 
 .feature-card-bg {
@@ -5212,3 +5108,113 @@ a {
   margin-bottom: 16px;
 }
 
+.menu_button-text.is-2 {
+  position: absolute;
+  inset: 0% auto auto 0%;
+}
+
+.menu_padding {
+  z-index: 2;
+  padding: 1.2em;
+  position: relative;
+}
+
+.menu_link-wrap {
+  z-index: 2;
+  position: relative;
+}
+
+.menu_link {
+  display: block;
+  
+}
+
+.menu_link-text {
+  font-size: 1.2em;
+  line-height: 1.4;
+  font-family: "NeueMontrealBook";
+}
+
+.menu_link-text.is-2 {
+  position: absolute;
+  inset: 0% auto auto 0%;
+}
+
+.odd {
+  display: inline-block;
+  transform: translate(0, 100%);
+}
+
+.even, .odd2 {
+  display: inline-block;
+  transform: translate(0);
+}
+
+.even2 {
+  display: inline-block;
+  transform: translate(0, -100%);
+}
+
+.menu_link-placeholder {
+  padding-top: 4.6em;
+  display: none;
+}
+
+.menu_text-wrap, .menu_text-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: row;
+  align-items: top;
+  gap: 50px;
+  padding: 100px 20px;
+  perspective: 1200px; 
+}
+
+.singlecard {
+  width: 300px;
+  height: 450px;
+  background: white;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.card-back,
+.card-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-back {
+  background: pink;
+  color: black;
+  transform: rotateY(180deg); 
+  font-family: "NeueMontrealBook";
+  font-size: 1.5rem;
+}
+
+.card-front {
+  background: blue;
+  color: white;
+  font-family: "NeueMontrealBook";
+  font-size: 18px;
+}
+
+.line-wrapper-left.cc--smaller {
+  min-width: calc(80px / 2);
+  height: 1.4375rem;
+  transform: translateY(-.05rem);
+}

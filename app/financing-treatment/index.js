@@ -232,7 +232,7 @@ useEffect(() => {
     {
       id: 1,
       frontText: "Initial consultations are always free of charge.",
-      img: "../images/tarot1.png",
+      img: "../images/quadra-pic.png",
     },
     //  backText: "  Complimentary Consultation"
     //  },

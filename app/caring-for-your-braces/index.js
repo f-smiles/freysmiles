@@ -15,7 +15,7 @@ export default function MultiPhasePinComplete() {
           trigger: containerRef.current,
           start: "top top",
           end: "+=9000",
-          scrub: 2,
+          scrub: 1,
           pin: true,
         },
       });
