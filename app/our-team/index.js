@@ -13,64 +13,6 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
 
-const Card = ({
-  i,
-  title,
-  description,
-  src,
-  url,
-  color,
-  progress,
-  range,
-  targetScale,
-}) => {
-  const container = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: container,
-    offset: ["start end", "start start"],
-  });
-
-  const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1]);
-  const scale = useTransform(progress, range, [1, targetScale]);
-
-  return (
-    <div ref={container} className="stackCardContainer">
-      <motion.div
-        style={{
-          backgroundColor: color,
-          scale,
-          top: `calc(-5vh + ${i * 25}px)`,
-        }}
-        className="uniqueCard"
-      >
-        <div className="uniqueBody">
-          <div
-            className="uniqueDescription"
-            style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-          >
-            <h2 className="text-[22px] font-neue-montreal">{title}</h2>
-            <p className="text-[16px] font-neue-montreal">{description}</p>
-          </div>
-
-          <div className="flex uniqueImageContainer">
-            <motion.div className="uniqueInner" style={{ scale: imageScale }}>
-              <Image fill src={`/images/${src}`} alt="image" />
-            </motion.div>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-};
-
-const Layer = ({ colorClass }) => {
-  return (
-    <div
-      className={`absolute top-0 left-0 right-0 h-full w-full ${colorClass}`}
-    />
-  );
-};
-
 export default function OurTeam() {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -211,44 +153,7 @@ export default function OurTeam() {
     return () => clearInterval(intervalId);
   }, []);
 
-  const projects = [
-    {
-      title: "Adriana",
-      description: "Insurance Coordinator",
-      src: "team_members/Adriana-Photoroom.jpg",
-      color: "#E6FF74",
-    },
-    {
-      title: "Alyssa",
-      description: "Treatment Coordinator",
-      src: "team_members/Alyssascan.png",
-      color: "#E6FF74",
-    },
-    {
-      title: "Elizabeth",
-      description: "Patient Services",
-      src: "team_members/Elizabethaao.png",
-      color: "#E6FF74",
-    },
-    {
-      title: "Grace",
-      description: "Specialized Orthodontic Assistant",
-      src: "team_members/Grace-Photoroom.jpg",
-      color: "#E6FF74",
-    },
-    {
-      title: "Lexi",
-      description: "Treatment Coordinator",
-      src: "team_members/lexigreen.png",
-      color: "#E6FF74",
-    },
-    {
-      title: "Nicolle",
-      description: "Specialized Orthodontic Assistant",
-      src: "team_members/nicollewaving.png",
-      color: "#E6FF74",
-    },
-  ];
+
 
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -316,7 +221,7 @@ export default function OurTeam() {
   //   },
   // ];
 
-  const [progress, setProgress] = useState(0);
+  // const [progress, setProgress] = useState(0);
   const carouselRef = useRef();
   const cursorRef = useRef();
 
@@ -551,9 +456,73 @@ export default function OurTeam() {
     "to the ever-changing nature of our industry.",
   ];
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((prev) => (prev >= 100 ? 0 : prev + 2)); // Progress animation
+    }, 100);
+
+    const timer = setTimeout(() => {
+      handleNext();
+      setProgress(0);
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timer);
+    };
+  }, [currentIndex]);
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+  const images = [
+    {
+      id: 1,
+      name: "Alyssa",
+      src: "../images/team_members/Alyssascan.png",
+      alt: "Image 1",
+      description: "Treatment Coordinator",
+    },
+    {
+      id: 2,
+      name: "Nicolle",
+      src: "../images/team_members/Nicollewaving.png",
+      alt: "Image 2",
+      description: "Specialized Orthodontic Assistant",
+    },
+    {
+      id: 3,
+      name: "Lexi",
+      src: "../images/team_members/Lexigreen.png",
+      alt: "Image 3",
+      description: "Treatment Coordinator",
+    },
+    {
+      id: 4,
+      name: "Elizabeth",
+      src: "../images/team_members/Elizabethaao.png",
+      alt: "Image 4",
+      description: "Patient Services",
+    },
+    {
+      id: 5,
+      name: "Adriana",
+      src: "../images/team_members/Adriana-Photoroom.png",
+      alt: "Image 5",
+      description: "Insurance Coordinator",
+    },
+  ];
+
   return (
-    <div className="relative w-full min-h-screen ">
-      <div className="min-h-screen bg-[#E2E2E2] relative ">
+    <div>
+      <div className="bg-[#E2E2E2] relative ">
         <section className="py-24 sm:py-32">
           <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
             <div className="grid grid-cols-2 ">
@@ -561,7 +530,7 @@ export default function OurTeam() {
                 {textLines.map((line, index) => (
                   <div
                     key={index}
-                    className="stagger-line font-neue-montreal text-[80px] relative"
+                    className="tracking-wide stagger-line font-saolitalic text-[90px] relative"
                   >
                     {line.text.split(" ").map((word, wordIndex) => (
                       <span
@@ -780,7 +749,7 @@ export default function OurTeam() {
                 <div className="horizontalRow">
                   <div className="horizontalItem horizontalFilled">
                     <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
-                      <p className="sm:text-left md:text-center">
+                      <p>
                         Our members have received the designation of Specialized
                         Orthodontic Assistant. This is a voluntary certification
                         program started by the American Association of
@@ -792,12 +761,12 @@ export default function OurTeam() {
 
                   <div className=" horizontalItem horizontalFilled">
                     <p>
-                      {" "}
                       Fun fact-our team is made up of former FreySmiles
                       patients, something we think is important, because we have
                       all experienced treatment and can help guide you through
                       it.
                     </p>
+
                     {/* <img
                       className="absolute bottom-0 w-90 h-90"
                       src="../images/threedots.svg"
@@ -824,7 +793,7 @@ export default function OurTeam() {
                       position: "relative",
                     }}
                   >
-                    <div className="svg-container">
+                    {/* <div className="svg-container">
                       {svgs.map((svg) => (
                         <div
                           key={svg.id}
@@ -848,7 +817,7 @@ export default function OurTeam() {
                           </svg>
                         </div>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className="horizontalRow">
@@ -887,9 +856,7 @@ export default function OurTeam() {
                       and protocols streamlining our processes
                     </p>
                     <a className="horizontalItemLink">
-                      <span className="link-text" data-text="Learn More">
-                        Learn More
-                      </span>
+                 
                     </a>
                   </div>
                 </div>
@@ -898,6 +865,7 @@ export default function OurTeam() {
           </div>
         </section>
 
+        {/*   
         <section ref={container} style={{ marginTop: "50vh" }}>
           {projects.map((project, i) => {
             const targetScale = 1 - (projects.length - i) * 0.05;
@@ -912,7 +880,7 @@ export default function OurTeam() {
               />
             );
           })}
-        </section>
+        </section> */}
 
         {/* <div
           ref={carouselRef}
@@ -951,6 +919,271 @@ export default function OurTeam() {
             </div>
           ))}
         </div> */}
+      </div>
+      <div className="bg-black h-screen flex relative">
+        <div className="flex" style={{ width: "100%" }}>
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "20%",
+              transform: "translate(-50%, -50%)",
+              color: "white",
+              fontSize: "42px",
+              textAlign: "center",
+              fontWeight: "200",
+              fontFamily: "HelveticaNeue-Light",
+            }}
+          >
+            We're here to support you
+            <br /> every step of the way
+          </div>
+          <div>
+            <div className="flex" style={{ width: "100%" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "25%",
+                  right: "25%",
+                  color: "white",
+                  fontSize: "18px",
+                  fontFamily: "NeueMontrealBook",
+                  textAlign: "center",
+                }}
+                className="w-[250px] h-auto object-cover"
+              >
+                <img
+                  src={images[currentIndex].src}
+                  alt={images[currentIndex].alt}
+                />
+            <div className="mt-10">{images[currentIndex].name}</div>       
+   <div className="mt-5">{images[currentIndex].description}</div>
+
+              </div>
+              
+
+              {/* Thumbnail Column */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: "25%",
+                  right: "10%",
+                  color: "white",
+                  textAlign: "center",
+                }}
+                className="ml-6 flex flex-col items-center gap-3"
+              >
+                {images.map((image, index) => (
+                  <div
+                    key={image.id}
+                    className="relative w-12 h-12 rounded-full overflow-hidden cursor-pointer"
+                    onClick={() => setCurrentIndex(index)}
+                  >
+    
+                    {index === currentIndex && (
+                      <svg
+                        className="absolute top-0 left-0 w-full h-full"
+                        viewBox="0 0 36 36"
+                      >
+                        <circle
+                        stroke="#E8F724"
+                          cx="18"
+                          cy="18"
+                          r="18"
+                          strokeWidth="1.5"
+                          fill="none"
+                          strokeDasharray="113"
+                          strokeDashoffset={113 - (progress / 100) * 113}
+                          strokeLinecap="round"
+                          transition="stroke-dashoffset 0.1s linear"
+                        />
+                      </svg>
+                    )}
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      className="w-full h-full"
+                    />
+                  </div>
+                ))}
+
+  <div className="flex">
+                <button
+                  onClick={handleNext}
+                  className="mt-2 p-2 border rounded-full text-white"
+                >
+       
+                </button>
+                <button
+                  onClick={handlePrev}
+                  className="mt-2 p-2 border rounded-full text-white"
+                >
+           
+                </button>
+                </div>
+                <div className="text-gray-400 text-sm font-neue-montreal mt-2">
+                  0{currentIndex + 1} - 0{images.length}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center justify-end relative flex-1">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-end",
+                transform: "translateY(-12rem)",
+              }}
+            >
+              <div
+                style={{
+                  width: "60px",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, .6)",
+                  transform: "translate(38px, -150px)",
+                }}
+              ></div>
+
+              <div
+                style={{
+                  width: "2.25rem",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, .6)",
+                  transform: "translate(34px, -138px) rotate(40deg)",
+                }}
+              ></div>
+
+              <div
+                style={{
+                  width: "600px",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  transform: "translate(30px, -126px)",
+                }}
+              ></div>
+
+              <div
+                style={{
+                  width: "2.25rem",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  transform: "translate(26px, -114px) rotate(40deg)",
+                }}
+              ></div>
+
+              <div
+                style={{
+                  width: "2.25rem",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  position: "absolute",
+                  left: "calc(100% + 5px)",
+                  transform:
+                    "rotate(-40deg) translateY(366px) translateX(-326px)",
+                }}
+              ></div>
+
+              <div
+                style={{
+                  width: "600px",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  position: "absolute",
+                  left: "calc(100% - 605px)",
+                  transform: "translateY(502px)",
+                }}
+              ></div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start relative flex-1">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-end",
+                transform: "translateY(-12rem)",
+              }}
+            >
+              <div
+                style={{
+                  width: "2.25rem",
+                  height: ".6px",
+                  transform:
+                    "rotate(-40deg) translateX(98px) translateY(-82px)",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  transformOrigin: "right",
+                  marginLeft: "-0.5rem",
+                }}
+              ></div>
+
+              <div
+                style={{
+                  width: "520px",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  transform: "translate(22px, -126px)",
+                  flex: "1",
+                }}
+              ></div>
+
+              <div
+                style={{
+                  width: "60px",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  flex: "0 auto",
+                  transform: "translate(50px, -148px)",
+                }}
+              ></div>
+
+              <div
+                style={{
+                  width: "2.25rem",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  transform:
+                    "rotate(-40deg) translateY(-132px) translateX(56px)",
+                }}
+              ></div>
+
+              {/* Vertical Line */}
+              <div
+                style={{
+                  width: ".6px",
+                  height: "580px",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  position: "absolute",
+                  right: "calc(100% - 22px)",
+                  top: "-102px",
+                }}
+              ></div>
+
+              {/* Bottom Slanted Line */}
+              <div
+                style={{
+                  width: "2.25rem",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  position: "absolute",
+                  right: "calc(100% - 1px)",
+                  transform:
+                    "rotate(40deg) translateY(342px) translateX(356px)",
+                }}
+              ></div>
+
+              <div
+                style={{
+                  width: "600px",
+                  height: ".6px",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  position: "absolute",
+                  right: "calc(100% - 636px)",
+                  transform: "translateY(502px) translateX(14px)",
+                }}
+              ></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
