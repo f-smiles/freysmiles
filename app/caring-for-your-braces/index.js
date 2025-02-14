@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function MultiPhasePinComplete() {
+export default function HorizontalContainer() {
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -19,35 +19,148 @@ export default function MultiPhasePinComplete() {
           pin: true,
         },
       });
-  
+
       // 1st: purple expands, green & white expand together
-      tl.to(".purpleSection", { left: "0vw", width: "70vw", duration: 1, ease: "none" }, 0);
-      tl.to(".greenSection", { left: "70vw", width: "20vw", duration: 1, ease: "none" }, 0);
-      tl.to(".whiteSection", { left: "90vw", width: "10vw", duration: 1, ease: "none" }, 0);
-  
-      // 2nd: green expands over purple, white continues expanding, orange appears
-      tl.to(".greenSection", { left: "0vw", width: "70vw", duration: 1, ease: "none" }, 1);
-      tl.to(".whiteSection", { left: "70vw", width: "15vw", duration: 1, ease: "none" }, 1);
-      tl.to(".orangeSection", { left: "85vw", width: "15vw", duration: 1, ease: "none" }, 1);
+      tl.to(
+        ".purpleSection",
+        { left: "0vw", width: "70vw", duration: 1, ease: "none" },
+        0
+      );
+      tl.to(
+        ".contentText",
+        {
+          x: "0%",
+          duration: 0.5,
+          ease: "power1.inOut",
+        },
+        0.5
+      );
+      tl.to(
+        ".image-wrapper",
+        {
+          scale: 1.5,
+          transformOrigin: "bottom right",
+          duration: 1,
+          ease: "power2.out",
+        },
+        0
+      );
+
+      tl.to(
+        ".greenSection",
+        { left: "70vw", width: "20vw", duration: 1, ease: "none" },
+        0
+      );
+
+      tl.to(
+        ".whiteSection",
+        { left: "90vw", width: "10vw", duration: 1, ease: "none" },
+        0
+      );
+
+      tl.to(
+        ".greenSection",
+        { left: "0vw", width: "70vw", duration: 1, ease: "none" },
+        1
+      );
+      tl.to(
+        ".greenContentText",
+        {
+          x: "0%",
+          duration: 0.5,
+          ease: "power1.inOut",
+        },
+        1.5
+      );
+      tl.to(
+        ".image-wrapper2",
+        {
+          scale: 2.5,
+          transformOrigin: "bottom right",
+          duration: 1,
+          ease: "power2.out",
+        },
+        1
+      );
+      tl.to(
+        ".whiteSection",
+        { left: "70vw", width: "15vw", duration: 1, ease: "none" },
+        1
+      );
+      tl.to(
+        ".orangeSection",
+        { left: "85vw", width: "15vw", duration: 1, ease: "none" },
+        1
+      );
       tl.set(".greenSection", { zIndex: 4 }, 1);
-  
+
       // 3rd: white moves over green, orange expands, red appears
-      tl.to(".whiteSection", { left: "0vw", width: "70vw", duration: 1, ease: "none" }, 2);
-      tl.to(".orangeSection", { left: "70vw", width: "20vw", duration: 1, ease: "none" }, 2);
-      tl.to(".redSection", { left: "90vw", width: "10vw", duration: 1, ease: "none" }, 2);
+      tl.to(
+        ".whiteSection",
+        { left: "0vw", width: "70vw", duration: 1, ease: "none" },
+        2
+      );
+      tl.to(
+        ".whiteContentText",
+        {
+          x: "0%",
+          duration: 0.5,
+          ease: "power1.inOut",
+        },
+        2.5
+      );
+      tl.to(
+        ".orangeSection",
+        { left: "70vw", width: "20vw", duration: 1, ease: "none" },
+        2
+      );
+      tl.to(
+        ".redSection",
+        { left: "90vw", width: "10vw", duration: 1, ease: "none" },
+        2
+      );
       tl.set(".whiteSection", { zIndex: 5 }, 2);
-  
+
       // 4th: orange moves over white, red expands
-      tl.to(".orangeSection", { left: "0vw", width: "70vw", duration: 1, ease: "none" }, 3);
-      tl.to(".redSection", { left: "70vw", width: "30vw", duration: 1, ease: "none" }, 3);
+      tl.to(
+        ".orangeSection",
+        { left: "0vw", width: "70vw", duration: 1, ease: "none" },
+        3
+      );
+      tl.to(
+        ".orangeContentText",
+        {
+          x: "0%",
+          duration: 0.5,
+          ease: "power1.inOut",
+        },
+        3.5
+      );
+      tl.to(
+        ".redSection",
+        { left: "70vw", width: "30vw", duration: 1, ease: "none" },
+        3
+      );
       tl.set(".orangeSection", { zIndex: 6 }, 3);
-  
+
       // 5th: red moves over orange as the final section
-      tl.to(".redSection", { left: "0vw", width: "100vw", duration: 1, ease: "none" }, 4);
+      tl.to(
+        ".redSection",
+        { left: "0vw", width: "100vw", duration: 1, ease: "none" },
+        4
+      );
       tl.set(".redSection", { zIndex: 7 }, 4);
-  
+      tl.to(
+        ".redContentText",
+        {
+          x: "0%",
+          duration: 0.5,
+          ease: "power1.inOut",
+        },
+        4.5
+      );
     }, containerRef);
-  
+
     return () => ctx.revert();
   }, []);
   return (
@@ -56,7 +169,7 @@ export default function MultiPhasePinComplete() {
         style={{
           position: "fixed",
           top: "10vh",
-          left: "0",
+          left: "-150px",
           width: "100%",
           paddingLeft: "16rem",
           zIndex: 10,
@@ -82,7 +195,7 @@ export default function MultiPhasePinComplete() {
             left: "0vw",
             width: "70vw",
             height: "100%",
-            overflow: "hidden", 
+            overflow: "hidden",
             background: "#d3e0f4",
             zIndex: 1,
           }}
@@ -90,10 +203,10 @@ export default function MultiPhasePinComplete() {
           <div className="flex flex-col h-screen justify-center">
             <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 px-8 md:px-16 lg:px-24">
               <div className="md:w-1/2 flex flex-col justify-end">
-                <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
-                  Braces treatment time varies based on your unique case and how
-                  well you follow care instructions. At FreySmiles Orthodontics,
-                  most patients achieve their ideal smile in 12 to 22 months.
+                <p className=" text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
+                  How long you’ll wear braces depends on your treatment plan and
+                  how well you follow our team's instructions. At FreySmiles,
+                  most patients achieve their ideal smile in 12 to 20 months.
                   Ready to get started? Let’s make it happen.
                 </p>
                 <hr className="border-t border-[#262626] mb-8" />
@@ -139,68 +252,72 @@ export default function MultiPhasePinComplete() {
           className="purpleSection"
           style={{
             position: "absolute",
+            overflow: "hidden",
             top: 0,
             left: "70vw",
             width: "20vw",
             height: "100%",
-            background: "#D9D1F1 ",
+            background: "#CABDFE",
             zIndex: 2,
           }}
         >
           <div className="flex flex-col h-screen justify-center">
-            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 px-8 md:px-16 lg:px-24">
-              <div className="md:w-1/2 flex flex-col justify-end">
+            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 ">
               <div
-    style={{
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      width: "80%",
-    }}
-  >
-                <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
-                  Brushing and flossing during orthodontic treatment is more
-                  important than ever. Orthodontic appliances such as clear
-                  aligners, brackets, and wires interfere with normal
-                  self-cleansing mechanisms of the mouth. Research shows that
-                  only 10% of patients brush and floss consistently during
-                  active treatment. We're here to ensure you don't just get lost
-                  in the statistics.
-                </p>
-             
-                <hr className="border-t border-[#262626] mb-8" />
-                <div className="flex items-center space-x-2">
-                  <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
-                    • Learn More
-                  </h3>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="w-4 h-4"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
-                    />
-                  </svg>
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    transform: "translate(-100%, 0%)",
+                    maxWidth: "550px",
+                    bottom: 0,
+                    left: "10%",
+                    paddingRight: "68px",
+                  }}
+                  className="contentText flex flex-col justify-end"
+                >
+                  <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
+                    Brushing and flossing during orthodontic treatment is more
+                    important than ever. All orthodontic appliances such as
+                    clear aligners, brackets, and wires interfere with normal
+                    self-cleansing mechanisms of the mouth. Research shows that
+                    only 10% of patients brush and floss consistently during
+                    active treatment. We always recommend patients with braces
+                    get three cleanings a year. Check with your insurance to see
+                    if they'll cover a third cleaning. When you begin treatment
+                    we will equip you with a number of tools to help with
+                    cleaning, including spare toothbrushes, and dental floss.
+                  </p>
+                  <hr className="border-t border-[#262626] mb-8" />
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
+                      • Brushing and Flossing
+                    </h3>
+                  </div>
                 </div>
-</div>
               </div>
-
-              <div className="absolute right-0 bottom-[6%] w-1/3 h-1/2 flex justify-end">
-                <div className="max-w-lg w-full h-auto overflow-hidden rounded-2xl">
-                  <img src="../images/purplefloss.jpeg" />
+              <div className="absolute right-0 bottom-[6%] flex justify-end">
+                <div
+                  className="image-wrapper rounded-2xl overflow-hidden"
+                  style={{
+                    width: "250px",
+                    height: "auto",
+                  }}
+                >
+                  <img
+                    src="../images/purplefloss.jpeg"
+                    className="w-full h-auto"
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
-
         {/* green */}
         <div
           className="greenSection"
@@ -213,7 +330,58 @@ export default function MultiPhasePinComplete() {
             background: "#DAE5D6",
             zIndex: 3,
           }}
-        ></div>
+        >
+          <div className="flex flex-col h-screen justify-center">
+            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 ">
+              <div
+                style={{
+                  overflow: "hidden",
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    transform: "translateX(-105%)",
+                    maxWidth: "500px",
+                    bottom: 0,
+                    left: "10%",
+                    paddingRight: "68px",
+                  }}
+                  className="absolute greenContentText flex flex-col justify-end"
+                >
+                  <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
+                    When you first get braces, your mouth might feel sore, and
+                    your teeth may be tender for 3–5 days—kind of like a dull
+                    headache. Taking Tylenol or your usual pain reliever can
+                    help ease the discomfort. Your lips, cheeks, and tongue
+                    might also feel irritated for a week or two as they adjust.
+                    No worries—we’ve got you covered with wax to prevent rubbing
+                    and irritation. Hang in there—it gets easier!
+                  </p>
+                  <hr className="border-t border-[#262626] mb-8" />
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
+                      • General Soreness
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute right-0 bottom-[6%] flex justify-end">
+                <div
+                  className="image-wrapper2 rounded-2xl overflow-hidden"
+                  style={{
+                    width: "150px",
+                    height: "auto",
+                  }}
+                >
+                  <img src="../images/orthowax.png" className="w-full h-auto" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* white */}
         <div
@@ -228,7 +396,61 @@ export default function MultiPhasePinComplete() {
             zIndex: 1,
             overflow: "hidden",
           }}
-        ></div>
+        >
+          <div className="flex flex-col h-screen justify-center">
+            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 ">
+              <div
+                style={{
+                  overflow: "hidden",
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    transform: "translateX(-105%)",
+                    maxWidth: "500px",
+                    left: "10%",
+                    bottom: 0,
+                    paddingRight: "68px",
+                  }}
+                  className="absolute whiteContentText flex flex-col justify-end"
+                >
+                  <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light text-black leading-relaxed mb-8">
+                    Traditionally, patients have been advised to avoid specific
+                    foods during braces treatment. Overly aggressive and rapid
+                    chewing will break your brackets. Crunchy, chewy, sugary,
+                    and acidic foods should be avoided. While this is not a
+                    comprehensive list, here is a basic guideline: Dense breads,
+                    caramel, gum, soda, lean meats. apples should be sliced and
+                    corn on the cob may require precise navigation.
+                  </p>
+                  <hr className="border-t border-[#262626] mb-8" />
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
+                      • Eating with braces
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute right-0 bottom-[6%] flex justify-end">
+                <div
+                  className="image-wrapper2 rounded-2xl overflow-hidden"
+                  style={{
+                    width: "150px",
+                    height: "auto",
+                  }}
+                >
+                  <img
+                    src="../images/purplefloss.jpeg"
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* orange */}
         <div
@@ -243,370 +465,140 @@ export default function MultiPhasePinComplete() {
             zIndex: 1,
             overflow: "hidden",
           }}
-        ></div>
+        >
+          <div className="flex flex-col h-screen justify-center">
+            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 ">
+              <div
+                style={{
+                  overflow: "hidden",
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    transform: "translate(-105%, 0%)",
+                    maxWidth: "500px",
+                    left: "10%",
+                    bottom: 0,
+                    paddingRight: "68px",
+                  }}
+                  className="orangeContentText absolute flex flex-col justify-end"
+                >
+                  <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light text-black leading-relaxed mb-8">
+                    If your doctor has prescribed rubber bands it's essential
+                    for you to follow the prescription for an ideal result.
+                    Failure to follow protocol and frequently breaking brackets
+                    will lead to a less than ideal treatment result. You’ll be
+                    given a number of different rubber band sizes during
+                    treatment—these are determined by the wire size and planned
+                    correction. You may accumulate a stockpile of various
+                    elastics, but keep in mind that not all elastics are
+                    interchangeable for every configuration.
+                  </p>
+                  <hr className="border-t border-[#262626] mb-8" />
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
+                      • Rubberband wear
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute right-0 bottom-[6%] flex justify-end">
+                <div
+                  className="image-wrapper2 rounded-2xl overflow-hidden"
+                  style={{
+                    width: "150px",
+                    height: "auto",
+                  }}
+                >
+                  <img
+                    src="../images/bracesrubberbands.png"
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div
-  className="redSection"
-  style={{
-    position: "absolute",
-    top: 0,
-    left: "100vw",
-    width: "0vw",
-    height: "100%",
-    background: "#B7A7B9",
-    zIndex: 1,
-    overflow: "hidden",
-  }}
->
-
-</div>
+          className="redSection"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "100vw",
+            width: "0vw",
+            height: "100%",
+            background: "#B7A7B9",
+            zIndex: 1,
+            overflow: "hidden",
+          }}
+        >
+          <div className="flex flex-col h-screen justify-center">
+            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 ">
+              <div
+                style={{
+                  overflow: "hidden",
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    transform: "translateX(-105%)",
+                    maxWidth: "500px",
+                    left: "10%",
+                    bottom: 0,
+                    paddingRight: "68px",
+                  }}
+                  className="redContentText absolute flex flex-col justify-end"
+                >
+                  <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light text-black leading-relaxed mb-8">
+                    Teeth will become loose, and some more than others.The teeth
+                    will settle into the bone and soft tissue and mobility will
+                    return to physiologic norms at the end of treatment.
+                    Brackets will also break. All orthodontic appliances are
+                    temporary, breakages are expected and considered when
+                    calculating your treatment time and retention. Dental
+                    professionals,dental hygenists, and other specialists all
+                    have different knowledge bases and motivations pertaining to
+                    patient care. It is not unlikely that at some point during
+                    treatment you may receive conflicting information. We're on
+                    the cutting edge with our office and some people may not
+                    comprehend what we're doing. We're always open educating
+                    other professionals on our cutting edge treatment plans,
+                    however patient care is our prority. Whenever in doubt, you
+                    can always circle back with the doctor who treatment planned
+                    your case. Trust our process.
+                  </p>
+                  <hr className="border-t border-[#262626] mb-8" />
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
+                      • Final Considerations
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute right-0 bottom-[6%] flex justify-end">
+                <div
+                  className="image-wrapper2 rounded-2xl overflow-hidden"
+                  style={{
+                    width: "150px",
+                    height: "auto",
+                  }}
+                >
+                  <img
+                    src="../images/purplefloss.jpeg"
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </>
   );
 }
-
-{
-  /* <div ref={scrollContainerRef} className=" bg-[#1B1C1D] flex flex-row items-stretch"
-      
->
-  <div className="flex flex-col w-1/2 border-r border-[#949494] sticky top-0 h-screen">
-  <div className="absolute w-full h-full flex items-center justify-center image-wrapper">
-
-        <div className="flex justify-center items-center absolute w-auto h-1/2 top-0 left-0 image-wrapper">
-        <img src="../images/testpic.png" />
-
-</div>
-</div>
-
-
-
-<div className="absolute w-full h-full top-0 left-0 image-wrapper" style={{ zIndex: 3 }}>
-<div className="flex justify-center items-center h-screen">
-  <img
-    src="/images/brushing.png"
-    alt="Profile"
-    className="blob-image1 object-cover"
-  />
-</div>
-</div>
-  </div>
-
-  <div className="w-1/2 overflow-auto" >
-    {sections.map((section, index) => (
-      <section
-        key={index}
-        className="p-20 min-h-[75vh] flex flex-col justify-center mb-5"
-      >
-        <div className="text-white font-neue-montreal font-thin text-2xl mb-4">
-          {section.title}
-        </div>
-        <p className="text-center text-white font-neue-montreal">{section.content}</p>
-      </section>
-    ))}
-  </div>
-</div> 
- */
-}
-
-// const sections = [
-//   {
-//     title: "Brush and floss",
-//     content:
-//       "Brushing and flossing during orthodontic treatment is more important than ever. Orthodontic appliances such as clear aligners, brackets, and wires interfere with normal self-cleansing mechanisms of the mouth. Research shows that only 10% of patients brush and floss consistently during active treatment. We're here to ensure you don't just get lost in the statistics.",
-//   },
-
-//   {
-//     title: "General Soreness",
-//     content:
-//       "When you get your braces on, you may feel general soreness in your mouth and teeth may be tender to biting pressures for 3 –5 days. Take Tylenol or whatever you normally take for headache or discomfort. The lips, cheeks and tongue may also become irritated for one to two weeks as they toughen and become accustomed to the braces. We will supply wax to put on the braces in irritated areas to lessen discomfort.",
-//   },
-//   {
-//     title: "Loosening of Teeth",
-//     content:
-//       "This is to be expected throughout treatment. The teeth must loosen first so they can move. The teeth will settle into the bone and soft tissue in their desired position after treatment is completed if retainers are worn correctly.",
-//   },
-//   {
-//     title: "Loose Wire or Band",
-//     content:
-//       "When crowding and/or significant dental rotations is the case initially, a new wire placed at the office may eventually slide longer than the last bracket. In this case, depending on the orientation of the last tooth, it may poke into your cheek or gums. If irritation to the lips or You  can place orthodontic wax on the wire to reduce prevent stabbing. If the wire doesn't settle in on its own, it will benefit from being clipped within two weeks. Call our office to schedule an appointment.",
-//   },
-//   {
-//     title: "Rubberband wear",
-//     content:
-//       "To successfully complete orthodontic treatment, the patient must work together with the orthodontist. If the doctor has prescribed rubber bands it will be necessary for you to follow the prescription for an ideal result. Failure to follow protocol will lead to a less than ideal treatment result. Excessive broken brackets will delay treatment and lead to an incomplete result. Compromised results due to lack of compliance is not grounds for financial reconciliation. ",
-//   },
-//   {
-//     title: "Athletics",
-//     content:
-//       "Braces and mouthguards typically don't mix. Molded mouthguards will prevent planned tooth movement. If you require a mouthguard for contact sports, we stock ortho-friendly mouthguards which may work. ",
-//   },
-//   {
-//     title: "How long will I be in braces",
-//     content:
-//       "Every year hundreds of parents trust our experience to provide beautiful, healthy smiles for their children. Deepending on case complexity and compliance, your time in braces may vary, but at FreySmiles Orthodontics case completion may only be typically only 12-22 months away.",
-//   },
-
-//   {
-//     title: "Eating with braces",
-//     content:
-//       "Something to keep in mind with braces is to take caution when eating hard foods, i.e., tough meats,hard breads, granola, and the like.  But you’ll need to protect yourorthodontic appliances when you eat for as long as you’re wearing braces.",
-//   },
-// ];
-
-// const scrollContainerRef = useRef(null);
-
-// useEffect(() => {
-//   const scrollContainer = scrollContainerRef.current;
-//   let scrollingImages = scrollContainer.querySelectorAll(".image-wrapper");
-
-//   scrollingImages = Array.from(scrollingImages);
-//   scrollingImages.forEach((e, i) => {
-//     e.style.zIndex = `${scrollingImages.length - i}`;
-//   });
-
-//   const setScrollHeight = () => {
-//     const offset =
-//       scrollContainer.getBoundingClientRect().top + window.scrollY;
-//     const scrollHeight = window.innerHeight;
-//     return { offset, scrollHeight };
-//   };
-
-//   const updateImages = () => {
-//     const { offset, scrollHeight } = setScrollHeight();
-
-//     scrollingImages.forEach((e, i) => {
-//       let scrollPct =
-//         ((window.scrollY - offset - scrollHeight * i) / scrollHeight) * 100;
-//       scrollPct = 100 - scrollPct;
-//       scrollPct = Math.min(Math.max(scrollPct, 0), 100);
-
-//       let clipPath = `polygon(0% 0%, 100% 0%, 100% ${scrollPct}%, 0% ${scrollPct}%)`;
-//       e.style.clipPath = clipPath;
-//       e.style.webkitClipPath = clipPath;
-//     });
-//   };
-
-//   window.addEventListener("scroll", updateImages);
-//   window.addEventListener("resize", () => {
-//     setScrollHeight();
-//     updateImages();
-//   });
-
-//   return () => {
-//     window.removeEventListener("scroll", updateImages);
-//     window.removeEventListener("resize", updateImages);
-//   };
-// }, []);
-
-//                 <h3>Food To Avoid</h3>
-{
-  /* <p>
-<ul>
-   <li>Chewy foods: dense baked goods, such as bagels and baguettes, licorice.</li>
-   <li>Crunchy foods: popcorn, ice.</li>
-  <li>Sticky foods: caramels, gum.</li>
-    <li>Hard foods: nuts, candy.</li>
-   <li>
-   Foods you have to bite into: corn on the cob, apples,
-    carrots.
-  </li>
- </ul>
-Chewing on hard things (for example, pens, pencils or
-fingernails) can damage the braces. Damaged braces will cause
- treatment to take longer.
-</p> */
-}
-
-// export default CaringForYourBraces
-// import React, { useEffect } from 'react';
-// import { gsap } from "gsap-trial";
-// import { ScrollTrigger } from "gsap/ScrollTrigger";
-// import Scrollbar from 'smooth-scrollbar';
-
-// useEffect(() => {
-//   gsap.registerPlugin(ScrollTrigger);
-
-//   gsap.to(".bglinear", {
-//     scrollTrigger: {
-//       trigger: "#p2",
-//       scrub: true,
-//       start: "10% bottom",
-//       end: "80% 80%",
-//     },
-//     backgroundImage: "linear-gradient(270deg, #000 50%, #fff 0%)",
-//     duration: 3,
-//   });
-
-//   gsap.to(".bglinear", {
-//     scrollTrigger: {
-//       trigger: "#p2",
-//       scrub: true,
-//       start: "10% 80%",
-//       end: "80% 80%",
-//     },
-//     letterSpacing: "10px",
-//     duration: 3,
-//   });
-
-//   return () => {
-//     ScrollTrigger.getAll().forEach((t) => t.kill());
-//   };
-// }, []);
-
-//   useEffect(() => {
-//     gsap.registerPlugin(ScrollTrigger);
-
-//     // Initialize custom scrollbar
-//     let bodyScrollBar = Scrollbar.init(document.querySelector('.scroller'), {
-//         damping: 0.1,
-//         delegateTo: document,
-//     });
-
-//     // Proxy scroller for ScrollTrigger
-//     ScrollTrigger.scrollerProxy(".scroller", {
-//         scrollTop(value) {
-//             if (arguments.length) {
-//                 bodyScrollBar.scrollTop = value;
-//             }
-//             return bodyScrollBar.scrollTop;
-//         },
-//     });
-
-//     bodyScrollBar.addListener(ScrollTrigger.update);
-
-//     // Set zIndex for panels
-//     gsap.set(".panel", { zIndex: (i, target, targets) => targets.length - i });
-
-//     // Animating panels
-//     gsap.utils.toArray('.panel:not(.purple)').forEach((image, i) => {
-//         gsap.timeline({
-//             scrollTrigger: {
-//                 trigger: ".black",
-//                 scroller: ".scroller",
-//                 start: () => "top -" + (window.innerHeight * (i + 0.5)),
-//                 end: () => "+=" + window.innerHeight,
-//                 scrub: true,
-//                 invalidateOnRefresh: true,
-//             }
-//         })
-//         .to(image, { height: 0 });
-//     });
-
-//     // Set zIndex for panel texts
-//     gsap.set(".panel-text", { zIndex: (i, target, targets) => targets.length - i });
-
-//     // Animating panel texts
-//     gsap.utils.toArray('.panel-text').forEach((text, i) => {
-//         gsap.timeline({
-//             scrollTrigger: {
-//                 trigger: ".black",
-//                 scroller: ".scroller",
-//                 start: () => "top -" + (window.innerHeight * i),
-//                 end: () => "+=" + window.innerHeight,
-//                 scrub: true,
-//                 invalidateOnRefresh: true,
-//             }
-//         })
-//         .to(text, { duration: 0.33, opacity: 1, y: "50%" })
-//         .to(text, { duration: 0.33, opacity: 0, y: "0%" }, 0.66);
-//     });
-
-//     // Create ScrollTrigger for pinning
-//     ScrollTrigger.create({
-//         trigger: ".black",
-//         scroller: ".scroller",
-//         start: "top top",
-//         end: () => "+=" + ((gsap.utils.toArray('.panel').length + 1) * window.innerHeight),
-//         pin: true,
-//         scrub: true,
-//         invalidateOnRefresh: true,
-//         markers: true
-//     });
-
-//     return () => {
-//         ScrollTrigger.kill();
-//         bodyScrollBar.destroy();
-//     };
-// }, []);
-
-//     return (
-// <>
-//         <div className="scroller h-screen overflow-hidden">
-//             <section className="black flex justify-around items-center h-screen bg-black sticky top-0 z-10">
-//                 <div className="text-wrap relative overflow-hidden w-[450px] h-[80vh]">
-//                     <div className="panel-text blue-text absolute inset-0 z-10 w-full h-full text-4xl uppercase font-bold text-center bg-black text-blue-500">Blue</div>
-//                     <div className="panel-text red-text absolute inset-0 z-10 w-full h-full text-4xl uppercase font-bold text-center bg-black text-red-500">Red</div>
-//                     <div className="panel-text orange-text absolute inset-0 z-10 w-full h-full text-4xl uppercase font-bold text-center bg-black text-orange-500">Orange</div>
-//                     <div className="panel-text purple-text absolute inset-0 z-10 w-full h-full text-4xl uppercase font-bold text-center bg-black text-purple-500">Purple</div>
-//                 </div>
-//                 <div className="p-wrap relative overflow-hidden w-[450px] h-[80vh]">
-//                     <div className="panel blue absolute inset-0 bg-blue-800"></div>
-//                     <div className="panel red absolute inset-0 bg-red-500"></div>
-//                     <div className="panel orange absolute inset-0 bg-orange-600"></div>
-//                     <div className="panel purple absolute inset-0 bg-purple-700"></div>
-//                 </div>
-//             </section>
-//             <section className="h-screen bg-blue-800"></section>
-//         </div>
-// {/* <div>
-{
-  /* <section
-  className="bglinear"
-  style={{
-    position: "fixed",
-    width: "100%",
-    height: "100vh",
-    backgroundImage: "linear-gradient(90deg, #000 50%, #fff 50%)",
-    zIndex: -1,
-    transition: "all 0.1s ease",
-    perspective: "1px",
-  }}
->
-  <span
-    style={{
-      color: "transparent",
-      fontSize: "122px",
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      WebkitBackgroundClip: "text",
-      WebkitTextStroke: "2px rgba(133, 133, 133, 1)",
-      backfaceVisibility: "none",
-    }}
-  >
-   FOODS
-  </span>
-</section>
-
-<section
-  id="p1"
-  className="flex justify-around items-center w-full h-screen bg-transparent z-10"
->
-  <h1 className="text-white text-4xl">YES</h1>
-  <h1 className="text-black text-4xl">NO</h1>
-  <a
-    href="#p2"
-    className="text-black text-2xl absolute left-1/2 top-0 mt-2 p-2 bg-gray-200 rounded transform -translate-x-1/2"
-  >
-    <i className="fas fa-arrow-down"></i>
-  </a>
-</section>
-
-<section
-  id="p2"
-  className="flex justify-around items-center w-full h-screen bg-transparent z-10 relative"
->
-  <h1 className="text-black text-4xl">FOODS TO AVOID</h1>
-  <h1 className="text-white text-4xl">OK</h1>
-  <a
-    href="#p1"
-    className="text-black text-2xl absolute left-1/2 top-5/6 mt-2 p-2 bg-gray-200 rounded transform -translate-x-1/2"
-  >
-    <i className="fas fa-arrow-up"></i>
-  </a>
-</section> */
-}
-//</>
-
-//     );
-// };
