@@ -500,7 +500,7 @@ export default function OurTeam() {
     {
       id: 3,
       name: "Lexi",
-      src: "../images/team_members/Lexigreen.png",
+      src: "../images/team_members/Lexiworking.png",
       alt: "Image 3",
       description: "Treatment Coordinator",
     },
@@ -946,7 +946,7 @@ export default function OurTeam() {
                   top: "25%",
                   right: "25%",
                   color: "white",
-                  fontSize: "18px",
+                  fontSize: "16px",
                   fontFamily: "NeueMontrealBook",
                   textAlign: "center",
                 }}

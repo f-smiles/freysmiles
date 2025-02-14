@@ -45,9 +45,9 @@ export default function WhyChooseUs() {
       <StackCards />
       <ScrollTextReveal />
       <About />
-      <CTA />
+      {/* <CTA />
       <VennDiagram />
-      <GridLayout />
+      <GridLayout /> */}
 
       {/* <TextSection /> */}
       {/* <div className="min-h-screen"> */}
@@ -338,179 +338,221 @@ const TextSection = () => {
 };
 
 function Hero() {
-  const title = "EXPERTS IN";
-  const imageUrl = "../images/crystal.png";
-  const svgRef = useRef(null);
-  let lastScrollTop = 0;
-  const rotationFactor = 5;
+  const sectionRef = useRef(null);
+  const overlayRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
-
-      if (svgRef.current) {
-        if (scrollTop > lastScrollTop) {
-          svgRef.current.style.transform = `rotate(${
-            scrollTop / rotationFactor
-          }deg)`;
-        } else {
-          svgRef.current.style.transform = `rotate(${
-            scrollTop / rotationFactor
-          }deg)`;
-        }
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // mobile
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    gsap.to(overlayRef.current, {
+      y: "-150%",
+      ease: "none",
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: 1,
+      },
+    });
   }, []);
 
-  return (
-    <div className="h-screen bg-212121">
-<div className="bg-[#DFFF00]  min-w-full flex justify-center items-center">
-  <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
+  // const title = "EXPERTS IN";
+  // const imageUrl = "../images/crystal.png";
+  // const svgRef = useRef(null);
+  // let lastScrollTop = 0;
+  // const rotationFactor = 5;
 
-    <h2 className="absolute top-20 left-[5vw] m-0 text-[10vw] uppercase text-center">
-      {title}
-    </h2>
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     const scrollTop =
+  //       window.pageYOffset || document.documentElement.scrollTop;
+
+  //     if (svgRef.current) {
+  //       if (scrollTop > lastScrollTop) {
+  //         svgRef.current.style.transform = `rotate(${
+  //           scrollTop / rotationFactor
+  //         }deg)`;
+  //       } else {
+  //         svgRef.current.style.transform = `rotate(${
+  //           scrollTop / rotationFactor
+  //         }deg)`;
+  //       }
+  //       lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // mobile
+  //     }
+  //   };
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
+
+  return (
+    <section ref={sectionRef} className="sticky top-0 relative w-full h-[200vh] bg-[#F0FF3D]">
+    {/* Sticky Text */}
+    <div className=" flex flex-col items-center justify-center h-screen text-black text-container">
+      <h1 className="text-[12vw] font-saolitalic font-light leading-none text-center">
+        Work
+      </h1>
+      <h1 className="text-[12vw] font-saolitalic font-light leading-none text-center">
+        With Us
+      </h1>
+      <p className="mt-4 text-sm tracking-widest uppercase">
+        FOR A SMILE THAT LASTS
+      </p>
+    </div>
+
+    {/* Moving Black Overlay */}
+    <div
+      ref={overlayRef}
+      className="absolute top-[80vh] w-full h-screen bg-black moving-section"
+    >
+           <img
+          src="../images/morethansmiles5.png"
+          alt="Revealed Content"
+          className="absolute top-20 left-1/2 transform -translate-x-1/2 w-[20%] h-[30%] object-contain opacity-100"
+        />
+    </div>
+  </section>
+//     <div className="h-screen bg-212121">
+// <div className="bg-[#DFFF00]  min-w-full flex justify-center items-center">
+//   <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
+
+//     <h2 className="absolute top-20 left-[5vw] m-0 text-[10vw] uppercase text-center">
+//       {title}
+//     </h2>
 
    
-    <img
-      src={imageUrl}
-      alt={title}
-      className="block object-cover w-full h-full"
-    />
+//     <img
+//       src={imageUrl}
+//       alt={title}
+//       className="block object-cover w-full h-full"
+//     />
 
-    <div className="relative" style={{ bottom:"5", right: "5" }}>
-            <svg
-              ref={svgRef}
-              id="spinscroll"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-              width="300px"
-              height="300px"
-              viewBox="0 0 300 300"
-              xmlSpace="preserve"
-              className="inline-flex transition-transform duration-100 book-svg"
-            >
-              <defs>
-                <path
-                  id="circlePath"
-                  d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"
-                />
-              </defs>
-              <g id="rotatingGroup">
-                <text className="scroll-text">
-                  <textPath xlinkHref="#circlePath">
-                    Scroll Down Scroll Down
-                  </textPath>
-                </text>
-              </g>
-            </svg>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 63 305"
-              width="10.75"
-              height="56.25"
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-            >
-              <path
-                className="arrow-line"
-                style={{
-                  fill: "none",
-                  stroke: "#000",
-                  strokeWidth: "1.5",
-                  strokeDashoffset: 0,
-                  strokeDasharray: "304",
-                }}
-                d="M31 0,31 304"
-              />
-              <path
-                className="arrow-left"
-                style={{
-                  fill: "none",
-                  stroke: "#000",
-                  strokeWidth: "1.5",
-                  strokeDashoffset: 0,
-                  strokeDasharray: "51",
-                }}
-                d="M1,269c0,0,29-1,30,35"
-              />
-              <path
-                className="arrow-right"
-                style={{
-                  fill: "none",
-                  stroke: "#000",
-                  strokeWidth: "1.5",
-                  strokeDashoffset: 0,
-                  strokeDasharray: "51",
-                }}
-                d="M61,269c0,0-29-1-30,35"
-              />
-            </svg>
-          </div>
-
-
-  </div>
-</div>
+//     <div className="relative" style={{ bottom:"5", right: "5" }}>
+//             <svg
+//               ref={svgRef}
+//               id="spinscroll"
+//               xmlns="http://www.w3.org/2000/svg"
+//               xmlnsXlink="http://www.w3.org/1999/xlink"
+//               width="300px"
+//               height="300px"
+//               viewBox="0 0 300 300"
+//               xmlSpace="preserve"
+//               className="inline-flex transition-transform duration-100 book-svg"
+//             >
+//               <defs>
+//                 <path
+//                   id="circlePath"
+//                   d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"
+//                 />
+//               </defs>
+//               <g id="rotatingGroup">
+//                 <text className="scroll-text">
+//                   <textPath xlinkHref="#circlePath">
+//                     Scroll Down Scroll Down
+//                   </textPath>
+//                 </text>
+//               </g>
+//             </svg>
+//             <svg
+//               xmlns="http://www.w3.org/2000/svg"
+//               viewBox="0 0 63 305"
+//               width="10.75"
+//               height="56.25"
+//               className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+//             >
+//               <path
+//                 className="arrow-line"
+//                 style={{
+//                   fill: "none",
+//                   stroke: "#000",
+//                   strokeWidth: "1.5",
+//                   strokeDashoffset: 0,
+//                   strokeDasharray: "304",
+//                 }}
+//                 d="M31 0,31 304"
+//               />
+//               <path
+//                 className="arrow-left"
+//                 style={{
+//                   fill: "none",
+//                   stroke: "#000",
+//                   strokeWidth: "1.5",
+//                   strokeDashoffset: 0,
+//                   strokeDasharray: "51",
+//                 }}
+//                 d="M1,269c0,0,29-1,30,35"
+//               />
+//               <path
+//                 className="arrow-right"
+//                 style={{
+//                   fill: "none",
+//                   stroke: "#000",
+//                   strokeWidth: "1.5",
+//                   strokeDashoffset: 0,
+//                   strokeDasharray: "51",
+//                 }}
+//                 d="M61,269c0,0-29-1-30,35"
+//               />
+//             </svg>
+//           </div>
 
 
-      <section>
-        <video
-          autoPlay
-          loop
-          muted
-          preload="true"
-          className="absolute inset-0 object-cover object-center w-full h-full -z-10"
-        >
-          {/* undulating waves */}
-          {/* <source src="/../../videos/production_id_4779866.mp4" type="video/mp4" /> */}
-          {/* sharp waves */}
-          {/* <source src="/../../videos/pexels-rostislav-uzunov-9150545.mp4" type="video/mp4" /> */}
-          {/* shutterstock */}
-          <source
-            src="/../../videos/shutterstock_1111670177.mp4"
-            type="video/mp4"
-          />
-        </video>
+//   </div>
+// </div>
 
-        <section className="absolute w-full mx-auto my-16 text-center top-60 md:h-16 md:flex-row">
-          <div className="h-full overflow-hidden">
-            <ul
-              style={{
-                animation: "scroll-text-up 5s infinite",
-              }}
-            >
-              <li className="py-1 ">
-                <h1 className="font-neue-montreal text-7xl">Invisalign</h1>
-              </li>
-              <li className="py-1 ">
-                <h1 className="font-neue-montreal text-7xl">Damon Braces</h1>
-              </li>
-              <li className="py-1 ">
-                <h1 className="font-neue-montreal text-7xl">
-                  Accelerated Orthodontic Treatment
-                </h1>
-              </li>
-              <li className="py-1 ">
-                <h1 className="font-neue-montreal text-7xl">
-                  low-dose 3D Digital Radiographs
-                </h1>
-              </li>
-              <li className="py-1">
-                <h1 className="font-neue-montreal text-7xl">Invisalign</h1>
-              </li>
-            </ul>
-          </div>
 
-        </section>
-      </section>
+//       <section>
+//         <video
+//           autoPlay
+//           loop
+//           muted
+//           preload="true"
+//           className="absolute inset-0 object-cover object-center w-full h-full -z-10"
+//         >
+//           {/* undulating waves */}
+//           {/* <source src="/../../videos/production_id_4779866.mp4" type="video/mp4" /> */}
+//           {/* sharp waves */}
+//           {/* <source src="/../../videos/pexels-rostislav-uzunov-9150545.mp4" type="video/mp4" /> */}
+//           {/* shutterstock */}
+//           <source
+//             src="/../../videos/shutterstock_1111670177.mp4"
+//             type="video/mp4"
+//           />
+//         </video>
 
-      <div className="w-full mt-20 h-[100vh] flex flex-col justify-center items-center relative">
-        <div className="absolute inset-0 m-4 bg-gray-300 border border-gray-100 rounded-xl -z-10 backdrop-filter bg-clip-padding backdrop-blur-sm bg-opacity-30" />
-      </div>
-    </div>
+//         <section className="absolute w-full mx-auto my-16 text-center top-60 md:h-16 md:flex-row">
+//           <div className="h-full overflow-hidden">
+//             <ul
+//               style={{
+//                 animation: "scroll-text-up 5s infinite",
+//               }}
+//             >
+//               <li className="py-1 ">
+//                 <h1 className="font-neue-montreal text-7xl">Invisalign</h1>
+//               </li>
+//               <li className="py-1 ">
+//                 <h1 className="font-neue-montreal text-7xl">Damon Braces</h1>
+//               </li>
+//               <li className="py-1 ">
+//                 <h1 className="font-neue-montreal text-7xl">
+//                   Accelerated Orthodontic Treatment
+//                 </h1>
+//               </li>
+//               <li className="py-1 ">
+//                 <h1 className="font-neue-montreal text-7xl">
+//                   low-dose 3D Digital Radiographs
+//                 </h1>
+//               </li>
+//               <li className="py-1">
+//                 <h1 className="font-neue-montreal text-7xl">Invisalign</h1>
+//               </li>
+//             </ul>
+//           </div>
+
+//         </section>
+//       </section>
+
+//       <div className="w-full mt-20 h-[100vh] flex flex-col justify-center items-center relative">
+//         <div className="absolute inset-0 m-4 bg-gray-300 border border-gray-100 rounded-xl -z-10 backdrop-filter bg-clip-padding backdrop-blur-sm bg-opacity-30" />
+//       </div>
+//     </div>
   );
 }
 
