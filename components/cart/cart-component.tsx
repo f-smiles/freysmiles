@@ -35,7 +35,7 @@ export default function CartComponent() {
         </div>
       </SheetTrigger>
 
-      <SheetContent className="w-[400px] sm:w-[640px] md:w-[768px] bg-white flex flex-col">
+      <SheetContent className="w-[400px] sm:w-[640px] md:w-[768px] bg-white flex flex-col z-[9999]">
         <SheetHeader>
           <CartHeader />
         </SheetHeader>
