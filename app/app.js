@@ -1,40 +1,22 @@
 'use client';
-import { useEffect } from 'react';
-import Lenis from '@studio-freight/lenis';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './_store/config';
 // import Navbar from './_components/Navbar';
-import Navbar from '../components/nav/MainNav';
+import MainNav from '../components/nav/MainNav';
 import Footer from './_components/Footer';
 import { Toast } from '@/components/ui/toaster';
-import DesktopNav from '@/components/nav/DesktopNav';
-
-import { usePathname } from 'next/navigation';
 
 export default function App({ children, user }) {
-  useEffect(() => {
-    const lenis = new Lenis();
-
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-  }, []);
-
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <DesktopNav />
-        {/* <Navbar user={user} /> */}
-        <main id="smooth-wrapper">
-          <div id="smooth-content">
+        <MainNav user={user} />
+        <main>
+          <div>
             <Toast />
-            {children}
-            <Footer />
           </div>
+          {children}
         </main>
         <Footer />
       </PersistGate>
