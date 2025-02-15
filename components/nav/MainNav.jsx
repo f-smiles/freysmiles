@@ -7,7 +7,7 @@ export default function MainNav({ user }) {
   return (
     <>
       <MobileNav user={user} />
-      <DesktopNav user={user} />
+      {/* <DesktopNav user={user} /> */}
     </>
   )
 }
