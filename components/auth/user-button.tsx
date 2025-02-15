@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Session } from "next-auth"
-import { ShoppingBag, Settings, ReceiptText } from "lucide-react"
+import { ShoppingBag, Settings, ReceiptText, CircleUserRound } from "lucide-react"
 
 import { SignOutButton } from "./signout-button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -14,11 +14,13 @@ export default function UserButton({ user }: Session) {
 
   const router = useRouter()
 
-
   if (user)
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="border rounded-full shadow-sm">
+      <DropdownMenuTrigger>
+        <CircleUserRound className="w-7 h-7" strokeWidth={1.25} />
+      </DropdownMenuTrigger>
+      {/* <DropdownMenuTrigger className="border rounded-full shadow-sm">
         <Avatar>
           {user.image && user.name ? (
             <Image src={user.image} alt={user.name} fill={true} />
@@ -28,7 +30,7 @@ export default function UserButton({ user }: Session) {
             </AvatarFallback>
           )}
         </Avatar>
-      </DropdownMenuTrigger>
+      </DropdownMenuTrigger> */}
 
       <DropdownMenuContent className="p-4 mt-6 -mr-4 min-w-64 backdrop-blur-sm bg-white/30" align="end">
         <DropdownMenuLabel className="flex flex-col items-center gap-4 mb-4 text-center rounded-md">
