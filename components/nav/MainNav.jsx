@@ -5,9 +5,9 @@ import DesktopNav from './DesktopNav'
 
 export default function MainNav({ user }) {
   return (
-    <>
+    <header>
       <MobileNav user={user} />
-      {/* <DesktopNav user={user} /> */}
-    </>
+      <DesktopNav user={user} />
+    </header>
   )
 }
