@@ -12,6 +12,7 @@ module.exports = withUt({
   theme: {
   	fontFamily: {
   		aileron: 'Aileron-Black',
+		syne: "syne-extra",
 		saolitalic:"SaolDisplay-LightItalic",
 		  didotmodernlight:'NNDidotModernTrial-Light',
 		didotmodern:'NNDidotModernTrial-LightItalic',

@@ -163,6 +163,7 @@ export default function HorizontalContainer() {
 
     return () => ctx.revert();
   }, []);
+  
   return (
     <>
       <div
@@ -201,54 +202,58 @@ export default function HorizontalContainer() {
           }}
         >
           <div className="flex flex-col h-screen justify-center">
-            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 px-8 md:px-16 lg:px-24">
-              <div className="md:w-1/2 flex flex-col justify-end">
-                <p className=" text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
+            <div className="h-2/3 flex flex-col md:flex-row gap-8 md:gap-16 ">
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    transform: "translate(0%, 0%)",
+                    maxWidth: "550px",
+                    bottom: 0,
+                    left: "10%",
+                    paddingRight: "68px",
+                  }}
+                  className="contentText flex flex-col justify-end"
+                >
+                  <p className="text-[14px] font-helvetica-neue-light md:text-[16px] font-light leading-relaxed mb-8">
                   How long you’ll wear braces depends on your treatment plan and
                   how well you follow our team's instructions. At FreySmiles,
                   most patients achieve their ideal smile in 12 to 20 months.
                   Ready to get started? Let’s make it happen.
-                </p>
-                <hr className="border-t border-[#262626] mb-8" />
-                <div className="flex items-center space-x-2">
-                  <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
-                    • Learn More
-                  </h3>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="w-4 h-4"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
-                    />
-                  </svg>
+
+                  </p>
+                  <hr className="border-t border-[#262626] mb-8" />
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
+                      • Learn More
+                    </h3>
+                  </div>
                 </div>
               </div>
-
-              <div className="absolute right-0 bottom-[6%] w-1/3 h-1/2 flex justify-end">
-                <div className="max-w-lg w-full h-auto overflow-hidden rounded-2xl">
-                  <video
-                    src="https://video.wixstatic.com/video/11062b_163d7539f7824eb895994a6460f0995b/720p/mp4/file.mp4"
-                    className="object-cover w-full h-full"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  ></video>
+              <div className="absolute right-0 bottom-[6%] flex justify-end">
+                <div
+                  className="image-wrapper rounded-2xl overflow-hidden"
+                  style={{
+                    width: "350px",
+                    height: "auto",
+                  }}
+                >
+                  <img
+                    src="../images/purplefloss.jpeg"
+                    className="w-full h-auto"
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* purle */}
-        <div
+ <div
           className="purpleSection"
           style={{
             position: "absolute",
@@ -272,12 +277,13 @@ export default function HorizontalContainer() {
               >
                 <div
                   style={{
-                    position: "absolute",
-                    transform: "translate(-100%, 0%)",
-                    maxWidth: "550px",
-                    bottom: 0,
-                    left: "10%",
-                    paddingRight: "68px",
+  position: "absolute",
+    transform: "translateX(-650px)", 
+    width: "550px", 
+    bottom: 0,
+    left: "100px",
+
+    paddingRight: "68px",
                   }}
                   className="contentText flex flex-col justify-end"
                 >
@@ -318,6 +324,7 @@ export default function HorizontalContainer() {
             </div>
           </div>
         </div>
+
         {/* green */}
         <div
           className="greenSection"

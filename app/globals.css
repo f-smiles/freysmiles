@@ -13,7 +13,10 @@
   url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.ttf")format("truetype"),
   url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.svg#SaolDisplay-LightItalic")format("svg");
 }
-
+@font-face {
+  font-family: "syne-extra";
+  src: url("/fonts/syne.extra.otf") format("opentype");
+}
 @font-face {
   font-family: "NNDidotModernTrial-Light";
   src: url("/fonts/NNDidotModernTrial-Light.otf") format("opentype");
@@ -5232,4 +5235,8 @@ a {
   width: 100%;
   background: #FAF8F4;
   z-index: 1;
+}
+
+.gravity {
+  opacity: 0.71;
 }

@@ -459,70 +459,76 @@ export default function OurTeam() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
+
+  const imageRefs = useRef([]);
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => (prev >= 100 ? 0 : prev + 2)); // Progress animation
-    }, 100);
+    if (imageRefs.current[currentIndex]) {
+      gsap.fromTo(
+        imageRefs.current[currentIndex],
+        {
+          y: "100%",  
+          scale: 1.6,
 
-    const timer = setTimeout(() => {
-      handleNext();
-      setProgress(0);
-    }, 5000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timer);
-    };
+        },
+        {
+          y: "0%",     
+          scale: 1,     
+          opacity: 1,  
+          duration: 1,  
+          ease: "power3.out"
+        }
+      );
+    }
   }, [currentIndex]);
+  
+  
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-  };
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-  const images = [
-    {
-      id: 1,
-      name: "Alyssa",
-      src: "../images/team_members/Alyssascan.png",
-      alt: "Image 1",
-      description: "Treatment Coordinator",
-    },
-    {
-      id: 2,
-      name: "Nicolle",
-      src: "../images/team_members/Nicollewaving.png",
-      alt: "Image 2",
-      description: "Specialized Orthodontic Assistant",
-    },
-    {
-      id: 3,
-      name: "Lexi",
-      src: "../images/team_members/Lexiworking.png",
-      alt: "Image 3",
-      description: "Treatment Coordinator",
-    },
-    {
-      id: 4,
-      name: "Elizabeth",
-      src: "../images/team_members/Elizabethaao.png",
-      alt: "Image 4",
-      description: "Patient Services",
-    },
-    {
-      id: 5,
-      name: "Adriana",
-      src: "../images/team_members/Adriana-Photoroom.png",
-      alt: "Image 5",
-      description: "Insurance Coordinator",
-    },
+  const teamMembers = [
+   {
+    id: 1,
+    name: "Alyssa",
+    src: "../images/team_members/Alyssascan.png",
+    alt: "Image 1",
+    description: "Treatment Coordinator",
+  },
+  {
+    id: 2,
+    name: "Nicolle",
+    src: "../images/team_members/Nicollewaving.png",
+    alt: "Image 2",
+    description: "Specialized Orthodontic Assistant",
+  },
+  {
+    id: 3,
+    name: "Lexi",
+    src: "../images/team_members/Lexiworking.png",
+    alt: "Image 3",
+    description: "Treatment Coordinator",
+  },
+  {
+    id: 4,
+    name: "Elizabeth",
+    src: "../images/team_members/Elizabethaao.png",
+    alt: "Image 4",
+    description: "Patient Services",
+  },
+  {
+    id: 5,
+    name: "Adriana",
+    src: "../images/team_members/Adriana-Photoroom.jpg",
+    alt: "Image 5",
+    description: "Insurance Coordinator",
+  },
   ];
+  
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const selectedMember = teamMembers[selectedIndex];
+
 
   return (
     <div>
-      <div className="bg-[#E2E2E2] relative ">
+      <div className="bg-[#f4f0ed] relative ">
         <section className="py-24 sm:py-32">
           <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
             <div className="grid grid-cols-2 ">
@@ -600,16 +606,16 @@ export default function OurTeam() {
                   className=" z-0 p-3 transition-all duration-200 ease-linear border rounded-full border-stone-600 hover:text-white hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
-                  <ArrowLeftIcon className="w-4 h-4 text-stone-600 font-helvetica-now-thin" />
+                  <ArrowLeftIcon className="w-4 h-4 font-helvetica-now-thin" />
                 </button>
-                <span className="text-[14px] text-stone-600">
+                <span className="text-[12px] t">
                   0{!switchDoctor ? index : index + 1} / 02
                 </span>
                 <button
                   className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white border-stone-600 hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
-                  <ArrowRightIcon className="w-4 h-4 text-stone-600 font-helvetica-now-thin" />
+                  <ArrowRightIcon className="w-4 h-4 font-helvetica-now-thin" />
                 </button>
               </div>
               <div className="row-span-1 row-start-2">
@@ -920,271 +926,219 @@ export default function OurTeam() {
           ))}
         </div> */}
       </div>
-      <div className="bg-black h-screen flex relative">
-        <div className="flex" style={{ width: "100%" }}>
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "20%",
-              transform: "translate(-50%, -50%)",
-              color: "white",
-              fontSize: "42px",
-              textAlign: "center",
-              fontWeight: "200",
-              fontFamily: "HelveticaNeue-Light",
-            }}
-          >
-            We're here to support you
-            <br /> every step of the way
-          </div>
-          <div>
-            <div className="flex" style={{ width: "100%" }}>
-              <div
-                style={{
-                  position: "absolute",
-                  top: "25%",
-                  right: "25%",
-                  color: "white",
-                  fontSize: "16px",
-                  fontFamily: "NeueMontrealBook",
-                  textAlign: "center",
-                }}
-                className="w-[250px] h-auto object-cover"
-              >
-                <img
-                  src={images[currentIndex].src}
-                  alt={images[currentIndex].alt}
-                />
-            <div className="mt-10">{images[currentIndex].name}</div>       
-   <div className="mt-5">{images[currentIndex].description}</div>
-
-              </div>
-              
-
-              {/* Thumbnail Column */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "25%",
-                  right: "10%",
-                  color: "white",
-                  textAlign: "center",
-                }}
-                className="ml-6 flex flex-col items-center gap-3"
-              >
-                {images.map((image, index) => (
-                  <div
-                    key={image.id}
-                    className="relative w-12 h-12 rounded-full overflow-hidden cursor-pointer"
-                    onClick={() => setCurrentIndex(index)}
-                  >
-    
-                    {index === currentIndex && (
-                      <svg
-                        className="absolute top-0 left-0 w-full h-full"
-                        viewBox="0 0 36 36"
-                      >
-                        <circle
-                        stroke="#E8F724"
-                          cx="18"
-                          cy="18"
-                          r="18"
-                          strokeWidth="1.5"
-                          fill="none"
-                          strokeDasharray="113"
-                          strokeDashoffset={113 - (progress / 100) * 113}
-                          strokeLinecap="round"
-                          transition="stroke-dashoffset 0.1s linear"
-                        />
-                      </svg>
-                    )}
-                    <img
-                      src={image.src}
-                      alt={image.alt}
-                      className="w-full h-full"
-                    />
-                  </div>
-                ))}
-
-  <div className="flex">
-                <button
-                  onClick={handleNext}
-                  className="mt-2 p-2 border rounded-full text-white"
-                >
-       
-                </button>
-                <button
-                  onClick={handlePrev}
-                  className="mt-2 p-2 border rounded-full text-white"
-                >
-           
-                </button>
-                </div>
-                <div className="text-gray-400 text-sm font-neue-montreal mt-2">
-                  0{currentIndex + 1} - 0{images.length}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center justify-end relative flex-1">
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-end",
-                transform: "translateY(-12rem)",
-              }}
-            >
-              <div
-                style={{
-                  width: "60px",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, .6)",
-                  transform: "translate(38px, -150px)",
-                }}
-              ></div>
-
-              <div
-                style={{
-                  width: "2.25rem",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, .6)",
-                  transform: "translate(34px, -138px) rotate(40deg)",
-                }}
-              ></div>
-
-              <div
-                style={{
-                  width: "600px",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  transform: "translate(30px, -126px)",
-                }}
-              ></div>
-
-              <div
-                style={{
-                  width: "2.25rem",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  transform: "translate(26px, -114px) rotate(40deg)",
-                }}
-              ></div>
-
-              <div
-                style={{
-                  width: "2.25rem",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  position: "absolute",
-                  left: "calc(100% + 5px)",
-                  transform:
-                    "rotate(-40deg) translateY(366px) translateX(-326px)",
-                }}
-              ></div>
-
-              <div
-                style={{
-                  width: "600px",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  position: "absolute",
-                  left: "calc(100% - 605px)",
-                  transform: "translateY(502px)",
-                }}
-              ></div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-start relative flex-1">
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-end",
-                transform: "translateY(-12rem)",
-              }}
-            >
-              <div
-                style={{
-                  width: "2.25rem",
-                  height: ".6px",
-                  transform:
-                    "rotate(-40deg) translateX(98px) translateY(-82px)",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  transformOrigin: "right",
-                  marginLeft: "-0.5rem",
-                }}
-              ></div>
-
-              <div
-                style={{
-                  width: "520px",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  transform: "translate(22px, -126px)",
-                  flex: "1",
-                }}
-              ></div>
-
-              <div
-                style={{
-                  width: "60px",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  flex: "0 auto",
-                  transform: "translate(50px, -148px)",
-                }}
-              ></div>
-
-              <div
-                style={{
-                  width: "2.25rem",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  transform:
-                    "rotate(-40deg) translateY(-132px) translateX(56px)",
-                }}
-              ></div>
-
-              {/* Vertical Line */}
-              <div
-                style={{
-                  width: ".6px",
-                  height: "580px",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  position: "absolute",
-                  right: "calc(100% - 22px)",
-                  top: "-102px",
-                }}
-              ></div>
-
-              {/* Bottom Slanted Line */}
-              <div
-                style={{
-                  width: "2.25rem",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  position: "absolute",
-                  right: "calc(100% - 1px)",
-                  transform:
-                    "rotate(40deg) translateY(342px) translateX(356px)",
-                }}
-              ></div>
-
-              <div
-                style={{
-                  width: "600px",
-                  height: ".6px",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  position: "absolute",
-                  right: "calc(100% - 636px)",
-                  transform: "translateY(502px) translateX(14px)",
-                }}
-              ></div>
-            </div>
-          </div>
-        </div>
+      <div>
       </div>
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-[#f4f0ed] px-10 relative">
+      <div
+  className="absolute top-10 right-10 text-right text-gray-900"
+  style={{
+    fontSize: "72px",
+    fontWeight: "200",
+    fontFamily: "NeueMontrealBook",
+  }}
+>
+  Meet The Team
+</div>
+
+      <div className="flex items-center justify-between w-full max-w-5xl">
+
+        <div className="text-left text-gray-900">
+          <h2 className="text-xl font-editorial-new-italic">
+            {teamMembers[currentIndex].name}
+          </h2>
+          <p className="text-md font-neue-montreal">
+            {teamMembers[currentIndex].description}
+          </p>
+        </div>
+
+
+        <div className="w-[300px] h-[400px] relative overflow-hidden flex-shrink-0">
+          {teamMembers.map((member, index) => (
+            <img
+              key={member.id}
+              ref={(el) => (imageRefs.current[index] = el)}
+              src={member.src}
+              alt={member.alt}
+              className="absolute w-full h-full object-cover"
+              style={{
+                top: 0,
+                left: 0,
+                zIndex: index === currentIndex ? 2 : 1, 
+              }}
+            />
+          ))}
+        </div>
+
+
+
+        <div
+          style={{
+            fontSize: "28px",
+            fontWeight: "200",
+            fontFamily: "HelveticaNeue-Light",
+          }}
+          className="text-right"
+        >
+          We're here to support you
+          <br /> <span className="font-saolitalic">every</span> step of the way
+        </div>
+        <div
+                style={{
+                  width: "1.5em",
+                  height: "1.5em",
+                  borderRadius: "50%", 
+                  overflow: "hidden", 
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <video
+                  id="holovideo"
+                  loop
+                  muted
+                  autoPlay
+                  playsInline
+                  preload="metadata"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transform: "scale(1.25)",
+                    boxShadow: "0 0 50px #ebe6ff80",
+                  }}
+                >
+                  <source
+                    src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+      </div>
+
+
+      <div className="absolute bottom-5 w-full flex left-10 space-x-4">
+  {teamMembers.slice(0, 5).map((member, index) => (
+    <div
+      key={member.id}
+      onClick={() => setCurrentIndex(index)}
+      className={`w-20 h-20 border rounded-md overflow-hidden cursor-pointer transition-all duration-300 ${
+        currentIndex === index ? "border-black" : "border-gray-300 opacity-50"
+      }`}
+    >
+      <img
+        src={member.src}
+        alt={member.alt}
+        className={`w-full h-full object-cover transition-transform duration-300 ${
+          currentIndex === index ? "scale-75" : "hover:scale-75"
+        }`}
+      />
+    </div>
+  ))}
+</div>
+
+    </div>
+
     </div>
   );
 }
+
+      {/* <div className="bg-black h-screen flex items-center justify-center relative">
+      <div className="top-10 h-screen relative w-full mx-auto border-l-[1px] border-r-[1px] border-b-[1px] border-white border-opacity-50 rounded-r-2xl rounded-l-2xl rounded-b-2xl overflow-hidden">
+<svg
+  width="100%"
+  height="60" 
+  viewBox="0 0 100 40" 
+  preserveAspectRatio="none"
+  className="absolute top-0 left-0 w-full"
+>
+<path
+  d="M0,0 H45 C47,0 47,30 50,30 C53,30 53,0 55,0 H100"
+  fill="none"
+  stroke="white"
+  strokeWidth=".5"
+  strokeLinecap="round"
+    vectorEffect="non-scaling-stroke" 
+  />
+</svg>
+  <div className="flex w-full max-w-5xl justify-between px-10">
+
+    <div className="flex items-center justify-start w-[500px] h-[400px] relative gap-x-6">
+
+  <div className="w-[300px] h-[400px] relative overflow-hidden flex-shrink-0">
+    {images.map((image, index) => (
+      <img
+        key={image.id}
+        ref={(el) => (imageRefs.current[index] = el)}
+        src={image.src}
+        alt={image.alt}
+        className="absolute w-full h-full object-cover"
+        style={{
+          top: 0,
+          left: 0,
+          zIndex: index === currentIndex ? 2 : 1,
+        }}
+      />
+    ))}
+  </div>
+
+  
+  <div className="text-white flex flex-col justify-center">
+    <h2 className="text-xl font-neue-montreal ">{images[currentIndex].name}</h2>
+    <p className="text-sm font-neue-montreal text-gray-300">{images[currentIndex].description}</p>
+  </div>
+</div>
+
+
+
+    <div className="flex flex-col items-center text-white text-center gap-4">
+      {images.map((image, index) => (
+        <div
+          key={image.id}
+          className={`relative w-14 h-14 rounded-full overflow-hidden cursor-pointer ${
+            index === currentIndex ? "border-2 border-yellow-400" : ""
+          }`}
+          onClick={() => setCurrentIndex(index)}
+        >
+          {index === currentIndex && (
+            <svg className="absolute top-0 left-0 w-full h-full" viewBox="0 0 36 36">
+              <circle
+                stroke="#E8F724"
+                cx="18"
+                cy="18"
+                r="18"
+                strokeWidth="1.5"
+                fill="none"
+                strokeDasharray="113"
+                strokeDashoffset={113 - (progress / 100) * 113}
+                strokeLinecap="round"
+                transition="stroke-dashoffset 0.1s linear"
+              />
+            </svg>
+          )}
+          <img src={image.src} alt={image.alt} className="w-full h-full object-cover" />
+        </div>
+      ))}
+
+
+      <div className="flex space-x-4 mt-4">
+        <button onClick={handlePrev} className="p-2 border rounded-full text-white">
+          ◀
+        </button>
+        <button onClick={handleNext} className="p-2 border rounded-full text-white">
+          ▶
+        </button>
+      </div>
+
+
+      <div className="text-gray-400 text-sm font-neue-montreal mt-2">
+        0{currentIndex + 1} - 0{images.length}
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+</div> */}
