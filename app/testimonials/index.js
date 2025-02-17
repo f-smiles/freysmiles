@@ -1,201 +1,215 @@
-'use client';
-import { useEffect, useRef } from "react";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+"use client";
+import { Canvas, useFrame } from "@react-three/fiber";
+import React, { useEffect, useRef, Suspense } from "react";
 import gsap from "gsap";
+import { SplitText } from "gsap-trial/all";
+import ScrollTrigger from "gsap/ScrollTrigger";
+import {
+  OrbitControls,
+  useGLTF,
+  MeshTransmissionMaterial,
+  Environment,
+} from "@react-three/drei";
+import * as THREE from "three";
+import { useControls } from "leva";
+import { MeshStandardMaterial } from "three";
 
-const ThreeDCarousel = () => {
-  const mountRef = useRef(null);
-  useEffect(() => {
-    const scene = new THREE.Scene();
-  
-    const camera = new THREE.PerspectiveCamera(
-      35,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-  
-    const carouselRadius = 1.7;
-    const desiredZoomLevel = 1.3;
-    const initialZ = carouselRadius * desiredZoomLevel;
-    camera.position.set(0, -5, initialZ);
-  
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    mountRef.current.appendChild(renderer.domElement);
-  
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.minPolarAngle = Math.PI / 2;
-    controls.maxPolarAngle = Math.PI / 2;
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, SplitText);
+}
 
-    const carouselGroup = new THREE.Group();
-    carouselGroup.position.y = 0.5;
-    scene.add(carouselGroup);
-  
-    const degToRad = (degrees) => degrees * (Math.PI / 180);
-    carouselGroup.rotation.x = degToRad(35);
-  
-    const numItems = 8;
-    const planes = [];
-  
-    const updateCurve = (geometry, curveRadius) => {
-      const scale = 0.15; // Reduce curve
-      let zOffset = 0;
-    
-      for (let j = 0; j < geometry.attributes.position.count; j++) {
-        const position = geometry.attributes.position;
-        const x = position.getX(j);
-    
-        const z = scale * (curveRadius > 0
-          ? Math.sqrt(Math.max(0, curveRadius ** 2 - x ** 2)) - curveRadius // Convex
-          : -(Math.sqrt(Math.max(0, curveRadius ** 2 - x ** 2)) - curveRadius)); // Concave
-    
-        position.setZ(j, z);
-        zOffset += z;
-      }
-    
-      zOffset /= geometry.attributes.position.count;
-    
-      for (let j = 0; j < geometry.attributes.position.count; j++) {
-        const position = geometry.attributes.position;
-        const z = position.getZ(j);
-        position.setZ(j, z - zOffset);
-      }
-    
-      geometry.attributes.position.needsUpdate = true;
-    };
-    
-    
-    for (let i = 0; i < numItems; i++) {
-      const geometry = new THREE.PlaneGeometry(1, 1.5, 32, 32);
-      const texture = new THREE.TextureLoader().load(`../images/freysmilepatient.jpg`);
-      const material = new THREE.MeshBasicMaterial({
-        map: texture,
-        side: THREE.DoubleSide,
-      });
-  
-      const curveRadius = 1.5; // initial convex
-      updateCurve(geometry, curveRadius);
-  
-      const plane = new THREE.Mesh(geometry, material);
-      const angle = (i / numItems) * Math.PI * 2;
-  
-      plane.position.x = Math.cos(angle) * carouselRadius;
-      plane.position.z = Math.sin(angle) * carouselRadius;
-      plane.position.y = 0;
-      plane.lookAt(new THREE.Vector3(0, 0, 0));
-  
-      plane.userData = {
-        originalPosition: plane.position.clone(),
-        curveRadius,
-      };
-  
-      planes.push(plane);
-      carouselGroup.add(plane);
+const RotatingModel = () => {
+  const { nodes } = useGLTF("/images/SVOX1F.glb");
+  console.log(nodes);
+  const modelRef = useRef(); 
+
+
+  useFrame(() => {
+    if (modelRef.current) {
+      modelRef.current.rotation.y += 0.001; 
     }
-  
+  });
 
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-  
-    const onMouseMove = (event) => {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(planes);
-    
-      planes.forEach((plane) => {
-        if (intersects.find((intersect) => intersect.object === plane)) {
-
-          if (!plane.userData.hovering) {
-            plane.userData.hovering = true;
-    
-
-            gsap.to(plane.userData, {
-              curveRadius: .5, 
-              duration: 0.5,
-              ease: "power2.out",
-              onUpdate: () => {
-  
-                updateCurve(plane.geometry, plane.userData.curveRadius);
-              },
-            });
-          }
-        } else if (plane.userData.hovering) {
-
-          plane.userData.hovering = false;
-    
-          gsap.to(plane.userData, {
-            curveRadius: -1.5, 
-            duration: 0.5,
-            ease: "power2.inOut",
-            onUpdate: () => {
-
-              updateCurve(plane.geometry, plane.userData.curveRadius);
-            },
-          });
-        }
-      });
-    };
-    
-    
-    window.addEventListener("mousemove", onMouseMove);
-  
-    const onResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-    window.addEventListener("resize", onResize);
-  
-    let scrollProgress = 0;
-    const onScroll = (event) => {
-      scrollProgress += event.deltaY * 0.002;
-      carouselGroup.rotation.y = scrollProgress;
-    };
-  
-    const preventDefault = (event) => {
-      event.preventDefault();
-    };
-  
-    window.addEventListener("wheel", onScroll);
-    renderer.domElement.addEventListener("wheel", preventDefault, { passive: false });
-  
-    const animate = () => {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    };
-    animate();
-  
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("wheel", onScroll);
-      renderer.domElement.removeEventListener("wheel", preventDefault);
-      mountRef.current.removeChild(renderer.domElement);
-      scene.traverse((object) => {
-        if (object.geometry) object.geometry.dispose();
-        if (object.material) object.material.dispose();
-      });
-    };
-  }, []);
-  
-  
-  
-
-  return <div ref={mountRef} style={{ width: "100vw", height: "100vh", background: "white" }} />;
+  return (
+    <group ref={modelRef} position={[0, 0, 0]} scale={[3, 3, 3]}>
+      {nodes.mesh_0 && (
+        <mesh geometry={nodes.mesh_0.geometry}>
+          <meshPhysicalMaterial
+            transmission={1}
+            // transparent={true}
+            roughness={0}
+            metalness={0}
+            thickness={0.2}
+            ior={1.2}
+            reflectivity={0.7}
+            clearcoat={0.5}
+            clearcoatRoughness={0.1}
+            chromaticAberration={0.02}
+          />
+        </mesh>
+      )}
+      {nodes.mesh_0_1 && (
+        <mesh geometry={nodes.mesh_0_1.geometry}>
+          <meshPhysicalMaterial
+            transmission={1}
+            transparent={true}
+            roughness={0}
+            metalness={0}
+            thickness={0.001}
+            ior={1.2}
+            reflectivity={0.5}
+            clearcoat={0.5}
+            clearcoatRoughness={0.1}
+            chromaticAberration={0.02}
+          />
+        </mesh>
+      )}
+    </group>
+  );
 };
 
-export default ThreeDCarousel;
+const StickyColumnScroll = () => {
+  const leftColumnRef = useRef(null);
+  const rightColumnRef = useRef(null);
+  const { scene } = useGLTF("/images/SVOX1F.glb");
+  const ref = useRef();
+
+  if (!scene) return null;
+
+  const { nodes } = useGLTF("/images/SVOX1F.glb");
+  const textRef = useRef(null);
+  const bgTextColor = "#CECED3";
+  const fgTextColor = "#161818";
+
+  useEffect(() => {
+    if (!textRef.current) return;
+
+    const split = new SplitText(textRef.current, { type: "chars" });
+
+    gsap.fromTo(
+      split.chars,
+      { color: bgTextColor },
+      {
+        color: fgTextColor,
+        stagger: 0.03,
+        duration: 1,
+        ease: "power2.out",
+      }
+    );
+
+    return () => split.revert();
+  }, []);
+
+  return (
+    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+      
+      <div 
+        style={{
+          width: "50%",
+          color: "white",
+          padding: "20px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          height: "100vh",
+          position: "relative",
+          background: "#1C1B1B",
+        }}
+      >
+        <Canvas
+          camera={{ position: [0, 1, 3] }}
+          gl={{ alpha: true }}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 0,
+          }}
+        >
+    
+          <ambientLight intensity={4} />
+          <directionalLight position={[5, 5, 5]} intensity={3} />
+          <pointLight position={[-5, 5, 5]} intensity={3} color="#FFF" />
+          <spotLight
+            position={[0, 5, 5]}
+            angle={0.5}
+            intensity={5}
+            penumbra={1}
+          />
+
+        
+          <pointLight position={[0, 0, -5]} intensity={4} color="#FFF" />
 
 
-{/* <div>
+          <Environment
+            files="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/lebombo_1k.hdr"
+            background={false}
+            intensity={0.8} 
+          />
+
+
+          <Suspense fallback={<span>Loading</span>}>
+            <RotatingModel />
+          </Suspense>
+
+          <OrbitControls minDistance={2} maxDistance={8} />
+        </Canvas>
+      </div>
+
+     
+      <div 
+        ref={rightColumnRef}
+        style={{
+          width: "50%",
+          height: "100vh",
+          overflowY: "scroll",
+          padding: "40px",
+        }}
+      >
+        <section style={{ marginBottom: "100vh" }}>
+          <div className="flex ">
+            <div className="pt-10">
+              <p ref={textRef} className="text-2xl font-neue-montreal">
+                We are committed to setting the standard for exceptional service. 
+                Our communication is always open—every question is
+                welcome, and every concern is met with care and professionalism.
+              </p>
+            </div>
+          </div>
+          <div className="pt-20 w-[13em] h-auto">
+  <img className="w-full object-contain rounded-[32px]" src="/images/testimonials/laniepurple.png" alt="Testimonial" />
+  <p className="font-neue-montreal bottom-2 right-2 bg-white text-black p-2 text-sm">
+    “FreySmiles is the best! I'm so happy with my smile and the confidence it's brought me!”
+  </p>
+</div>
+
+        </section>
+        <section  >
+
+
+        </section>
+        <section  style={{ marginBottom: "100vh" }}>
+        <h1 className="font-neue-montreal text-xl">
+        I am certainly going to miss Dr. Frey and his team!! The professionalism and kindness by each person does not go unnoticed! Dr. Frey has always been very patient and such a pleasure to be around. They celebrate the end of your Invisalign journey as if it was their own! I would, and do recommend Frey Smiles to anyone looking for perfect their smile. I came in for minor cosmetic adjustments, and Dr. Frey somehow made magic happen in ways I didn’t expect. I love my smile! Thank you so much team - and thank you to all the girls. I would mention names, but truly - everyone was so amazing!
+</h1>
+<h2 className="text-xl">-Stephanie N.</h2>
+
+        </section>
+        <section style={{ marginBottom: "100vh" }}>
+          <h2 className="font-neue-montreal text-xl">I had an open bite and misaligned teeth most of my life. Dr Frey fixed it and in record time. 1 1/2 yrs with Invisalign’s. Highly recommended! Friendly staff and easy to make appointments!</h2>
+          <p className="text-xl">Karen O.</p>
+        </section>
+      </div>
+    </div>
+  );
+};
+
+export default StickyColumnScroll;
+
+{
+  /* <div>
       <header className="flex flex-row w-full py-8 justify-center items-center fixed top-0 left-0 bg-slate-950 z-10">
         <div className="flex items-center justify-center max-w-6xl w-full">
           <a href="/" className="text-3xl text-slate-50" id="testimonials">
@@ -270,4 +284,5 @@ export default ThreeDCarousel;
           </section>
         </main>
       </div>
-    </div> */}
+    </div> */
+}
