@@ -197,7 +197,7 @@ export default function HorizontalContainer() {
             width: "70vw",
             height: "100%",
             overflow: "hidden",
-            background: "#d3e0f4",
+            background: "#FCFCFC",
             zIndex: 1,
           }}
         >
@@ -334,7 +334,7 @@ export default function HorizontalContainer() {
             left: "90vw",
             width: "10vw",
             height: "100%",
-            background: "#DAE5D6",
+            background: "#fb9474",
             zIndex: 3,
           }}
         >
@@ -399,7 +399,7 @@ export default function HorizontalContainer() {
             left: "100vw",
             width: "0vw",
             height: "100%",
-            background: "#FCFCFC",
+            background: "#81CAEE",
             zIndex: 1,
             overflow: "hidden",
           }}
@@ -468,7 +468,7 @@ export default function HorizontalContainer() {
             left: "100vw",
             width: "0vw",
             height: "100%",
-            background: "#F0D0CD",
+            background: "#C0D8D8",
             zIndex: 1,
             overflow: "hidden",
           }}
@@ -537,7 +537,7 @@ export default function HorizontalContainer() {
             left: "100vw",
             width: "0vw",
             height: "100%",
-            background: "#B7A7B9",
+            background: "#E3ACC3",
             zIndex: 1,
             overflow: "hidden",
           }}
