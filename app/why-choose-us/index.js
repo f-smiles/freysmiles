@@ -45,7 +45,6 @@ export default function WhyChooseUs() {
       <StackCards />
       <ScrollTextReveal />
       <About />
-      <CTA />
       <VennDiagram />
       <GridLayout />
 
@@ -847,119 +846,6 @@ function StackCards() {
   );
 }
 
-function CTA() {
-  const textRef = useRef(null);
-  const bgTextColor = "#CECED3";
-  const fgTextColor = "#161818";
-
-  useEffect(() => {
-    const split = new SplitText(textRef.current, { type: "chars" });
-    const chars = split.chars;
-
-    const animation = gsap.fromTo(
-      chars,
-      { color: bgTextColor },
-      { color: fgTextColor, stagger: 0.03 }
-    );
-
-    ScrollTrigger.create({
-      trigger: textRef.current,
-      start: "top 80%",
-      end: "bottom 70%",
-      animation: animation,
-      scrub: true,
-      markers: false,
-    });
-
-    return () => split.revert();
-  }, []);
-
-  const btnRef = useRef();
-  const hitRef = useRef();
-
-  useEffect(() => {
-    const btn = btnRef.current;
-    const hit = hitRef.current;
-
-    hit.onpointermove = (e) => {
-      const domPt = new DOMPoint(e.x, e.y);
-      let svgPt = domPt.matrixTransform(btn.getScreenCTM().inverse());
-
-      gsap
-        .timeline({ defaults: { duration: 0.3, ease: "power3" } })
-        .to(".hit", { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
-        .to(".bg", { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
-        .to(".txt", { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
-        .to(".bg", { attr: { fill: "rgb(197, 207, 199)" } }, 0)
-        .to(".txt", { attr: { fill: "rgb(0,0,0)" } }, 0);
-    };
-
-    hit.onpointerleave = (e) => {
-      gsap
-        .timeline({ defaults: { duration: 0.3, ease: "power2" } })
-        .to(".bg", { attr: { fill: "rgb(50,50,50)" } }, 0)
-        .to(".txt", { attr: { fill: "rgb(255,255,255)" } }, 0)
-        .to(
-          ".hit, .bg, .txt",
-          { duration: 0.7, ease: "elastic.out(0.8)", x: 0, y: 0 },
-          0
-        );
-    };
-  }, []);
-
-  return (
-    <section className="sm:py-32 ">
-      <div className="flex ">
-        <div className="px-40">
-          <p ref={textRef} className="text-3xl uppercase font-helvetica-neue">
-            Frey Smiles believes in providing accessible orthodontic care for
-            everyone. In 2011, they established a non-profit organization called
-            More Than Smiles, which offers orthodontic treatment to deserving
-            individuals who may not have access to world-class orthodontic care
-            or cannot afford it.
-          </p>
-        </div>
-      </div>
-      <div className="container flex flex-col gap-8 mx-auto md:flex-row md:justify-between lg:gap-16">
-        <div className="flex flex-col justify-center space-y-8 md:w-1/2">
-          <h4 className="text-[#161818] text-md font-helvetica-neue uppercase">
-            If you know someone who could benefit from this gift, please visit
-            the website for details on how to nominate a candidate.
-          </h4>
-
-          <a
-            href="https://morethansmiles.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg
-              ref={btnRef}
-              className="w-4/5 max-w-xs cursor-pointer h-4/5"
-              viewBox="-50 -50 100 100"
-            >
-              <circle className="bg" r="22.4" fill="rgb(50,50,50)" />
-              <text
-                className="txt fill-white text-[5.5px] tracking-[0.2px] text-center"
-                x="0"
-                y="2"
-                textAnchor="middle"
-              >
-                LEARN MORE
-              </text>
-              <circle
-                ref={hitRef}
-                className="hit"
-                r="42"
-                fill="rgba(0,0,0,0)"
-              />
-            </svg>
-          </a>
-        </div>
-        <Shape03 className="md:w-1/2" />
-      </div>
-    </section>
-  );
-}
 
 function ScrollTextReveal() {
   useEffect(() => {

@@ -5240,3 +5240,121 @@ a {
 .gravity {
   opacity: 0.71;
 }
+
+:root {
+  --gradient: #FF69CC;
+  --progress: 0.2;
+}
+
+.gradient-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  width: 50vw; 
+  height: 100vh;
+  overflow: hidden;
+  position:relative;
+}
+
+
+.gradient-col {
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+
+.gradient-col:nth-child(1) {  
+  background: linear-gradient(180deg, #FFFFFF 23%, var(--gradient) 45%, var(--gradient) 55%, #FFFFFF 100%);
+  transform: translateY(calc(var(--progress) * -27%));
+}
+
+
+.gradient-col:nth-child(2) {
+  background: linear-gradient(
+    180deg, 
+    #FFFFFF 0%, 
+    var(--gradient) 21.43%, 
+    #FFFFFF 47.37%, 
+    #FFFFFF 53.13%, 
+    var(--gradient) 73.85%, 
+    #FFFFFF 100%
+  );
+  transform: translateY(calc(var(--progress) * 8% +10));
+}
+
+
+.gradient-col:nth-child(3) {  
+  background: linear-gradient(180deg, #FFFFFF 23%, var(--gradient) 45%, var(--gradient) 55%, #FFFFFF 100%);
+  transform: translateY(calc(var(--progress) * -21%));
+  
+}
+
+
+.gradient-col:nth-child(4) {
+  background: linear-gradient(
+    180deg, 
+    #FFFFFF 0%, 
+    var(--gradient) 21.43%, 
+    #FFFFFF 47.37%, 
+    #FFFFFF 53.13%, 
+    var(--gradient) 73.85%, 
+    #FFFFFF 100%
+  );
+  transform: translateY(calc(var(--progress) * 8% +10));
+}
+
+:root {
+  --gradient-2: #E8F724; 
+  --progress: 0.2;
+}
+
+.gradient-container-2 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  width: 50vw; 
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.gradient-col-2 {
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.gradient-col-2:nth-child(1) {  
+  background: linear-gradient(180deg, #FFFFFF 23%, var(--gradient-2) 45%, var(--gradient-2) 55%, #FFFFFF 100%);
+  transform: translateY(calc(var(--progress) * -27%));
+}
+
+.gradient-col-2:nth-child(2) {
+  background: linear-gradient(
+    180deg, 
+    #FFFFFF 0%, 
+    var(--gradient-2) 21.43%, 
+    #FFFFFF 47.37%, 
+    #FFFFFF 53.13%, 
+    var(--gradient-2) 73.85%, 
+    #FFFFFF 100%
+  );
+  transform: translateY(calc(var(--progress) * 8% +10));
+}
+
+.gradient-col-2:nth-child(3) {  
+  background: linear-gradient(180deg, #FFFFFF 23%, var(--gradient-2) 45%, var(--gradient-2) 55%, #FFFFFF 100%);
+  transform: translateY(calc(var(--progress) * -21%));
+}
+
+.gradient-col-2:nth-child(4) {
+  background: linear-gradient(
+    180deg, 
+    #FFFFFF 0%, 
+    var(--gradient-2) 21.43%, 
+    #FFFFFF 47.37%, 
+    #FFFFFF 53.13%, 
+    var(--gradient-2) 73.85%, 
+    #FFFFFF 100%
+  );
+  transform: translateY(calc(var(--progress) * 8% +10));
+}
