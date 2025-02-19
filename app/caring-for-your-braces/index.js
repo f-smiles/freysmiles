@@ -30,8 +30,8 @@ export default function HorizontalContainer() {
         ".contentText",
         {
           x: "0%",
-          duration: 0.5,
-          ease: "power1.inOut",
+          duration: .5,
+          ease: "none",
         },
         0.5
       );
@@ -67,8 +67,8 @@ export default function HorizontalContainer() {
         ".greenContentText",
         {
           x: "0%",
-          duration: 0.5,
-          ease: "power1.inOut",
+          duration: .5,
+          ease: "none",
         },
         1.5
       );
@@ -104,8 +104,8 @@ export default function HorizontalContainer() {
         ".whiteContentText",
         {
           x: "0%",
-          duration: 0.5,
-          ease: "power1.inOut",
+          duration: .5,
+          ease: "none",
         },
         2.5
       );
@@ -131,8 +131,8 @@ export default function HorizontalContainer() {
         ".orangeContentText",
         {
           x: "0%",
-          duration: 0.5,
-          ease: "power1.inOut",
+          duration: .5,
+          ease: "none",
         },
         3.5
       );
@@ -154,8 +154,8 @@ export default function HorizontalContainer() {
         ".redContentText",
         {
           x: "0%",
-          duration: 0.5,
-          ease: "power1.inOut",
+          duration: .5,
+
         },
         4.5
       );
@@ -197,7 +197,7 @@ export default function HorizontalContainer() {
             width: "70vw",
             height: "100%",
             overflow: "hidden",
-            background: "#FCFCFC",
+            background: "#EFEFEF",
             zIndex: 1,
           }}
         >
@@ -214,7 +214,7 @@ export default function HorizontalContainer() {
                   style={{
                     position: "absolute",
                     transform: "translate(0%, 0%)",
-                    maxWidth: "550px",
+                    width: "550px",
                     bottom: 0,
                     left: "10%",
                     paddingRight: "68px",
@@ -351,7 +351,7 @@ export default function HorizontalContainer() {
                 <div
                   style={{
                     transform: "translateX(-105%)",
-                    maxWidth: "500px",
+                    width: "550px",
                     bottom: 0,
                     left: "10%",
                     paddingRight: "68px",
@@ -399,7 +399,7 @@ export default function HorizontalContainer() {
             left: "100vw",
             width: "0vw",
             height: "100%",
-            background: "#81CAEE",
+            background: "#8AADB2",
             zIndex: 1,
             overflow: "hidden",
           }}
@@ -417,7 +417,7 @@ export default function HorizontalContainer() {
                 <div
                   style={{
                     transform: "translateX(-105%)",
-                    maxWidth: "500px",
+                    width: "550px",
                     left: "10%",
                     bottom: 0,
                     paddingRight: "68px",
@@ -468,7 +468,7 @@ export default function HorizontalContainer() {
             left: "100vw",
             width: "0vw",
             height: "100%",
-            background: "#C0D8D8",
+            background: "#87B0DF",
             zIndex: 1,
             overflow: "hidden",
           }}
@@ -537,7 +537,7 @@ export default function HorizontalContainer() {
             left: "100vw",
             width: "0vw",
             height: "100%",
-            background: "#E3ACC3",
+            background: "#EAC9E4",
             zIndex: 1,
             overflow: "hidden",
           }}
@@ -555,7 +555,7 @@ export default function HorizontalContainer() {
                 <div
                   style={{
                     transform: "translateX(-105%)",
-                    maxWidth: "500px",
+                    maxWidth: "550px",
                     left: "10%",
                     bottom: 0,
                     paddingRight: "68px",

@@ -1763,11 +1763,8 @@ header h1 {
 
 }
 
-body {
-  height: 250vh;
-}
 
-@media screen and (max-width: 466px) {
+/* @media screen and (max-width: 466px) {
   body {
     height: 150vh;
   }
@@ -1777,7 +1774,7 @@ body {
   body {
     height: 200vh;
   }
-}
+} */
 
 .blend-mode-class {
   mix-blend-mode: multiply;
@@ -5358,3 +5355,21 @@ a {
   );
   transform: translateY(calc(var(--progress) * 8% +10));
 }
+.imagestack {
+  position: relative; 
+  display: flex;
+  justify-content: center;
+  align-items: right;
+  width: 100%;
+  height: 100%;
+}
+
+
+.gallery-img {
+  position: absolute; 
+  height: 40vh;
+  width: auto;
+  object-fit: contain;
+  cursor: pointer;
+}
+
