@@ -1,4 +1,5 @@
 "use client";
+import { motion } from "framer-motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import React, { useEffect, useState, useRef, Suspense } from "react";
 import {
@@ -103,7 +104,6 @@ const RotatingModel = () => {
 
 const StickyColumnScroll = () => {
   const { scene } = useGLTF("/images/SVOX1F.glb");
-  const ref = useRef();
 
   if (!scene) return null;
 
@@ -292,229 +292,351 @@ const StickyColumnScroll = () => {
     };
   }, [images]);
 
+  const patients = [
+    { name: "Lainie", image: "../images/testimonials/laniepurple.png" },
+    { name: "Ron Lucien", image: "../images/testimonials/Ron_Lucien.jpg" },
+    {
+      name: "Elizabeth",
+      image: "../images/testimonials/elizabethpatient.jpeg",
+    },
+    { name: "Kinzie", image: "../images/testimonials/kinzie1.jpg" },
+    { name: "Kasprenski", image: "../images/testimonials/kasprenski.jpg" },
+    { name: "Leanne", image: "../images/testimonials/leanne.png" },
+    { name: "Narvaez", image: "../images/testimonials/Narvaez.jpg" },
+    { name: "Rosie & Grace", image: "../images/testimonials/Rosiegrace.png" },
+    { name: "Hobson", image: "../images/testimonials/hobsonblue.png" },
+    { name: "Hurlburt", image: "../images/testimonials/hurlburt.jpeg" },
+    { name: "Kara", image: "../images/testimonials/Kara.jpeg" },
+    { name: "Sophia Lee", image: "../images/testimonials/Sophia_Lee.jpg" },
+    { name: "Brynn", image: "../images/testimonials/Brynn.jpeg" },
+    { name: "Emma", image: "../images/testimonials/Emma.png" },
+    {
+      name: "Brooke Walker",
+      image: "../images/testimonials/Brooke_Walker.jpg",
+    },
+    { name: "Nilaya", image: "../images/testimonials/nilaya.jpeg" },
+    {
+      name: "Maria Anagnostou",
+      image: "../images/testimonials/Maria_Anagnostou.jpg",
+    },
+  ];
+
+  const [hoveredImage, setHoveredImage] = useState(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [hoveredColumn, setHoveredColumn] = useState(null);
+
+  const handleMouseEnter = (image, column) => {
+    setHoveredImage(image);
+    setHoveredColumn(column);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredImage(null);
+    setHoveredColumn(null);
+  };
+
+  const handleMouseMove = (e) => {
+    setPosition({ x: e.clientX + 20, y: e.clientY });
+  };
+
   return (
-    <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
-      <div
-        style={{
-          width: "50%",
-          color: "white",
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          // height: "100vh",
-          position: "relative",
-          background: "#1C1B1B",
-        }}
-      >
-        {/* <Canvas
-camera={{ position: [0, 1.5, 4] }} 
+    <div className="bg-[#F9F9F9]">
+      {" "}
+      <div className=" max-w-[1200px] mx-auto px-6">
+        <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
+          <div className="w-[64px] h-auto">
+            <img src="../images/whitedots.svg" />
+          </div>
+          <nav className="flex space-x-6 text-sm">
+            <h1 class="text-2xl font-bold">
+              <span className="text-black font-agrandir-bold inline-flex items-center">
+                TESTI
+                <img
+                  src="../images/mo.svg"
+                  alt="MO"
+                  className="h-[1em] mx-1 inline-flex"
+                />
+                NIALS
+              </span>
+            </h1>
+          </nav>
+        </header>
 
-  gl={{ alpha: true }}
-  style={{
-    position: "fixed",
-    top: "50%",
-    left: "100%",
-    transform: "translate(-75%, -50%)", 
-    width: "100vw",
-    height: "100vh",
-    zIndex: 0,
-  }}
->
-
-<ambientLight intensity={0.5} /> //lower to avoid washed out
-
-<directionalLight 
-  position={[4, 4, 4]} 
-  intensity={4} 
-  castShadow
-/>
-
-<spotLight 
-  position={[3, 4, 3]} 
-  angle={0.2} 
-  intensity={4.5} //brightness
-  penumbra={0.8} 
-  distance={8}
-  castShadow
-/>
-
-<pointLight position={[-4, 3, 2]} intensity={2} color="#000" />
-<pointLight position={[0, 0, -5]} intensity={3} color="#BCC6CC" />
-
-          <Environment files="../images/empty_warehouse.exr" />
-          <EffectComposer>
-
-</EffectComposer>
-          <Suspense fallback={<span>Loading</span>}>
-            <RotatingModel />
-          </Suspense>
-
-          <OrbitControls enableZoom={false} /> 
-        </Canvas> */}
-      </div>
-
-      <div
-        id="right-column"
-        className="relative"
-        style={{
-          width: "50%",
-
-          overflowY: "auto",
-          // padding: "40px",
-        }}
-      >
-        <section>
-          <div>
-            <div className="pl-10 pt-20 flex justify-start">
-              <p
-                ref={textRef}
-                className="text-[1.5em] leading-[1.1] font-helvetica-neue max-w-[700px]"
-              >
-                We are committed to setting the standard for exceptional
-                service. Our communication is always open—every question is
-                welcome, and every concern is met with care and professionalism.
-              </p>
+        {/* About Section */}
+        <section className="py-10 border-b grid md:grid-cols-2 gap-12">
+          <p
+            ref={textRef}
+            className="text-[1.5em] leading-[1.1] font-helvetica-neue max-w-[700px]"
+          >
+            We are committed to setting the standard for exceptional service.
+            Our communication is always open—every question is welcome, and
+            every concern is met with care and professionalism.
+          </p>
+          <div
+            className="relative text-[14px] flex justify-between space-x-12"
+            onMouseMove={handleMouseMove}
+          >
+            {/* Left Column */}
+            <div className="w-1/2">
+              <h3 className="font-bold font-helvetica-neue uppercase tracking-widest text-xs pt-2">
+                Our Patients
+              </h3>
+              <ul className="font-neue-montreal border-t mt-2 pt-1 space-y-1">
+                {patients
+                  .slice(0, Math.ceil(patients.length / 2))
+                  .map((member, index) => (
+                    <li
+                      key={index}
+                      onMouseEnter={() =>
+                        handleMouseEnter(member.image, "left")
+                      }
+                      onMouseLeave={handleMouseLeave}
+                      className="border-b pb-1 cursor-pointer hover:bg-[#d3fd50]"
+                    >
+                      {member.name}
+                    </li>
+                  ))}
+              </ul>
             </div>
-            <div className="font-neue-montreal p-10 relative">
-              <div className="flex flex-col items-end">
-                <p className="text-md font-helvetica-neue-light mb-2">
-                  Top orthodontics
-                </p>
-                <h1 className="text-[220px]  leading-none ">1%</h1>
-              </div>
+
+            {/* Right Column */}
+            <div className="w-1/2">
+              <ul className="font-neue-montreal mt-[30px] pt-2 space-y-1">
+                {patients
+                  .slice(Math.ceil(patients.length / 2))
+                  .map((member, index) => (
+                    <li
+                      key={index + patients.length / 2}
+                      onMouseEnter={() =>
+                        handleMouseEnter(member.image, "right")
+                      }
+                      onMouseLeave={handleMouseLeave}
+                      className="border-b pb-1 cursor-pointer hover:bg-[#d3fd50]"
+                    >
+                      {member.name}
+                    </li>
+                  ))}
+              </ul>
             </div>
+
+            {/* Hover Image */}
+            {hoveredImage && (
+              <motion.img
+                src={hoveredImage}
+                alt="Hovered"
+                className="hover-image"
+                style={{
+                  position: "fixed",
+                  top: "20%",
+                  left: hoveredColumn === "left" ? "50%" : "75%",
+                  zIndex: 100,
+                }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              />
+            )}
           </div>
         </section>
-        <section className="mt-20 relative" style={{ marginBottom: "0vh" }}>
-          <div className="relative w-full h-full">
-            <div ref={gradient1Ref} className="gradient-container">
-              <div className="gradient-col">
-                <div className="gradient-1 h-full"></div>
-              </div>
-              <div className="gradient-col">
-                <div className="gradient-2 h-full"></div>
-              </div>
-              <div className="gradient-col">
-                <div className="gradient-1 h-full"></div>
-              </div>
-              <div className="gradient-col">
-                <div className="gradient-2 h-full"></div>
-              </div>
-            </div>
-            <div>
-              <img
-                ref={image1Ref}
-                src="../images/patient25k.png"
-                alt="patient"
-                className="absolute top-[45%] right-[15%] w-[250px] h-auto "
-              />
-            </div>
-          </div>
-          <div className="w-[160px]">
-            <img src="../images/svg-graphic-104.png" />
-          </div>
+
+        <section
+        // className="bg-[#fb542d] py-10"
+        >
+          {/* <h2 className="uppercase text-sm font-bold tracking-widest pb-2">
+            STICKY SECTION
+          </h2> */}
+
+          <Canvas
+            camera={{ position: [0, 1.5, 4] }}
+            gl={{ alpha: true }}
+            style={{
+              position: "fixed",
+              top: "50%",
+              right: "20%",
+              transform: "translate(-95%, -50%)",
+              width: "20vw",
+              height: "100vh",
+              zIndex: 0,
+            }}
+          >
+            <ambientLight intensity={0.5} /> //lower to avoid washed out
+            <directionalLight position={[4, 4, 4]} intensity={4} castShadow />
+            <spotLight
+              position={[3, 4, 3]}
+              angle={0.2}
+              intensity={4.5} //brightness
+              penumbra={0.8}
+              distance={8}
+              castShadow
+            />
+            <pointLight position={[-4, 3, 2]} intensity={2} color="#000" />
+            <pointLight position={[0, 0, -5]} intensity={3} color="#BCC6CC" />
+            <Environment files="../images/empty_warehouse.exr" />
+            <EffectComposer></EffectComposer>
+            <Suspense fallback={<span>Loading</span>}>
+              <RotatingModel />
+            </Suspense>
+            <OrbitControls enableZoom={false} />
+          </Canvas>
+        </section>
+        <section className="w-2/3 py-16"></section>
+      </div>
+      <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
+        <div
+          id="left-column"
+          style={{
+            width: "40%",
+
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            position: "relative",
+          }}
+        >
+
           <div
             ref={text1Ref}
-            className="leading-[1.2] font-helvetica-neue text-[1.5em] max-w-[400px] ml-10 relative -top-10"
+            className="leading-[1.2] font-helvetica-neue text-[2em] max-w-[500px] ml-10 relative "
           >
             Voted the best orthodontist in Lehigh Valley year after year
           </div>
-        </section>
-        <div className="flex items-center justify-center pl-10  h-auto">
-          <img
-            className="h-[350px] max-w-[250px] object-contain rounded-[20px]"
-            src="../images/testimage.png"
-            alt="Testimonial"
-          />
         </div>
+
         <div
-          style={{ marginBottom: "10vh" }}
-          className="mt-40 leading-[1.2] max-w-[560px] ml-auto "
+          id="right-column"
+          className="relative"
+          style={{
+            width: "60%",
+            overflowY: "auto",
+            // padding: "40px",
+          }}
         >
-          <div className="flex items-end font-helvetica-neue-light text-[18px] ">
-            I had an open bite and misaligned teeth most of my life. Dr Frey
-            fixed it and in record time. 1 1/2 yrs with Invisalign’s. Highly
-            recommended! Friendly staff and easy to make appointments!
+          <section className="relative" style={{ marginBottom: "0vh" }}>
+            <div className="relative w-full h-full">
+              <div ref={gradient1Ref} className="gradient-container">
+                <div className="gradient-col">
+                  <div className="gradient-1 h-full"></div>
+                </div>
+                <div className="gradient-col">
+                  <div className="gradient-2 h-full"></div>
+                </div>
+                <div className="gradient-col">
+                  <div className="gradient-1 h-full"></div>
+                </div>
+                <div className="gradient-col">
+                  <div className="gradient-2 h-full"></div>
+                </div>
+              </div>
+              <div>
+                <img
+                  ref={image1Ref}
+                  src="../images/patient25k.png"
+                  alt="patient"
+                  className="absolute top-[45%] right-[15%] w-[250px] h-auto "
+                />
+              </div>
+            </div>
+          </section>
+          <div className="flex items-center justify-center pl-10  h-auto">
+            <img
+              className="h-[350px] max-w-[250px] object-contain rounded-[20px]"
+              src="../images/testimage.png"
+              alt="Testimonial"
+            />
           </div>
-          <p className="text-[16px] font-helvetica-neue-light">Karen O.</p>
-        </div>
-        <p className="pl-10 max-w-[300px] justify-center items-center font-helvetica-neue-light text-black text-[16px]">
-          “FreySmiles is the best! I'm so happy with my smile and the confidence
-          it's brought me!” -Lainie
-        </p>
-        <div class="gradient-container-2">
-          <div class="gradient-col-2"></div>
-          <div class="gradient-col-2"></div>
-          <div class="gradient-col-2"></div>
-          <div class="gradient-col-2"></div>
-        </div>
-        <div className=" pl-10 leading-[1.1] transform -translate-y-1/2 font-helvetica-neue text-[1.5em] max-w-[500px]">
-          Our non-profit, More Than Smiles, provides world-class orthodontic
-          care to deserving kids since 2011.
-        </div>
-        <div className="pl-10 flex">
-          <h4 className="text-[17px] max-w-[450px] font-helvetica-neue-light leading-[1.2]">
-            Part of our More than Smiles mission is to educate our community
-            about their dental and orthodontic health. If you know someone who
-            could benefit from this gift, please visit the website for details
-            on how to nominate a candidate.
-          </h4>
-        </div>
-        <section className="morethansmiles">
-          <div ref={imagesContainerRef} className="imagestack">
-            {images.map((url, index) => (
-              <img
-                key={index}
-                src={url}
-                className="gallery-img"
-                alt="gallery"
-              />
-            ))}
-          </div>
-        </section>
-        <a
-          href="https://morethansmiles.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <svg
-            ref={btnRef}
-            className="w-4/5 max-w-xs cursor-pointer h-4/5"
-            viewBox="-50 -50 100 100"
+          <div
+            style={{ marginBottom: "10vh" }}
+            className="mt-40 leading-[1.2] max-w-[560px] ml-auto "
           >
-            <circle className="bg" r="22.4" fill="#5454EF" />
-            <text
-              className="txt fill-white text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
-              x="0"
-              y="2"
-              textAnchor="middle"
+            <div className="flex items-end font-helvetica-neue-light text-[18px] ">
+              I had an open bite and misaligned teeth most of my life. Dr Frey
+              fixed it and in record time. 1 1/2 yrs with Invisalign’s. Highly
+              recommended! Friendly staff and easy to make appointments!
+            </div>
+            <p className="text-[16px] font-helvetica-neue-light">Karen O.</p>
+          </div>
+          <p className="pl-10 max-w-[300px] justify-center items-center font-helvetica-neue-light text-black text-[16px]">
+            “FreySmiles is the best! I'm so happy with my smile and the
+            confidence it's brought me!” -Lainie
+          </p>
+          <div class="gradient-container-2">
+            <div class="gradient-col-2"></div>
+            <div class="gradient-col-2"></div>
+            <div class="gradient-col-2"></div>
+            <div class="gradient-col-2"></div>
+          </div>
+          <div className=" pl-10 leading-[1.1] transform -translate-y-1/2 font-helvetica-neue text-[1.5em] max-w-[500px]">
+            Our non-profit, More Than Smiles, provides world-class orthodontic
+            care to deserving kids since 2011.
+          </div>
+          <div className="pl-10 flex">
+            <h4 className="text-[17px] max-w-[450px] font-helvetica-neue-light leading-[1.2]">
+              Part of our More than Smiles mission is to educate our community
+              about their dental and orthodontic health. If you know someone who
+              could benefit from this gift, please visit the website for details
+              on how to nominate a candidate.
+            </h4>
+          </div>
+          <section className="morethansmiles">
+            <div ref={imagesContainerRef} className="imagestack">
+              {images.map((url, index) => (
+                <img
+                  key={index}
+                  src={url}
+                  className="gallery-img"
+                  alt="gallery"
+                />
+              ))}
+            </div>
+          </section>
+          <a
+            href="https://morethansmiles.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg
+              ref={btnRef}
+              className="w-4/5 max-w-xs cursor-pointer h-4/5"
+              viewBox="-50 -50 100 100"
             >
-              Nominate
-            </text>
-            <circle ref={hitRef} className="hit" r="42" fill="rgba(0,0,0,0)" />
-          </svg>
-        </a>
+              <circle className="bg" r="22.4" fill="#5454EF" />
+              <text
+                className="txt fill-white text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
+                x="0"
+                y="2"
+                textAnchor="middle"
+              >
+                Nominate
+              </text>
+              <circle
+                ref={hitRef}
+                className="hit"
+                r="42"
+                fill="rgba(0,0,0,0)"
+              />
+            </svg>
+          </a>
 
-        <section style={{ marginBottom: "100vh" }}>
-          <h1 className="font-neue-montreal text-xl">
-            I am certainly going to miss Dr. Frey and his team!! The
-            professionalism and kindness by each person does not go unnoticed!
-            Dr. Frey has always been very patient and such a pleasure to be
-            around. They celebrate the end of your Invisalign journey as if it
-            was their own! I would, and do recommend Frey Smiles to anyone
-            looking for perfect their smile. I came in for minor cosmetic
-            adjustments, and Dr. Frey somehow made magic happen in ways I didn’t
-            expect. I love my smile! Thank you so much team - and thank you to
-            all the girls. I would mention names, but truly - everyone was so
-            amazing!
-          </h1>
-          <h2 className="text-xl">-Stephanie N.</h2>
-        </section>
+          <section style={{ marginBottom: "100vh" }}>
+            <h1 className="font-neue-montreal text-xl">
+              I am certainly going to miss Dr. Frey and his team!! The
+              professionalism and kindness by each person does not go unnoticed!
+              Dr. Frey has always been very patient and such a pleasure to be
+              around. They celebrate the end of your Invisalign journey as if it
+              was their own! I would, and do recommend Frey Smiles to anyone
+              looking for perfect their smile. I came in for minor cosmetic
+              adjustments, and Dr. Frey somehow made magic happen in ways I
+              didn’t expect. I love my smile! Thank you so much team - and thank
+              you to all the girls. I would mention names, but truly - everyone
+              was so amazing!
+            </h1>
+            <h2 className="text-xl">-Stephanie N.</h2>
+          </section>
 
-        <section className="relative overflow-hidden">
-          <img src="../images/neonsunpattern.svg" />
-        </section>
+          <section className="relative overflow-hidden">
+            <img src="../images/neonsunpattern.svg" />
+          </section>
+        </div>
       </div>
     </div>
   );
