@@ -17,7 +17,7 @@ import React, {
   useCallback,
 } from "react";
 // framer motion
-import { motion, stagger, useAnimate, useInView } from "framer-motion";
+import { motion, stagger, useAnimate, useInView, useScroll, useTransform } from "framer-motion";
 // headless ui
 import { Disclosure, Transition } from "@headlessui/react";
 // gsap
@@ -46,7 +46,6 @@ if (typeof window !== "undefined") {
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 export default function LandingComponent() {
-
   useEffect(() => {
     // Set zIndex for panels
     gsap.set(".pinreveal", {
@@ -70,10 +69,8 @@ export default function LandingComponent() {
 
   return (
     <>
-      <div    style={{position: "relative" }} className="herocontainer">
-        <section
-className="pinreveal"
-        >
+      <div style={{ position: "relative" }} className="herocontainer">
+        <section className="pinreveal">
           <Hero />
         </section>
         <section
@@ -85,10 +82,8 @@ className="pinreveal"
         >
           {/* <MarqueeSection /> */}
         </section>
-        <section
-   className="pinreveal"
-        >
-          <Stats  />
+        <section className="pinreveal">
+          <Stats />
         </section>
         <section>
           <ImageGrid />
@@ -665,28 +660,23 @@ const Hero = () => {
             }}
           />
         </div>
-
-
       </div>
 
       {/* Right Section */}
       <div className="flex-[1] flex flex-col items-center justify-start  p-4">
         <div className="mb-6">
-          <div
-            className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "
-
-          ></div>
-                  <div className="">
-  <video
-    // src="../videos/whitewavessvg.mp4"
-    src="../images/holographic.mp4"
-    className="object-cover w-3/4 max-h-[80vh] rounded-md"
-    autoPlay
-    loop
-    muted
-    playsInline
-  ></video>
-</div>
+          <div className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "></div>
+          <div className="">
+            <video
+              // src="../videos/whitewavessvg.mp4"
+              src="../images/holographic.mp4"
+              className="object-cover w-3/4 max-h-[80vh] rounded-md"
+              autoPlay
+              loop
+              muted
+              playsInline
+            ></video>
+          </div>
           {/* <img
         src="../images/ribbedimage.png"
     
@@ -966,10 +956,13 @@ const Stats = () => {
     <section className=" rounded-tl-[40px] rounded-tr-[40px] ">
       <section className="min-h-screen grid grid-cols-12 px-12">
         <div className="col-span-4  flex">
-          <div
-            className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "
-          >
-            <svg className="pointer-events-none" width="1000" height="500" viewBox="-50 -50 1000 500">
+          <div className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 ">
+            <svg
+              className="pointer-events-none"
+              width="1000"
+              height="500"
+              viewBox="-50 -50 1000 500"
+            >
               <g id="multiply-circles">
                 {circles.map((circle, index) => (
                   <circle
@@ -981,7 +974,6 @@ const Stats = () => {
                     fill={getRandomColor()}
                     data-row={circle.row}
                     data-col={circle.col}
-       
                   />
                 ))}
               </g>
@@ -1020,71 +1012,83 @@ const Stats = () => {
             <div className="my-12"></div>
 
             <div ref={paragraphRef} className="text-right font-neue-montreal">
-      {lines.map((line, index) => (
-        <motion.div
-          key={index}
-          className="text-[14px] lg:text-[20px] overflow-hidden leading-relaxed"
-          initial={{
-            clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
-            y: 20,
-          }}
-          animate={lineFinished ? { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", y: 0 } : {}}
-          transition={{
-            duration: 0.8,
-            delay: index * 0.2,
-            ease: "easeOut",
-          }}
-        >
-          {line}
-        </motion.div>
-      ))}
-    </div>
+              {lines.map((line, index) => (
+                <motion.div
+                  key={index}
+                  className="text-[14px] lg:text-[20px] overflow-hidden leading-relaxed"
+                  initial={{
+                    clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
+                    y: 20,
+                  }}
+                  animate={
+                    lineFinished
+                      ? {
+                          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+                          y: 0,
+                        }
+                      : {}
+                  }
+                  transition={{
+                    duration: 0.8,
+                    delay: index * 0.2,
+                    ease: "easeOut",
+                  }}
+                >
+                  {line}
+                </motion.div>
+              ))}
+            </div>
           </div>
           <div className="my-12"></div>
           {/* Stats Section */}
           <div className="flex flex-wrap sm:flex-nowrap justify-end mt-8 space-x-4 sm:space-x-6 md:space-x-12">
-  <div className="text-center">
-    <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">Years of Experience</p>
-    <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light flex items-center gap-1 sm:gap-2">
-      <span
-        data-target="60"
-        ref={(el) => (statRefs.current[0] = el)}
-        className="pointer-events-none"
-      >
-        0
-      </span>
-      <span className="text-[2rem] sm:text-[3rem] align-center">+</span>
-    </h2>
-  </div>
-  <div className="text-center">
-    <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">Satisfied Patients</p>
-    <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light flex items-center gap-1 sm:gap-2">
-      <span
-        data-target="25"
-        ref={(el) => (statRefs.current[1] = el)}
-        className="pointer-events-none flex"
-      >
-        0
-      </span>
-      <span className="text-[2rem] sm:text-[3rem]">k</span>
-    </h2>
-  </div>
-  <div className="text-center">
-    <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">Locations</p>
-    <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light">
-      <span
-        data-target="4"
-        ref={(el) => (statRefs.current[2] = el)}
-        className="pointer-events-none"
-      >
-        0
-      </span>
-    </h2>
-  </div>
-</div>
-
-
-
+            <div className="text-center">
+              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">
+                Years of Experience
+              </p>
+              <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light flex items-center gap-1 sm:gap-2">
+                <span
+                  data-target="60"
+                  ref={(el) => (statRefs.current[0] = el)}
+                  className="pointer-events-none"
+                >
+                  0
+                </span>
+                <span className="text-[2rem] sm:text-[3rem] align-center">
+                  +
+                </span>
+              </h2>
+            </div>
+            <div className="text-center">
+              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">
+                Satisfied Patients
+              </p>
+              <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light flex items-center gap-1 sm:gap-2">
+                <span
+                  data-target="25"
+                  ref={(el) => (statRefs.current[1] = el)}
+                  className="pointer-events-none flex"
+                >
+                  0
+                </span>
+                <span className="text-[2rem] sm:text-[3rem]">k</span>
+              </h2>
+            </div>
+            <div className="text-center">
+              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">
+                Locations
+              </p>
+              <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light">
+                <span
+                  data-target="4"
+                  ref={(el) => (statRefs.current[2] = el)}
+                  className="pointer-events-none"
+                >
+                  0
+                </span>
+              </h2>
+            </div>
+          </div>
         </div>
       </section>
       {/* <motion.div
@@ -2404,68 +2408,69 @@ const ImageGrid = () => {
   // }, []);
 
   return (
-<div >
-  <div className="grid grid-cols-2 h-screen gap-4 p-4">
-    {/* Column 1 */}
-    <div className="grid grid-cols-2 gap-4">
+    <div>
+      <div className="grid grid-cols-2 h-screen gap-4 p-4">
+        {/* Column 1 */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="relative group rounded-[60px] bg-[#B2E7EB]">
+            <img
+              src="../images/hand.jpeg"
+              alt="Left Sub-Column Image"
+              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-200 group-hover:-translate-y-20 pointer-events-none"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <h2 className="text-2xl font-neue-montreal">Clear Aligners</h2>
+              <p className="font-neue-montreal text-lg">Invisalign</p>
+            </div>
+          </div>
 
-      <div className="relative group rounded-[60px] bg-[#B2E7EB]">
-        <img
-          src="../images/hand.jpeg"
-          alt="Left Sub-Column Image"
-          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-200 group-hover:-translate-y-20 pointer-events-none"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-          <h2 className="text-2xl font-neue-montreal">Clear Aligners</h2>
-          <p className="font-neue-montreal text-lg">Invisalign</p>
+          <div className="relative group  rounded-[60px] bg-[#FFE0DB]">
+            <img
+              src="../images/mainsectionimage.jpg"
+              alt="Right Sub-Column Image"
+              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-200 group-hover:-translate-y-10 pointer-events-none"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <h2 className="text-2xl font-neue-montreal">Braces</h2>
+              <p className="font-neue-montreal text-lg">Damon Ultima</p>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="relative group  rounded-[60px] bg-[#FFE0DB]">
-        <img
-          src="../images/mainsectionimage.jpg"
-          alt="Right Sub-Column Image"
-          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-200 group-hover:-translate-y-10 pointer-events-none"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-          <h2 className="text-2xl font-neue-montreal">Braces</h2>
-          <p className="font-neue-montreal text-lg">Damon Ultima</p>
+        {/* Column 2 */}
+        <div className="flex flex-col gap-4">
+          {/* Top */}
+          <div className="h-1/3 bg-[#EFFD47] rounded-[60px] relative flex items-center justify-center">
+            <div className="flex flex-col">
+              <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
+              <span className="text-6xl font-cursive italic text-gray-700 mt-2 font-autumnchant">
+                best
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom */}
+          <div className="flex-grow relative group rounded-[60px] bg-[#F2BD4A]">
+            <img
+              src="../images/handbackground.png"
+              alt="Bottom Image Column 2"
+              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-500 group-hover:-translate-y-10 pointer-events-none"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+              <h2 className="text-2xl font-neue-montreal">
+                Advanced Technology
+              </h2>
+              <p className="font-neue-montreal text-lg">
+                3D i-Cat Imaging, Digital Scans
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-    {/* Column 2 */}
-    <div className="flex flex-col gap-4">
-      {/* Top */}
-      <div className="h-1/3 bg-[#EFFD47] rounded-[60px] relative flex items-center justify-center">
-        <div className="flex flex-col">
-          <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
-          <span className="text-6xl font-cursive italic text-gray-700 mt-2 font-autumnchant">
-            best
-          </span>
-        </div>
-      </div>
-
-      {/* Bottom */}
-      <div className="flex-grow relative group rounded-[60px] bg-[#F2BD4A]">
-        <img
-          src="../images/handbackground.png"
-          alt="Bottom Image Column 2"
-          className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-500 group-hover:-translate-y-10 pointer-events-none"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-          <h2 className="text-2xl font-neue-montreal">Advanced Technology</h2>
-          <p className="font-neue-montreal text-lg">
-            3D i-Cat Imaging, Digital Scans
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
     // <section className="bg-[#FBFBFB]">
     //   <div>
@@ -2753,7 +2758,6 @@ const LogoGrid = () => {
 
   return (
     <div className="bg-[#F1F7FF] relative h-screen overflow-hidden">
-  
       {/* <div className="grid grid-cols-2 gap-4">
         {logos.map((columnLogos, columnIndex) => (
           <div key={columnIndex} className="flex flex-col items-center">
@@ -2775,8 +2779,7 @@ const LogoGrid = () => {
           className="z-10 w-full h-full lg:w-1/2 horizontal-item"
         />
 
-        <div className="lg:w-1/2"
-        >
+        <div className="lg:w-1/2">
           <p className="font-neue-montreal text-center text-[px]">
             Awards & Recognition
           </p>
@@ -3343,7 +3346,7 @@ function Locations() {
             className="h-[30px] relative -top-[15px] z-10 hover:h-[60px] hover:-top-[30px]"
           />
           <svg className="w-full h-[60px] -top-[30px] absolute">
-            <path ref={path} strokeWidth={1} stroke="#FFF" fill="none" />
+            <path ref={path} strokeWidth={1} stroke="#000" fill="none" />
           </svg>
         </div>
       </>
@@ -3428,12 +3431,12 @@ function Locations() {
 
   return (
     <>
-      <section id="flex locations-section" className="relative bg-[#0500F7]">
+      <section id="flex locations-section" className="relative ">
         <div
           id="locations-heading"
           className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32"
         >
-          <h1 className="font-helvetica-neue-light lg:text-5xl text-[#FFF]">
+          <h1 className="font-helvetica-neue-light lg:text-5xl">
             Come see us at any of our{" "}
             <span className="relative inline-block my-8 leading-tight lowercase font-editorial-new underline-offset-8">
               four convenient locations
@@ -3441,7 +3444,7 @@ function Locations() {
               <DrawEllipse className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" />
             </span>{" "}
             or opt for a{" "}
-            <span className=" relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#FFF] underline inline-block">
+            <span className=" relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#000] underline inline-block">
               virtual consultation
             </span>
           </h1>
@@ -3462,7 +3465,7 @@ function Locations() {
         </div>
 
         <div className="font-neue-montreal text-[#171616]" ref={ref}>
-          <motion.div
+          {/* <motion.div
             id="locations-map"
             className="h-[60vh] overflow-hidden lg:absolute lg:right-0 lg:h-full lg:w-1/2"
             style={{
@@ -3488,7 +3491,7 @@ function Locations() {
                       .mapbox_map_title
               }
             />
-          </motion.div>
+          </motion.div> */}
 
           <div
             className="font-neue-montreal text-[#171616]"
@@ -3506,8 +3509,8 @@ function Locations() {
               >
                 <button
                   className={`${
-                    selectedLocation === "All" ? "text-[#FFF]" : ""
-                  } self-end transition-all duration-300 ease-linear w-max mr-6 mb-6 underline-offset-4 hover:text-[#FFF]`}
+                    selectedLocation === "All" ? "" : ""
+                  } self-end transition-all duration-300 ease-linear w-max mr-6 mb-6 underline-offset-4 `}
                   onClick={handleShowAllLocations}
                 >
                   {selectedLocation === "All"
@@ -3521,8 +3524,8 @@ function Locations() {
                       as="div"
                       key={l.location}
                       className={`${
-                        selectedLocation === l.location ? "text-white" : ""
-                      } px-4 py-6 transition-all duration-300 ease-linear cursor-pointer hover:text-white group text-white`}
+                        selectedLocation === l.location ? "" : ""
+                      } px-4 py-6 transition-all duration-300 ease-linear cursor-pointer hover:text-black group `}
                     >
                       {(panel) => {
                         const { open, close } = panel;
@@ -3539,18 +3542,18 @@ function Locations() {
                               }}
                             >
                               <dt className="col-span-5 row-start-1">
-                                <h6 className="text-xl font-neue-montreal text-[#FFF]">
+                                <h6 className="text-xl font-neue-montreal">
                                   {l.location}
                                 </h6>
                               </dt>
                               <dd className="col-span-7 row-start-1">
                                 <span className="flex items-center justify-between">
-                                  <p className="font-neue-montreal text-[#FFF]">
+                                  <p className="font-neue-montreal">
                                     {l.addressLine1}
                                     <br />
                                     {l.addressLine2}
                                   </p>
-                                  <ChevronRightIcon className="w-6 h-6 ui-open:rotate-90 ui-open:transform text-[#FFF]" />
+                                  <ChevronRightIcon className="w-6 h-6 ui-open:rotate-90 ui-open:transform" />
                                 </span>
                               </dd>
                             </Disclosure.Button>
@@ -3567,7 +3570,7 @@ function Locations() {
                                 as="div"
                                 className="grid grid-cols-12"
                               >
-                                <ul className="col-span-7 col-start-6 text-left text-[#FFF] mt-4 mb-2">
+                                <ul className="col-span-7 col-start-6 text-left mt-4 mb-2">
                                   <h6 className="font-medium uppercase">
                                     Office Hours:
                                   </h6>
@@ -3595,313 +3598,101 @@ function Locations() {
   );
 }
 
-const ContactUs = () => {
-  useEffect(() => {
-    const buttonText = new SplitText("#buttonText", { type: "chars" });
-    const button = document.querySelector("button");
 
-    const buttonHoverOn_tl = gsap.timeline({ paused: true });
-    buttonHoverOn_tl
-      .to(button, { y: -8, ease: "back.out(4)", duration: 1.2 }, 0)
-      .to(
-        buttonText.chars,
-        { y: 3, stagger: 0.02, duration: 0.8, ease: "back.out(4)" },
-        0
-      )
-      .to(
-        buttonText.chars,
-        { y: 1, stagger: 0.02, duration: 0.8, ease: "back.out(0)" },
-        0.6
-      );
 
-    const buttonHoverOff_tl = gsap.timeline({ paused: true });
-    buttonHoverOff_tl.to(button, { y: 0, duration: 2, ease: "circ.out" }, 0);
+function ContactUs() {
+  const [isExpanded, setIsExpanded] = useState(false);
 
-    button.addEventListener("mouseenter", () => {
-      buttonHoverOff_tl.pause();
-      buttonHoverOn_tl.restart();
-    });
+useEffect(() => {
+  const handleScroll = () => {
+    const parentdiv = document.querySelector(".parentdiv");
+    if (!parentdiv) return;
 
-    button.addEventListener("mouseleave", () => {
-      buttonHoverOn_tl.pause();
-      buttonHoverOff_tl.restart();
-    });
+    const rect = parentdiv.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
 
-    return () => {
-      buttonHoverOn_tl.kill();
-      buttonHoverOff_tl.kill();
-    };
-  }, []);
-
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const imgSize = [1250, 833];
-
-    const vertex = `
-      attribute vec2 uv;
-      attribute vec2 position;
-      varying vec2 vUv;
-      void main() {
-        vUv = uv;
-        gl_Position = vec4(position, 0, 1);
-      }
-    `;
-
-    const fragment = `
-      precision highp float;
-      uniform sampler2D tWater;
-      uniform sampler2D tFlow;
-      uniform float uTime;
-      varying vec2 vUv;
-      uniform vec4 res;
-      void main() {
-        vec3 flow = texture2D(tFlow, vUv).rgb;
-        vec2 uv = .5 * gl_FragCoord.xy / res.xy ;
-        vec2 myUV = (uv - vec2(0.5)) * res.zw + vec2(0.5);
-        myUV -= flow.xy * (0.15 * 0.7);
-        vec3 tex = texture2D(tWater, myUV).rgb;
-        gl_FragColor = vec4(tex, 1.0);
-      }
-    `;
-
-    const renderer = new OGL.Renderer({ dpr: 2 });
-    const gl = renderer.gl;
-    containerRef.current.appendChild(gl.canvas);
-
-    let aspect = 1;
-    const mouse = new OGL.Vec2(-1);
-    const velocity = new OGL.Vec2();
-
-    function resize() {
-      let a1, a2;
-      var imageAspect = imgSize[1] / imgSize[0];
-      if (window.innerHeight / window.innerWidth < imageAspect) {
-        a1 = 1;
-        a2 = window.innerHeight / window.innerWidth / imageAspect;
-      } else {
-        a1 = (window.innerWidth / window.innerHeight) * imageAspect;
-        a2 = 1;
-      }
-      mesh.program.uniforms.res.value = new OGL.Vec4(
-        window.innerWidth,
-        window.innerHeight,
-        a1,
-        a2
-      );
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      aspect = window.innerWidth / window.innerHeight;
-    }
-
-    const flowmap = new OGL.Flowmap(gl);
-
-    const geometry = new OGL.Geometry(gl, {
-      position: {
-        size: 2,
-        data: new Float32Array([-1, -1, 3, -1, -1, 3]),
-      },
-      uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
-    });
-
-    const texture = new OGL.Texture(gl, {
-      minFilter: gl.LINEAR,
-      magFilter: gl.LINEAR,
-    });
-
-    const img = new Image();
-    img.onload = () => (texture.image = img);
-    img.crossOrigin = "Anonymous";
-    img.src =
-      "../images/whitesquiggle.png";
-
-    let a1, a2;
-    var imageAspect = imgSize[1] / imgSize[0];
-    if (window.innerHeight / window.innerWidth < imageAspect) {
-      a1 = 1;
-      a2 = window.innerHeight / window.innerWidth / imageAspect;
+    if (rect.top <= windowHeight * 0.5) {
+      setIsExpanded(true);
     } else {
-      a1 = (window.innerWidth / window.innerHeight) * imageAspect;
-      a2 = 1;
+      setIsExpanded(false);
     }
+  };
 
-    const program = new OGL.Program(gl, {
-      vertex,
-      fragment,
-      uniforms: {
-        uTime: { value: 0 },
-        tWater: { value: texture },
-        res: {
-          value: new OGL.Vec4(window.innerWidth, window.innerHeight, a1, a2),
-        },
-        tFlow: flowmap.uniform,
-      },
-    });
-
-    const mesh = new OGL.Mesh(gl, { geometry, program });
-
-    window.addEventListener("resize", resize, false);
-    resize();
-
-    const isTouchCapable = "ontouchstart" in window;
-    if (isTouchCapable) {
-      window.addEventListener("touchstart", updateMouse, true);
-      window.addEventListener("touchmove", updateMouse, { passive: true });
-    } else {
-      window.addEventListener("mousemove", updateMouse, true);
-    }
-
-    let lastTime;
-    const lastMouse = new OGL.Vec2();
-
-    function updateMouse(e) {
-      e.preventDefault();
-      if (e.changedTouches && e.changedTouches.length) {
-        e.x = e.changedTouches[0].pageX;
-        e.y = e.changedTouches[0].pageY;
-      }
-      if (e.x === undefined) {
-        e.x = e.pageX;
-        e.y = e.pageY;
-      }
-      mouse.set(e.x / gl.renderer.width, 1.0 - e.y / gl.renderer.height);
-
-      if (!lastTime) {
-        lastTime = performance.now();
-        lastMouse.set(e.x, e.y);
-      }
-
-      const deltaX = e.x - lastMouse.x;
-      const deltaY = e.y - lastMouse.y;
-      lastMouse.set(e.x, e.y);
-
-      let time = performance.now();
-      let delta = Math.max(10.4, time - lastTime);
-      lastTime = time;
-      velocity.x = deltaX / delta;
-      velocity.y = deltaY / delta;
-      velocity.needsUpdate = true;
-    }
-
-    function update(t) {
-      requestAnimationFrame(update);
-      if (!velocity.needsUpdate) {
-        mouse.set(-1);
-        velocity.set(0);
-      }
-      velocity.needsUpdate = false;
-      flowmap.aspect = aspect;
-      flowmap.mouse.copy(mouse);
-      flowmap.velocity.lerp(velocity, velocity.len ? 0.15 : 0.1);
-      flowmap.update();
-      program.uniforms.uTime.value = t * 0.01;
-      renderer.render({ scene: mesh });
-    }
-
-    requestAnimationFrame(update);
-
-    return () => {
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", updateMouse);
-      window.removeEventListener("touchstart", updateMouse);
-      window.removeEventListener("touchmove", updateMouse);
-      containerRef.current.removeChild(gl.canvas);
-    };
-  }, []);
-  const linkRef = useRef(null);
-
-  useEffect(() => {
-    const link = linkRef.current;
-
-    const span1 = link.querySelector("[data-tha-span-1]");
-    const span2 = link.querySelector("[data-tha-span-2]");
-
-    const handleMouseEnter = () => {
-      gsap.to([span1, span2], {
-        yPercent: -100,
-        duration: 0.8,
-        ease: "power4.inOut",
-      });
-    };
-
-    const handleMouseLeave = () => {
-      gsap.to([span1, span2], {
-        yPercent: 0,
-        duration: 0.8,
-        ease: "power4.inOut",
-      });
-    };
-
-    link.addEventListener("mouseenter", handleMouseEnter);
-    link.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      link.removeEventListener("mouseenter", handleMouseEnter);
-      link.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
 
   return (
-    <section
-      className="min-h-screen flex items-center justify-center text-white relative"
-      data-scroll-section
-      data-scroll
-      data-scroll-speed="1.2"
-    >
-      <div className="flex justify-center relative h-[600px]">
-      <div ref={containerRef} />
-        {/* <video
-          src="../images/holographic.mp4"
-          autoPlay
-          loop
-          muted
-          className="w-full h-full object-cover"
-        /> */}
+    <>
+      <div className="parentdiv relative w-full h-[100vh] ">
+      <div className="absolute top-0 left-0 w-full h-full  bg-[#F4F4F4] transition-all duration-700 ease-in-out"
+         style={{
+           borderRadius: isExpanded ? "0" : "50vw 50vw 0px 0px",
+           transform: isExpanded ? "translate(0%, 0%)" : "translate(0%, -5%)",
+         }}
+    ></div>
+        <div className="relative my-[10vh] mx-auto p-0 rounded-[2.5rem] overflow-hidden w-[90vw] h-[80vh]">
+          <div className="flex items-start justify-start ml-10 font-neue-montreal text-[4em]">
+             Connect with us
+          </div>
+          <div className="font-helvetica-neue absolute left-[25%] bottom-[5%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[15deg]">
+            Email
+          </div>
 
-<a
-    ref={linkRef}
-   href="mailto:info@freysmiles.com"
-    data-tha
-    className="absolute transform -translate-x-1/2 -translate-y-1/2 border border-black py-6 px-8"
-    style={{
-      top: "50%",
-      left: "50%",
-      display: "inline-block",
-      position: "absolute",
-      overflow: "hidden",
-    }}
-  >
-    <span
-      data-tha-span-1
-      style={{
-        fontSize: "1.25rem",
-        fontFamily: "HelveticaNeue-Light",
-        display: "inline-block",
-        position: "relative",
-      }}
-    >
-      Contact
-    </span>
-    <span
-      data-tha-span-2
-      style={{
-        fontSize: "1.25rem",
-        fontFamily: "HelveticaNeue-Light",
-        display: "inline-block",
-        position: "absolute",
-        top: "100%",
-        left: "0",
-      }}
-    >
-      Contact
-    </span>
-  </a>
+          <div className="font-helvetica-neue  absolute left-[40%] bottom-[5%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[-15deg]">
+            Facebook
+          </div>
+
+          <div className="font-helvetica-neue  absolute left-[45%] bottom-[25%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[5deg]">
+            Instagram
+          </div>
+
+          <div className="font-helvetica-neue absolute right-[20%] bottom-[5%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[5deg]">
+            Call Us
+          </div>
+
+          <div className="absolute right-[20%] top-[60%] w-[200px] rotate-[25deg]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 2000 2000"
+              fill="none"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <g transform="scale(.4)">
+                <path
+                  d="M917.582 2000L956.044 1208.79L692.308 1956.04L538.462 1895.6L879.121 1175.82L351.648 1769.23L230.769 1648.35L824.176 1120.88L104.396 1461.54L43.956 1307.69L791.209 1043.96L0 1082.42V917.582L791.209 961.538L43.956 692.308L104.396 543.956L824.176 884.615L230.769 351.648L351.648 236.264L879.121 824.176L538.462 109.89L692.308 43.956L956.044 796.703L917.582 0H1082.42L1038.46 791.209L1307.69 43.956L1456.04 109.89L1115.38 824.176L1648.35 236.264L1763.74 351.648L1175.82 884.615L1890.11 543.956L1956.04 692.308L1203.3 961.538L2000 917.582V1082.42L1203.3 1043.96L1956.04 1307.69L1890.11 1461.54L1175.82 1120.88L1763.74 1648.35L1648.35 1769.23L1115.38 1175.82L1456.04 1895.6L1307.69 1956.04L1038.46 1208.79L1082.42 2000H917.582Z"
+                  fill="#202020"
+                />
+              </g>
+            </svg>
+          </div>
+          <div className="absolute left-[20%] top-[40%] w-[300px] rotate-[20deg]">
+            <img
+              src="../images/shapes/greenandpinkshape.png"
+              alt="pinkgreen"
+            />
+          </div>
+          <div className="absolute left-[70%] top-[20%] w-[300px] rotate-[20deg]">
+            <img
+              src="../images/shapes/silverstar.svg"
+              alt="star"
+            />
+          </div>
+
+          <div className="absolute left-[35%] top-[65%] w-[200px] rotate-[-10deg]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 995.94 574.21"
+              fill="currentColor"
+            >
+              <path d="M 100 449 Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z M 0 0 l 112.42 112.42 H 0 v 112.42 c 0 124.17 100.66 224.83 224.83 224.83 h 224.83 V 224.84 H 224.83 l 224.83 -112.42 V 0 H 0" />
+            </svg>
+          </div>
+        </div>
       </div>
-    </section>
+    </>
   );
-};
-
+}
 function GiftCards() {
   return (
     <>
