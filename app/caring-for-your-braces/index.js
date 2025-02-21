@@ -14,8 +14,8 @@ const ExpandingSections = () => {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: () => `+=${window.innerWidth * 8}`,
-          scrub: 1,
+          end: () => `+=${window.innerWidth * 7}`,
+          scrub: 0,
           pin: true,
         },
       });
@@ -25,20 +25,28 @@ const ExpandingSections = () => {
       gsap.set(".whiteSection", { left: "95vw" });
       gsap.set(".orangeSection", { left: "100vw" });
       gsap.set(".redSection", { left: "100vw" });
+      gsap.set(".blackSection", { left: "100vw" });
 
       tl.to(".greenSection", { left: "0vw", duration: 1, ease: "none" }, 1);
       tl.to(".whiteSection", { left: "80vw", duration: 1, ease: "none" }, 1);
       tl.to(".orangeSection", { left: "95vw", duration: 1, ease: "none" }, 1);
       tl.to(".redSection", { left: "100vw", duration: 1, ease: "none" }, 1);
+      tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 1);
 
       tl.to(".whiteSection", { left: "0vw", duration: 1, ease: "none" }, 2);
       tl.to(".orangeSection", { left: "80vw", duration: 1, ease: "none" }, 2);
       tl.to(".redSection", { left: "95vw", duration: 1, ease: "none" }, 2);
+      tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 2);
 
       tl.to(".orangeSection", { left: "0vw", duration: 1, ease: "none" }, 3);
       tl.to(".redSection", { left: "80vw", duration: 1, ease: "none" }, 3);
+      tl.to(".blackSection", { left: "95vw", duration: 1, ease: "none" }, 3);
 
       tl.to(".redSection", { left: "0vw", duration: 1, ease: "none" }, 4);
+      tl.to(".blackSection", { left: "80vw", duration: 1, ease: "none" }, 4);
+
+      tl.to(".blackSection", { left: "0vw", duration: 1, ease: "none" }, 5);
+
       tl.to(".greenContentText", { x: "0%", duration: 0.8, ease: "none" }, 1.2);
       gsap.set(".greenContentText", { x: "-64%" });
       tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 1.2);
@@ -51,28 +59,58 @@ const ExpandingSections = () => {
       gsap.set(".orangeContentText", { x: "-224%" });
       tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 1.2);
       gsap.set(".redContentText", { x: "-304%" });
+      tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 1.2);
+      gsap.set(".blackContentText", { x: "-385%" });
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    gsap.to(".fixedNav", {
+      duration: 0.5,
+      scrollTrigger: {
+        trigger: "body",
+        start: "top -10px",
+      },
+    });
+  }, []);
+
   return (
     <div>
-      
-      <div ref={containerRef} className="sticky">
-      <div
-  style={{
-    position: "fixed",
-    top: "20vh",
-    left: "-150px",
-    width: "100%",
-    paddingLeft: "16rem",
-    zIndex: 10,
-    pointerEvents: "none",
-  }}
->
-  <h1 className="text-[82px] font-generalregular">Self-Care</h1>
-</div>
+      <div ref={containerRef} className="h-screen sticky">
+        <nav className="font-neue-montreal text-[12px] fixed top-0 left-0 w-full h-8 flex z-50">
+          <div className="w-1/5 h-full  flex items-center justify-center">
+            <span className="text-black ">• Brushing and Flossing</span>
+          </div>
+          <div className="w-1/5 h-full  flex items-center justify-center">
+            <span className="text-black ">• General Soreness</span>
+          </div>
+          <div className="w-1/5 h-full flex items-center justify-center">
+            <span className="text-black "> • Eating with braces</span>
+          </div>
+          <div className="w-1/5 h-full flex items-center justify-center">
+            <span className="text-black font-semibold"> • Rubberband wear</span>
+          </div>
+          <div className="w-1/5 h-full flex items-center justify-center">
+            <span className="text-black font-semibold">
+              • Final Considerations
+            </span>
+          </div>
+        </nav>
+        <div
+          style={{
+            position: "fixed",
+            top: "20vh",
+
+            width: "100%",
+            paddingLeft: "13rem",
+            zIndex: 10,
+            pointerEvents: "none",
+          }}
+        >
+          <h1 className="text-[82px] font-generalregular">Self-Care</h1>
+        </div>
 
         <div
           style={{
@@ -112,16 +150,15 @@ const ExpandingSections = () => {
                   }}
                 >
                   {" "}
-                  <p className="font-neue-montreal"> Braces treatment time varies based on your unique case and how
-                  well you follow care instructions. At FreySmiles Orthodontics,
-                  most patients achieve their ideal smile in 12 to 22 months.
-                  Ready to get started? Let’s make it happen.</p>
+                  <p className="font-neue-montreal">
+                    {" "}
+                    Braces treatment time varies based on your unique case and
+                    how well you follow care instructions. At FreySmiles
+                    Orthodontics, most patients achieve their ideal smile in 12
+                    to 22 months. Ready to get started? Let’s make it happen.
+                  </p>
                   <hr className="border-t border-[#262626] mt-10 mb-8" />
-               <div className="flex items-center space-x-2">
-                    <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
-                      • Learn More
-                    </h3>
-                   </div>
+                  <div className="flex items-center space-x-2"></div>
                 </div>
               </div>
             </div>
@@ -156,18 +193,15 @@ const ExpandingSections = () => {
               >
                 {" "}
                 <p className="font-neue-montreal">
-                Brushing and flossing are especially important during
-                orthodontic treatment since appliances like aligners and braces
-                interfere with the mouth’s natural cleaning. Only 10% of
-                patients maintain consistent oral hygiene, so we recommend three
-                cleanings a year—check with your insurance for coverage.
+                  Brushing and flossing are especially important during
+                  orthodontic treatment since appliances like aligners and
+                  braces interfere with the mouth’s natural cleaning. Only 10%
+                  of patients maintain consistent oral hygiene, so we recommend
+                  at least three professional cleanings a year—check with your
+                  insurance for coverage.
                 </p>
                 <hr className="border-t border-[#262626] mt-10 mb-8" />
-               <div className="flex items-center space-x-2">
-                    <h3 className="font-helvetica-neue-light text-sm font-medium uppercase tracking-widest mb-0 leading-none">
-                      • Brushing and Flossing
-                    </h3>
-                   </div>
+                <div className="flex items-center space-x-2"></div>
               </div>
             </div>
           </div>
@@ -245,7 +279,7 @@ const ExpandingSections = () => {
                 be avoided. While this is not a comprehensive list, some
                 examples include dense breads, caramel, gum, soda, and lean
                 meats. Apples should be sliced, and corn on the cob may require
-                careful eating.
+                careful navigation.
               </div>
             </div>
           </div>
@@ -261,6 +295,44 @@ const ExpandingSections = () => {
           >
             <div
               className="redContentText"
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "flex-start",
+                paddingLeft: "12rem",
+                paddingTop: "0vh",
+              }}
+            >
+              <div
+                style={{
+                  width: "450px",
+                  marginTop: "23.25rem",
+                  overflow: "hidden",
+                }}
+              >
+                {" "}
+                If your doctor has prescribed rubber bands, it’s essential to
+                follow the prescription for the best results. Not wearing them
+                as directed or frequently breaking brackets can affect your
+                treatment outcome. During treatment, you’ll receive different
+                rubber band sizes based on wire size and planned corrections.
+                While you may accumulate various elastics, keep in mind that not
+                all are interchangeable for every configuration.
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              height: "100vh",
+              overflow: "hidden",
+              position: "absolute",
+              top: "0",
+              width: "100%",
+            }}
+            className=" blackSection"
+          >
+            <div
+              className="blackContentText"
               style={{
                 display: "flex",
                 alignItems: "flex-start",
