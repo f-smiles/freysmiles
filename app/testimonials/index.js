@@ -345,6 +345,7 @@ const StickyColumnScroll = () => {
       <div className=" max-w-[1200px] mx-auto px-6">
         <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
           <div className="w-[64px] h-auto">
+    
             <img src="../images/whitedots.svg" />
           </div>
           <nav className="flex space-x-6 text-sm">

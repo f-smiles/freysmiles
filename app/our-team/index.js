@@ -532,33 +532,54 @@ export default function OurTeam() {
         <section className="py-24 sm:py-32">
           <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
             <div className="grid grid-cols-2 ">
-              <div className="flex flex-col items-start justify-center leading-none">
-                {textLines.map((line, index) => (
-                  <div
-                    key={index}
-                    className="tracking-wide stagger-line font-saolitalic text-[90px] relative"
-                  >
-                    {line.text.split(" ").map((word, wordIndex) => (
-                      <span
-                        key={wordIndex}
-                        className="overflow-hidden inline-block mr-[16px]"
-                      >
-                        {word.split("").map((letter, letterIndex) => (
-                          <span key={letterIndex} className="inline-block">
-                            <span
-                              className={`stagger-letter inline-block ${
-                                letterIndex === 0 ? "text-[90px]" : ""
-                              }`}
-                            >
-                              {letter}
-                            </span>
-                          </span>
-                        ))}
-                      </span>
-                    ))}
-                  </div>
-                ))}
-              </div>
+              <div className="w-[60px]">
+            <svg
+      
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M63.93 30.1793H63.9983V0H31.999V0.0690724C49.052 0.0690724 62.9842 13.3921 63.93 30.1793Z"
+        fill="currentColor"
+      />
+      <path
+        d="M63.9315 33.8208C62.9858 50.608 49.0536 63.931 32.0006 63.931V64.0001H63.9999V33.8208H63.9315Z"
+        fill="currentColor"
+      />
+      <path
+        d="M31.9309 30.1793H31.9993V0H0V0.0690724C17.053 0.0690724 30.9852 13.3921 31.9309 30.1793Z"
+        fill="currentColor"
+      />
+      <path
+        d="M31.9309 33.8208C30.9852 50.608 17.053 63.931 0 63.931V64.0001H31.9993V33.8208H31.9309Z"
+        fill="currentColor"
+      />
+    </svg>
+    </div>
+    <div className="flex flex-col items-start justify-center leading-none">
+  {textLines.map((line, index) => (
+    <div
+      key={index}
+      className="tracking-wide stagger-line font-neue-montreal text-[40px] relative"
+    >
+      {line.text.split(" ").map((word, wordIndex) => (
+        <span
+          key={wordIndex}
+          className="overflow-hidden inline-block mr-[16px]"
+        >
+          {word.split("").map((letter, letterIndex) => (
+            <span key={letterIndex} className="inline-block">
+              <span className="stagger-letter inline-block">
+                {letter}
+              </span>
+            </span>
+          ))}
+        </span>
+      ))}
+    </div>
+  ))}
+</div>
 
               <div className="flex flex-col overflow-hidden">
                 <motion.div
