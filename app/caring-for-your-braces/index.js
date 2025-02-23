@@ -9,69 +9,105 @@ const ExpandingSections = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
+    let tl;
+
+    const updateGSAPValues = () => {
+        const containerWidth = window.innerWidth;
+        const sections = document.querySelectorAll(".allsections"); 
+
+        
+        const numSections = sections.length; 
+        const totalScrollDistance = (numSections - 1) * containerWidth;
+
+        
+        const greenOffset = -containerWidth * 0.64;
+        const whiteOffset = -containerWidth * 1.44;
+        const orangeOffset = -containerWidth * 2.24;
+        const redOffset = -containerWidth * 3.04;
+        const blackOffset = -containerWidth * 3.84;
+
+        if (tl) {
+            tl.kill();
+            ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+        }
+
+        gsap.set(".greenContentText", { x: greenOffset });
+        gsap.set(".whiteContentText", { x: whiteOffset });
+        gsap.set(".orangeContentText", { x: orangeOffset });
+        gsap.set(".redContentText", { x: redOffset });
+        gsap.set(".blackContentText", { x: blackOffset });
+
+        tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top top",
+                end: () => `+=${totalScrollDistance}`, 
+
+                scrub: 1,
+                pin: true,
+            },
+        });
+
+        gsap.set(".purpleSection", { left: "0vw" });
+        gsap.set(".greenSection", { left: "80vw" });
+        gsap.set(".whiteSection", { left: "95vw" });
+        gsap.set(".orangeSection", { left: "100vw" });
+        gsap.set(".redSection", { left: "100vw" });
+        gsap.set(".blackSection", { left: "100vw" });
+
+        tl.to(".greenSection", { left: "0vw", duration: 1, ease: "none" }, 1);
+        tl.to(".whiteSection", { left: "80vw", duration: 1, ease: "none" }, 1);
+        tl.to(".orangeSection", { left: "95vw", duration: 1, ease: "none" }, 1);
+        tl.to(".redSection", { left: "100vw", duration: 1, ease: "none" }, 1);
+        tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 1);
+
+        tl.to(".whiteSection", { left: "0vw", duration: 1, ease: "none" }, 2);
+        tl.to(".orangeSection", { left: "80vw", duration: 1, ease: "none" }, 2);
+        tl.to(".redSection", { left: "95vw", duration: 1, ease: "none" }, 2);
+        tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 2);
+
+        tl.to(".orangeSection", { left: "0vw", duration: 1, ease: "none" }, 3);
+        tl.to(".redSection", { left: "80vw", duration: 1, ease: "none" }, 3);
+        tl.to(".blackSection", { left: "95vw", duration: 1, ease: "none" }, 3);
+
+        tl.to(".redSection", { left: "0vw", duration: 1, ease: "none" }, 4);
+        tl.to(".blackSection", { left: "80vw", duration: 1, ease: "none" }, 4);
+
+        tl.to(".blackSection", { left: "0vw", duration: 1, ease: "none" }, 5);
+
+        tl.to(".greenContentText", { x: "0%", duration: 0.8, ease: "none" }, 1.2);
+        tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 1.2);
+        tl.to(".orangeContentText", { x: "0%", duration: 2.8, ease: "none" }, 1.2);
+        tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 1.2);
+        tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 1.2);
+
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+      }, 100);
+      
+    };
+
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: () => `+=${window.innerWidth * 7}`,
-          scrub: 0,
-          pin: true,
-        },
-      });
-
-      gsap.set(".purpleSection", { left: "0vw" });
-      gsap.set(".greenSection", { left: "80vw" });
-      gsap.set(".whiteSection", { left: "95vw" });
-      gsap.set(".orangeSection", { left: "100vw" });
-      gsap.set(".redSection", { left: "100vw" });
-      gsap.set(".blackSection", { left: "100vw" });
-
-      tl.to(".greenSection", { left: "0vw", duration: 1, ease: "none" }, 1);
-      tl.to(".whiteSection", { left: "80vw", duration: 1, ease: "none" }, 1);
-      tl.to(".orangeSection", { left: "95vw", duration: 1, ease: "none" }, 1);
-      tl.to(".redSection", { left: "100vw", duration: 1, ease: "none" }, 1);
-      tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 1);
-
-      tl.to(".whiteSection", { left: "0vw", duration: 1, ease: "none" }, 2);
-      tl.to(".orangeSection", { left: "80vw", duration: 1, ease: "none" }, 2);
-      tl.to(".redSection", { left: "95vw", duration: 1, ease: "none" }, 2);
-      tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 2);
-
-      tl.to(".orangeSection", { left: "0vw", duration: 1, ease: "none" }, 3);
-      tl.to(".redSection", { left: "80vw", duration: 1, ease: "none" }, 3);
-      tl.to(".blackSection", { left: "95vw", duration: 1, ease: "none" }, 3);
-
-      tl.to(".redSection", { left: "0vw", duration: 1, ease: "none" }, 4);
-      tl.to(".blackSection", { left: "80vw", duration: 1, ease: "none" }, 4);
-
-      tl.to(".blackSection", { left: "0vw", duration: 1, ease: "none" }, 5);
-
-      tl.to(".greenContentText", { x: "0%", duration: 0.8, ease: "none" }, 1.2);
-      gsap.set(".greenContentText", { x: "-64%" });
-      tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 1.2);
-      gsap.set(".whiteContentText", { x: "-144%" });
-      tl.to(
-        ".orangeContentText",
-        { x: "0%", duration: 2.8, ease: "none" },
-        1.2
-      );
-      gsap.set(".orangeContentText", { x: "-224%" });
-      tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 1.2);
-      gsap.set(".redContentText", { x: "-304%" });
-      tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 1.2);
-      gsap.set(".blackContentText", { x: "-385%" });
+        updateGSAPValues();
     }, containerRef);
 
-    return () => ctx.revert();
-  }, []);
+    updateGSAPValues();
+    window.addEventListener("resize", () => {
+      updateGSAPValues();
+  });
+
+    return () => {
+        window.removeEventListener("resize", updateGSAPValues);
+        ctx.revert();
+    };
+}, []);
 
   useEffect(() => {
     gsap.to(".fixedNav", {
       duration: 0.5,
       scrollTrigger: {
         trigger: "body",
-        start: "top -10px",
+        start: "top top",
       },
     });
   }, []);
@@ -104,7 +140,7 @@ const ExpandingSections = () => {
             top: "20vh",
 
             width: "100%",
-            paddingLeft: "13rem",
+            paddingLeft: "15rem",
             zIndex: 10,
             pointerEvents: "none",
           }}
@@ -129,7 +165,7 @@ const ExpandingSections = () => {
               top: "0",
               width: "100%",
             }}
-            className="purpleSection"
+            className="purpleSection allsections"
           >
             <div>
               <div
@@ -137,7 +173,7 @@ const ExpandingSections = () => {
                   display: "flex",
                   alignItems: "flex-start",
                   justifyContent: "flex-start",
-                  paddingLeft: "12rem",
+                  paddingLeft: "16rem",
                   paddingTop: "0vh",
                 }}
               >
@@ -146,62 +182,35 @@ const ExpandingSections = () => {
                   style={{
                     marginTop: "23.25rem",
                     overflow: "hidden",
-                    width: "450px",
+                    width: "475px",
                   }}
                 >
-                  {" "}
                   <p className="font-neue-montreal">
-                    {" "}
-                    Braces treatment time varies based on your unique case and
-                    how well you follow care instructions. At FreySmiles
-                    Orthodontics, most patients achieve their ideal smile in 12
-                    to 22 months. Ready to get started? Let’s make it happen.
+                    How long you’ll wear braces depends on your treatment plan
+                    and how well you follow our team's instructions. At
+                    FreySmiles, most patients achieve their ideal smile in 12 to
+                    20 months. Ready to get started? Let’s make it happen.
                   </p>
                   <hr className="border-t border-[#262626] mt-10 mb-8" />
                   <div className="flex items-center space-x-2"></div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              height: "100vh",
-              overflow: "hidden",
-              position: "absolute",
-              top: "0",
-              width: "100%",
-            }}
-            className="greenSection"
-          >
-            <div
-              className="greenContentText"
-              style={{
-                display: "flex",
-                overflow: "hidden",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                paddingLeft: "12rem",
-                paddingTop: "0vh",
-              }}
-            >
-              <div
-                style={{
-                  marginTop: "23.25rem",
-                  overflow: "hidden",
-                  width: "450px",
-                }}
-              >
-                {" "}
-                <p className="font-neue-montreal">
-                  Brushing and flossing are especially important during
-                  orthodontic treatment since appliances like aligners and
-                  braces interfere with the mouth’s natural cleaning. Only 10%
-                  of patients maintain consistent oral hygiene, so we recommend
-                  at least three professional cleanings a year—check with your
-                  insurance for coverage.
-                </p>
-                <hr className="border-t border-[#262626] mt-10 mb-8" />
-                <div className="flex items-center space-x-2"></div>
+
+                <div
+                  className="w-1/3 "
+                  style={{
+                    marginTop: "23.25rem",
+                  }}
+                >
+                  <img
+                    src="../images/macmockup.jpg"
+                    alt="portal"
+                    style={{
+                      maxHeight: "80%",
+                      width: "auto",
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -214,24 +223,87 @@ const ExpandingSections = () => {
               top: "0",
               width: "100%",
             }}
-            className="whiteSection"
+            className="greenSection allsections"
           >
             <div
-              className="whiteContentText"
               style={{
                 display: "flex",
                 overflow: "hidden",
                 alignItems: "flex-start",
                 justifyContent: "flex-start",
-                paddingLeft: "12rem",
+                paddingLeft: "16rem",
                 paddingTop: "0vh",
               }}
             >
               <div
+                className="greenContentText"
                 style={{
                   marginTop: "23.25rem",
                   overflow: "hidden",
-                  width: "450px",
+                  width: "475px",
+                }}
+              >
+                {" "}
+                <p className="font-neue-montreal">
+                  Brushing and flossing during orthodontic treatment is more
+                  important than ever. All orthodontic appliances such as clear
+                  aligners, brackets, and wires interfere with normal
+                  self-cleansing mechanisms of the mouth. Research shows that
+                  only 10% of patients brush and floss consistently during
+                  active treatment. We always recommend patients with braces get
+                  three cleanings a year. Check with your insurance to see if
+                  they’ll cover a third cleaning. When you begin treatment, we
+                  will equip you with a number of tools to help with cleaning,
+                  including spare toothbrushes and dental floss.
+                </p>
+                <hr className="border-t border-[#262626] mt-10 mb-8" />
+                <div className="flex items-center space-x-2"></div>
+              </div>
+              <div
+                className="w-1/3 "
+                style={{
+                  marginTop: "18.25rem",
+                }}
+              >
+                <img
+                  src="../images/flossbrush.png"
+                  alt="brushing"
+                  style={{
+                    maxHeight: "60%",
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              height: "100vh",
+              overflow: "hidden",
+              position: "absolute",
+              top: "0",
+              width: "100%",
+            }}
+            className="whiteSection allsections"
+          >
+            <div
+              style={{
+                display: "flex",
+                overflow: "hidden",
+                alignItems: "flex-start",
+                justifyContent: "flex-start",
+                paddingLeft: "16rem",
+                paddingTop: "0vh",
+              }}
+            >
+              <div
+                className="whiteContentText"
+                style={{
+                  marginTop: "23.25rem",
+                  overflow: "hidden",
+                  width: "475px",
                 }}
               >
                 {" "}
@@ -242,6 +314,23 @@ const ExpandingSections = () => {
                 irritated for a week or two as they adjust. No worries—we’ve got
                 you covered with wax to prevent rubbing and irritation. Hang in
                 there—it gets easier!
+
+              </div>
+              <div
+                className="w-1/4 "
+                style={{
+                  marginTop: "3.25rem",
+                }}
+              >
+                <img
+                  src="../images/hanginthere.png"
+                  alt="portal"
+                  style={{
+                    maxHeight: "80%",
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -253,21 +342,21 @@ const ExpandingSections = () => {
               top: "0",
               width: "100%",
             }}
-            className=" orangeSection"
+            className="orangeSection allsections"
           >
             <div
-              className="orangeContentText"
               style={{
                 display: "flex",
                 alignItems: "flex-start",
                 justifyContent: "flex-start",
-                paddingLeft: "12rem",
+                paddingLeft: "16rem",
                 paddingTop: "0vh",
               }}
             >
               <div
+                className="orangeContentText"
                 style={{
-                  width: "450px",
+                  width: "475px",
                   marginTop: "23.25rem",
                   overflow: "hidden",
                 }}
@@ -280,6 +369,23 @@ const ExpandingSections = () => {
                 examples include dense breads, caramel, gum, soda, and lean
                 meats. Apples should be sliced, and corn on the cob may require
                 careful navigation.
+
+              </div>
+              <div
+                className="w-1/3 "
+                style={{
+                  marginTop: "20.25rem",
+                }}
+              >
+                <img
+                  src="../images/elephanttusk.jpg"
+                  alt="portal"
+                  style={{
+                    maxHeight: "70%",
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -291,21 +397,76 @@ const ExpandingSections = () => {
               top: "0",
               width: "100%",
             }}
-            className=" redSection"
+            className=" redSection allsections"
           >
             <div
-              className="redContentText"
               style={{
                 display: "flex",
                 alignItems: "flex-start",
                 justifyContent: "flex-start",
-                paddingLeft: "12rem",
+                paddingLeft: "16rem",
                 paddingTop: "0vh",
               }}
             >
               <div
+                className="redContentText"
                 style={{
-                  width: "450px",
+                  width: "475px",
+                  marginTop: "23.25rem",
+                  overflow: "hidden",
+                }}
+              >
+                {" "}
+                If your doctor has prescribed rubber bands, it’s essential to
+                follow the prescription for the best results. Not wearing them
+                as directed or frequently breaking brackets can affect your
+                treatment outcome. During treatment, you’ll receive different
+                rubber band sizes based on wire size and planned corrections.
+                While you may accumulate various elastics, keep in mind that not
+                all are interchangeable for every configuration.
+
+              </div>
+              <div
+                className="w-1/3 "
+                style={{
+                  marginTop: "13.25rem",
+                }}
+              >
+                <img
+                  src="../images/rubberbands2.png"
+                  alt="portal"
+                  style={{
+                    maxHeight: "80%",
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              height: "100vh",
+              overflow: "hidden",
+              position: "absolute",
+              top: "0",
+              width: "100%",
+            }}
+            className=" blackSection allsections"
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "flex-start",
+                paddingLeft: "16rem",
+                paddingTop: "0vh",
+              }}
+            >
+              <div
+                className="blackContentText"
+                style={{
+                  width: "475px",
                   marginTop: "23.25rem",
                   overflow: "hidden",
                 }}
@@ -319,43 +480,20 @@ const ExpandingSections = () => {
                 While you may accumulate various elastics, keep in mind that not
                 all are interchangeable for every configuration.
               </div>
-            </div>
-          </div>
-          <div
-            style={{
-              height: "100vh",
-              overflow: "hidden",
-              position: "absolute",
-              top: "0",
-              width: "100%",
-            }}
-            className=" blackSection"
-          >
-            <div
-              className="blackContentText"
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                paddingLeft: "12rem",
-                paddingTop: "0vh",
-              }}
-            >
               <div
+                className="w-1/3 "
                 style={{
-                  width: "450px",
-                  marginTop: "23.25rem",
-                  overflow: "hidden",
+                  marginTop: "20.25rem",
                 }}
               >
-                {" "}
-                If your doctor has prescribed rubber bands, it’s essential to
-                follow the prescription for the best results. Not wearing them
-                as directed or frequently breaking brackets can affect your
-                treatment outcome. During treatment, you’ll receive different
-                rubber band sizes based on wire size and planned corrections.
-                While you may accumulate various elastics, keep in mind that not
-                all are interchangeable for every configuration.
+                <video
+                  src="https://video.wixstatic.com/video/11062b_163d7539f7824eb895994a6460f0995b/720p/mp4/file.mp4"
+                  className="object-cover w-full h-full"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                ></video>
               </div>
             </div>
           </div>

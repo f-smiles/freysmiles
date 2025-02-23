@@ -17,7 +17,14 @@ import React, {
   useCallback,
 } from "react";
 // framer motion
-import { motion, stagger, useAnimate, useInView, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  stagger,
+  useAnimate,
+  useInView,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 // headless ui
 import { Disclosure, Transition } from "@headlessui/react";
 // gsap
@@ -46,66 +53,18 @@ if (typeof window !== "undefined") {
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 export default function LandingComponent() {
-  useEffect(() => {
-    // Set zIndex for panels
-    gsap.set(".pinreveal", {
-      zIndex: (i, target, targets) => targets.length - i,
-    });
-
-    // GSAP animation
-    gsap.to(".pinreveal:not(:last-child)", {
-      yPercent: -100,
-      ease: "none",
-      stagger: 0.5,
-      scrollTrigger: {
-        trigger: "#heroontainer",
-        start: "top top",
-        end: "+=300%",
-        scrub: true,
-        pin: true,
-      },
-    });
-  }, []);
-
   return (
     <>
-      <div style={{ position: "relative" }} className="herocontainer">
-        <section className="pinreveal">
-          <Hero />
-        </section>
-        <section
-        // className="relative"
-        // style={{
-        //   height: "60vh",
-        // }}
-        // data-item
-        >
-          {/* <MarqueeSection /> */}
-        </section>
-        <section className="pinreveal">
-          <Stats />
-        </section>
-        <section>
-          <ImageGrid />
-        </section>
-        <section>
-          <NewSection />
-        </section>
-
-        <section
-        // className="relative"
-        // style={{
-        //   height: "100vh",
-        // }}
-        // data-item
-        >
-          <Testimonials />
-        </section>
-        <LogoGrid />
-        <Locations />
-        <ContactUs />
-        <GiftCards />
-      </div>
+      <Hero />
+      {/* <MarqueeSection /> */}
+      <Stats />
+      <ImageGrid />
+      <NewSection />
+      <Testimonials />
+      <LogoGrid />
+      <Locations />
+      <ContactUs />
+      <GiftCards />
     </>
   );
 }
@@ -2615,19 +2574,19 @@ const LogoGrid = () => {
 
       for (let i = 0; i < 12; i++) {
         const ball = Bodies.circle(halfsW, halfsW, circleW, {
-          density: 0.00001,
-          restitution: 0.5,
-          density: 0.05,
+          restitution: 0.3, // reduce bounces
+          friction: 0.1, // 
+          
+          density: 0.02, // helps with
           collisionFilter: {
             category: 0x0003,
             mask: 0x0003 | 0x0001,
           },
           render: {
             fillStyle: "#1e90ff",
-            // strokeStyle: 'white',
-            // lineWidth: 1,
           },
         });
+        
         ballsWithText.push({ ball, text: texts[i] });
         Composite.add(engine.world, ball);
       }
@@ -2705,36 +2664,66 @@ const LogoGrid = () => {
       render.mouse = mouse;
 
       Render.run(render);
+      let boxWidth = sW * 0.9;
+      let boxHeight = sW * .8;
+      let boxX = sW / 2;
+      let boxY = sW / 2;
+      let wallThickness = 50;
+      
+      let walls = [
+        // 🔥 Adjusted Top Wall - Moves higher
+        Bodies.rectangle(boxX, boxY - boxHeight / 2 - wallThickness / 2, boxWidth, wallThickness, { 
+          isStatic: true, render: { fillStyle: "transparent" }  
+        }),
+      
+        // 🔥 Adjusted Bottom Wall - Moves lower so balls align with bottom
+        Bodies.rectangle(boxX, boxY + boxHeight / 2, boxWidth, wallThickness, { 
+          isStatic: true, render: { fillStyle: "transparent" }  
+        }),
+      
+        // Left Wall
+        Bodies.rectangle(boxX - boxWidth / 2 - wallThickness / 2, boxY, wallThickness, boxHeight, { 
+          isStatic: true, render: { fillStyle: "transparent" }  
+        }),
+      
+        // Right Wall
+        Bodies.rectangle(boxX + boxWidth / 2 + wallThickness / 2, boxY, wallThickness, boxHeight, { 
+          isStatic: true, render: { fillStyle: "transparent" }  
+        })
+      ];
+      
+      Composite.add(engine.world, walls);
+      
 
-      let r = sW / 2;
-      let parts = [];
-      let pegCount = 32;
-      let TAU = Math.PI * 2;
-      for (let i = 0; i < pegCount; i++) {
-        const segment = TAU / pegCount;
-        let angle2 = (i / pegCount) * TAU + segment / 2;
-        let x2 = Math.cos(angle2);
-        let y2 = Math.sin(angle2);
-        let cx2 = x2 * r + sW / 2;
-        let cy2 = y2 * r + sW / 2;
-        let rect = addRect({
-          x: cx2,
-          y: cy2,
-          w: (10 / 1000) * sW,
-          h: (400 / 1000) * sW,
-          options: {
-            angle: angle2,
-            isStatic: true,
-            density: 1,
-            render: {
-              fillStyle: "transparent",
-              strokeStyle: "transparent",
-              lineWidth: 0,
-            },
-          },
-        });
-        parts.push(rect);
-      }
+      // let r = sW / 2;
+      // let parts = [];
+      // let pegCount = 32;
+      // let TAU = Math.PI * 2;
+      // for (let i = 0; i < pegCount; i++) {
+      //   const segment = TAU / pegCount;
+      //   let angle2 = (i / pegCount) * TAU + segment / 2;
+      //   let x2 = Math.cos(angle2);
+      //   let y2 = Math.sin(angle2);
+      //   let cx2 = x2 * r + sW / 2;
+      //   let cy2 = y2 * r + sW / 2;
+      //   let rect = addRect({
+      //     x: cx2,
+      //     y: cy2,
+      //     w: (10 / 1000) * sW,
+      //     h: (400 / 1000) * sW,
+      //     options: {
+      //       angle: angle2,
+      //       isStatic: true,
+      //       density: 1,
+      //       render: {
+      //         fillStyle: "transparent",
+      //         strokeStyle: "transparent",
+      //         lineWidth: 0,
+      //       },
+      //     },
+      //   });
+      //   parts.push(rect);
+      // }
 
       function addBody(...bodies) {
         World.add(engine.world, ...bodies);
@@ -2779,8 +2768,8 @@ const LogoGrid = () => {
           className="z-10 w-full h-full lg:w-1/2 horizontal-item"
         />
 
-        <div className="lg:w-1/2">
-          <p className="font-neue-montreal text-center text-[px]">
+        <div className="lg:w-1/2 bg-[#303BB0] py-24 px-20 rounded-[18px]">
+          <p className="font-neue-montreal text-[24px]">
             Awards & Recognition
           </p>
           <div className="flex items-center mt-10">
@@ -3429,6 +3418,32 @@ function Locations() {
     };
   }, []);
 
+  const pathRef = useRef(null);
+
+  useEffect(() => {
+    const path = pathRef.current;
+    if (!path) return;
+
+    const pathLength = path.getTotalLength();
+    path.style.strokeDasharray = pathLength;
+    path.style.strokeDashoffset = pathLength;
+    path.style.transition = "stroke-dashoffset 2s ease-out";
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          path.style.strokeDashoffset = "0";
+        } else {
+          path.style.strokeDashoffset = pathLength;
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(path);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       <section id="flex locations-section" className="relative ">
@@ -3448,7 +3463,7 @@ function Locations() {
               virtual consultation
             </span>
           </h1>
-          {/* arrow */}
+
           <svg
             className="hidden lg:block absolute bottom-0 translate-y-1/2 left-0 translate-x-64 w-36 h-36 rotate-[120deg] text-[#ff6432]"
             viewBox="0 0 77 85"
@@ -3456,6 +3471,7 @@ function Locations() {
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
+              ref={pathRef}
               d="M1.33755 84.3973C0.297616 62.7119 2.93494 39.8181 19.4192 23.8736C28.2211 15.3599 42.4944 12.5723 47.6281 26.2359C51.1245 35.5419 51.542 51.9945 41.0605 57.0865C29.486 62.7095 40.2945 35.2221 41.9942 32.4952C49.9497 19.7313 59.7772 11.6122 72.2699 3.78281C76.9496 0.849879 73.7108 0.477284 70.0947 1.13476C66.9572 1.7052 63.4035 2.43717 60.5291 3.81975C59.6524 4.24143 65.7349 2.73236 66.6827 2.44768C70.7471 1.22705 75.4874 -0.0219285 75.9527 5.60812C76.0274 6.5127 75.9956 14.9844 74.7481 15.2963C74.099 15.4586 71.0438 10.27 70.4642 9.65288C66.6996 5.64506 63.5835 4.42393 58.2726 5.11792"
               stroke="currentColor"
               strokeWidth="2"
@@ -3598,42 +3614,41 @@ function Locations() {
   );
 }
 
-
-
 function ContactUs() {
   const [isExpanded, setIsExpanded] = useState(false);
 
-useEffect(() => {
-  const handleScroll = () => {
-    const parentdiv = document.querySelector(".parentdiv");
-    if (!parentdiv) return;
+  useEffect(() => {
+    const handleScroll = () => {
+      const parentdiv = document.querySelector(".parentdiv");
+      if (!parentdiv) return;
 
-    const rect = parentdiv.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
+      const rect = parentdiv.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
 
-    if (rect.top <= windowHeight * 0.5) {
-      setIsExpanded(true);
-    } else {
-      setIsExpanded(false);
-    }
-  };
+      if (rect.top <= windowHeight * 0.5) {
+        setIsExpanded(true);
+      } else {
+        setIsExpanded(false);
+      }
+    };
 
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, []);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
       <div className="parentdiv relative w-full h-[100vh] ">
-      <div className="absolute top-0 left-0 w-full h-full  bg-[#F4F4F4] transition-all duration-700 ease-in-out"
-         style={{
-           borderRadius: isExpanded ? "0" : "50vw 50vw 0px 0px",
-           transform: isExpanded ? "translate(0%, 0%)" : "translate(0%, -5%)",
-         }}
-    ></div>
+        <div
+          className="absolute top-0 left-0 w-full h-full  bg-[#F4F4F4] transition-all duration-700 ease-in-out"
+          style={{
+            borderRadius: isExpanded ? "0" : "50vw 50vw 0px 0px",
+            transform: isExpanded ? "translate(0%, 0%)" : "translate(0%, -5%)",
+          }}
+        ></div>
         <div className="relative my-[10vh] mx-auto p-0 rounded-[2.5rem] overflow-hidden w-[90vw] h-[80vh]">
           <div className="flex items-start justify-start ml-10 font-neue-montreal text-[4em]">
-             Connect with us
+            Connect with us
           </div>
           <div className="font-helvetica-neue absolute left-[25%] bottom-[5%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[15deg]">
             Email
@@ -3667,16 +3682,10 @@ useEffect(() => {
             </svg>
           </div>
           <div className="absolute left-[20%] top-[40%] w-[300px] rotate-[20deg]">
-            <img
-              src="../images/shapes/greenandpinkshape.png"
-              alt="pinkgreen"
-            />
+            <img src="../images/shapes/greenandpinkshape.png" alt="pinkgreen" />
           </div>
           <div className="absolute left-[70%] top-[20%] w-[300px] rotate-[20deg]">
-            <img
-              src="../images/shapes/silverstar.svg"
-              alt="star"
-            />
+            <img src="../images/shapes/silverstar.svg" alt="star" />
           </div>
 
           <div className="absolute left-[35%] top-[65%] w-[200px] rotate-[-10deg]">
