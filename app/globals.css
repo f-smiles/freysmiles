@@ -13,6 +13,7 @@
   url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.ttf")format("truetype"),
   url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.svg#SaolDisplay-LightItalic")format("svg");
 }
+
 @font-face {
   font-family: "syne-extra";
   src: url("/fonts/syne.extra.otf") format("opentype");
@@ -95,6 +96,15 @@
   font-family: "Lato-Bold";
   src: url("/fonts/Lato-Bold.ttf") format("truetype");
 }
+@font-face {
+  font-family: "Lato-Thin";
+  src: url("/fonts/Lato-Thin.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Lato-Light";
+  src: url("/fonts/Lato-Light.ttf") format("truetype");
+}
+
 
 @font-face {
   font-family: "Oakes-Regular";
@@ -5398,5 +5408,5 @@ a {
 .whiteSection { background-color:  #D2D2FB }
 .orangeSection { background-color: #D99579;}
 .redSection { background-color:#F3F3F3}
-.blackSection { background-color:#455BE9}
+.blackSection { background-color:#CADACF}
 

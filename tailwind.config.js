@@ -40,6 +40,8 @@ module.exports = withUt({
 		larken: 'Larken',
 		'larken-italic': 'Larken Italic',
 		Lato: 'Lato',
+		LatoThin: 'Lato-Thin',
+		LatoLight: 'Lato-Light',
 		monument: 'MonumentExtended-Regular',
 		nautica: 'Nautica',
 		'neue-montreal': 'NeueMontrealBook',

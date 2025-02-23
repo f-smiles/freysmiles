@@ -541,7 +541,7 @@ const StickyColumnScroll = () => {
           <div className="flex items-center justify-center pl-10  h-auto">
             <img
               className="h-[350px] max-w-[250px] object-contain rounded-[20px]"
-              src="../images/testimage.png"
+              src="../images/testimonial1.png"
               alt="Testimonial"
             />
           </div>

@@ -8,6 +8,7 @@ import Navbar from './_components/Navbar'
 import Footer from './_components/Footer'
 import { Toast } from '@/components/ui/toaster'
 
+
 export default function App({ children, user }) {
 
   return (
@@ -18,7 +19,7 @@ export default function App({ children, user }) {
           <Toast />
           {children}
         </main>
-        <Footer />
+        {/* <Footer /> */}
       </PersistGate>
     </Provider>
   )
