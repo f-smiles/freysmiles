@@ -1384,7 +1384,6 @@ const NewSection = () => {
 
       const tags = [
         {
-          x: 200,
           y: 100,
           w: 164,
           h: 56,
