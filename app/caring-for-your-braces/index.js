@@ -42,7 +42,6 @@ const ExpandingSections = () => {
                 trigger: containerRef.current,
                 start: "top top",
                 end: () => `+=${totalScrollDistance}`, 
-
                 scrub: 1,
                 pin: true,
             },
@@ -113,22 +112,22 @@ const ExpandingSections = () => {
   }, []);
 
   return (
-    <div>
-      <div ref={containerRef} className="h-screen sticky">
-        <nav className="font-neue-montreal text-[12px] fixed top-0 left-0 w-full h-8 flex z-50">
-          <div className="w-1/5 h-full  flex items-center justify-center">
+    <div ref={containerRef} className=" min-h-screen">
+      <div >
+        <nav className="font-neue-montreal text-[12px] fixed top-5 left-5 w-1/2 h-8 flex z-50">
+          <div className="bg-[#FE462B] rounded-[10px] w-1/5 h-full  flex items-center justify-center">
             <span className="text-black ">• Brushing and Flossing</span>
           </div>
-          <div className="w-1/5 h-full  flex items-center justify-center">
+          <div className="bg-[#FFBAC4] rounded-[10px] w-1/5 h-full  flex items-center justify-center">
             <span className="text-black ">• General Soreness</span>
           </div>
-          <div className="w-1/5 h-full flex items-center justify-center">
+          <div className="bg-[#D6A3E4] rounded-[10px] w-1/5 h-full flex items-center justify-center">
             <span className="text-black "> • Eating with braces</span>
           </div>
-          <div className="w-1/5 h-full flex items-center justify-center">
+          <div className="bg-[#D2FF56] rounded-[10px] w-1/5 h-full flex items-center justify-center">
             <span className="text-black font-semibold"> • Rubberband wear</span>
           </div>
-          <div className="w-1/5 h-full flex items-center justify-center">
+          <div className="bg-[#9BD9E6] rounded-[10px] w-1/5 h-full flex items-center justify-center">
             <span className="text-black font-semibold">
               • Final Considerations
             </span>
@@ -202,7 +201,7 @@ const ExpandingSections = () => {
                   }}
                 >
                   <img
-                    src="../images/macmockup.jpg"
+                    src="../images/mockupfs.jpg"
                     alt="portal"
                     style={{
                       maxHeight: "80%",
@@ -472,13 +471,9 @@ const ExpandingSections = () => {
                 }}
               >
                 {" "}
-                If your doctor has prescribed rubber bands, it’s essential to
-                follow the prescription for the best results. Not wearing them
-                as directed or frequently breaking brackets can affect your
-                treatment outcome. During treatment, you’ll receive different
-                rubber band sizes based on wire size and planned corrections.
-                While you may accumulate various elastics, keep in mind that not
-                all are interchangeable for every configuration.
+                Teeth will become loose, and some more than others. The teeth will settle into the bone and soft tissue, and mobility will return to physiologic norms at the end of treatment. Brackets will also break. All orthodontic appliances are temporary; breakages are expected and considered when calculating your treatment time and retention.
+
+Dental professionals, dental hygienists, and other specialists all have different knowledge bases and motivations pertaining to patient care. It is not unlikely that at some point during treatment, you may receive conflicting information. We’re on the cutting edge with our office, and some people may not comprehend what we’re doing. We’re always open to educating other professionals on our cutting-edge treatment plans; however, patient care is our priority. Whenever in doubt, you can always circle back with the doctor who treatment-planned your case. Trust our process.
               </div>
               <div
                 className="w-1/3 "

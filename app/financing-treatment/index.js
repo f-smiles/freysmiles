@@ -2,10 +2,15 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import {motion} from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap-trial/all";
+import { MorphSVGPlugin } from "gsap-trial/MorphSVGPlugin";
 
-gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText);
+
+gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText, MorphSVGPlugin);
+
+
 
 const HeaderBanner = () => {
   const marqueeRef = useRef(null);
@@ -301,12 +306,66 @@ useEffect(() => {
     });
   }, []);
 
-
+  const starRef = useRef(null);
+  const containerRef = useRef(null);
+  const contentRef = useRef(null);
   
+  useEffect(() => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const maxSize = Math.max(width, height);
+  
+    const starRect = starRef.current.getBoundingClientRect();
+    const starWidth = starRect.width;
+    const targetScale = (maxSize * 4) / starWidth;
+  
+    gsap.set(contentRef.current, { opacity: 0 });
+  
+    const tl = gsap.timeline({
+      defaults: { duration: 1.2, ease: "power2.inOut" },
+    });
+  
+    tl.set(starRef.current, {
+      scale: 0.1,
+      transformOrigin: "50% 50%",
+    })
+    .to(starRef.current, {
+      scale: targetScale,
+      duration: 1.5,
+    })
+    .to(contentRef.current, {
+      opacity: 1,
+      duration: 0.8,
+    }, "-=0.6")
+    .set(containerRef.current, { zIndex: -1 });
+  }, []);
+  
+  
+
+
   return (
     <div>
-      <div className="flex justify-center py-16 px-4">
-        <div ref={cardsectionRef} className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12 relative">
+
+
+<div ref={containerRef} className="fixed inset-0 flex justify-center items-center bg-[#FE2F01] z-50">
+      <svg width="100vw" height="100vh" viewBox="0 0 1 1" xmlns="http://www.w3.org/2000/svg">
+        <path
+          ref={starRef}
+          d="M 0.5 0.0391 C 0.4727 0.2148 0.4492 0.3203 0.3828 0.3828 
+                C 0.3203 0.4492 0.2148 0.4727 0.0391 0.5 
+                C 0.2148 0.5273 0.3203 0.5508 0.3828 0.6172 
+                C 0.4492 0.6797 0.4727 0.7852 0.5 0.9609 
+                C 0.5273 0.7852 0.5508 0.6797 0.6172 0.6172 
+                C 0.6797 0.5508 0.7852 0.5273 0.9609 0.5 
+                C 0.7852 0.4727 0.6797 0.4492 0.6172 0.3828 
+                C 0.5508 0.3203 0.5273 0.2148 0.5 0.0391 Z"
+          fill="#FEA7E4"
+        />
+      </svg>
+    </div>
+
+      <div ref={contentRef}  className="flex justify-center ">
+
           
           <div className="grid grid-cols-1 h-full md:grid-cols-2 gap-8">
             <div className="col-span-1">
@@ -370,7 +429,7 @@ useEffect(() => {
             </div>
           </div>
 
-        </div>
+
       </div>
 
       <div className="overflow-hidden w-full py-4">
