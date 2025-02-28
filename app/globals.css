@@ -5410,3 +5410,97 @@ a {
 .redSection { background-color:#F3F3F3}
 .blackSection { background-color:#D2D2FB}
 
+.section_intro {
+  background-color:#fff ;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  position: absolute;
+  
+}
+
+
+.intro_split {
+  background-color: #E4D3D7;
+  width: 100%;
+  height: 50vh;
+}
+
+.intro_load {
+  align-items: center;
+  width: 0%;
+  height: 100vh;
+  display: flex;
+  position: absolute;
+}
+
+.intro_load-line {
+  background-color: #FFF;
+  border-radius: 1rem;
+  width: 100%;
+  height: .1rem;
+}
+
+.intro_load-illustration {
+  color: #FFF;
+  width: 12.5rem;
+  height: 12.5rem;
+  position: absolute;
+  top: 47%;
+  left: 100%;
+}
+
+
+.section_hero {
+  justify-content: center;
+  align-items: stretch;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* .container_ft {
+  grid-row-gap: 1.5rem;
+  flex-flow: column wrap;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 90rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  display: flex;
+} */
+
+
+.nav_container {
+  /* background-color: #FF4B1E; */
+  /* color: #FFF; */
+  border-radius: 10rem;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+}
+
+.hero_heading {
+  color: #FF4B1E;
+  font-family: "NeueMontrealBook";
+  /* text-align: left; */
+  font-size: 2.5rem;
+}
+
+
+.hero_illustration {
+
+  /* justify-content: center;
+  align-items: center; */
+  /* width: 40vw; */
+  /* margin-left: auto;
+  margin-right: auto; */
+  display: flex;
+}
