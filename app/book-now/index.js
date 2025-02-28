@@ -1,6 +1,12 @@
 "use client";
+import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import "tw-elements";
+import gsap from "gsap";
+import { MorphSVGPlugin } from "gsap-trial/MorphSVGPlugin";
+
+
+gsap.registerPlugin(MorphSVGPlugin);
 
 const LeftColumn = () => {
   return (
@@ -77,19 +83,63 @@ const RightColumn = () => {
 };
 
 export default function BookNow() {
+  const starRef = useRef(null);
+  const containerRef = useRef(null);
+  const contentRef = useRef(null);
+  
+  useEffect(() => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const maxSize = Math.max(width, height);
+  
+    const starRect = starRef.current.getBoundingClientRect();
+    const starWidth = starRect.width;
+    const targetScale = (maxSize * 4) / starWidth;
+  
+    gsap.set(contentRef.current, { opacity: 0 });
+  
+    const tl = gsap.timeline({
+      defaults: { duration: 1.2, ease: "power2.inOut" },
+    });
+  
+    tl.set(starRef.current, {
+      scale: 0.1,
+      transformOrigin: "50% 50%",
+    })
+    .to(starRef.current, {
+      scale: targetScale,
+      duration: 1.5,
+    })
+    .to(contentRef.current, {
+      opacity: 1,
+      duration: 0.8,
+    }, "-=0.6")
+    .set(containerRef.current, { zIndex: -1 });
+  }, []);
+
   return (
-    <section className="font-helvetica-now-thin bg-center h-[100vh] bg-[#E7E7E7]">
-      <motion.div
-        initial={{ clipPath: `circle(0% at 50% 50%)` }}
-        animate={{ clipPath: `circle(100% at 50% 50%)` }}
-        transition={{ duration: 2, ease: "easeOut" }}
-        className="flex items-center justify-center w-full h-full"
-      >
-        <div className="grid h-full grid-cols-1 gap-8 py-24 lg:py-36 lg:grid-cols-3">
+    <section className="">
+  <div ref={containerRef} className="fixed inset-0 flex justify-center items-center bg-[#FE2F01] z-50">
+      <svg width="100vw" height="100vh" viewBox="0 0 1 1" xmlns="http://www.w3.org/2000/svg">
+        <path
+          ref={starRef}
+          d="M 0.5 0.0391 C 0.4727 0.2148 0.4492 0.3203 0.3828 0.3828 
+                C 0.3203 0.4492 0.2148 0.4727 0.0391 0.5 
+                C 0.2148 0.5273 0.3203 0.5508 0.3828 0.6172 
+                C 0.4492 0.6797 0.4727 0.7852 0.5 0.9609 
+                C 0.5273 0.7852 0.5508 0.6797 0.6172 0.6172 
+                C 0.6797 0.5508 0.7852 0.5273 0.9609 0.5 
+                C 0.7852 0.4727 0.6797 0.4492 0.6172 0.3828 
+                C 0.5508 0.3203 0.5273 0.2148 0.5 0.0391 Z"
+          fill="#F3DACF"
+        />
+      </svg>
+    </div>
+        <div ref={contentRef} className="grid h-full grid-cols-1 gap-8 py-24 lg:py-36 lg:grid-cols-3">
           <LeftColumn />
           <RightColumn />
         </div>
-      </motion.div>
+  
     </section>
   );
 }
