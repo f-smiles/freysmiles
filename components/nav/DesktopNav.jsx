@@ -10,6 +10,8 @@ import { XIcon } from 'lucide-react'
 import { background, height, opacity } from './anim'
 import { links } from './links'
 import styles from './style.module.css'
+import CartComponent from '@/components/cart/cart-component';
+import UserButton from '@/components/auth/user-button';
 
 export default function DesktopNav({ user }) {
   const pathname = usePathname();
@@ -52,13 +54,13 @@ export default function DesktopNav({ user }) {
   return (
     <motion.nav
       id="desktop-nav"
-      className={`${styles.header} ${isActive ? "bg-[#e1f672]" : ""} hidden lg:block`}
+      className={`${styles.header} ${isActive ? "bg-[#e1f672]" : ""} hidden md:block`}
       transition={{ duration: 1, scale: { type: "spring", visualDuration: 1 }}}
     >
       <motion.div className="pt-[16px] flex items-center justify-between uppercase m-auto transition-all duration-1000 ease-in-out scroll-nav" variants={opacity} animate={!isActive ? "open" : "closed"}>
         <Link href="/">
           <motion.div className={`${isActive ? "hidden" : "block"} bg-[#e0ff33] rounded-full flex justify-center items-center w-10 h-10 p-3`}>
-            <img src="../images/logo_icon.png" alt="Logo Icon" className="w-full h-full icon-replacement" />
+            <img src="../../images/logo_icon.png" alt="Logo Icon" className="w-full h-full icon-replacement" />
           </motion.div>
         </Link>
 
@@ -67,7 +69,7 @@ export default function DesktopNav({ user }) {
             {links.map((link, i) => (
               <motion.p
                 key={`${i} + ${link}`}
-                className="text-black text-md"
+                className="text-black text-md hover:cursor-pointer"
                 onClick={() => {
                   setSelectedLink(link.title)
                   setIsActive(!isActive)
@@ -83,13 +85,19 @@ export default function DesktopNav({ user }) {
             <Link href="/shop/products">
               <p className="text-md">Shop</p>
             </Link>
+            <CartComponent />
+            {user 
+              ? <UserButton user={user} /> 
+              : (
+                <Link href="/auth/login">
+                  <p className="text-md">Login</p>
+                </Link>
+              )
+            }
           </motion.div>
         </motion.div>
 
         <motion.div variants={opacity} animate={!isActive ? "open" : "closed"} className="flex items-center gap-4">
-          <Link href="/auth/login">
-            <p className="text-md">Login</p>
-          </Link>
           <Link href="/book-now">
             <p className="text-md">Book Now</p>
           </Link>
@@ -102,20 +110,14 @@ export default function DesktopNav({ user }) {
         {isActive && (
           <motion.div variants={height} initial="initial" animate="enter" exit="exit" className={`${styles.nav} z-50`}>
             <div className="flex flex-col max-w-4xl m-auto"> {/* styles.body */}
-              <>
-              <div onClick={() => setIsActive(!isActive)} className="flex items-start self-end h2-menu-row">
-                <p className="h2-menu-text-number"><XIcon className="w-4 h-4" /></p>
-                <h1 className="text-[40px]">Close</h1>
-              </div>
+              <button type="button" onClick={() => setIsActive(!isActive)} className="flex items-start self-end cursor-pointer h2-menu-row">
+                <XIcon className="w-4 h-4 top-3 -left-5 text-primary-700 h2-menu-text-number" />
+                {/* <h1 className="mb-4 text-[40px] text-zinc-700">Close</h1> */}
+              </button>
               {links.map((link) => (
                 <div key={link.title}>
                   {selectedLink === link.title && link.sublinks.map((sublink, i) => (
-                    <Link
-                      key={sublink}
-                      href={link.hrefs[i]}
-                      className={`h2-menu-row h2-menu-row-${i + 1} ${isActive ? "open" : ""}`}
-                      onClick={() => setIsActive(false)}
-                    >
+                    <Link key={sublink} href={link.hrefs[i]} onClick={() => setIsActive(false)} className={`h2-menu-row h2-menu-row-${i + 1} hover:cursor-pointer ${isActive ? "open" : ""}`}>
                       <div className="cursor-pointer h2-menu-wrapper-top">
                         <p className="h2-menu-text-number">{`0${i + 1}`}</p>
                         <h1 className="h2-menu-heading">{sublink}</h1>
@@ -124,7 +126,6 @@ export default function DesktopNav({ user }) {
                   ))}
                 </div>
               ))}
-              </>
             </div>
           </motion.div>
         )}
