@@ -20,11 +20,11 @@ export const height = {
   },
   enter: {
     height: "auto",
-    transition,
+    transition: { duration: 0.3 },
   },
   exit: {
     height: 0,
-    transition,
+    transition: { duration: 0.3 },
   },
 };
 
@@ -34,11 +34,11 @@ export const background = {
   },
   open: {
     height: "100vh",
-    transition,
+    transition: { duration: 0.3 },
   },
   closed: {
     height: 0,
-    transition,
+    transition: { duration: 0.3 },
   },
 };
 
