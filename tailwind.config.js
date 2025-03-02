@@ -12,7 +12,7 @@ module.exports = withUt({
   theme: {
   	fontFamily: {
   		aileron: 'Aileron-Black',
-		autumnchant: 'Autumn Chant',
+  		autumnchant: 'Autumn Chant',
   		cera: 'CeraProRegular',
   		horizon: 'HorizonSolid',
   		horizonOutline: 'HorizonOutline',
@@ -74,7 +74,10 @@ module.exports = withUt({
   			'-2': '-2deg',
   			'-5': '-5deg',
   			fontFamily: {
-  				sans: ["Lato", "sans-serif"]
+  				sans: [
+  					'Lato',
+  					'sans-serif'
+  				]
   			}
   		},
   		borderRadius: {
@@ -175,13 +178,32 @@ module.exports = withUt({
   				to: {
   					height: '0'
   				}
-  			}
+  			},
+  			spinBorder: {
+  				'0%': {
+  					transform: 'rotate(0deg) scale(10)'
+  				},
+  				'100%': {
+  					transform: 'rotate(-360deg) scale(10)'
+  				}
+  			},
+				"accordion-down": {
+					from: { height: "0" },
+					to: { height: "var(--radix-accordion-content-height)" },
+				},
+				"accordion-up": {
+					from: { height: "var(--radix-accordion-content-height)" },
+					to: { height: "0" },
+				},
   		},
   		animation: {
   			slideDown: 'slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1)',
-  			slideUp: 'slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1)'
-  		}
-  	}
+  			slideUp: 'slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1)',
+  			spinBorder: 'rotate 10s linear infinite',
+				"accordion-down": "accordion-down 300ms ease-out forwards",
+				"accordion-up": "accordion-up 300ms ease-out forwards",
+			}
+		}
   },
   plugins: [
     require("postcss-import"), // Handles @import directives
