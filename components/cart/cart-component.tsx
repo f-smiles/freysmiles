@@ -18,7 +18,7 @@ export default function CartComponent() {
   return (
     <Sheet open={cartOpen} onOpenChange={setCartOpen}>
       <SheetTrigger>
-        <div className="relative mr-2">
+        <div className="relative">
           <AnimatePresence>
             {cart.length > 0 && (
               <motion.span
