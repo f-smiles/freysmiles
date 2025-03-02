@@ -4,6 +4,7 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
 @import url("https://db.onlinewebfonts.com/c/4c4c08af466e9ad071b6d69cf44093df?family=SaolDisplay-Regular");
+
 @font-face {
   font-family: "Aileron-Black";
   src: url("/fonts/Aileron-Black.otf") format("opentype");
@@ -152,6 +153,75 @@
   font-family: "Larken Italic";
   src: url("/fonts/LarkenVariableItalic.ttf") format("truetype");
 }
+
+/* ========================= SHADCN ========================= */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ========================= SHADCN ========================= */
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -4769,9 +4839,9 @@ a {
 }
 
 .h2-menu-text-number {
-  color: #fff;
   margin-bottom: 0;
   font-weight: 500;
+  color: rgb(39, 39, 42);
 }
 
 .h2-menu-heading {
@@ -4897,6 +4967,7 @@ a {
 .h2-menu-heading {
   transform: translate3d(0, 0, 0);
   transition: transform 0.3s ease-in-out;
+  color: rgb(39, 39, 42);
 }
 
 .h2-menu-row-1:hover .h2-menu-image,
@@ -4955,7 +5026,7 @@ a {
   color: #000;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid rgb(39, 39, 42);
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -4972,7 +5043,7 @@ a {
   cursor: none;
   font-family: "Didot";
   font-style: italic;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid rgb(39, 39, 42);
   width: 100%;
   padding-top: 22px;
   padding-bottom: 22px;
@@ -4984,7 +5055,7 @@ a {
   grid-column-gap: 40px;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid rgb(39, 39, 42);
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -4999,7 +5070,7 @@ a {
   color: #fff;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid rgb(39, 39, 42);
   width: 100%;
   padding-top: 22px;
   padding-bottom: 22px;
@@ -5011,7 +5082,7 @@ a {
   color: #fff;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid rgb(39, 39, 42);
   justify-content: space-between;
   align-items: center;
   width: 100%;
