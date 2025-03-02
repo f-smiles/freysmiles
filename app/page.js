@@ -21,9 +21,7 @@ import React, {
   useCallback,
 } from "react";
 // framer motion
-import { motion, stagger, useAnimate, useInView } from "framer-motion";
-// headless ui
-import { Disclosure, Transition } from "@headlessui/react";
+import { motion, useInView } from "framer-motion";
 // gsap
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
@@ -32,19 +30,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
 import { SplitText } from "gsap-trial/SplitText";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
-import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Ellipse } from "@/app/_components/ui/Ellipse"
+import { WavyLineLong } from "@/app/_components/ui/WavyLine"
+import BezierCurve from "@/app/_components/ui/BezierCurve"
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(
-    DrawSVGPlugin,
-    ScrollTrigger,
-    SplitText,
-    useGSAP,
-    CustomEase
-  );
-}
-
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+gsap.registerPlugin(DrawSVGPlugin, SplitText, useGSAP, CustomEase, ScrollTrigger, ScrollSmoother);
 
 export default function LandingComponent() {
   // const canvasRef = useRef(null);
@@ -550,12 +541,12 @@ const Hero = () => {
 
   return (
     <section className="relative font-editorial-new bg-[#E1F672] flex flex-col justify-between p-8 text-black min-h-screen ">
-      <div className="flex flex-row h-full relative">
+      <div className="relative flex flex-row h-full">
         {/* Left Column */}
-        <div className="lg:w-2/3 w-full lg:pr-8 flex flex-col justify-start">
+        <div className="flex flex-col justify-start w-full lg:w-2/3 lg:pr-8">
           <div className="flex-grow"></div>
           <div className="overflow-hidden mt-[20vh]">
-            <p className="font-neue-montreal text-xl lg:text-3xl font-light leading-relaxed">
+            <p className="text-xl font-light leading-relaxed font-neue-montreal lg:text-3xl">
               A confident smile begins with effective care tailored to each
               patient.
               <br />
@@ -574,7 +565,7 @@ const Hero = () => {
           className="lg:w-1/3 w-full flex flex-col justify-center items-center lg:pl-8 mt-[14vh]"
           data-speed="1"
         >
-          <div className="flex flex-col justify-center items-center h-full space-y-0">
+          <div className="flex flex-col items-center justify-center h-full space-y-0">
             {colors.map((row, rowIndex) => (
               <div key={rowIndex} className="flex space-x-0">
                 {row.map((color, circleIndex) => (
@@ -595,12 +586,12 @@ const Hero = () => {
       </div>
 
       {/* Bottom Content */}
-      <div className="flex justify-between items-end mt-8">
+      <div className="flex items-end justify-between mt-8">
         <div>
-          <p className="font-neue-montreal font-bold text-sm">• EST {time}</p>
+          <p className="text-sm font-bold font-neue-montreal">• EST {time}</p>
         </div>
 
-        <div className="flex flex-col items-end text-right font-light lg:w-1/3 w-full">
+        <div className="flex flex-col items-end w-full font-light text-right lg:w-1/3">
           <h2 className="text-[3em] font-bold mb-4 leading-tight inline-block">
             We know
             <br />
@@ -730,10 +721,10 @@ const Stats = () => {
 
         <div
           style={{ marginTop: "8rem" }}
-          className="big-numbers-wrapper flex justify-around items-center"
+          className="flex items-center justify-around big-numbers-wrapper"
         >
           <div
-            className="big-numbers-card group transition-all duration-500 ease-in-out"
+            className="transition-all duration-500 ease-in-out big-numbers-card group"
             onMouseEnter={() => handleMouseEnter(1)}
             onMouseLeave={handleMouseLeave}
           >
@@ -758,7 +749,7 @@ const Stats = () => {
           </div>
 
           <div
-            className="big-numbers-card group transition-all duration-500 ease-in-out"
+            className="transition-all duration-500 ease-in-out big-numbers-card group"
             onMouseEnter={() => handleMouseEnter(2)}
             onMouseLeave={handleMouseLeave}
           >
@@ -779,7 +770,7 @@ const Stats = () => {
           </div>
 
           <div
-            className="big-numbers-card group transition-all duration-500 ease-in-out"
+            className="transition-all duration-500 ease-in-out big-numbers-card group"
             onMouseEnter={() => handleMouseEnter(3)}
             onMouseLeave={handleMouseLeave}
           >
@@ -800,11 +791,11 @@ const Stats = () => {
           </div>
         </div>
 
-        <section className="py-20 px-6">
-          <div className="max-w-7xl mx-auto">
+        <section className="px-6 py-20">
+          <div className="mx-auto max-w-7xl">
             <div className="mb-12">
               <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
-              <span className="text-6xl font-cursive italic text-gray-700 block mt-2 font-autumnchant">
+              <span className="block mt-2 text-6xl italic text-gray-700 font-cursive font-autumnchant">
                 best
               </span>
 
@@ -817,21 +808,21 @@ const Stats = () => {
           </div>
         </section>
 
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="px-6 mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
             {projects.map((project, index) => {
               const [isHovered, setIsHovered] = useState(false);
 
               return (
                 <motion.div
                   key={index}
-                  className="bg-white relative rounded-lg p-8 flex flex-col justify-between overflow-hidden"
+                  className="relative flex flex-col justify-between p-8 overflow-hidden bg-white rounded-lg"
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
                   style={{ height: "36rem" }}
                 >
                   <motion.div
-                    className="relative overflow-hidden flex items-center justify-center w-full h-full"
+                    className="relative flex items-center justify-center w-full h-full overflow-hidden"
                     animate={{
                       clipPath: isHovered
                         ? "circle(150% at 50% 50%)"
@@ -866,11 +857,11 @@ const Stats = () => {
                     />
                   </motion.div>
 
-                  <div className="text-left mt-auto pt-4 relative z-10 pointer-events-none">
+                  <div className="relative z-10 pt-4 mt-auto text-left pointer-events-none">
                     <h3 className="text-[2rem] font-neue-montreal tracking-wider mb-2 text-gray-800">
                       {project.title}
                     </h3>
-                    <p className="text-gray-600 uppercase tracking-wider">
+                    <p className="tracking-wider text-gray-600 uppercase">
                       {project.subtitle}
                     </p>
                   </div>
@@ -883,7 +874,7 @@ const Stats = () => {
       {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
         <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">
-          <div className="hero-header flex flex-col items-center text-center relative gap-4">
+          <div className="relative flex flex-col items-center gap-4 text-center hero-header">
             <div
               className="heading opacity-0 transform translate-y-[10vh]"
               style={{
@@ -896,8 +887,8 @@ const Stats = () => {
           </div>
         </div>
 
-        <section className="hero relative flex justify-center items-center h-screen">
-          <div className="hero-grid absolute inset-0 flex justify-center items-center z-0">
+        <section className="relative flex items-center justify-center h-screen hero">
+          <div className="absolute inset-0 z-0 flex items-center justify-center hero-grid">
             <img
               src="../images/Hero-Background-Grid.svg"
               alt="Hero Grid"
@@ -906,7 +897,7 @@ const Stats = () => {
             />
           </div>
 
-          <div className="z-20 hero-interaction-wrapper relative flex justify-center items-center z-20 space-x-2">
+          <div className="relative z-20 flex items-center justify-center space-x-2 hero-interaction-wrapper">
             <div className="hero-card bg-transparent z-30 rotate-[-4deg]">
               <img
                 src="../images/freysmilepatient.jpg"
@@ -946,12 +937,12 @@ const NewSection = () => {
       data-scroll-speed="1.2"
     >
       <div className="flex flex-col items-center">
-        <div className="eyes-container flex space-x-4">
+        <div className="flex space-x-4 eyes-container">
           <div className="eye bg-white rounded-full w-[150px] h-[150px] flex items-center justify-center">
-            <span className="text-black font-bold">PLAY</span>
+            <span className="font-bold text-black">PLAY</span>
           </div>
           <div className="eye bg-white rounded-full w-[150px] h-[150px] flex items-center justify-center">
-            <span className="text-black font-bold">PLAY</span>
+            <span className="font-bold text-black">PLAY</span>
           </div>
         </div>
       </div>
@@ -1083,11 +1074,11 @@ const BookNowSection = () => {
     >
       <section
         ref={parallaxRef}
-        className="py-20 px-8 flex flex-col lg:flex-row max-w-7xl mx-auto space-y-12 lg:space-y-0 lg:space-x-8"
+        className="flex flex-col px-8 py-20 mx-auto space-y-12 lg:flex-row max-w-7xl lg:space-y-0 lg:space-x-8"
       >
         {/* Left Text Section */}
         <div
-          className="flex-1 flex flex-col justify-center items-start space-y-8 relative"
+          className="relative flex flex-col items-start justify-center flex-1 space-y-8"
           ref={textContainerRef}
         >
           <h1 className="font-saol text-[3rem] leading-tight">
@@ -1096,7 +1087,7 @@ const BookNowSection = () => {
             </span>
             <span className="block">
               Are{" "}
-              <span className="font-autumnchant text-black px-4 py-2 inline-block rounded-lg">
+              <span className="inline-block px-4 py-2 text-black rounded-lg font-autumnchant">
                 always
               </span>{" "}
               Complimentary
@@ -1112,7 +1103,7 @@ const BookNowSection = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex items-center justify-center relative">
+        <div className="relative flex items-center justify-center flex-1">
           <div
             ref={wrapperRef}
             className="w-[360px] h-[660px] overflow-hidden bg-transparent rounded-full"
@@ -1133,7 +1124,7 @@ const BookNowSection = () => {
         <a href="/book-now" className="block">
           <div
             data-remodal-target="form"
-            className="img-wrap mod--round transform"
+            className="transform img-wrap mod--round"
             style={{
               transform: "translate3d(0, 0, 0) rotateZ(-120deg)",
             }}
@@ -1171,7 +1162,7 @@ const BookNowSection = () => {
       </div> */}
         </div>
 
-        <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
+        <div className="z-20 flex flex-col items-center justify-center space-y-6 lg:pl-8">
           <button className="font-helvetica-neue-light bg-[#e0cbe8] text-black text-2xl py-6 px-12 rounded-lg">
             NEED MORE INFO? <br /> TAKE OUR QUIZ
           </button>
@@ -2138,7 +2129,7 @@ function Testimonials() {
           lineHeight: "80%",
           letterSpacing: "0.1rem",
         }}
-        className="font-neue-montreal mt-32 mb-10 flex justify-center tracking"
+        className="flex justify-center mt-32 mb-10 font-neue-montreal tracking"
       >
         Testimonials
       </h1>
@@ -2288,25 +2279,10 @@ function Testimonials() {
 
 function Locations() {
   const ref = useRef(null);
+  const targetRef = useRef(null);
+  const locationsArrowRef = useRef(null);
   const isInView = useInView(ref, { once: false });
-  const [scope, animate] = useAnimate();
   const [selectedLocation, setSelectedLocation] = useState("All");
-  const [activeDisclosurePanel, setActiveDisclosurePanel] = useState(null);
-
-  function toggleDisclosurePanels(newPanel) {
-    if (activeDisclosurePanel) {
-      if (
-        activeDisclosurePanel.key !== newPanel.key &&
-        activeDisclosurePanel.open
-      ) {
-        activeDisclosurePanel.close();
-      }
-    }
-    setActiveDisclosurePanel({
-      ...newPanel,
-      open: !newPanel.open,
-    });
-  }
 
   const locations = [
     {
@@ -2353,34 +2329,6 @@ function Locations() {
     },
   ];
 
-  const handleShowAllLocations = () => {
-    activeDisclosurePanel.close();
-    setSelectedLocation("All");
-  };
-
-  useEffect(() => {
-    animate(
-      "div",
-      isInView
-        ? {
-            opacity: 1,
-            transform: "translateX(0px)",
-            scale: 1,
-            filter: "blur(0px)",
-          }
-        : {
-            opacity: 0,
-            transform: "translateX(-50px)",
-            scale: 0.3,
-            filter: "blur(2px)",
-          },
-      {
-        duration: 0.2,
-        delay: isInView ? stagger(0.1, { startDelay: 0.15 }) : 0,
-      }
-    );
-  }, [isInView]);
-
   const DrawEllipse = (props) => {
     useGSAP(() => {
       gsap.from(".draw", {
@@ -2388,142 +2336,37 @@ function Locations() {
         ease: "expo.out",
         scrollTrigger: {
           trigger: "#locations-section",
-          start: "clamp(top center)",
+          start: "clamp(-50% 0%)",
           scrub: true,
           pinSpacing: false,
           markers: false,
         },
-      });
-    });
-
+      })
+    })
+  
     return (
-      <svg
-        width="508"
-        height="122"
-        viewBox="0 0 508 122"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        {...props}
-      >
-        <path
-          className="draw"
-          d="M2 23.2421C28.9079 14.5835 113.098 -1.63994 234.594 2.73493C386.464 8.20351 515.075 37.5458 505.497 77.9274C503.774 85.1946 491.815 127.145 271.535 118.942C51.2552 110.739 32.8106 78.7919 45.7824 58.053C59.4644 36.1787 112.824 27.9758 193.548 27.9758"
-          stroke="#ff6432"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-      </svg>
-    );
-  };
+      <Ellipse {...props} />
+    )
+  }
 
-  const BezierCurve = () => {
-    const container = useRef(null);
-    const path = useRef(null);
-    let progress = 0;
-    let time = Math.PI / 2; // want the initial time value to be 1; in sine graph y = 1 when x = pi / 2
-    let reqId = null; // everytime mouse enters and leaves line's bounding box, animation gets called causing simultaneous chains of it being called (this is bad), only want one request animation running at the same time
-    let x = 0.5; // middle point is 1/2
-
-    useEffect(() => {
-      setPath(progress);
-      window.addEventListener("resize", () => {
-        setPath(progress);
-      });
-    }, []);
-
-    {
-      /*
-      use svg container's width to get control point (center point) of quadratic bezier curve; control point = svg container's width / 2
-      30 ==> svg height(60) divided by 2 to align the path within the center of the svg
-    */
-    }
-    const setPath = (progress) => {
-      if (container.current) {
-        const width = container.current.offsetWidth;
-        path.current.setAttributeNS(
-          null,
-          "d",
-          `M 0 30 Q${width * x} ${30 + progress} ${width} 30`
-        );
-      }
-    };
-
-    const manageMouseEnter = () => {
-      if (reqId) {
-        window.cancelAnimationFrame(reqId);
-        resetAnimation();
-      }
-    };
-
-    const manageMouseMove = (e) => {
-      const { movementY, clientX } = e;
-      const { left, width } = path.current.getBoundingClientRect();
-      // get value of x depending on where mouse is on the x-axis of the line
-      x = (clientX - left) / width;
-      progress += movementY;
-      setPath(progress);
-    };
-
-    const manageMouseLeave = () => {
-      animateOut();
-    };
-
-    {
-      /*
-      linear interpolation
-      x: The value we want to interpolate from (start) => 10
-      y: The target value we want to interpolate to (end) => 0
-      a: The amount by which we want x to be closer to y => 10% or 0.1
-      ex: value = lerp(value, 0, 0.1)
-      if value = 10, bring that value close to 0 by 10% which will give 9
-    */
-    }
-    const lerp = (x, y, a) => x * (1 - a) + y * a;
-
-    // sine function, linear interpolation, recursivity
-    const animateOut = () => {
-      // sine function creates the "wobbly" line animation when mouse leaves the line
-      const newProgress = progress * Math.sin(time);
-      time += 0.25; // speed of bounce animation
-      setPath(newProgress);
-      progress = lerp(progress, 0, 0.05); // change 3rd lerp argument to change curve's bounce exaggeration
-
-      // exit condition
-      if (Math.abs(progress) > 0.75) {
-        reqId = window.requestAnimationFrame(animateOut);
-      } else {
-        resetAnimation();
-      }
-    };
-
-    const resetAnimation = () => {
-      time = Math.PI / 2;
-      progress = 0;
-    };
-
+  const DrawWavyLineLong = (props) => {
+    useGSAP(() => {
+      gsap.from(".draw-wavy-line", {
+        drawSVG: "0%",
+        ease: "expo.out",
+        scrollTrigger: {
+          trigger: "#locations-section",
+          start: "clamp(-50% -25%)",
+          scrub: true,
+          pinSpacing: false,
+          markers: false,
+        },
+      })
+    })
     return (
-      <>
-        {/* line */}
-        <div
-          ref={container}
-          className="mb-[30px] col-span-12 row-start-2 h-[1px] w-full relative"
-        >
-          {/* box for event listeners overlays the svg element */}
-          <div
-            onMouseEnter={manageMouseEnter}
-            onMouseMove={(e) => {
-              manageMouseMove(e);
-            }}
-            onMouseLeave={manageMouseLeave}
-            className="h-[30px] relative -top-[15px] z-10 hover:h-[60px] hover:-top-[30px]"
-          />
-          <svg className="w-full h-[60px] -top-[30px] absolute">
-            <path ref={path} strokeWidth={1} stroke="#147b5d" fill="none" />
-          </svg>
-        </div>
-      </>
-    );
-  };
+      <WavyLineLong {...props} />
+    )
+  }
 
   useEffect(() => {
     const title = document.querySelector(".content__title");
@@ -2567,8 +2410,6 @@ function Locations() {
     });
   }, []);
 
-  const targetRef = useRef(null);
-
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -2601,33 +2442,76 @@ function Locations() {
     };
   }, []);
 
+  useEffect(() => {
+    const path = locationsArrowRef.current
+    if (!path) return
+
+    const pathLength = path.getTotalLength()
+    path.style.strokeDasharray = pathLength
+    path.style.strokeDashoffset = pathLength
+    path.style.transition = "stroke-dashoffset 2s ease-out"
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          path.style.strokeDashoffset = "0"
+        } else {
+          path.style.strokeDashoffset = pathLength
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(path)
+    return () => observer.disconnect()
+  }, [])
+
+  const officeHoursStaggerVariants = {
+    hidden: {
+      y: 0,
+      transition: { staggerChildren: 0.07, delayChildren: 0.2 },
+    },
+    visible: {
+      y: 10,
+      transition: { staggerChildren: 0.05, staggerDirection: -1 },
+    },
+  }
+  const officeHoursItemVariants = {
+    hidden: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        y: { stiffness: 1000, velocity: -100 },
+      },
+    },
+    visible: {
+      y: 10,
+      opacity: 0,
+      transition: {
+        y: { stiffness: 1000 },
+      },
+    },
+  } 
+
   return (
     <>
-      <section id="locations-section" className="relative bg-[#FF9831]">
-        <div
-          id="locations-heading"
-          className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[100rem] lg:px-8 lg:py-32"
-        >
+      <section id="locations-section" className="bg-[#FF9831]">
+        <div id="locations-heading" className="relative block max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:max-w-[80rem] lg:px-8 lg:py-32">
           <h1 className="lg:text-6xl font-neue-montreal text-[#032D42]">
             Come see us at any of our{" "}
             <span className="relative inline-block my-8 leading-tight lowercase font-editorial-new underline-offset-8">
               four convenient locations
-              {/* <img className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" src="/../../images/ellipse.svg" /> */}
               <DrawEllipse className="absolute w-full h-auto -ml-2 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" />
             </span>{" "}
             or opt for a{" "}
-            <span className="relative leading-tight lowercase font-editorial-new decoration-wavy underline-offset-8 decoration-[#147b5d] underline inline-block">
+            <span className="relative inline-block">
               virtual consultation
+              <DrawWavyLineLong className="absolute left-0 right-0 w-full -bottom-4" />
             </span>
           </h1>
           {/* arrow */}
-          <svg
-            className="hidden lg:block absolute bottom-0 translate-y-1/2 left-0 translate-x-64 w-36 h-36 rotate-[120deg] text-[#ff6432]"
-            viewBox="0 0 77 85"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg className="hidden lg:block absolute bottom-0 translate-y-1/2 left-0 translate-x-64 w-36 h-36 rotate-[120deg] text-[#ff6432]" viewBox="0 0 77 85" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
+              ref={locationsArrowRef}
               d="M1.33755 84.3973C0.297616 62.7119 2.93494 39.8181 19.4192 23.8736C28.2211 15.3599 42.4944 12.5723 47.6281 26.2359C51.1245 35.5419 51.542 51.9945 41.0605 57.0865C29.486 62.7095 40.2945 35.2221 41.9942 32.4952C49.9497 19.7313 59.7772 11.6122 72.2699 3.78281C76.9496 0.849879 73.7108 0.477284 70.0947 1.13476C66.9572 1.7052 63.4035 2.43717 60.5291 3.81975C59.6524 4.24143 65.7349 2.73236 66.6827 2.44768C70.7471 1.22705 75.4874 -0.0219285 75.9527 5.60812C76.0274 6.5127 75.9956 14.9844 74.7481 15.2963C74.099 15.4586 71.0438 10.27 70.4642 9.65288C66.6996 5.64506 63.5835 4.42393 58.2726 5.11792"
               stroke="currentColor"
               strokeWidth="2"
@@ -2636,10 +2520,9 @@ function Locations() {
           </svg>
         </div>
 
-        <div className="font-neue-montreal text-[#171616]" ref={ref}>
-          <motion.div
-            id="locations-map"
-            className="h-[60vh] overflow-hidden lg:absolute lg:right-0 lg:h-full lg:w-1/2"
+        <div ref={ref} className="grid grid-cols-12 lg:mt-16">
+          <motion.div id="locations-map" className="w-full col-span-12 h-[100dvh] lg:col-span-7 lg:order-1"
+            // className="h-[100vh] lg:w-1/2 lg:h-[60vh] h-[100dvh] w-full lg:w-1/2"
             style={{
               opacity: isInView ? 1 : 0,
               filter: isInView ? "blur(0px)" : "blur(16px)",
@@ -2665,104 +2548,67 @@ function Locations() {
             />
           </motion.div>
 
-          <div
-            className="font-neue-montreal text-[#171616]"
-            id="locations-details"
-          >
-            <div className="max-w-2xl px-4 py-16 mx-auto sm:px-6 sm:py-24 lg:mt-0 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 xl:gap-x-24">
-              {/* LOCATIONS LIST */}
-              <motion.div
-                className="flex flex-col mt-10"
-                style={{
-                  transform: isInView ? "none" : "translateX(-50px)",
-                  opacity: isInView ? 1 : 0,
-                  transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
-                }}
+          <div id="locations-details" className="pb-32 w-full col-span-12 font-neue-montreal text-[#171616] lg:justify-self-end lg:max-w-xl lg:col-span-5">
+            {/* LOCATIONS LIST */}
+            <motion.div
+              className="flex flex-col mt-10"
+              style={{
+                transform: isInView ? "none" : "translateX(-50px)",
+                opacity: isInView ? 1 : 0,
+                transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+              }}
+            >
+              <button
+                className={`${
+                  selectedLocation === "All" ? "text-[#147b5d]" : ""
+                } self-end transition-all duration-300 ease-linear w-max mr-6 mb-6 underline-offset-4 hover:text-[#147b5d]`}
+                onClick={() => setSelectedLocation("All")}
               >
-                <button
-                  className={`${
-                    selectedLocation === "All" ? "text-[#147b5d]" : ""
-                  } self-end transition-all duration-300 ease-linear w-max mr-6 mb-6 underline-offset-4 hover:text-[#147b5d]`}
-                  onClick={handleShowAllLocations}
-                >
-                  {selectedLocation === "All"
-                    ? "Showing All Locations"
-                    : "Show All Locations"}
-                </button>
+                {selectedLocation === "All"
+                  ? "Showing All Locations"
+                  : "Show All Locations"}
+              </button>
 
-                <dl ref={scope}>
-                  {locations.map((l, i) => (
-                    <Disclosure
-                      as="div"
-                      key={l.location}
-                      className={`${
-                        selectedLocation === l.location ? "text-white" : ""
-                      } px-4 py-6 transition-all duration-300 ease-linear cursor-pointer hover:text-white group text-white`}
-                    >
-                      {(panel) => {
-                        const { open, close } = panel;
-                        return (
-                          <>
-                            <BezierCurve />
-
-                            <Disclosure.Button
-                              className="grid w-full grid-cols-12 grid-rows-1 text-left sm:px-0"
-                              onClick={() => {
-                                if (!open) close();
-                                toggleDisclosurePanels({ ...panel, key: i });
-                                setSelectedLocation(l.location);
-                              }}
-                            >
-                              <dt className="col-span-5 row-start-1">
-                                <h6 className="text-xl font-neue-montreal text-[#171616]">
-                                  {l.location}
-                                </h6>
-                              </dt>
-                              <dd className="col-span-7 row-start-1">
-                                <span className="flex items-center justify-between">
-                                  <p className="font-neue-montreal text-[#171616]">
-                                    {l.addressLine1}
-                                    <br />
-                                    {l.addressLine2}
-                                  </p>
-                                  <ChevronRightIcon className="w-6 h-6 ui-open:rotate-90 ui-open:transform text-[#ff6432]" />
-                                </span>
-                              </dd>
-                            </Disclosure.Button>
-                            <Transition
-                              show={open}
-                              enter="transition-transform ease-out duration-300"
-                              enterFrom="transform scale-y-0 opacity-0"
-                              enterTo="transform scale-y-100 opacity-100"
-                              leave="transition-transform ease-in duration-200"
-                              leaveFrom="transform scale-y-100 opacity-100"
-                              leaveTo="transform scale-y-0 opacity-0"
-                            >
-                              <Disclosure.Panel
-                                as="div"
-                                className="grid grid-cols-12"
-                              >
-                                <ul className="col-span-7 col-start-6 text-left text-[#147b5d] mt-4 mb-2">
-                                  <h6 className="font-medium uppercase">
-                                    Office Hours:
-                                  </h6>
-                                  {l.hours.map((hour, index) => (
-                                    <li key={index}>
-                                      {Object.keys(hour)[0]}:{" "}
-                                      {Object.values(hour)[0]}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </Disclosure.Panel>
-                            </Transition>
-                          </>
-                        );
-                      }}
-                    </Disclosure>
-                  ))}
-                </dl>
-              </motion.div>
-            </div>
+              <div className="border-t border-[#147b5d]">
+                {locations.map((l, idx) => (
+                  <Accordion key={l.location} type="single" collapsible>
+                    <AccordionItem value={`item-${idx + 1}`} className="border-none">
+                      <AccordionTrigger className="grid w-full grid-cols-12 grid-rows-1 px-4 py-8 hover:no-underline" onClick={() => setSelectedLocation(l.location)}>
+                        <h6 className="col-span-5 row-start-1 text-xl font-neue-montreal text-[#171616]">{l.location}</h6>
+                        <span className="flex items-center justify-between col-span-6 row-start-1">
+                          <p className="font-neue-montreal text-[#171616]">
+                            {l.addressLine1}
+                            <br />
+                            {l.addressLine2}
+                          </p>
+                        </span>
+                      </AccordionTrigger>
+                      <AccordionContent className="grid grid-cols-12">
+                        <motion.ul
+                          className="col-span-7 col-start-6 text-left text-[#147b5d] pb-4"
+                          initial="visible"
+                          animate="hidden"
+                          variants={officeHoursStaggerVariants}
+                        >
+                          <h6 className="font-medium uppercase">Office Hours:</h6>
+                          {l.hours.map((hour, index) => (
+                            <motion.li
+                            key={index}
+                            variants={officeHoursItemVariants}
+                          >
+                              {Object.keys(hour)[0]}:{" "}
+                              {Object.values(hour)[0]}
+                            </motion.li>
+                          ))}
+                        </motion.ul>
+                      </AccordionContent>
+                    </AccordionItem>
+                    {/* Bezier Curve */}
+                    <BezierCurve />
+                  </Accordion>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -2812,7 +2658,7 @@ const ContactUs = () => {
 
   return (
     <section
-    className="min-h-screen flex items-center justify-center text-white relative"
+    className="relative flex items-center justify-center min-h-screen text-white"
     data-scroll-section
     data-scroll
     data-scroll-speed="1.2"
@@ -2823,7 +2669,7 @@ const ContactUs = () => {
         autoPlay 
         loop 
         muted 
-        className="w-full h-full object-cover"
+        className="object-cover w-full h-full"
       />
 
 <a href="mailto:info@freysmiles.com">
