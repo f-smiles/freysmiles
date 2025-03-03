@@ -52,7 +52,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   if (variant) {
     return (
-      <section className="flex flex-col w-full max-w-6xl min-h-screen px-4 mx-auto space-y-8 md:flex-row md:gap-8 lg:gap-12 sm:px-6 lg:px-8 lg:py-48">
+      <section className="font-neue-montreal flex flex-col w-full max-w-6xl min-h-screen px-4 mx-auto space-y-8 md:flex-row md:gap-8 lg:gap-12 sm:px-6 lg:px-8 lg:py-48">
         <div className="flex-1">
           <ProductCarousel variants={variant.product.productVariants} />
         </div>

@@ -1,6 +1,6 @@
 "use client";
-import Image from 'next/image';
-import Lenis from '@studio-freight/lenis'
+import Image from "next/image";
+import Lenis from "@studio-freight/lenis";
 import React, { useEffect, useState, useRef } from "react";
 import { SplitText } from "gsap-trial/all";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -10,70 +10,8 @@ import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
 
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger, SplitText)
+  gsap.registerPlugin(ScrollTrigger, SplitText);
 }
-
-const Card = ({ i, title, description, src, url, color, progress, range, targetScale }) => {
-  const container = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: container,
-    offset: ['start end', 'start start']
-  })
-
-  const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1])
-  const scale = useTransform(progress, range, [1, targetScale]);
-
-  return (
-    <div ref={container} className="uniqueCardContainer">
-      <motion.div
-        style={{
-          backgroundColor: color,
-          scale,
-          top: `calc(-5vh + ${i * 25}px)`,
-        }}
-        className="uniqueCard"
-      >
-        <h2>{title}</h2>
-        <div className="uniqueBody">
-          <div className="uniqueDescription">
-            <p>{description}</p>
-            <span>
-              <a href={url} target="_blank">
-                See more
-              </a>
-              <svg
-                width="22"
-                height="12"
-                viewBox="0 0 22 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M21.5303 6.53033C21.8232 6.23744 21.8232 5.76256 21.5303 5.46967L16.7574 0.696699C16.4645 0.403806 15.9896 0.403806 15.6967 0.696699C15.4038 0.989592 15.4038 1.46447 15.6967 1.75736L19.9393 6L15.6967 10.2426C15.4038 10.5355 15.4038 11.0104 15.6967 11.3033C15.9896 11.5962 16.4645 11.5962 16.7574 11.3033L21.5303 6.53033ZM0 6.75L21 6.75V5.25L0 5.25L0 6.75Z"
-                  fill="black"
-                />
-              </svg>
-            </span>
-          </div>
-
-          <div className="uniqueImageContainer">
-            <motion.div className="uniqueInner" style={{ scale: imageScale }}>
-              <Image fill src={`/images/${src}`} alt="image" />
-            </motion.div>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  )
-}
-
-const Layer = ({ colorClass }) => {
-  return (
-    <div
-      className={`absolute top-0 left-0 right-0 h-full w-full ${colorClass}`}
-    />
-  );
-};
 
 export default function OurTeam() {
   const [isVisible, setIsVisible] = useState(false);
@@ -125,7 +63,6 @@ export default function OurTeam() {
     return () => clearAnimation();
   }, [switchDoctor]);
 
-
   useEffect(() => {
     const container = document.querySelector(".horizontalScroller");
     const containerWidth =
@@ -174,26 +111,6 @@ export default function OurTeam() {
   }, []);
 
   const svgRef = useRef(null);
-  const circleRef = useRef(null);
-
-  useEffect(() => {
-    gsap.set('.layer', { clipPath: 'circle(0% at 50% 50%)' });
-    const tl = gsap.timeline({
-      onComplete: () => {
-        gsap.to('.contentTeam', { opacity: 1, duration: 1 });
-      }
-    });
-    tl.to('.layer', {
-      clipPath: 'circle(71% at 50% 50%)',
-      duration: 1,
-      ease: 'power1.inOut',
-    });
-    tl.to('.layer', {
-      clipPath: 'circle(0% at 50% 50%)',
-      duration: 1,
-      ease: 'power1.inOut'
-    });
-  }, []);
 
   const [svgs, setSvgs] = useState([]);
   const svgWidth = 200;
@@ -237,53 +154,15 @@ export default function OurTeam() {
   }, []);
 
 
-  const projects = [
-    {
-      title: "Adriana",
-      description: "Insurance Coordinator",
-      src: "team_members/Adriana-Photoroom.jpg",
-      color: "#BBACAF",
-    },
-    {
-      title: "Alyssa",
-      description: "Treatment Coordinator",
-      src: "team_members/Alyssascan.png",
-      color: "#c4aead",
-    },
-    {
-      title: "Elizabeth",
-      description: "Patient Services",
-      src: "team_members/Elizabethaao.png",
-      color: "#998d8f",
-    },
-    {
-      title: "Grace",
-      description: "Specialized Orthodontic Assistant",
-      src: "team_members/Grace-Photoroom.jpg",
-      color: "#e5e4e2",
-    },
-    {
-      title: "Lexi",
-      description: "Treatment Coordinator",
-      src: "team_members/lexigreen.png",
-      color: "#cbc4c5",
-    },
-    {
-      title: "Nicolle",
-      description: "Specialized Orthodontic Assistant",
-      src: "team_members/nicollewaving.png",
-      color: "#c9c0bb",
-    },
-  ];
 
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
     target: container,
-    offset: ['start start', 'end end']
-  })
+    offset: ["start start", "end end"],
+  });
   useEffect(() => {
     const lenis = new Lenis({
-      lerp: 0.1
+      lerp: 0.1,
     });
 
     function raf(time) {
@@ -342,7 +221,7 @@ export default function OurTeam() {
   //   },
   // ];
 
-  const [progress, setProgress] = useState(0);
+  // const [progress, setProgress] = useState(0);
   const carouselRef = useRef();
   const cursorRef = useRef();
 
@@ -485,36 +364,9 @@ export default function OurTeam() {
   //   };
   // }, []);
 
-  // const cursorStyle = {
-  //   position: "fixed",
-  //   left: `${position.x}px`,
-  //   top: `${position.y}px`,
-  //   transform: "translate(-50%, -50%)",
-  //   pointerEvents: "none",
-  //   zIndex: 99,
-  //   willChange: "transform",
-  // };
-
-  // const cursorCircleStyle = {
-  //   width: isDragging ? "64px" : "128px",
-  //   height: isDragging ? "64px" : "128px",
-  //   marginTop: "-50%",
-  //   marginLeft: "-50%",
-  //   borderRadius: "50%",
-  //   border: "solid 1px #0058EF",
-  //   backgroundColor: "#0058EF",
-  //   color: "white",
-  //   display: "flex",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   fontSize: "20px",
-  //   transition:
-  //     "width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
-  // };
-
   const [cursorPosition, setCursorPosition] = useState({ x: -100, y: -100 });
   const [isFocused, setIsFocused] = useState(false);
-  const isTouchDevice = 'ontouchstart' in window
+  const isTouchDevice = "ontouchstart" in window;
 
   useEffect(() => {
     if (!isTouchDevice) {
@@ -532,59 +384,235 @@ export default function OurTeam() {
     position: "fixed",
     left: `${cursorPosition.x}px`,
     top: `${cursorPosition.y}px`,
-    width: isFocused ? "100px" : "40px",
-    height: isFocused ? "100px" : "40px",
+    width: isFocused ? "100px" : "10px",
+    height: isFocused ? "100px" : "10px",
     borderRadius: "50%",
-    backgroundColor: isFocused ? "rgb(190,255,3)" : "#FFFFFF",
+    backgroundColor: isFocused ? "rgb(210,246,90)" : "#FFFFFF",
     pointerEvents: "none",
-    opacity: 0.7,
     transform: "translate(-50%, -50%)",
     transition: "width 0.5s, height 0.5s, background-color 0.25s",
     zIndex: 9999,
+    fontFamily: "NeueMontrealBook",
   };
 
+  useEffect(() => {
+    const lines = document.querySelectorAll(".stagger-line");
 
+    lines.forEach((line) => {
+      gsap.fromTo(
+        line.querySelectorAll(".stagger-letter"),
+        {
+          y: "100%",
+          opacity: 0,
+        },
+        {
+          y: "-10%",
+          opacity: 1,
+          stagger: 0.05,
+          duration: 1,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: line,
+            start: "top 80%",
+          },
+        }
+      );
+    });
+  }, []);
+
+  const textLines = [{ text: "Meet Our" }, { text: "Doctors" }];
+
+  useEffect(() => {
+    const lines = document.querySelectorAll(".stagger-line");
+
+    lines.forEach((line) => {
+      const letters = line.querySelectorAll(".stagger-letter");
+
+      gsap.fromTo(
+        letters,
+        {
+          y: "100%",
+          opacity: 0,
+        },
+        {
+          y: "0%",
+          opacity: 1,
+          stagger: 0.05,
+          duration: 1,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: line,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    });
+  }, []);
+
+  const lines = [
+    "Our experience spans over 50 years-a testament to the precision,",
+    "accuracy, and relevance of our vision, demonstrating our ability to adapt",
+    "to the ever-changing nature of our industry.",
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+
+  const imageRefs = useRef([]);
+  useEffect(() => {
+    if (imageRefs.current[currentIndex]) {
+      gsap.fromTo(
+        imageRefs.current[currentIndex],
+        {
+          y: "100%",  
+          scale: 1.6,
+
+        },
+        {
+          y: "0%",     
+          scale: 1,     
+          opacity: 1,  
+          duration: 1,  
+          ease: "power3.out"
+        }
+      );
+    }
+  }, [currentIndex]);
   
+  
+
+
+  const teamMembers = [
+   {
+    id: 1,
+    name: "Alyssa",
+    src: "../images/team_members/Alyssascan.png",
+    alt: "Image 1",
+    description: "Treatment Coordinator",
+  },
+  {
+    id: 2,
+    name: "Nicolle",
+    src: "../images/team_members/Nicollewaving.png",
+    alt: "Image 2",
+    description: "Specialized Orthodontic Assistant",
+  },
+  {
+    id: 3,
+    name: "Lexi",
+    src: "../images/team_members/Lexiworking.png",
+    alt: "Image 3",
+    description: "Treatment Coordinator",
+  },
+  {
+    id: 4,
+    name: "Elizabeth",
+    src: "../images/team_members/Elizabethaao.png",
+    alt: "Image 4",
+    description: "Patient Services",
+  },
+  {
+    id: 5,
+    name: "Adriana",
+    src: "../images/team_members/Adriana-Photoroom.jpg",
+    alt: "Image 5",
+    description: "Insurance Coordinator",
+  },
+  ];
+  
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const selectedMember = teamMembers[selectedIndex];
+
+
   return (
-    <div className="relative w-full min-h-screen wrapper">
-      <div
-        className="fixed top-0 left-0 z-10 w-full h-full layer gradient-green "
- 
-        
-        style={{ width: "100vw", height: "100vh" }}
-        ref={circleRef}
-      />
-      <div className="min-h-screen bg-[#E2E2E2] contentTeam relative ">
+    <div>
+      <div className="bg-[#f4f0ed] relative ">
         <section className="py-24 sm:py-32">
           <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
             <div className="grid grid-cols-2 ">
-              <div className="flex flex-col items-start justify-center">
-                <div className="font-saol text-[80px] tracking-tight relative z-10">
-                  Meet Our
-                </div>
-                <div className="font-saol italic text-[80px] tracking-tight relative z-10">
-                  Doctors
-                </div>
-              </div>
-              <div className="flex items-center">
-              <motion.div
-            className="h-px bg-gray-700"
-            initial={{ width: 0 }}
-            animate={{ width: "6rem" }}
-            transition={{
-              duration: 1, 
-              ease: "easeInOut",
-              delay: 2, 
-            }}
-          ></motion.div>
-
-   
-      <span className="text-[13px] block w-3/5 ml-4">
-        Our experience spans over 50 years, a testament to the precision,
-        accuracy, and relevance of our vision, demonstrating our ability to
-        adapt to the ever-changing nature of our industry.
-      </span>
+              <div className="w-[60px]">
+            <svg
+      
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M63.93 30.1793H63.9983V0H31.999V0.0690724C49.052 0.0690724 62.9842 13.3921 63.93 30.1793Z"
+        fill="currentColor"
+      />
+      <path
+        d="M63.9315 33.8208C62.9858 50.608 49.0536 63.931 32.0006 63.931V64.0001H63.9999V33.8208H63.9315Z"
+        fill="currentColor"
+      />
+      <path
+        d="M31.9309 30.1793H31.9993V0H0V0.0690724C17.053 0.0690724 30.9852 13.3921 31.9309 30.1793Z"
+        fill="currentColor"
+      />
+      <path
+        d="M31.9309 33.8208C30.9852 50.608 17.053 63.931 0 63.931V64.0001H31.9993V33.8208H31.9309Z"
+        fill="currentColor"
+      />
+    </svg>
     </div>
+    <div className="flex flex-col items-start justify-center leading-none">
+  {textLines.map((line, index) => (
+    <div
+      key={index}
+      className="tracking-wide stagger-line font-neue-montreal text-[40px] relative"
+    >
+      {line.text.split(" ").map((word, wordIndex) => (
+        <span
+          key={wordIndex}
+          className="overflow-hidden inline-block mr-[16px]"
+        >
+          {word.split("").map((letter, letterIndex) => (
+            <span key={letterIndex} className="inline-block">
+              <span className="stagger-letter inline-block">
+                {letter}
+              </span>
+            </span>
+          ))}
+        </span>
+      ))}
+    </div>
+  ))}
+</div>
+
+              <div className="flex flex-col overflow-hidden">
+                <motion.div
+                  className="mb-2 h-px bg-gray-700"
+                  initial={{ width: 0, transformOrigin: "left" }}
+                  animate={{ width: "32vw" }}
+                  transition={{
+                    duration: 1,
+                    ease: "easeInOut",
+                  }}
+                ></motion.div>
+                {lines.map((line, index) => (
+                  <motion.div
+                    key={index}
+                    className="font-neue-montreal text-[14px] overflow-hidden"
+                    initial={{
+                      clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
+                      y: 20,
+                    }}
+                    animate={{
+                      clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+                      y: 0,
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      delay: index * 0.2,
+                      ease: "easeOut",
+                    }}
+                  >
+                    {line}
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -593,31 +621,28 @@ export default function OurTeam() {
               {/* slider controls */}
               <div
                 id="controls"
-                className="flex items-center justify-start row-span-1 row-start-1 space-x-4 "
+                className="font-helvetica-now-thin flex items-center justify-start row-span-1 row-start-1 space-x-4 "
               >
                 <button
-                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full border-stone-600 hover:text-white hover:bg-black"
+                  className=" z-0 p-3 transition-all duration-200 ease-linear border rounded-full border-stone-600 hover:text-white hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
-                  <ArrowLeftIcon className="w-5 h-5 text-stone-600" />
+                  <ArrowLeftIcon className="w-4 h-4 font-helvetica-now-thin" />
                 </button>
-                <span className="text-stone-600">
+                <span className="text-[12px] t">
                   0{!switchDoctor ? index : index + 1} / 02
                 </span>
                 <button
                   className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white border-stone-600 hover:bg-black"
                   onClick={toggleSwitchDoctor}
                 >
-                  <ArrowRightIcon className="w-5 h-5 text-stone-600" />
+                  <ArrowRightIcon className="w-4 h-4 font-helvetica-now-thin" />
                 </button>
               </div>
               <div className="row-span-1 row-start-2">
                 {/* doctor bio */}
                 {switchDoctor ? (
-                  <p
-                    ref={doctorBioRef}
-                    className="font-helvetica-now-thin heading"
-                  >
+                  <p ref={doctorBioRef} className="font-helvetica-neue-light">
                     Dr. Daniel Frey pursued his pre-dental requisites at the
                     University of Pittsburgh, majoring in Biology. Dr. Frey
                     excelled in his studies and was admitted to Temple
@@ -636,10 +661,7 @@ export default function OurTeam() {
                     spending time with loved ones.
                   </p>
                 ) : (
-                  <p
-                    ref={doctorBioRef}
-                    className="font-helvetica-now-thin heading"
-                  >
+                  <p ref={doctorBioRef} className="font-helvetica-neue-light">
                     Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
                     graduated from Temple University School of Dentistry with
                     honors and served in the U.S. Navy Dental Corps before
@@ -686,10 +708,10 @@ export default function OurTeam() {
                 />
               </figure>
               <figcaption>
-                <h5 className="mt-5 font-helvetica-now-thin">
+                <h5 className="mt-5 font-neue-montreal text-[14px]">
                   {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
                 </h5>
-                <p className="font-helvetica-now-thin">
+                <p className="font-neue-montreal text-[14px]">
                   {!switchDoctor ? "DDS" : "DMD, MSD"}
                 </p>
               </figcaption>
@@ -738,12 +760,12 @@ export default function OurTeam() {
                 transform: "translate(-50%, -50%)",
               }}
             >
-              Click
+              View
             </span>
           )}
         </div>
 
-        <section className='overflow-x-auto overflow-y-hidden lg:overflow-hidden'>
+        <section className="overflow-x-auto overflow-y-hidden lg:overflow-hidden">
           <div
             onMouseEnter={() => setIsFocused(true)}
             onMouseLeave={() => setIsFocused(false)}
@@ -753,11 +775,8 @@ export default function OurTeam() {
               <div className="horizontalScroller">
                 <div className="horizontalRow">
                   <div className="horizontalItem horizontalFilled">
-                    <a
-                      href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/"
-                      className="horizontalItemLink"
-                    >
-                      <p className="sm:text-left md:text-center">
+                    <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
+                      <p>
                         Our members have received the designation of Specialized
                         Orthodontic Assistant. This is a voluntary certification
                         program started by the American Association of
@@ -767,19 +786,19 @@ export default function OurTeam() {
                     </a>
                   </div>
 
-                  <div className="horizontalItem horizontalFilled">
+                  <div className=" horizontalItem horizontalFilled">
                     <p>
-                      {" "}
                       Fun fact-our team is made up of former FreySmiles
                       patients, something we think is important, because we have
                       all experienced treatment and can help guide you through
                       it.
                     </p>
-                    <img
+
+                    {/* <img
                       className="absolute bottom-0 w-90 h-90"
                       src="../images/threedots.svg"
                       alt="Green Squiggle"
-                    />
+                    /> */}
                   </div>
                   <a
                     href="https://g.co/kgs/Sds93Ha"
@@ -801,7 +820,7 @@ export default function OurTeam() {
                       position: "relative",
                     }}
                   >
-                    <div className="svg-container">
+                    {/* <div className="svg-container">
                       {svgs.map((svg) => (
                         <div
                           key={svg.id}
@@ -825,7 +844,7 @@ export default function OurTeam() {
                           </svg>
                         </div>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className="horizontalRow">
@@ -835,7 +854,7 @@ export default function OurTeam() {
                   <div className="horizontalItem horizontalFilled ">
                     <a
                       href="https://g.co/kgs/YkknjNg"
-                      className="horizontalItemLink"
+                      // className="horizontalItemLink"
                     >
                       <p className>
                         Had a wonderful experience at FreySmiles. Everyone is
@@ -864,9 +883,7 @@ export default function OurTeam() {
                       and protocols streamlining our processes
                     </p>
                     <a className="horizontalItemLink">
-                      <span className="link-text" data-text="Learn More">
-                        Learn More
-                      </span>
+                 
                     </a>
                   </div>
                 </div>
@@ -875,10 +892,8 @@ export default function OurTeam() {
           </div>
         </section>
 
-        <section
-          ref={container}
-          style={{ position: "relative", marginTop: "50vh" }}
-        >
+        {/*   
+        <section ref={container} style={{ marginTop: "50vh" }}>
           {projects.map((project, i) => {
             const targetScale = 1 - (projects.length - i) * 0.05;
             return (
@@ -892,7 +907,7 @@ export default function OurTeam() {
               />
             );
           })}
-        </section>
+        </section> */}
 
         {/* <div
           ref={carouselRef}
@@ -932,6 +947,219 @@ export default function OurTeam() {
           ))}
         </div> */}
       </div>
+      <div>
+      </div>
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-[#f4f0ed] px-10 relative">
+      <div
+  className="absolute top-10 right-10 text-right text-gray-900"
+  style={{
+    fontSize: "72px",
+    fontWeight: "200",
+    fontFamily: "NeueMontrealBook",
+  }}
+>
+  Meet The Team
+</div>
+
+      <div className="flex items-center justify-between w-full max-w-5xl">
+
+        <div className="text-left text-gray-900">
+          <h2 className="text-xl font-editorial-new-italic">
+            {teamMembers[currentIndex].name}
+          </h2>
+          <p className="text-md font-neue-montreal">
+            {teamMembers[currentIndex].description}
+          </p>
+        </div>
+
+
+        <div className="w-[300px] h-[400px] relative overflow-hidden flex-shrink-0">
+          {teamMembers.map((member, index) => (
+            <img
+              key={member.id}
+              ref={(el) => (imageRefs.current[index] = el)}
+              src={member.src}
+              alt={member.alt}
+              className="absolute w-full h-full object-cover"
+              style={{
+                top: 0,
+                left: 0,
+                zIndex: index === currentIndex ? 2 : 1, 
+              }}
+            />
+          ))}
+        </div>
+
+
+
+        <div
+          style={{
+            fontSize: "28px",
+            fontWeight: "200",
+            fontFamily: "HelveticaNeue-Light",
+          }}
+          className="text-right"
+        >
+          We're here to support you
+          <br /> <span className="font-saolitalic">every</span> step of the way
+        </div>
+        <div
+                style={{
+                  width: "1.5em",
+                  height: "1.5em",
+                  borderRadius: "50%", 
+                  overflow: "hidden", 
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <video
+                  id="holovideo"
+                  loop
+                  muted
+                  autoPlay
+                  playsInline
+                  preload="metadata"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transform: "scale(1.25)",
+                    boxShadow: "0 0 50px #ebe6ff80",
+                  }}
+                >
+                  <source
+                    src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+      </div>
+
+
+      <div className="absolute bottom-5 w-full flex left-10 space-x-4">
+  {teamMembers.slice(0, 5).map((member, index) => (
+    <div
+      key={member.id}
+      onClick={() => setCurrentIndex(index)}
+      className={`w-20 h-20 border rounded-md overflow-hidden cursor-pointer transition-all duration-300 ${
+        currentIndex === index ? "border-black" : "border-gray-300 opacity-50"
+      }`}
+    >
+      <img
+        src={member.src}
+        alt={member.alt}
+        className={`w-full h-full object-cover transition-transform duration-300 ${
+          currentIndex === index ? "scale-75" : "hover:scale-75"
+        }`}
+      />
+    </div>
+  ))}
+</div>
+
+    </div>
+
     </div>
   );
-};
+}
+
+      {/* <div className="bg-black h-screen flex items-center justify-center relative">
+      <div className="top-10 h-screen relative w-full mx-auto border-l-[1px] border-r-[1px] border-b-[1px] border-white border-opacity-50 rounded-r-2xl rounded-l-2xl rounded-b-2xl overflow-hidden">
+<svg
+  width="100%"
+  height="60" 
+  viewBox="0 0 100 40" 
+  preserveAspectRatio="none"
+  className="absolute top-0 left-0 w-full"
+>
+<path
+  d="M0,0 H45 C47,0 47,30 50,30 C53,30 53,0 55,0 H100"
+  fill="none"
+  stroke="white"
+  strokeWidth=".5"
+  strokeLinecap="round"
+    vectorEffect="non-scaling-stroke" 
+  />
+</svg>
+  <div className="flex w-full max-w-5xl justify-between px-10">
+
+    <div className="flex items-center justify-start w-[500px] h-[400px] relative gap-x-6">
+
+  <div className="w-[300px] h-[400px] relative overflow-hidden flex-shrink-0">
+    {images.map((image, index) => (
+      <img
+        key={image.id}
+        ref={(el) => (imageRefs.current[index] = el)}
+        src={image.src}
+        alt={image.alt}
+        className="absolute w-full h-full object-cover"
+        style={{
+          top: 0,
+          left: 0,
+          zIndex: index === currentIndex ? 2 : 1,
+        }}
+      />
+    ))}
+  </div>
+
+  
+  <div className="text-white flex flex-col justify-center">
+    <h2 className="text-xl font-neue-montreal ">{images[currentIndex].name}</h2>
+    <p className="text-sm font-neue-montreal text-gray-300">{images[currentIndex].description}</p>
+  </div>
+</div>
+
+
+
+    <div className="flex flex-col items-center text-white text-center gap-4">
+      {images.map((image, index) => (
+        <div
+          key={image.id}
+          className={`relative w-14 h-14 rounded-full overflow-hidden cursor-pointer ${
+            index === currentIndex ? "border-2 border-yellow-400" : ""
+          }`}
+          onClick={() => setCurrentIndex(index)}
+        >
+          {index === currentIndex && (
+            <svg className="absolute top-0 left-0 w-full h-full" viewBox="0 0 36 36">
+              <circle
+                stroke="#E8F724"
+                cx="18"
+                cy="18"
+                r="18"
+                strokeWidth="1.5"
+                fill="none"
+                strokeDasharray="113"
+                strokeDashoffset={113 - (progress / 100) * 113}
+                strokeLinecap="round"
+                transition="stroke-dashoffset 0.1s linear"
+              />
+            </svg>
+          )}
+          <img src={image.src} alt={image.alt} className="w-full h-full object-cover" />
+        </div>
+      ))}
+
+
+      <div className="flex space-x-4 mt-4">
+        <button onClick={handlePrev} className="p-2 border rounded-full text-white">
+          ◀
+        </button>
+        <button onClick={handleNext} className="p-2 border rounded-full text-white">
+          ▶
+        </button>
+      </div>
+
+
+      <div className="text-gray-400 text-sm font-neue-montreal mt-2">
+        0{currentIndex + 1} - 0{images.length}
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+</div> */}
