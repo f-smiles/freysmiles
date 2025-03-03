@@ -1,234 +1,365 @@
 "use client";
-
+import { interpolate } from "flubber";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  useAnimation,
+} from "framer-motion";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap-trial/all";
+import { MorphSVGPlugin } from "gsap-trial/MorphSVGPlugin";
 
-gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText);
+gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText, MorphSVGPlugin);
 
-const HeaderBanner = () => {
-  const marqueeRef = useRef(null);
-
+const StepsSection = () => {
+  const iconPaths = [
+    {
+      id: "icon-1",
+      paths: [
+        "M 60 90 A 16 16 0 1 0 92 90 A 16 16 0 1 0 60 90 Z",
+        "M 41 90 A 35 35 0 1 0 111 90 A 35 35 0 1 0 41 90",
+        "M 21 90 A 55 55 0 1 0 131 90 A 55 55 0 1 0 21 90",
+        "M 1 90 A 75 75 0 1 0 151 90 A 75 75 0 1 0 1 90",
+      ],
+    },
+    {
+      id: "icon-2",
+      paths: [
+        "M 109 28 A 27 27 0 1 0 109 82 A 27 27 0 1 0 109 28 Z",
+        "M 109 97 A 27 27 0 1 0 109 151 A 27 27 0 1 0 109 97 Z",
+        "M 40 97 A 27 27 0 1 0 40 151 A 27 27 0 1 0 40 97 Z",
+        "M 40 28 A 27 27 0 1 0 40 82 A 27 27 0 1 0 40 28 Z",
+        "M 100 54.28 L 106.246 60.2902 C 106.651 60.6795 107.296 60.6595 107.676 60.2458 L 118 49",
+      ],
+    },
+    {
+      id: "icon-3",
+      paths: [
+        "M 31 20 H 127 A 6 6 0 0 1 133 26 V 155 A 6 6 0 0 1 127 161 H 31 A 6 6 0 0 1 25 155 V 26 A 6 6 0 0 1 31 20 Z",
+        "M 47 83 A 2 2 0 1 0 43 83 A 2 2 0 1 0 47 83 Z",
+        "M 54 83 H 116 A 1 1 0 0 1 117 84 V 85 A 1 1 0 0 1 116 86 H 54 A 1 1 0 0 1 53 85 V 84 A 1 1 0 0 1 54 83 Z",
+        "M 47 69 A 2 2 0 1 0 43 69 A 2 2 0 1 0 47 69 Z",
+        "M 54 69 H 116 A 1 1 0 0 1 117 70 V 71 A 1 1 0 0 1 116 72 H 54 A 1 1 0 0 1 53 71 V 70 A 1 1 0 0 1 54 69 Z",
+        "M 47 97 A 2 2 0 1 0 43 97 A 2 2 0 1 0 47 97 Z",
+        "M 54 97 H 116 A 1 1 0 0 1 117 98 V 99 A 1 1 0 0 1 116 100 H 54 A 1 1 0 0 1 53 99 V 98 A 1 1 0 0 1 54 97 Z",
+        "M 47 111 A 2 2 0 1 0 43 111 A 2 2 0 1 0 47 111 Z",
+        "M 54 111 H 116 A 1 1 0 0 1 117 112 V 113 A 1 1 0 0 1 116 114 H 54 A 1 1 0 0 1 53 113 V 112 A 1 1 0 0 1 54 111 Z",
+      ],
+    },
+    {
+      id: "icon-4",
+      paths: [
+        "M 56 90.5986 A 36.5 36.5 0 1 0 129 90.5986 A 36.5 36.5 0 1 0 56 90.5986 Z",
+        "M 63.7792 157.069 C 76.9276 162.786 91.476 164.476 105.585 161.925 C 119.694 159.374 132.729 152.697 143.043 142.737 C 153.356 132.777 160.485 119.983 163.528 105.972 C 166.57 91.9609 165.389 77.3623 160.134 64.0224",
+        "M 44 152.599 A 10.5 10.5 0 1 0 65 152.599 A 10.5 10.5 0 1 0 44 152.599 Z",
+        "M 128 38.5986 A 12.5 12.5 0 1 0 153 38.5986 A 12.5 12.5 0 1 0 128 38.5986 Z",
+        "M 36.8975 138.49 C 25.4209 125.123 19.125 108.081 19.1557 90.4631 C 19.1865 72.8457 25.5417 55.8249 37.0649 42.4986 C 48.588 29.1723 64.513 20.4264 81.9414 17.8526 C 99.3698 15.2788 117.143 19.0483 132.026 28.475",
+      ],
+    },
+    {
+      id: "icon-5",
+      paths: [
+        "M 100.539 103.158 L 125.539 119.158",
+        "M 35 62.5 L 60 78",
+        "M 128.5 65.5 L 102.998 80.0003",
+        "M 61.5012 104 L 36 119",
+        "M 81 35.5 L 81 65.5",
+        "M 81 113.5 L 81 143.5",
+        "M 56 89.5 A 24.5 24.5 0 1 0 105 89.5 A 24.5 24.5 0 1 0 56 89.5 Z",
+        "M 68 22.5 A 12.5 12.5 0 1 0 93 22.5 A 12.5 12.5 0 1 0 68 22.5 Z",
+        "M 68 156.5 A 12.5 12.5 0 1 0 93 156.5 A 12.5 12.5 0 1 0 68 156.5 Z",
+        "M 125 56.5 A 12.5 12.5 0 1 0 150 56.5 A 12.5 12.5 0 1 0 125 56.5 Z",
+        "M 125 123.5 A 12.5 12.5 0 1 0 150 123.5 A 12.5 12.5 0 1 0 125 123.5 Z",
+        "M 11 56.5 A 12.5 12.5 0 1 0 36 56.5 A 12.5 12.5 0 1 0 11 56.5 Z",
+        "M 11 123.5 A 12.5 12.5 0 1 0 36 123.5 A 12.5 12.5 0 1 0 11 123.5 Z",
+      ],
+    },
+  ];
+  const pathsRef = useRef([]);
+  const container1Ref = useRef(null);
   useEffect(() => {
-    const marqueeElement = marqueeRef.current;
-    const windowWidth = window.innerWidth;
-
-    const marqueeSpan = marqueeElement.querySelector("span");
-    const spanWidth = marqueeSpan.offsetWidth;
-
-    const numberOfClones = Math.floor(windowWidth / spanWidth) + 1;
-    let innerContent = marqueeElement.innerHTML;
-
-    marqueeElement.style.width = (numberOfClones + 1) * spanWidth + "px";
-
-    for (let i = 0; i < numberOfClones; i++) {
-      innerContent += marqueeElement.innerHTML;
-    }
-
-    marqueeElement.innerHTML = innerContent;
-
-    gsap.to(marqueeElement, {
-      duration: 8,
-      repeat: -1,
-      x: "-=" + spanWidth,
-      modifiers: {
-        x: (x) => gsap.utils.wrap(-spanWidth, 0, parseFloat(x)) + "px",
-      },
-      ease: "linear",
-    });
-  }, []);
-
-  const [hover, setHover] = useState(false);
-
-  useEffect(() => {
-    const tl = gsap.timeline({
+    const timeline = gsap.timeline({
       scrollTrigger: {
-        trigger: "#tracking-section",
+        trigger: container1Ref.current,
         start: "top center",
-        end: "bottom center",
-        scrub: true,
-      },
-    });
-
-    tl.fromTo(
-      "#element",
-      { x: 0, y: 0 },
-      {
-        ease: "none",
-        motionPath: {
-          path: [
-            { x: "50vw", y: "100vh" },
-            { x: "25vw", y: "200vh" },
-            { x: "75vw", y: "300vh" },
-            { x: "0vw", y: "400vh" },
-          ],
-        },
-      }
-    );
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const timelineBlocks = document.querySelectorAll(".cd-timeline-block");
-      timelineBlocks.forEach((block) => {
-        const top = block.getBoundingClientRect().top;
-        if (top <= window.innerHeight * 0.75) {
-          block.querySelector(".cd-timeline-img").classList.remove("is-hidden");
-          block.querySelector(".cd-timeline-img").classList.add("bounce-in");
-          block
-            .querySelector(".cd-timeline-content")
-            .classList.remove("is-hidden");
-          block
-            .querySelector(".cd-timeline-content")
-            .classList.add("bounce-in");
-        } else {
-          block.querySelector(".cd-timeline-img").classList.add("is-hidden");
-          block.querySelector(".cd-timeline-img").classList.remove("bounce-in");
-          block
-            .querySelector(".cd-timeline-content")
-            .classList.add("is-hidden");
-          block
-            .querySelector(".cd-timeline-content")
-            .classList.remove("bounce-in");
-        }
-      });
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    const firstSection = {
-      section: "#first-color",
-      bgColor: "#EDE7E6",
-      // fontColor: "#2F796D",
-    };
-
-    const secondSection = {
-      section: "#second-color",
-      bgColor: "#D9D2D6 ",
-      fontColor: "#2F796D ",
-    };
-
-    const thirdSection = {
-      section: ".third-color",
-      bgColor: "#D8EBE3",
-      // fontColor: "#233329",
-    };
-
-    const setColors = (curr, next) => {
-      let tl = gsap.timeline({ ease: "power2.inOut" });
-
-      tl.to(".colorcontainer", {
-        duration: 1.5,
-        backgroundColor: next.bgColor,
-        color: next.fontColor,
-      });
-    };
-
-    gsap.set(".colorcontainer", {
-      backgroundColor: firstSection.bgColor,
-      color: firstSection.fontColor,
-    });
-
-    gsap.to(secondSection.section, {
-      duration: 1,
-      scrollTrigger: {
-        trigger: secondSection.section,
-        start: "top 70%",
-        end: "bottom 30%",
-        scrub: true,
-        onEnter: () => setColors(firstSection, secondSection),
-        onLeaveBack: () => setColors(secondSection, firstSection),
-      },
-    });
-
-    gsap.to(thirdSection.section, {
-      duration: 1,
-      scrollTrigger: {
-        trigger: thirdSection.section,
-        start: "top 70%",
-        end: "bottom 30%",
-        scrub: true,
-        onEnter: () => setColors(secondSection, thirdSection),
-        onLeaveBack: () => setColors(thirdSection, secondSection),
-      },
-    });
-  }, []);
-
-  const cardRefs = useRef([]);
-  const sectionRef = useRef(null);
-  const leftColumnRef = useRef(null);
-
-  useEffect(() => {
-    const cards = cardRefs.current;
-
-    gsap.to(leftColumnRef.current, {
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top top",
         end: "bottom top",
-        pin: true,
-        pinSpacing: true,
+        scrub: 1,
       },
     });
-    cards.forEach((card) => {
-      if (card) {
-        gsap.to(card, {
-          height: 0,
-          ease: "power1.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "0% 40%",
-            end: "bottom center",
-            scrub: true,
+
+    const paths = iconPaths[0].paths;
+    const totalRings = paths.length - 1; 
+
+    paths.forEach((_, i) => {
+      if (i === 0) return; 
+
+      const pathElement = pathsRef.current[`icon1-${i}`];
+      if (pathElement) {
+        timeline.to(
+          pathElement,
+          {
+            scale: 0,
+            transformOrigin: "center center",
+            duration: 2 + (totalRings - i) * 0.5,
+            ease: "power2.inOut",
           },
-        });
+          `-=${i * 0.2}`
+        );
       }
     });
 
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, []);
+    return () => timeline.kill();
+  }, [iconPaths]);
 
-  //circle
 
-  // const svgRef = useRef(null);
+  
+
 
   // useEffect(() => {
-  //   const circles = svgRef.current.querySelectorAll("circle");
-
-  //   circles.forEach((circle, index) => {
-  //     gsap.to(circle, {
-  //       scrollTrigger: {
-  //         trigger: circle,
-  //         start: "top 80%",
-  //         end: "bottom 20%",
-  //         scrub: 1,
-  //       },
-  //       attr: {
-  //         cy: 400 + index * 50,
-  //       },
-  //       duration: 1,
-  //       ease: "power1.inOut",
-  //     });
+  //   const timeline = gsap.timeline({
+  //     scrollTrigger: {
+  //       trigger: "#container", // Container holding all SVGs
+  //       start: "top top",
+  //       end: "bottom bottom",
+  //       scrub: true,
+  //     },
   //   });
-
-  //   return () => {
-  //     ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-  //   };
+  
+  //   // Morph icon-1 to icon-2
+  //   iconPaths[0].paths.forEach((_, i) => {
+  //     timeline.to(
+  //       `#icon1-path${i}`,
+  //       {
+  //         morphSVG: `#icon2-path${i}`,
+  //         duration: 2,
+  //         ease: "power1.inOut",
+  //       },
+  //       "start" // Align all animations to start at the same time
+  //     );
+  //   });
+  
+  //   // Morph icon-2 to icon-3
+  //   iconPaths[1].paths.forEach((_, i) => {
+  //     timeline.to(
+  //       `#icon2-path${i}`,
+  //       {
+  //         morphSVG: `#icon3-path${i}`,
+  //         duration: 2,
+  //         ease: "power1.inOut",
+  //       },
+  //       "start+=2" // Start after the first animation ends
+  //     );
+  //   });
+  
+  //   // Morph icon-3 to icon-4
+  //   iconPaths[2].paths.forEach((_, i) => {
+  //     timeline.to(
+  //       `#icon3-path${i}`,
+  //       {
+  //         morphSVG: `#icon4-path${i}`,
+  //         duration: 2,
+  //         ease: "power1.inOut",
+  //       },
+  //       "start+=4" // Start after the second animation ends
+  //     );
+  //   });
+  
+  //   // Morph icon-4 to icon-5
+  //   iconPaths[3].paths.forEach((_, i) => {
+  //     timeline.to(
+  //       `#icon4-path${i}`,
+  //       {
+  //         morphSVG: `#icon5-path${i}`,
+  //         duration: 2,
+  //         ease: "power1.inOut",
+  //       },
+  //       "start+=6" // Start after the third animation ends
+  //     );
+  //   });
+  
+  //   // Morph icon-5 back to icon-1 (optional for looping)
+  //   iconPaths[4].paths.forEach((_, i) => {
+  //     timeline.to(
+  //       `#icon5-path${i}`,
+  //       {
+  //         morphSVG: `#icon1-path${i}`,
+  //         duration: 2,
+  //         ease: "power1.inOut",
+  //       },
+  //       "start+=8" // Start after the fourth animation ends
+  //     );
+  //   });
   // }, []);
 
-  //line
-  const pathRef = useRef(null);
+  
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 60,
+    damping: 50,
+    mass: 0.8,
+  });
+
+  const progressHeight = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
+
+  const steps = [
+    {
+      number: "01",
+      title: "Complimentary Consultation",
+      description: "Initial consultations are always free of charge.",
+    },
+    {
+      number: "02",
+      title: "Flexible ways to pay",
+      description:
+        "Choose from flexible payment plans or enjoy 10% off when you pay in full prior to starting treatment.",
+    },
+    {
+      number: "03",
+      title: "Caring Traditions",
+      description:
+        "Successive family members always receive the same excellent care. Ask about our family courtesies.",
+    },
+    {
+      number: "04",
+      title: "Support after treatment",
+      description:
+        "Your treatment includes one year of follow-up care. We're never cheap with our energy.",
+    },
+  ];
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative flex w-full bg-[#D9CDE5] px-20 py-36 min-h-[200vh]"
+    >
+  <div className="w-3/5 flex overflow-y-auto"> 
+        <div className="w-1/2 flex flex-col relative">
+          <div className="relative h-full flex flex-col justify-between">
+            {steps.map((step, index) => (
+              <div key={index} className="flex items-center space-x-6">
+                <span className="font-neue-montreal text-sm w-6">
+                  {step.number}
+                </span>
+              </div>
+            ))}
+            <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[2px] bg-gray-400 h-full"></div>
+            <motion.div
+              className="absolute left-1/2 -translate-x-1/2 top-0 w-[2px] bg-[#FE2F01] h-full"
+              style={{ height: progressHeight }}
+            />
+          </div>
+        </div>
+
+        <div className="w-1/2 flex flex-col space-y-40">
+          {steps.map((step, index) => (
+            <div key={index} className="flex flex-col space-y-2">
+              <h2 className="font-neue-montreal text-2xl">{step.title}</h2>
+              <p className="text-gray-600 text-md font-neue-montreal">
+                {step.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="w-2/5 sticky top-0 h-screen flex flex-col justify-center items-center relative">
+      <div className="flex flex-col items-center space-y-10">
+      <div className="flex flex-col items-center space-y-6">
+
+
+          <div className="flex justify-center">
+   <div ref={container1Ref} >
+    <svg viewBox="0 0 180 180" className="w-32 h-32">
+      {iconPaths[0].paths.map((path, i) => (
+        <path
+          key={`icon1-${i}`}
+          ref={el => pathsRef.current[`icon1-${i}`] = el}
+          d={path}
+          stroke="#FF6E30"
+          fill={i === 0 ? "#FF6E30" : "transparent"}
+        />
+      ))}
+    </svg>
+    </div>
+    <svg viewBox="0 0 180 180" className="w-32 h-32">
+      {iconPaths[1].paths.map((path, i) => (
+        <path
+          key={`icon2-${i}`}
+          d={path}
+          stroke={i === 4 ? "#F5F5F7" : "#FF6E30"}
+          strokeWidth="2"
+          strokeLinecap={i === 4 ? "round" : "butt"}
+          fill={i === 0 ? "#FF6E30" : "transparent"}
+          strokeDasharray={i === 2 ? "7 7" : "none"}
+        />
+      ))}
+    </svg>
+
+    <svg viewBox="0 0 180 180" className="w-32 h-32">
+      {iconPaths[2].paths.map((path, i) => (
+        <path
+          key={`icon3-${i}`}
+          d={path}
+          stroke="#FF6E30"
+          fill={i === 0 ? "transparent" : "#FF6E30"}
+          strokeWidth="2"
+        />
+      ))}
+    </svg>
+
+    <svg viewBox="0 0 180 180" className="w-32 h-32">
+      {iconPaths[3].paths.map((path, i) => (
+        <path
+          key={`icon4-${i}`}
+          d={path}
+          stroke="#FF6E30"
+          fill={i === 0 ? "#FF6E30" : "transparent"}
+          strokeWidth="2"
+        />
+      ))}
+    </svg>
+
+    <svg viewBox="0 0 180 180" className="w-32 h-32">
+      {iconPaths[4].paths.map((path, i) => (
+        <path
+          key={`icon5-${i}`}
+          d={path}
+          stroke="#FF6E30"
+          fill={i === 6 ? "#FF6E30" : "transparent"}
+          strokeWidth="2"
+        />
+      ))}
+    </svg>
+  </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const FinancingTreatment = () => {
+  const introRef = useRef(null);
+  const loadRef = useRef(null);
+  const loadIllustrationRef = useRef(null);
+  const navRef = useRef(null);
+  const headingRef = useRef(null);
+  const illustrationRef = useRef(null);
+
+  // const pathRef = useRef(null);
+  // const cardsectionRef =useRef(null)
 
   // useEffect(() => {
   //   const path = pathRef.current;
-
   //   const pathLength = path.getTotalLength();
 
   //   gsap.set(path, {
@@ -243,73 +374,250 @@ const HeaderBanner = () => {
   //     onComplete: () => {
   //       gsap.to(path, {
   //         strokeDashoffset: pathLength,
-  //         duration: 3,
-  //         ease: "power2.in",
+  //         ease: "none",
+  //         scrollTrigger: {
+  //           trigger: cardsectionRef.current,
+  //           start: "top top",
+  //           end: "bottom top",
+  //           scrub: 1,
+  //         },
   //       });
   //     },
   //   });
 
+  //   // Pin section
+  //   ScrollTrigger.create({
+  //     trigger: cardsectionRef.current,
+  //     start: "top top",
+  //     end: "+=150%",
+  //     pin: true,
+  //     pinSpacing: true,
+  //   });
+
   // }, []);
 
-  const containerRef = useRef(null);
+  useEffect(() => {
+    let heroTl = gsap.timeline();
+
+    let loadTl = gsap.timeline({
+      onComplete: () => {
+        heroTl
+          .fromTo(
+            navRef.current,
+            { scale: 0.9, opacity: 0 },
+            { opacity: 1, scale: 1, duration: 0.8, ease: "power2.inOut" }
+          )
+          .fromTo(
+            headingRef.current,
+            { yPercent: 50, opacity: 0 },
+            { yPercent: 0, opacity: 1, duration: 0.8, ease: "power2.inOut" }
+          )
+          .fromTo(
+            illustrationRef.current,
+            { scale: 0.9, yPercent: 20, opacity: 0 },
+            {
+              scale: 1,
+              yPercent: 0,
+              opacity: 1,
+              duration: 0.8,
+              ease: "power2.inOut",
+            },
+            "<"
+          );
+      },
+    });
+
+    loadTl
+      .to(loadRef.current, { width: "100%", duration: 3, ease: "power1.inOut" })
+      .to(loadIllustrationRef.current, { rotation: 15, xPercent: -10 }, "<")
+      .to(introRef.current.querySelectorAll(".intro_split"), { height: 0 });
+  }, []);
+
+  const canvasRef = useRef(null);
+  let dots = [];
+  let scl = 30;
+  let cols, rows;
 
   useEffect(() => {
-    const tl = gsap.timeline();
-    tl.fromTo(
-      ".gsap-hidden-text",
-      { y: "100%" },
-      { y: "0%", duration: 1.5, ease: "power4.out", stagger: 0.15 }
-    );
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const setupDots = () => {
+      dots = [];
+      cols = Math.floor(canvas.width / scl);
+      rows = Math.floor(canvas.height / scl);
+
+      let id = 0;
+      for (let x = 0; x < cols; x++) {
+        for (let y = 0; y < rows; y++) {
+          dots.push(new Dot(id, x * scl, y * scl, ctx, scl));
+          id++;
+        }
+      }
+    };
+
+    class Dot {
+      constructor(id, x, y, context, scl) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.new = {
+          x: x,
+          y: y,
+          radius: 3,
+          opacity: 0.2,
+        };
+        this.radius = 3;
+        this.context = context;
+        this.scl = scl;
+        this.isHover = false;
+      }
+
+      mousemove(x, y) {
+        const distX = Math.abs(this.x - x);
+        const distY = Math.abs(this.y - y);
+        const distance = Math.sqrt(distX ** 2 + distY ** 2);
+
+        const maxDist = this.scl * 5;
+        const minDist = this.scl * 1.5;
+
+        this.isClosest = distance < minDist;
+        this.isCenter = distance < this.scl * 3;
+        this.isHover = distance < maxDist;
+
+        let opacity = 1 - Math.min(distance / maxDist, 1);
+        opacity = Math.max(opacity, 0.4);
+
+        gsap.to(this.new, {
+          radius: this.isClosest
+            ? 10
+            : this.isCenter
+            ? 9
+            : this.isHover
+            ? 5
+            : 3,
+          opacity: opacity,
+          duration: 0.4,
+        });
+      }
+
+      render() {
+        this.context.beginPath();
+        this.context.arc(
+          this.new.x,
+          this.new.y,
+          this.new.radius,
+          0,
+          2 * Math.PI
+        );
+        this.context.fillStyle = `rgba(0, 0, 0, ${this.new.opacity})`;
+        this.context.fill();
+      }
+    }
+    ``;
+
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      dots.forEach((dot) => dot.render());
+      requestAnimationFrame(render);
+    };
+
+    const mousemoveHandler = (event) => {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const scaleX = canvasRef.current.width / rect.width;
+      const scaleY = canvasRef.current.height / rect.height;
+
+      const x = (event.clientX - rect.left) * scaleX;
+      const y = (event.clientY - rect.top) * scaleY;
+
+      dots.forEach((dot) => dot.mousemove(x, y));
+    };
+
+    const resizeHandler = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      setupDots();
+    };
+
+    setupDots();
+    render();
+
+    window.addEventListener("mousemove", mousemoveHandler);
+    window.addEventListener("resize", resizeHandler);
+
+    return () => {
+      window.removeEventListener("mousemove", mousemoveHandler);
+      window.removeEventListener("resize", resizeHandler);
+    };
   }, []);
 
   return (
-    <div>
-      <div className="flex justify-center py-16 px-4">
-        <div className="bg-[#F3DACF] max-w-7xl w-full rounded-2xl p-12 relative">
-          <div className="grid grid-cols-1 h-full md:grid-cols-2 gap-8">
-            <div className="col-span-1">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="flex flex-col items-start fade-in">
-                  <div className="flex items-center justify-center">
-                    <img src="../images/appts.svg" alt="Appointments Icon" />
-                  </div>
-                  <p className="font-neue-montreal mt-4  text-[#ff5722] text-md">
-                    10 medical visits so all your concerns are heard
-                  </p>
-                </div>
-                <div className="flex flex-col items-start fade-in">
-                  <div className="w-16 h-16 flex items-center justify-center text-white">
-                    <img src="../images/tech.svg" alt="Tech Icon" />
-                  </div>
-                  <p className="font-neue-montreal mt-4 text-[#ff5722]  text-md">
-                    Access to advanced technology others don’t offer
-                  </p>
-                </div>
-                <div className="flex flex-col items-start fade-in">
-                  <div className="w-12 h-12 flex items-center justify-center text-white">
-                    <img src="../images/paperwork.svg" alt="Paperwork Icon" />
-                  </div>
-                  <p className="font-neue-montreal mt-4 text-[#ff5722] text-md">
-                    No Hidden Costs. We do not upcharge for “special braces,”
-                    including Invisalign, and fees are all inclusive.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-64 font-neue-montreal">
-                <h1 className="gsap-heading">
-                  <span className="gsap-hidden-text">
-                    Your plan is tailored
-                  </span>
-                </h1>
-                <h1 className="gsap-heading">
-                  <span className="gsap-hidden-text">to your needs</span>
-                </h1>
-              </div>
+    <>
+      <div className="h-screen">
+        <div >
+          <div ref={introRef} className="section_intro">
+            <div className="intro_split"></div>
+            <div className="intro_split"></div>
+            <div className="intro_load" ref={loadRef}>
+              <div className="intro_load-line"></div>
+              {/* <div className="intro_load-illustration w-embed" ref={loadIllustrationRef}><svg width="213" height="204" viewbox="0 0 213 204" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9508 8.29492C8.42263 11.3055 5.6198 16.0245 4.43321 22.7169C2.79584 31.9516 5.81391 43.5655 13.3867 56.4826C20.9344 69.3571 32.8773 83.2977 48.6713 97.0752C62.1209 108.808 71.1927 117.584 77.2201 124.549C83.2414 131.508 86.337 136.784 87.6637 141.523C87.8334 142.129 87.7077 142.78 87.3244 143.28C86.9411 143.779 86.345 144.069 85.7155 144.062C78.6551 143.984 65.8638 147.19 54.5366 153.118C48.9 156.067 43.7361 159.635 39.8719 163.7C36.0087 167.764 33.5333 172.227 33.0405 177.001C32.1442 185.686 35.8361 192.976 41.2882 196.885C46.6908 200.759 53.8877 201.388 60.4912 196.66C62.0718 195.528 63.5982 194.417 65.085 193.335C78.5246 183.551 88.7274 176.123 106.441 177.299C108.463 177.434 110.536 177.616 112.66 177.802C120.098 178.456 128.165 179.164 136.916 178.072C149.302 176.527 163.005 171.346 177.388 156.894C187.273 146.962 192.748 137.852 195.149 128.805C197.385 120.384 196.772 111.922 194.428 102.546C192.313 94.0885 188.829 85.0273 184.843 74.6608C184.388 73.4782 183.927 72.2786 183.461 71.061C169.101 33.5819 134.063 32.4976 120.674 44.0127C122.042 44.8018 123.465 45.6625 124.914 46.544C125.129 46.6746 125.344 46.8057 125.56 46.9372C127.683 48.2291 129.869 49.56 132.099 50.8204C137.048 53.6178 141.987 55.9327 146.498 56.624C147.589 56.7913 148.339 57.812 148.171 58.9039C148.004 59.9957 146.983 60.7451 145.892 60.5778C140.619 59.7698 135.147 57.1378 130.131 54.3027C127.841 53.0084 125.599 51.6437 123.485 50.3565C123.267 50.2239 123.051 50.0922 122.836 49.9615C120.516 48.5506 118.375 47.2611 116.434 46.2326C113.537 44.697 109.433 43.248 105.051 42.3918C100.659 41.5336 96.1518 41.303 92.4105 42.0689C85.4544 43.4927 80.8856 46.3108 77.7336 49.1801C75.1997 51.4868 73.5748 53.8151 72.2779 55.7063C78.0923 61.4767 84.1139 66.7482 89.8933 70.8846C96.0962 75.3241 101.873 78.3487 106.726 79.3844C107.806 79.615 108.495 80.6776 108.264 81.7579C108.033 82.8381 106.971 83.5269 105.891 83.2963C100.244 82.091 93.9363 78.6971 87.5653 74.1373C81.1609 69.5536 74.5434 63.6827 68.2628 57.3472C60.5472 49.5642 53.8587 41.5939 47.4723 23.018C43.2488 10.733 33.4557 4.27113 24.3871 4.00838C19.8565 3.87712 15.4812 5.28237 11.9508 8.29492ZM69.4159 52.8048C62.7575 45.8802 56.9366 38.2434 51.255 21.7175C46.544 8.01449 35.3962 0.325674 24.503 0.0100623C19.0527 -0.147849 13.692 1.5508 9.35433 5.25213C5.01435 8.95544 1.81704 14.5602 0.494638 22.0186C-1.37988 32.5908 2.1391 45.2063 9.93598 58.5057C17.7579 71.8478 30.0173 86.111 46.0419 100.09C59.4454 111.782 68.3516 120.414 74.1953 127.167C78.8853 132.587 81.5304 136.715 82.9608 140.161C74.9165 140.769 63.1156 144.114 52.6821 149.573C46.7939 152.654 41.2306 156.465 36.9728 160.944C32.7141 165.424 29.6727 170.671 29.0617 176.591C28.0238 186.647 32.2938 195.358 38.9573 200.136C45.6703 204.949 54.7426 205.695 62.8197 199.912C64.4018 198.78 65.9167 197.68 67.379 196.618C80.9295 186.778 89.9687 180.214 106.176 181.29C108.05 181.415 110.023 181.589 112.082 181.771C119.093 182.389 127.106 183.096 135.667 182.238C136.879 186.049 139.732 190.726 144.69 193.653C150.584 197.133 159.04 197.905 170.372 192.601C181.056 187.6 190.285 180.186 197.222 172.861C204.117 165.582 208.922 158.205 210.56 153.176C212.111 148.412 213.116 142.434 211.54 137.347C210.736 134.752 209.254 132.376 206.847 130.575C204.928 129.138 202.507 128.132 199.544 127.616C201.356 119.07 200.557 110.566 198.309 101.576C196.13 92.8648 192.552 83.5613 188.586 73.2496C188.127 72.0568 187.663 70.8504 187.196 69.6299C171.665 29.0939 131.951 27.1986 116.937 42.0147C113.82 40.5481 109.902 39.2639 105.818 38.466C101.122 37.5483 96.0449 37.242 91.6084 38.1501C83.9144 39.725 78.6998 42.8914 75.0409 46.2221C72.4916 48.5429 70.7014 50.9538 69.4159 52.8048ZM198.539 131.504C195.703 140.836 189.873 150.02 180.223 159.715C166.064 173.942 152.343 179.713 139.716 181.715C140.79 184.604 143.042 188.035 146.724 190.208C151.207 192.855 158.221 193.872 168.676 188.978C178.813 184.234 187.647 177.155 194.318 170.111C201.032 163.022 205.383 156.155 206.756 151.938C208.215 147.457 208.93 142.44 207.719 138.531C207.13 136.629 206.092 135.006 204.451 133.777C203.067 132.742 201.159 131.916 198.539 131.504ZM168.523 99.0998C169.48 98.547 170.703 98.8742 171.256 99.8305L171.457 100.179C177.669 110.924 181.304 117.213 184.976 128.71C185.312 129.762 184.731 130.887 183.679 131.223C182.627 131.559 181.501 130.979 181.165 129.927C177.625 118.842 174.175 112.874 167.941 102.089L167.793 101.832C167.24 100.876 167.567 99.6525 168.523 99.0998ZM144.907 103.549C145.752 102.838 147.014 102.946 147.725 103.792C158.919 117.093 165.094 124.845 173.797 141.119C174.317 142.093 173.95 143.305 172.976 143.826C172.002 144.347 170.79 143.979 170.269 143.005C161.754 127.083 155.778 119.573 144.664 106.367C143.953 105.522 144.062 104.26 144.907 103.549ZM135.574 130.854C136.244 129.976 137.499 129.807 138.377 130.477C142.414 133.557 152.235 142.188 159.606 152.385C160.253 153.28 160.052 154.531 159.156 155.178C158.261 155.825 157.011 155.624 156.364 154.728C149.285 144.935 139.774 136.574 135.951 133.657C135.072 132.987 134.904 131.732 135.574 130.854Z" fill="#FFF"></path>
+            </svg></div> */}
             </div>
+          </div>
+          <section className="bg-gradient-to-br from-gray-100 to-gray-300 section_hero">
+            <div className="container_ft">
+              <div ref={navRef} className="nav_container">
+                <div className="h-screen w-screen flex items-center justify-center ">
+                  <div className="w-[90%] h-[90%] flex border border-[#0EFF00] ">
+                    {/* Left  */}
+                    <div className="w-1/3 h-full flex flex-col border-r border-[#0EFF00]">
+                      {/* Section 1*/}
+                      <div className="pt-24 flex justify-center border-b border-gray-300 flex items-start h-2/3">
+                        <h1 className="flex text-center font-neue-montreal text-[24px]">
+                          Your plan is tailored to your{" "}
+                          <span className="italic">needs</span>.
+                        </h1>
+                      </div>
 
-            <div className="col-span-1 flex items-center justify-center">
-              <svg
+                      {/* Section 2 */}
+                      <div className="p-6 border-b border-gray-300 h-1/6 flex items-center">
+                        <p className="font-neue-montreal">
+                          Expert Personalized Care
+                        </p>
+                      </div>
+
+                      {/* Secion 3*/}
+                      <div className="p-6 flex items-center justify-between h-1/4">
+                        <h2 className="text-xl font-serif">
+                          <img src="https://cdn.prod.website-files.com/61dafc27e67e5a2d2487f390/6337d944ddbb7e4cb8d944f8_Curve%20Studio%20logo%20-%20fill.svg" />
+                        </h2>
+                      </div>
+                    </div>
+
+                    {/* Right */}
+                    <div className="w-2/3 h-full flex flex-col">
+                      {/* Top Section */}
+                      <div className="p-6 flex justify-between border-b border-gray-300">
+                        <p className="justify-center text-sm font-neue-montreal w-2/3 leading-relaxed">
+                          We believe in lasting care and long-term
+                          relationships. Our flexible payment options make it
+                          easier to plan your treatment on a timeline that works
+                          for you.
+                        </p>
+                        <div className="flex gap-4 w-[80px]">
+                          <img src="../images/fourpetals.svg" alt="logo" />
+                        </div>
+                      </div>
+
+                      <div className="flex-grow flex items-center relative justify-center">
+                        <canvas
+                          ref={canvasRef}
+                          className="absolute w-full h-full z-[-1]"
+                        />
+                        {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 951 367"
                 fill="none"
@@ -324,434 +632,37 @@ const HeaderBanner = () => {
                   strokeLinejoin="round"
                   style={{ strokeDasharray: "3202.1", strokeDashoffset: "0px" }}
                 />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="overflow-hidden w-full py-4">
-        <div
-          ref={marqueeRef}
-          className="inline-block text-6xl font-sans whitespace-nowrap"
-        >
-          <span>Expert Clinical Care, Personalized Just for You&nbsp;</span>
-        </div>
-      </div>
-      <section
-        ref={sectionRef}
-        className="font-neue-montreal"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          padding: "100px 20px",
-        }}
-      >
-        <div className="payment-grid">
-          <div className="payment-grid-left" ref={leftColumnRef}>
-            <div>
-              <img src="../images/testimonial.gif" alt="Testimonial" />
-            </div>
-          </div>
-          <div className="payment-grid-right">
-            {[
-              {
-                title: "Coverage",
-                description:
-                  "If you have orthodontic insurance, we’ll help you maximize your lifetime benefits",
-              },
-              {
-                title: "FSA/HSA",
-                description:
-                  "We accept HSA/FSA to help you save on your orthodontic treatment",
-              },
-              {
-                title: "INSURANCE",
-                description:
-                  "We will help you submit claims for reimbursement based on your insurance plan’s guidelines",
-              },
-            ].map((card, index) => (
-              <div
-                key={index}
-                className="payment-card-wrapper"
-                ref={(el) => (cardRefs.current[index] = el)}
-              >
-                <div className="payment-card">
-                  <div className="payment-title-wrapper">
-                    <img
-                      src="../images/star.png"
-                      alt="Star"
-                      className="card-star"
-                    />
-                    <h2>{card.title}</h2>
+              </svg> */}
+                      </div>
+                    </div>
                   </div>
-                  <p className="font-neue-montreal card-description">
-                    {card.description}
-                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      <div className="font-neue-montreal text-lg flex space-x-4 mt-8">
-        <Link href="/book-now" className="flex items-center space-x-2">
-          <button
-            className="px-6 py-3"
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-          >
-            Get started
-          </button>
-          <svg
-            className="cursor-pointer w-12"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 13"
-          >
-            <path
-              d="M19.4 6.4L13 0l-1.4 1.4 4 4H4.8v2h10.8l-4 4 1.4 1.4 6.4-6.4z"
-              className="head"
-              style={{
-                transform: hover ? "translateX(0)" : "translateX(-3px)",
-                transition: "all 0.35s ease",
-              }}
-            />
-            <path
-              d="M0 5.4h9.7v2H0z"
-              className="tail"
-              style={{
-                transform: hover ? "translateX(0)" : "translateX(5px)",
-                transition: "all 0.35s ease",
-              }}
-            />
-          </svg>
-        </Link>
-      </div>
-      <div
-        className="third-color py-16 px-8 bg-cover bg-center"
-        id="tracking-section"
-        // style={{ backgroundImage: "url('../images/background_min.png')" }}
-      >
-        <div
-          id="element"
-          className="absolute w-12 h-12 bg-black rounded-full top-0 left-0"
-        ></div>
-
-        <section
-          id="cd-timeline"
-          className="relative mx-auto w-[90%] max-w-[1170px]"
-        >
-          {/* Vertical line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 top-0 h-full w-[2px] bg-gray-300"></div>
-
-          {/* Section 1 (Left Aligned) */}
-          <div className="cd-timeline-block relative my-8 flex lg:flex-row-reverse">
-            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
-              <img
-                src="../images/starbullet.svg"
-                alt="Location"
-                className="w-15 h-15"
-              />
-            </div>
-
-            <div className="cd-timeline-content flex justify-end">
-              <div className="relative bg-[#68C9BA1A] p-12 rounded-3xl m-6 lg:w-[45%] min-w-[min-content]">
-                <img
-                  src="../images/consultgraphic.svg"
-                  alt="Consult Graphic"
-                  className="absolute left-[-100px] top-0 w-[150px] h-auto"
-                />
-
-                <h3 className="text-4xl font-bold text-[#212353] mb-4">
-                  Complimentary Consultation
-                </h3>
-
-                <p className="text-md text-[#4B5D68] mb-6">
-                  Initial consultations are always free of charge.
-                </p>
-
-                <a
-                  href="#0"
-                  className="float-right text-white bg-black px-4 py-2 rounded-full hover:bg-gray-300"
-                >
-                  Book Now
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 2 (Right Aligned) */}
-          <div className="cd-timeline-block relative my-8 flex lg:flex-row">
-            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10 flex items-center justify-center">
-              <img
-                src="../images/starbullet.svg"
-                alt="Location"
-                className="w-15 h-15"
-              />
-            </div>
-
-            <div className="cd-timeline-content">
-              <div className="relative bg-[#F063B81A] p-12 rounded-3xl m-6 lg:w-[45%]">
-                <img
-                  src="../../images/orangecylinder.svg"
-                  alt="Consult Graphic"
-                  className="absolute left-[-100px] top-0 w-[150px] h-auto"
-                />
-
-                <h3 className="text-4xl font-bold text-[#212353] mb-4">
-                  Explore Flexible Ways to Pay
-                </h3>
-
-                <p className="text-md text-[#4B5D68] mb-6">
-                  Choose from flexible payment plans or enjoy 10% off when you
-                  pay in full prior to starting treatment
-                </p>
-
-                <a
-                  href="https://www.klarna.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="float-right"
-                >
-                  <img
-                    src="../images/klarna.svg"
-                    alt="Klarna"
-                    className="w-12 h-auto"
-                  />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 3 (Left Aligned) */}
-          <div className="cd-timeline-block relative my-8 flex lg:flex-row-reverse">
-            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
-              <img
-                src="../images/starbullet.svg"
-                alt="Location"
-                className="w-15 h-15"
-              />
-            </div>
-            <div className="cd-timeline-content flex justify-end">
-              <div className="relative bg-[#9C69E21A] p-12 rounded-3xl m-6 lg:w-[45%] min-w-[min-content]">
-                <img
-                  src="../images/consultgraphic.svg"
-                  alt="Caring Tradition"
-                  className="absolute left-[-100px] top-0 w-[150px] h-auto"
-                />
-
-                <h3 className="text-4xl font-bold text-[#212353] mb-4">
-                  Caring Tradition
-                </h3>
-
-                <p className="text-md text-[#4B5D68] mb-6">
-                  Successive family members always receive the same excellent
-                  care. Ask about our family courtesies.
-                </p>
-
-                <a
-                  href="#0"
-                  className="float-right text-white bg-black px-4 py-2 rounded-full hover:bg-gray-300"
-                >
-                  Inquire
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 4 (Right Aligned) */}
-          <div className="cd-timeline-block relative my-8 flex lg:flex-row">
-            <div className="cd-timeline-img absolute left-1/2 transform -translate-x-1/2 top-0 w-10 h-10  flex items-center justify-center">
-              <img
-                src="../images/starbullet.svg"
-                alt="Location"
-                className="w-15 h-15"
-              />
-            </div>
-            <div className="cd-timeline-content flex justify-start">
-              <div className="relative bg-[#68C9BA1A] p-12 rounded-3xl m-6 lg:w-[45%] min-w-[min-content]">
-                <img
-                  src="../images/winky.svg"
-                  alt="Post-Op Care Graphic"
-                  className="absolute left-[-100px] top-0 w-[150px] h-auto"
-                />
-
-                <h3 className="text-4xl font-bold text-[#212353] mb-4">
-                  Our Support Doesn&apos;t End When Treatment Does
-                </h3>
-
-                <p className="text-md text-[#4B5D68] mb-6">
-                  Your treatment includes one year of follow-up care. We&apos;re
-                  never cheap with our energy.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-        <div className="flex">
-          <section className="relative p-8 w-1/2 ">
-            <div className="flex w-2/3 items-center justify-center ">
-              <div
-                className="relative mx-2"
-                style={{ width: "300px", height: "240px" }}
-              >
-                <img
-                  className="object-cover w-full h-full rounded-full opacity-90"
-                  src="../../images/carepatient1.png"
-                  alt="patient"
-                  style={{ objectPosition: "40% 50%" }}
-                />
-              </div>
-              <div
-                className="relative mx-2"
-                style={{ width: "300px", height: "300px" }}
-              >
-                <img
-                  className="object-cover w-full h-full rounded-full opacity-90"
-                  src="../../images/carepatient2.png"
-                  alt="patient"
-                  style={{ objectPosition: "10% 50%" }}
-                />
-              </div>
-
-              <div
-                className="relative mx-2 "
-                style={{ width: "300px", height: "340px" }}
-              >
-                <img
-                  className="object-cover w-full h-full rounded-full opacity-90"
-                  src="../../images/carepatient3.png"
-                  alt="patient"
-                />
-              </div>
-              <div
-                className="relative mx-2 "
-                style={{ width: "330px", height: "400px" }}
-              >
-                <img
-                  className="object-cover w-full h-full rounded-full opacity-90"
-                  src="../../images/carepatient4.png"
-                  alt="patient"
-                  style={{ objectPosition: "40% 50%" }}
-                />
-              </div>
-              <div
-                className="relative mx-2 "
-                style={{ width: "300px", height: "480px" }}
-              >
-                <img
-                  className="object-cover w-full h-full rounded-full opacity-90"
-                  src="../../images/freysmilepatient1.jpg"
-                  alt="patient"
-                />
+              <div className="flex">
+                <h1 ref={headingRef} className="w-1/2 hero_heading">
+                  Your plan is tailored <br /> to your needs
+                </h1>
+                <div ref={illustrationRef} className="hero_illustration ">
+                  <div className="flex items-center justify-center">
+                    <img
+                      className="w-1/4 h-auto"
+                      src="https://cdn.prod.website-files.com/62c43dd3c66c31771a08e642/6474609676590e82e090f077_Overthought_Studio_Kimberly_Eichenberger_Web_Design_Development_31%201.svg"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </section>
-
-          <div className="flex  ">
-            <div className="relative bg-white bg-opacity-10 p-12 rounded-3xl m-6 backdrop-filter backdrop-blur-lg shadow-lg max-w-lg w-full">
-              <div className="flex items-center justify-center mb-8">
-                <img
-                  src="../../images/logo_icon.png"
-                  alt="Logo"
-                  className="w-20 h-20 mr-4"
-                />
-              </div>
-
-              <p className="text-lg text-gray-700 mb-8">
-                &quot;Frey Smiles has made the whole process from start to finish
-                incredibly pleasant and sooo easy on my kids to follow. They
-                were able to make a miracle happen with my son&apos;s tooth that was
-                coming in sideways. He now has a perfect smile and I couldn&apos;t be
-                happier. My daughter is halfway through her treatment and the
-                difference already has been great. I 100% recommend this place
-                to anyone!!!&quot;
-              </p>
-
-              <div className="mt-8">
-                <p className="text-xl font-bold text-[#212353]">James P</p>
-                <p className="text-sm text-gray-500">Happy Customer</p>
-              </div>
-            </div>
+          <div>
+            
           </div>
         </div>
-        {/* <section className="relative p-8 w-full ">
-          <div className="flex w-full items-center justify-center ">
-            <div
-              className="relative mx-2"
-              style={{ width: "300px", height: "240px" }}
-            >
-              <img
-                className="object-cover w-full h-full rounded-full opacity-90"
-                src="../../images/carepatient1.png"
-                alt="patient"
-                style={{ objectPosition: "40% 50%" }}
-              />
-            </div>
-            <div
-              className="relative mx-2"
-              style={{ width: "300px", height: "300px" }}
-            >
-              <img
-                className="object-cover w-full h-full rounded-full opacity-90"
-                src="../../images/carepatient2.png"
-                alt="patient"
-                style={{ objectPosition: "10% 50%" }}
-              />
-            </div>
-
-            <div
-              className="relative mx-2 "
-              style={{ width: "300px", height: "340px" }}
-            >
-              <img
-                className="object-cover w-full h-full rounded-full opacity-90"
-                src="../../images/carepatient3.png"
-                alt="patient"
-              />
-            </div>
-            <div
-              className="relative mx-2 "
-              style={{ width: "330px", height: "400px" }}
-            >
-              <img
-                className="object-cover w-full h-full rounded-full opacity-90"
-                src="../../images/carepatient4.png"
-                alt="patient"
-                style={{ objectPosition: "40% 50%" }}
-              />
-            </div>
-            <div
-              className="relative mx-2 "
-              style={{ width: "300px", height: "480px" }}
-            >
-              <img
-                className="object-cover w-full h-full rounded-full opacity-90"
-                src="../../images/freysmilepatient1.jpg"
-                alt="patient"
-              />
-            </div>
-          </div>
-        </section> */}
       </div>
-    </div>
+      {/* <div>
+        <StepsSection />
+      </div> */}
+    </>
   );
 };
 
-export default HeaderBanner;
-
-{
-  /* <div className="flex items-center w-1/4 h-full justify-center bg-[#e5c2cc]">
-      <p className="text-2xl font-bold tracking-wider text-black transform -rotate-90">REVIEWS</p>
-    </div>
-
-
-    <div className="p-8">
-      <p className="text-gray-500">
-      "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!"
-      </p>
-      <p className="mt-4 font-bold text-black">
-   <a href="/testimonials" className="text-black underline">Read More</a>
-      </p>
-    </div> */
-}
+export default FinancingTreatment;
