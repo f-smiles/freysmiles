@@ -438,126 +438,124 @@ const FinancingTreatment = () => {
   let scl = 30;
   let cols, rows;
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+  // useEffect(() => {
+  //   const canvas = canvasRef.current;
+  //   const ctx = canvas.getContext("2d");
+  //   canvas.width = window.innerWidth;
+  //   canvas.height = window.innerHeight;
 
-    const setupDots = () => {
-      dots = [];
-      cols = Math.floor(canvas.width / scl);
-      rows = Math.floor(canvas.height / scl);
+  //   const setupDots = () => {
+  //     dots = [];
+  //     cols = Math.floor(canvas.width / scl);
+  //     rows = Math.floor(canvas.height / scl);
 
-      let id = 0;
-      for (let x = 0; x < cols; x++) {
-        for (let y = 0; y < rows; y++) {
-          dots.push(new Dot(id, x * scl, y * scl, ctx, scl));
-          id++;
-        }
-      }
-    };
+  //     let id = 0;
+  //     for (let x = 0; x < cols; x++) {
+  //       for (let y = 0; y < rows; y++) {
+  //         dots.push(new Dot(id, x * scl, y * scl, ctx, scl));
+  //         id++;
+  //       }
+  //     }
+  //   };
 
-    class Dot {
-      constructor(id, x, y, context, scl) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.new = {
-          x: x,
-          y: y,
-          radius: 3,
-          opacity: 0.2,
-        };
-        this.radius = 3;
-        this.context = context;
-        this.scl = scl;
-        this.isHover = false;
-      }
+  //   class Dot {
+  //     constructor(id, x, y, context, scl) {
+  //       this.id = id;
+  //       this.x = x;
+  //       this.y = y;
+  //       this.new = {
+  //         x: x,
+  //         y: y,
+  //         radius: 3,
+  //         opacity: 0.2,
+  //       };
+  //       this.radius = 3;
+  //       this.context = context;
+  //       this.scl = scl;
+  //       this.isHover = false;
+  //     }
 
-      mousemove(x, y) {
-        const distX = Math.abs(this.x - x);
-        const distY = Math.abs(this.y - y);
-        const distance = Math.sqrt(distX ** 2 + distY ** 2);
+  //     mousemove(x, y) {
+  //       const distX = Math.abs(this.x - x);
+  //       const distY = Math.abs(this.y - y);
+  //       const distance = Math.sqrt(distX ** 2 + distY ** 2);
 
-        const maxDist = this.scl * 5;
-        const minDist = this.scl * 1.5;
+  //       const maxDist = this.scl * 5;
+  //       const minDist = this.scl * 1.5;
 
-        this.isClosest = distance < minDist;
-        this.isCenter = distance < this.scl * 3;
-        this.isHover = distance < maxDist;
+  //       this.isClosest = distance < minDist;
+  //       this.isCenter = distance < this.scl * 3;
+  //       this.isHover = distance < maxDist;
 
-        let opacity = 1 - Math.min(distance / maxDist, 1);
-        opacity = Math.max(opacity, 0.4);
+  //       let opacity = 1 - Math.min(distance / maxDist, 1);
+  //       opacity = Math.max(opacity, 0.4);
 
-        gsap.to(this.new, {
-          radius: this.isClosest
-            ? 10
-            : this.isCenter
-            ? 9
-            : this.isHover
-            ? 5
-            : 3,
-          opacity: opacity,
-          duration: 0.4,
-        });
-      }
+  //       gsap.to(this.new, {
+  //         radius: this.isClosest
+  //           ? 10
+  //           : this.isCenter
+  //           ? 9
+  //           : this.isHover
+  //           ? 5
+  //           : 3,
+  //         opacity: opacity,
+  //         duration: 0.4,
+  //       });
+  //     }
 
-      render() {
-        this.context.beginPath();
-        this.context.arc(
-          this.new.x,
-          this.new.y,
-          this.new.radius,
-          0,
-          2 * Math.PI
-        );
-        this.context.fillStyle = `rgba(0, 0, 0, ${this.new.opacity})`;
-        this.context.fill();
-      }
-    }
-    ``;
+  //     render() {
+  //       this.context.beginPath();
+  //       this.context.arc(
+  //         this.new.x,
+  //         this.new.y,
+  //         this.new.radius,
+  //         0,
+  //         2 * Math.PI
+  //       );
+  //       this.context.fillStyle = `rgba(0, 0, 0, ${this.new.opacity})`;
+  //       this.context.fill();
+  //     }
+  //   }
+  //   ``;
 
-    const render = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      dots.forEach((dot) => dot.render());
-      requestAnimationFrame(render);
-    };
+  //   const render = () => {
+  //     ctx.clearRect(0, 0, canvas.width, canvas.height);
+  //     dots.forEach((dot) => dot.render());
+  //     requestAnimationFrame(render);
+  //   };
 
-    const mousemoveHandler = (event) => {
-      const rect = canvasRef.current.getBoundingClientRect();
-      const scaleX = canvasRef.current.width / rect.width;
-      const scaleY = canvasRef.current.height / rect.height;
+  //   const mousemoveHandler = (event) => {
+  //     const rect = canvasRef.current.getBoundingClientRect();
+  //     const scaleX = canvasRef.current.width / rect.width;
+  //     const scaleY = canvasRef.current.height / rect.height;
 
-      const x = (event.clientX - rect.left) * scaleX;
-      const y = (event.clientY - rect.top) * scaleY;
+  //     const x = (event.clientX - rect.left) * scaleX;
+  //     const y = (event.clientY - rect.top) * scaleY;
 
-      dots.forEach((dot) => dot.mousemove(x, y));
-    };
+  //     dots.forEach((dot) => dot.mousemove(x, y));
+  //   };
 
-    const resizeHandler = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      setupDots();
-    };
+  //   const resizeHandler = () => {
+  //     canvas.width = window.innerWidth;
+  //     canvas.height = window.innerHeight;
+  //     setupDots();
+  //   };
 
-    setupDots();
-    render();
+  //   setupDots();
+  //   render();
 
-    window.addEventListener("mousemove", mousemoveHandler);
-    window.addEventListener("resize", resizeHandler);
+  //   window.addEventListener("mousemove", mousemoveHandler);
+  //   window.addEventListener("resize", resizeHandler);
 
-    return () => {
-      window.removeEventListener("mousemove", mousemoveHandler);
-      window.removeEventListener("resize", resizeHandler);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("mousemove", mousemoveHandler);
+  //     window.removeEventListener("resize", resizeHandler);
+  //   };
+  // }, []);
 
   return (
     <>
-      <div className="h-screen">
-        <div >
-          <div ref={introRef} className="section_intro">
+       <div ref={introRef} className="section_intro">
             <div className="intro_split"></div>
             <div className="intro_split"></div>
             <div className="intro_load" ref={loadRef}>
@@ -567,100 +565,20 @@ const FinancingTreatment = () => {
             </svg></div> */}
             </div>
           </div>
-          <section className="bg-gradient-to-br from-gray-100 to-gray-300 section_hero">
-            <div className="container_ft">
-              <div ref={navRef} className="nav_container">
-                <div className="h-screen w-screen flex items-center justify-center ">
-                  <div className="w-[90%] h-[90%] flex border border-[#0EFF00] ">
-                    {/* Left  */}
-                    <div className="w-1/3 h-full flex flex-col border-r border-[#0EFF00]">
-                      {/* Section 1*/}
-                      <div className="pt-24 flex justify-center border-b border-gray-300 flex items-start h-2/3">
-                        <h1 className="flex text-center font-neue-montreal text-[24px]">
-                          Your plan is tailored to your{" "}
-                          <span className="italic">needs</span>.
-                        </h1>
-                      </div>
 
-                      {/* Section 2 */}
-                      <div className="p-6 border-b border-gray-300 h-1/6 flex items-center">
-                        <p className="font-neue-montreal">
-                          Expert Personalized Care
-                        </p>
-                      </div>
-
-                      {/* Secion 3*/}
-                      <div className="p-6 flex items-center justify-between h-1/4">
-                        <h2 className="text-xl font-serif">
-                          <img src="https://cdn.prod.website-files.com/61dafc27e67e5a2d2487f390/6337d944ddbb7e4cb8d944f8_Curve%20Studio%20logo%20-%20fill.svg" />
-                        </h2>
-                      </div>
-                    </div>
-
-                    {/* Right */}
-                    <div className="w-2/3 h-full flex flex-col">
-                      {/* Top Section */}
-                      <div className="p-6 flex justify-between border-b border-gray-300">
-                        <p className="justify-center text-sm font-neue-montreal w-2/3 leading-relaxed">
-                          We believe in lasting care and long-term
-                          relationships. Our flexible payment options make it
-                          easier to plan your treatment on a timeline that works
-                          for you.
-                        </p>
-                        <div className="flex gap-4 w-[80px]">
-                          <img src="../images/fourpetals.svg" alt="logo" />
-                        </div>
-                      </div>
-
-                      <div className="flex-grow flex items-center relative justify-center">
-                        <canvas
-                          ref={canvasRef}
-                          className="absolute w-full h-full z-[-1]"
-                        />
-                        {/* <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 951 367"
-                fill="none"
-                className="w-full max-w-lg h-auto"
-              >
-                <path
-                  ref={pathRef}
-                  d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
-                  stroke="#0C0EFE"
-                  strokeWidth="40"
-                  strokeMiterlimit="10"
-                  strokeLinejoin="round"
-                  style={{ strokeDasharray: "3202.1", strokeDashoffset: "0px" }}
-                />
-              </svg> */}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex">
-                <h1 ref={headingRef} className="w-1/2 hero_heading">
-                  Your plan is tailored <br /> to your needs
-                </h1>
-                <div ref={illustrationRef} className="hero_illustration ">
-                  <div className="flex items-center justify-center">
-                    <img
-                      className="w-1/4 h-auto"
-                      src="https://cdn.prod.website-files.com/62c43dd3c66c31771a08e642/6474609676590e82e090f077_Overthought_Studio_Kimberly_Eichenberger_Web_Design_Development_31%201.svg"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          <div>
-            
+          <section className="section_hero">
+        <div className="container">
+          <div className="nav_container" ref={navRef}>
+            <a href="#" className="nav_brand-link">
+              <div className="icon-32">LOGO</div>
+            </a>
+            <a href="#" className="button">Click me</a>
           </div>
+          <h1 className="hero_heading" ref={headingRef}>hi there!</h1>
+          <div className="hero_illustration" ref={illustrationRef}></div>
         </div>
-      </div>
-      {/* <div>
-        <StepsSection />
-      </div> */}
+      </section>
+
     </>
   );
 };
