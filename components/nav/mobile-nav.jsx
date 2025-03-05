@@ -5,6 +5,8 @@ import { momentum } from "ldrs";
 import { HomeIcon } from "lucide-react";
 import { useCartStore } from "@/lib/cart-store";
 import { AnimatePresence } from "framer-motion";
+import { sidebarVariants, staggerVariants, itemVariants } from "@/components/nav/mobile-anim"
+import { about_us_links, patient_links, treatments_links } from "@/components/nav/mobile-links"
 import CartComponent from "@/components/cart/cart-component";
 
 momentum.register()
@@ -13,70 +15,7 @@ export default function MobileNav() {
 
   const [show, setShow] = useState(null)
   const [isHovered, setIsHovered] = useState(null)
-
   const { cart } = useCartStore()
-
-  const handleToggleMobileNav = () => {
-    // setShow((prevState) => !prevState)
-    setShow(!show)
-  }
-
-  const about_us_links = [
-    { name: "Our Team", href: "/our-team" },
-    { name: "Why Choose Us", href: "/why-choose-us" },
-    { name: "Testimonials", href: "/testimonials" },
-    { name: "Locations", href: "/#locations-section", hashLink: true },
-  ]
-
-  const patient_links = [
-    { name: "Your Care", href: "/your-care" },
-    { name: "Financing Treatment", href: "/financing-treatment" },
-    {
-      name: "Patient Login",
-      href: "https://my.orthoblink.com/bLink/Login",
-      external: true,
-    },
-  ]
-
-  const treatments_links = [
-    { name: "Invisalign", href: "/invisalign" },
-    { name: "Braces", href: "/braces" },
-    { name: "Early & Adult Orthodontics", href: "/early-adult-orthodontics" },
-  ]
-
-  const sidebarVariants = {
-    open: {
-      clipPath: "circle(125vh at calc(100% - 48px) 48px)",
-      opacity: 1,
-      transition: { type: "linear", stiffness: 400, damping: 400 },
-      backgroundColor: "#fafafa",
-    },
-    closed: {
-      clipPath: "circle(24px at calc(100% - 48px) 48px)",
-      opacity: 0,
-      transition: { delay: 0.2, type: "linear", stiffness: 400, damping: 400 },
-    },
-  }
-
-  const staggerVariants = {
-    open: {
-      transition: { staggerChildren: 0.07, delayChildren: 0.2 },
-    },
-    closed: {
-      transition: { staggerChildren: 0.05, staggerDirection: -1 },
-    },
-  }
-
-  const itemVariants = {
-    open: {
-      y: 0,
-      transition: { type: "linear", stiffness: 1500, damping: 1000 },
-    },
-    closed: {
-      y: 10,
-      transition: { type: "linear", stiffness: 1500, damping: 1000 },
-    },
-  }
 
   return (
     <motion.nav id="mobile-nav">
@@ -95,7 +34,7 @@ export default function MobileNav() {
 
         <motion.div
           id="sidebarMenuToggle"
-          onClick={handleToggleMobileNav}
+          onClick={() => setShow(!show)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           whileTap={{ scale: 0.80 }}
@@ -107,7 +46,7 @@ export default function MobileNav() {
               <circle cx="5" cy="12" r="1.5" />
             </motion.svg>
           ) : isHovered ? (
-            <l-momentum size="22" speed="1.1" color="black"></l-momentum>
+            <l-momentum size="22" speed="1.1" color="#fafafa"></l-momentum>
           ) : (
             <motion.svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="19" cy="12" r="1.5" />
