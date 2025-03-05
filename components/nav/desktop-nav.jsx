@@ -52,7 +52,7 @@ export default function DesktopNav({ user }) {
   return (
     <motion.nav
       id="desktop-nav"
-      className={`${styles.header} ${isActive ? "bg-[#e1f672]" : ""} hidden md:block`}
+      className={`${styles.header} ${isActive ? "bg-[#e1f672]" : ""} hidden md:block z-50`}
       transition={{ duration: 1, scale: { type: "spring", visualDuration: 1 }}}
     >
       <motion.div className="pt-[16px] flex items-center justify-between uppercase m-auto transition-all duration-1000 ease-in-out scroll-nav" variants={opacity} animate={!isActive ? "open" : "closed"}>
