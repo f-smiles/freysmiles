@@ -4755,7 +4755,7 @@ a {
 }
 
 .h2-menu-text-number {
-  color: #fff;
+  color: var(--primary);
   margin-bottom: 0;
   font-weight: 500;
 }
@@ -4883,6 +4883,7 @@ a {
 .h2-menu-heading {
   transform: translate3d(0, 0, 0);
   transition: transform 0.3s ease-in-out;
+  color: #000;
 }
 
 .h2-menu-row-1:hover .h2-menu-image,
@@ -4938,10 +4939,9 @@ a {
 
 
 .h2-menu-row-1 {
-  color: #000;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -4954,11 +4954,10 @@ a {
 }
 
 .h2-menu-row-2 {
-  color: red;
   cursor: none;
   font-family: "Didot";
   font-style: italic;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
   width: 100%;
   padding-top: 22px;
   padding-bottom: 22px;
@@ -4970,7 +4969,7 @@ a {
   grid-column-gap: 40px;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -4982,10 +4981,9 @@ a {
 }
 
 .h2-menu-row-4 {
-  color: #fff;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
   width: 100%;
   padding-top: 22px;
   padding-bottom: 22px;
@@ -4994,10 +4992,9 @@ a {
 }
 
 .h2-menu-row-5 {
-  color: #fff;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
   justify-content: space-between;
   align-items: center;
   width: 100%;
