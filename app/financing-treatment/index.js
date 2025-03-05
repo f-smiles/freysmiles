@@ -1,5 +1,8 @@
+
 "use client";
-import { interpolate } from "flubber";
+import { Canvas, useFrame, extend } from "@react-three/fiber";
+import { Sphere, OrbitControls, Environment, shaderMaterial } from "@react-three/drei";
+import * as THREE from "three";
 import {
   motion,
   useScroll,
@@ -16,113 +19,10 @@ import { MorphSVGPlugin } from "gsap-trial/MorphSVGPlugin";
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText, MorphSVGPlugin);
 
 const StepsSection = () => {
-  const iconPaths = [
-    {
-      id: "icon-1",
-      paths: [
-        "M 60 90 A 16 16 0 1 0 92 90 A 16 16 0 1 0 60 90 Z",
-        "M 41 90 A 35 35 0 1 0 111 90 A 35 35 0 1 0 41 90",
-        "M 21 90 A 55 55 0 1 0 131 90 A 55 55 0 1 0 21 90",
-        "M 1 90 A 75 75 0 1 0 151 90 A 75 75 0 1 0 1 90",
-      ],
-    },
-    {
-      id: "icon-2",
-      paths: [
-        "M 109 28 A 27 27 0 1 0 109 82 A 27 27 0 1 0 109 28 Z",
-        "M 109 97 A 27 27 0 1 0 109 151 A 27 27 0 1 0 109 97 Z",
-        "M 40 97 A 27 27 0 1 0 40 151 A 27 27 0 1 0 40 97 Z",
-        "M 40 28 A 27 27 0 1 0 40 82 A 27 27 0 1 0 40 28 Z",
-        "M 100 54.28 L 106.246 60.2902 C 106.651 60.6795 107.296 60.6595 107.676 60.2458 L 118 49",
-      ],
-    },
-    {
-      id: "icon-3",
-      paths: [
-        "M 31 20 H 127 A 6 6 0 0 1 133 26 V 155 A 6 6 0 0 1 127 161 H 31 A 6 6 0 0 1 25 155 V 26 A 6 6 0 0 1 31 20 Z",
-        "M 47 83 A 2 2 0 1 0 43 83 A 2 2 0 1 0 47 83 Z",
-        "M 54 83 H 116 A 1 1 0 0 1 117 84 V 85 A 1 1 0 0 1 116 86 H 54 A 1 1 0 0 1 53 85 V 84 A 1 1 0 0 1 54 83 Z",
-        "M 47 69 A 2 2 0 1 0 43 69 A 2 2 0 1 0 47 69 Z",
-        "M 54 69 H 116 A 1 1 0 0 1 117 70 V 71 A 1 1 0 0 1 116 72 H 54 A 1 1 0 0 1 53 71 V 70 A 1 1 0 0 1 54 69 Z",
-        "M 47 97 A 2 2 0 1 0 43 97 A 2 2 0 1 0 47 97 Z",
-        "M 54 97 H 116 A 1 1 0 0 1 117 98 V 99 A 1 1 0 0 1 116 100 H 54 A 1 1 0 0 1 53 99 V 98 A 1 1 0 0 1 54 97 Z",
-        "M 47 111 A 2 2 0 1 0 43 111 A 2 2 0 1 0 47 111 Z",
-        "M 54 111 H 116 A 1 1 0 0 1 117 112 V 113 A 1 1 0 0 1 116 114 H 54 A 1 1 0 0 1 53 113 V 112 A 1 1 0 0 1 54 111 Z",
-      ],
-    },
-    {
-      id: "icon-4",
-      paths: [
-        "M 56 90.5986 A 36.5 36.5 0 1 0 129 90.5986 A 36.5 36.5 0 1 0 56 90.5986 Z",
-        "M 63.7792 157.069 C 76.9276 162.786 91.476 164.476 105.585 161.925 C 119.694 159.374 132.729 152.697 143.043 142.737 C 153.356 132.777 160.485 119.983 163.528 105.972 C 166.57 91.9609 165.389 77.3623 160.134 64.0224",
-        "M 44 152.599 A 10.5 10.5 0 1 0 65 152.599 A 10.5 10.5 0 1 0 44 152.599 Z",
-        "M 128 38.5986 A 12.5 12.5 0 1 0 153 38.5986 A 12.5 12.5 0 1 0 128 38.5986 Z",
-        "M 36.8975 138.49 C 25.4209 125.123 19.125 108.081 19.1557 90.4631 C 19.1865 72.8457 25.5417 55.8249 37.0649 42.4986 C 48.588 29.1723 64.513 20.4264 81.9414 17.8526 C 99.3698 15.2788 117.143 19.0483 132.026 28.475",
-      ],
-    },
-    {
-      id: "icon-5",
-      paths: [
-        "M 100.539 103.158 L 125.539 119.158",
-        "M 35 62.5 L 60 78",
-        "M 128.5 65.5 L 102.998 80.0003",
-        "M 61.5012 104 L 36 119",
-        "M 81 35.5 L 81 65.5",
-        "M 81 113.5 L 81 143.5",
-        "M 56 89.5 A 24.5 24.5 0 1 0 105 89.5 A 24.5 24.5 0 1 0 56 89.5 Z",
-        "M 68 22.5 A 12.5 12.5 0 1 0 93 22.5 A 12.5 12.5 0 1 0 68 22.5 Z",
-        "M 68 156.5 A 12.5 12.5 0 1 0 93 156.5 A 12.5 12.5 0 1 0 68 156.5 Z",
-        "M 125 56.5 A 12.5 12.5 0 1 0 150 56.5 A 12.5 12.5 0 1 0 125 56.5 Z",
-        "M 125 123.5 A 12.5 12.5 0 1 0 150 123.5 A 12.5 12.5 0 1 0 125 123.5 Z",
-        "M 11 56.5 A 12.5 12.5 0 1 0 36 56.5 A 12.5 12.5 0 1 0 11 56.5 Z",
-        "M 11 123.5 A 12.5 12.5 0 1 0 36 123.5 A 12.5 12.5 0 1 0 11 123.5 Z",
-      ],
-    },
-  ];
-  const pathsRef = useRef([]);
-  const container1Ref = useRef(null);
-  useEffect(() => {
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: container1Ref.current,
-        start: "top center",
-        end: "bottom top",
-        scrub: 1,
-      },
-    });
-
-    const paths = iconPaths[0].paths;
-    const totalRings = paths.length - 1; 
-
-    paths.forEach((_, i) => {
-      if (i === 0) return; 
-
-      const pathElement = pathsRef.current[`icon1-${i}`];
-      if (pathElement) {
-        timeline.to(
-          pathElement,
-          {
-            scale: 0,
-            transformOrigin: "center center",
-            duration: 2 + (totalRings - i) * 0.5,
-            ease: "power2.inOut",
-          },
-          `-=${i * 0.2}`
-        );
-      }
-    });
-
-    return () => timeline.kill();
-  }, [iconPaths]);
-
-
-  
-
-
   // useEffect(() => {
   //   const timeline = gsap.timeline({
   //     scrollTrigger: {
-  //       trigger: "#container", // Container holding all SVGs
+  //       trigger: "#container",
   //       start: "top top",
   //       end: "bottom bottom",
   //       scrub: true,
@@ -138,7 +38,7 @@ const StepsSection = () => {
   //         duration: 2,
   //         ease: "power1.inOut",
   //       },
-  //       "start" // Align all animations to start at the same time
+  //       "start" 
   //     );
   //   });
   
@@ -151,7 +51,7 @@ const StepsSection = () => {
   //         duration: 2,
   //         ease: "power1.inOut",
   //       },
-  //       "start+=2" // Start after the first animation ends
+  //       "start+=2"
   //     );
   //   });
   
@@ -164,7 +64,7 @@ const StepsSection = () => {
   //         duration: 2,
   //         ease: "power1.inOut",
   //       },
-  //       "start+=4" // Start after the second animation ends
+  //       "start+=4" 
   //     );
   //   });
   
@@ -177,7 +77,7 @@ const StepsSection = () => {
   //         duration: 2,
   //         ease: "power1.inOut",
   //       },
-  //       "start+=6" // Start after the third animation ends
+  //       "start+=6" 
   //     );
   //   });
   
@@ -190,50 +90,11 @@ const StepsSection = () => {
   //         duration: 2,
   //         ease: "power1.inOut",
   //       },
-  //       "start+=8" // Start after the fourth animation ends
+  //       "start+=8" 
   //     );
   //   });
   // }, []);
 
-  
-  const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 60,
-    damping: 50,
-    mass: 0.8,
-  });
-
-  const progressHeight = useTransform(smoothProgress, [0, 1], ["0%", "100%"]);
-
-  const steps = [
-    {
-      number: "01",
-      title: "Complimentary Consultation",
-      description: "Initial consultations are always free of charge.",
-    },
-    {
-      number: "02",
-      title: "Flexible ways to pay",
-      description:
-        "Choose from flexible payment plans or enjoy 10% off when you pay in full prior to starting treatment.",
-    },
-    {
-      number: "03",
-      title: "Caring Traditions",
-      description:
-        "Successive family members always receive the same excellent care. Ask about our family courtesies.",
-    },
-    {
-      number: "04",
-      title: "Support after treatment",
-      description:
-        "Your treatment includes one year of follow-up care. We're never cheap with our energy.",
-    },
-  ];
 
   return (
     <div
@@ -274,7 +135,7 @@ const StepsSection = () => {
       <div className="flex flex-col items-center space-y-10">
       <div className="flex flex-col items-center space-y-6">
 
-
+{/* 
           <div className="flex justify-center">
    <div ref={container1Ref} >
     <svg viewBox="0 0 180 180" className="w-32 h-32">
@@ -338,7 +199,7 @@ const StepsSection = () => {
         />
       ))}
     </svg>
-  </div>
+  </div> */}
 
           </div>
         </div>
@@ -347,240 +208,346 @@ const StepsSection = () => {
   );
 };
 
-const FinancingTreatment = () => {
-  const introRef = useRef(null);
-  const loadRef = useRef(null);
-  const loadIllustrationRef = useRef(null);
-  const navRef = useRef(null);
-  const headingRef = useRef(null);
-  const illustrationRef = useRef(null);
 
-  // const pathRef = useRef(null);
-  // const cardsectionRef =useRef(null)
+const OrbShaderMaterial = shaderMaterial(
+  {
+    time: 0,
+    hover: 0,
+    mousePos: new THREE.Vector2(0.5, 0.5),
+    color1: new THREE.Color("#FDF69B"),
+    color2: new THREE.Color("#FCD5C4"),
+    color3: new THREE.Color("#ffd1a1"),
+    rippleScale: 2.0,
+    waveSpeed: 1.2, 
+    refractionPower: 0.08,
+    highlightStrength: 1.2, 
+  },
 
-  // useEffect(() => {
-  //   const path = pathRef.current;
-  //   const pathLength = path.getTotalLength();
+  `
+  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying float vHoverEffect;
+  varying float vDisplacement;
+  uniform float time;
+  uniform float hover;
+  uniform vec2 mousePos;
+  uniform float rippleScale;
+  uniform float waveSpeed;
 
-  //   gsap.set(path, {
-  //     strokeDasharray: pathLength,
-  //     strokeDashoffset: pathLength,
-  //   });
+  float wave(vec2 p, float t) {
+      return sin(20.0 * length(p) - t * 6.0) * 0.6 + 0.5;
+  }
 
-  //   gsap.to(path, {
-  //     strokeDashoffset: 0,
-  //     duration: 3,
-  //     ease: "power2.out",
-  //     onComplete: () => {
-  //       gsap.to(path, {
-  //         strokeDashoffset: pathLength,
-  //         ease: "none",
-  //         scrollTrigger: {
-  //           trigger: cardsectionRef.current,
-  //           start: "top top",
-  //           end: "bottom top",
-  //           scrub: 1,
-  //         },
-  //       });
-  //     },
-  //   });
+  void main() {
+    vUv = uv;
+    vNormal = normal;
+    
+    vec3 pos = position;
+    vec2 uvMouse = mousePos;
+    float dist = length(vUv - uvMouse);
 
-  //   // Pin section
-  //   ScrollTrigger.create({
-  //     trigger: cardsectionRef.current,
-  //     start: "top top",
-  //     end: "+=150%",
-  //     pin: true,
-  //     pinSpacing: true,
-  //   });
+    // 🔹 Stronger, Expanding Wave Effect
+    float ripple = wave(vUv - uvMouse, time * waveSpeed);
+    float rippleEffect = smoothstep(0.4, 0.0, dist) * hover * ripple * rippleScale;
+    
+    pos += normal * rippleEffect * 0.3; // 🔹 More pronounced displacement
 
-  // }, []);
+    vHoverEffect = rippleEffect;
+    vDisplacement = rippleEffect;
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+  }
+  `,
+  // Fragment Shader
+  `
+  uniform vec3 color1;
+  uniform vec3 color2;
+  uniform float refractionPower;
+  uniform float highlightStrength;
+  varying vec2 vUv;
+  varying vec3 vNormal;
+  varying float vHoverEffect;
+  varying float vDisplacement;
+
+  void main() {
+
+    vec3 baseColor = mix(color1, color2, vUv.y * 1.3);
+
+
+    float specular = pow(vHoverEffect, 2.0) * highlightStrength;
+    vec3 highlight = vec3(1.0, 0.5, 0.5) * specular;
+
+
+    float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 4.0);
+    vec3 rimLight = vec3(0.8, 0.85, 1.0) * fresnel * 0.5;
+
+    vec3 finalColor = baseColor + highlight + rimLight;
+    finalColor *= 1.0 - smoothstep(0.8, 1.0, length(vUv - 0.5));
+
+    gl_FragColor = vec4(finalColor, 1.0);
+  }
+  `
+);
+
+extend({ OrbShaderMaterial });
+const MovingOrb = ({ setEllipseFinalY, setIsOrbScaledDown }) => {
+  const sphereRef = useRef();
+  const shaderRef = useRef();
+  const [finalSet, setFinalSet] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const targetMousePos = useRef(new THREE.Vector2(0.5, 0.5));
+
+  useFrame(({ clock }) => {
+    if (sphereRef.current && shaderRef.current) {
+      const scrollFactor = window.scrollY;
+      const scaleFactor = Math.max(
+        0.5, 
+        1.5 - Math.max(0, scrollFactor - 150) * 0.004
+      );
+      
+      sphereRef.current.position.set(
+        (1.5 - scaleFactor) * 2.5,
+        -scrollFactor * 0.002,
+        -1
+      );
+      sphereRef.current.scale.setScalar(scaleFactor);
+
+      shaderRef.current.time = clock.getElapsedTime();
+      shaderRef.current.mousePos.lerp(targetMousePos.current, 0.1);
+      shaderRef.current.mousePos.needsUpdate = true;
+
+      if (scaleFactor === 0.5 && !finalSet) {
+        const screenHeight = window.innerHeight;
+        const adjustedFinalY = screenHeight / 2 - sphereRef.current.position.y * screenHeight * 1.2;
+        setEllipseFinalY(adjustedFinalY);
+        setIsOrbScaledDown(true);
+        setFinalSet(true);
+      }
+    }
+  });
+
+  const handleMouseMove = (e) => {
+    const canvas = document.querySelector("canvas");
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = 1.0 - (e.clientY - rect.top) / rect.height;
+    targetMousePos.current.set(x, y);
+  };
 
   useEffect(() => {
-    let heroTl = gsap.timeline();
-
-    let loadTl = gsap.timeline({
-      onComplete: () => {
-        heroTl
-          .fromTo(
-            navRef.current,
-            { scale: 0.9, opacity: 0 },
-            { opacity: 1, scale: 1, duration: 0.8, ease: "power2.inOut" }
-          )
-          .fromTo(
-            headingRef.current,
-            { yPercent: 50, opacity: 0 },
-            { yPercent: 0, opacity: 1, duration: 0.8, ease: "power2.inOut" }
-          )
-          .fromTo(
-            illustrationRef.current,
-            { scale: 0.9, yPercent: 20, opacity: 0 },
-            {
-              scale: 1,
-              yPercent: 0,
-              opacity: 1,
-              duration: 0.8,
-              ease: "power2.inOut",
-            },
-            "<"
-          );
-      },
-    });
-
-    loadTl
-      .to(loadRef.current, { width: "100%", duration: 3, ease: "power1.inOut" })
-      .to(loadIllustrationRef.current, { rotation: 15, xPercent: -10 }, "<")
-      .to(introRef.current.querySelectorAll(".intro_split"), { height: 0 });
-  }, []);
-
-  const canvasRef = useRef(null);
-  let dots = [];
-  let scl = 30;
-  let cols, rows;
-
-  // useEffect(() => {
-  //   const canvas = canvasRef.current;
-  //   const ctx = canvas.getContext("2d");
-  //   canvas.width = window.innerWidth;
-  //   canvas.height = window.innerHeight;
-
-  //   const setupDots = () => {
-  //     dots = [];
-  //     cols = Math.floor(canvas.width / scl);
-  //     rows = Math.floor(canvas.height / scl);
-
-  //     let id = 0;
-  //     for (let x = 0; x < cols; x++) {
-  //       for (let y = 0; y < rows; y++) {
-  //         dots.push(new Dot(id, x * scl, y * scl, ctx, scl));
-  //         id++;
-  //       }
-  //     }
-  //   };
-
-  //   class Dot {
-  //     constructor(id, x, y, context, scl) {
-  //       this.id = id;
-  //       this.x = x;
-  //       this.y = y;
-  //       this.new = {
-  //         x: x,
-  //         y: y,
-  //         radius: 3,
-  //         opacity: 0.2,
-  //       };
-  //       this.radius = 3;
-  //       this.context = context;
-  //       this.scl = scl;
-  //       this.isHover = false;
-  //     }
-
-  //     mousemove(x, y) {
-  //       const distX = Math.abs(this.x - x);
-  //       const distY = Math.abs(this.y - y);
-  //       const distance = Math.sqrt(distX ** 2 + distY ** 2);
-
-  //       const maxDist = this.scl * 5;
-  //       const minDist = this.scl * 1.5;
-
-  //       this.isClosest = distance < minDist;
-  //       this.isCenter = distance < this.scl * 3;
-  //       this.isHover = distance < maxDist;
-
-  //       let opacity = 1 - Math.min(distance / maxDist, 1);
-  //       opacity = Math.max(opacity, 0.4);
-
-  //       gsap.to(this.new, {
-  //         radius: this.isClosest
-  //           ? 10
-  //           : this.isCenter
-  //           ? 9
-  //           : this.isHover
-  //           ? 5
-  //           : 3,
-  //         opacity: opacity,
-  //         duration: 0.4,
-  //       });
-  //     }
-
-  //     render() {
-  //       this.context.beginPath();
-  //       this.context.arc(
-  //         this.new.x,
-  //         this.new.y,
-  //         this.new.radius,
-  //         0,
-  //         2 * Math.PI
-  //       );
-  //       this.context.fillStyle = `rgba(0, 0, 0, ${this.new.opacity})`;
-  //       this.context.fill();
-  //     }
-  //   }
-  //   ``;
-
-  //   const render = () => {
-  //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  //     dots.forEach((dot) => dot.render());
-  //     requestAnimationFrame(render);
-  //   };
-
-  //   const mousemoveHandler = (event) => {
-  //     const rect = canvasRef.current.getBoundingClientRect();
-  //     const scaleX = canvasRef.current.width / rect.width;
-  //     const scaleY = canvasRef.current.height / rect.height;
-
-  //     const x = (event.clientX - rect.left) * scaleX;
-  //     const y = (event.clientY - rect.top) * scaleY;
-
-  //     dots.forEach((dot) => dot.mousemove(x, y));
-  //   };
-
-  //   const resizeHandler = () => {
-  //     canvas.width = window.innerWidth;
-  //     canvas.height = window.innerHeight;
-  //     setupDots();
-  //   };
-
-  //   setupDots();
-  //   render();
-
-  //   window.addEventListener("mousemove", mousemoveHandler);
-  //   window.addEventListener("resize", resizeHandler);
-
-  //   return () => {
-  //     window.removeEventListener("mousemove", mousemoveHandler);
-  //     window.removeEventListener("resize", resizeHandler);
-  //   };
-  // }, []);
+    if (shaderRef.current) {
+      gsap.to(shaderRef.current, {
+        hover: hovered ? 1.0 : 0,
+        duration: 0.6,
+        ease: "power2.out",
+        onUpdate: () => {
+          shaderRef.current.needsUpdate = true;
+        }
+      });
+    }
+  }, [hovered]);
 
   return (
+    <Sphere
+      ref={sphereRef}
+      args={[3, 128, 128]}
+      onPointerMove={handleMouseMove}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+    >
+      <orbShaderMaterial
+        ref={shaderRef}
+        key={OrbShaderMaterial.key}
+        color1="#FDF69B"
+        color2="#FCD5C4"
+        rippleScale={1.5}
+        waveSpeed={0.8}
+        highlightStrength={1.2}
+        transparent={false}
+        depthWrite={true}
+      />
+    </Sphere>
+  );
+};
+
+
+
+
+
+const FinancingTreatment = () => {
+  const containerRef = useRef(null);
+  const pathRef = useRef(null);
+  const dottedEllipsesRef = useRef([]);
+  const [ellipseFinalY, setEllipseFinalY] = useState(null);
+  const [isEllipseDrawn, setIsEllipseDrawn] = useState(false);
+  const [isOrbScaledDown, setIsOrbScaledDown] = useState(false);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      gsap.fromTo(
+        containerRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 2.5, ease: "power2.out" }
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!pathRef.current || !isOrbScaledDown) return; 
+
+    const path = pathRef.current;
+    const pathLength = path.getTotalLength();
+
+    gsap.set(path, { strokeDasharray: pathLength, strokeDashoffset: pathLength });
+
+    gsap.to(path, {
+      strokeDashoffset: 0,
+      duration: 2,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: path,
+        start: "top 80%",
+        end: "top 30%",
+        scrub: 1,
+      },
+      onComplete: () => setIsEllipseDrawn(true),
+    });
+  }, [isOrbScaledDown]); 
+
+
+  useEffect(() => {
+    if (!isEllipseDrawn) return;
+
+    dottedEllipsesRef.current.forEach((el, i) => {
+      if (el) {
+        gsap.to(el, {
+          opacity: 1,
+          duration: 1,
+          delay: i * 0.3,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 70%",
+            end: "top 20%",
+            scrub: true,
+          },
+          top: ellipseFinalY ? `${ellipseFinalY + (i + 1) * 20}px` : "50%",
+        });
+      }
+    });
+  }, [isEllipseDrawn]);
+  return (
     <>
-       <div ref={introRef} className="section_intro">
-            <div className="intro_split"></div>
-            <div className="intro_split"></div>
-            <div className="intro_load" ref={loadRef}>
-              <div className="intro_load-line"></div>
-              {/* <div className="intro_load-illustration w-embed" ref={loadIllustrationRef}><svg width="213" height="204" viewbox="0 0 213 204" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9508 8.29492C8.42263 11.3055 5.6198 16.0245 4.43321 22.7169C2.79584 31.9516 5.81391 43.5655 13.3867 56.4826C20.9344 69.3571 32.8773 83.2977 48.6713 97.0752C62.1209 108.808 71.1927 117.584 77.2201 124.549C83.2414 131.508 86.337 136.784 87.6637 141.523C87.8334 142.129 87.7077 142.78 87.3244 143.28C86.9411 143.779 86.345 144.069 85.7155 144.062C78.6551 143.984 65.8638 147.19 54.5366 153.118C48.9 156.067 43.7361 159.635 39.8719 163.7C36.0087 167.764 33.5333 172.227 33.0405 177.001C32.1442 185.686 35.8361 192.976 41.2882 196.885C46.6908 200.759 53.8877 201.388 60.4912 196.66C62.0718 195.528 63.5982 194.417 65.085 193.335C78.5246 183.551 88.7274 176.123 106.441 177.299C108.463 177.434 110.536 177.616 112.66 177.802C120.098 178.456 128.165 179.164 136.916 178.072C149.302 176.527 163.005 171.346 177.388 156.894C187.273 146.962 192.748 137.852 195.149 128.805C197.385 120.384 196.772 111.922 194.428 102.546C192.313 94.0885 188.829 85.0273 184.843 74.6608C184.388 73.4782 183.927 72.2786 183.461 71.061C169.101 33.5819 134.063 32.4976 120.674 44.0127C122.042 44.8018 123.465 45.6625 124.914 46.544C125.129 46.6746 125.344 46.8057 125.56 46.9372C127.683 48.2291 129.869 49.56 132.099 50.8204C137.048 53.6178 141.987 55.9327 146.498 56.624C147.589 56.7913 148.339 57.812 148.171 58.9039C148.004 59.9957 146.983 60.7451 145.892 60.5778C140.619 59.7698 135.147 57.1378 130.131 54.3027C127.841 53.0084 125.599 51.6437 123.485 50.3565C123.267 50.2239 123.051 50.0922 122.836 49.9615C120.516 48.5506 118.375 47.2611 116.434 46.2326C113.537 44.697 109.433 43.248 105.051 42.3918C100.659 41.5336 96.1518 41.303 92.4105 42.0689C85.4544 43.4927 80.8856 46.3108 77.7336 49.1801C75.1997 51.4868 73.5748 53.8151 72.2779 55.7063C78.0923 61.4767 84.1139 66.7482 89.8933 70.8846C96.0962 75.3241 101.873 78.3487 106.726 79.3844C107.806 79.615 108.495 80.6776 108.264 81.7579C108.033 82.8381 106.971 83.5269 105.891 83.2963C100.244 82.091 93.9363 78.6971 87.5653 74.1373C81.1609 69.5536 74.5434 63.6827 68.2628 57.3472C60.5472 49.5642 53.8587 41.5939 47.4723 23.018C43.2488 10.733 33.4557 4.27113 24.3871 4.00838C19.8565 3.87712 15.4812 5.28237 11.9508 8.29492ZM69.4159 52.8048C62.7575 45.8802 56.9366 38.2434 51.255 21.7175C46.544 8.01449 35.3962 0.325674 24.503 0.0100623C19.0527 -0.147849 13.692 1.5508 9.35433 5.25213C5.01435 8.95544 1.81704 14.5602 0.494638 22.0186C-1.37988 32.5908 2.1391 45.2063 9.93598 58.5057C17.7579 71.8478 30.0173 86.111 46.0419 100.09C59.4454 111.782 68.3516 120.414 74.1953 127.167C78.8853 132.587 81.5304 136.715 82.9608 140.161C74.9165 140.769 63.1156 144.114 52.6821 149.573C46.7939 152.654 41.2306 156.465 36.9728 160.944C32.7141 165.424 29.6727 170.671 29.0617 176.591C28.0238 186.647 32.2938 195.358 38.9573 200.136C45.6703 204.949 54.7426 205.695 62.8197 199.912C64.4018 198.78 65.9167 197.68 67.379 196.618C80.9295 186.778 89.9687 180.214 106.176 181.29C108.05 181.415 110.023 181.589 112.082 181.771C119.093 182.389 127.106 183.096 135.667 182.238C136.879 186.049 139.732 190.726 144.69 193.653C150.584 197.133 159.04 197.905 170.372 192.601C181.056 187.6 190.285 180.186 197.222 172.861C204.117 165.582 208.922 158.205 210.56 153.176C212.111 148.412 213.116 142.434 211.54 137.347C210.736 134.752 209.254 132.376 206.847 130.575C204.928 129.138 202.507 128.132 199.544 127.616C201.356 119.07 200.557 110.566 198.309 101.576C196.13 92.8648 192.552 83.5613 188.586 73.2496C188.127 72.0568 187.663 70.8504 187.196 69.6299C171.665 29.0939 131.951 27.1986 116.937 42.0147C113.82 40.5481 109.902 39.2639 105.818 38.466C101.122 37.5483 96.0449 37.242 91.6084 38.1501C83.9144 39.725 78.6998 42.8914 75.0409 46.2221C72.4916 48.5429 70.7014 50.9538 69.4159 52.8048ZM198.539 131.504C195.703 140.836 189.873 150.02 180.223 159.715C166.064 173.942 152.343 179.713 139.716 181.715C140.79 184.604 143.042 188.035 146.724 190.208C151.207 192.855 158.221 193.872 168.676 188.978C178.813 184.234 187.647 177.155 194.318 170.111C201.032 163.022 205.383 156.155 206.756 151.938C208.215 147.457 208.93 142.44 207.719 138.531C207.13 136.629 206.092 135.006 204.451 133.777C203.067 132.742 201.159 131.916 198.539 131.504ZM168.523 99.0998C169.48 98.547 170.703 98.8742 171.256 99.8305L171.457 100.179C177.669 110.924 181.304 117.213 184.976 128.71C185.312 129.762 184.731 130.887 183.679 131.223C182.627 131.559 181.501 130.979 181.165 129.927C177.625 118.842 174.175 112.874 167.941 102.089L167.793 101.832C167.24 100.876 167.567 99.6525 168.523 99.0998ZM144.907 103.549C145.752 102.838 147.014 102.946 147.725 103.792C158.919 117.093 165.094 124.845 173.797 141.119C174.317 142.093 173.95 143.305 172.976 143.826C172.002 144.347 170.79 143.979 170.269 143.005C161.754 127.083 155.778 119.573 144.664 106.367C143.953 105.522 144.062 104.26 144.907 103.549ZM135.574 130.854C136.244 129.976 137.499 129.807 138.377 130.477C142.414 133.557 152.235 142.188 159.606 152.385C160.253 153.28 160.052 154.531 159.156 155.178C158.261 155.825 157.011 155.624 156.364 154.728C149.285 144.935 139.774 136.574 135.951 133.657C135.072 132.987 134.904 131.732 135.574 130.854Z" fill="#FFF"></path>
-            </svg></div> */}
-            </div>
-          </div>
-
-          <section className="section_hero">
-        <div className="container">
-          <div className="nav_container" ref={navRef}>
-            <a href="#" className="nav_brand-link">
-              <div className="icon-32">LOGO</div>
-            </a>
-            <a href="#" className="button">Click me</a>
-          </div>
-          <h1 className="hero_heading" ref={headingRef}>hi there!</h1>
-          <div className="hero_illustration" ref={illustrationRef}></div>
+      <div
+        ref={containerRef}
+        style={{
+          position: "relative",
+          height: "200vh",
+          background: "linear-gradient(to bottom, #f4e4d7, #ebbe9a)",
+          opacity: 0,
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "10%",
+            left: "60%",
+            transform: "translateX(-50%)",
+            fontSize: "4em",
+            fontFamily: "NeueMontrealBook",
+            maxWidth: "40vw",
+            lineHeight: "1.2",
+            zIndex: 2,
+          }}
+        >
+          Your plan <br />
+          is tailored <br />
+          to your needs. <br />
         </div>
-      </section>
 
+        <Canvas
+          camera={{ position: [0, 0, 8] }}
+          style={{
+            position: "fixed",
+            top: 0,
+            right: -100,
+            width: "100vw",
+            height: "100vh",
+            zIndex: 1,
+          }}
+        >
+          <ambientLight intensity={0.8} />
+          <pointLight position={[2, 2, 5]} intensity={2} color={"#ff9966"} />
+          <MovingOrb setEllipseFinalY={setEllipseFinalY} setIsOrbScaledDown={setIsOrbScaledDown} />
+          <OrbitControls enableZoom={false} />
+    
+          <Environment preset="sunset" background={false} />
+        </Canvas>
+
+        <div className="ellipse-container">
+          {isOrbScaledDown && (
+            <>
+              <svg
+                width="458"
+                height="72"
+                viewBox="0 0 458 72"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  position: "absolute",
+                  top: ellipseFinalY ? `${ellipseFinalY}px` : "50%",
+                  left: "70%",
+                  transform: "translate(-50%, -50%)",
+                  transition: "top 0.5s ease-out",
+                }}
+              >
+  <path
+    ref={pathRef}
+    d="M229,0.5c62.9,0,120.6,4.1,161.9,10.5c20.7,3.3,37.4,7.1,49,11.4c5.8,2.1,10.2,4.4,13.2,6.7c3,2.3,4.5,4.6,4.5,6.9s-1.5,4.6-4.5,6.9c-3,2.3-7.4,4.5-13.2,6.7c-11.5,4.3-28.3,8.2-49,11.4c-41.4,6.5-98.6,10.5-161.9,10.5S108.6,67.5,67.2,61c-20.7-3.3-37.4-7.1-49-11.4C12.4,47.4,8,45.2,5,42.9c-3-2.3-4.5-4.6-4.5-6.9S2,31.4,5,29.1c3-2.3,7.4-4.5,13.2-6.7c11.5-4.3,28.3-8.2,49-11.4C108.6,4.5,165.8,0.5,229,0.5"
+    stroke="black"
+    strokeWidth="1"
+/>
+</svg>
+
+{[...Array(5)].map((_, i) => (
+ <svg
+ key={i}
+ ref={(el) => {
+   if (el) dottedEllipsesRef.current[i] = el;
+ }}
+ width="458"
+ height="72"
+ viewBox="0 0 458 72"
+ fill="none"
+ xmlns="http://www.w3.org/2000/svg"
+ style={{
+   position: "absolute",
+   top: ellipseFinalY ? `${ellipseFinalY + (i + 1) * 20}px` : "50%",
+   left: "70%",
+   transform: "translate(-50%, -50%)",
+   opacity: 0,
+ }}
+>
+    <path
+      d="M229,0.5c62.9,0,120.6,4.1,161.9,10.5c20.7,3.3,37.4,7.1,49,11.4c5.8,2.1,10.2,4.4,13.2,6.7c3,2.3,4.5,4.6,4.5,6.9s-1.5,4.6-4.5,6.9c-3,2.3-7.4,4.5-13.2,6.7c-11.5,4.3-28.3,8.2-49,11.4c-41.4,6.5-98.6,10.5-161.9,10.5S108.6,67.5,67.2,61c-20.7-3.3-37.4-7.1-49-11.4C12.4,47.4,8,45.2,5,42.9c-3-2.3-4.5-4.6-4.5-6.9S2,31.4,5,29.1c3-2.3,7.4-4.5,13.2-6.7c11.5-4.3,28.3-8.2,49-11.4C108.6,4.5,165.8,0.5,229,0.5"
+      stroke="black"
+      strokeWidth="1"
+      fill="none"
+      strokeDasharray="3, 6"
+    />
+  </svg>
+))}
+
+            </>
+          )}
+        </div>
+      </div>
     </>
   );
 };
+
 
 export default FinancingTreatment;
