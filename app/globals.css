@@ -194,6 +194,72 @@
   src: url("/fonts/LarkenVariableItalic.ttf") format("truetype");
 }
 
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -1195,7 +1261,7 @@ header h1 {
 .horizontalWrapper {
   width: 100%;
   height: auto;
-  margin: 2vh auto; 
+  margin: 2vh auto;
   padding-bottom: 10px;
 }
 
@@ -1223,8 +1289,8 @@ header h1 {
 }
 
 .horizontalItem:hover {
-  outline: 6px solid rgb(210, 246, 90); 
-  
+  outline: 6px solid rgb(210, 246, 90);
+
 }
 
 .horizontalItem p {
@@ -3525,7 +3591,7 @@ box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.1);
 }
 
 :root {
-  
+
   --rotation-duration-custom: 20s;
   --hover-duration-custom: 0.3s;
   --ease-in-custom: cubic-bezier(0.32, 0, 0.67, 0);
@@ -4095,7 +4161,7 @@ font-family: "NovelaRegular";
   --color--font: #151515;
   --text-size--regular: 1rem;
   --heading--h1: 5rem;
-  --heading--h2: 3.5rem; 
+  --heading--h2: 3.5rem;
 }
 
 .hero-card {
@@ -4163,7 +4229,7 @@ font-family: "NovelaRegular";
   margin-right: auto;
   padding-left: 2.5rem;
   padding-right: 2.5rem;
-  
+
 }
 
 .container.container-small {
@@ -4304,11 +4370,11 @@ h2.heading-2 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin: 0 30px; 
-  color: #FE330A; 
-  font-size: 0.8em; 
-  line-height: 1; 
-  transform: translateY(-10%); 
+  margin: 0 30px;
+  color: #FE330A;
+  font-size: 0.8em;
+  line-height: 1;
+  transform: translateY(-10%);
 }
 
 .book-cursor {
@@ -4343,7 +4409,7 @@ h2.heading-2 {
   inset: 0%;
   will-change: transform;
 
-  
+
 }
 
 .overflow-hidden:hover .mod--round-arrow {
@@ -4404,7 +4470,7 @@ h2.heading-2 {
 }
 
 
-/* 
+/*
 * {
   margin: 0;
   padding: 0;
@@ -4493,7 +4559,7 @@ ion-icon{
   padding: 0.5rem;
   display: flex;
   overflow: hidden;
-  backdrop-filter: blur(8px); 
+  backdrop-filter: blur(8px);
 }
 
 .showcase_navigation_start {
@@ -4585,7 +4651,7 @@ a {
   background-color: #ddd0;
   position: fixed;
   inset: 0% 0% auto;
-  
+
 }
 
 .h2-navbar-container {
@@ -4599,13 +4665,13 @@ a {
   margin-right: auto;
   padding: 40px 55px 0;
   display: flex;
-  
+
 }
 
 
 
 .h2-menu.open {
-  pointer-events: auto; 
+  pointer-events: auto;
 }
 .h2-navbar-menu-button {
   color: #000;
@@ -4689,7 +4755,7 @@ a {
 }
 
 .h2-menu-text-number {
-  color: #fff;
+  color: var(--primary);
   margin-bottom: 0;
   font-weight: 500;
 }
@@ -4738,13 +4804,13 @@ a {
 .h2-menu.open {
   opacity: 1;
   visibility: visible;
-  pointer-events: auto; 
+  pointer-events: auto;
 }
 
 .h2-menu.closed {
   opacity: 0;
   visibility: hidden;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .h2-menu-row-1:hover {
@@ -4817,10 +4883,11 @@ a {
 .h2-menu-heading {
   transform: translate3d(0, 0, 0);
   transition: transform 0.3s ease-in-out;
+  color: #000;
 }
 
 .h2-menu-row-1:hover .h2-menu-image,
-.h2-menu-row-5:hover .h2-menu-image, 
+.h2-menu-row-5:hover .h2-menu-image,
 .h2-menu-row-3:hover .h2-menu-image{
   transform: translate3d(0, 0, 0);
   opacity: 1;
@@ -4872,10 +4939,9 @@ a {
 
 
 .h2-menu-row-1 {
-  color: #000;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -4888,11 +4954,10 @@ a {
 }
 
 .h2-menu-row-2 {
-  color: red;
   cursor: none;
   font-family: "Didot";
   font-style: italic;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
   width: 100%;
   padding-top: 22px;
   padding-bottom: 22px;
@@ -4904,7 +4969,7 @@ a {
   grid-column-gap: 40px;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -4916,10 +4981,9 @@ a {
 }
 
 .h2-menu-row-4 {
-  color: #fff;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
   width: 100%;
   padding-top: 22px;
   padding-bottom: 22px;
@@ -4928,10 +4992,9 @@ a {
 }
 
 .h2-menu-row-5 {
-  color: #fff;
   cursor: none;
   font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #000;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -5004,12 +5067,12 @@ a {
 .payment-title-wrapper {
   display: flex;
   align-items: center;
-  gap: 8px; 
+  gap: 8px;
 }
 
 .card-star {
-  width: 60px; 
-  height: 60px; 
+  width: 60px;
+  height: 60px;
 }
 
 .card-description {
@@ -5020,7 +5083,7 @@ a {
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: #000; 
+  color: #000;
 }
 
 
@@ -5034,7 +5097,7 @@ a {
 
 .gsap-hidden-text {
   position: absolute;
-  color: #ff5722; 
+  color: #ff5722;
 }
 
 @keyframes fadeIn {
@@ -5049,8 +5112,8 @@ a {
 }
 
 .fade-in {
-  opacity: 0; 
-  animation: fadeIn 1s ease-out forwards; 
+  opacity: 0;
+  animation: fadeIn 1s ease-out forwards;
 }
 
 .fade-in:nth-child(1) {
@@ -5080,16 +5143,16 @@ a {
 
 .feature-card {
   position: sticky;
-  top: 50%; 
-  transform: translateY(-50%); 
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 1;
   font-family: "NeueMontrealBook";
 }
 
 .feature-card div {
-  display: grid; 
-  grid-template-columns: 1fr 1fr; 
-  gap: 16px; 
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
   background: #E7E7FD;
   color: black;
   border-radius: 36px;
@@ -5112,9 +5175,9 @@ a {
 }
 
 .feature-card img {
-  width: 100%; 
-  height: auto; 
-  border-radius: 16px; 
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
   margin-bottom: 16px;
 }
 
@@ -5136,7 +5199,7 @@ a {
 
 .menu_link {
   display: block;
-  
+
 }
 
 .menu_link-text {
@@ -5181,7 +5244,7 @@ a {
   align-items: top;
   gap: 50px;
   padding: 100px 20px;
-  perspective: 1200px; 
+  perspective: 1200px;
 }
 
 .singlecard {
@@ -5211,7 +5274,7 @@ a {
 .card-back {
   background: pink;
   color: black;
-  transform: rotateY(180deg); 
+  transform: rotateY(180deg);
   font-family: "NeueMontrealBook";
   font-size: 1.5rem;
 }
@@ -5238,7 +5301,7 @@ a {
 .moving-section {
   position: absolute;
   top: 120vh;
-  height: 100vh; 
+  height: 100vh;
   width: 100%;
   background: #FAF8F4;
   z-index: 1;
@@ -5255,8 +5318,8 @@ a {
 
 .gradient-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); 
-  width: 50vw; 
+  grid-template-columns: repeat(4, 1fr);
+  width: 50vw;
   height: 100vh;
   overflow: hidden;
   position:relative;
@@ -5270,7 +5333,7 @@ a {
 }
 
 
-.gradient-col:nth-child(1) {  
+.gradient-col:nth-child(1) {
   background: linear-gradient(180deg, #F9F9F9 23%, var(--gradient) 45%, var(--gradient) 55%, #F9F9F9 100%);
   transform: translateY(calc(var(--progress) * -27%));
 }
@@ -5278,47 +5341,47 @@ a {
 
 .gradient-col:nth-child(2) {
   background: linear-gradient(
-    180deg, 
-    #F9F9F9 0%, 
-    var(--gradient) 21.43%, 
-    #F9F9F9 47.37%, 
-    #F9F9F9 53.13%, 
-    var(--gradient) 73.85%, 
+    180deg,
+    #F9F9F9 0%,
+    var(--gradient) 21.43%,
+    #F9F9F9 47.37%,
+    #F9F9F9 53.13%,
+    var(--gradient) 73.85%,
     #F9F9F9 100%
   );
   transform: translateY(calc(var(--progress) * 8% +10));
 }
 
 
-.gradient-col:nth-child(3) {  
+.gradient-col:nth-child(3) {
   background: linear-gradient(180deg, #F9F9F9 23%, var(--gradient) 45%, var(--gradient) 55%, #F9F9F9 100%);
   transform: translateY(calc(var(--progress) * -21%));
-  
+
 }
 
 
 .gradient-col:nth-child(4) {
   background: linear-gradient(
-    180deg, 
-    #F9F9F9 0%, 
-    var(--gradient) 21.43%, 
-    #F9F9F9 47.37%, 
-    #F9F9F9 53.13%, 
-    var(--gradient) 73.85%, 
+    180deg,
+    #F9F9F9 0%,
+    var(--gradient) 21.43%,
+    #F9F9F9 47.37%,
+    #F9F9F9 53.13%,
+    var(--gradient) 73.85%,
     #F9F9F9 100%
   );
   transform: translateY(calc(var(--progress) * 8% +10));
 }
 
 :root {
-  --gradient-2: #E8F724; 
+  --gradient-2: #E8F724;
   --progress: 0.2;
 }
 
 .gradient-container-2 {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); 
-  width: 50vw; 
+  grid-template-columns: repeat(4, 1fr);
+  width: 50vw;
   height: 100vh;
   overflow: hidden;
   position: relative;
@@ -5330,43 +5393,43 @@ a {
   background-repeat: no-repeat;
 }
 
-.gradient-col-2:nth-child(1) {  
+.gradient-col-2:nth-child(1) {
   background: linear-gradient(180deg, #FFFFFF 23%, var(--gradient-2) 45%, var(--gradient-2) 55%, #FFFFFF 100%);
   transform: translateY(calc(var(--progress) * -27%));
 }
 
 .gradient-col-2:nth-child(2) {
   background: linear-gradient(
-    180deg, 
-    #FFFFFF 0%, 
-    var(--gradient-2) 21.43%, 
-    #FFFFFF 47.37%, 
-    #FFFFFF 53.13%, 
-    var(--gradient-2) 73.85%, 
+    180deg,
+    #FFFFFF 0%,
+    var(--gradient-2) 21.43%,
+    #FFFFFF 47.37%,
+    #FFFFFF 53.13%,
+    var(--gradient-2) 73.85%,
     #FFFFFF 100%
   );
   transform: translateY(calc(var(--progress) * 8% +10));
 }
 
-.gradient-col-2:nth-child(3) {  
+.gradient-col-2:nth-child(3) {
   background: linear-gradient(180deg, #FFFFFF 23%, var(--gradient-2) 45%, var(--gradient-2) 55%, #FFFFFF 100%);
   transform: translateY(calc(var(--progress) * -21%));
 }
 
 .gradient-col-2:nth-child(4) {
   background: linear-gradient(
-    180deg, 
-    #FFFFFF 0%, 
-    var(--gradient-2) 21.43%, 
-    #FFFFFF 47.37%, 
-    #FFFFFF 53.13%, 
-    var(--gradient-2) 73.85%, 
+    180deg,
+    #FFFFFF 0%,
+    var(--gradient-2) 21.43%,
+    #FFFFFF 47.37%,
+    #FFFFFF 53.13%,
+    var(--gradient-2) 73.85%,
     #FFFFFF 100%
   );
   transform: translateY(calc(var(--progress) * 8% +10));
 }
 .imagestack {
-  position: relative; 
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: right;
@@ -5376,7 +5439,7 @@ a {
 
 
 .gallery-img {
-  position: absolute; 
+  position: absolute;
   height: 40vh;
   width: auto;
   object-fit: contain;
@@ -5384,7 +5447,7 @@ a {
 }
 
 .patient-grid {
-  grid-template-columns: repeat(2, 1fr); 
+  grid-template-columns: repeat(2, 1fr);
   display: grid;
   gap: 50px;
 }
@@ -5418,7 +5481,7 @@ a {
   height: 100vh;
   display: flex;
   position: absolute;
-  
+
 }
 
 
