@@ -209,169 +209,89 @@ const StepsSection = () => {
 };
 
 
-const OrbShaderMaterial = shaderMaterial(
+
+const SolareOrbMaterial = shaderMaterial(
   {
     time: 0,
-    hover: 0,
-    mousePos: new THREE.Vector2(0.5, 0.5),
-    color1: new THREE.Color("#FDF69B"),
-    color2: new THREE.Color("#FCD5C4"),
-    color3: new THREE.Color("#ffd1a1"),
-    rippleScale: 2.0,
-    waveSpeed: 1.2, 
-    refractionPower: 0.08,
-    highlightStrength: 1.2, 
+    color1: new THREE.Color("#E8C586"), 
+    color2: new THREE.Color("#C89E6A"), 
+    highlightColor: new THREE.Color("#FFFACD"), 
   },
-
+  // Vertex Shader
   `
   varying vec2 vUv;
   varying vec3 vNormal;
-  varying float vHoverEffect;
-  varying float vDisplacement;
   uniform float time;
-  uniform float hover;
-  uniform vec2 mousePos;
-  uniform float rippleScale;
-  uniform float waveSpeed;
-
-  float wave(vec2 p, float t) {
-      return sin(20.0 * length(p) - t * 6.0) * 0.6 + 0.5;
-  }
 
   void main() {
     vUv = uv;
-    vNormal = normal;
-    
+    vNormal = normalize(normal);
+
     vec3 pos = position;
-    vec2 uvMouse = mousePos;
-    float dist = length(vUv - uvMouse);
+    pos.y += sin(time * 0.6 + pos.x * 2.0) * 0.03;
 
-    // 🔹 Stronger, Expanding Wave Effect
-    float ripple = wave(vUv - uvMouse, time * waveSpeed);
-    float rippleEffect = smoothstep(0.4, 0.0, dist) * hover * ripple * rippleScale;
-    
-    pos += normal * rippleEffect * 0.3; // 🔹 More pronounced displacement
-
-    vHoverEffect = rippleEffect;
-    vDisplacement = rippleEffect;
+    float pulse = sin(time * 0.8) * 0.015;
+    pos *= (1.0 + pulse);
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
   }
   `,
   // Fragment Shader
   `
-  uniform vec3 color1;
-  uniform vec3 color2;
-  uniform float refractionPower;
-  uniform float highlightStrength;
-  varying vec2 vUv;
-  varying vec3 vNormal;
-  varying float vHoverEffect;
-  varying float vDisplacement;
+uniform vec3 color1;
+uniform vec3 color2;
+uniform vec3 highlightColor;
+uniform float time;
 
-  void main() {
+varying vec2 vUv;
+varying vec3 vNormal;
 
-    vec3 baseColor = mix(color1, color2, vUv.y * 1.3);
+  float hash(float n) { return fract(sin(n) * 1e4); }
+  float noise(vec2 p) {
+    return hash(p.x * 37.0 + p.y * 57.0 + time * 0.1);
+  }
 
+void main() {
+      float radial = length(vUv - 0.5) * 1.2; 
+      radial = smoothstep(0.1, 0.9, radial); 
+    
+    vec3 baseGradient = mix(color1, color2, radial);
 
-    float specular = pow(vHoverEffect, 2.0) * highlightStrength;
-    vec3 highlight = vec3(1.0, 0.5, 0.5) * specular;
+vec2 lightPos = vec2(0.25, 0.6);
+  float highlight = pow(1.0 - length(vUv - lightPos), 3.0) * 0.6; 
+ vec3 highlightEffect = highlightColor * highlight * 0.8; 
 
+    float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.5);
+      vec3 rimLight = vec3(1.0, 0.9, 0.8) * fresnel * 0.5; 
 
-    float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 4.0);
-    vec3 rimLight = vec3(0.8, 0.85, 1.0) * fresnel * 0.5;
+   vec3 finalColor = clamp(baseGradient + highlightEffect + rimLight, 0.0, 1.0);
 
-    vec3 finalColor = baseColor + highlight + rimLight;
-    finalColor *= 1.0 - smoothstep(0.8, 1.0, length(vUv - 0.5));
+      gl_FragColor = vec4(finalColor, 1.0);
 
-    gl_FragColor = vec4(finalColor, 1.0);
   }
   `
 );
 
-extend({ OrbShaderMaterial });
-const MovingOrb = ({ setEllipseFinalY, setIsOrbScaledDown }) => {
+
+extend({ SolareOrbMaterial });
+
+const SolareOrb = () => {
   const sphereRef = useRef();
-  const shaderRef = useRef();
-  const [finalSet, setFinalSet] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const targetMousePos = useRef(new THREE.Vector2(0.5, 0.5));
+  const materialRef = useRef();
 
   useFrame(({ clock }) => {
-    if (sphereRef.current && shaderRef.current) {
-      const scrollFactor = window.scrollY;
-      const scaleFactor = Math.max(
-        0.5, 
-        1.5 - Math.max(0, scrollFactor - 150) * 0.004
-      );
-      
-      sphereRef.current.position.set(
-        (1.5 - scaleFactor) * 2.5,
-        -scrollFactor * 0.002,
-        -1
-      );
-      sphereRef.current.scale.setScalar(scaleFactor);
-
-      shaderRef.current.time = clock.getElapsedTime();
-      shaderRef.current.mousePos.lerp(targetMousePos.current, 0.1);
-      shaderRef.current.mousePos.needsUpdate = true;
-
-      if (scaleFactor === 0.5 && !finalSet) {
-        const screenHeight = window.innerHeight;
-        const adjustedFinalY = screenHeight / 2 - sphereRef.current.position.y * screenHeight * 1.2;
-        setEllipseFinalY(adjustedFinalY);
-        setIsOrbScaledDown(true);
-        setFinalSet(true);
-      }
+    if (materialRef.current) {
+      materialRef.current.uniforms.time.value = clock.getElapsedTime();
     }
   });
 
-  const handleMouseMove = (e) => {
-    const canvas = document.querySelector("canvas");
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = 1.0 - (e.clientY - rect.top) / rect.height;
-    targetMousePos.current.set(x, y);
-  };
-
-  useEffect(() => {
-    if (shaderRef.current) {
-      gsap.to(shaderRef.current, {
-        hover: hovered ? 1.0 : 0,
-        duration: 0.6,
-        ease: "power2.out",
-        onUpdate: () => {
-          shaderRef.current.needsUpdate = true;
-        }
-      });
-    }
-  }, [hovered]);
-
   return (
-    <Sphere
-      ref={sphereRef}
-      args={[3, 128, 128]}
-      onPointerMove={handleMouseMove}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
-    >
-      <orbShaderMaterial
-        ref={shaderRef}
-        key={OrbShaderMaterial.key}
-        color1="#FDF69B"
-        color2="#FCD5C4"
-        rippleScale={1.5}
-        waveSpeed={0.8}
-        highlightStrength={1.2}
-        transparent={false}
-        depthWrite={true}
-      />
-    </Sphere>
+    <mesh ref={sphereRef} scale={2}>
+      <sphereGeometry args={[1.8, 128, 128]} />
+      <solareOrbMaterial ref={materialRef} />
+    </mesh>
   );
 };
-
 
 
 
@@ -481,7 +401,7 @@ const FinancingTreatment = () => {
         >
           <ambientLight intensity={0.8} />
           <pointLight position={[2, 2, 5]} intensity={2} color={"#ff9966"} />
-          <MovingOrb setEllipseFinalY={setEllipseFinalY} setIsOrbScaledDown={setIsOrbScaledDown} />
+          <SolareOrb setEllipseFinalY={setEllipseFinalY} setIsOrbScaledDown={setIsOrbScaledDown} />
           <OrbitControls enableZoom={false} />
     
           <Environment preset="sunset" background={false} />
