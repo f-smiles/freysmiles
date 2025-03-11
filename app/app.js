@@ -17,7 +17,7 @@ export default function App({ children, user }) {
             <Toast />
             {children}
           </main>
-          <Footer />
+          {/* <Footer /> */}
         </PersistGate>
       </Provider>
     </NextThemeProvider>

@@ -19,11 +19,13 @@ export default function DesktopNav({ user }) {
   const pathname = usePathname();
   const [isActive, setIsActive] = useState(false)
   const [selectedLink, setSelectedLink] = useState(null)
-
   useEffect(() => {
     const delayAnimation = setTimeout(() => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
 
+      ScrollTrigger.getAll()
+        .filter(trigger => trigger.trigger === document.querySelector('.scroll-nav'))
+        .forEach((trigger) => trigger.kill());
+  
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: '.scroll-nav',
@@ -32,16 +34,19 @@ export default function DesktopNav({ user }) {
           scrub: true,
         },
       });
-
+  
       timeline.to('.scroll-nav', { width: '80%', padding: '0px' });
-
+  
     }, 250); // delay for next to finish rendering
-
+  
     return () => {
       clearTimeout(delayAnimation);
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      ScrollTrigger.getAll()
+        .filter(trigger => trigger.trigger === document.querySelector('.scroll-nav'))
+        .forEach((trigger) => trigger.kill());
     };
   }, [pathname]); // rerun gsap on route change
+  
 
   // reset navbar
   useEffect(() => {

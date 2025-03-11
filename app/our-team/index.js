@@ -561,7 +561,7 @@ export default function OurTeam() {
   {textLines.map((line, index) => (
     <div
       key={index}
-      className="tracking-wide stagger-line font-neue-montreal text-[40px] relative"
+      className="dark:text-zinc-900 tracking-wide stagger-line font-neue-montreal text-[40px] relative"
     >
       {line.text.split(" ").map((word, wordIndex) => (
         <span
