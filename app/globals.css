@@ -5339,45 +5339,66 @@ a {
 }
 
 
-/* 
-html, body {
 
-  scroll-behavior: smooth;
+
+ .gtext {
+  line-height: 1;
   margin: 0;
-  padding: 0;
-  height: 100%;
-} */
-
-
-/* .MainContainer {
-  perspective: 1px;
-  transform-style: preserve-3d;
-  height: 100vh;
-  overflow-x: hidden;
-  overflow-y: scroll;
-} */
-
-
-.ParallaxContainer {
-  display: flex;
+  display: grid;
+  font-weight: 400;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
-  position: relative;
-  /* z-index: -1; */
-  /* transform: translateZ(-1px) scale(2); */
-
+  white-space: nowrap;
+  --text-width: 100px;
+  --gsplits: 4;
+  --gcolor: #fff;
+  --gsize: 1rem;
+  font-size: var(--gsize);
+  color: var(--gcolor);
+  --offset: calc(var(--text-width) / var(--gsplits));
+  grid-template-columns: repeat(var(--gsplits), var(--offset));
+  
 }
 
-/* 
-.StatsContainer {
-  position: relative;
-  z-index: 10; 
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 100px 20px;
+.size-xl {
+	--gsize: clamp(5rem,12vw,18rem);
+	/* text-transform: uppercase; */
 }
- */
 
+
+
+.spaced {
+  margin: 20vh auto;
+}
+
+
+.gtext__box {
+  overflow: hidden;
+  position: relative;
+  will-change: transform;
+  margin-right: -0.5px;
+}
+
+.gtext__box-inner {
+  padding-right: 0.2em; 
+  width: max-content;
+  position: relative;
+  display: block;
+  will-change: transform;
+}
+
+.stroke_wide {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width:100%;
+	height: 100%;
+	stroke-linecap: round;
+	fill: none;
+	z-index: 0;
+  stroke: #3339F1;
+  stroke-width: 230;
+
+
+
+
+}

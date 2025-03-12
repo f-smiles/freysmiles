@@ -134,7 +134,7 @@ export default function DesktopNav({ user }) {
               <p className="font-helvetica-neue-light tracking-wider text-[13px] ">Shop</p>
             </Link>
             
-            <CartComponent />
+            <CartComponent isScrolled={isScrolled}  />
             
             {user ? (
               <UserButton user={user} />

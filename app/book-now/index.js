@@ -8,31 +8,6 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger);
 
-const Marquee = () => {
-  const items = [
-    { word: "Let's Talk" },
-    { word: "Let's Talk" },
-    { word: "Let's Talk" },
-    { word: "Let's Talk" },
-    { word: "Let's Talk" },
-  ];
-
-  return (
-    <div className="relative flex max-w-[100vw] overflow-hidden py-5">
-      <div className="flex min-w-max animate-marquee hover:[animation-play-state:paused]">
-        {[...items, ...items].map((item, index) => (
-          <div
-            key={index}
-            className="px-4 text-[2.5em] font-medium whitespace-nowrap"
-          >
-            {item.word}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 export default function BookNow() {
   const fadeUpMaskedVariants = {
     hidden: { y: "100%", opacity: 0 },
@@ -88,6 +63,7 @@ export default function BookNow() {
 
   return (
     <div className="pt-20 flex flex-col items-center relative">
+      
       <motion.div
         className="absolute left-0 top-0 h-full w-[1px] bg-gray-400"
         initial={{ height: 0 }}
@@ -101,8 +77,8 @@ export default function BookNow() {
         transition={{ duration: 1, ease: "easeInOut", delay: 0.2 }}
         onAnimationComplete={() => setLinesComplete(true)}
       />
-
 <motion.div className="relative w-full overflow-hidden">
+  {/* Top Border */}
   <motion.div
     className="absolute top-0 left-0 h-[1px] w-0 bg-gray-400 z-10"
     initial={{ width: 0 }}
@@ -110,12 +86,29 @@ export default function BookNow() {
     transition={{ duration: 0.8, ease: "easeInOut", delay: 0.4 }}
   />
 
-  <motion.div
-    className="absolute top-0 left-0 w-full bg-[#FEEA27]"
-    initial={{ height: "0%" }} 
-    animate={linesComplete && fadeUpMaskedVariants ? { height: "100%" } : {}} 
-    transition={{ duration: 1.2, ease: "easeInOut" }} 
-  />
+
+  <motion.div className="relative w-full">
+    <motion.div
+      className="absolute top-0 left-0 w-full bg-[#FEEA27]"
+      initial={{ height: "0%" }}
+      animate={linesComplete ? { height: "180px" } : {}} 
+      transition={{ duration: 1.2, ease: "easeInOut" }}
+    />
+    
+    {/* "Let's Talk" */}
+<div className="relative flex justify-center items-center h-[180px] text-center text-[4em] font-neue-montreal">
+  <div className="relative overflow-hidden">
+    <motion.div
+      variants={fadeUpMaskedVariants}
+      initial="hidden"
+      animate={linesComplete ? "visible" : "hidden"}
+    >
+      Let's Talk
+    </motion.div>
+  </div>
+</div>
+
+  </motion.div>
 
   {/* Bottom Border */}
   <motion.div
@@ -124,19 +117,8 @@ export default function BookNow() {
     animate={{ width: "100%" }}
     transition={{ duration: 0.8, ease: "easeInOut", delay: 0.5 }}
   />
-
-  {/* "Let's Talk" */}
-  <div className="text-[5em] font-neue-montreal w-full relative text-center flex justify-center overflow-hidden">
-    <motion.div
-      variants={fadeUpMaskedVariants}
-      initial="hidden"
-      animate={linesComplete ? "visible" : "hidden"}
-      
-    >
-      Let's Talk
-    </motion.div>
-  </div>
 </motion.div>
+
 
       <motion.div
         className="w-full grid grid-cols-1 md:grid-cols-2 relative"
@@ -155,10 +137,10 @@ export default function BookNow() {
 
           <div className="relative overflow-hidden">
             <motion.h1
-              className="font-helvetica-neue-light text-[1.6rem]"
+              className="pb-10 font-helvetica-neue-light text-[1.6rem]"
               variants={fadeUpMaskedVariants}
             >
-              CONTACT
+              Contact
             </motion.h1>
           </div>
 

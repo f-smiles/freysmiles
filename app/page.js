@@ -1,4 +1,5 @@
 "use client";
+import { Item } from "../utils/Item";
 import { Curtains, Plane } from "curtainsjs";
 import { Vector2, Vector4 } from "three";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,6 +9,8 @@ import Link from "next/link";
 import Matter from "matter-js";
 import * as THREE from "three";
 import { GUI } from "dat.gui";
+import Lenis from "@studio-freight/lenis";
+
 import React, {
   forwardRef,
   useRef,
@@ -51,6 +54,24 @@ if (typeof window !== "undefined") {
 }
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+const Marquee = () => {
+  const items = [{ word: "TESTIMONIALS" }, { word: "TESTIMONIALS" }];
+
+  return (
+    <div className="relative flex  overflow-hidden py-5">
+      <div className="flex min-w-max animate-marquee hover:[animation-play-state:paused]">
+        {[...items, ...items].map((item, index) => (
+          <div
+            key={index}
+            className="px-4 text-[10em] font-agrandir-bold whitespace-nowrap"
+          >
+            {item.word}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export default function LandingComponent() {
   return (
@@ -612,146 +633,223 @@ const Hero = () => {
       window.removeEventListener("mousemove", updateMouse);
       window.removeEventListener("touchstart", updateMouse);
       window.removeEventListener("touchmove", updateMouse);
-      containerRef.current.removeChild(gl.canvas);
+      if (containerRef.current && gl?.canvas) {
+        containerRef.current.removeChild(gl.canvas);
+      }
     };
   }, []);
 
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, (latest) => -latest * 0.5);
+
+  const sectionCircleRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionCircleRef,
+    offset: ["start end", "end start"],
+  });
+
+  const strokeRef = useRef(null);
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    if (strokeRef.current && mainRef.current) {
+      const path = strokeRef.current;
+      const pathLength = path.getTotalLength();
+  
+      gsap.set(path, {
+        strokeDasharray: pathLength,
+        strokeDashoffset: pathLength, // Start fully hidden
+      });
+  
+      gsap.to(path, {
+        strokeDashoffset: 0, // Reveals the stroke
+        ease: "none",
+        scrollTrigger: {
+          trigger: mainRef.current,
+          start: "top bottom",  // Animation starts when SVG enters viewport
+          end: "bottom top",    // Ends when it leaves the viewport
+          scrub: 1,            // Fully tied to scroll progress
+        },
+      });
+    }
+  }, []);
+  
   return (
-    <motion.section className="h-screen w-full flex items-center justify-center bg-cover bg-center ">
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "100%",
-        }}
+    <div className="relative">
+      <motion.section
+        style={{ y }}
+        className="h-screen w-full flex items-center justify-center bg-blue-500 fixed top-0 left-0 z-0"
       >
         <div
-          ref={containerRef}
-          className="absolute inset-0 pointer-events-none"
           style={{
-            position: "absolute",
+            position: "relative",
             width: "100%",
             height: "100%",
-            overflow: "hidden",
           }}
-        />
-      </div>
-
-      <svg
-        viewBox="0 0 96 1332"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full"
-      >
-        <path
-          d="M1.00003 1332L1.00006 726.469C1.00007 691.615 18.8257 659.182 48.25 640.5V640.5C77.6744 621.818 95.5 589.385 95.5 554.531L95.5 0"
-          stroke="white"
-          strokeOpacity="0.2"
-          strokeWidth="1"
-        ></path>
-
+        >
+          <div
+            ref={containerRef}
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              overflow: "hidden",
+            }}
+          />
+        </div>
+          {/* Wavy Line Main Section */}
         <svg
           viewBox="0 0 96 1332"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full"
         >
-          <defs>
-            <filter
-              id="glow-effect"
-              x="-50%"
-              y="-50%"
-              width="200%"
-              height="200%"
-            >
-              <feGaussianBlur stdDeviation="8" result="coloredBlur" />
-              <feFlood
-                floodColor="white"
-                floodOpacity="0.8"
-                result="glowColor"
-              />
-              <feComposite
-                in="glowColor"
-                in2="coloredBlur"
-                operator="in"
-                result="softGlow"
-              />
-              <feMerge>
-                <feMergeNode in="softGlow" />
-                <feMergeNode in="softGlow" />
-              </feMerge>
-            </filter>
-          </defs>
-
-          <motion.path
+          <path
             d="M1.00003 1332L1.00006 726.469C1.00007 691.615 18.8257 659.182 48.25 640.5V640.5C77.6744 621.818 95.5 589.385 95.5 554.531L95.5 0"
             stroke="white"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeOpacity="0.4"
-            filter="url(#glow-effect)"
-            strokeDasharray="620, 1332"
-            strokeDashoffset="1952"
-            animate={{
-              strokeDashoffset: [1952, 0],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 4.5,
-              ease: "linear",
-            }}
-          />
+            strokeOpacity="0.2"
+            strokeWidth="1"
+          ></path>
+
+          <svg
+            viewBox="0 0 96 1332"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full"
+          >
+            <defs>
+              <filter
+                id="glow-effect"
+                x="-50%"
+                y="-50%"
+                width="200%"
+                height="200%"
+              >
+                <feGaussianBlur stdDeviation="8" result="coloredBlur" />
+                <feFlood
+                  floodColor="white"
+                  floodOpacity="0.8"
+                  result="glowColor"
+                />
+                <feComposite
+                  in="glowColor"
+                  in2="coloredBlur"
+                  operator="in"
+                  result="softGlow"
+                />
+                <feMerge>
+                  <feMergeNode in="softGlow" />
+                  <feMergeNode in="softGlow" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <motion.path
+              d="M1.00003 1332L1.00006 726.469C1.00007 691.615 18.8257 659.182 48.25 640.5V640.5C77.6744 621.818 95.5 589.385 95.5 554.531L95.5 0"
+              stroke="white"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeOpacity="0.4"
+              filter="url(#glow-effect)"
+              strokeDasharray="620, 1332"
+              strokeDashoffset="1952"
+              animate={{
+                strokeDashoffset: [1952, 0],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 4.5,
+                ease: "linear",
+              }}
+            />
+          </svg>
         </svg>
-      </svg>
 
-      <div className="font-neue-montreal absolute top-60 right-10 max-w-lg text-sm text-gray-300">
-        <h1 className="text-6xl md:text-7xl font-neue-montreal leading-none">
-          Because every <br /> smile is unique
-        </h1>
+        <div className="font-neue-montreal absolute top-60 right-10 max-w-lg text-sm text-gray-300">
+          <h1 className="text-6xl md:text-7xl font-neue-montreal leading-none">
+            Because every <br /> smile is unique
+          </h1>
 
-        <button className="font-helvetica-neue mt-6 px-6 py-3 bg-[url('/images/buttongradipng')] bg-cover bg-center hover:bg-blue-600 text-[12px] rounded-full transition">
-          START YOUR JOURNEY
-        </button>
-        <div
-          style={{
-            width: "1.5em",
-            height: "1.5em",
-            borderRadius: "50%",
-            overflow: "hidden",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <video
-            id="holovideo"
-            loop
-            muted
-            autoPlay
-            playsInline
-            preload="metadata"
+          <button className="font-helvetica-neue mt-6 px-6 py-3 bg-[url('/images/buttongradipng')] bg-cover bg-center hover:bg-blue-600 text-[12px] rounded-full transition">
+            START YOUR JOURNEY
+          </button>
+          <div
             style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              transform: "scale(1.25)",
-              boxShadow: "0 0 50px #ebe6ff80",
+              width: "1.5em",
+              height: "1.5em",
+              borderRadius: "50%",
+              overflow: "hidden",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <source
-              src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
+            <video
+              id="holovideo"
+              loop
+              muted
+              autoPlay
+              playsInline
+              preload="metadata"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                transform: "scale(1.25)",
+                boxShadow: "0 0 50px #ebe6ff80",
+              }}
+            >
+              <source
+                src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support the video tag.
+            </video>
+          </div>
         </div>
-      </div>
 
-      <div className="font-neue-montreal absolute bottom-10 right-10 max-w-xs text-sm text-gray-300">
-        Frey Smiles is working at the intersection of technology and nature to
-        transform your smile.
-      </div>
-    </motion.section>
+        <div className="font-neue-montreal absolute bottom-10 right-10 max-w-xs text-sm text-gray-300">
+          Frey Smiles is working at the intersection of technology and nature to
+          transform your smile.
+        </div>
+      </motion.section>
+      <section
+        ref={sectionCircleRef}
+        className="relative h-[160vh] w-full bg-white z-10 mt-[100vh]"
+      >
+        <section className="relative flex flex-col justify-center items-center text-center h-full px-8">
+        <main ref={mainRef}>
+          <svg
+            style={{ transform: "translateX(120px)" }} 
+          className="stroke_wide " 
+            preserveAspectRatio="xMidYMid slice"
+            fill-rule="evenodd"
+            stroke-miterlimit="1.5"
+            clip-rule="evenodd"
+            viewBox="0 1000 8500 14948.91"
+          >
+            <defs></defs>
+            <path
+                 ref={strokeRef}
+              class="stroke_wide"
+              d="M4462.32,625c0,0 14.613,622.459 -463.862,807.768c-481.301,186.404 -1447.09,-126.375 -1575.51,541.543c-124.818,649.224 959.032,311.455 1893.1,826.688c1089.01,600.699 -524.942,1127.57 -1302.17,1453.96c-951.997,399.786 -995.709,1421.16 -230.78,1308.47c1157.75,-170.555 2955.04,-369.639 2625.82,434.977c-258.167,630.956 -1834.68,308.013 -1915.59,964.376c-123.736,1003.78 785.635,859.091 1309.31,778.296c976.475,-150.654 1261.08,579.399 1203.78,1013.11c-62.259,471.302 -669.89,1009.61 -1534.75,1125.17c-1019.84,136.266 -2356.12,174.662 -2200.88,942.9c130.32,644.912 1957.69,378.097 2999.78,691.136c860.372,258.452 772.286,1223.59 346.923,1696.49c-769.812,855.852 -852.502,1355.35 -852.502,1355.35"
+            />
+          </svg>
+</main>
+          <div className="max-w-3xl text-[#1D64EF]">
+            <p className="uppercase text-[12px] font-semibold font-helvetica-neue-light tracking-widest">
+              Vision
+            </p>
+            <h2 className="font-neue-montreal text-[40px] md:text-[40px] font-medium leading-none mt-4">
+              At FreySmiles, we blend artistry and precision to craft smiles as
+              unique as the individuals who wear them. Guided by expertise and
+              innovation—we shape confidence one smile at a time.
+            </h2>
+          </div>
+        </section>
+      </section>
+    </div>
   );
 };
 
@@ -990,9 +1088,8 @@ const Stats = () => {
   }, []);
 
   const lines = [
-    "A confident smile begins with effective care tailored to each patient.",
-    "At our practice, we’re dedicated to providing treatments that are not only ",
-    "scientifically sound but also crafted to bring out your best smile.",
+    "We take a different approach, ",
+    "and we think you'll appreciate the difference.",
   ];
 
   return (
@@ -1058,7 +1155,7 @@ const Stats = () => {
               {lines.map((line, index) => (
                 <motion.div
                   key={index}
-                  className="text-[14px] lg:text-[20px] overflow-hidden leading-relaxed"
+                  className="text-[18px] lg:text-[24px] overflow-hidden leading-relaxed"
                   initial={{
                     clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
                     y: 20,
@@ -1086,7 +1183,7 @@ const Stats = () => {
           {/* Stats Section */}
           <div className="flex flex-wrap sm:flex-nowrap justify-end mt-8 space-x-4 sm:space-x-6 md:space-x-12">
             <div className="text-center">
-              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">
+              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 ">
                 Years of Experience
               </p>
               <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light flex items-center gap-1 sm:gap-2">
@@ -1103,7 +1200,7 @@ const Stats = () => {
               </h2>
             </div>
             <div className="text-center">
-              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">
+              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 ">
                 Satisfied Patients
               </p>
               <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light flex items-center gap-1 sm:gap-2">
@@ -1118,7 +1215,7 @@ const Stats = () => {
               </h2>
             </div>
             <div className="text-center">
-              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">
+              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10">
                 Locations
               </p>
               <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light">
@@ -2448,111 +2545,69 @@ const ImageGrid = () => {
   //   if (sectionRef.current) observer.observe(sectionRef.current);
   //   return () => observer.disconnect();
   // }, []);
-  const sectionRef = useRef(null);
-  const contentRefs = useRef([]);
 
-  const sections = [
-    {
-      title: "Big Laptop Clock",
-      text: "More surprises we find.",
-      image: "https://source.unsplash.com/800x400/?laptop,clock",
-    },
-    {
-      title: "Pricing Formula",
-      text: "Intelligence is a narrow branch of the tree of life...",
-      image: "https://source.unsplash.com/800x400/?calculator,finance",
-    },
-    {
-      title: "Position Your Brand",
-      text: "Branding is all about positioning your story...",
-      image: "https://source.unsplash.com/800x400/?branding,design",
-    },
-    {
-      title: "Paper Calendar",
-      text: "Time management requires tangible planning...",
-      image: "https://source.unsplash.com/800x400/?calendar,planner",
-    },
-    {
-      title: "Visual Strategy",
-      text: "A compelling strategy is both visual and tactical...",
-      image: "https://source.unsplash.com/800x400/?strategy,design",
-    },
-  ];
+  const createItems = () => {
+    const elements = document.querySelectorAll(".gtext");
+
+    return [...elements].map((el) => new Item(el, 6));
+  };
+
+  const textExpertiseRef = useRef(null);
+  const textWrapRef = useRef(null);
 
   useEffect(() => {
-    const sectionsContainer = sectionRef.current;
-    const contents = contentRefs.current;
+    if (!textExpertiseRef.current) return;
 
-    if (!sectionsContainer || !contents.length) return;
+    let items = createItems();
 
-    gsap.set(contents, { autoAlpha: 0, y: 50 }); // Hide all content initially
-    gsap.set(contents[0], { autoAlpha: 1, y: 0 }); // Show the first one
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionsContainer,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: true,
-        pin: true,
-      },
-    });
-
-    sections.forEach((_, index) => {
-      if (index < sections.length - 1) {
-        tl.to(contents[index], { autoAlpha: 0, y: -50 }).to(
-          contents[index + 1],
-          { autoAlpha: 1, y: 0 },
-          "<"
+    items.forEach((item, index) => {
+      gsap
+        .timeline({
+          defaults: { ease: "power1" },
+          scrollTrigger: {
+            trigger: item.DOM.el,
+            start: "top 90%",
+            end: "top 20%",
+            scrub: true,
+          },
+        })
+        .fromTo(
+          item.DOM.inner,
+          { xPercent: (pos) => (pos % 2 === 0 ? 30 : -30), opacity: 0.6 },
+          { xPercent: 0, opacity: 1 },
+          index * 0.1
+        )
+        .fromTo(
+          item.DOM.innerWrap,
+          { xPercent: (pos) => 2 * (pos + 1) * 10 },
+          { xPercent: 0 },
+          index * 0.1
         );
-      }
-    });
-  }, [sections]);
-  const textRef = useRef(null);
-
-  useEffect(() => {
-    const slices = textRef.current.querySelectorAll(".slice");
-
-    gsap.set(slices, { xPercent: (i) => -i * 100 });
-
-    textRef.current.addEventListener("mouseenter", () => {
-      gsap.to(slices, {
-        xPercent: (i) => -i * 100 - 100,
-        duration: 0.5,
-        stagger: 0.05,
-        ease: "power2.out",
-      });
-    });
-
-    textRef.current.addEventListener("mouseleave", () => {
-      gsap.to(slices, {
-        xPercent: (i) => -i * 100,
-        duration: 0.5,
-        stagger: 0.05,
-        ease: "power2.out",
-      });
     });
   }, []);
+
   return (
     <div>
-         <div className="bg-gray-100 px-10 py-20">
-      {/* Featured Header Section */}
-      <div className="flex justify-between items-start border-b pb-6">
+      <div className="bg-[#E7E8EA] px-10 py-10">
+        <div className="content content--full">
+          <h1
+            ref={textExpertiseRef}
+            className="gtext size-xl font-neue-montreal spaced"
+            data-text="Expertise"
+            data-effect="2"
+          >
+            Expertise
+          </h1>
+        </div>
+
+        {/* <div className="flex justify-between items-start border-b pb-6">
         <h1 className="text-[160px] md:text-[200px] leading-none text-gray-900">
 EXPERTISE
         </h1>
-        <span className="text-gray-500 text-lg">( 03 )</span>
+        <span className="text-gray-500 text-lg font-neue-montreal">( 03 )</span>
+      </div> */}
       </div>
-
-      <div className="sliced-text-container" ref={textRef}>
-      {Array.from({ length: 6 }).map((_, i) => (
-        <span key={i} className="slice">
-          Select Projects
-        </span>
-      ))}
-    </div>
-    </div>
-      <div className="grid grid-cols-2 h-screen gap-4 p-4">
+      <div className="bg-[#E7E8EA] grid grid-cols-2 h-screen gap-4 p-4">
         {/* Column 1 */}
         <div className="grid grid-cols-2 gap-4">
           <div className="relative group rounded-[60px] bg-[#B2E7EB]">
@@ -3182,16 +3237,17 @@ function Testimonials() {
         ))}
       </div>
       <div className="bg-[#ECE4FF] w-2/3 flex flex-col h-screen">
-        <div className="h-1/3 flex items-center justify-center">
+        <div className="h-1/3 flex items-center">
           <div class="left-mid-block">
-            <div class="movin-text-holder">
+            <Marquee className="w-full h-full" />
+            {/* <div class="movin-text-holder">
               <h1 class="moving-text">Testimonials </h1>
               <h1 class="moving-text">Testimonials</h1>
               <h1 class="moving-text">Testimonials </h1>
               <h1 class="moving-text">Testimonials </h1>
               <h1 class="moving-text">Testimonials</h1>
               <h1 class="moving-text">Testimonials </h1>
-            </div>
+            </div> */}
           </div>
         </div>
 
