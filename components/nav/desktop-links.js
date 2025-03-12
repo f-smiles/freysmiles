@@ -6,8 +6,8 @@ export const links = [
   },
   {
     title: "PATIENT",
-    sublinks: ["Your Care", "Financing Treatment"],
-    hrefs: ["/your-care", "/financing-treatment"]
+    sublinks: ["Your Care", "Financing Treatment", "Caring For Your Braces"],
+    hrefs: ["/your-care", "/financing-treatment", "/caring-for-your-braces"]
   },
   {
     title: "TREATMENTS",

@@ -19,6 +19,20 @@ export default function DesktopNav({ user }) {
   const pathname = usePathname();
   const [isActive, setIsActive] = useState(false)
   const [selectedLink, setSelectedLink] = useState(null)
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true); 
+      } else {
+        setIsScrolled(false); 
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   useEffect(() => {
     const delayAnimation = setTimeout(() => {
 
@@ -57,10 +71,36 @@ export default function DesktopNav({ user }) {
   return (
     <motion.nav
       id="desktop-nav"
-      className={`${styles.header} ${isActive ? "bg-[#e1f672]" : ""} hidden md:block z-50`}
-      transition={{ duration: 1, scale: { type: "spring", visualDuration: 1 }}}
+      className={`${styles.header} ${
+        isScrolled ? "bg-white bg-opacity-100 text-black" : "text-white bg-transparent"
+      } fixed top-0 w-full z-50 transition-all duration-300 ease-in-out`}
     >
-      <motion.div className="pt-[16px] flex items-center justify-between uppercase m-auto transition-all duration-1000 ease-in-out scroll-nav" variants={opacity} animate={!isActive ? "open" : "closed"}>
+      <motion.div 
+        className="pt-[16px] flex items-center justify-between uppercase m-auto transition-all duration-1000 ease-in-out scroll-nav"
+        variants={opacity} 
+        animate={!isActive ? "open" : "closed"}
+      >
+        
+        <motion.div variants={opacity} animate={!isActive ? "open" : "closed"}> {/* styles.el */}
+          <motion.div className="flex items-center gap-4"> {/* styles.label */}
+            {links.slice(0, 4).map((link, i) => (
+              <motion.p
+                key={`${i} + ${link}`}
+                className="font-helvetica-neue-light tracking-wider text-[13px] hover:cursor-pointer"
+                onClick={() => {
+                  setSelectedLink(link.title);
+                  setIsActive(!isActive);
+                }}
+                variants={opacity}
+                animate={!isActive ? "open" : "closed"}
+              >
+                {link.title}
+              </motion.p>
+            ))}
+          </motion.div>
+        </motion.div>
+
+  
         <Link href="/">
           <motion.div className={`${isActive ? "hidden" : "block"} bg-[#e0ff33] rounded-full flex justify-center items-center w-10 h-10 p-3`}>
             <img src="../../images/logo_icon.png" alt="Logo Icon" className="w-full h-full icon-replacement" />
@@ -69,15 +109,13 @@ export default function DesktopNav({ user }) {
 
         <motion.div variants={opacity} animate={!isActive ? "open" : "closed"}> {/* styles.el */}
           <motion.div className="flex items-center gap-4"> {/* styles.label */}
-            {links.map((link, i) => (
+            {links.slice(4, 7).map((link, i) => (
               <motion.p
                 key={`${i} + ${link}`}
-                className="text-black text-md hover:cursor-pointer"
+                className="font-helvetica-now-display tracking-wider text-[13px] hover:cursor-pointer"
                 onClick={() => {
-                  setSelectedLink(link.title)
-                  setIsActive(!isActive)
-                  console.log(`clicked ${link.title}`)
-                  console.log(`selectedLink ${selectedLink}`)
+                  setSelectedLink(link.title);
+                  setIsActive(!isActive);
                 }}
                 variants={opacity}
                 animate={!isActive ? "open" : "closed"}
@@ -85,29 +123,37 @@ export default function DesktopNav({ user }) {
                 {link.title}
               </motion.p>
             ))}
-            <Link href="/shop/products">
-              <p className="text-md">Shop</p>
-            </Link>
-            <CartComponent />
-            {user
-              ? <UserButton user={user} />
-              : (
-                <Link href="/auth/login">
-                  <p className="text-md">Login</p>
-                </Link>
-              )
-            }
-          </motion.div>
-        </motion.div>
+            
 
-        <motion.div variants={opacity} animate={!isActive ? "open" : "closed"} className="flex items-center gap-4">
-          <Link href="/book-now">
-            <p className="text-md">Book Now</p>
-          </Link>
+            <Link href="/book-now">
+              <p className="font-helvetica-neue-light tracking-wider text-[13px] tracking-wider">Book Now</p>
+            </Link>
+
+ 
+            <Link href="/shop/products">
+              <p className="font-helvetica-neue-light tracking-wider text-[13px] ">Shop</p>
+            </Link>
+            
+            <CartComponent />
+            
+            {user ? (
+              <UserButton user={user} />
+            ) : (
+              <Link href="/auth/login">
+                <p className="font-helvetica-neue-light tracking-wider text-[13px] ">Login</p>
+              </Link>
+            )}
+          </motion.div>
         </motion.div>
       </motion.div>
 
-      <motion.div onClick={() => setIsActive(false)} variants={background} initial="initial" animate={isActive ? "open" : "closed"} className={styles.background}></motion.div>
+      <motion.div 
+        onClick={() => setIsActive(false)} 
+        variants={background} 
+        initial="initial" 
+        animate={isActive ? "open" : "closed"} 
+        className={styles.background}
+      ></motion.div>
 
       <AnimatePresence mode="wait">
         {isActive && (
@@ -115,12 +161,16 @@ export default function DesktopNav({ user }) {
             <div className="flex flex-col max-w-4xl m-auto"> {/* styles.body */}
               <button type="button" onClick={() => setIsActive(!isActive)} className="flex items-start self-end cursor-pointer h2-menu-row">
                 <XIcon className="w-4 h-4 top-3 -left-5 text-primary-700 h2-menu-text-number" />
-                {/* <h1 className="mb-4 text-[40px] text-zinc-700">Close</h1> */}
               </button>
               {links.map((link) => (
                 <div key={link.title}>
                   {selectedLink === link.title && link.sublinks.map((sublink, i) => (
-                    <Link key={sublink} href={link.hrefs[i]} onClick={() => setIsActive(false)} className={`h2-menu-row h2-menu-row-${i + 1} hover:cursor-pointer ${isActive ? "open" : ""}`}>
+                    <Link 
+                      key={sublink} 
+                      href={link.hrefs[i]} 
+                      onClick={() => setIsActive(false)} 
+                      className={`h2-menu-row h2-menu-row-${i + 1} hover:cursor-pointer ${isActive ? "open" : ""}`}
+                    >
                       <div className="cursor-pointer h2-menu-wrapper-top">
                         <p className="h2-menu-text-number">{`0${i + 1}`}</p>
                         <h1 className="h2-menu-heading">{sublink}</h1>
@@ -134,5 +184,6 @@ export default function DesktopNav({ user }) {
         )}
       </AnimatePresence>
     </motion.nav>
+  
   )
 }

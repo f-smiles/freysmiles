@@ -55,9 +55,16 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 export default function LandingComponent() {
   return (
     <>
-      <Hero />
+      <div class="MainContainer">
+        <div class="ParallaxContainer">
+          <Hero />
+        </div>
+        <div class="StatsContainer">
+          <Stats />
+        </div>
+      </div>
       {/* <MarqueeSection /> */}
-      <Stats />
+
       <ImageGrid />
       <NewSection />
       <Testimonials />
@@ -444,17 +451,18 @@ const Hero = () => {
     const gl = renderer.gl;
     containerRef.current.appendChild(gl.canvas);
 
-    gl.canvas.style.borderRadius = "30px";
-    gl.canvas.style.clipPath = "inset(0% round 30px)";
+    // gl.canvas.style.borderRadius = "30px";
+    // gl.canvas.style.clipPath = "inset(0% round 30px)";
+    gl.canvas.style.clipPath = "none";
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-    renderer.setSize(window.innerWidth, 600);
     let aspect = 1;
     const mouse = new OGL.Vec2(-1);
     const velocity = new OGL.Vec2();
 
     function resize() {
-      const width = 200;
-      const height = 250;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
       renderer.setSize(width, height);
       program.uniforms.res.value = new OGL.Vec4(width, height, 1, 1);
@@ -462,11 +470,10 @@ const Hero = () => {
     }
 
     const flowmap = new OGL.Flowmap(gl);
-
     const geometry = new OGL.Geometry(gl, {
       position: {
         size: 2,
-        data: new Float32Array([-1, -1, 3, -1, -1, 3]),
+        data: new Float32Array([-1, -1, 3, -1, -1, 3]), // Covers full screen
       },
       uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
     });
@@ -480,7 +487,7 @@ const Hero = () => {
     img.onload = () => (texture.image = img);
     img.crossOrigin = "Anonymous";
     // img.src = "../images/bubble.jpg";
-    img.src = "../images/greencheckered.png";
+    img.src = "../images/test.png";
 
     let a1, a2;
     var imageAspect = imgSize[1] / imgSize[0];
@@ -530,15 +537,18 @@ const Hero = () => {
 
       mouse.set(x / rect.width, 1 - y / rect.height);
 
-      const sensitivity = (Math.min(rect.width, rect.height) / 300) * 3;
+      const minDimension = Math.min(window.innerWidth, window.innerHeight);
+      const baseFactor = 300;
+      const scaleFactor = minDimension / baseFactor;
 
       if (!lastTime) {
         lastTime = performance.now();
         lastMouse.set(x, y);
       }
 
-      const deltaX = (x - lastMouse.x) * sensitivity;
-      const deltaY = (y - lastMouse.y) * sensitivity;
+      // Scale the cursor distortion dynamically
+      const deltaX = (x - lastMouse.x) * scaleFactor * 0.3; // Lower factor for less exaggerated movement
+      const deltaY = (y - lastMouse.y) * scaleFactor * 0.3;
       lastMouse.set(x, y);
 
       const time = performance.now();
@@ -550,6 +560,34 @@ const Hero = () => {
       velocity.needsUpdate = true;
     }
 
+    // function updateMouse(e) {
+    //   e.preventDefault();
+
+    //   const rect = gl.canvas.getBoundingClientRect();
+    //   const x = e.clientX - rect.left;
+    //   const y = e.clientY - rect.top;
+
+    //   mouse.set(x / rect.width, 1 - y / rect.height);
+
+    //   const sensitivity = (Math.min(rect.width, rect.height) / 300) * 3;
+
+    //   if (!lastTime) {
+    //     lastTime = performance.now();
+    //     lastMouse.set(x, y);
+    //   }
+
+    //   const deltaX = (x - lastMouse.x) * sensitivity;
+    //   const deltaY = (y - lastMouse.y) * sensitivity;
+    //   lastMouse.set(x, y);
+
+    //   const time = performance.now();
+    //   const delta = Math.max(5, time - lastTime);
+    //   lastTime = time;
+
+    //   velocity.x = deltaX / delta;
+    //   velocity.y = deltaY / delta;
+    //   velocity.needsUpdate = true;
+    // }
     function update(t) {
       requestAnimationFrame(update);
 
@@ -579,95 +617,141 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="flex h-screen w-full">
-      {/* Left Section */}
-      <div className="flex-[3] flex flex-col justify-center p-8 border-r border-black">
-        {/* <div className="mt-[300px] w-full">
-          <div className="stagger-line overflow-hidden">
-            <h1 className="text-[10vw] font-semibold font-neue-montreal leading-none w-full text-left">
-              <span className="stagger-letter">F</span>
-              <span className="stagger-letter">r</span>
-              <span className="stagger-letter">e</span>
-              <span className="stagger-letter">y</span>
-              <span className="stagger-letter">&nbsp;</span>
-              <span className="stagger-letter">S</span>
-              <span className="stagger-letter">m</span>
-              <span className="stagger-letter">i</span>
-              <span className="stagger-letter">l</span>
-              <span className="stagger-letter">e</span>
-              <span className="stagger-letter">s</span>
-            </h1>
-          </div>
-        </div>
-     */}
+    <motion.section className="h-screen w-full flex items-center justify-center bg-cover bg-center ">
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+        }}
+      >
         <div
+          ref={containerRef}
+          className="absolute inset-0 pointer-events-none"
           style={{
-            position: "relative",
+            position: "absolute",
             width: "100%",
-            height: "600px",
+            height: "100%",
+            overflow: "hidden",
           }}
+        />
+      </div>
+
+      <svg
+        viewBox="0 0 96 1332"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full"
+      >
+        <path
+          d="M1.00003 1332L1.00006 726.469C1.00007 691.615 18.8257 659.182 48.25 640.5V640.5C77.6744 621.818 95.5 589.385 95.5 554.531L95.5 0"
+          stroke="white"
+          strokeOpacity="0.2"
+          strokeWidth="1"
+        ></path>
+
+        <svg
+          viewBox="0 0 96 1332"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute top-0 left-1/2 transform -translate-x-1/2 h-full"
         >
-          <div
-            ref={containerRef}
-            className="pointer-events-none"
-            style={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
-              borderRadius: "30px",
-              overflow: "hidden",
+          <defs>
+            <filter
+              id="glow-effect"
+              x="-50%"
+              y="-50%"
+              width="200%"
+              height="200%"
+            >
+              <feGaussianBlur stdDeviation="8" result="coloredBlur" />
+              <feFlood
+                floodColor="white"
+                floodOpacity="0.8"
+                result="glowColor"
+              />
+              <feComposite
+                in="glowColor"
+                in2="coloredBlur"
+                operator="in"
+                result="softGlow"
+              />
+              <feMerge>
+                <feMergeNode in="softGlow" />
+                <feMergeNode in="softGlow" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <motion.path
+            d="M1.00003 1332L1.00006 726.469C1.00007 691.615 18.8257 659.182 48.25 640.5V640.5C77.6744 621.818 95.5 589.385 95.5 554.531L95.5 0"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeOpacity="0.4"
+            filter="url(#glow-effect)"
+            strokeDasharray="620, 1332"
+            strokeDashoffset="1952"
+            animate={{
+              strokeDashoffset: [1952, 0],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 4.5,
+              ease: "linear",
             }}
           />
+        </svg>
+      </svg>
+
+      <div className="font-neue-montreal absolute top-60 right-10 max-w-lg text-sm text-gray-300">
+        <h1 className="text-6xl md:text-7xl font-neue-montreal leading-none">
+          Because every <br /> smile is unique
+        </h1>
+
+        <button className="font-helvetica-neue mt-6 px-6 py-3 bg-[url('/images/buttongradipng')] bg-cover bg-center hover:bg-blue-600 text-[12px] rounded-full transition">
+          START YOUR JOURNEY
+        </button>
+        <div
+          style={{
+            width: "1.5em",
+            height: "1.5em",
+            borderRadius: "50%",
+            overflow: "hidden",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <video
+            id="holovideo"
+            loop
+            muted
+            autoPlay
+            playsInline
+            preload="metadata"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              transform: "scale(1.25)",
+              boxShadow: "0 0 50px #ebe6ff80",
+            }}
+          >
+            <source
+              src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
+              type="video/mp4"
+            />
+            Your browser does not support the video tag.
+          </video>
         </div>
       </div>
 
-      {/* Right Section */}
-      <div className="flex-[1] flex flex-col items-center justify-start  p-4">
-        <div className="mb-6">
-          <div className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "></div>
-          <div className="">
-            <video
-              // src="../videos/whitewavessvg.mp4"
-              src="../images/holographic.mp4"
-              className="object-cover w-3/4 max-h-[80vh] rounded-md"
-              autoPlay
-              loop
-              muted
-              playsInline
-            ></video>
-          </div>
-          {/* <img
-        src="../images/ribbedimage.png"
-    
-        className="object-cover rounded-md"
-      /> */}
-        </div>
-        {/* <div className="stagger-line overflow-hidden mt-[6vh]">
-          <p className="font-helvetica-neue-light text-xl lg:text-xl font-light leading-relaxed">
-            <span className="stagger-word">
-              A confident smile begins with effective care tailored to each
-              patient. At our practice, we’re dedicated to providing treatments
-              that are not only scientifically sound but also crafted to bring
-              out your best smile.
-            </span>
-            <br />
-          </p>
-        </div> */}
-        <div className="font-neue-montreal flex gap-4 mt-6">
-          <div>
-            <p className="font-neue-montreal text-sm tracking-widest">
-              • EST {time}
-            </p>
-          </div>
-          {/* <button className="px-6 py-2 border border-black text-black font-medium rounded-full">
-            Shop →
-          </button>
-          <button className="px-6 py-2 border border-black text-black font-medium rounded-full">
-            Learn More →
-          </button> */}
-        </div>
+      <div className="font-neue-montreal absolute bottom-10 right-10 max-w-xs text-sm text-gray-300">
+        Frey Smiles is working at the intersection of technology and nature to
+        transform your smile.
       </div>
-    </div>
+    </motion.section>
   );
 };
 
@@ -912,8 +996,8 @@ const Stats = () => {
   ];
 
   return (
-    <section className=" rounded-tl-[40px] rounded-tr-[40px] ">
-      <section className="min-h-screen grid grid-cols-12 px-12">
+    <section className="bg-white w-full min-h-screen flex items-center justify-center">
+      <section className="grid grid-cols-12 px-12">
         <div className="col-span-4  flex">
           <div className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 ">
             <svg
@@ -2364,9 +2448,110 @@ const ImageGrid = () => {
   //   if (sectionRef.current) observer.observe(sectionRef.current);
   //   return () => observer.disconnect();
   // }, []);
+  const sectionRef = useRef(null);
+  const contentRefs = useRef([]);
 
+  const sections = [
+    {
+      title: "Big Laptop Clock",
+      text: "More surprises we find.",
+      image: "https://source.unsplash.com/800x400/?laptop,clock",
+    },
+    {
+      title: "Pricing Formula",
+      text: "Intelligence is a narrow branch of the tree of life...",
+      image: "https://source.unsplash.com/800x400/?calculator,finance",
+    },
+    {
+      title: "Position Your Brand",
+      text: "Branding is all about positioning your story...",
+      image: "https://source.unsplash.com/800x400/?branding,design",
+    },
+    {
+      title: "Paper Calendar",
+      text: "Time management requires tangible planning...",
+      image: "https://source.unsplash.com/800x400/?calendar,planner",
+    },
+    {
+      title: "Visual Strategy",
+      text: "A compelling strategy is both visual and tactical...",
+      image: "https://source.unsplash.com/800x400/?strategy,design",
+    },
+  ];
+
+  useEffect(() => {
+    const sectionsContainer = sectionRef.current;
+    const contents = contentRefs.current;
+
+    if (!sectionsContainer || !contents.length) return;
+
+    gsap.set(contents, { autoAlpha: 0, y: 50 }); // Hide all content initially
+    gsap.set(contents[0], { autoAlpha: 1, y: 0 }); // Show the first one
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionsContainer,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        pin: true,
+      },
+    });
+
+    sections.forEach((_, index) => {
+      if (index < sections.length - 1) {
+        tl.to(contents[index], { autoAlpha: 0, y: -50 }).to(
+          contents[index + 1],
+          { autoAlpha: 1, y: 0 },
+          "<"
+        );
+      }
+    });
+  }, [sections]);
+  const textRef = useRef(null);
+
+  useEffect(() => {
+    const slices = textRef.current.querySelectorAll(".slice");
+
+    gsap.set(slices, { xPercent: (i) => -i * 100 });
+
+    textRef.current.addEventListener("mouseenter", () => {
+      gsap.to(slices, {
+        xPercent: (i) => -i * 100 - 100,
+        duration: 0.5,
+        stagger: 0.05,
+        ease: "power2.out",
+      });
+    });
+
+    textRef.current.addEventListener("mouseleave", () => {
+      gsap.to(slices, {
+        xPercent: (i) => -i * 100,
+        duration: 0.5,
+        stagger: 0.05,
+        ease: "power2.out",
+      });
+    });
+  }, []);
   return (
     <div>
+         <div className="bg-gray-100 px-10 py-20">
+      {/* Featured Header Section */}
+      <div className="flex justify-between items-start border-b pb-6">
+        <h1 className="text-[160px] md:text-[200px] leading-none text-gray-900">
+EXPERTISE
+        </h1>
+        <span className="text-gray-500 text-lg">( 03 )</span>
+      </div>
+
+      <div className="sliced-text-container" ref={textRef}>
+      {Array.from({ length: 6 }).map((_, i) => (
+        <span key={i} className="slice">
+          Select Projects
+        </span>
+      ))}
+    </div>
+    </div>
       <div className="grid grid-cols-2 h-screen gap-4 p-4">
         {/* Column 1 */}
         <div className="grid grid-cols-2 gap-4">
@@ -2574,8 +2759,8 @@ const LogoGrid = () => {
       for (let i = 0; i < 12; i++) {
         const ball = Bodies.circle(halfsW, halfsW, circleW, {
           restitution: 0.3, // reduce bounces
-          friction: 0.1, // 
-          
+          friction: 0.1, //
+
           density: 0.02, // helps with
           collisionFilter: {
             category: 0x0003,
@@ -2585,7 +2770,7 @@ const LogoGrid = () => {
             fillStyle: "#1e90ff",
           },
         });
-        
+
         ballsWithText.push({ ball, text: texts[i] });
         Composite.add(engine.world, ball);
       }
@@ -2664,35 +2849,56 @@ const LogoGrid = () => {
 
       Render.run(render);
       let boxWidth = sW * 0.9;
-      let boxHeight = sW * .8;
+      let boxHeight = sW * 0.8;
       let boxX = sW / 2;
       let boxY = sW / 2;
       let wallThickness = 50;
-      
+
       let walls = [
         // 🔥 Adjusted Top Wall - Moves higher
-        Bodies.rectangle(boxX, boxY - boxHeight / 2 - wallThickness / 2, boxWidth, wallThickness, { 
-          isStatic: true, render: { fillStyle: "transparent" }  
-        }),
-      
+        Bodies.rectangle(
+          boxX,
+          boxY - boxHeight / 2 - wallThickness / 2,
+          boxWidth,
+          wallThickness,
+          {
+            isStatic: true,
+            render: { fillStyle: "transparent" },
+          }
+        ),
+
         // 🔥 Adjusted Bottom Wall - Moves lower so balls align with bottom
-        Bodies.rectangle(boxX, boxY + boxHeight / 2, boxWidth, wallThickness, { 
-          isStatic: true, render: { fillStyle: "transparent" }  
+        Bodies.rectangle(boxX, boxY + boxHeight / 2, boxWidth, wallThickness, {
+          isStatic: true,
+          render: { fillStyle: "transparent" },
         }),
-      
+
         // Left Wall
-        Bodies.rectangle(boxX - boxWidth / 2 - wallThickness / 2, boxY, wallThickness, boxHeight, { 
-          isStatic: true, render: { fillStyle: "transparent" }  
-        }),
-      
+        Bodies.rectangle(
+          boxX - boxWidth / 2 - wallThickness / 2,
+          boxY,
+          wallThickness,
+          boxHeight,
+          {
+            isStatic: true,
+            render: { fillStyle: "transparent" },
+          }
+        ),
+
         // Right Wall
-        Bodies.rectangle(boxX + boxWidth / 2 + wallThickness / 2, boxY, wallThickness, boxHeight, { 
-          isStatic: true, render: { fillStyle: "transparent" }  
-        })
+        Bodies.rectangle(
+          boxX + boxWidth / 2 + wallThickness / 2,
+          boxY,
+          wallThickness,
+          boxHeight,
+          {
+            isStatic: true,
+            render: { fillStyle: "transparent" },
+          }
+        ),
       ];
-      
+
       Composite.add(engine.world, walls);
-      
 
       // let r = sW / 2;
       // let parts = [];
@@ -2768,9 +2974,7 @@ const LogoGrid = () => {
         />
 
         <div className="lg:w-1/2 bg-[#303BB0] py-24 px-20 rounded-[18px]">
-          <p className="font-neue-montreal text-[24px]">
-            Awards & Recognition
-          </p>
+          <p className="font-neue-montreal text-[24px]">Awards & Recognition</p>
           <div className="flex items-center mt-10">
             <div className="w-48 h-px bg-black"></div>
             <p className=" font-neue-montreal text-[15px] pl-4">

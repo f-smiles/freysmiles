@@ -1,6 +1,24 @@
 import { withUt } from "uploadthing/tw"
 
 /** @type {import('tailwindcss').Config} */
+export default {
+	theme: {
+	  extend: {
+		animation: {
+		  marquee: "marquee var(--duration, 30s) linear infinite",
+		},
+		keyframes: {
+		  marquee: {
+			from: { transform: "translateX(0)" },
+			to: { transform: "translateX(-100%)" }, 
+		  },
+		},
+	  },
+	},
+  };
+  
+
+/** @type {import('tailwindcss').Config} */
 module.exports = withUt({
   darkMode: ["class"],
   content: [
@@ -34,6 +52,7 @@ module.exports = withUt({
   		'helvetica-neue': 'HelveticaNeue-Medium',
   		'helvetica-neue-light': 'HelveticaNeue-Light',
   		'helvetica-now-thin': 'Helvetica Now Thin',
+		'helvetica-now-display': 'HelveticaNowDisplay-Light',
   		horizon: 'HorizonSolid',
   		horizonOutline: 'HorizonOutline',
   		'iCiel-Gotham-Ultra': 'iCiel-Gotham-Ultra',
