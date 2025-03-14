@@ -22,6 +22,7 @@ import React, {
 // framer motion
 import {
   motion,
+  useAnimation,
   stagger,
   useAnimate,
   useInView,
@@ -472,9 +473,9 @@ const Hero = () => {
     const gl = renderer.gl;
     containerRef.current.appendChild(gl.canvas);
 
-    // gl.canvas.style.borderRadius = "30px";
-    // gl.canvas.style.clipPath = "inset(0% round 30px)";
-    gl.canvas.style.clipPath = "none";
+    gl.canvas.style.borderRadius = "20px";
+    gl.canvas.style.clipPath = "inset(0% round 20px)";
+    // gl.canvas.style.clipPath = "none";
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     let aspect = 1;
@@ -482,12 +483,35 @@ const Hero = () => {
     const velocity = new OGL.Vec2();
 
     function resize() {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      if (!containerRef.current) return;
 
-      renderer.setSize(width, height);
-      program.uniforms.res.value = new OGL.Vec4(width, height, 1, 1);
-      aspect = width / height;
+      const containerWidth = containerRef.current.clientWidth;
+      const containerHeight = containerRef.current.clientHeight;
+
+      renderer.setSize(containerWidth, containerHeight);
+
+
+      let a1, a2;
+      var imageAspect = imgSize[1] / imgSize[0]; 
+      var containerAspect = containerHeight / containerWidth;
+
+      if (containerAspect < imageAspect) {
+        a1 = 1;
+        a2 = containerAspect / imageAspect;
+      } else {
+        a1 = imageAspect / containerAspect;
+        a2 = 1;
+      }
+
+      // Update WebGL uniform values
+      program.uniforms.res.value = new OGL.Vec4(
+        containerWidth,
+        containerHeight,
+        a1,
+        a2
+      );
+
+      aspect = containerWidth / containerHeight;
     }
 
     const flowmap = new OGL.Flowmap(gl);
@@ -567,8 +591,7 @@ const Hero = () => {
         lastMouse.set(x, y);
       }
 
-      // Scale the cursor distortion dynamically
-      const deltaX = (x - lastMouse.x) * scaleFactor * 0.3; // Lower factor for less exaggerated movement
+      const deltaX = (x - lastMouse.x) * scaleFactor * 0.3;
       const deltaY = (y - lastMouse.y) * scaleFactor * 0.3;
       lastMouse.set(x, y);
 
@@ -655,50 +678,55 @@ const Hero = () => {
     if (strokeRef.current && mainRef.current) {
       const path = strokeRef.current;
       const pathLength = path.getTotalLength();
-  
+
       gsap.set(path, {
         strokeDasharray: pathLength,
-        strokeDashoffset: pathLength, // Start fully hidden
+        strokeDashoffset: pathLength,
       });
-  
+
       gsap.to(path, {
-        strokeDashoffset: 0, // Reveals the stroke
+        strokeDashoffset: 0,
         ease: "none",
         scrollTrigger: {
           trigger: mainRef.current,
-          start: "top bottom",  // Animation starts when SVG enters viewport
-          end: "bottom top",    // Ends when it leaves the viewport
-          scrub: 1,            // Fully tied to scroll progress
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1,
         },
       });
     }
   }, []);
-  
+
   return (
     <div className="relative">
       <motion.section
         style={{ y }}
-        className="h-screen w-full flex items-center justify-center bg-blue-500 fixed top-0 left-0 z-0"
+        className="h-screen w-full flex items-center justify-center bg-white fixed top-0 left-0 z-0"
       >
         <div
           style={{
             position: "relative",
             width: "100%",
             height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "4vw",
           }}
         >
           <div
             ref={containerRef}
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none"
             style={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
+              width: "80%",
+              height: "80%",
               overflow: "hidden",
+              position: "relative",
             }}
           />
         </div>
-          {/* Wavy Line Main Section */}
+
+        {/* Wavy Line Main Section */}
         <svg
           viewBox="0 0 96 1332"
           fill="none"
@@ -766,46 +794,33 @@ const Hero = () => {
           </svg>
         </svg>
 
-        <div className="font-neue-montreal absolute top-60 right-10 max-w-lg text-sm text-gray-300">
-          <h1 className="text-6xl md:text-7xl font-neue-montreal leading-none">
+        <div className="font-neue-montreal absolute top-60 right-56 max-w-lg text-sm text-gray-300">
+          <h1 className="text-6xl md:text-6xl font-neue-montreal leading-none">
             Because every <br /> smile is unique
           </h1>
 
-          <button className="font-helvetica-neue mt-6 px-6 py-3 bg-[url('/images/buttongradipng')] bg-cover bg-center hover:bg-blue-600 text-[12px] rounded-full transition">
-            START YOUR JOURNEY
-          </button>
-          <div
-            style={{
-              width: "1.5em",
-              height: "1.5em",
-              borderRadius: "50%",
-              overflow: "hidden",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <video
-              id="holovideo"
-              loop
-              muted
-              autoPlay
-              playsInline
-              preload="metadata"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                transform: "scale(1.25)",
-                boxShadow: "0 0 50px #ebe6ff80",
-              }}
-            >
-              <source
-                src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
-                type="video/mp4"
-              />
-              Your browser does not support the video tag.
-            </video>
+          <div className="flex items-center gap-2 mt-6">
+            <button className="font-helvetica-neue px-6 py-3 bg-[url('/images/buttongradipng')] bg-cover bg-center hover:bg-blue-600 text-[12px] rounded-full transition">
+              START YOUR JOURNEY
+            </button>
+
+            <div className="w-6 h-6 rounded-full flex justify-center items-center overflow-hidden">
+              <video
+                id="holovideo"
+                loop
+                muted
+                autoPlay
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-cover scale-125 shadow-[0_0_50px_#ebe6ff80]"
+              >
+                <source
+                  src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
+                  type="video/mp4"
+                />
+                Your browser does not support the video tag.
+              </video>
+            </div>
           </div>
         </div>
 
@@ -816,27 +831,38 @@ const Hero = () => {
       </motion.section>
       <section
         ref={sectionCircleRef}
-        className="relative h-[160vh] w-full bg-white z-10 mt-[100vh]"
+        className="relative h-[160vh] w-full bg-[#F2F2F2] z-10 mt-[100vh]"
       >
         <section className="relative flex flex-col justify-center items-center text-center h-full px-8">
-        <main ref={mainRef}>
-          <svg
-            style={{ transform: "translateX(120px)" }} 
-          className="stroke_wide " 
-            preserveAspectRatio="xMidYMid slice"
-            fill-rule="evenodd"
-            stroke-miterlimit="1.5"
-            clip-rule="evenodd"
-            viewBox="0 1000 8500 14948.91"
-          >
-            <defs></defs>
-            <path
-                 ref={strokeRef}
-              class="stroke_wide"
-              d="M4462.32,625c0,0 14.613,622.459 -463.862,807.768c-481.301,186.404 -1447.09,-126.375 -1575.51,541.543c-124.818,649.224 959.032,311.455 1893.1,826.688c1089.01,600.699 -524.942,1127.57 -1302.17,1453.96c-951.997,399.786 -995.709,1421.16 -230.78,1308.47c1157.75,-170.555 2955.04,-369.639 2625.82,434.977c-258.167,630.956 -1834.68,308.013 -1915.59,964.376c-123.736,1003.78 785.635,859.091 1309.31,778.296c976.475,-150.654 1261.08,579.399 1203.78,1013.11c-62.259,471.302 -669.89,1009.61 -1534.75,1125.17c-1019.84,136.266 -2356.12,174.662 -2200.88,942.9c130.32,644.912 1957.69,378.097 2999.78,691.136c860.372,258.452 772.286,1223.59 346.923,1696.49c-769.812,855.852 -852.502,1355.35 -852.502,1355.35"
-            />
-          </svg>
-</main>
+          <main ref={mainRef}>
+            <svg
+              style={{ transform: "translateX(120px)" }}
+              className="stroke_wide "
+              preserveAspectRatio="xMidYMid slice"
+              fill-rule="evenodd"
+              stroke-miterlimit="1.5"
+              clip-rule="evenodd"
+              viewBox="0 1000 8500 14948.91"
+            >
+              <defs>
+                <linearGradient
+                  id="strokeGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stopColor="#3339F1" />
+                  <stop offset="50%" stopColor="#000AFF" />
+                </linearGradient>
+              </defs>
+              <path
+                ref={strokeRef}
+                class="stroke_wide"
+                d="M4462.32,625c0,0 14.613,622.459 -463.862,807.768c-481.301,186.404 -1447.09,-126.375 -1575.51,541.543c-124.818,649.224 959.032,311.455 1893.1,826.688c1089.01,600.699 -524.942,1127.57 -1302.17,1453.96c-951.997,399.786 -995.709,1421.16 -230.78,1308.47c1157.75,-170.555 2955.04,-369.639 2625.82,434.977c-258.167,630.956 -1834.68,308.013 -1915.59,964.376c-123.736,1003.78 785.635,859.091 1309.31,778.296c976.475,-150.654 1261.08,579.399 1203.78,1013.11c-62.259,471.302 -669.89,1009.61 -1534.75,1125.17c-1019.84,136.266 -2356.12,174.662 -2200.88,942.9c130.32,644.912 1957.69,378.097 2999.78,691.136c860.372,258.452 772.286,1223.59 346.923,1696.49c-769.812,855.852 -852.502,1355.35 -852.502,1355.35"
+              />
+            </svg>
+          </main>
           <div className="max-w-3xl text-[#1D64EF]">
             <p className="uppercase text-[12px] font-semibold font-helvetica-neue-light tracking-widest">
               Vision
@@ -1093,7 +1119,7 @@ const Stats = () => {
   ];
 
   return (
-    <section className="bg-white w-full min-h-screen flex items-center justify-center">
+    <section className="bg-[#F2F2F2] w-full min-h-screen flex items-center justify-center">
       <section className="grid grid-cols-12 px-12">
         <div className="col-span-4  flex">
           <div className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 ">
@@ -3043,322 +3069,182 @@ const LogoGrid = () => {
 };
 
 function Testimonials() {
-  const carouselRef = useRef(null);
+  const carouselItems = [
+    {
+      type: "image",
+      src: "../images/beigegradient.png",
+      name: "Lisa Moyer",
+      description: "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!",
+    },
+    {
+      type: "image",
+      src: "../images/buttongradient.png",
+      name: "Karen O'Neill",
+      description:
+      "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
+    },
+    {
+      type: "image",
+      src: "../images/gradient2.jpeg",
+      name: "Karen Oneill",
+      description:
+      "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
+    },
+    {
+      type: "image",
+      src: "../images/radialgradient.png",
+      name: "Tanya Burnhauser",
+      description:
+      "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!",
+  },
+  ];
+  
 
-  const scroll = (direction) => {
-    if (carouselRef.current) {
-      const { current: carousel } = carouselRef;
-      const scrollAmount = carousel.offsetWidth;
-      if (direction === "left") {
-        carousel.scrollLeft -= scrollAmount;
-      } else {
-        carousel.scrollLeft += scrollAmount;
-      }
+  const carouselRef = useRef(null);
+  
+  const controls = useAnimation();
+
+  const handleDragEnd = (_, info) => {
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
+
+    if (offset > 100 || velocity > 500) {
+      prevSlide();
+    } else if (offset < -100 || velocity < -500) {
+      nextSlide();
+    } else {
+      controls.start({ x: `-${currentIndex * 50}vw` });
     }
   };
 
-  const headingRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const prevSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? carouselItems.length - 1 : prevIndex - 1
+    );
+  };
+
+  const nextSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === carouselItems.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const [maxDrag, setMaxDrag] = useState(0);
 
   useEffect(() => {
-    const split = new SplitText(headingRef.current, {
-      type: "words, chars",
-      charsClass: "char",
-      wordsClass: "word",
-      specialChars: ["Te", "mo", "al"],
-    });
-
-    document.querySelectorAll(".word").forEach((word) => {
-      word.style.overflow = "hidden";
-      word.style.display = "inline-block";
-    });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: headingRef.current,
-        start: "top 75%",
-        toggleActions: "play none none reverse",
-      },
-    });
-
-    tl.from(".char", {
-      y: "100%",
-      stagger: 0.1,
-      duration: 0.8,
-      ease: "power2.out",
-    });
-
-    return () => {
-      split.revert();
-    };
-  }, []);
-
-  const items = [
-    {
-      name: "Lisa Moyer",
-      year: "2023",
-      description:
-        "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!",
-    },
-    {
-      name: "Karen Oneill",
-      year: "2022",
-      description:
-        "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
-    },
-    {
-      name: "Tanya Burnhauser",
-      year: "2021",
-      description:
-        "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!",
-    },
-  ];
-
-  const [selectedDescription, setSelectedDescription] = useState(
-    items[0].description
-  );
-
-  const menuRefs = useRef([]);
-
-  useEffect(() => {
-    menuRefs.current.forEach((menuLink) => {
-      if (!menuLink) return;
-
-      const text1 = menuLink.querySelector("[hoverstagger='text']:first-child");
-      const text2 = menuLink.querySelector("[hoverstagger='text']:last-child");
-
-      if (!text1 || !text2) return;
-
-      const wrapCharacters = (element) => {
-        const words = element.innerText.split(" ");
-        element.innerHTML = words
-          .map(
-            (word) =>
-              `<span class="word">${word
-                .split("")
-                .map(
-                  (char, i) =>
-                    `<span class="char ${
-                      i % 2 === 0 ? "odd" : "even"
-                    }">${char}</span>`
-                )
-                .join("")}</span>`
-          )
-          .join('<span class="space"> </span>');
-      };
-
-      wrapCharacters(text1);
-      wrapCharacters(text2);
-
-      gsap.set(text1.querySelectorAll(".char"), { visibility: "visible" });
-      gsap.set(text2.querySelectorAll(".char"), { visibility: "visible" });
-
-      gsap.set(text1.querySelectorAll(".odd"), { yPercent: 100 });
-      gsap.set(text2.querySelectorAll(".odd"), { yPercent: 0 });
-      gsap.set(text1.querySelectorAll(".even"), { yPercent: 0 });
-      gsap.set(text2.querySelectorAll(".even"), { yPercent: -100 });
-
-      gsap.to(text1.querySelectorAll(".odd"), {
-        yPercent: 0,
-        duration: 0.6,
-        ease: "power2.out",
-      });
-      gsap.to(
-        text2.querySelectorAll(".odd"),
-        { yPercent: -100, duration: 0.6, ease: "power2.out" },
-        0
-      );
-      gsap.to(
-        text1.querySelectorAll(".even"),
-        { yPercent: 100, duration: 0.6, ease: "power2.out" },
-        0
-      );
-      gsap.to(
-        text2.querySelectorAll(".even"),
-        { yPercent: 0, duration: 0.6, ease: "power2.out" },
-        0
-      );
-
-      const tl = gsap.timeline({
-        paused: true,
-        defaults: { duration: 0.5, ease: "power2.out" },
-      });
-
-      tl.to(text1.querySelectorAll(".odd"), { yPercent: 0 });
-      tl.to(text2.querySelectorAll(".odd"), { yPercent: -100 }, 0);
-      tl.to(text1.querySelectorAll(".even"), { yPercent: 100 }, 0);
-      tl.to(text2.querySelectorAll(".even"), { yPercent: 0 }, 0);
-
-      menuLink.addEventListener("mouseenter", () => {
-        gsap.set(text1.querySelectorAll(".odd"), { yPercent: 100 });
-        gsap.set(text2.querySelectorAll(".odd"), { yPercent: 0 });
-        gsap.set(text1.querySelectorAll(".even"), { yPercent: 0 });
-        gsap.set(text2.querySelectorAll(".even"), { yPercent: -100 });
-
-        tl.restart();
-      });
-    });
-  }, []);
+    if (carouselRef.current) {
+      const containerWidth = carouselRef.current.scrollWidth;
+      const viewportWidth = carouselRef.current.offsetWidth;
+      setMaxDrag(-(containerWidth - viewportWidth)); 
+    }
+  }, [carouselItems]); 
 
   return (
-    <div className="w-full h-screen flex">
-      <div className="bg-[#CABDFE] w-1/3 flex flex-col justify-start  menu_link-wrap">
-        <img
-          className="w-1/2 h-auto mx-auto"
-          src="../images/freysmilesbg.png"
-        />
-        {[
-          { name: "Lisa Moyer", title: "2023" },
-          { name: "Karen Oneill", title: "2022" },
-          { name: "Tanya Burnhauser", title: "2021" },
-        ].map((item, index) => (
-          <a
-            key={index}
-            hoverstagger="link"
-            href="#"
-            className="menu_link w-inline-block"
-            ref={(el) => (menuRefs.current[index] = el)}
-          >
-            <div className="items-center menu_padding mb-10 ">
-              <div className=" border-t border-black flex justify-between pt-4">
-                <div className="menu_text-wrap">
-                  <div hoverstagger="text" className="menu_link-text">
-                    {item.name}
-                  </div>
-                  <div hoverstagger="text" className="menu_link-text is-2">
-                    {item.name}
-                  </div>
-                </div>
-                <div hoverstagger="text" className="font-neue-montreal">
-                  [ {item.title} ]
-                </div>
-              </div>
-            </div>
-          </a>
-        ))}
-      </div>
-      <div className="bg-[#ECE4FF] w-2/3 flex flex-col h-screen">
-        <div className="h-1/3 flex items-center">
-          <div class="left-mid-block">
-            <Marquee className="w-full h-full" />
-            {/* <div class="movin-text-holder">
-              <h1 class="moving-text">Testimonials </h1>
-              <h1 class="moving-text">Testimonials</h1>
-              <h1 class="moving-text">Testimonials </h1>
-              <h1 class="moving-text">Testimonials </h1>
-              <h1 class="moving-text">Testimonials</h1>
-              <h1 class="moving-text">Testimonials </h1>
-            </div> */}
-          </div>
-        </div>
+    <div className="relative w-full h-screen bg-black flex flex-col overflow-hidden">
 
-        <div className="h-2/3 flex items-center justify-center border-t border-black">
-          <div
-            style={{
-              fontFamily: "NeueMontrealBook",
-              fontSize: "20px",
-              color: "#333",
-              padding: "20px",
-              maxWidth: "700px",
-            }}
-            className="flex flex-col"
-          >
-            <div className="text-center">{selectedDescription}</div>
+    <div className="w-full bg-[#666] h-[1px]"></div>
+
+    <div className="relative flex w-full flex-1 overflow-hidden">
+      {/* Left Column */}
+      <div className="w-[25%] h-full flex flex-col justify-center items-center p-10 border-r border-[#666]">
+
+        <div className="font-neue-montreal text-white text-[40px] leading-tight">Select Reviews</div>
+
+        {/* Counter */}
+        <div className="mt-20 inline-flex flex items-center gap-6 font-neue-montreal text-white text-sm">
+          <div >{`${String(currentIndex + 1).padStart(2, "0")} / ${carouselItems.length}`}</div>
+          <div className="flex gap-4">
+            <button onClick={prevSlide} className=" flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
+                stroke="white" fill="none" strokeWidth="10" transform="rotate(-90)">
+                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
+                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+              </svg>
+            </button>
+            <button onClick={nextSlide} className=" flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
+                stroke="white" fill="none" strokeWidth="10" transform="rotate(90)">
+                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
+                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
-
-      {/* <div  className="bg-[#FF6400] w-2/5">
-        
-        <h1 ref={headingRef}
+      
+      {/* Right Column */}
+      <div className="w-[75%] relative flex overflow-hidden">
+        <div className="w-full flex overflow-x-auto snap-mandatory snap-x"
           style={{
-            fontSize: "3rem",
-            lineHeight: "100%",
-          }}
-          className="font-helvetica-neue-light mt-32 mb-10 flex justify-center"
-        >
-          Testimonials
-        </h1>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: "50px",
-            padding: "20px",
-            maxWidth: "800px",
-            margin: "auto",
-          }}
-        >
-          {items.map((item, index) => (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                width: "100%",
-              }}
-              key={index}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: "1px",
-                  backgroundColor: "#000",
-                  marginBottom: "10px",
-                }}
-              ></div>
-              <div
-                style={{
-                  justifyContent: "space-between",
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                  padding: "10px 0",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "NeueMontrealBook",
-                    fontSize: "20px",
+            scrollSnapType: "x mandatory",
+            scrollBehavior: "smooth",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}>
+        <motion.div
+  ref={carouselRef}
+  className="flex w-full h-full cursor-grab active:cursor-grabbing gap-[2vw] pl-[2vw]" 
+  style={{ willChange: "transform" }}
+  drag="x"
+  dragConstraints={{ left: maxDrag, right: 0 }}
+  dragElastic={0.1}
+  dragMomentum={false}
+  onDragEnd={(event, info) => {
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
+    const threshold = 60;
+    const velocityThreshold = 400;
 
-                    color: "#333",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setSelectedDescription(item.description)}
-                >
-                  {item.name}
-                </span>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontFamily: "NeueMontrealBook",
-
-                    color: "#999",
-                    marginTop: "5px",
-                  }}
-                >
-                  {item.year}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+    if (offset > threshold || velocity > velocityThreshold) {
+      prevSlide();
+    } else if (offset < -threshold || velocity < -velocityThreshold) {
+      nextSlide();
+    }
+  }}
+>
+  {carouselItems.map((item, index) => (
+    <motion.div
+      key={index}
+      className="flex-none flex flex-col items-center justify-center cursor-grab active:cursor-grabbing"
+      whileTap={{ scale: 0.98 }}
+    >
+ {item.type === "image" ? (
+    <div className="relative w-[30vw] h-[70vh] flex items-center justify-center">
+      <img
+        src={item.src}
+        alt={item.name}
+        className="w-full h-full object-cover pointer-events-none"
+        draggable={false}
+        loading="lazy"
+      />
+      <div className="absolute inset-0 flex items-center justify-center font-neue-montreal text-[#17191A] text-[15px] p-4">
+        {item.description}
       </div>
-      <div className="bg-[#FF6400] w-3/5 flex items-center justify-center">
-        <div
-          style={{
-            fontFamily: "NeueMontrealBook",
-            fontSize: "20px",
-            color: "#333",
-            padding: "20px",
-            maxWidth: "700px",
-          }}
-          className="flex flex-col"
-        >
-          <div className="text-center">{selectedDescription}</div>
-        </div>
-      </div> */}
     </div>
+  ) : (
+    <video
+      src={item.src}
+      autoPlay
+      loop
+      muted
+      className="w-auto h-full max-w-[40vw] max-h-[85vh] object-cover pointer-events-none"
+      draggable={false}
+      preload="auto"
+    />
+  )}
+      <p className="font-neue-montreal text-center text-sm">{item.name}</p>
+    </motion.div>
+  ))}
+</motion.div>
+
+        </div>
+      </div>
+    </div>
+
+    <div className="w-full bg-[#666] h-[1px]"></div>
+  </div>
   );
 }
 

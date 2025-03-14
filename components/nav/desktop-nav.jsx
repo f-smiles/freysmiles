@@ -68,11 +68,13 @@ export default function DesktopNav({ user }) {
     setSelectedLink(null);
   }, [pathname]);
 
+  
+
   return (
     <motion.nav
       id="desktop-nav"
       className={`${styles.header} ${
-        isScrolled ? "bg-white bg-opacity-100 text-black" : "text-white bg-transparent"
+        isScrolled ? "bg-opacity-80 text-black" : "text-black bg-transparent"
       } fixed top-0 w-full z-50 transition-all duration-300 ease-in-out`}
     >
       <motion.div 

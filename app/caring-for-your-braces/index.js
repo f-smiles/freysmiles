@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ExpandingSections = () => {
+const CaringForYourBraces = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -498,7 +498,7 @@ Dental professionals, dental hygienists, and other specialists all have differen
   );
 };
 
-export default ExpandingSections;
+export default CaringForYourBraces;
 
 // "use client";
 // import React, { useRef, useEffect } from "react";

@@ -41,10 +41,11 @@ export default function WhyChooseUs() {
   return (
     <>
       <Hero />
-      <MarqueeAnimation />
-      <StackCards />
-      <ScrollTextReveal />
+      {/* <MarqueeAnimation /> */}
+
+      {/* <ScrollTextReveal /> */}
       <About />
+      <StackCards />
       <VennDiagram />
       <GridLayout />
 
@@ -62,7 +63,7 @@ function Hero() {
   const contentRef = useRef(null);
   const imageRefs = useRef([]);
   const boxRefs = useRef([]);
-  
+
   useEffect(() => {
     const tl = gsap.timeline();
 
@@ -97,10 +98,12 @@ function Hero() {
     }, "+=0.2");
 
     // Overlaps fade-in of white section with image animation
-    tl.to(contentRef.current, { opacity: 1, y: 0, duration: 1, ease: "power2.out" }, "-=1");
-
-}, []);
-
+    tl.to(
+      contentRef.current,
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
+      "-=1"
+    );
+  }, []);
 
   const title = "Experts in";
   const imageUrl = "../images/crystal.png";
@@ -156,12 +159,12 @@ function Hero() {
                 </li>
                 <li className="py-1">
                   <h1 className="font-neue-montreal text-3xl">
-                    Accelerated Orthodontic Treatment
+                    Accelerated Treatment
                   </h1>
                 </li>
                 <li className="py-1">
                   <h1 className="font-neue-montreal text-3xl">
-                    Low-Dose 3D Digital Radiographs
+                    Low-Dose 3D Radiographs
                   </h1>
                 </li>
                 <li className="py-1">
@@ -170,151 +173,40 @@ function Hero() {
               </ul>
             </div>
           </section>
-
         </div>
 
-        <div
-  ref={contentRef}
-
->
-<div className="absolute top-1/4 right-10 flex flex-col gap-8"> 
-  {["../images/portraitglass.jpg", "../images/landscapeimage.jpg"].map((src, index) => (
-    <div 
-      key={index} 
-      className={`wrapper-img relative overflow-hidden ${
-        index === 0 
-        ? "w-[300px] h-[388px] absolute top-[120px] right-[-100px] rotate-[-10deg]"  
-        : "w-[450px] h-[275px] absolute bottom-[80px] left-[-400px] rotate-[8deg]" 
-      }`}
-    >
-
-      <div
-        ref={(el) => (boxRefs.current[index] = el)}
-        className="box absolute inset-0 bg-black"
-      ></div>
-
-
-      <img
-        ref={(el) => (imageRefs.current[index] = el)}
-        src={src}
-        alt={`Placeholder ${index + 1}`}
-        className="absolute w-full h-full object-cover opacity-0"
-      />
-    </div>
-  ))}
-</div>
-
-
-
-</div>
-
-
-      </div>
-
-      <div className="h-screen bg-212121">
-        <div className="bg-[#DFFF00]  min-w-full flex justify-center items-center">
-          <div className="relative my-[10vh] mx-auto p-0 rounded-[5rem] overflow-hidden w-[90vw] h-[80vh] bg-[#E8E8E4]">
-            <img
-              src={imageUrl}
-              alt={title}
-              className="block object-cover w-full h-full"
-            />
-
-            <div className="relative" style={{ bottom: "5", right: "5" }}>
-              <svg
-                ref={svgRef}
-                id="spinscroll"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-                width="300px"
-                height="300px"
-                viewBox="0 0 300 300"
-                xmlSpace="preserve"
-                className="inline-flex transition-transform duration-100 book-svg"
+        <div ref={contentRef}>
+          <div className="absolute top-1/4 right-10 flex flex-col gap-8">
+            {[
+              "../images/landscapeimage.jpg ",
+              "../images/iphonemockup.jpg",
+            ].map((src, index) => (
+              <div
+                key={index}
+                className={`wrapper-img relative overflow-hidden ${
+                  index === 0
+                    ? "w-[300px] h-[388px] absolute top-[120px] right-[-100px] rotate-[-10deg]"
+                    : "w-[450px] h-[275px] absolute bottom-[80px] left-[-400px] rotate-[8deg]"
+                }`}
               >
-                <defs>
-                  <path
-                    id="circlePath"
-                    d="M75,150A75,75 0 1 1225,150A75,75 0 1 175,150"
-                  />
-                </defs>
-                <g id="rotatingGroup">
-                  <text className="scroll-text">
-                    <textPath xlinkHref="#circlePath">
-                      Scroll Down Scroll Down
-                    </textPath>
-                  </text>
-                </g>
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 63 305"
-                width="10.75"
-                height="56.25"
-                className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              >
-                <path
-                  className="arrow-line"
-                  style={{
-                    fill: "none",
-                    stroke: "#000",
-                    strokeWidth: "1.5",
-                    strokeDashoffset: 0,
-                    strokeDasharray: "304",
-                  }}
-                  d="M31 0,31 304"
+                <div
+                  ref={(el) => (boxRefs.current[index] = el)}
+                  className="box absolute inset-0 bg-black"
+                ></div>
+
+                <img
+                  ref={(el) => (imageRefs.current[index] = el)}
+                  src={src}
+                  alt={`Placeholder ${index + 1}`}
+                  className="absolute w-full h-full object-cover opacity-0"
                 />
-                <path
-                  className="arrow-left"
-                  style={{
-                    fill: "none",
-                    stroke: "#000",
-                    strokeWidth: "1.5",
-                    strokeDashoffset: 0,
-                    strokeDasharray: "51",
-                  }}
-                  d="M1,269c0,0,29-1,30,35"
-                />
-                <path
-                  className="arrow-right"
-                  style={{
-                    fill: "none",
-                    stroke: "#000",
-                    strokeWidth: "1.5",
-                    strokeDashoffset: 0,
-                    strokeDasharray: "51",
-                  }}
-                  d="M61,269c0,0-29-1-30,35"
-                />
-              </svg>
-            </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        <section>
-          <video
-            autoPlay
-            loop
-            muted
-            preload="true"
-            className="absolute inset-0 object-cover object-center w-full h-full -z-10"
-          >
-            {/* undulating waves */}
-            {/* <source src="/../../videos/production_id_4779866.mp4" type="video/mp4" /> */}
-            {/* sharp waves */}
-            {/* <source src="/../../videos/pexels-rostislav-uzunov-9150545.mp4" type="video/mp4" /> */}
-            {/* shutterstock */}
-            <source
-              src="/../../videos/shutterstock_1111670177.mp4"
-              type="video/mp4"
-            />
-          </video>
-        </section>
-
-        <div className="w-full mt-20 h-[100vh] flex flex-col justify-center items-center relative">
-          <div className="absolute inset-0 m-4 bg-gray-300 border border-gray-100 rounded-xl -z-10 backdrop-filter bg-clip-padding backdrop-blur-sm bg-opacity-30" />
-        </div>
       </div>
+
+     
     </>
   );
 }
@@ -470,12 +362,12 @@ const About = () => {
             <SwiperSlide className="swiper-slide slide--reviews">
               <div className="timeline-grid mod--timeline2">
                 <div className="timeline__col mod--1">
-                  {/* <img
-                    src="images/ico_building-01.svg"
+                  <img
+                    src="../images/diamondinvismockup.png"
                     loading="lazy"
                     alt=""
                     className="timeline__ico"
-                  /> */}
+                  />
                   <div className="timeline__ico-title">
                     Invisalign <br />
                     Pioneers
@@ -500,17 +392,17 @@ const About = () => {
               </div>
             </SwiperSlide>
 
-            {/* Second Slide - Innovation () */}
+            {/* Second Slide - Innovation */}
 
             <SwiperSlide className="swiper-slide slide--reviews">
               <div className="timeline-grid mod--timeline2">
                 <div className="timeline__col mod--1">
-                  {/* <img
-                    src="images/ico_builing-03.svg"
+                  <img
+                    src="../images/doctorphoto.png"
                     loading="lazy"
                     alt=""
                     className="timeline__ico"
-                  /> */}
+                  />
                   <div className="timeline__ico-title">
                     Expertise <br />
                     Defined
@@ -537,12 +429,12 @@ const About = () => {
             <SwiperSlide className="swiper-slide slide--reviews">
               <div className="timeline-grid mod--timeline2">
                 <div className="timeline__col mod--1">
-                  {/* <img
-                    src="images/ico_builing-02.svg"
+                  <img
+                    src="../images/fsajo.png"
                     loading="lazy"
                     alt=""
                     className="timeline__ico"
-                  /> */}
+                  />
                   <div className="timeline__ico-title">
                     Leading <br />
                     Recognition
@@ -596,158 +488,7 @@ const TextSection = () => {
   );
 };
 
-function MarqueeAnimation() {
-  const textContainerRef = useRef(null);
-  const textRef1 = useRef(null);
-  const textRef2 = useRef(null);
 
-  useEffect(() => {
-    const onEntry = (entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          [textRef1, textRef2].forEach((ref) => {
-            const split = new SplitText(ref.current, { type: "lines" });
-            split.lines.forEach((line) => {
-              gsap.fromTo(
-                line,
-                {
-                  y: 80,
-                  opacity: 0,
-                  clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
-                },
-                {
-                  y: 0,
-                  opacity: 1,
-                  clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-                  duration: 1.5,
-                  ease: "power4.out",
-                }
-              );
-            });
-          });
-
-          observer.disconnect();
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(onEntry, {
-      threshold: 1,
-    });
-
-    if (textContainerRef.current) {
-      observer.observe(textContainerRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  const marqueeRef = useRef(null);
-
-  useEffect(() => {
-    const marquee = marqueeRef.current;
-    if (!marquee) return;
-    const speed = 0.06;
-    let lastFrameTime = 0;
-
-    const animate = (time) => {
-      if (!lastFrameTime) lastFrameTime = time;
-      const delta = time - lastFrameTime;
-      lastFrameTime = time;
-
-      marquee.scrollLeft += speed * delta;
-      if (marquee.scrollLeft >= marquee.firstChild.offsetWidth) {
-        marquee.scrollLeft -= marquee.firstChild.offsetWidth;
-      }
-
-      requestAnimationFrame(animate);
-    };
-
-    requestAnimationFrame(animate);
-  }, []);
-
-  const svgIcon = (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 200 200"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g clipPath="url(#clip0_104_26)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M107.143 0H92.8571V82.7556L34.3401 24.2385L24.2386 34.3401L82.7556 92.8571H0V107.143H82.7555L24.2386 165.66L34.3401 175.761L92.8571 117.244V200H107.143V117.244L165.66 175.761L175.761 165.66L117.244 107.143H200V92.8571H117.244L175.761 34.34L165.66 24.2385L107.143 82.7555V0Z"
-          fill="#E8E2D6"
-        />
-      </g>
-      <clipPath id="clip0_104_26">
-        <rect width="200" height="200" fill="white" />
-      </clipPath>
-    </svg>
-  );
-
-  const items = [
-    "unparalleled",
-    "CARE",
-    "AND",
-    "EXCELLENCE",
-    "unparalleled",
-    "Care",
-    svgIcon,
-  ];
-
-  const duplicatedItems = [...items, ...items];
-
-  return (
-    <section className="project-section">
-      <div
-        ref={marqueeRef}
-        className="flex w-full overflow-hidden whitespace-nowrap"
-      >
-        <div className="text-[#E8E2D6] flex">
-          {duplicatedItems.map((item, index) => (
-            <div key={index} className="mx-4 marquee-item">
-              <h3 className="text-3xl font-semibold uppercase">{item}</h3>
-            </div>
-          ))}
-        </div>
-        <div className="text-[#E8E2D6] flex">
-          {duplicatedItems.map((item, index) => (
-            <div
-              key={index + duplicatedItems.length}
-              className="mx-4 marquee-item"
-            >
-              <h3 className="text-3xl font-semibold uppercase">{item}</h3>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* <div className="flex items-center appointmentMarquee">
-        <svg width="50" height="50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g clipPath="url(#clip0_104_26)">
-          <path fillRule="evenodd" clipRule="evenodd" d="M107.143 0H92.8571V82.7556L34.3401 24.2385L24.2386 34.3401L82.7556 92.8571H0V107.143H82.7555L24.2386 165.66L34.3401 175.761L92.8571 117.244V200H107.143V117.244L165.66 175.761L175.761 165.66L117.244 107.143H200V92.8571H117.244L175.761 34.34L165.66 24.2385L107.143 82.7555V0Z" fill="#E8E2D6"/>
-        </g>
-          <clipPath id="clip0_104_26">
-            <rect width="200" height="200" fill="white"/>
-          </clipPath>
-        </svg>
-        <div className="project-heading col-lg-6">
-          <h1>UNPARALLELED CARE AND EXPERTISE</h1>
-        </div>
-        <svg width="50" height="50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g clipPath="url(#clip0_104_26)">
-            <path fillRule="evenodd" clipRule="evenodd" d="M107.143 0H92.8571V82.7556L34.3401 24.2385L24.2386 34.3401L82.7556 92.8571H0V107.143H82.7555L24.2386 165.66L34.3401 175.761L92.8571 117.244V200H107.143V117.244L165.66 175.761L175.761 165.66L117.244 107.143H200V92.8571H117.244L175.761 34.34L165.66 24.2385L107.143 82.7555V0Z" fill="#E8E2D6"/>
-          </g>
-          <clipPath id="clip0_104_26">
-            <rect width="200" height="200" fill="white"/>
-          </clipPath>
-        </svg>
-      </div> */}
-    </section>
-  );
-}
 
 function StackCards() {
   const containerRef = useRef(null);
@@ -763,8 +504,12 @@ function StackCards() {
   return (
     <section ref={containerRef}>
       <section className="rounded-2xl bg-[#F1F1F1] sm:py-32">
+        {/* <div className=" w-48 h-48 -translate-x-1/4 -z-10">
+          <Shape06 />
+        </div> */}
+
         <div className="flex items-start space-x-8">
-          <div className="flex justify-center items-center h-screen bg-gray-100">
+          {/* <div className="flex justify-center items-center h-screen bg-gray-100">
             <svg
               className="hero__middle-line"
               width="35"
@@ -797,46 +542,61 @@ function StackCards() {
                 style={{ pathLength: bottomPathLength }}
               />
             </svg>
-          </div>
+          </div> */}
           <div className="container relative mx-auto">
             <div className="max-w-screen-lg mx-auto mt-10 space-y-16">
-              <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] translate-x-[4dvw] border-2 border-[#c5cfc7] -rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105 ">
-                <h4>
-                  We strive to attain finished results consistent with the{" "}
-                  <span>American Board of Orthodontics (ABO)</span> qualitative
-                  standards. Our doctors place great priority on the
-                  certification and recertification process, ensuring that all
-                  diagnostic records adhere to ABO standards.
-                </h4>
-              </div>
-              <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#c5cfc7] transition-all duration-150 ease-linear hover:scale-105 rotate-2 hover:rotate-0">
-                <h4>
-                  Currently, Dr. Gregg Frey is a certified orthodontist, and is
-                  preparing cases for recertification. Dr. Daniel Frey is in the
-                  final stages of obtaining his initial certification.
-                </h4>
-                <div className="absolute bottom-0 left-0 w-48 h-48 -translate-x-1/4 -z-10">
-                  <Shape06 />
+              <div className="transition-all duration-150 ease-linear hover:scale-105 hover:rotate-0 relative flex items-center justify-center mx-auto max-w-[80vw]">
+                <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
+
+                <div className="relative w-[110%] bg-[#F1F1F1] px-12 py-6 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
+                  <div className="py-12 font-neue-montreal text-center text-[18px] text-black">
+                    We strive to attain finished results consistent with the{" "}
+                    <span className="font-bold">
+                      American Board of Orthodontics (ABO)
+                    </span>{" "}
+                    qualitative standards. Our doctors place great priority on
+                    the certification and recertification process, ensuring that
+                    all diagnostic records adhere to ABO standards.
+                  </div>
                 </div>
               </div>
-              <div className="font-neue-montreal px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] translate-x-[2dvw] border-2 border-[#c5cfc7] rotate-2 lg:-rotate-2 relative hover:rotate-0 hover:scale-105 transition-all duration-150 ease-linear ">
-                <h4>
-                  To complement our use of cutting-edge diagnostic technology,
-                  we uphold the highest standards for our records, ensuring
-                  accuracy and precision throughout the treatment process.
-                </h4>
-                <div className="absolute bottom-0 right-0 translate-x-1/2 w-44 h-44 translate-y-1/4 -z-10">
-                  <Shape05 />
+
+              <div className="transition-all duration-150 ease-linear hover:scale-105 hover:rotate-0 relative flex items-center justify-center mx-auto max-w-[80vw]">
+                <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
+
+                <div className="relative w-[110%] bg-[#F1F1F1] px-12 py-6 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
+                  <div className="py-12 font-neue-montreal text-center text-[18px] text-black">
+                    Currently, Dr. Gregg Frey is a certified orthodontist and is
+                    preparing cases for recertification. Dr. Daniel Frey is in
+                    the final stages of obtaining his initial certification.
+                  </div>
                 </div>
               </div>
-              <div className="font-neue-montreal relative px-8 lg:px-16 py-8 mx-auto max-w-[60dvw] -translate-x-[2dvw] border-2 border-[#c5cfc7] rotate-2 hover:rotate-0 transition-all duration-150 ease-linear hover:scale-105">
-                <h4>
-                  Our office holds the distinction of being the
-                  longest-standing, active board-certified orthodontic office in
-                  the area . With four offices in the Lehigh Valley, we have
-                  been providing unparalleled orthodontic care for over four
-                  decades.
-                </h4>
+
+              <div className="transition-all duration-150 ease-linear hover:scale-105  hover:rotate-0 relative flex items-center justify-center mx-auto max-w-[80vw]">
+                <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
+
+                <div className="relative w-[110%] bg-[#F1F1F1] px-12 py-6 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
+                  <div className="py-12 font-neue-montreal text-center text-[18px] text-black">
+                    To complement our use of cutting-edge diagnostic technology,
+                    we uphold the highest standards for our records, ensuring
+                    accuracy and precision throughout the treatment process.
+                  </div>
+                </div>
+              </div>
+
+              <div className="transition-all duration-150 ease-linear hover:scale-105 hover:rotate-0 relative flex items-center justify-center mx-auto max-w-[80vw]">
+                <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
+
+                <div className="relative w-[110%] bg-[#F1F1F1] px-12 py-6 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
+                  <div className="py-12 font-neue-montreal text-center text-[18px] text-black">
+                    Our office holds the distinction of being the
+                    longest-standing, active board-certified orthodontic office
+                    in the area. With four offices in the Lehigh Valley, we have
+                    been providing unparalleled orthodontic care for over four
+                    decades.
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -845,7 +605,6 @@ function StackCards() {
     </section>
   );
 }
-
 
 function ScrollTextReveal() {
   useEffect(() => {
