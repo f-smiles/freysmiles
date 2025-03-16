@@ -5403,3 +5403,16 @@ a {
 
 
 }
+
+.blurred-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background:#E8F84B ; 
+  backdrop-filter: blur(120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(232, 248, 75, 0.9); 
+}
+

@@ -42,7 +42,7 @@ export default function WhyChooseUs() {
     <>
       <Hero />
       {/* <MarqueeAnimation /> */}
-
+<CardStack />
       {/* <ScrollTextReveal /> */}
       <About />
       <StackCards />
@@ -58,6 +58,65 @@ export default function WhyChooseUs() {
     </>
   );
 }
+
+const CardStack = () => {
+  const containerRef = useRef(null);
+  const cardsRef = useRef([]);
+
+  useEffect(() => {
+    const cards = cardsRef.current;
+
+    function reset() {
+      cards.forEach((card) => {
+        gsap.set(card, {
+          rotate: gsap.utils.random(-9, 9), 
+        });
+      });
+    }
+
+    reset(); 
+
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "bottom bottom",
+        end: "top top", 
+        scrub: true, 
+        pin: true, 
+      },
+    });
+
+    tl.add("anime"); 
+
+    cards.forEach((card, i) => {
+      tl.to(
+        card,
+        {
+          x: gsap.utils.random(-10, 10),
+          y: -150 * i,
+          rotate: 0,
+          ease: "power2.out",
+        },
+        "anime"
+      );
+    });
+  }, []);
+
+
+  return (
+    <div ref={containerRef} className="relative flex flex-col items-center justify-center h-screen overflow-hidden">
+      {["Expertise", "Agility", "Quality", "Innovation"].map((text, index) => (
+        <div
+          key={index}
+          ref={(el) => (cardsRef.current[index] = el)}
+          className="absolute w-[60%] text-center text-4xl font-bold p-6 border border-blue-500 bg-white shadow-lg"
+        >
+          {text}
+        </div>
+      ))}
+    </div>
+  );
+};
 function Hero() {
   const overlayRef = useRef(null);
   const contentRef = useRef(null);
@@ -97,7 +156,7 @@ function Hero() {
       });
     }, "+=0.2");
 
-    // Overlaps fade-in of white section with image animation
+
     tl.to(
       contentRef.current,
       { opacity: 1, y: 0, duration: 1, ease: "power2.out" },

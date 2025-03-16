@@ -104,7 +104,8 @@ export default function DesktopNav({ user }) {
 
   
         <Link href="/">
-          <motion.div className={`${isActive ? "hidden" : "block"} bg-[#e0ff33] rounded-full flex justify-center items-center w-10 h-10 p-3`}>
+        
+          <motion.div className={`${isActive ? "hidden" : "block"}  rounded-full flex justify-center items-center  w-10 h-10 p-3`}>
             <img src="../../images/logo_icon.png" alt="Logo Icon" className="w-full h-full icon-replacement" />
           </motion.div>
         </Link>

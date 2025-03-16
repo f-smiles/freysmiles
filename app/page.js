@@ -1,7 +1,7 @@
 "use client";
 import { Item } from "../utils/Item";
 import { Curtains, Plane } from "curtainsjs";
-import { Vector2, Vector4 } from "three";
+import { Vector2, Vector4, TextureLoader } from "three";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
 import { Navigation } from "swiper/modules";
@@ -10,6 +10,7 @@ import Matter from "matter-js";
 import * as THREE from "three";
 import { GUI } from "dat.gui";
 import Lenis from "@studio-freight/lenis";
+import DoorScene from "../Scenes/DoorScene";
 
 import React, {
   forwardRef,
@@ -19,7 +20,7 @@ import React, {
   useState,
   useCallback,
 } from "react";
-// framer motion
+
 import {
   motion,
   useAnimation,
@@ -28,10 +29,11 @@ import {
   useInView,
   useScroll,
   useTransform,
+  useMotionValueEvent
 } from "framer-motion";
-// headless ui
+
 import { Disclosure, Transition } from "@headlessui/react";
-// gsap
+
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { useGSAP } from "@gsap/react";
@@ -42,6 +44,8 @@ import { SplitText } from "gsap-trial/SplitText";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 import * as OGL from "ogl";
+import { ScrollControls, useScroll as useThreeScroll,Scroll  } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
@@ -86,7 +90,9 @@ export default function LandingComponent() {
         </div>
       </div>
       {/* <MarqueeSection /> */}
-
+      <div style={{ height: "100vh", background: "#fff" }}>
+            <DoorScene />
+        </div>
       <ImageGrid />
       <NewSection />
       <Testimonials />
@@ -94,6 +100,7 @@ export default function LandingComponent() {
       <Locations />
       <ContactUs />
       <GiftCards />
+     
     </>
   );
 }
@@ -864,6 +871,9 @@ const Hero = () => {
             </svg>
           </main>
           <div className="max-w-3xl text-[#1D64EF]">
+          <div className="blurred-circle">
+
+    </div>
             <p className="uppercase text-[12px] font-semibold font-helvetica-neue-light tracking-widest">
               Vision
             </p>
@@ -1685,10 +1695,56 @@ const NewSection = () => {
             <h1 className="font-helvetica-neue-light text-5xl md:text-6xl mb-4">
               A world of opportunity.
             </h1>
+       
+
             <div
               ref={canvasRef}
               style={{ height: "400px", width: "500px" }}
             ></div>
+                 <div className="relative flex items-center justify-center mx-auto max-w-[80vw]">
+            <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
+            <div className="relative w-[110%] bg-[#CFF174] px-48 py-2 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
+                  <div className="py-2 font-neue-montreal text-center text-[18px] text-black">
+                  <a
+                ref={linkRef}
+                href="/book-now"
+                data-tha
+                style={{
+                  display: "inline-block",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <span
+                  data-tha-span-1
+                  style={{
+                    fontSize: "1.25rem",
+                    fontFamily: "HelveticaNeue-Light",
+                    display: "inline-block",
+                    position: "relative",
+                  }}
+                >
+                  BOOK NOW
+                </span>
+                <span
+                  data-tha-span-2
+                  style={{
+                    fontSize: "1.25rem",
+                    fontFamily: "HelveticaNeue-Light",
+                    display: "inline-block",
+                    position: "absolute",
+                    top: "100%",
+                    left: "0",
+                  }}
+                >
+                  BOOK NOW
+                </span>
+              </a>
+
+                  </div>
+                </div>
+</div>
+{/*             
             <div className="tracking-widest flex justify-center border border-black py-6 px-8">
               <a
                 ref={linkRef}
@@ -1725,7 +1781,7 @@ const NewSection = () => {
                   BOOK NOW
                 </span>
               </a>
-            </div>
+            </div> */}
           </div>
 
           {/*right*/}
@@ -1743,7 +1799,7 @@ const NewSection = () => {
                 </clipPath>
               </defs>
 
-              {/* use href for image to put inside the clip path */}
+
               <image
                 href="../images/nowbook.png"
                 width="200"
@@ -1752,7 +1808,7 @@ const NewSection = () => {
                 preserveAspectRatio="xMidYMid slice"
               />
 
-              {/* shape outline*/}
+        
               <path
                 d="M50 50.5H50.5V50V49.5C23.2199 49.5 1.04241 27.6526 0.509799 0.5H199.491C198.957 27.6526 176.781 49.5 149.5 49.5V50V50.5H150C177.338 50.5 199.5 72.6619 199.5 100C199.5 125.033 180.918 145.726 156.795 149.038L156.791 150.028C180.949 153.556 199.5 174.363 199.5 199.5H0.5C0.5 174.363 19.0509 153.556 43.2094 150.028L43.2051 149.038C19.0823 145.726 0.5 125.033 0.5 100C0.5 72.6619 22.6619 50.5 50 50.5Z"
                 fill="none"
@@ -3068,7 +3124,187 @@ const LogoGrid = () => {
   );
 };
 
-function Testimonials() {
+const BulgePlane = ({ textureUrl, scrollProgress, index, totalItems, position }) => {
+  const meshRef = useRef();
+  const texture = new THREE.TextureLoader().load(textureUrl);
+
+  const vertexShader = `
+    varying vec2 vUv;
+    uniform float uProgress; // Strength of bulge effect
+    uniform float uDistance; // Distance of image from viewport center
+
+    void main() {
+      vUv = uv;
+      vec3 transformed = position;
+
+      // Calculate distance from UV center
+      float distanceFromCenter = length(uv - vec2(0.5, 0.5));
+
+      // Make bulge effect strongest at center and fade as it moves out
+      float bulge = (1.0 - pow(distanceFromCenter, 2.0)) * uProgress * exp(-uDistance * 2.0); 
+
+      // Apply bulge along the Z-axis
+      transformed.z += bulge;  
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+    }
+  `;
+
+
+  const fragmentShader = `
+    varying vec2 vUv;
+    uniform sampler2D uTexture;
+
+    void main() {
+      gl_FragColor = texture2D(uTexture, vUv);
+    }
+  `;
+  useFrame(() => {
+    if (meshRef.current) {
+      const activeIndex = scrollProgress * (totalItems - 1);
+      const distance = Math.abs(activeIndex - index);
+
+      const influence = 1.0 / (1.0 + Math.pow(distance, 2.5)); 
+  
+      meshRef.current.material.uniforms.uProgress.value = influence;
+      meshRef.current.material.uniforms.uDistance.value = distance;
+      meshRef.current.material.uniforms.uProgress.needsUpdate = true;
+      meshRef.current.material.uniforms.uDistance.needsUpdate = true;
+  
+      console.log(`Plane ${index}: Distance = ${distance}, Influence = ${influence}`);
+    }
+  });
+  
+
+  return (
+    <mesh ref={meshRef} position={position}>
+      <planeGeometry args={[3, 4, 256, 256]} /> 
+      <shaderMaterial
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={{
+          uTexture: { value: texture },
+          uProgress: { value: 0.0 },  
+          uDistance: { value: 1.0 },  
+        }}
+      />
+    </mesh>
+  );
+};
+
+const Carousel = ({ items }) => {
+  const { viewport } = useThree();
+  const scroll = useScroll(); 
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    console.log("useScroll initialized:", scroll);
+  }, [scroll]);
+
+
+  useMotionValueEvent(scroll.scrollXProgress, "change", (latest) => {
+    console.log("Detected ScrollX Progress Change:", latest);
+    setScrollProgress(latest);
+  });
+
+  return (
+    <> 
+      {items.map((item, index) => (
+        <BulgePlane
+          key={index}
+          textureUrl={item.textureUrl}
+          scrollProgress={scrollProgress}
+          index={index}
+          totalItems={items.length}
+          position={[index * viewport.width * 0.3, 0, 0]} 
+        />
+      ))}
+    </>
+  );
+};
+
+const WebGLCarousel = () => {
+  const items = [
+    { textureUrl: 'https://picsum.photos/800/600?random=1' },
+    { textureUrl: 'https://picsum.photos/800/600?random=2' },
+    { textureUrl: 'https://picsum.photos/800/600?random=3' },
+    { textureUrl: 'https://picsum.photos/800/600?random=4' },
+  ];
+
+  return (
+    <Canvas>
+      <ScrollControls horizontal pages={items.length * 1.5}> 
+        <Scroll> 
+          <Carousel items={items} />
+        </Scroll>
+      </ScrollControls>
+    </Canvas>
+  );
+};
+
+
+// const TestimonialMesh = ({ textureUrl, position }) => {
+//   const [texture, setTexture] = useState(null);
+//   const meshRef = useRef();
+
+
+//   useEffect(() => {
+//     const loader = new TextureLoader();
+//     loader.load(textureUrl, (loadedTexture) => {
+//       setTexture(loadedTexture);
+//     });
+//   }, [textureUrl]);
+
+
+//   const vertexShader = `
+//     varying vec2 vUv;
+//     uniform float uTime;
+//     void main() {
+//       vUv = uv;
+//       vec3 pos = position;
+//       // Subtle wave effect (like paper blowing in the wind)
+//       float wave = sin(pos.x * 0.5 + uTime * 1.5) * 0.1; // Adjust amplitude and frequency
+//       pos.y += wave;
+//       pos.x += wave * 0.5; // Add slight horizontal movement for realism
+//       gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+//     }
+//   `;
+
+
+//   const fragmentShader = `
+//     varying vec2 vUv;
+//     uniform sampler2D uTexture;
+//     void main() {
+//       gl_FragColor = texture2D(uTexture, vUv);
+//     }
+//   `;
+
+
+//   useFrame(({ clock }) => {
+//     if (meshRef.current) {
+//       meshRef.current.material.uniforms.uTime.value = clock.getElapsedTime();
+//     }
+//   });
+
+//   if (!texture) return null;
+
+//   return (
+// <mesh ref={meshRef} position={position}>
+//   <planeGeometry args={[7.5, 9, 32, 32]} /> 
+//   <shaderMaterial
+//     vertexShader={vertexShader}
+//     fragmentShader={fragmentShader}
+//     uniforms={{
+//       uTexture: { value: texture },
+//       uTime: { value: 0 },
+//     }}
+//   />
+// </mesh>
+//   );
+// };
+const Testimonials = ({ textureUrl, position }) => {
+
+
   const carouselItems = [
     {
       type: "image",
@@ -3140,7 +3376,13 @@ function Testimonials() {
       setMaxDrag(-(containerWidth - viewportWidth)); 
     }
   }, [carouselItems]); 
-
+  const images = [
+    "../images/radialgradient.png",
+    "../images/radialgradient.png",
+    "../images/radialgradient.png",
+    "../images/radialgradient.png",
+  ];
+  const { scrollXProgress } = useScroll();
   return (
     <div className="relative w-full h-screen bg-black flex flex-col overflow-hidden">
 
@@ -3176,7 +3418,26 @@ function Testimonials() {
       
       {/* Right Column */}
       <div className="w-[75%] relative flex overflow-hidden">
-        <div className="w-full flex overflow-x-auto snap-mandatory snap-x"
+      <div className="sticky top-0 h-screen w-full">
+      <div className="App" style={{ width: '100vw', height: '100vh' }}>
+      <WebGLCarousel />
+    </div>
+      {/* <Canvas camera={{ position: [0, 0, 14], fov: 50 }}>
+        <ScrollControls horizontal pages={3}>
+          <group position={[-4, 0, 0]}>
+            {images.map((src, index) => (
+              <TestimonialMesh 
+                key={index} 
+                textureUrl={src} 
+                position={[index * 8.5, 0, 0]} 
+                scrollProgress={scrollXProgress}
+              />
+            ))}
+          </group>
+        </ScrollControls>
+      </Canvas> */}
+    </div>
+        {/* <div className="w-full flex overflow-x-auto snap-mandatory snap-x"
           style={{
             scrollSnapType: "x mandatory",
             scrollBehavior: "smooth",
@@ -3239,7 +3500,7 @@ function Testimonials() {
   ))}
 </motion.div>
 
-        </div>
+        </div> */}
       </div>
     </div>
 
