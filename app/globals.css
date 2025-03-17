@@ -5416,3 +5416,13 @@ a {
   box-shadow: 0 0 20px rgba(232, 248, 75, 0.9); 
 }
 
+.scroll-container::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  display: none;
+}
+.scroll-container {
+  -ms-overflow-style: none;  
+  scrollbar-width: none; 
+}
+

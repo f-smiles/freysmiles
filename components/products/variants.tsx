@@ -49,19 +49,25 @@ export default function Variants({ variants }: ProductVariantsProps) {
                         priority
                       />
                     </figure>
+                    <div className="w-full flex justify-between items-center">
+  <h3 className="font-neue-montreal text-[16px] text-zinc-900">
+    {variant.product.title}
+  </h3>
 
-                    <h3 className="mt-4 text-lg font-medium text-zinc-900">
-                      {variant.product.title}
-                    </h3>
+  <span className="font-neue-montreal text-[15px] text-zinc-900">
+    {formatPrice(variant.product.price)}
+  </span>
+</div>
 
-                    <div className="w-full flex justify-between">
-                      <span className="font-neue-montreal text-sm text-zinc-500">
-                        {variant.variantName}
-                      </span>
-                      <span className="font-neue-montreal text-sm font-bold text-zinc-900">
-                        {formatPrice(variant.product.price)}
-                      </span>
-                    </div>
+
+<div className="w-full h-[1px] bg-gray-300"></div>
+
+<div className="mt-4">
+  <span className="font-neue-montreal text-sm text-zinc-500">
+    {variant.variantName}
+  </span>
+</div>
+
                   </Link>
                 </div>
               ))}

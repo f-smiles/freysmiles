@@ -59,7 +59,7 @@ const Braces = () => {
 
   return (
     <>
-      <div className="bg-[#A7A4B5] flex h-screen">
+      <div className="bg-[#EBD4D3] flex h-screen">
         <div><img src= "../images/radium-green.svg " /></div>
         {/* <div className="flex flex-col w-1/3">
           <img

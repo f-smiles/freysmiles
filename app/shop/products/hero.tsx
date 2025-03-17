@@ -1,4 +1,22 @@
 import React from 'react';
+const Marquee = () => {
+  const items = [{ word: "Click here to shop gift cards" }, { word: "Click here to shop gift cards" }];
+
+  return (
+    <div className="relative flex  overflow-hidden py-5">
+      <div className="flex min-w-max animate-marquee hover:[animation-play-state:paused]">
+        {[...items, ...items].map((item, index) => (
+          <div
+            key={index}
+            className="px-4 text-[1em] font-neue-montreal whitespace-nowrap"
+          >
+            {item.word}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const Hero: React.FC = () => {
   const letters = [
@@ -98,11 +116,11 @@ const Hero: React.FC = () => {
     </section>
   </div>
 </div>
-
+<Marquee />
 
 
 <div >
-      <div className="shop-marquee">
+      {/* <div className="shop-marquee">
         <div className="shop-marquee-track">
           {[...Array(20)].map((_, index: number) => (
             <React.Fragment key={index}>
@@ -116,7 +134,7 @@ const Hero: React.FC = () => {
             </React.Fragment>
           ))}
         </div>
-      </div>
+      </div> */}
       </div>
 
       <div >
@@ -132,6 +150,26 @@ const Hero: React.FC = () => {
         </div>
 
       </div>
+      <section
+  className="font-neue-montreal h-[50vh] flex flex-col items-center justify-center text-center px-6"
+>
+  <div className="max-w-3xl">
+    <div className="text-5xl font-medium text-gray-900 leading-tight mb-4">
+      Wellbeing starts with well doing.
+    </div>
+    <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-6 leading-snug font-neue-montreal">
+      We’ve carefully curated a selection of premium products designed to elevate your 
+      experience during treatment. From gentle yet effective whitening solutions to 
+      comfort-enhancing essentials, each product is handpicked to support your journey 
+      to a healthier, more confident smile. Shop smarter, smile brighter.
+    </p>
+  </div>
+
+  <div className="h-[1px] w-[85vw] bg-gray-300 mt-6"></div>
+
+</section>
+
+
     </div>
     </div>
   );

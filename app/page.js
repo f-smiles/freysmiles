@@ -1,5 +1,7 @@
 "use client";
 import { Item } from "../utils/Item";
+import { Water } from "three/examples/jsm/objects/Water";
+import { Sky } from "three/examples/jsm/objects/Sky";
 import { Curtains, Plane } from "curtainsjs";
 import { Vector2, Vector4, TextureLoader } from "three";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,11 +10,8 @@ import { Navigation } from "swiper/modules";
 import Link from "next/link";
 import Matter from "matter-js";
 import * as THREE from "three";
-import { GUI } from "dat.gui";
-import Lenis from "@studio-freight/lenis";
-import DoorScene from "../Scenes/DoorScene";
-
 import React, {
+  useMemo,
   forwardRef,
   useRef,
   useEffect,
@@ -33,7 +32,6 @@ import {
 } from "framer-motion";
 
 import { Disclosure, Transition } from "@headlessui/react";
-
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { useGSAP } from "@gsap/react";
@@ -44,8 +42,8 @@ import { SplitText } from "gsap-trial/SplitText";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 import * as OGL from "ogl";
-import { ScrollControls, useScroll as useThreeScroll,Scroll  } from "@react-three/drei";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { ScrollControls, useScroll as useThreeScroll,Scroll, Text,OrbitControls,useGLTF  } from "@react-three/drei";
+import { Canvas, useFrame, useThree , extend} from "@react-three/fiber";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
@@ -78,21 +76,187 @@ const Marquee = () => {
   );
 };
 
+
+extend({ Water, Sky });
+
+function DoorModel() {
+  const { scene, animations } = useGLTF("/models/openingclosingdoor3d.glb");
+  const mixer = useRef(null);
+  const action = useRef(null);
+  const doorRef = useRef();
+  useEffect(() => {
+    if (animations.length > 0) {
+      mixer.current = new THREE.AnimationMixer(scene);
+      const openingAnimation = animations.find((anim) => anim.name === "Action");
+  
+      if (!openingAnimation) {
+        return;
+      }
+  
+      action.current = mixer.current.clipAction(openingAnimation);
+      action.current.clampWhenFinished = true;
+      action.current.setLoop(THREE.LoopOnce);
+      action.current.play();
+  
+      const stopFrame = openingAnimation.duration * 0.9;
+      const checkAnimation = () => {
+        if (action.current.time >= stopFrame) {
+          action.current.paused = true;
+        } else {
+          requestAnimationFrame(checkAnimation);
+        }
+      };
+  
+      requestAnimationFrame(checkAnimation);
+    }
+  }, [scene, animations]);
+  
+
+  
+  useEffect(() => {
+    const textureLoader = new THREE.TextureLoader();
+    const matcapTexture = textureLoader.load("../images/matcap-green-yellow-pink.png");
+
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material.map = null;
+        child.material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
+        child.material.needsUpdate = true;
+      }
+    });
+  }, [scene]);
+
+  useFrame((_, delta) => {
+    mixer.current?.update(delta);
+  });
+
+  return <primitive ref={doorRef} object={scene} position={[0, -1, 0]}  rotation={[0, Math.PI, 0]} scale={5} />;
+}
+
+
+const OceanScene = () => {
+  const { scene, gl, camera } = useThree();
+  const waterRef = useRef();
+  const meshRef = useRef();
+  useEffect(() => {
+    camera.position.set(-10, 5, 30); //-x moves the right part of door back positive moves it forward
+    camera.lookAt(0, -5, 0); 
+  }, [camera]);
+  
+  useEffect(() => {
+
+    const waterNormals = new THREE.TextureLoader().load(
+      "https://threejs.org/examples/textures/waternormals.jpg"
+    );
+    waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+
+    const waterGeometry = new THREE.PlaneGeometry(10000, 10000);
+
+    const water = new Water(waterGeometry, {
+      textureWidth: 512,
+      textureHeight: 512,
+      waterNormals: waterNormals,
+      sunDirection: new THREE.Vector3(),
+      sunColor: 0xffffff,
+      waterColor: 0x001e0f,
+      distortionScale: 3.7, 
+      fog: scene.fog !== undefined,
+    });
+
+    water.rotation.x = -Math.PI / 2;
+    scene.add(water);
+    waterRef.current = water;
+
+
+    const sky = new Sky();
+    sky.scale.setScalar(10000);
+    scene.add(sky);
+
+    const skyUniforms = sky.material.uniforms;
+    skyUniforms["turbidity"].value = 10;
+    skyUniforms["rayleigh"].value = 2;
+    skyUniforms["mieCoefficient"].value = 0.005;
+    skyUniforms["mieDirectionalG"].value = 0.8;
+
+    const pmremGenerator = new THREE.PMREMGenerator(gl);
+    const sun = new THREE.Vector3();
+
+    const updateSun = () => {
+      const theta = Math.PI * (0.49 - 0.5); 
+      const phi = 2 * Math.PI * (0.205 - 0.5);
+
+      sun.x = Math.cos(phi);
+      sun.y = Math.sin(phi) * Math.sin(theta);
+      sun.z = Math.sin(phi) * Math.cos(theta);
+
+      sky.material.uniforms["sunPosition"].value.copy(sun);
+      water.material.uniforms["sunDirection"].value.copy(sun).normalize();
+      scene.environment = pmremGenerator.fromScene(sky).texture;
+    };
+
+    updateSun();
+
+    return () => {
+      scene.remove(water);
+      scene.remove(sky);
+    };
+  }, [scene, gl]);
+
+  useFrame(({ clock }) => {
+    const time = clock.getElapsedTime();
+
+    if (meshRef.current) {
+      meshRef.current.position.y = Math.sin(time) * 20 + 5;
+      meshRef.current.rotation.x = time * 0.5;
+      meshRef.current.rotation.z = time * 0.51;
+    }
+
+    if (waterRef.current) {
+      waterRef.current.material.uniforms["time"].value += 1.0 / 60.0;
+    }
+  });
+
+  return (
+    <>
+      <OrbitControls
+        maxPolarAngle={Math.PI * 0.495}
+        target={[0, 10, 0]}
+        minDistance={30.0}
+        maxDistance={30.0}
+      />
+           <DoorModel />
+      <mesh ref={meshRef} position={[0, 10, 0]}>
+        
+        {/* <boxGeometry args={[30, 30, 30]} /> */}
+        <meshStandardMaterial roughness={0} color="white" />
+      </mesh>
+    </>
+  );
+};
+
 export default function LandingComponent() {
   return (
     <>
-      <div class="MainContainer">
+    <div style={{ height: "200vh", margin: 0 }}>
+      <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh" }}>
+      <Canvas>
+      <ScrollControls pages={3} damping={0.1}>
+        <OceanScene />
+      </ScrollControls>
+    </Canvas>
+      </div>
+    </div>
+      <div style={{ overflowX: 'hidden' }}> 
+      {/* <div class="MainContainer">
         <div class="ParallaxContainer">
           <Hero />
         </div>
         <div class="StatsContainer">
           <Stats />
         </div>
-      </div>
+      </div> */}
       {/* <MarqueeSection /> */}
-      <div style={{ height: "100vh", background: "#fff" }}>
-            <DoorScene />
-        </div>
+
       <ImageGrid />
       <NewSection />
       <Testimonials />
@@ -100,7 +264,7 @@ export default function LandingComponent() {
       <Locations />
       <ContactUs />
       <GiftCards />
-     
+     </div>
     </>
   );
 }
@@ -3123,187 +3287,144 @@ const LogoGrid = () => {
     </div>
   );
 };
-
-const BulgePlane = ({ textureUrl, scrollProgress, index, totalItems, position }) => {
+const BulgePlane = ({ textureUrl, text, scrollVelocity, index, position }) => {
   const meshRef = useRef();
-  const texture = new THREE.TextureLoader().load(textureUrl);
+  const texture = useMemo(() => new THREE.TextureLoader().load(textureUrl), [textureUrl]);
+
+  const uniforms = useMemo(() => ({
+    uTexture: { value: texture },
+    uScrollVelocity: { value: 0.0 },
+  }), [texture]);
 
   const vertexShader = `
     varying vec2 vUv;
-    uniform float uProgress; // Strength of bulge effect
-    uniform float uDistance; // Distance of image from viewport center
+    uniform float uScrollVelocity;
 
     void main() {
       vUv = uv;
       vec3 transformed = position;
+      float wave = sin(transformed.x * 1.2) * 0.5; 
 
-      // Calculate distance from UV center
-      float distanceFromCenter = length(uv - vec2(0.5, 0.5));
+      transformed.y += wave * uScrollVelocity * 0.2; 
 
-      // Make bulge effect strongest at center and fade as it moves out
-      float bulge = (1.0 - pow(distanceFromCenter, 2.0)) * uProgress * exp(-uDistance * 2.0); 
-
-      // Apply bulge along the Z-axis
-      transformed.z += bulge;  
+      float t = (vUv.y - 0.5) * 2.0;
+      float distortion = t * t * 0.9 * uScrollVelocity;
+      transformed.x += distortion;
 
       gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
     }
   `;
 
-
   const fragmentShader = `
     varying vec2 vUv;
     uniform sampler2D uTexture;
-
     void main() {
       gl_FragColor = texture2D(uTexture, vUv);
     }
   `;
-  useFrame(() => {
-    if (meshRef.current) {
-      const activeIndex = scrollProgress * (totalItems - 1);
-      const distance = Math.abs(activeIndex - index);
 
-      const influence = 1.0 / (1.0 + Math.pow(distance, 2.5)); 
-  
-      meshRef.current.material.uniforms.uProgress.value = influence;
-      meshRef.current.material.uniforms.uDistance.value = distance;
-      meshRef.current.material.uniforms.uProgress.needsUpdate = true;
-      meshRef.current.material.uniforms.uDistance.needsUpdate = true;
-  
-      console.log(`Plane ${index}: Distance = ${distance}, Influence = ${influence}`);
+
+  const dampedVelocity = useRef(0);
+  useFrame((_, delta) => {
+    if (meshRef.current) {
+
+      dampedVelocity.current += (scrollVelocity - dampedVelocity.current) * delta * 5; // Adjust damping factor
+      meshRef.current.material.uniforms.uScrollVelocity.value = dampedVelocity.current;
     }
   });
-  
 
   return (
-    <mesh ref={meshRef} position={position}>
-      <planeGeometry args={[3, 4, 256, 256]} /> 
-      <shaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={{
-          uTexture: { value: texture },
-          uProgress: { value: 0.0 },  
-          uDistance: { value: 1.0 },  
-        }}
-      />
-    </mesh>
+    <group position={position}>
+      <Text
+        position={[0, 0, 0.01]}
+        fontSize={0.14}
+        color="black"
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={3.6}
+        textAlign="left"
+      >
+        {text}
+      </Text>
+      <mesh ref={meshRef}>
+        <planeGeometry args={[4.2, 5, 64, 64]} />
+        <shaderMaterial
+          vertexShader={vertexShader}
+          fragmentShader={fragmentShader}
+          uniforms={uniforms}
+        />
+      </mesh>
+    </group>
   );
 };
 
 const Carousel = ({ items }) => {
   const { viewport } = useThree();
-  const scroll = useScroll(); 
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const scroll = useThreeScroll();
+  
+  const [velocity, setVelocity] = useState(0);
 
-  useEffect(() => {
-    console.log("useScroll initialized:", scroll);
-  }, [scroll]);
+  const lastOffset = useRef(0);
+  const velocityRef = useRef(0);
+
+  useFrame((_, delta) => {
+
+    const currentOffset = scroll.offset;
 
 
-  useMotionValueEvent(scroll.scrollXProgress, "change", (latest) => {
-    console.log("Detected ScrollX Progress Change:", latest);
-    setScrollProgress(latest);
+    const offsetDelta = currentOffset - lastOffset.current;
+    lastOffset.current = currentOffset;
+    const newVelocity = offsetDelta * 200;
+
+    velocityRef.current += (newVelocity - velocityRef.current) * delta * 10;
+
+
+    setVelocity(velocityRef.current);
   });
 
   return (
-    <> 
+    <>
       {items.map((item, index) => (
         <BulgePlane
           key={index}
           textureUrl={item.textureUrl}
-          scrollProgress={scrollProgress}
+          text={item.text}
+          scrollVelocity={velocity}
           index={index}
-          totalItems={items.length}
-          position={[index * viewport.width * 0.3, 0, 0]} 
+          position={[(index + 0.5) * viewport.width * 0.32 - viewport.width * 0.5, 0, 0]}
         />
       ))}
     </>
   );
 };
 
+
 const WebGLCarousel = () => {
-  const items = [
-    { textureUrl: 'https://picsum.photos/800/600?random=1' },
-    { textureUrl: 'https://picsum.photos/800/600?random=2' },
-    { textureUrl: 'https://picsum.photos/800/600?random=3' },
-    { textureUrl: 'https://picsum.photos/800/600?random=4' },
+  const items = [  { textureUrl: '../images/beigegradient.png', text: "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!" },
+    { textureUrl: '../images/buttongradient.png', text: "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!" },
+    { textureUrl: '../images/gradient2.jpeg', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
+    { textureUrl: '../images/radialgradient.png', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
+    { textureUrl: '../images/beigegradient.png', text: "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!" },
+    { textureUrl: '../images/buttongradient.png', text: "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!" },
+    { textureUrl: '../images/gradient2.jpeg', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
+    { textureUrl: '../images/radialgradient.png', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
   ];
 
   return (
-    <Canvas>
-      <ScrollControls horizontal pages={items.length * 1.5}> 
-        <Scroll> 
-          <Carousel items={items} />
-        </Scroll>
-      </ScrollControls>
-    </Canvas>
+<div  className="scroll-container">
+<Canvas style={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
+    <ScrollControls horizontal pages={Math.max(items.length * 0.85, 1)}>
+      <Scroll>
+        <Carousel items={items} />
+      </Scroll>
+    </ScrollControls>
+  </Canvas>
+</div>
+
   );
 };
 
-
-// const TestimonialMesh = ({ textureUrl, position }) => {
-//   const [texture, setTexture] = useState(null);
-//   const meshRef = useRef();
-
-
-//   useEffect(() => {
-//     const loader = new TextureLoader();
-//     loader.load(textureUrl, (loadedTexture) => {
-//       setTexture(loadedTexture);
-//     });
-//   }, [textureUrl]);
-
-
-//   const vertexShader = `
-//     varying vec2 vUv;
-//     uniform float uTime;
-//     void main() {
-//       vUv = uv;
-//       vec3 pos = position;
-//       // Subtle wave effect (like paper blowing in the wind)
-//       float wave = sin(pos.x * 0.5 + uTime * 1.5) * 0.1; // Adjust amplitude and frequency
-//       pos.y += wave;
-//       pos.x += wave * 0.5; // Add slight horizontal movement for realism
-//       gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-//     }
-//   `;
-
-
-//   const fragmentShader = `
-//     varying vec2 vUv;
-//     uniform sampler2D uTexture;
-//     void main() {
-//       gl_FragColor = texture2D(uTexture, vUv);
-//     }
-//   `;
-
-
-//   useFrame(({ clock }) => {
-//     if (meshRef.current) {
-//       meshRef.current.material.uniforms.uTime.value = clock.getElapsedTime();
-//     }
-//   });
-
-//   if (!texture) return null;
-
-//   return (
-// <mesh ref={meshRef} position={position}>
-//   <planeGeometry args={[7.5, 9, 32, 32]} /> 
-//   <shaderMaterial
-//     vertexShader={vertexShader}
-//     fragmentShader={fragmentShader}
-//     uniforms={{
-//       uTexture: { value: texture },
-//       uTime: { value: 0 },
-//     }}
-//   />
-// </mesh>
-//   );
-// };
 const Testimonials = ({ textureUrl, position }) => {
-
 
   const carouselItems = [
     {
@@ -3384,7 +3505,7 @@ const Testimonials = ({ textureUrl, position }) => {
   ];
   const { scrollXProgress } = useScroll();
   return (
-    <div className="relative w-full h-screen bg-black flex flex-col overflow-hidden">
+    <div className="sticky  relative w-full h-screen bg-black flex flex-col overflow-hidden">
 
     <div className="w-full bg-[#666] h-[1px]"></div>
 
@@ -3418,24 +3539,11 @@ const Testimonials = ({ textureUrl, position }) => {
       
       {/* Right Column */}
       <div className="w-[75%] relative flex overflow-hidden">
-      <div className="sticky top-0 h-screen w-full">
+      <div className="top-0 h-screen w-full">
       <div className="App" style={{ width: '100vw', height: '100vh' }}>
       <WebGLCarousel />
     </div>
-      {/* <Canvas camera={{ position: [0, 0, 14], fov: 50 }}>
-        <ScrollControls horizontal pages={3}>
-          <group position={[-4, 0, 0]}>
-            {images.map((src, index) => (
-              <TestimonialMesh 
-                key={index} 
-                textureUrl={src} 
-                position={[index * 8.5, 0, 0]} 
-                scrollProgress={scrollXProgress}
-              />
-            ))}
-          </group>
-        </ScrollControls>
-      </Canvas> */}
+
     </div>
         {/* <div className="w-full flex overflow-x-auto snap-mandatory snap-x"
           style={{
