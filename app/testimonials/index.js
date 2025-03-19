@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import React, { useEffect, useState, useRef, Suspense } from "react";
 import {
@@ -421,22 +421,23 @@ const StickyColumnScroll = () => {
             </div>
 
             {/* Hover Image */}
-            {hoveredImage && (
-              <motion.img
-                src={hoveredImage}
-                alt="Hovered"
-                className="hover-image"
-                style={{
-                  position: "fixed",
-                  top: "20%",
-                  left: hoveredColumn === "left" ? "50%" : "75%",
-                  zIndex: 100,
-                }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-              />
-            )}
+            <AnimatePresence mode="popLayout">
+  {hoveredImage && (
+    <motion.div
+      key={hoveredImage + Date.now()} //  Unique key to ensure a rerender
+      className="fixed top-1/3 w-[180px] h-[250px] bg-cover bg-center border rounded-lg shadow-lg"
+      style={{
+        backgroundImage: `url(${hoveredImage})`,
+        left: hoveredColumn === "left" ? "50%" : "75%",
+      }}
+      initial={{ clipPath: "inset(0 100% 0 0)", opacity: 0 }}
+      animate={{ clipPath: "inset(0 0% 0 0)", opacity: 1 }}
+      exit={{ clipPath: "inset(0 100% 0 0)", opacity: 0 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+    />
+  )}
+</AnimatePresence>
+
           </div>
         </section>
 

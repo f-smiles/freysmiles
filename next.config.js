@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  
   images: {
     remotePatterns: [
       {
@@ -24,10 +25,18 @@ const nextConfig = {
       },
     ],
   },
+    webpack: (config) => {
+      config.module.rules.push({
+        test: /\.glsl$/,
+        use: "raw-loader",
+      });
+      return config;
+    },
   webpack: (config) => {
     config.externals = [...config.externals, "bcrypt"];
     return config;
   },
+  
 }
 
 module.exports = nextConfig

@@ -22,7 +22,7 @@ export default function CartComponent({ isScrolled }: CartComponentProps) {
     <Sheet
      open={cartOpen} onOpenChange={setCartOpen}>
       <SheetTrigger>
-      <div className="relative mx-4 transition-all duration-1000">
+      <div className="relative mx-4">
           <AnimatePresence>
             {cart.length > 0 && (
               <motion.span
@@ -35,9 +35,9 @@ export default function CartComponent({ isScrolled }: CartComponentProps) {
               </motion.span>
             )}
       <motion.div 
-  className="relative mx-4 transition-all duration-300"
-  // animate={{ color: isScrolled ? "#000" : "#FFF" }}
-  transition={{ duration: 1 }}
+  className="transition-colors duration-300"
+  animate={{ color: isScrolled ? "#000" : "#fff" }}
+  // transition={{ duration: 1 }}
 >
   <ShoppingBagIcon
     className="w-6 h-6"

@@ -5223,11 +5223,12 @@ a {
 
 
 .purpleSection { background-color: #C1CCEC ;}
-.greenSection { background-color: #F1C206 }
-.whiteSection { background-color: #CADACF  }
-.orangeSection { background-color: #D99579;}
+.greenSection { background-color: #E37977  }
+.whiteSection { background-color: #F1C206  }
+.orangeSection { background-color: #F2D0E3;}
 .redSection { background-color:#F3F3F3}
 .blackSection { background-color:#D2D2FB}
+/* #CADACF */
 
 .section_intro {
   background-color:#fff ;
@@ -5421,8 +5422,16 @@ a {
   height: 0px;
   display: none;
 }
+
 .scroll-container {
   -ms-overflow-style: none;  
   scrollbar-width: none; 
+}
+
+
+.content__title {
+	counter-increment: section;
+	text-align: center;
+	display: grid;
 }
 

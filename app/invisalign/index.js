@@ -1,4 +1,6 @@
 "use client";
+import Splitting from "splitting";
+import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -15,7 +17,89 @@ import gsap from "gsap";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap-trial/all";
+import * as THREE from "three";
+import { Canvas, useLoader, useFrame } from "@react-three/fiber";
+import { useMemo } from "react";
+import { Environment, OrbitControls } from "@react-three/drei";
 
+const SmileyFace = ({ position = [0, 0, 0] }) => {
+  const circleRadius = 6;
+  const groupRef = useRef(); 
+  useFrame(() => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += 0.003; 
+    }
+  });
+
+  const texture = useLoader(THREE.TextureLoader, 'https://cdn.zajno.com/dev/codepen/cicada/texture.png');
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+  const circlePath = new THREE.Path();
+  circlePath.absarc(0, 0, circleRadius, 0, Math.PI * 2, false);
+  const circlePoints = circlePath.getPoints(100).map((p) => new THREE.Vector3(p.x, p.y, 0));
+
+  const smileCurve = new THREE.EllipseCurve(0, -2, 3, 2, Math.PI, 0, false, 0);
+  const smilePoints = smileCurve.getPoints(50).map((p, index, arr) => {
+    if (index === arr.length - 1) return null;
+    return new THREE.Vector3(p.x, p.y, 0);
+  }).filter(Boolean);
+
+  const generateNoiseTexture = (size = 512) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    const imageData = ctx.getImageData(0, 0, size, size);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const value = Math.random() * 255;
+      data[i] = value;
+      data[i + 1] = value;
+      data[i + 2] = value;
+      data[i + 3] = 255;
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.repeat.set(5, 5);
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.anisotropy = 16;
+
+    return texture;
+  };
+
+  const noiseTexture = useMemo(() => generateNoiseTexture(), []);
+
+  const material = useMemo(() => new THREE.MeshPhysicalMaterial({
+    map: noiseTexture,
+    metalness: 1,
+    roughness: 0.2,
+    transmission: 1,
+    transparent: true,
+    clearcoat: 1,
+    clearcoatRoughness: 0.1,
+    iridescence: 1,
+    iridescenceIOR: 1.5,
+    iridescenceThicknessRange: [200, 600],
+    sheen: 1,
+    sheenRoughness: 0.2,
+  }), [texture]);
+
+  const createTube = (points, radius = 0.4, isClosed = false) => {
+    const path = new THREE.CatmullRomCurve3(points);
+    return new THREE.TubeGeometry(path, 100, radius, 32, isClosed);
+  };
+
+  return (
+    <group ref={groupRef} position={position} scale={[0.3, 0.3, 0.3]}>
+      <mesh geometry={createTube(circlePoints, 0.4, true)} material={material} />
+      <mesh geometry={createTube(smilePoints, 0.4, false)} material={material} />
+    </group>
+  );
+};
 // function Invisalign() {
 //   const sectionRef = useRef()
 //   const { scrollYProgress } = useScroll({
@@ -130,7 +214,6 @@ const Invisalign = () => {
     });
   }, []);
 
-
   const cardRefs = useRef([]);
 
   useEffect(() => {
@@ -180,10 +263,116 @@ const Invisalign = () => {
       image: "https://picsum.photos/400/300?random=1",
     },
   ];
-  
 
+
+  const textRef = useRef(null);
+  useEffect(() => {
+    gsap.registerPlugin(SplitText);
+    const split = new SplitText(textRef.current, { type: "chars" });
+    const chars = split.chars;
+    gsap.fromTo(
+      chars,
+      {
+        willChange: "transform",
+        transformOrigin: "50% 0%",
+        scaleY: 0,
+        opacity: 0, 
+      },
+      {
+        ease: "back.out(1.7)",
+        scaleY: 1,
+        opacity: 1,
+        stagger: 0.03, 
+        duration: 1.2, 
+      }
+    );
+
+    return () => split.revert();
+  }, []);
   return (
     <>
+    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+      {/* Left */}
+      <div style={{  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+      <div style={{fontFamily:"HelveticaNeue-Light", maxWidth: '400px', fontSize: '3rem', lineHeight: '1.1' }}>
+      <h2 ref={textRef} className="content__title" data-splitting data-effect5>
+        <span>Ranked in the top</span>
+        <span >1% of practitioners </span>
+        <span>nationwide</span>
+      </h2>
+    </div>
+      </div>
+
+      {/* Right */}
+      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Canvas>
+          <ambientLight intensity={0.5} />
+          <SmileyFace position={[0, 0, 0]} />
+          <Environment preset="sunset" />
+          <OrbitControls enableZoom={false} />
+        </Canvas>
+      </div>
+      
+    </div>
+      <section className="relative w-full min-h-screen flex flex-col justify-between px-16 py-20">
+        <div className="absolute top-1/2 left-0 w-1/2 h-[1px] bg-gray-300 z-0 transform -translate-y-1/2"></div>
+
+        <div className="grid grid-cols-3 items-start w-full relative">
+          <div></div>
+
+          <div className="flex flex-col items-center justify-center mt-[100px]">
+            <div className="relative w-[320px] h-[320px]">
+              <img
+                src="../images/1024mainsectionimage.jpg"
+                className="object-cover rounded-lg"
+              />
+
+              <button className="absolute -left-10 top-1/2 transform -translate-y-1/2 bg-black text-white p-2 rounded-full shadow">
+                <ArrowLeft size={20} />
+              </button>
+
+              <p className="absolute top-2 -right-20 text-xs text-gray-600 leading-tight">
+                Lehigh <br />
+                Valley
+              </p>
+            </div>
+
+            <h1 className="text-[3rem] mt-6 leading-none font-generalregular">
+           Ranked in the top 1%
+           of practitioners nationwide
+            </h1>
+          </div>
+
+          <div className="flex flex-col items-end text-right">
+            <ArrowUpRight size={24} />
+            <p className="text-sm text-gray-700">Scroll</p>
+          </div>
+        </div>
+        <p className="text-xl font-neue-montreal">Since 2000</p>
+        {/* Bottom Border */}
+        <div className="w-full h-[1px] bg-gray-300 mt-8"></div>
+
+        {/* Category Tags */}
+        <div className="flex space-x-3 mt-6">
+          {["Diamond Plus", "Invisalign", "Invisalign Teen"].map((tag, index) => (
+            <span
+              key={index}
+              className={`px-3 py-1 rounded-full text-sm ${
+                index === 0
+                  ? "bg-gray-200 text-gray-600"
+                  : "border border-gray-300"
+              }`}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        <p className="mt-8 text-lg text-gray-700 max-w-3xl leading-relaxed">
+        Customized just for you – Your aligners are customized to fit your mouth. 
+        </p>
+      </section>
+
       <div className="min-h-screen flex items-center justify-center px-8">
         <div className="grid grid-rows-2 gap-8 w-full max-w-screen-xl mx-auto md:grid-cols-2">
           <div className="font-helvetica-neue-light flex flex-col justify-start">
@@ -230,26 +419,26 @@ const Invisalign = () => {
         </div>
       </div>
       <div className="feature-jacket">
-      <ul className="feature-cards">
-        {features.map((feature, index) => (
-         <li
-         className={`feature-card feature-card-${index + 1}`}
-         key={index}
-         ref={(el) => (cardRefs.current[index] = el)}
-       >
-         <div>
-           <span className="feature-card-bg"></span>
-           <img
-             src={feature.image}
-             alt={`Feature ${index + 1}`}
-             className="feature-card w-full h-auto rounded-lg mb-4"
-           />
-           <p className="feature-card">{feature.text}</p>
-         </div>
-       </li>
-        ))}
-      </ul>
-    </div>
+        <ul className="feature-cards">
+          {features.map((feature, index) => (
+            <li
+              className={`feature-card feature-card-${index + 1}`}
+              key={index}
+              ref={(el) => (cardRefs.current[index] = el)}
+            >
+              <div>
+                <span className="feature-card-bg"></span>
+                <img
+                  src={feature.image}
+                  alt={`Feature ${index + 1}`}
+                  className="feature-card w-full h-auto rounded-lg mb-4"
+                />
+                <p className="feature-card">{feature.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
       <div className=" bg-[#FFF7F4]">
         <div
           style={{
@@ -448,3 +637,4 @@ const Invisalign = () => {
   );
 };
 export default Invisalign;
+

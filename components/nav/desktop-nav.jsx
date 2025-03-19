@@ -12,6 +12,7 @@ import { links } from './desktop-links'
 import styles from './style.module.css'
 import CartComponent from '@/components/cart/cart-component';
 import UserButton from '@/components/auth/user-button';
+import { useCartStore } from '@/lib/cart-store';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,6 +21,7 @@ export default function DesktopNav({ user }) {
   const [isActive, setIsActive] = useState(false)
   const [selectedLink, setSelectedLink] = useState(null)
   const [isScrolled, setIsScrolled] = useState(false);
+const {cart} = useCartStore()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,17 +70,17 @@ export default function DesktopNav({ user }) {
     setSelectedLink(null);
   }, [pathname]);
 
-  
+
 
   return (
     <motion.nav
       id="desktop-nav"
       className={`${styles.header} ${
-        isScrolled ? "bg-opacity-80 text-black" : "text-black bg-transparent"
+        isScrolled ? "bg-opacity-80 text-black" : "text-[#fff] bg-transparent"
       } fixed top-0 w-full z-50 transition-all duration-300 ease-in-out`}
     >
       <motion.div 
-        className="pt-[16px] flex items-center justify-between uppercase m-auto transition-all duration-1000 ease-in-out scroll-nav"
+        className="pt-[16px] flex items-center justify-between uppercase m-auto transition-[width] duration-1000 ease-in-out scroll-nav"
         variants={opacity} 
         animate={!isActive ? "open" : "closed"}
       >
@@ -137,7 +139,7 @@ export default function DesktopNav({ user }) {
               <p className="font-helvetica-neue-light tracking-wider text-[13px] ">Shop</p>
             </Link>
             
-            <CartComponent isScrolled={isScrolled}  />
+            {cart.length > 0 && <CartComponent isScrolled={isScrolled} />}
             
             {user ? (
               <UserButton user={user} />

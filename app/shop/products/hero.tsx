@@ -70,51 +70,37 @@ const Hero: React.FC = () => {
 
   return (
     <div className="bg-[#FCFAF5]">
-       <div className="flex justify-center py-16 px-4">
-  <div className="bg-black max-w-7xl w-full rounded-2xl relative flex">
-
-    <section className="w-1/2 flex flex-col justify-center items-center">
-      <div
-        className="relative w-full flex justify-center items-center"
-        style={{ height: "45%" }}
-      >
-        <div className="absolute flex flex-wrap justify-center font-helvetica-neue-light">
-          {letters.map((style, index) => (
-            <span
-              key={index}
-              className={`text-white inline-block ${style.rotate} ${style.translateY} ${style.translateX} ${style.color} mx-1`}
-              style={{ fontSize: "6rem" }}
-            >
-              {style.char}
-            </span>
-          ))}
-        </div>
+       <div className="flex justify-center py-24 px-4">
+       <section className="w-full min-h-screen grid grid-cols-2">
+      <div className="relative w-full h-full">
+        <img
+          src="../images/shoptest.png" 
+          alt="mockup"
+          className="w-full h-full object-cover"
+        />
       </div>
 
-      <div
-        className="relative w-full flex justify-center items-center"
-        style={{ height: "35%" }}
-      >
-        <div className="absolute flex justify-center font-neue-light">
-          {lettersNow.map((style, index) => (
-            <span
-              key={`now-${index}`}
-              className={`text-white inline-block ${style.rotate} ${style.translateY} ${style.color}`}
-              style={{ fontSize: "6rem" }}
-            >
-              {style.char}
-            </span>
-          ))}
+
+      <div className="flex flex-col items-center justify-center px-12 text-center bg-white">
+        <h1 className="text-6xl font-helvetica-neue-light leading-tight">
+          Shop <br /> Now
+        </h1>
+
+        <p className="font-helvetica-neue-light mt-6 text-lg text-gray-700 max-w-md">
+        Something exciting is coming. <br />
+          Stay tuned for our next offer.
+        </p>
+
+
+        <div className="absolute bottom-10 right-10">
+          <img
+            src=""
+            alt="Gradient Blob"
+            className="w-32 h-32"
+          />
         </div>
       </div>
-      
     </section>
-
-
-    <section className="w-1/2 flex items-center justify-center">
-      <img src="../images/shop.png" alt="Shop" className="rounded-xl" />
-    </section>
-  </div>
 </div>
 <Marquee />
 
