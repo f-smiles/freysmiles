@@ -76,7 +76,7 @@ const {cart} = useCartStore()
     <motion.nav
       id="desktop-nav"
       className={`${styles.header} ${
-        isScrolled ? "bg-opacity-80 text-black" : "text-[#fff] bg-transparent"
+        isScrolled ? "bg-opacity-80 text-[#fff]" : "text-[#fff] bg-transparent"
       } fixed top-0 w-full z-50 transition-all duration-300 ease-in-out`}
     >
       <motion.div 
@@ -86,7 +86,8 @@ const {cart} = useCartStore()
       >
         
         <motion.div variants={opacity} animate={!isActive ? "open" : "closed"}> {/* styles.el */}
-          <motion.div className="flex items-center gap-4"> {/* styles.label */}
+          <motion.div 
+          className="bg-[#C2C1C7]/50 backdrop-blur-lg shadow-lg shadow-white/10 rounded-full px-6 py-3 flex items-center gap-4"> {/* styles.label */}
             {links.slice(0, 4).map((link, i) => (
               <motion.p
                 key={`${i} + ${link}`}
@@ -113,7 +114,7 @@ const {cart} = useCartStore()
         </Link>
 
         <motion.div variants={opacity} animate={!isActive ? "open" : "closed"}> {/* styles.el */}
-          <motion.div className="flex items-center gap-4"> {/* styles.label */}
+          <motion.div className=" flex items-center gap-4"> {/* styles.label */}
             {links.slice(4, 7).map((link, i) => (
               <motion.p
                 key={`${i} + ${link}`}
@@ -131,15 +132,31 @@ const {cart} = useCartStore()
             
 
             <Link href="/book-now">
-              <p className="font-helvetica-neue-light tracking-wider text-[13px] tracking-wider">Book Now</p>
+              <p className="bg-[#F2F2F2]/50 backdrop-blur-lg shadow-lg shadow-white/10 text-black rounded-full px-6 py-3 font-helvetica-neue-light tracking-wider text-[13px] tracking-wider">Book Now</p>
             </Link>
 
  
             <Link href="/shop/products">
-              <p className="font-helvetica-neue-light tracking-wider text-[13px] ">Shop</p>
-            </Link>
+      <motion.div
+        className="bg-[#C2C1C7]/50 backdrop-blur-lg shadow-lg shadow-white/10  rounded-full px-6 flex items-center cursor-pointer transition-all h-12"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <span className="text-white font-helvetica-neue-light tracking-wider text-[13px]">
+          Shop
+        </span>
+        <div className="ml-2 flex items-center justify-center h-full">
+          <motion.div
+            className="py-2 px-4 flex justify-center items-center bg-white rounded-full"
+            whileHover={{ scale: 1.1 }}
+          >
+            <span className="text-[#C8C8C8] text-lg">&rarr;</span>
+          </motion.div>
+        </div>
+      </motion.div>
+    </Link>
             
-            {cart.length > 0 && <CartComponent isScrolled={isScrolled} />}
+            {/* {cart.length > 0 && <CartComponent isScrolled={isScrolled} />}
             
             {user ? (
               <UserButton user={user} />
@@ -147,7 +164,7 @@ const {cart} = useCartStore()
               <Link href="/auth/login">
                 <p className="font-helvetica-neue-light tracking-wider text-[13px] ">Login</p>
               </Link>
-            )}
+            )} */}
           </motion.div>
         </motion.div>
       </motion.div>

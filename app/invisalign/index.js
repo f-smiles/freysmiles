@@ -1,4 +1,5 @@
 "use client";
+import {useControls} from "leva";
 import Splitting from "splitting";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import Image from "next/image";
@@ -20,7 +21,7 @@ import { SplitText } from "gsap-trial/all";
 import * as THREE from "three";
 import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 import { useMemo } from "react";
-import { Environment, OrbitControls } from "@react-three/drei";
+import { Environment, OrbitControls, useTexture } from "@react-three/drei";
 
 const SmileyFace = ({ position = [0, 0, 0] }) => {
   const circleRadius = 6;
@@ -100,6 +101,70 @@ const SmileyFace = ({ position = [0, 0, 0] }) => {
     </group>
   );
 };
+
+const WavePlane = () => {
+  const texture = useTexture("/images/iphonerock.jpg")
+  const image = useRef(); 
+
+  const { amplitude, waveLength } = useControls({
+    amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
+    waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
+  });
+
+
+  const uniforms = useRef({
+    uTime: { value: 0 },
+    uAmplitude: { value: amplitude },
+    uWaveLength: { value: waveLength },
+    uTexture: { value: texture },
+  });
+
+
+  useFrame(() => {
+    uniforms.current.uTime.value += 0.04; 
+    uniforms.current.uAmplitude.value = amplitude;
+    uniforms.current.uWaveLength.value = waveLength;
+  });
+
+
+  const vertexShader = `
+   uniform float uTime;
+uniform float uAmplitude;
+uniform float uWaveLength;
+varying vec2 vUv;
+void main() {
+    vUv = uv;
+    vec3 newPosition = position;
+    float wave = uAmplitude * sin(position.x * uWaveLength + uTime);
+    float ripple = 0.01 * sin((position.x + position.y) * 10.0 + uTime * 2.0);
+    float bulge = 0.05 * sin(position.x * 5.0 + uTime) * cos(position.y * 5.0 + uTime * 1.5);
+    newPosition.z += wave + ripple + bulge;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+}
+
+  `;
+
+  const fragmentShader = `
+  uniform sampler2D uTexture; 
+  varying vec2 vUv; 
+    void main() {
+  gl_FragColor = texture2D(uTexture, vUv);
+    }
+  `;
+  
+
+  return (
+    <mesh ref={image} scale={[2, 2, 1]} rotation={[-Math.PI * 0.4, 0.3, Math.PI / 2]}>
+  <planeGeometry args={[2, 1, 100, 50]} />
+      <shaderMaterial
+        wireframe={false}
+        fragmentShader={fragmentShader}
+        vertexShader={vertexShader}
+        uniforms={uniforms.current}
+      />
+    </mesh>
+  );
+};
 // function Invisalign() {
 //   const sectionRef = useRef()
 //   const { scrollYProgress } = useScroll({
@@ -129,19 +194,19 @@ const SmileyFace = ({ position = [0, 0, 0] }) => {
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
-const Section = ({ children, onHoverStart, onHoverEnd }) => (
+const Section = ({ children, onHoverStart, onHoverEnd, gradient }) => (
   <motion.div
     onHoverStart={onHoverStart}
     onHoverEnd={onHoverEnd}
     style={{
-      height: "50%",
+      height: "20%",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
       cursor: "pointer",
       backgroundColor: "transparent",
       color: "black",
-      fontSize: "2em",
+      fontSize: "1.2em",
       fontFamily: "HelveticaNeue-Light",
       userSelect: "none",
       position: "relative",
@@ -149,9 +214,14 @@ const Section = ({ children, onHoverStart, onHoverEnd }) => (
       textAlign: "center",
       width: "100%",
       boxSizing: "border-box",
-      border: "1px solid black",
+      borderTop: "1px solid #DBDADD",
+      gap: "5rem",
     }}
   >
+    <div
+      className="w-8 h-8 rounded-full"
+      style={{ background: gradient }}
+    ></div>
     {children}
   </motion.div>
 );
@@ -190,14 +260,7 @@ const Invisalign = () => {
       ScrollTrigger.getAll().forEach((st) => st.kill());
     };
   }, []);
-  const controls = useAnimation();
 
-  const handleHover = (index) => {
-    controls.start({
-      y: `${index * 100}%`,
-      transition: { type: "tween", duration: 0.3 },
-    });
-  };
 
   const alignerRef = useRef(null);
 
@@ -263,46 +326,53 @@ const Invisalign = () => {
       image: "https://picsum.photos/400/300?random=1",
     },
   ];
-
-
   const textRef = useRef(null);
   useEffect(() => {
     gsap.registerPlugin(SplitText);
     const split = new SplitText(textRef.current, { type: "chars" });
     const chars = split.chars;
+
     gsap.fromTo(
       chars,
       {
         willChange: "transform",
         transformOrigin: "50% 0%",
         scaleY: 0,
-        opacity: 0, 
+        opacity: 0,
       },
       {
         ease: "back.out(1.7)",
         scaleY: 1,
         opacity: 1,
         stagger: 0.03, 
-        duration: 1.2, 
+        duration: 1.2,
       }
     );
 
-    return () => split.revert();
+    return () => split.revert(); 
   }, []);
+
+  const controls = useAnimation();
+
+  const handleHover = (index) => {
+    controls.start({
+      y: `${index * 100}%`,
+      transition: { type: "tween", duration: 0.3 },
+    });
+  };
   return (
     <>
     <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
-      {/* Left */}
+  {/* Left */}
       <div style={{  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-      <div style={{fontFamily:"HelveticaNeue-Light", maxWidth: '400px', fontSize: '3rem', lineHeight: '1.1' }}>
-      <h2 ref={textRef} className="content__title" data-splitting data-effect5>
+      <div style={{ fontFamily:"NeueHaasDisplayXThin",  fontSize: '3rem', lineHeight: '1.1' }}>
+      <div ref={textRef} className="content__title" >
         <span>Ranked in the top</span>
         <span >1% of practitioners </span>
-        <span>nationwide</span>
-      </h2>
+        <span>nationwide since 2000</span>
+      </div>
     </div>
       </div>
-
       {/* Right */}
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Canvas>
@@ -312,48 +382,29 @@ const Invisalign = () => {
           <OrbitControls enableZoom={false} />
         </Canvas>
       </div>
-      
     </div>
+    <div className="text-5xl sm:text-5xl leading-tight text-black font-light font-neuehaas-thin">
+      <span className="font-normal">Our doctors</span>{" "}
+      <span className="font-light">have </span>{" "}
+      <span className="font-saolitalic">treated</span>{" "}
+      <span className="font-medium">thousands of patients</span>{" "}
+      <br />
+      <span className="font-normal">with this </span>{" "}
+      <span className="font-light font-saolitalic">leading edge</span>{" "}
+      <span className="font-light ">appliance</span>{" "}
+      <span className="font-normal">system.</span>{" "}
+    </div>
+       <section className="relative h-[100vh] items-center justify-center px-10">
+        <Canvas camera={{ position: [0, 0, 3] }}>
+      <ambientLight intensity={0.5} />
+      <WavePlane />
+      <OrbitControls enableZoom={false}/>
+    </Canvas>
+      </section>
+    
       <section className="relative w-full min-h-screen flex flex-col justify-between px-16 py-20">
-        <div className="absolute top-1/2 left-0 w-1/2 h-[1px] bg-gray-300 z-0 transform -translate-y-1/2"></div>
 
-        <div className="grid grid-cols-3 items-start w-full relative">
-          <div></div>
-
-          <div className="flex flex-col items-center justify-center mt-[100px]">
-            <div className="relative w-[320px] h-[320px]">
-              <img
-                src="../images/1024mainsectionimage.jpg"
-                className="object-cover rounded-lg"
-              />
-
-              <button className="absolute -left-10 top-1/2 transform -translate-y-1/2 bg-black text-white p-2 rounded-full shadow">
-                <ArrowLeft size={20} />
-              </button>
-
-              <p className="absolute top-2 -right-20 text-xs text-gray-600 leading-tight">
-                Lehigh <br />
-                Valley
-              </p>
-            </div>
-
-            <h1 className="text-[3rem] mt-6 leading-none font-generalregular">
-           Ranked in the top 1%
-           of practitioners nationwide
-            </h1>
-          </div>
-
-          <div className="flex flex-col items-end text-right">
-            <ArrowUpRight size={24} />
-            <p className="text-sm text-gray-700">Scroll</p>
-          </div>
-        </div>
-        <p className="text-xl font-neue-montreal">Since 2000</p>
-        {/* Bottom Border */}
-        <div className="w-full h-[1px] bg-gray-300 mt-8"></div>
-
-        {/* Category Tags */}
-        <div className="flex space-x-3 mt-6">
+        <div className="font-neue-montreal flex space-x-3 mt-6">
           {["Diamond Plus", "Invisalign", "Invisalign Teen"].map((tag, index) => (
             <span
               key={index}
@@ -368,32 +419,36 @@ const Invisalign = () => {
           ))}
         </div>
 
-        <p className="mt-8 text-lg text-gray-700 max-w-3xl leading-relaxed">
-        Customized just for you – Your aligners are customized to fit your mouth. 
-        </p>
-      </section>
+       <div className="flex flex-col">
+       <p className="font-saol mt-8 text-[5em] leading-snug">
+Why Invisalign?
+        </p>     
+       {/* <p className="w-1/2 mt-8 text-[1.8em] font-neue-montreal leading-snug">
+        Under the skilled guidance of our doctors, countless individuals have experienced the transformative benefits of this advanced orthodontic treatment.
+        </p>      */}
+      <div className="relative w-2/3"
+              style={{ height: "600px", overflow: "hidden" }}
+            >
+              <motion.div
+                initial={{ y: "0%" }}
+                animate={controls}
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "20%",
+                  background: "rgb(245,227,24,.6)",
+                  zIndex: 1,
+                }}
+              />
 
-      <div className="min-h-screen flex items-center justify-center px-8">
-        <div className="grid grid-rows-2 gap-8 w-full max-w-screen-xl mx-auto md:grid-cols-2">
-          <div className="font-helvetica-neue-light flex flex-col justify-start">
-            <div className="flex items-start mt-24 ">
-              <div className="text-content text-left max-w-xl">
-                <h1 className="text-[48px] md:text-[48px] mb-6 leading-tight">
-                  Solutions designed <br /> to fit your needs
-                </h1>
-                <p className="text-lg font-neue-montreal text-gray-600">
-                  As Diamond Plus providers of Invisalign and Invisalign
-                  Teen—ranked within the top 1% of practitioners nationwide—we
-                  are equipped with the expertise necessary to deliver the smile
-                  you aspire to attain. Under the skilled guidance of our
-                  doctors, countless individuals have experienced the
-                  transformative benefits of this advanced orthodontic
-                  treatment.
-                </p>
-              </div>
+<Section onHoverStart={() => handleHover(0)} gradient="linear-gradient(to bottom right, #FF9A8B, #FF6A88, #FF99AC)"> Fewer appointments, faster treatment</Section>
+      <Section onHoverStart={() => handleHover(1)} gradient="linear-gradient(to bottom right, #A18CD1, #FBC2EB)"> Personalized care for every patient</Section>
+      <Section onHoverStart={() => handleHover(2)} gradient="linear-gradient(to bottom right, #FA8BFF, #2BD2FF, #2BFF88)">Advanced technology at your service</Section>
+      <Section onHoverStart={() => handleHover(3)} gradient="linear-gradient(to bottom right, #FFD3A5, #FD6585)">Comfortable and stress-free visits</Section>
             </div>
 
-            <div className="image-content flex mt-16">
+            </div>
+            <div className="image-content mt-16">
               <img
                 ref={alignerRef}
                 src="../images/invisalignset.png"
@@ -403,21 +458,11 @@ const Invisalign = () => {
                   willChange: "transform",
                 }}
               />
+             <img src='../images/alignercase.png'/>
             </div>
-          </div>
+      </section>
 
-          <div className="relative hidden md:flex justify-end items-start">
-            <div
-              className="rounded-full bg-black absolute top-[100px] right-60"
-              style={{ height: "450px", width: "300px" }}
-            ></div>
-            <div
-              className="rounded-full bg-black absolute top-[200px] -right-14"
-              style={{ height: "450px", width: "300px" }}
-            ></div>
-          </div>
-        </div>
-      </div>
+
       <div className="feature-jacket">
         <ul className="feature-cards">
           {features.map((feature, index) => (
@@ -439,200 +484,7 @@ const Invisalign = () => {
           ))}
         </ul>
       </div>
-      <div className=" bg-[#FFF7F4]">
-        <div
-          style={{
-            backgroundImage: "url('../images/invisalignset.png')",
-            backgroundSize: "30%",
-          }}
-          className="bg-contain bg-no-repeat  h-screen p-10"
-        >
-          <main className="flex flex-col items-center justify-end h-screen relative">
-            <div
-              style={{
-                position: "absolute",
-                top: "0%",
-                left: "50%",
-                width: "50%",
-                height: "50%",
-                backgroundImage: "url('../images/alignercase.png')",
-                backgroundSize: "contain",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-              }}
-            />
-            <div className="z-10 flex flex-col ">
-              <div className="w-full pb-20 ">
-                <h1 className="text-[7em] font-bold leading-none">
-                  <div className="mb-4">SOLUTIONS</div>
-                  <div>
-                    <span className="px-2 rounded-full  border border-black">
-                      DESIGNED
-                    </span>{" "}
-                    TO FIT
-                  </div>
-                  <div className="flex ">
-                    <span className="mt-4">YOUR NEEDS</span>
-                    <div className="-mt-10">
-                      <Link href="/book-now">
-                        <button
-                          data-text="BOOK CONSULT"
-                          className="link link--leda font-cera-bold bg-[#F5FF7D] font-bold py-6 px-16 rounded-full ml-4 text-[.3em]"
-                        >
-                          BOOK CONSULT
-                        </button>
-                      </Link>
-                    </div>
-                  </div>
-                </h1>
-              </div>
-            </div>
-          </main>
-        </div>
-        <div className="text-white min-h-screen flex relative">
-          <div className="flex w-full min-h-screen">
-            <div className="flex-1">
-              <video
-                autoPlay
-                loop
-                muted
-                style={{
-                  width: "60%",
-                  height: "80%",
-                  objectFit: "contain",
-                }}
-              >
-                <source src="../images/invisfullvideo.mov" type="video/mp4" />{" "}
-                Your browser does not support the video tag.
-              </video>{" "}
-            </div>
-            <div
-              className="w-1/3 relative"
-              style={{ height: "600px", overflow: "hidden" }}
-            >
-              <motion.div
-                initial={{ y: "0%" }}
-                animate={controls}
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  height: "50%",
-                  background: "rgb(245,255,125,.6)",
-                  zIndex: 1,
-                }}
-              />
-
-              <Section onHoverStart={() => handleHover(0)}>
-                A healthier journey to a better smile
-              </Section>
-              <Section onHoverStart={() => handleHover(1)}>
-                Fewer appointments, faster treatment
-              </Section>
-            </div>
-          </div>
-        </div>
-        <div className="flex  items-center ">
-          <div className="w-1/2">
-            <h1 ref={headingRef} className="  max-w-xl text-xl overflow-hidden">
-              Our team, led by the skilled Dr. Gregg and Dr. Daniel, possesses
-              the expertise required to achieve the smile you desire. Countless
-              individuals have already experienced the transformative effects of
-              our advanced orthodontic treatments
-            </h1>
-          </div>
-          <div className="rounded-2xl max-w-xl bg-black w-1/3  items-center">
-            <div className="h-[32rem]">
-              <svg role="group" viewBox="0 0 233 184">
-                <defs>
-                  <pattern
-                    id="grid"
-                    width="16"
-                    height="10"
-                    patternUnits="userSpaceOnUse"
-                  >
-                    <circle cx="15" cy="5" r="1" fill="grey" />
-                  </pattern>
-                </defs>
-
-                <rect width="100%" height="100%" fill="url(#grid)" />
-
-                <g
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                >
-                  <path
-                    stroke="#3a3d4c"
-                    d="M37.05 102.4s11.09 23.44 28.46 23.44 22.3-36 47.05-36 28.4 33.7 39.83 33.7S164.74 102.1 199 102.1"
-                  />
-
-                  <path
-                    class="squiggle"
-                    pathLength="1"
-                    stroke="#FD6635"
-                    d="M37.05 102.4s11.09 23.44 28.46 23.44 22.3-36 47.05-36c11.63 0 18.61 7.45 23.92 15.35"
-                  />
-                </g>
-
-                <g fill="none" stroke-linecap="round" stroke-width="1">
-                  <path
-                    stroke="#3a3d4c"
-                    stroke-linejoin="round"
-                    d="M37.05 92.88s8.34-12.11 25.72-12.11S88.6 111.86 111 111.86s22-37.27 35.21-37.27 13.49 34 51.9 12.35"
-                  />
-
-                  <path
-                    class="squiggle squiggle-2"
-                    pathLength="1"
-                    stroke="#EBE3F5"
-                    stroke-miterlimit="10"
-                    d="M37.05 92.88s8.34-12.11 25.72-12.11S88.6 111.86 111 111.86c14 0 19.08-14.56 24.15-25.47"
-                  />
-                </g>
-
-                <g
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                >
-                  <path
-                    stroke="#3a3d4c"
-                    d="M37.05 72.9s14.52-7.55 26.63-7.55 20.81 18.91 39.56 18.91 29.26-24.39 44.58-24.39S167.25 81.59 199 81.59"
-                  />
-
-                  <path
-                    class="squiggle squiggle-3"
-                    pathLength="1"
-                    stroke="#BCE456"
-                    d="M37.05 72.9s14.52-7.55 26.63-7.55 20.81 18.91 39.56 18.91 29.26-24.39 44.58-24.39c7 0 11.66 4.54 17.7 9.47"
-                  />
-                </g>
-                <foreignObject width="200" height="200">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "120%",
-                      height: "120%",
-                    }}
-                  >
-                    <img
-                      src="../images/logo_icon.png"
-                      alt="Description"
-                      style={{ width: "24px", height: "24px" }}
-                    />
-                  </div>
-                </foreignObject>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div></div>
-      </div>
+  
     </>
   );
 };

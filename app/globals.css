@@ -14,10 +14,22 @@
   url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.ttf")format("truetype"),
   url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.svg#SaolDisplay-LightItalic")format("svg");
 }
+@font-face {
+  font-family: "NeueHaasDisplayRoman";
+  src: url("/fonts/NeueHaasDisplayRoman.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NeueHaasDisplayLight";
+  src: url("/fonts/NeueHaasDisplayLight.ttf") format("truetype");
+}
 
 @font-face {
-  font-family: "HelveticaNowDisplay-Light";
-  src: url("/fonts/HelveticaNowDisplay-Regular.ttf") format("truetype");
+  font-family: "NeueHaasDisplayXThin";
+  src: url("/fonts/NeueHaasDisplayXThin.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NeueHaasDisplayXXThin";
+  src: url("/fonts/NeueHaasDisplayXXThin.ttf") format("truetype");
 }
 @font-face {
   font-family: "syne-extra";
@@ -198,6 +210,11 @@
   font-family: "Larken Italic";
   src: url("/fonts/LarkenVariableItalic.ttf") format("truetype");
 }
+@font-face {
+  font-family: "PPEditorialNew-ThinItalic";
+  src: url("/fonts/PPEditorialNew-ThinItalic.ttf") format("truetype");
+}
+
 
 @layer base {
   :root {
@@ -4909,7 +4926,7 @@ a {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  background: #E7E7FD;
+  background: #CBF23D;
   color: black;
   border-radius: 36px;
   padding: 48px 24px;
@@ -5222,13 +5239,13 @@ a {
 
 
 
-.purpleSection { background-color: #C1CCEC ;}
-.greenSection { background-color: #E37977  }
-.whiteSection { background-color: #F1C206  }
-.orangeSection { background-color: #F2D0E3;}
-.redSection { background-color:#F3F3F3}
-.blackSection { background-color:#D2D2FB}
-/* #CADACF */
+.purpleSection { background-color: #D0D8DA;}
+.greenSection { background-color:  #F1C206;  }
+.whiteSection { background-color: #D2D2FB }
+.orangeSection { background-color: #F3F3F3;}
+.redSection { background-color:#F2D0E3 }
+.blackSection { background-color: #CADACF}
+
 
 .section_intro {
   background-color:#fff ;
@@ -5431,7 +5448,7 @@ a {
 
 .content__title {
 	counter-increment: section;
-	text-align: center;
+	/* text-align: center; */
 	display: grid;
 }
 

@@ -420,7 +420,7 @@ export default function OurTeam() {
     });
   }, []);
 
-  const textLines = [{ text: "Meet Our" }, { text: "Doctors" }];
+  const textLines = [{ text: "Meet Our Team" }];
 
   useEffect(() => {
     const lines = document.querySelectorAll(".stagger-line");
@@ -528,69 +528,15 @@ export default function OurTeam() {
 
   return (
     <div>
+      
       <div className="bg-[#f4f0ed] relative ">
-        <section className="py-24 sm:py-32">
+      <section className="py-[12em] sm:py-[12em]">
+          
           <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
             <div className="grid grid-cols-2 ">
-              <div className="w-[60px]">
-            <svg
-      
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M63.93 30.1793H63.9983V0H31.999V0.0690724C49.052 0.0690724 62.9842 13.3921 63.93 30.1793Z"
-        fill="currentColor"
-      />
-      <path
-        d="M63.9315 33.8208C62.9858 50.608 49.0536 63.931 32.0006 63.931V64.0001H63.9999V33.8208H63.9315Z"
-        fill="currentColor"
-      />
-      <path
-        d="M31.9309 30.1793H31.9993V0H0V0.0690724C17.053 0.0690724 30.9852 13.3921 31.9309 30.1793Z"
-        fill="currentColor"
-      />
-      <path
-        d="M31.9309 33.8208C30.9852 50.608 17.053 63.931 0 63.931V64.0001H31.9993V33.8208H31.9309Z"
-        fill="currentColor"
-      />
-    </svg>
-    </div>
-    <div className="flex flex-col items-start justify-center leading-none">
-  {textLines.map((line, index) => (
-    <div
-      key={index}
-      className="dark:text-zinc-900 tracking-wide stagger-line font-neue-montreal text-[40px] relative"
-    >
-      {line.text.split(" ").map((word, wordIndex) => (
-        <span
-          key={wordIndex}
-          className="overflow-hidden inline-block mr-[16px]"
-        >
-          {word.split("").map((letter, letterIndex) => (
-            <span key={letterIndex} className="inline-block">
-              <span className="stagger-letter inline-block">
-                {letter}
-              </span>
-            </span>
-          ))}
-        </span>
-      ))}
-    </div>
-  ))}
-</div>
-
+   
               <div className="flex flex-col overflow-hidden">
-                <motion.div
-                  className="mb-2 h-px bg-gray-700"
-                  initial={{ width: 0, transformOrigin: "left" }}
-                  animate={{ width: "32vw" }}
-                  transition={{
-                    duration: 1,
-                    ease: "easeInOut",
-                  }}
-                ></motion.div>
+     
                 {lines.map((line, index) => (
                   <motion.div
                     key={index}
@@ -615,34 +561,25 @@ export default function OurTeam() {
               </div>
             </div>
           </div>
-
+   
           <div className="grid grid-cols-12 gap-8 px-6 mx-auto max-w-7xl lg:px-8">
+            
             <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
               {/* slider controls */}
-              <div
-                id="controls"
-                className="font-helvetica-now-thin flex items-center justify-start row-span-1 row-start-1 space-x-4 "
-              >
-                <button
-                  className=" z-0 p-3 transition-all duration-200 ease-linear border rounded-full border-stone-600 hover:text-white hover:bg-black"
-                  onClick={toggleSwitchDoctor}
-                >
-                  <ArrowLeftIcon className="w-4 h-4 font-helvetica-now-thin" />
-                </button>
-                <span className="text-[12px] t">
-                  0{!switchDoctor ? index : index + 1} / 02
-                </span>
-                <button
-                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white border-stone-600 hover:bg-black"
-                  onClick={toggleSwitchDoctor}
-                >
-                  <ArrowRightIcon className="w-4 h-4 font-helvetica-now-thin" />
-                </button>
-              </div>
+           
               <div className="row-span-1 row-start-2">
+              <motion.div
+                  className="h-px mb-10 bg-gray-700"
+                  initial={{ width: 0, transformOrigin: "left" }}
+                  animate={{ width: "40vw" }}
+                  transition={{
+                    duration: 1,
+                    ease: "easeInOut",
+                  }}
+                ></motion.div>
                 {/* doctor bio */}
                 {switchDoctor ? (
-                  <p ref={doctorBioRef} className="font-helvetica-neue-light">
+                  <p ref={doctorBioRef} className=" font-helvetica-neue-light">
                     Dr. Daniel Frey pursued his pre-dental requisites at the
                     University of Pittsburgh, majoring in Biology. Dr. Frey
                     excelled in his studies and was admitted to Temple
@@ -678,6 +615,34 @@ export default function OurTeam() {
                     vintage car racing, and playing the drums.
                   </p>
                 )}
+              </div>
+              <div
+                id="controls"
+                className="font-helvetica-now-thin flex items-center justify-start row-span-1 row-start-1 space-x-4 "
+              >
+                <button
+                  className=" z-0 p-3 transition-all duration-200 ease-linear border rounded-full border-stone-600 hover:text-white hover:bg-black"
+                  onClick={toggleSwitchDoctor}
+                >
+     <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
+                stroke="black" fill="none" strokeWidth="10" transform="rotate(-90)">
+                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
+                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+              </svg>
+                </button>
+                <span className="text-[12px] t">
+                  0{!switchDoctor ? index : index + 1} / 02
+                </span>
+                <button
+                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white border-stone-600 hover:bg-black"
+                  onClick={toggleSwitchDoctor}
+                >
+  <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
+                stroke="black" fill="none" strokeWidth="10" transform="rotate(90)">
+                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
+                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+              </svg>
+                </button>
               </div>
             </div>
             <div className="col-span-5 lg:col-span-3 lg:col-start-7">
@@ -958,7 +923,31 @@ export default function OurTeam() {
     fontFamily: "NeueMontrealBook",
   }}
 >
-  Meet The Team
+<div className="w-[60px]">
+            <svg
+      
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M63.93 30.1793H63.9983V0H31.999V0.0690724C49.052 0.0690724 62.9842 13.3921 63.93 30.1793Z"
+        fill="currentColor"
+      />
+      <path
+        d="M63.9315 33.8208C62.9858 50.608 49.0536 63.931 32.0006 63.931V64.0001H63.9999V33.8208H63.9315Z"
+        fill="currentColor"
+      />
+      <path
+        d="M31.9309 30.1793H31.9993V0H0V0.0690724C17.053 0.0690724 30.9852 13.3921 31.9309 30.1793Z"
+        fill="currentColor"
+      />
+      <path
+        d="M31.9309 33.8208C30.9852 50.608 17.053 63.931 0 63.931V64.0001H31.9993V33.8208H31.9309Z"
+        fill="currentColor"
+      />
+    </svg>
+    </div>
 </div>
 
       <div className="flex items-center justify-between w-full max-w-5xl">

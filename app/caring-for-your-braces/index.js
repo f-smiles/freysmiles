@@ -54,7 +54,7 @@ const CaringForYourBraces = () => {
         gsap.set(".redSection", { left: "100vw" });
         gsap.set(".blackSection", { left: "100vw" });
 
-        tl.to(".greenSection", { left: "0vw", duration: 1, ease: "none" }, 1);
+        tl.to(".greenSection", { left: "0vw", duration: 1, ease: "none" }, 0);
         tl.to(".whiteSection", { left: "80vw", duration: 1, ease: "none" }, 1);
         tl.to(".orangeSection", { left: "95vw", duration: 1, ease: "none" }, 1);
         tl.to(".redSection", { left: "100vw", duration: 1, ease: "none" }, 1);
@@ -74,7 +74,7 @@ const CaringForYourBraces = () => {
 
         tl.to(".blackSection", { left: "0vw", duration: 1, ease: "none" }, 5);
 
-        tl.to(".greenContentText", { x: "0%", duration: 0.8, ease: "none" }, 1.2);
+        tl.to(".greenContentText", { x: "0%", duration: 0.8, ease: "none" }, .2);
         tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 1.2);
         tl.to(".orangeContentText", { x: "0%", duration: 2.8, ease: "none" }, 1.2);
         tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 1.2);
@@ -114,7 +114,7 @@ const CaringForYourBraces = () => {
   return (
     <div ref={containerRef} className=" min-h-screen">
       <div >
-        <nav className="font-neue-montreal text-[12px] fixed top-5 left-5 w-1/2 h-8 flex z-50">
+        {/* <nav className="font-neue-montreal text-[12px] fixed top-5 left-5 w-1/2 h-8 flex z-50">
           <div className="bg-[#FE462B] rounded-[10px] w-1/5 h-full  flex items-center justify-center">
             <span className="text-black ">• Brushing and Flossing</span>
           </div>
@@ -132,19 +132,20 @@ const CaringForYourBraces = () => {
               • Final Considerations
             </span>
           </div>
-        </nav>
+        </nav> */}
         <div
           style={{
             position: "fixed",
             top: "20vh",
-
+            // color: "#48350B",
             width: "100%",
             paddingLeft: "15rem",
             zIndex: 10,
             pointerEvents: "none",
           }}
         >
-          <h1 className="text-[82px] font-generalregular">Self-Care</h1>
+          
+          <h1 className="text-[82px] font-neuehaas-roman">Self-Care</h1>
         </div>
 
         <div
@@ -190,8 +191,7 @@ const CaringForYourBraces = () => {
                     FreySmiles, most patients achieve their ideal smile in 12 to
                     20 months. Ready to get started? Let’s make it happen.
                   </p>
-                  <hr className="border-t border-[#262626] mt-10 mb-8" />
-                  <div className="flex items-center space-x-2"></div>
+
                 </div>
 
                 <div
@@ -255,7 +255,7 @@ const CaringForYourBraces = () => {
                   will equip you with a number of tools to help with cleaning,
                   including spare toothbrushes and dental floss.
                 </p>
-                <hr className="border-t border-[#262626] mt-10 mb-8" />
+
                 <div className="flex items-center space-x-2"></div>
               </div>
               <div
