@@ -1,4 +1,5 @@
 "use client";
+import { Item } from "../../utils/Item";
 import Image from "next/image";
 import Lenis from "@studio-freight/lenis";
 import React, { useEffect, useState, useRef } from "react";
@@ -524,7 +525,47 @@ export default function OurTeam() {
   
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedMember = teamMembers[selectedIndex];
+  const titleRef = useRef(null);
 
+  useEffect(() => {
+    if (titleRef.current) {
+        const title = titleRef.current;
+        
+        const splitTitle = new SplitText(title, {
+            type: "chars",
+            charsClass: "char",
+        });
+
+        splitTitle.chars.forEach((char) => {
+            const wrapEl = document.createElement("span");
+            wrapEl.classList.add("char-wrap");
+
+            if (char.textContent === " ") {
+                char.innerHTML = "&nbsp;"; 
+            }
+
+            char.parentNode.insertBefore(wrapEl, char);
+            wrapEl.appendChild(char);
+        });
+
+        gsap.fromTo(
+            splitTitle.chars,
+            {
+                xPercent: 105,
+                opacity: 0,
+                transformOrigin: "0% 50%",
+            },
+            {
+                xPercent: 0,
+                opacity: 1,
+                duration: 1,
+                ease: "expo.out",
+                stagger: 0.042,
+                delay: 0.5,
+            }
+        );
+    }
+}, []);
 
   return (
     <div>
@@ -534,13 +575,13 @@ export default function OurTeam() {
           
           <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
             <div className="grid grid-cols-2 ">
-   
+
               <div className="flex flex-col overflow-hidden">
      
                 {lines.map((line, index) => (
                   <motion.div
                     key={index}
-                    className="font-neue-montreal text-[14px] overflow-hidden"
+                    className="font-neuehaasdisplaylight  text-[14px] overflow-hidden"
                     initial={{
                       clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
                       y: 20,
@@ -559,17 +600,23 @@ export default function OurTeam() {
                   </motion.div>
                 ))}
               </div>
+              <div >
+      <h2 className="content__title1" ref={titleRef}>
+        <span style={{lineHeight: "1.2"}}>Our Team</span>
+      </h2>
+    </div>
+
             </div>
           </div>
    
-          <div className="grid grid-cols-12 gap-8 px-6 mx-auto max-w-7xl lg:px-8">
+          <div className="grid grid-cols-12 gap-8 px-6 py-12 mx-auto max-w-7xl lg:px-8">
             
             <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
               {/* slider controls */}
            
               <div className="row-span-1 row-start-2">
               <motion.div
-                  className="h-px mb-10 bg-gray-700"
+                  className="h-px mb-10 bg-gray-300"
                   initial={{ width: 0, transformOrigin: "left" }}
                   animate={{ width: "40vw" }}
                   transition={{
@@ -579,7 +626,7 @@ export default function OurTeam() {
                 ></motion.div>
                 {/* doctor bio */}
                 {switchDoctor ? (
-                  <p ref={doctorBioRef} className=" font-helvetica-neue-light">
+                  <p ref={doctorBioRef} className="font-neuehaasdisplaylight ">
                     Dr. Daniel Frey pursued his pre-dental requisites at the
                     University of Pittsburgh, majoring in Biology. Dr. Frey
                     excelled in his studies and was admitted to Temple
@@ -598,7 +645,7 @@ export default function OurTeam() {
                     spending time with loved ones.
                   </p>
                 ) : (
-                  <p ref={doctorBioRef} className="font-helvetica-neue-light">
+                  <p ref={doctorBioRef} className="font-neuehaasdisplaylight">
                     Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
                     graduated from Temple University School of Dentistry with
                     honors and served in the U.S. Navy Dental Corps before
@@ -618,7 +665,7 @@ export default function OurTeam() {
               </div>
               <div
                 id="controls"
-                className="font-helvetica-now-thin flex items-center justify-start row-span-1 row-start-1 space-x-4 "
+                className="font-neuehaasdisplaylight  flex items-center justify-start row-span-1 row-start-1 space-x-4 "
               >
                 <button
                   className=" z-0 p-3 transition-all duration-200 ease-linear border rounded-full border-stone-600 hover:text-white hover:bg-black"
@@ -773,9 +820,6 @@ export default function OurTeam() {
                       This office is on 🔥! The orthodontists as well as every
                       single staff member.
                     </p>
-                    <span className="link-text" data-text="Check it out">
-                      Keary Riddick
-                    </span>
                   </a>
                   <div
                     style={{
@@ -826,14 +870,7 @@ export default function OurTeam() {
                         extremely professional, polite, timely. Would highly
                         recommend! -TK
                       </p>
-                      <span>
-                        {" "}
-                        <img
-                          className="h-auto w-90 -mt-80 "
-                          src="../images/fivestars.svg"
-                          alt="Green Squiggle"
-                        />
-                      </span>
+                     
                     </a>
                   </div>
 

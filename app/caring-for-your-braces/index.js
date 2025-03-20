@@ -55,30 +55,30 @@ const CaringForYourBraces = () => {
         gsap.set(".blackSection", { left: "100vw" });
 
         tl.to(".greenSection", { left: "0vw", duration: 1, ease: "none" }, 0);
-        tl.to(".whiteSection", { left: "80vw", duration: 1, ease: "none" }, 1);
-        tl.to(".orangeSection", { left: "95vw", duration: 1, ease: "none" }, 1);
-        tl.to(".redSection", { left: "100vw", duration: 1, ease: "none" }, 1);
+        tl.to(".whiteSection", { left: "80vw", duration: 1, ease: "none" }, 0);
+        tl.to(".orangeSection", { left: "95vw", duration: 1, ease: "none" }, 0);
+        tl.to(".redSection", { left: "100vw", duration: 1, ease: "none" }, 0);
+        tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 0);
+
+        tl.to(".whiteSection", { left: "0vw", duration: 1, ease: "none" }, 1);
+        tl.to(".orangeSection", { left: "80vw", duration: 1, ease: "none" }, 1);
+        tl.to(".redSection", { left: "95vw", duration: 1, ease: "none" }, 1);
         tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 1);
 
-        tl.to(".whiteSection", { left: "0vw", duration: 1, ease: "none" }, 2);
-        tl.to(".orangeSection", { left: "80vw", duration: 1, ease: "none" }, 2);
-        tl.to(".redSection", { left: "95vw", duration: 1, ease: "none" }, 2);
-        tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 2);
+        tl.to(".orangeSection", { left: "0vw", duration: 1, ease: "none" }, 2);
+        tl.to(".redSection", { left: "80vw", duration: 1, ease: "none" }, 2);
+        tl.to(".blackSection", { left: "95vw", duration: 1, ease: "none" }, 2);
 
-        tl.to(".orangeSection", { left: "0vw", duration: 1, ease: "none" }, 3);
-        tl.to(".redSection", { left: "80vw", duration: 1, ease: "none" }, 3);
-        tl.to(".blackSection", { left: "95vw", duration: 1, ease: "none" }, 3);
+        tl.to(".redSection", { left: "0vw", duration: 1, ease: "none" }, 3);
+        tl.to(".blackSection", { left: "80vw", duration: 1, ease: "none" }, 3);
 
-        tl.to(".redSection", { left: "0vw", duration: 1, ease: "none" }, 4);
-        tl.to(".blackSection", { left: "80vw", duration: 1, ease: "none" }, 4);
-
-        tl.to(".blackSection", { left: "0vw", duration: 1, ease: "none" }, 5);
+        tl.to(".blackSection", { left: "0vw", duration: 1, ease: "none" }, 4);
 
         tl.to(".greenContentText", { x: "0%", duration: 0.8, ease: "none" }, .2);
-        tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 1.2);
-        tl.to(".orangeContentText", { x: "0%", duration: 2.8, ease: "none" }, 1.2);
-        tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 1.2);
-        tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 1.2);
+        tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, .2);
+        tl.to(".orangeContentText", { x: "0%", duration: 2.8, ease: "none" }, .2);
+        tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, .2);
+        tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, .2);
 
         setTimeout(() => {
           ScrollTrigger.refresh();

@@ -14,6 +14,36 @@
   url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.ttf")format("truetype"),
   url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.svg#SaolDisplay-LightItalic")format("svg");
 }
+
+@font-face {
+  font-family: "NeueHaasRoman";
+  src: url("/fonts/Neue Haas Grotesk Text Pro 55 Roman.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "NeueHaas45Light";
+  src: url("/fonts/Neue Haas Grotesk Display Pro 45 Light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "NeueMontrealLight";
+  src: url("/fonts/NeueMontreal-Light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Calyx Regular";
+  src: url("/fonts/calyx-regular.ttf") format("truetype");
+}
+
+
+@font-face {
+  font-family: "NeueHaasGroteskDisplayPro15UltraLight";
+  src: url("/fonts/Neue Haas Grotesk Display Pro 15 Ultra Thin.ttf") format("truetype");
+}
+@font-face {
+  font-family: "NeueHaasGroteskDisplayExtraLight";
+  src: url("/fonts/Neue Haas Grotesk Display Pro 45 Light.ttf") format("truetype");
+}
 @font-face {
   font-family: "NeueHaasDisplayRoman";
   src: url("/fonts/NeueHaasDisplayRoman.ttf") format("truetype");
@@ -1316,7 +1346,7 @@ header h1 {
 }
 
 .horizontalItem p {
-  font-size: 1.3vw;
+  font-size: 1.1vw;
   font-family: "NeueMontrealBook"
 }
 
@@ -1325,7 +1355,8 @@ header h1 {
 }
 
 .horizontalBig {
-  font-size: 1.3vw;
+  font-size: 1.1vw;
+  color: black;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -1334,6 +1365,9 @@ header h1 {
 .horizontalFilled {
   background-color: white;
   color: black;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .c-shutter {
@@ -5378,6 +5412,8 @@ a {
   
 }
 
+
+
 .size-xl {
 	--gsize: clamp(5rem,12vw,18rem);
 	/* text-transform: uppercase; */
@@ -5452,3 +5488,22 @@ a {
 	display: grid;
 }
 
+
+.content__title1 {
+	font-size: 4em;
+  font-family: "NeueHaasRoman";
+	line-height: 0.8;
+	text-align: center;
+  display: inline-block;
+	gap: 2rem;
+}
+
+
+.char-wrap {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.char {
+  display: inline-block;
+}

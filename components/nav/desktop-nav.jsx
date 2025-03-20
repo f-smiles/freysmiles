@@ -87,7 +87,7 @@ const {cart} = useCartStore()
         
         <motion.div variants={opacity} animate={!isActive ? "open" : "closed"}> {/* styles.el */}
           <motion.div 
-          className="bg-[#C2C1C7]/50 backdrop-blur-lg shadow-lg shadow-white/10 rounded-full px-6 py-3 flex items-center gap-4"> {/* styles.label */}
+          className="bg-[#C2C1C7]/50 shadow-white/10 rounded-full px-6 py-3 flex items-center gap-4"> {/* styles.label */}
             {links.slice(0, 4).map((link, i) => (
               <motion.p
                 key={`${i} + ${link}`}
@@ -108,8 +108,9 @@ const {cart} = useCartStore()
   
         <Link href="/">
         
-          <motion.div className={`${isActive ? "hidden" : "block"}  rounded-full flex justify-center items-center  w-10 h-10 p-3`}>
-            <img src="../../images/logo_icon.png" alt="Logo Icon" className="w-full h-full icon-replacement" />
+          <motion.div className={`${isActive ? "hidden" : "block"}  font-calyx  text-[48px] text-black flex justify-center items-center   p-3`}>
+            {/* <img src="../../images/logo_icon.png" alt="Logo Icon" className="w-full h-full icon-replacement" /> */}
+            FS
           </motion.div>
         </Link>
 
@@ -156,7 +157,7 @@ const {cart} = useCartStore()
       </motion.div>
     </Link>
             
-            {/* {cart.length > 0 && <CartComponent isScrolled={isScrolled} />}
+            {cart.length > 0 && <CartComponent isScrolled={isScrolled} />}
             
             {user ? (
               <UserButton user={user} />
@@ -164,7 +165,7 @@ const {cart} = useCartStore()
               <Link href="/auth/login">
                 <p className="font-helvetica-neue-light tracking-wider text-[13px] ">Login</p>
               </Link>
-            )} */}
+            )}
           </motion.div>
         </motion.div>
       </motion.div>
@@ -179,7 +180,7 @@ const {cart} = useCartStore()
 
       <AnimatePresence mode="wait">
         {isActive && (
-          <motion.div variants={height} initial="initial" animate="enter" exit="exit" className={`${styles.nav} z-50`}>
+          <motion.div variants={height} initial="initial" animate="enter" exit="exit" className={`${styles.nav} z-50  bg-[#F5FF7D]`}>
             <div className="flex flex-col max-w-4xl m-auto"> {/* styles.body */}
               <button type="button" onClick={() => setIsActive(!isActive)} className="flex items-start self-end cursor-pointer h2-menu-row">
                 <XIcon className="w-4 h-4 top-3 -left-5 text-primary-700 h2-menu-text-number" />

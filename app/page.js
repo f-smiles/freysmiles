@@ -130,7 +130,7 @@ function DoorModel() {
     mixer.current?.update(delta);
   });
 
-  return <primitive ref={doorRef} object={scene} position={[0, -1, 0]}  rotation={[0, Math.PI, 0]} scale={5} />;
+  return <primitive ref={doorRef} object={scene} position={[0, -1, 0]}  rotation={[0, Math.PI, 0]} scale={7.25} />;
 }
 
 

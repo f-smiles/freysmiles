@@ -24,9 +24,9 @@
   z-index: 9999;
 
   .background {
-    background-color: black;
-    opacity: 0.5;
-    height: 100%;
+    background-color: white;
+    /* opacity: 0.5; */
+    height: 60%; 
     width: 100%;
     position: absolute;
     left: 0;
@@ -141,6 +141,7 @@
 }
 
 .nav {
+  
   overflow: hidden;
 
   .wrapper {

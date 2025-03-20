@@ -6,8 +6,8 @@ export const links = [
   },
   {
     title: "PATIENT",
-    sublinks: ["Your Care", "Financing Treatment", "Caring For Your Braces"],
-    hrefs: ["/your-care", "/financing-treatment", "/caring-for-your-braces"]
+    sublinks: ["Your Care", "Financing Treatment", "Caring For Your Braces", "Patient Portal"],
+    hrefs: ["/your-care", "/financing-treatment", "/caring-for-your-braces", "https://orthoblink.andisolutions.com/bLink/Login"]
   },
   {
     title: "TREATMENTS",

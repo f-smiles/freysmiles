@@ -226,6 +226,29 @@ const Section = ({ children, onHoverStart, onHoverEnd, gradient }) => (
   </motion.div>
 );
 
+const Marquee = () => {
+
+  const items = [
+    { image: "../images/invisalignset.png" },
+    { image: "../images/alignercase.png" },
+    { image: "../images/alignergraphic.png" },
+    { image: "../images/teethiterographic.png" },
+  ]
+  
+  return (
+    <div className="relative flex max-w-[100vw] overflow-hidden py-5">
+    <div className="flex w-max animate-marquee [--duration:30s] hover:[animation-play-state:paused]">
+      {[...items, ...items].map((item, index) => (
+        <div key={index} className="h-24 w-24 flex items-center justify-center px-1">
+          <img src={item.image} alt="Marquee Image" className="h-20 w-auto object-contain block" />
+        </div>
+      ))}
+    </div>
+  </div>
+  
+  
+  )
+}
 const Invisalign = () => {
   const headingRef = useRef(null);
 
@@ -365,12 +388,13 @@ const Invisalign = () => {
     <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
   {/* Left */}
       <div style={{  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-      <div style={{ fontFamily:"NeueHaasDisplayXThin",  fontSize: '3rem', lineHeight: '1.1' }}>
+      <div style={{ fontFamily:"NeueMontrealLight",  fontSize: '3rem', lineHeight: '1.1' }}>
       <div ref={textRef} className="content__title" >
         <span>Ranked in the top</span>
         <span >1% of practitioners </span>
         <span>nationwide since 2000</span>
       </div>
+      
     </div>
       </div>
       {/* Right */}
@@ -383,11 +407,11 @@ const Invisalign = () => {
         </Canvas>
       </div>
     </div>
-    <div className="text-5xl sm:text-5xl leading-tight text-black font-light font-neuehaas-thin">
-      <span className="font-normal">Our doctors</span>{" "}
-      <span className="font-light">have </span>{" "}
-      <span className="font-saolitalic">treated</span>{" "}
-      <span className="font-medium">thousands of patients</span>{" "}
+    <div className="ml-10 text-5xl sm:text-5xl leading-tight text-black font-light font-neuehaasdisplay35light">
+      <span className="font-normal">Our doctors </span>{" "}
+      <span className="font-light">have treated</span>{" "}
+      <span className="font-saolitalic">thousands</span>{" "}
+      <span className="font-medium">of patients</span>{" "}
       <br />
       <span className="font-normal">with this </span>{" "}
       <span className="font-light font-saolitalic">leading edge</span>{" "}
@@ -403,6 +427,7 @@ const Invisalign = () => {
       </section>
     
       <section className="relative w-full min-h-screen flex flex-col justify-between px-16 py-20">
+<Marquee />
 
         <div className="font-neue-montreal flex space-x-3 mt-6">
           {["Diamond Plus", "Invisalign", "Invisalign Teen"].map((tag, index) => (
@@ -420,7 +445,7 @@ const Invisalign = () => {
         </div>
 
        <div className="flex flex-col">
-       <p className="font-saol mt-8 text-[5em] leading-snug">
+       <p className="font-neuehaasdisplay35light mt-8 text-[3em] leading-snug">
 Why Invisalign?
         </p>     
        {/* <p className="w-1/2 mt-8 text-[1.8em] font-neue-montreal leading-snug">
@@ -448,7 +473,7 @@ Why Invisalign?
             </div>
 
             </div>
-            <div className="image-content mt-16">
+            {/* <div className="image-content mt-16">
               <img
                 ref={alignerRef}
                 src="../images/invisalignset.png"
@@ -459,7 +484,7 @@ Why Invisalign?
                 }}
               />
              <img src='../images/alignercase.png'/>
-            </div>
+            </div> */}
       </section>
 
 
