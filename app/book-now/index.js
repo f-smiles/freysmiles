@@ -95,7 +95,6 @@ export default function BookNow() {
       transition={{ duration: 1.2, ease: "easeInOut" }}
     />
     
-    {/* "Let's Talk" */}
 <div className="relative flex justify-center items-center h-[180px] text-center text-[4em] font-neue-montreal">
   <div className="relative overflow-hidden">
     <motion.div

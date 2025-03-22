@@ -1,4 +1,4 @@
-.main-tool-bar {
+/* .main-tool-bar {
   height: 80px;
   background: #fffce1;
   color: #0e100f;
@@ -14,7 +14,7 @@
   &--scrolled {
     height: 40px;
   }
-}
+} */
 
 .header {
   position: fixed;
@@ -22,17 +22,18 @@
   right: 0;
   margin: 0 auto;
   z-index: 9999;
-
+  height: auto;
   .background {
     background-color: white;
-    /* opacity: 0.5; */
-    height: 60%; 
-    width: 100%;
-    position: absolute;
-    left: 0;
-    top: 100%;
     backdrop-filter: blur(32px);
+    position: fixed;  
+    /* top: 0;            */
+    left: 0;
+    width: 100vw;
+    height: "90vh";      
+    z-index: 999;
   }
+  
 
   .bar {
     display: flex;
@@ -141,9 +142,14 @@
 }
 
 .nav {
+  height: 90vh;  
+  overflow-y: auto;
+  position: fixed;
+  width: 100%;
+  top: 0;
   
-  overflow: hidden;
-
+  background-color: white;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.25); 
   .wrapper {
     display: flex;
     gap: 50px;

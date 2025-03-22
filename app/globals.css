@@ -4433,121 +4433,6 @@ a {
 }
 
 
-
-
-.h2-menu.open {
-  pointer-events: auto;
-}
-.h2-navbar-menu-button {
-  color: #000;
-  cursor: none;
-  text-decoration: none;
-  position: relative;
-  overflow: hidden;
-}
-
-
-.h2-menu-container {
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 1210px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 55px;
-  padding-right: 55px;
-  display: flex;
-}
-
-.h2-menu-wrapper-top {
-  grid-column-gap: 12px;
-  align-items: flex-start;
-  display: flex;
-}
-
-.h2-menu-text-number {
-  margin-bottom: 0;
-  font-weight: 500;
-}
-
-
-
-.h2-menu-row-2,
-.h2-menu-row-4 {
-  flex-direction: row-reverse;
-  justify-content: space-between;
-}
-
-
-
-.h2-menu-row-1 {
-  cursor: none;
-  font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #000;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding-top: 22px;
-  padding-bottom: 22px;
-  text-decoration: none;
-  display: flex;
-  transform: translate3d(0, 0, 0);
-  transition: transform 0.3s ease-in-out;
-}
-
-.h2-menu-row-2 {
-  cursor: none;
-  font-family: "Didot";
-  font-style: italic;
-  border-bottom: 1px solid #000;
-  width: 100%;
-  padding-top: 22px;
-  padding-bottom: 22px;
-  text-decoration: none;
-  display: flex;
-}
-
-.h2-menu-row-3 {
-  grid-column-gap: 40px;
-  cursor: none;
-  font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #000;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding-top: 22px;
-  padding-bottom: 22px;
-  padding-left: 132px;
-  text-decoration: none;
-  display: flex;
-}
-
-.h2-menu-row-4 {
-  cursor: none;
-  font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #000;
-  width: 100%;
-  padding-top: 22px;
-  padding-bottom: 22px;
-  text-decoration: none;
-  display: flex;
-}
-
-.h2-menu-row-5 {
-  cursor: none;
-  font-family: "HelveticaNeue-Light";
-  border-bottom: 1px solid #000;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding-top: 22px;
-  padding-bottom: 22px;
-  padding-right: 0;
-  text-decoration: none;
-  display: flex;
-}
-
-
 .button_wrapper {
   button {
     padding: 1.7rem 3rem;
@@ -5283,3 +5168,9 @@ a {
 }
 
 
+/* .card__text {
+  color: white;
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.1),
+   -1px -1px 2px rgba(255, 255, 255, 0.5);
+} */

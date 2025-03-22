@@ -1,8 +1,8 @@
 export const links = [
   {
     title: "ABOUT",
-    sublinks: ["Team", "Manifesto", "Testimonials", "Locations", "Patient Login"],
-    hrefs: ["/our-team", "/why-choose-us", "/testimonials", "/#locations", "https://my.orthoblink.com/bLink/Login"]
+    sublinks: ["Team", "Manifesto", "Testimonials", "Locations"],
+    hrefs: ["/our-team", "/why-choose-us", "/testimonials", "/#locations"]
   },
   {
     title: "PATIENT",

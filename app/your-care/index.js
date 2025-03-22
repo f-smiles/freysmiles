@@ -33,18 +33,18 @@ const YourCare = () => {
     gsap.fromTo(
       circleRefs.current,
       {
-        y: -100, // Start above the section
+        y: -100, 
         opacity: 0,
       },
       {
-        y: 0, // Drop to the bottom
+        y: 0, 
         opacity: 1,
         ease: "bounce.out",
         duration: 1.5,
         stagger: 0.1,
         physics2D: {
-          velocity: Math.random() * 200 + 100, // Random fall speed
-          angle: 90, // Straight down
+          velocity: Math.random() * 200 + 100, 
+          angle: 90, 
           friction: 0.1,
         },
       }

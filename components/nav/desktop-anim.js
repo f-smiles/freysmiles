@@ -17,30 +17,50 @@ export const opacity = {
 export const height = {
   initial: {
     height: 0,
+    y: -30,
+    opacity: 1,
   },
   enter: {
     height: "auto",
-    transition: { duration: 0.3 },
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 1.2,
+      ease: [0.075, 0.82, 0.165, 1],
+      delay: 0.1,
+    },
   },
   exit: {
     height: 0,
-    transition: { duration: 0.3 },
+    y: -30,
+    opacity: 1,
+    transition: {
+      duration: 0.8, 
+      ease: [0.33, 1, 0.68, 1],
+      delay: 0,
+    },
   },
 };
 
+
 export const background = {
-  initial: {
-    height: 0,
-  },
+  initial: { y: '-100%', opacity: 0 },
   open: {
-    height: "100vh",
-    transition: { duration: 0.3 },
+    y: '0%',
+    opacity: 1,
+    transition: { duration: 0.7, ease: [0.075, 0.82, 0.165, 1] }
   },
   closed: {
-    height: 0,
-    transition: { duration: 0.3 },
-  },
-};
+    y: '-100%',
+    opacity: 1,
+    transition: {
+      duration: 1.1,
+      ease: [0.33, 1, 0.68, 1],
+      delay: 0.2
+    }
+  }
+}
+
 
 export const blur = {
   initial: {
