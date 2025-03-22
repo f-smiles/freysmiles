@@ -70,11 +70,11 @@ const Hero: React.FC = () => {
 
   return (
     <div className="bg-[#FCFAF5]">
-       <div className="flex justify-center py-24 px-4">
+       <div className="flex justify-center px-4">
        <section className="w-full min-h-screen grid grid-cols-2">
       <div className="relative w-full h-full">
         <img
-          src="../images/shoptest.png" 
+          src="../images/shoptest1.png" 
           alt="mockup"
           className="w-full h-full object-cover"
         />

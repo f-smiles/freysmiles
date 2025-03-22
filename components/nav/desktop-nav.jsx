@@ -87,7 +87,7 @@ const {cart} = useCartStore()
         
         <motion.div variants={opacity} animate={!isActive ? "open" : "closed"}> {/* styles.el */}
           <motion.div 
-          className="bg-[#C2C1C7]/50 shadow-white/10 rounded-full px-6 py-3 flex items-center gap-4"> {/* styles.label */}
+          className="bg-[#C2C1C7]/50 shadow-white/10 rounded-2xl px-6 py-3 flex items-center gap-4"> {/* styles.label */}
             {links.slice(0, 4).map((link, i) => (
               <motion.p
                 key={`${i} + ${link}`}
@@ -133,7 +133,7 @@ const {cart} = useCartStore()
             
 
             <Link href="/book-now">
-              <p className="bg-[#F2F2F2]/50 backdrop-blur-lg shadow-lg shadow-white/10 text-black rounded-full px-6 py-3 font-helvetica-neue-light tracking-wider text-[13px] tracking-wider">Book Now</p>
+              <p className="bg-[#F2F2F2]/50 backdrop-blur-lg shadow-lg shadow-white/10 text-black rounded-2xl px-6 py-3 font-helvetica-neue-light tracking-wider text-[13px] tracking-wider">Book Now</p>
             </Link>
 
  

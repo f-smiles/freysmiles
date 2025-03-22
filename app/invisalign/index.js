@@ -23,6 +23,9 @@ import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 import { useMemo } from "react";
 import { Environment, OrbitControls, useTexture } from "@react-three/drei";
 
+
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
+
 const SmileyFace = ({ position = [0, 0, 0] }) => {
   const circleRadius = 6;
   const groupRef = useRef(); 
@@ -192,17 +195,16 @@ void main() {
 //   )
 // }
 
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
-const Section = ({ children, onHoverStart, onHoverEnd, gradient }) => (
+
+const Section = ({ children, onHoverStart, onHoverEnd }) => (
   <motion.div
     onHoverStart={onHoverStart}
     onHoverEnd={onHoverEnd}
     style={{
-      height: "20%",
+      height: "15%",
       display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
+      alignItems: "center", // Align items vertically
       cursor: "pointer",
       backgroundColor: "transparent",
       color: "black",
@@ -211,17 +213,12 @@ const Section = ({ children, onHoverStart, onHoverEnd, gradient }) => (
       userSelect: "none",
       position: "relative",
       zIndex: 2,
-      textAlign: "center",
       width: "100%",
       boxSizing: "border-box",
       borderTop: "1px solid #DBDADD",
-      gap: "5rem",
+      paddingLeft: "2rem", // Ensures text is properly spaced
     }}
   >
-    <div
-      className="w-8 h-8 rounded-full"
-      style={{ background: gradient }}
-    ></div>
     {children}
   </motion.div>
 );
@@ -383,12 +380,48 @@ const Invisalign = () => {
       transition: { type: "tween", duration: 0.3 },
     });
   };
+
+  const [isVisible, setIsVisible] = useState(false);
+  const squigglyTextRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.5 } // Triggers when 50% of the element is in view
+    );
+
+    if (squigglyTextRef.current) {
+      observer.observe(squigglyTextRef.current);
+    }
+
+    return () => {
+      if (squigglyTextRef.current) {
+        observer.unobserve(squigglyTextRef.current);
+      }
+    };
+  }, []);
+
   return (
     <>
     <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
   {/* Left */}
+  <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Canvas>
+          <ambientLight intensity={0.5} />
+          <SmileyFace position={[0, 0, 0]} />
+          <Environment preset="sunset" />
+          <OrbitControls enableZoom={false} />
+        </Canvas>
+      </div>
+      {/* Right */}
+     
+
       <div style={{  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-      <div style={{ fontFamily:"NeueMontrealLight",  fontSize: '3rem', lineHeight: '1.1' }}>
+      <div style={{ fontFamily:"NeueHaasDisplayThin25",  fontSize: '3rem', lineHeight: '1.1' }}>
       <div ref={textRef} className="content__title" >
         <span>Ranked in the top</span>
         <span >1% of practitioners </span>
@@ -397,17 +430,8 @@ const Invisalign = () => {
       
     </div>
       </div>
-      {/* Right */}
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Canvas>
-          <ambientLight intensity={0.5} />
-          <SmileyFace position={[0, 0, 0]} />
-          <Environment preset="sunset" />
-          <OrbitControls enableZoom={false} />
-        </Canvas>
-      </div>
     </div>
-    <div className="ml-10 text-5xl sm:text-5xl leading-tight text-black font-light font-neuehaasdisplay35light">
+    <div className="ml-10 text-5xl sm:text-5xl leading-tight text-black font-light font-neuehaasdisplay15light">
       <span className="font-normal">Our doctors </span>{" "}
       <span className="font-light">have treated</span>{" "}
       <span className="font-saolitalic">thousands</span>{" "}
@@ -427,8 +451,6 @@ const Invisalign = () => {
       </section>
     
       <section className="relative w-full min-h-screen flex flex-col justify-between px-16 py-20">
-<Marquee />
-
         <div className="font-neue-montreal flex space-x-3 mt-6">
           {["Diamond Plus", "Invisalign", "Invisalign Teen"].map((tag, index) => (
             <span
@@ -444,35 +466,82 @@ const Invisalign = () => {
           ))}
         </div>
 
-       <div className="flex flex-col">
-       <p className="font-neuehaasdisplay35light mt-8 text-[3em] leading-snug">
-Why Invisalign?
-        </p>     
-       {/* <p className="w-1/2 mt-8 text-[1.8em] font-neue-montreal leading-snug">
-        Under the skilled guidance of our doctors, countless individuals have experienced the transformative benefits of this advanced orthodontic treatment.
-        </p>      */}
-      <div className="relative w-2/3"
-              style={{ height: "600px", overflow: "hidden" }}
-            >
-              <motion.div
-                initial={{ y: "0%" }}
-                animate={controls}
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  height: "20%",
-                  background: "rgb(245,227,24,.6)",
-                  zIndex: 1,
-                }}
-              />
+        <div className="flex flex-row justify-between">
+  <div className="max-w-[700px] mt-10">
 
-<Section onHoverStart={() => handleHover(0)} gradient="linear-gradient(to bottom right, #FF9A8B, #FF6A88, #FF99AC)"> Fewer appointments, faster treatment</Section>
-      <Section onHoverStart={() => handleHover(1)} gradient="linear-gradient(to bottom right, #A18CD1, #FBC2EB)"> Personalized care for every patient</Section>
-      <Section onHoverStart={() => handleHover(2)} gradient="linear-gradient(to bottom right, #FA8BFF, #2BD2FF, #2BFF88)">Advanced technology at your service</Section>
-      <Section onHoverStart={() => handleHover(3)} gradient="linear-gradient(to bottom right, #FFD3A5, #FD6585)">Comfortable and stress-free visits</Section>
-            </div>
+    <div className="flex items-center gap-24">
+      <div className="font-neuehaasdisplayextralight text-sm whitespace-nowrap relative">
+        Why Invisalign
 
-            </div>
+        <div ref={squigglyTextRef} className="absolute left-0 bottom-[-5px] w-full">
+          <svg className="w-full" height="9" viewBox="0 0 101 9">
+            <path
+              d="M1 6.86925C5.5 5.89529 20.803 1.24204 22.5 1.30925C24.6212 1.39327 20.5 3.73409 19.5 4.26879C18.8637 4.60904 14.9682 6.39753 15.7268 6.96472C16.4853 7.5319 34.2503 1.07424 35.8216 1.00703C37.3928 0.939816 37.2619 1.37115 37 1.59522C37 1.59522 24.5598 6.65262 24.84 6.96472C25.1202 7.27681 39.3546 4.85181 45.5 3.73407C51.6454 2.61634 61.4661 1.31205 62.525 2.12081C63.3849 2.77753 57.6549 3.25627 55.6997 4.04288C48.4368 6.96472 69.5845 5.83575 70 6.14029"
+              stroke="#1D64EF"
+              fill="none"
+              strokeWidth="1.5"
+              pathLength="1"
+              style={{
+                strokeDasharray: "1",
+                strokeDashoffset: isVisible ? "0" : "1",
+                transition: "stroke-dashoffset 0.6s cubic-bezier(0.7, 0, 0.3, 1)",
+              }}
+            />
+          </svg>
+        </div>
+      </div>
+
+      <h2 className="font-neuehaasdisplaylight text-[3rem] leading-[1.1] font-light">
+        Invisalign has continued to
+      </h2>
+    </div>
+
+    <h2 className="font-neuehaasdisplaylight text-[3rem] leading-[1.1] font-light">
+      work for millions worldwide.<br />
+      <span className="text-[#1D64EF]">Clear,&nbsp;</span>
+      <span className="text-[#1D64EF]">comfortable,&nbsp;</span>
+      <span className="text-[#1D64EF]">confident.</span>
+      <br />
+    </h2>
+
+    <Marquee />
+  </div>
+
+
+  <div className="relative w-1/2" style={{ height: "600px", overflow: "hidden" }}>
+      <motion.div
+        initial={{ y: "0%" }}
+        animate={controls}
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "15%",
+          background: "rgb(245,227,24,.8)",
+          zIndex: 1,
+        }}
+      />
+
+      {[
+        { text: "Fewer appointments, faster treatment", gradient: "radial-gradient(circle, #FF9A8B 0%, #FF6A88 50%, #FF99AC 100%)" },
+        { text: "Personalized care for every patient", gradient: "radial-gradient(circle, #A18CD1 0%, #FBC2EB 100%)" },
+        { text: "Advanced technology at your service", gradient: "radial-gradient(circle, #FA8BFF 0%, #2BD2FF 50%, #2BFF88 100%)" },
+        { text: "Comfortable and stress-free visits", gradient: "radial-gradient(circle, #FFD3A5 0%, #FD6585 100%)" }
+      ].map((item, index) => (
+        <Section key={index} onHoverStart={() => handleHover(index)}>
+          <div className="relative flex items-center w-full">
+         
+            <div
+              className="w-4 h-4 rounded-full absolute left-[40px]"
+              style={{ background: item.gradient }}
+            ></div>
+            {/* Text Properly Aligned */}
+            <span className="pl-40">{item.text}</span>
+          </div>
+        </Section>
+      ))}
+    </div>
+</div>
+
             {/* <div className="image-content mt-16">
               <img
                 ref={alignerRef}
@@ -488,7 +557,7 @@ Why Invisalign?
       </section>
 
 
-      <div className="feature-jacket">
+      {/* <div className="feature-jacket">
         <ul className="feature-cards">
           {features.map((feature, index) => (
             <li
@@ -509,7 +578,7 @@ Why Invisalign?
           ))}
         </ul>
       </div>
-  
+   */}
     </>
   );
 };

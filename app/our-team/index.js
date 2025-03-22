@@ -2,18 +2,164 @@
 import { Item } from "../../utils/Item";
 import Image from "next/image";
 import Lenis from "@studio-freight/lenis";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { SplitText } from "gsap-trial/all";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
-
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import * as THREE from "three";
+import { TextureLoader } from "three";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
 
+
+const vertexShader = `
+uniform vec2 uOffset;
+varying vec2 vUv;
+const float PI = 3.14159265359;
+
+vec3 deformationCurve(vec3 position, vec2 uv, vec2 offset) {
+    position.x += sin(uv.y * PI) * offset.x;
+    position.y += sin(uv.x * PI) * offset.y;
+    return position;
+}
+
+void main() {
+    vUv = uv;
+    vec3 pos = position;
+    pos = deformationCurve(pos, uv, uOffset);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+}
+`;
+const fragmentShader = `
+uniform sampler2D iChannel0;
+uniform vec2 uMeshSize;
+uniform vec2 uMediaSize;
+uniform vec2 uOffset;
+uniform float uOpacity;
+uniform float uMouseEnter;
+uniform float uMouseEnterMask;
+varying vec2 vUv;
+
+vec2 distort(vec2 uv) {
+    uv -= 0.5;
+    float mRatio = uMeshSize.x / uMeshSize.y;
+    float strength = 1.0 - (10.0 * (1.0 - uMouseEnter)) * (pow(uv.x * mRatio, 2.0) + pow(uv.y, 2.0));
+    uv *= strength;
+    uv += 0.5;
+    return uv;
+}
+
+void main() {
+    vec2 uv = vUv;
+    uv = distort(uv);
+    vec4 tex = texture2D(iChannel0, uv);
+    gl_FragColor = vec4(tex.rgb, tex.a * uOpacity);
+}
+`;
+
+const ShaderPlane = ({ imageUrl, mouse }) => {
+  const meshRef = useRef();
+  const texture = useLoader(TextureLoader, imageUrl);
+
+  const uniforms = useMemo(
+    () => ({
+      iChannel0: { value: texture },
+      uMeshSize: { value: new THREE.Vector2(300, 400) }, 
+      uMediaSize: { value: new THREE.Vector2(texture.image.width, texture.image.height) },
+      uOffset: { value: new THREE.Vector2(0, 0) },
+      uOpacity: { value: 1.0 },
+      uMouseEnter: { value: 0 },
+      uMouseEnterMask: { value: 0 },
+    }),
+    [texture]
+  );
+
+  useFrame(() => {
+    if (!meshRef.current) return;
+
+    const targetX = mouse.current.x;
+    const targetY = mouse.current.y;
+
+
+    gsap.to(meshRef.current.position, {
+      x: (targetX - 0.5) * window.innerWidth,
+      y: -(targetY - 0.5) * window.innerHeight,
+      duration: 0.4,
+      ease: "power3.out",
+    });
+
+
+    gsap.to(uniforms.uOffset.value, {
+      x: (targetX - 0.5) * 0.2,
+      y: (targetY - 0.5) * 0.2,
+      duration: 0.3,
+    });
+
+
+    gsap.to(uniforms.uMouseEnter, { value: 1, duration: 1.2, ease: "power2.out" });
+    gsap.to(uniforms.uMouseEnterMask, { value: 1, duration: 0.7, ease: "power2.out" });
+  });
+
+  return (
+    <mesh ref={meshRef} scale={[300, 400, 1]}>
+      <planeGeometry args={[1, 1, 64, 64]} />
+      <shaderMaterial
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={uniforms}
+        transparent
+      />
+    </mesh>
+  );
+};
+
+const ShaderHoverEffect = () => {
+  const images = [
+    { name: "Alyssa", url: "../images/team_members/Alyssascan.png",    description: "Treatment Coordinator",},
+    { name: "Nicolle", url: "../images/team_members/Nicollewaving.png",   description: "Specialized Orthodontic Assistant", },
+    { name: "Lexi", url: "../images/team_members/Lexiworking.png",   description: "Treatment Coordinator" },
+    { name: "Elizabeth", url: "../images/team_members/Elizabethaao.png",   description: "Patient Services", },
+    { name: "Adriana", url: "../images/team_members/Adriana-Photoroom.jpg" ,description: "Insurance Coordinator"},
+  ];
+  const [hoveredImage, setHoveredImage] = useState(null);
+  const mouse = useRef({ x: 0.5, y: 0.5 });
+
+  const handleMouseMove = (e) => {
+    mouse.current.x = e.clientX / window.innerWidth;
+    mouse.current.y = e.clientY / window.innerHeight;
+  };
+
+  return (
+    <div className="relative w-screen h-screen overflow-hidden" onMouseMove={handleMouseMove}>
+      <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 100] }}>
+        {hoveredImage && <ShaderPlane imageUrl={hoveredImage} mouse={mouse} />}
+      </Canvas>
+      <div className="absolute inset-0 flex items-center justify-center">
+        
+        <div className="flex flex-col justify-between space-y-6 text-center">
+          {images.map((img) => (
+    <div
+    key={img.name}
+    className="flex flex-row justify-between font-neuehaasdisplaythin text-xl cursor-pointer w-96"
+    onMouseEnter={() => setHoveredImage(img.url)}
+    onMouseLeave={() => setHoveredImage(null)}
+  >
+    <span>{img.name}</span>
+    <span className="text-sm text-gray-400">{img.description}</span>
+  </div>
+     
+          ))}
+          
+        </div>
+      </div>
+    </div>
+  );
+};
 export default function OurTeam() {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -570,7 +716,7 @@ export default function OurTeam() {
   return (
     <div>
       
-      <div className="bg-[#f4f0ed] relative ">
+      <div className="bg-[#F7F7F7] relative ">
       <section className="py-[12em] sm:py-[12em]">
           
           <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
@@ -612,7 +758,7 @@ export default function OurTeam() {
           <div className="grid grid-cols-12 gap-8 px-6 py-12 mx-auto max-w-7xl lg:px-8">
             
             <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
-              {/* slider controls */}
+    
            
               <div className="row-span-1 row-start-2">
               <motion.div
@@ -894,65 +1040,15 @@ export default function OurTeam() {
           </div>
         </section>
 
-        {/*   
-        <section ref={container} style={{ marginTop: "50vh" }}>
-          {projects.map((project, i) => {
-            const targetScale = 1 - (projects.length - i) * 0.05;
-            return (
-              <Card
-                key={`p_${i}`}
-                i={i}
-                {...project}
-                progress={scrollYProgress}
-                range={[i * 0.25, 1]}
-                targetScale={targetScale}
-              />
-            );
-          })}
-        </section> */}
-
-        {/* <div
-          ref={carouselRef}
-          className="relative z-10 min-h-[150vh]  pointer-events-none"
-        >
-          <div id="cursor" style={cursorStyle} className={className}>
-            <div className="cursor__circle" style={cursorCircleStyle}>
-              {!isDragging && (
-                <>
-                  Drag
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-                    />
-                  </svg>
-                </>
-              )}
-            </div>
-          </div>
-          {items.map((item) => (
-            <div key={item.num} className="carousel-item">
-              <div className="carousel-box">
-                <div className="titleCard">{item.title}</div>
-                <div className="nameCard">{item.num}</div>
-                <img src={item.imgSrc} alt={item.title} />
-              </div>
-            </div>
-          ))}
-        </div> */}
+      
       </div>
       <div>
       </div>
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-[#f4f0ed] px-10 relative">
-      <div
+
+{/* <ShaderHoverEffect /> */}
+{/* bg-[#E2F600] */}
+      <div className="h-screen w-full flex flex-col items-center justify-center  px-10 relative">
+      {/* <div
   className="absolute top-10 right-10 text-right text-gray-900"
   style={{
     fontSize: "72px",
@@ -960,6 +1056,17 @@ export default function OurTeam() {
     fontFamily: "NeueMontrealBook",
   }}
 >
+<div
+          style={{
+            fontSize: "28px",
+            fontWeight: "200",
+            fontFamily: "HelveticaNeue-Light",
+          }}
+          className="text-right"
+        >
+          We're here to support you
+          <br /> <span className="font-saolitalic">every</span> step of the way
+        </div>
 <div className="w-[60px]">
             <svg
       
@@ -985,7 +1092,7 @@ export default function OurTeam() {
       />
     </svg>
     </div>
-</div>
+</div> */}
 
       <div className="flex items-center justify-between w-full max-w-5xl">
 
@@ -1015,20 +1122,7 @@ export default function OurTeam() {
             />
           ))}
         </div>
-
-
-
-        <div
-          style={{
-            fontSize: "28px",
-            fontWeight: "200",
-            fontFamily: "HelveticaNeue-Light",
-          }}
-          className="text-right"
-        >
-          We're here to support you
-          <br /> <span className="font-saolitalic">every</span> step of the way
-        </div>
+      
         <div
                 style={{
                   width: "1.5em",
@@ -1091,101 +1185,58 @@ export default function OurTeam() {
   );
 }
 
-      {/* <div className="bg-black h-screen flex items-center justify-center relative">
-      <div className="top-10 h-screen relative w-full mx-auto border-l-[1px] border-r-[1px] border-b-[1px] border-white border-opacity-50 rounded-r-2xl rounded-l-2xl rounded-b-2xl overflow-hidden">
-<svg
-  width="100%"
-  height="60" 
-  viewBox="0 0 100 40" 
-  preserveAspectRatio="none"
-  className="absolute top-0 left-0 w-full"
->
-<path
-  d="M0,0 H45 C47,0 47,30 50,30 C53,30 53,0 55,0 H100"
-  fill="none"
-  stroke="white"
-  strokeWidth=".5"
-  strokeLinecap="round"
-    vectorEffect="non-scaling-stroke" 
-  />
-</svg>
-  <div className="flex w-full max-w-5xl justify-between px-10">
 
-    <div className="flex items-center justify-start w-[500px] h-[400px] relative gap-x-6">
-
-  <div className="w-[300px] h-[400px] relative overflow-hidden flex-shrink-0">
-    {images.map((image, index) => (
-      <img
-        key={image.id}
-        ref={(el) => (imageRefs.current[index] = el)}
-        src={image.src}
-        alt={image.alt}
-        className="absolute w-full h-full object-cover"
-        style={{
-          top: 0,
-          left: 0,
-          zIndex: index === currentIndex ? 2 : 1,
-        }}
-      />
-    ))}
-  </div>
-
-  
-  <div className="text-white flex flex-col justify-center">
-    <h2 className="text-xl font-neue-montreal ">{images[currentIndex].name}</h2>
-    <p className="text-sm font-neue-montreal text-gray-300">{images[currentIndex].description}</p>
-  </div>
-</div>
-
-
-
-    <div className="flex flex-col items-center text-white text-center gap-4">
-      {images.map((image, index) => (
-        <div
-          key={image.id}
-          className={`relative w-14 h-14 rounded-full overflow-hidden cursor-pointer ${
-            index === currentIndex ? "border-2 border-yellow-400" : ""
-          }`}
-          onClick={() => setCurrentIndex(index)}
-        >
-          {index === currentIndex && (
-            <svg className="absolute top-0 left-0 w-full h-full" viewBox="0 0 36 36">
-              <circle
-                stroke="#E8F724"
-                cx="18"
-                cy="18"
-                r="18"
-                strokeWidth="1.5"
-                fill="none"
-                strokeDasharray="113"
-                strokeDashoffset={113 - (progress / 100) * 113}
-                strokeLinecap="round"
-                transition="stroke-dashoffset 0.1s linear"
+  {/*   
+        <section ref={container} style={{ marginTop: "50vh" }}>
+          {projects.map((project, i) => {
+            const targetScale = 1 - (projects.length - i) * 0.05;
+            return (
+              <Card
+                key={`p_${i}`}
+                i={i}
+                {...project}
+                progress={scrollYProgress}
+                range={[i * 0.25, 1]}
+                targetScale={targetScale}
               />
-            </svg>
-          )}
-          <img src={image.src} alt={image.alt} className="w-full h-full object-cover" />
-        </div>
-      ))}
+            );
+          })}
+        </section> */}
 
-
-      <div className="flex space-x-4 mt-4">
-        <button onClick={handlePrev} className="p-2 border rounded-full text-white">
-          ◀
-        </button>
-        <button onClick={handleNext} className="p-2 border rounded-full text-white">
-          ▶
-        </button>
-      </div>
-
-
-      <div className="text-gray-400 text-sm font-neue-montreal mt-2">
-        0{currentIndex + 1} - 0{images.length}
-      </div>
-    </div>
-  </div>
-
-
-</div>
-
-</div> */}
+        {/* <div
+          ref={carouselRef}
+          className="relative z-10 min-h-[150vh]  pointer-events-none"
+        >
+          <div id="cursor" style={cursorStyle} className={className}>
+            <div className="cursor__circle" style={cursorCircleStyle}>
+              {!isDragging && (
+                <>
+                  Drag
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                    />
+                  </svg>
+                </>
+              )}
+            </div>
+          </div>
+          {items.map((item) => (
+            <div key={item.num} className="carousel-item">
+              <div className="carousel-box">
+                <div className="titleCard">{item.title}</div>
+                <div className="nameCard">{item.num}</div>
+                <img src={item.imgSrc} alt={item.title} />
+              </div>
+            </div>
+          ))}
+        </div> */}

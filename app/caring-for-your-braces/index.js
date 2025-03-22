@@ -145,7 +145,7 @@ const CaringForYourBraces = () => {
           }}
         >
           
-          <h1 className="text-[82px] font-neuehaas-roman">Self-Care</h1>
+          <h1 className="text-[82px] font-neuehaasdisplayextralight">Braces Care</h1>
         </div>
 
         <div
@@ -377,7 +377,7 @@ const CaringForYourBraces = () => {
                 }}
               >
                 <img
-                  src="../images/elephanttusk.jpg"
+                  src="../images/soda.png"
                   alt="portal"
                   style={{
                     maxHeight: "70%",
