@@ -3,7 +3,7 @@ import * as THREE from "three";
 import * as PIXI from "pixi.js";
 import Layout from "./layout.js";
 import { SplitText } from "gsap-trial/all";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Physics2DPlugin } from "gsap-trial/Physics2DPlugin";
@@ -51,46 +51,7 @@ const YourCare = () => {
     );
   
   }, []);
-  const textRef = useRef(null);
-  const sectionRef = useRef(null);
-  const bookNowRef = useRef(null);
 
-  useEffect(() => {
-    const text = textRef.current;
-    const bookNow = bookNowRef.current;
-
-    gsap.to(text, {
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top center",
-        end: "bottom center",
-        scrub: true,
-      },
-      scale: 0.5,
-      x: -160,
-      ease: "none",
-    });
-
-
-    gsap.fromTo(
-      bookNow,
-      {
-        opacity: 0,
-        x: 0, 
-      },
-      {
-        opacity: 1,
-        x: 0, 
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top center",
-          end: "bottom center",
-          scrub: true,
-        },
-        ease: "none",
-      }
-    );
-  }, []);
   return (
     <>
       <div
@@ -104,29 +65,46 @@ const YourCare = () => {
         }}
       >
       
-      <div
-      ref={sectionRef}
-      className="sticky top-0 h-screen flex flex-col items-center justify-center text-black"
-    >
-
-      <h1
-        ref={textRef}
-        className="text-[5em] md:text-[5em] font-neuehaasdisplaythin text-center leading-tight"
-      >
-        Your smile journey is unique. <br /> Your treatment should reflect that.
+      <div className="h-[300vh]">
+  <div className="flex w-full px-8 gap-16 mx-auto items-start">
+    <div className="flex-1 sticky top-0 h-screen flex items-center">
+      <h1 className="text-[5em] font-neuehaasdisplaythin leading-tight">
+        Your smile journey is unique.
       </h1>
+    </div>
 
-      <div ref={bookNowRef} className="w-1/2 opacity-0">
-        BOOK NOW IN PERSON OR VIRTUAL
+    <div className="h-screen overflow-y-scroll snap-y snap-mandatory">
+    <div n-snap="" class="container-wrapper">
+      <div class="snap-start snap-container">
+        <h1 class="snap-text"> Book an initial consultation in person or virtually</h1>
+       
       </div>
     </div>
-    <div className="h-screen"/>
+    <div n-snap="" class="container-wrapper">
+      <div class="snap-start snap-container">
+      <h1 class="snap-text"> Your first appointment will consist of a thorough orthodontic examination <br/> including photos and a digital radiograph of your teeth.</h1>
       </div>
-      <div>
-       Your first appointment will consist of a
-        thorough orthodontic examination, including photos and a digital
-        radiograph of your teeth., Discover your treatment plan at no fee
+    </div>
+    <div n-snap="" class="container-wrapper">
+      <div class="snap-start snap-container">
+      <h1 class="snap-text"> Discover your treatment plan at no fee</h1>
       </div>
+    </div>
+    <div n-snap="" class="container-wrapper">
+      <div class="snap-start snap-container ">
+        <h1>Snap<br />Scrolling</h1>
+      
+      </div>
+    </div>
+  </div>
+
+
+
+  </div>
+</div>
+
+      </div>
+    
       <div className="flex items-center justify-center py-20">
         <div className="container text-center">
           <p className="font-helvetica-neue text-xl">

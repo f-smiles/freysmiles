@@ -7,6 +7,7 @@ import {
   Bloom,
   Outline,
   ChromaticAberration,
+  Noise
 } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import gsap from "gsap";
@@ -83,21 +84,18 @@ const RotatingModel = () => {
         )}
       </group>
       <EffectComposer>
-        <ChromaticAberration
-          blendFunction={BlendFunction.NORMAL}
-          offset={[
-            0.00002 + Math.sin(clock.elapsedTime) * 0.00005,
-            0.00002 + Math.cos(clock.elapsedTime) * 0.00005,
-          ]}
-        />
+  <ChromaticAberration
+    blendFunction={BlendFunction.NORMAL}
+    offset={[0.0003, 0.0003]}
+  />
+  <Bloom
+    intensity={0.15}
+    luminanceThreshold={0.2}
+    luminanceSmoothing={0.025}
+  />
+  <Noise opacity={0.03} />
+</EffectComposer>
 
-        <Outline
-          edgeStrength={5}
-          pulseSpeed={0}
-          visibleEdgeColor="#BCC6CC"
-          hiddenEdgeColor="#BCC6CC"
-        />
-      </EffectComposer>
     </>
   );
 };

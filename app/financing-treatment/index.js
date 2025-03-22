@@ -210,88 +210,6 @@ const StepsSection = () => {
 
 
 
-const SolareOrbMaterial = shaderMaterial(
-  {
-    time: 0,
-    color1: new THREE.Color("#E8C586"), 
-    color2: new THREE.Color("#C89E6A"), 
-    highlightColor: new THREE.Color("#FFFACD"), 
-  },
-  // Vertex Shader
-  `
-  varying vec2 vUv;
-  varying vec3 vNormal;
-  uniform float time;
-
-  void main() {
-    vUv = uv;
-    vNormal = normalize(normal);
-
-    vec3 pos = position;
-    pos.y += sin(time * 0.6 + pos.x * 2.0) * 0.03;
-
-    float pulse = sin(time * 0.8) * 0.015;
-    pos *= (1.0 + pulse);
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-  }
-  `,
-  // Fragment Shader
-  `
-uniform vec3 color1;
-uniform vec3 color2;
-uniform vec3 highlightColor;
-uniform float time;
-
-varying vec2 vUv;
-varying vec3 vNormal;
-
-  float hash(float n) { return fract(sin(n) * 1e4); }
-  float noise(vec2 p) {
-    return hash(p.x * 37.0 + p.y * 57.0 + time * 0.1);
-  }
-
-void main() {
-      float radial = length(vUv - 0.5) * 1.2; 
-      radial = smoothstep(0.1, 0.9, radial); 
-    
-    vec3 baseGradient = mix(color1, color2, radial);
-
-vec2 lightPos = vec2(0.25, 0.6);
-  float highlight = pow(1.0 - length(vUv - lightPos), 3.0) * 0.6; 
- vec3 highlightEffect = highlightColor * highlight * 0.8; 
-
-    float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.5);
-      vec3 rimLight = vec3(1.0, 0.9, 0.8) * fresnel * 0.5; 
-
-   vec3 finalColor = clamp(baseGradient + highlightEffect + rimLight, 0.0, 1.0);
-
-      gl_FragColor = vec4(finalColor, 1.0);
-
-  }
-  `
-);
-
-
-extend({ SolareOrbMaterial });
-
-const SolareOrb = () => {
-  const sphereRef = useRef();
-  const materialRef = useRef();
-
-  useFrame(({ clock }) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.time.value = clock.getElapsedTime();
-    }
-  });
-
-  return (
-    <mesh ref={sphereRef} scale={2}>
-      <sphereGeometry args={[1.8, 128, 128]} />
-      <solareOrbMaterial ref={materialRef} />
-    </mesh>
-  );
-};
 
 
 
@@ -449,114 +367,60 @@ const FinancingTreatment = () => {
       }
     });
   }, [isEllipseDrawn]);
+
+
+  const ballRef = useRef(null);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    gsap.fromTo(
+      ballRef.current,
+      { y: 0 },
+      {
+        y: 400, 
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top center",
+          end: "bottom center",
+          scrub: true,
+        },
+        ease: "power1.out",
+      }
+    );
+  }, []);
+
   return (
     <>
-      <div ref={canvasRef} className="w-32 h-32"></div>
-      {/* <div
-        ref={containerRef}
-        style={{
-          position: "relative",
-          height: "200vh",
-          background: "linear-gradient(to bottom, #f4e4d7, #ebbe9a)",
-          opacity: 0,
-          overflow: "hidden",
-        }}
-      >
+     <div ref={sectionRef} className="relative h-[200vh] bg-black">
+
+      <div className="sticky top-0 h-screen flex items-center justify-center">
+      <div className="relative h-screen bg-black flex items-center justify-center">
+  {/* Back  */}
+  <img
+    src="https://cdn.prod.website-files.com/63ca1c298ff20ed7487ad63e/64f9a3f03dd6c2c1edf4901e_sculpture%20Top.svg"
+    alt="Sculpture Back"
+    className="z-10 w-[300px] h-auto"
+  />
+
+
+
+
+  <img
+    src="https://cdn.prod.website-files.com/63ca1c298ff20ed7487ad63e/64f9b95746e31c40a01c2762_sculpture%20Bottom.svg"
+    alt="Sculpture Front"
+    className="absolute z-30 w-[300px] h-auto"
+  />
+</div>
+
+
         <div
-          style={{
-            position: "absolute",
-            top: "10%",
-            left: "60%",
-            transform: "translateX(-50%)",
-            fontSize: "4em",
-            fontFamily: "NeueMontrealBook",
-            maxWidth: "40vw",
-            lineHeight: "1.2",
-            zIndex: 2,
-          }}
-        >
-          Your plan <br />
-          is tailored <br />
-          to your needs. <br />
-        </div>
+          ref={ballRef}
+          className="absolute -top-10 z-20 w-24 h-24 bg-[#FDBA12] rounded-full"
+        />
+      </div>
+    </div>
+      <div ref={canvasRef} className="w-32 h-32"></div>
 
-        <Canvas
-          camera={{ position: [0, 0, 8] }}
-          style={{
-            position: "fixed",
-            top: 0,
-            right: -100,
-            width: "100vw",
-            height: "100vh",
-            zIndex: 1,
-          }}
-        >
-          <ambientLight intensity={0.8} />
-          <pointLight position={[2, 2, 5]} intensity={2} color={"#ff9966"} />
-          <SolareOrb setEllipseFinalY={setEllipseFinalY} setIsOrbScaledDown={setIsOrbScaledDown} />
-          <OrbitControls enableZoom={false} />
-    
-          <Environment preset="sunset" background={false} />
-        </Canvas>
-
-        <div className="ellipse-container">
-          {isOrbScaledDown && (
-            <>
-              <svg
-                width="458"
-                height="72"
-                viewBox="0 0 458 72"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                style={{
-                  position: "absolute",
-                  top: ellipseFinalY ? `${ellipseFinalY}px` : "50%",
-                  left: "70%",
-                  transform: "translate(-50%, -50%)",
-                  transition: "top 0.5s ease-out",
-                }}
-              >
-  <path
-    ref={pathRef}
-    d="M229,0.5c62.9,0,120.6,4.1,161.9,10.5c20.7,3.3,37.4,7.1,49,11.4c5.8,2.1,10.2,4.4,13.2,6.7c3,2.3,4.5,4.6,4.5,6.9s-1.5,4.6-4.5,6.9c-3,2.3-7.4,4.5-13.2,6.7c-11.5,4.3-28.3,8.2-49,11.4c-41.4,6.5-98.6,10.5-161.9,10.5S108.6,67.5,67.2,61c-20.7-3.3-37.4-7.1-49-11.4C12.4,47.4,8,45.2,5,42.9c-3-2.3-4.5-4.6-4.5-6.9S2,31.4,5,29.1c3-2.3,7.4-4.5,13.2-6.7c11.5-4.3,28.3-8.2,49-11.4C108.6,4.5,165.8,0.5,229,0.5"
-    stroke="black"
-    strokeWidth="1"
-/>
-</svg>
-
-{[...Array(5)].map((_, i) => (
- <svg
- key={i}
- ref={(el) => {
-   if (el) dottedEllipsesRef.current[i] = el;
- }}
- width="458"
- height="72"
- viewBox="0 0 458 72"
- fill="none"
- xmlns="http://www.w3.org/2000/svg"
- style={{
-   position: "absolute",
-   top: ellipseFinalY ? `${ellipseFinalY + (i + 1) * 20}px` : "50%",
-   left: "70%",
-   transform: "translate(-50%, -50%)",
-   opacity: 0,
- }}
->
-    <path
-      d="M229,0.5c62.9,0,120.6,4.1,161.9,10.5c20.7,3.3,37.4,7.1,49,11.4c5.8,2.1,10.2,4.4,13.2,6.7c3,2.3,4.5,4.6,4.5,6.9s-1.5,4.6-4.5,6.9c-3,2.3-7.4,4.5-13.2,6.7c-11.5,4.3-28.3,8.2-49,11.4c-41.4,6.5-98.6,10.5-161.9,10.5S108.6,67.5,67.2,61c-20.7-3.3-37.4-7.1-49-11.4C12.4,47.4,8,45.2,5,42.9c-3-2.3-4.5-4.6-4.5-6.9S2,31.4,5,29.1c3-2.3,7.4-4.5,13.2-6.7c11.5-4.3,28.3-8.2,49-11.4C108.6,4.5,165.8,0.5,229,0.5"
-      stroke="black"
-      strokeWidth="1"
-      fill="none"
-      strokeDasharray="3, 6"
-    />
-  </svg>
-))}
-
-            </>
-          )}
-        </div>
-      </div> */}
     </>
   );
 };
