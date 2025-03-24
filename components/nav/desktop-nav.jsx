@@ -298,14 +298,14 @@ export default function DesktopNav({ user }) {
               {/* RIGHT */}
               <div className="flex font-neuehaasdisplaylight justify-center text-center flex-col text-sm gap-8 w-1/2">
                 <div>
-                  <p className="uppercase text-xs mb-2 opacity-70">E:</p>
+                  <p className="uppercase font-neuehaasdisplaylight text-xs mb-2 opacity-70">E:</p>
                   <div className="flex flex-col gap-1 underline underline-offset-2">
                     <a href="mailto:info@email.com">info@freysmiles.com</a>
                   </div>
                 </div>
 
                 <div>
-                  <p className="uppercase text-xs mb-2 opacity-70">T:</p>
+                  <p className="uppercase font-neuehaasdisplaylight text-xs mb-2 opacity-70">T:</p>
                   <div className="flex flex-col gap-1">
                     <p className="text-xs font-neuehaasdisplaylight">
                       (610) 437-4748
@@ -314,7 +314,7 @@ export default function DesktopNav({ user }) {
                 </div>
 
                 <div>
-                  <p className="uppercase text-xs mb-2 opacity-70">SOCIAL</p>
+                  <p className="uppercase font-neuehaasdisplaylight text-xs mb-2 opacity-70">SOCIAL</p>
                   <div className="flex flex-col gap-1 underline underline-offset-2">
                     <a href="#">Instagram</a>
                     <a href="#">Facebook</a>

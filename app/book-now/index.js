@@ -144,13 +144,14 @@ export default function BookNow() {
           </div>
 
           <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden border-b border-gray-300 pb-6 mb-6" />
             <motion.div
-              className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 mb-10 w-full"
+              className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 mb-2 w-full"
               variants={fadeUpMaskedVariants}
             >
               <div className="relative overflow-hidden w-1/2">
                 <motion.p
-                  className="font-helvetica-neue-light text-[.9em] text-gray-400 text-left"
+                  className="font-helvetica-neue-light text-[.9em] text-[#0101F5] text-left"
                   variants={fadeUpMaskedVariants}
                 >
                   NUMBER
@@ -179,13 +180,14 @@ export default function BookNow() {
           </div>
 
           <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden border-b border-gray-300 pb-6 mb-6" />
             <motion.div
               className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 mb-10 w-full"
               variants={fadeUpMaskedVariants}
             >
               <div className="relative overflow-hidden w-1/2">
                 <motion.p
-                  className="font-helvetica-neue-light text-[.9em] text-gray-400 text-left"
+                  className="font-helvetica-neue-light text-[.9em] text-[#0101F5] text-left"
                   variants={fadeUpMaskedVariants}
                 >
                   EMAIL

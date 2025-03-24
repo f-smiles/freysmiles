@@ -1,14 +1,19 @@
-import React from 'react';
+import React from "react";
 const Marquee = () => {
-  const items = [{ word: "Click here to shop gift cards" }, { word: "Click here to shop gift cards" }];
+  const items = [
+    { word: "Click here to shop gift cards" },
+    { word: "Click here to shop gift cards" },
+    { word: "Click here to shop gift cards" },
+    { word: "Click here to shop gift cards" },
+  ];
 
   return (
-    <div className="relative flex  overflow-hidden py-5">
-      <div className="flex min-w-max animate-marquee hover:[animation-play-state:paused]">
+    <div className="relative overflow-hidden w-screen bg-[#FCFAF5]">
+      <div className="flex animate-marquee min-w-full hover:[animation-play-state:paused]">
         {[...items, ...items].map((item, index) => (
           <div
             key={index}
-            className="px-4 text-[1em] font-neue-montreal whitespace-nowrap"
+            className="px-10 text-[1em] font-neue-montreal whitespace-nowrap"
           >
             {item.word}
           </div>
@@ -18,149 +23,71 @@ const Marquee = () => {
   );
 };
 
-const Hero: React.FC = () => {
-  const letters = [
-    {
-      char: "S",
-      rotate: "rotate-12",
-      translateY: "translate-y-0",
-      color: "text-black",
-    },
-    {
-      char: "H",
-      rotate: "rotate-12",
-      translateY: "translate-y-20",
-      color: "text-black",
-    },
-    {
-      char: "O",
-      rotate: "rotate-6",
-      translateY: "translate-y-2",
-      color: "text-black",
-    },
-    {
-      char: "P",
-      rotate: "rotate-2",
-      translateY: "translate-y-20",
-      translateX: "translate-x-2",
-      color: "text-black",
-    },
-  ];
 
-  const lettersNow = [
-    {
-      char: "N",
-      rotate: "rotate-12",
-      translateY: "translate-y-1",
-      color: "text-black",
-    },
-    {
-      char: "O",
-      rotate: "rotate-12",
-      translateY: "translate-y-5",
-      color: "text-black",
-    },
-    {
-      char: "W",
-      rotate: "rotate-6",
-      translateY: "translate-y-1",
-      color: "text-black",
-    },
+const Hero: React.FC = () => {
+
+  const slices = [
+    { id: 1, containerHeight: 50, translateY: -420 },
+    { id: 2, containerHeight: 50, translateY: -370 },
+    { id: 3, containerHeight: 50, translateY: -320 },
+    { id: 4, containerHeight: 320, translateY: -0 },
   ];
 
   return (
-    <div className="bg-[#FCFAF5]">
-       <div className="flex justify-center px-4">
-       <section className="w-full min-h-screen grid grid-cols-2">
-      <div className="relative w-full h-full">
+    
+<div className="bg-[#FCFAF5]">
+  <div className="flex justify-center px-4">
+    <section className="w-full min-h-screen grid grid-cols-1 md:grid-cols-2">
+      <div className="relative w-full h-[50vh] md:h-full">
         <img
-          src="../images/shoptest1.png" 
+          src="../images/shoptest1.png"
           alt="mockup"
           className="w-full h-full object-cover"
         />
-      </div>
-
-
-      <div className="flex flex-col items-center justify-center px-12 text-center bg-white">
-        <h1 className="text-6xl font-helvetica-neue-light leading-tight">
-          Shop <br /> Now
-        </h1>
-
-        <p className="font-helvetica-neue-light mt-6 text-lg text-gray-700 max-w-md">
-        Something exciting is coming. <br />
-          Stay tuned for our next offer.
-        </p>
-
-
-        <div className="absolute bottom-10 right-10">
-          <img
-            src=""
-            alt="Gradient Blob"
-            className="w-32 h-32"
-          />
-        </div>
-      </div>
-    </section>
-</div>
-<Marquee />
-
-
-<div >
-      {/* <div className="shop-marquee">
-        <div className="shop-marquee-track">
-          {[...Array(20)].map((_, index: number) => (
-            <React.Fragment key={index}>
-              <img
-              className=" w-6"
-                src="../images//bullet-point.svg"
-                loading="lazy"
-                
-              />
-              <p className="font-neue-montreal shop-marquee-text">Click Here to Shop Gift Cards </p>
-            </React.Fragment>
-          ))}
-        </div>
-      </div> */}
-      </div>
-
-      <div >
-      <div  className="mt-10 products_title_container">
-
-        <div className="filter_wrapper">
-          <h5 className="small_heading light">Filter by category</h5>
-          <div className="filter_links_container">
-            <a href="#clean" className="inner-link filter">Clean</a>
-            <a href="#treat" className="inner-link filter">Treat</a>
-            <a href="#whiten" className="inner-link filter">Whiten</a>
+        <div className="shop-sectionslice">
+          <div className="flex relative flex-col justify-center text-center items-center z-10">
+            {slices.map((slice, index) => (
+              <div
+                key={slice.id}
+                style={{
+                  height: `${slice.containerHeight}px`,
+                  overflow: "hidden",
+                }}
+              >
+                <h1
+                  style={{
+                    fontFamily: "NeueHaasRoman",
+                    fontSize: "100px",
+                    color: "#0249FD",
+                  }}
+                >
+                  SHOP
+                </h1>
+              </div>
+            ))}
           </div>
         </div>
-
       </div>
-      <section
-  className="font-neue-montreal h-[50vh] flex flex-col items-center justify-center text-center px-6"
->
-  <div className="max-w-3xl">
-    <div className="text-5xl font-medium text-gray-900 leading-tight mb-4">
-      Wellbeing starts with well doing.
-    </div>
-    <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-6 leading-snug font-neue-montreal">
-      We’ve carefully curated a selection of premium products designed to elevate your 
-      experience during treatment. From gentle yet effective whitening solutions to 
-      comfort-enhancing essentials, each product is handpicked to support your journey 
-      to a healthier, more confident smile. Shop smarter, smile brighter.
-    </p>
+
+
+      <div className="flex flex-col items-center justify-center px-12 text-center h-[50vh] md:h-auto">
+        <div className="font-helvetica-neue-light mb-10 text-[#0249FD]">
+          Shop smarter, smile brighter.
+        </div>
+
+        <h1 className="text-xl font-helvetica-neue-light leading-tight">
+          We’ve carefully curated a selection of premium products designed to elevate your experience during treatment...
+        </h1>
+      </div>
+    </section>
   </div>
 
-  <div className="h-[1px] w-[85vw] bg-gray-300 mt-6"></div>
+  <section className="font-neue-montreal pt-10 overflow-hidden">
+    <Marquee />
+  </section>
+</div>
 
-</section>
-
-
-    </div>
-    </div>
   );
-
-
-}
+};
 
 export default Hero;
