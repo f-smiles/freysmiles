@@ -5106,8 +5106,9 @@ a {
 
 
 .content__title1 {
-	font-size: 4em;
-  font-family: "NeueHaasGroteskDisplayExtraLight";
+	font-size: 2.2em;
+
+  font-family: "NeueHaasRoman";
 	line-height: 0.8;
 	text-align: center;
   display: inline-block;
@@ -5196,7 +5197,7 @@ a {
   height: 100%;
   overflow: hidden;
   font-family: NeueHaasGroteskDisplayExtraLight;
-  background: #F7F7F7;
+  background: #EFEFEF;
 }
 
 .diagonal-page {
@@ -5222,7 +5223,7 @@ a {
 }
 
 .text-slide {
-  height: 100px;
+  height: 300px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -5235,4 +5236,27 @@ a {
 .text-sliderinner{
     max-width: 550px;
     text-align: left;
+}
+.tag-brackets::before,
+.tag-brackets::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 8px;
+  border: 1px solid currentColor;
+  pointer-events: none;
+}
+
+.tag-brackets::before {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+}
+
+.tag-brackets::after {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
 }

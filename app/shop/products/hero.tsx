@@ -3,7 +3,7 @@ const Marquee = () => {
   const items = [
     { word: "Click here to shop gift cards" },
     { word: "Click here to shop gift cards" },
-    { word: "Click here to shop gift cards" },
+        { word: "Click here to shop gift cards" },
     { word: "Click here to shop gift cards" },
   ];
 
@@ -13,7 +13,7 @@ const Marquee = () => {
         {[...items, ...items].map((item, index) => (
           <div
             key={index}
-            className="px-10 text-[1em] font-neue-montreal whitespace-nowrap"
+            className="px-4 text-[1em] font-neue-montreal whitespace-nowrap"
           >
             {item.word}
           </div>
@@ -71,13 +71,19 @@ const Hero: React.FC = () => {
 
 
       <div className="flex flex-col items-center justify-center px-12 text-center h-[50vh] md:h-auto">
+      <div className="w-[64px]">
+  <img src="https://cdn.prod.website-files.com/6749e677c74b3f0e424aab25/67c23233f1a330defe27c954_Icon%20Quality%20Pura.webp" />
+</div>
         <div className="font-helvetica-neue-light mb-10 text-[#0249FD]">
           Shop smarter, smile brighter.
         </div>
-
         <h1 className="text-xl font-helvetica-neue-light leading-tight">
-          We’ve carefully curated a selection of premium products designed to elevate your experience during treatment...
+        We’ve carefully curated a selection of premium products designed to elevate your 
+      experience during treatment. From gentle yet effective whitening solutions to 
+      comfort-enhancing essentials, each product is handpicked to support your journey 
+      to a healthier, more confident smile. 
         </h1>
+     
       </div>
     </section>
   </div>
@@ -91,3 +97,6 @@ const Hero: React.FC = () => {
 };
 
 export default Hero;
+
+
+;

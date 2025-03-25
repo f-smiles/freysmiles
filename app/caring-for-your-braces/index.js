@@ -149,70 +149,74 @@ const CaringForYourBraces = () => {
         </div>
 
         <div
+        
           style={{
             fontFamily: "NeueMontrealBook",
             height: "100%",
             position: "absolute",
             top: "0",
             width: "100%",
+
           }}
         >
-          <div
-            style={{
-              height: "100vh",
-              overflow: "hidden",
-              position: "absolute",
-              top: "0",
-              width: "100%",
-            }}
-            className="purpleSection allsections"
-          >
-            <div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "flex-start",
-                  paddingLeft: "16rem",
-                  paddingTop: "0vh",
-                }}
-              >
-                <div
-                  className="contentText"
-                  style={{
-                    marginTop: "23.25rem",
-                    overflow: "hidden",
-                    width: "475px",
-                  }}
-                >
-                  <p className="font-neue-montreal">
-                    How long you’ll wear braces depends on your treatment plan
-                    and how well you follow our team's instructions. At
-                    FreySmiles, most patients achieve their ideal smile in 12 to
-                    20 months. Ready to get started? Let’s make it happen.
-                  </p>
+       <div
+  style={{
+    height: "100vh",
+    overflow: "hidden",
+    position: "absolute",
+    top: "0",
+    width: "100%",
+  }}
+  className="purpleSection allsections"
+>
+  <div>
+    <div
+      className="purpleInner"
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "flex-start",
+        paddingLeft: "16rem",
+        paddingTop: "0vh",
+      }}
+    >
+      <div
+        className="contentText"
+        style={{
+          marginTop: "23.25rem",
+          overflow: "hidden",
+          width: "475px",
+        }}
+      >
+        <p className="font-neue-montreal">
+          How long you’ll wear braces depends on your treatment plan and how
+          well you follow our team's instructions. At FreySmiles, most patients
+          achieve their ideal smile in 12 to 20 months. Ready to get started?
+          Let’s make it happen.
+        </p>
+      </div>
 
-                </div>
+      <div
+        className="w-1/3 imageContainer"
+        style={{
+          marginTop: "23.25rem",
+        }}
+      >
+        <img
+          src="../images/mockupfs.jpg"
+          alt="portal"
+          style={{
+            maxHeight: "80%",
+            width: "auto",
+            objectFit: "contain",
+          }}
+        />
+      </div>
+    </div>
+  </div>
 
-                <div
-                  className="w-1/3 "
-                  style={{
-                    marginTop: "23.25rem",
-                  }}
-                >
-                  <img
-                    src="../images/mockupfs.jpg"
-                    alt="portal"
-                    style={{
-                      maxHeight: "80%",
-                      width: "auto",
-                      objectFit: "contain",
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+
+</div>
 
           <div
             style={{

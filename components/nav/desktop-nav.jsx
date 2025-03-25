@@ -100,8 +100,18 @@ export default function DesktopNav({ user }) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isActive]);
-  
+
   const navRef = useRef();
+
+  useEffect(() => {
+    const currentYear = new Date().getFullYear();
+    const currentYearElements = document.querySelectorAll(
+      "[data-current-year]"
+    );
+    currentYearElements.forEach((currentYearElement) => {
+      currentYearElement.textContent = currentYear;
+    });
+  }, []);
 
   return (
     <>
@@ -110,7 +120,7 @@ export default function DesktopNav({ user }) {
         className={`${styles.header} ${
           isScrolled
             ? "bg-opacity-80 text-[#000]"
-            : "text-[#000] bg-transparent"
+            : "text-[#595959] bg-transparent"
         } fixed top-0 w-full z-50 transition-all duration-300 ease-in-out`}
       >
         <motion.div
@@ -124,13 +134,13 @@ export default function DesktopNav({ user }) {
           >
             {" "}
             {/* styles.el */}
-            <motion.div className="bg-[#C2C1C7]/50 shadow-white/10 rounded-2xl px-6 py-3 flex items-center gap-4">
+            <motion.div className="bg-[#F1F1F1]/90 shadow-white/10 rounded-2xl px-6 py-3 flex items-center gap-4">
               {" "}
               {/* styles.label */}
               {links.slice(0, 4).map((link, i) => (
                 <motion.p
                   key={`${i} + ${link}`}
-                  className="font-helvetica-neue-light tracking-wider text-[13px] hover:cursor-pointer"
+                  className="font-helvetica-neue-light tracking-wider text-[11px] hover:cursor-pointer"
                   onClick={() => {
                     setSelectedLink(link.title);
                     setIsActive(!isActive);
@@ -148,10 +158,18 @@ export default function DesktopNav({ user }) {
             <motion.div
               className={`${
                 isActive ? "hidden" : "block"
-              }  font-calyx  text-[48px] text-black flex justify-center items-center   p-3`}
+              }    text-black flex justify-center items-center   p-3`}
             >
-              {/* <img src="../../images/logo_icon.png" alt="Logo Icon" className="w-full h-full icon-replacement" /> */}
-              FS
+              {/* <img
+                src="../images/Logo_White.svg"
+                alt="Logo Icon"
+                className="w-[32px] h-auto icon-replacement"
+              />
+              <img
+                src="../images/LetteringSa_Black.svg"
+                alt="Logo Icon"
+                className="w-[48px] h-auto icon-replacement"
+              /> */}
             </motion.div>
           </Link>
 
@@ -179,7 +197,7 @@ export default function DesktopNav({ user }) {
                 </motion.p>
               ))}
               <Link href="/book-now">
-                <p className="bg-[#F2F2F2]/50 backdrop-blur-lg shadow-lg shadow-white/10 text-black rounded-2xl px-6 py-3 font-helvetica-neue-light tracking-wider text-[13px] tracking-wider">
+                <p className="bg-[#F2F2F2]/90 backdrop-blur-lg shadow-lg shadow-white/10 text-[#595959] rounded-2xl px-6 py-3 font-helvetica-neue-light tracking-wider text-[11px] tracking-wider">
                   Book Now
                 </p>
               </Link>
@@ -189,12 +207,15 @@ export default function DesktopNav({ user }) {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <span className="text-white font-helvetica-neue-light tracking-wider text-[13px]">
+                  <span className="text-white font-helvetica-neue-light tracking-wider text-[11px]">
                     Shop
                   </span>
                   <div className="ml-2 flex items-center justify-center h-full">
                     <motion.div
-                      className="py-2 px-4 flex justify-center items-center bg-white rounded-full"
+                      className="py-2 px-4 flex justify-center items-center rounded-full"
+                      style={{
+                        background: "linear-gradient(to right, #fff, #f0d7ff)",
+                      }}
                       whileHover={{ scale: 1.1 }}
                     >
                       <span className="text-[#C8C8C8] text-lg">&rarr;</span>
@@ -203,15 +224,6 @@ export default function DesktopNav({ user }) {
                 </motion.div>
               </Link>
               {cart.length > 0 && <CartComponent isScrolled={isScrolled} />}
-              {user ? (
-                <UserButton user={user} />
-              ) : (
-                <Link href="/auth/login">
-                  <p className="font-helvetica-neue-light tracking-wider text-[13px] ">
-                    Login
-                  </p>
-                </Link>
-              )}
             </motion.div>
           </motion.div>
         </motion.div>
@@ -224,8 +236,8 @@ export default function DesktopNav({ user }) {
           style={{ overflow: "hidden" }}
         >
           <div className="absolute bottom-0 left-0 w-full pointer-events-none">
-            <p className="card__text text-[14vw] font-neueroman tracking-tight select-none leading-[1.1]">
-              2025
+            <p className="text-[14vw] font-neueroman text-black tracking-tight select-none leading-[1.1]">
+              <span data-current-year=""></span>
             </p>
           </div>
         </motion.div>
@@ -252,60 +264,68 @@ export default function DesktopNav({ user }) {
               <div className="flex flex-col gap-6 w-1/2">
                 {links.map(
                   (link, i) =>
-                    selectedLink === link.title &&
-                    link.sublinks.map((sublink, j) => (
-                      <motion.div
-                        key={sublink}
-                        whileHover="hover"
-                        initial="initial"
-                        className="relative flex flex-col cursor-pointer py-4"
-                      >
-                        <Link
-                          href={link.hrefs[j]}
-                          onClick={() => setIsActive(false)}
-                          className="contents"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <p className="text-sm font-saolitalic opacity-60">
-                                ({j + 1})
-                              </p>
-                              <h2 className="text-[24px] font-light uppercase font-neueroman">
-                                {sublink}
-                              </h2>
-                            </div>
-                          </div>
+                    selectedLink === link.title && (
+                      <>
+                        {link.sublinks.map((sublink, j) => (
+                          <motion.div
+                            key={sublink}
+                            whileHover="hover"
+                            initial="initial"
+                            className="relative flex flex-col cursor-pointer py-2"
+                          >
+                            <Link
+                              href={link.hrefs[j]}
+                              onClick={() => setIsActive(false)}
+                              className="contents"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                  <p className="text-sm font-saolitalic opacity-60">
+                                    ({j + 1})
+                                  </p>
+                                  <h2 className="text-[24px] font-light uppercase font-neueroman">
+                                    {sublink}
+                                  </h2>
+                                </div>
+                              </div>
 
-                          <div className="relative w-full mt-2 h-[1px] bg-neutral-200 overflow-hidden">
-                            <motion.div
-                              className="absolute left-0 top-0 h-full bg-black"
-                              variants={{
-                                initial: { width: 0 },
-                                hover: { width: "100%" },
-                              }}
-                              transition={{
-                                duration: 0.4,
-                                ease: [0.65, 0, 0.35, 1],
-                              }}
-                            />
-                          </div>
-                        </Link>
-                      </motion.div>
-                    ))
+                              <div className="relative w-full mt-2 h-[1px] bg-neutral-200 overflow-hidden">
+                                <motion.div
+                                  className="absolute left-0 top-0 h-full bg-black"
+                                  variants={{
+                                    initial: { width: 0 },
+                                    hover: { width: "100%" },
+                                  }}
+                                  transition={{
+                                    duration: 0.4,
+                                    ease: [0.65, 0, 0.35, 1],
+                                  }}
+                                />
+                              </div>
+                            </Link>
+                          </motion.div>
+                        ))}
+                        {link.component && link.component(user)}
+                      </>
+                    )
                 )}
               </div>
 
               {/* RIGHT */}
               <div className="flex font-neuehaasdisplaylight justify-center text-center flex-col text-sm gap-8 w-1/2">
                 <div>
-                  <p className="uppercase font-neuehaasdisplaylight text-xs mb-2 opacity-70">E:</p>
+                  <p className="uppercase font-neuehaasdisplaylight text-xs mb-2 opacity-70">
+                    E:
+                  </p>
                   <div className="flex flex-col gap-1 underline underline-offset-2">
                     <a href="mailto:info@email.com">info@freysmiles.com</a>
                   </div>
                 </div>
 
                 <div>
-                  <p className="uppercase font-neuehaasdisplaylight text-xs mb-2 opacity-70">T:</p>
+                  <p className="uppercase font-neuehaasdisplaylight text-xs mb-2 opacity-70">
+                    T:
+                  </p>
                   <div className="flex flex-col gap-1">
                     <p className="text-xs font-neuehaasdisplaylight">
                       (610) 437-4748
@@ -314,7 +334,9 @@ export default function DesktopNav({ user }) {
                 </div>
 
                 <div>
-                  <p className="uppercase font-neuehaasdisplaylight text-xs mb-2 opacity-70">SOCIAL</p>
+                  <p className="font-neuehaasdisplaylight text-xs mb-2 opacity-70">
+                    Social
+                  </p>
                   <div className="flex flex-col gap-1 underline underline-offset-2">
                     <a href="#">Instagram</a>
                     <a href="#">Facebook</a>

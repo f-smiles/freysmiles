@@ -25,35 +25,23 @@ import { Environment, OrbitControls, useTexture } from "@react-three/drei";
 
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
-
 const SmileyFace = ({ position = [0, 0, 0] }) => {
-  const circleRadius = 6;
-  const groupRef = useRef(); 
+  const groupRef = useRef();
+
   useFrame(() => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += 0.003; 
+      groupRef.current.rotation.y += 0.003;
     }
   });
 
   const texture = useLoader(THREE.TextureLoader, 'https://cdn.zajno.com/dev/codepen/cicada/texture.png');
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
-  const circlePath = new THREE.Path();
-  circlePath.absarc(0, 0, circleRadius, 0, Math.PI * 2, false);
-  const circlePoints = circlePath.getPoints(100).map((p) => new THREE.Vector3(p.x, p.y, 0));
-
-  const smileCurve = new THREE.EllipseCurve(0, -2, 3, 2, Math.PI, 0, false, 0);
-  const smilePoints = smileCurve.getPoints(50).map((p, index, arr) => {
-    if (index === arr.length - 1) return null;
-    return new THREE.Vector3(p.x, p.y, 0);
-  }).filter(Boolean);
-
   const generateNoiseTexture = (size = 512) => {
     const canvas = document.createElement('canvas');
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext('2d');
-
     const imageData = ctx.getImageData(0, 0, size, size);
     const data = imageData.data;
 
@@ -67,40 +55,118 @@ const SmileyFace = ({ position = [0, 0, 0] }) => {
 
     ctx.putImageData(imageData, 0, 0);
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.repeat.set(5, 5);
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.anisotropy = 16;
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.repeat.set(5, 5);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.anisotropy = 16;
 
-    return texture;
+    return tex;
   };
 
   const noiseTexture = useMemo(() => generateNoiseTexture(), []);
 
+  // const material = useMemo(() => new THREE.MeshPhysicalMaterial({
+  //   color: new THREE.Color('#fdf6ec'),
+  //   map: noiseTexture,
+  //   metalness: 0.3,               
+  //   roughness: 0.1,
+  //   transmission: 1,            
+  //   thickness: 1.5,                 
+  //   transparent: true,
+  //   clearcoat: 1,
+  //   clearcoatRoughness: 0.05,
+  //   iridescence: 1,
+  //   iridescenceIOR: 1.6,
+  //   iridescenceThicknessRange: [100, 300],
+  //   sheen: 1,
+  //   sheenRoughness: 0.05,
+  // }), [noiseTexture]);
   const material = useMemo(() => new THREE.MeshPhysicalMaterial({
-    map: noiseTexture,
-    metalness: 1,
-    roughness: 0.2,
+    color: new THREE.Color('#fdf6ec'),
+    metalness: 0.3,
+    roughness: 0.1,
     transmission: 1,
+    thickness: 1.5,
     transparent: true,
     clearcoat: 1,
-    clearcoatRoughness: 0.1,
+    clearcoatRoughness: 0.05,
     iridescence: 1,
-    iridescenceIOR: 1.5,
-    iridescenceThicknessRange: [200, 600],
+    iridescenceIOR: 1.6,
+    iridescenceThicknessRange: [100, 300],
     sheen: 1,
-    sheenRoughness: 0.2,
-  }), [texture]);
+    sheenRoughness: 0.05,
+    roughnessMap: noiseTexture, 
+    bumpMap: noiseTexture,     
+    bumpScale: 0.05,
+  }), [noiseTexture]);
+  
 
-  const createTube = (points, radius = 0.4, isClosed = false) => {
-    const path = new THREE.CatmullRomCurve3(points);
-    return new THREE.TubeGeometry(path, 100, radius, 32, isClosed);
-  };
+  const { ring, smile, leftEye, rightEye } = useMemo(() => {
+    const arcSegments = 100;
+  
+    const ringCurve = new THREE.ArcCurve(0, 0, 5.6, 0, Math.PI * 2, false);
+    const ringPoints = ringCurve.getPoints(arcSegments).map(p => new THREE.Vector3(p.x, p.y, 0));
+    const ringPath = new THREE.CatmullRomCurve3(ringPoints, true);
+  
+    const ringRect = new THREE.Shape();
+    const rw = 0.4;
+    const rh = 0.6;
+    ringRect.moveTo(-rw / 2, -rh / 2);
+    ringRect.lineTo(rw / 2, -rh / 2);
+    ringRect.lineTo(rw / 2, rh / 2);
+    ringRect.lineTo(-rw / 2, rh / 2);
+    ringRect.lineTo(-rw / 2, -rh / 2);
+  
+    const ringGeo = new THREE.ExtrudeGeometry(ringRect, {
+      steps: arcSegments,
+      bevelEnabled: false,
+      extrudePath: ringPath,
+    });
+
+const smilePath = new THREE.CurvePath();
+const smileCurve = new THREE.ArcCurve(0, -1.5, 2.4, Math.PI, 0, false);
+
+const smilePoints = smileCurve.getPoints(50).map(p => new THREE.Vector3(p.x, p.y, 0));
+const smileCatmull = new THREE.CatmullRomCurve3(smilePoints);
+
+
+const rectShape = new THREE.Shape();
+const w = 0.4;
+const h = 0.6;
+rectShape.moveTo(-w / 2, -h / 2);
+rectShape.lineTo(w / 2, -h / 2);
+rectShape.lineTo(w / 2, h / 2);
+rectShape.lineTo(-w / 2, h / 2);
+rectShape.lineTo(-w / 2, -h / 2);
+
+const smileGeo = new THREE.ExtrudeGeometry(rectShape, {
+  steps: 50,
+  bevelEnabled: false,
+  extrudePath: smileCatmull,
+});
+
+    const makeEye = (x, y) => {
+      const geo = new THREE.CylinderGeometry(0.5, 0.5, 0.6, 32);
+      geo.rotateX(Math.PI / 2);
+      geo.translate(x, y, 0);
+      return geo;
+    };
+
+    return {
+      ring: ringGeo,  
+      smile: smileGeo,
+      leftEye: makeEye(-2, 1),
+      rightEye: makeEye(2, 1),
+      
+    };
+  }, []);
 
   return (
     <group ref={groupRef} position={position} scale={[0.3, 0.3, 0.3]}>
-      <mesh geometry={createTube(circlePoints, 0.4, true)} material={material} />
-      <mesh geometry={createTube(smilePoints, 0.4, false)} material={material} />
+      <mesh geometry={ring} material={material} />
+      <mesh geometry={smile} material={material} />
+      <mesh geometry={leftEye} material={material} />
+      <mesh geometry={rightEye} material={material} />
     </group>
   );
 };
@@ -109,10 +175,14 @@ const WavePlane = () => {
   const texture = useTexture("/images/iphonerock.jpg")
   const image = useRef(); 
 
-  const { amplitude, waveLength } = useControls({
-    amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
-    waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
-  });
+  // const { amplitude, waveLength } = useControls({
+  //   amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
+  //   waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
+  // });
+
+  const amplitude = 0.1;
+const waveLength = 5;
+
 
 
   const uniforms = useRef({
@@ -204,24 +274,40 @@ const Section = ({ children, onHoverStart, onHoverEnd }) => (
     style={{
       height: "15%",
       display: "flex",
-      alignItems: "center", // Align items vertically
+      alignItems: "center",
       cursor: "pointer",
       backgroundColor: "transparent",
       color: "black",
       fontSize: "1.2em",
       fontFamily: "HelveticaNeue-Light",
       userSelect: "none",
-      position: "relative",
+      position: "relative", // this is important
       zIndex: 2,
       width: "100%",
       boxSizing: "border-box",
-      borderTop: "1px solid #DBDADD",
-      paddingLeft: "2rem", // Ensures text is properly spaced
+      paddingLeft: "2rem",
     }}
   >
+    {/* Top gradient line */}
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "1px",
+        backgroundColor: "#fff0",
+        backgroundImage: "linear-gradient(to right, #000, #fff0)",
+        opacity: 0.4,
+        transformOrigin: "0% 50%",
+        transform: "translate(0px, 0px)",
+        pointerEvents: "none", // ensures it doesn't block hover events
+      }}
+    />
     {children}
   </motion.div>
 );
+
 
 const Marquee = () => {
 
@@ -407,13 +493,17 @@ const Invisalign = () => {
 
   return (
     <>
-    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+
+    <div className="bg-[#F9F7F7]" style={{ display: 'flex', height: '100vh', width: '100vw' }}>
   {/* Left */}
   <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Canvas>
           <ambientLight intensity={0.5} />
+          <pointLight color="#ffe9c4" intensity={2} position={[0, 0, -2]} />
+
           <SmileyFace position={[0, 0, 0]} />
           <Environment preset="sunset" />
+
           <OrbitControls enableZoom={false} />
         </Canvas>
       </div>
@@ -449,27 +539,74 @@ const Invisalign = () => {
       <OrbitControls enableZoom={false}/>
     </Canvas>
       </section>
-    
-      <section className="relative w-full min-h-screen flex flex-col justify-between px-16 py-20">
-        <div className="font-neue-montreal flex space-x-3 mt-6">
-          {["Diamond Plus", "Invisalign", "Invisalign Teen"].map((tag, index) => (
-            <span
-              key={index}
-              className={`px-3 py-1 rounded-full text-sm ${
-                index === 0
-                  ? "bg-gray-200 text-gray-600"
-                  : "border border-gray-300"
-              }`}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+  
+      <section className="relative w-full min-h-screen flex flex-col justify-between px-16 py-20 pb-10">
+      <div className="font-neue-montreal flex space-x-3">
+  {["Diamond Plus", "Invisalign", "Invisalign Teen"].map((tag, index) => (
+    <span
+      key={index}
+      className="px-2  text-sm relative tag-brackets"
+    >
+      {tag}
+    </span>
+  ))}
+</div>
 
-        <div className="flex flex-row justify-between">
+
+
+<div className="relative bg-[#FFF]" style={{ height: "600px", overflow: "hidden" }}>
+      <motion.div
+        initial={{ y: "0%" }}
+        animate={controls}
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "15%",
+          background: "rgb(245,227,24,.8)",
+          zIndex: 1,
+        }}
+      />
+
+      {[
+        { text: "Fewer appointments, faster treatment", gradient: "radial-gradient(circle, #FF9A8B 0%, #FF6A88 50%, #FF99AC 100%)" },
+        { text: "Personalized care for every patient", gradient: "radial-gradient(circle, #A18CD1 0%, #FBC2EB 100%)" },
+        { text: "Advanced technology at your service", gradient: "radial-gradient(circle, #FA8BFF 0%, #2BD2FF 50%, #2BFF88 100%)" },
+        { text: "Comfortable and stress-free visits", gradient: "radial-gradient(circle, #FFD3A5 0%, #FD6585 100%)" }
+      ].map((item, index) => (
+        <Section key={index} onHoverStart={() => handleHover(index)}>
+          <div className="relative flex items-center w-full">
+        
+
+
+            <div
+              className="w-4 h-4 rounded-full absolute left-[40px]"
+              style={{ background: item.gradient }}
+            ></div>
+            <span className="pl-40">{item.text}</span>
+          </div>
+        </Section>
+      ))}
+    </div>
+
+            {/* <div className="image-content mt-16">
+              <img
+                ref={alignerRef}
+                src="../images/invisalignset.png"
+                alt="aligner"
+                className="w-[400px] h-[400px] object-contain"
+                style={{
+                  willChange: "transform",
+                }}
+              />
+             <img src='../images/alignercase.png'/>
+            </div> */}
+      </section>
+
+      <div className="flex flex-row justify-between">
   <div className="max-w-[700px] mt-10">
 
     <div className="flex items-center gap-24">
+
       <div className="font-neuehaasdisplayextralight text-sm whitespace-nowrap relative">
         Why Invisalign
 
@@ -504,58 +641,12 @@ const Invisalign = () => {
       <br />
     </h2>
 
-    <Marquee />
+
   </div>
 
 
-  <div className="relative w-1/2" style={{ height: "600px", overflow: "hidden" }}>
-      <motion.div
-        initial={{ y: "0%" }}
-        animate={controls}
-        style={{
-          position: "absolute",
-          width: "100%",
-          height: "15%",
-          background: "rgb(245,227,24,.8)",
-          zIndex: 1,
-        }}
-      />
 
-      {[
-        { text: "Fewer appointments, faster treatment", gradient: "radial-gradient(circle, #FF9A8B 0%, #FF6A88 50%, #FF99AC 100%)" },
-        { text: "Personalized care for every patient", gradient: "radial-gradient(circle, #A18CD1 0%, #FBC2EB 100%)" },
-        { text: "Advanced technology at your service", gradient: "radial-gradient(circle, #FA8BFF 0%, #2BD2FF 50%, #2BFF88 100%)" },
-        { text: "Comfortable and stress-free visits", gradient: "radial-gradient(circle, #FFD3A5 0%, #FD6585 100%)" }
-      ].map((item, index) => (
-        <Section key={index} onHoverStart={() => handleHover(index)}>
-          <div className="relative flex items-center w-full">
-         
-            <div
-              className="w-4 h-4 rounded-full absolute left-[40px]"
-              style={{ background: item.gradient }}
-            ></div>
-            {/* Text Properly Aligned */}
-            <span className="pl-40">{item.text}</span>
-          </div>
-        </Section>
-      ))}
-    </div>
 </div>
-
-            {/* <div className="image-content mt-16">
-              <img
-                ref={alignerRef}
-                src="../images/invisalignset.png"
-                alt="aligner"
-                className="w-[400px] h-[400px] object-contain"
-                style={{
-                  willChange: "transform",
-                }}
-              />
-             <img src='../images/alignercase.png'/>
-            </div> */}
-      </section>
-
 
       {/* <div className="feature-jacket">
         <ul className="feature-cards">

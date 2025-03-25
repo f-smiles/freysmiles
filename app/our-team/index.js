@@ -161,15 +161,93 @@ const ShaderHoverEffect = () => {
   );
 };
 export default function OurTeam() {
-  const [isVisible, setIsVisible] = useState(false);
-
+  const panelRefs = useRef([]);
+  const titleRef = useRef(null);
+  const [isRevealing, setIsRevealing] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+  
   useEffect(() => {
-    return () => {
-      if (ScrollTrigger) {
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      }
-    };
+
+    gsap.set(panelRefs.current, { y: "0%" });
+  
+    const tl = gsap.timeline({
+      defaults: { ease: "expo.out" },
+    });
+  
+    if (titleRef.current) {
+      const split = new SplitText(titleRef.current, {
+        type: "chars",
+        charsClass: "char",
+      });
+  
+      split.chars.forEach((char) => {
+        const wrap = document.createElement("span");
+        wrap.classList.add("char-wrap");
+  
+        if (char.textContent === " ") {
+          char.innerHTML = "&nbsp;";
+        }
+  
+        char.parentNode.insertBefore(wrap, char);
+        wrap.appendChild(char);
+      });
+  
+      tl.fromTo(
+        split.chars,
+        {
+          xPercent: 105,
+          opacity: 0,
+          transformOrigin: "0% 50%",
+        },
+        {
+          xPercent: 0,
+          opacity: 1,
+          duration: 1,
+          stagger: 0.042,
+          delay: 0.2,
+        }
+      );
+  
+      tl.to(
+        titleRef.current,
+        {
+          opacity: 0,
+          duration: 0.6,
+          ease: "power2.out",
+        },
+        "+=0.2"
+      );
+    }
+  
+    tl.fromTo(
+      panelRefs.current,
+      { y: "0%" },
+      {
+        y: "-100%",
+        duration: 1.2,
+        stagger: 0.08,
+        ease: [0.65, 0, 0.35, 1],
+      },
+      "+=0.1"
+    );
+  
+    tl.call(() => {
+      setIsRevealing(false);
+      setShowContent(true);
+    }, null, "+=0.2");
   }, []);
+  
+  
+
+  // const [isVisible, setIsVisible] = useState(false);
+
+  // useEffect(() => {
+  //   return () => {
+  //     if (ScrollTrigger) {
+  //       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+  //     }
+  //   };
+  // }, []);
 
   const [index, setIndex] = useState(1);
   const [switchDoctor, setSwitchDoctor] = useState(false);
@@ -183,15 +261,21 @@ export default function OurTeam() {
   };
 
   useEffect(() => {
+    if (isRevealing) return; 
+  
     const clearAnimation = () => {
       gsap.killTweensOf(doctorBioRef.current);
     };
-
+  
     const startAnimation = () => {
       setTimeout(() => {
         const doctorBio = doctorBioRef.current;
         if (doctorBio) {
           const splitText = new SplitText(doctorBio, { type: "lines" });
+    
+
+          gsap.set(doctorBio, { visibility: "visible" });
+    
           gsap.from(splitText.lines, {
             duration: 2,
             xPercent: 20,
@@ -200,21 +284,28 @@ export default function OurTeam() {
             stagger: 0.12,
           });
         }
-      }, 100);
+      }, 200);
     };
-
+    
+  
     if (doctorBioRef.current) {
       clearAnimation();
       startAnimation();
     }
+  
     return () => clearAnimation();
-  }, [switchDoctor]);
+  }, [switchDoctor, isRevealing]);
+  
 
   useEffect(() => {
+    if (!showContent) return; 
+  
     const container = document.querySelector(".horizontalScroller");
+    if (!container) return;
+  
     const containerWidth =
       container.scrollWidth - document.documentElement.clientWidth;
-
+  
     gsap.to(container, {
       x: () => -containerWidth,
       scrollTrigger: {
@@ -227,289 +318,8 @@ export default function OurTeam() {
         invalidateOnRefresh: true,
       },
     });
-  }, []);
-
-  const imagesRef = useRef([]);
-  imagesRef.current = [];
-
-  const addToRefs = (el) => {
-    if (el && !imagesRef.current.includes(el)) {
-      imagesRef.current.push(el);
-    }
-  };
-
-  useEffect(() => {
-    imagesRef.current.forEach((img, index) => {
-      gsap.fromTo(
-        img,
-        { y: 100, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          scrollTrigger: {
-            trigger: img,
-            start: "top bottom-=100",
-            toggleActions: "play none none reverse",
-            ease: "power3.out",
-          },
-        }
-      );
-    });
-  }, []);
-
-  const svgRef = useRef(null);
-
-  const [svgs, setSvgs] = useState([]);
-  const svgWidth = 200;
-  useEffect(() => {
-    setSvgs((prevSvgs) => {
-      const newSvg = {
-        id: `svg-${Date.now()}`,
-        right: svgWidth * 4,
-      };
-
-      const overlapAdjustment = 1;
-
-      const updatedSvgs = prevSvgs
-        .map((svg) => ({
-          ...svg,
-          right: svg.right - svgWidth + overlapAdjustment,
-        }))
-        .filter((svg) => svg.right >= -svgWidth)
-        .concat(newSvg);
-
-      return updatedSvgs;
-    });
-
-    const intervalId = setInterval(() => {
-      setSvgs((prevSvgs) => {
-        const newSvg = {
-          id: `svg-${Date.now()}`,
-          right: svgWidth * 4,
-        };
-
-        const updatedSvgs = prevSvgs
-          .map((svg) => ({ ...svg, right: svg.right - svgWidth }))
-          .filter((svg) => svg.right >= -svgWidth)
-          .concat(newSvg);
-
-        return updatedSvgs;
-      });
-    }, 2000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-
-
-  const container = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: container,
-    offset: ["start start", "end end"],
-  });
-  useEffect(() => {
-    const lenis = new Lenis({
-      lerp: 0.1,
-    });
-
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    const rafId = requestAnimationFrame(raf);
-
-    return () => cancelAnimationFrame(rafId);
-  }, []);
-
-  // const items = [
-  //   {
-  //     title: "5",
-  //     num: "Adriana",
-  //     imgSrc: "/../../images/team_members/Adriana-Photoroom.jpg",
-  //   },
-  //   {
-  //     title: "7",
-  //     num: "Alyssa",
-  //     imgSrc: "/../../images/team_members/Alyssascan.png",
-  //   },
-  //   {
-  //     title: "6",
-  //     num: "Dana",
-  //     imgSrc: "/../../images/team_members/Dana-Photoroom.png",
-  //   },
-
-  //   {
-  //     title: "2",
-  //     num: "Elizabeth",
-  //     imgSrc: "/../../images/team_members/Elizabethaao.png",
-  //   },
-
-  //   {
-  //     title: "4",
-  //     num: "Grace",
-  //     imgSrc: "/../../images/team_members/Grace-Photoroom.jpg",
-  //   },
-  //   {
-  //     title: "1",
-  //     num: "Lexi",
-  //     imgSrc: "/../../images/team_members/Lexigreen.png",
-  //   },
-
-  //   {
-  //     title: "3",
-  //     num: "Nicolle",
-  //     imgSrc: "/../../images/team_members/Nicollewaving.png",
-  //   },
-  //   {
-  //     title: "9",
-  //     num: "x",
-  //     imgSrc: "/../../images/team_members/Kayli-Photoroom.png",
-  //   },
-  // ];
-
-  // const [progress, setProgress] = useState(0);
-  const carouselRef = useRef();
-  const cursorRef = useRef();
-
-  const speedWheel = 0.02;
-  const speedDrag = -0.1;
-  let startX = 0;
-  let isDown = false;
-
-  // const getZindex = (length, active) => {
-  //   return Array.from({ length }, (_, i) =>
-  //     active === i ? length : length - Math.abs(active - i)
-  //   );
-  // };
-
-  // const displayItems = (index, active, length) => {
-  //   const zIndex = getZindex(length, active)[index];
-  //   const activeFactor = (index - active) / length;
-  //   return {
-  //     "--zIndex": zIndex,
-  //     "--active": activeFactor,
-  //   };
-  // };
-
-  // const animate = () => {
-  //   const boundedProgress = Math.max(0, Math.min(progress, 100));
-  //   const active = Math.floor(
-  //     (boundedProgress / 100) * (carouselRef.current.children.length - 1)
-  //   );
-  //   Array.from(carouselRef.current.children).forEach((item, index) => {
-  //     const styles = displayItems(
-  //       index,
-  //       active,
-  //       carouselRef.current.children.length
-  //     );
-  //     Object.keys(styles).forEach((key) =>
-  //       item.style.setProperty(key, styles[key])
-  //     );
-  //   });
-  // };
-
-  // useEffect(animate, [progress]);
-
-  useEffect(() => {
-    const handleWheel = (e) => {
-      const wheelProgress = e.deltaY * speedWheel;
-      setProgress((progress) => progress + wheelProgress);
-    };
-
-    const handleMouseMove = (e) => {
-      if (e.type === "mousemove" && cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-      }
-
-      if (!isDown) return;
-      const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-      const mouseProgress = (x - startX) * speedDrag;
-      setProgress((progress) => progress + mouseProgress);
-      startX = x;
-    };
-
-    const handleMouseDown = (e) => {
-      isDown = true;
-      startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-    };
-
-    const handleMouseUp = () => {
-      isDown = false;
-    };
-
-    document.addEventListener("wheel", handleWheel);
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("touchstart", handleMouseDown);
-    document.addEventListener("touchmove", handleMouseMove);
-    document.addEventListener("touchend", handleMouseUp);
-
-    return () => {
-      document.removeEventListener("wheel", handleWheel);
-      document.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("touchstart", handleMouseDown);
-      document.removeEventListener("touchmove", handleMouseMove);
-      document.removeEventListener("touchend", handleMouseUp);
-    };
-  }, []);
-
-  const [position, setPosition] = useState({ x: -100, y: -100 });
-  const [className, setClassName] = useState("");
-
-  useEffect(() => {
-    const updatePosition = (e) => {
-      if (carouselRef.current) {
-        const rect = carouselRef.current.getBoundingClientRect();
-        const isInCarousel =
-          e.clientX >= rect.left &&
-          e.clientX <= rect.right &&
-          e.clientY >= rect.top &&
-          e.clientY <= rect.bottom;
-        if (isInCarousel) {
-          setPosition({ x: e.clientX, y: e.clientY });
-          setClassName("");
-        } else {
-          setClassName("hidden");
-        }
-      }
-    };
-
-    window.addEventListener("mousemove", updatePosition);
-
-    return () => {
-      window.removeEventListener("mousemove", updatePosition);
-    };
-  }, []);
-
-  const [isDragging, setIsDragging] = useState(false);
-
-  // useEffect(() => {
-  //   const handleMouseMove = (e) => {
-  //     setPosition({ x: e.clientX, y: e.clientY });
-  //   };
-
-  //   const handleMouseDown = () => {
-  //     setIsDragging(true);
-  //   };
-
-  //   const handleMouseUp = () => {
-  //     setIsDragging(false);
-  //   };
-
-  //   document.addEventListener("mousemove", handleMouseMove);
-  //   document.addEventListener("mousedown", handleMouseDown);
-  //   document.addEventListener("mouseup", handleMouseUp);
-
-  //   return () => {
-  //     document.removeEventListener("mousemove", handleMouseMove);
-  //     document.removeEventListener("mousedown", handleMouseDown);
-  //     document.removeEventListener("mouseup", handleMouseUp);
-  //   };
-  // }, []);
+  }, [showContent]); 
+  
 
   const [cursorPosition, setCursorPosition] = useState({ x: -100, y: -100 });
   const [isFocused, setIsFocused] = useState(false);
@@ -628,9 +438,6 @@ export default function OurTeam() {
     }
   }, [currentIndex]);
   
-  
-
-
   const teamMembers = [
    {
     id: 1,
@@ -671,53 +478,36 @@ export default function OurTeam() {
   
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedMember = teamMembers[selectedIndex];
-  const titleRef = useRef(null);
-
-  useEffect(() => {
-    if (titleRef.current) {
-        const title = titleRef.current;
-        
-        const splitTitle = new SplitText(title, {
-            type: "chars",
-            charsClass: "char",
-        });
-
-        splitTitle.chars.forEach((char) => {
-            const wrapEl = document.createElement("span");
-            wrapEl.classList.add("char-wrap");
-
-            if (char.textContent === " ") {
-                char.innerHTML = "&nbsp;"; 
-            }
-
-            char.parentNode.insertBefore(wrapEl, char);
-            wrapEl.appendChild(char);
-        });
-
-        gsap.fromTo(
-            splitTitle.chars,
-            {
-                xPercent: 105,
-                opacity: 0,
-                transformOrigin: "0% 50%",
-            },
-            {
-                xPercent: 0,
-                opacity: 1,
-                duration: 1,
-                ease: "expo.out",
-                stagger: 0.042,
-                delay: 0.5,
-            }
-        );
-    }
-}, []);
-
+const contentRef = useRef(null)
+  
   return (
-    <div>
-      
+    <div className="our-team-page ">
+  <div
+    className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
+      isRevealing ? "translate-y-0" : "-translate-y-full"
+    }`}
+  >
+    {[...Array(4)].map((_, i) => (
+      <div
+        key={i}
+        ref={(el) => (panelRefs.current[i] = el)}
+        className="h-full w-1/4 bg-[#E1F572]"
+      />
+    ))}
+
+<div className="absolute inset-0 z-40 flex justify-center items-center">
+
+      <h2 ref={titleRef} className="uppercase content__title1">
+        <span style={{ lineHeight: "1.2" }}>Meet Our Team</span>
+      </h2>
+    </div>
+  </div>
+
+
+
+<div ref={contentRef} className="relative z-0">
       <div className="bg-[#F7F7F7] relative ">
-      <section className="py-[12em] sm:py-[12em]">
+      <section className="py-[10em] sm:py-[10em]">
           
           <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
             <div className="grid grid-cols-2 ">
@@ -732,13 +522,13 @@ export default function OurTeam() {
                       clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
                       y: 20,
                     }}
-                    animate={{
+                    animate={isRevealing ? {} : {
                       clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
                       y: 0,
                     }}
                     transition={{
                       duration: 0.8,
-                      delay: index * 0.2,
+                      delay: 0.2 + index * 0.2,
                       ease: "easeOut",
                     }}
                   >
@@ -746,27 +536,50 @@ export default function OurTeam() {
                   </motion.div>
                 ))}
               </div>
-              <div >
-      <h2 className="content__title1" ref={titleRef}>
-        <span style={{lineHeight: "1.2"}}>Our Team</span>
-      </h2>
-    </div>
-
+     
             </div>
           </div>
-   
-          <div className="grid grid-cols-12 gap-8 px-6 py-12 mx-auto max-w-7xl lg:px-8">
+
+          <div className="grid grid-cols-12 gap-8 px-6 py-1 mx-auto max-w-7xl lg:px-8">
             
             <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
-    
+            <div
+                id="controls"
+                className="font-neuehaasdisplaylight  flex items-center justify-start row-span-1 row-start-1 space-x-4 "
+              >
+                <button
+                  className=" z-0 p-3"
+                  onClick={toggleSwitchDoctor}
+                >
+     <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
+                stroke="black" fill="none" strokeWidth="10" transform="rotate(-90)">
+                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
+                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+              </svg>
+                </button>
+                <span className="text-[12px] t">
+                  0{!switchDoctor ? index : index + 1} / 02
+                </span>
+                <button
+                  className="z-3"
+                  onClick={toggleSwitchDoctor}
+                >
+  <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
+                stroke="black" fill="none" strokeWidth="10" transform="rotate(90)">
+                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
+                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+              </svg>
+                </button>
+              </div>
            
               <div className="row-span-1 row-start-2">
               <motion.div
                   className="h-px mb-10 bg-gray-300"
                   initial={{ width: 0, transformOrigin: "left" }}
-                  animate={{ width: "40vw" }}
+                  animate={isRevealing ? {} : { width: "40vw" }}
                   transition={{
                     duration: 1,
+                    delay: 0.4,
                     ease: "easeInOut",
                   }}
                 ></motion.div>
@@ -791,7 +604,7 @@ export default function OurTeam() {
                     spending time with loved ones.
                   </p>
                 ) : (
-                  <p ref={doctorBioRef} className="font-neuehaasdisplaylight">
+                  <p style={{ visibility: "hidden" }} ref={doctorBioRef} className="font-neuehaasdisplaylight">
                     Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
                     graduated from Temple University School of Dentistry with
                     honors and served in the U.S. Navy Dental Corps before
@@ -809,34 +622,7 @@ export default function OurTeam() {
                   </p>
                 )}
               </div>
-              <div
-                id="controls"
-                className="font-neuehaasdisplaylight  flex items-center justify-start row-span-1 row-start-1 space-x-4 "
-              >
-                <button
-                  className=" z-0 p-3 transition-all duration-200 ease-linear border rounded-full border-stone-600 hover:text-white hover:bg-black"
-                  onClick={toggleSwitchDoctor}
-                >
-     <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
-                stroke="black" fill="none" strokeWidth="10" transform="rotate(-90)">
-                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
-                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
-              </svg>
-                </button>
-                <span className="text-[12px] t">
-                  0{!switchDoctor ? index : index + 1} / 02
-                </span>
-                <button
-                  className="z-0 p-3 transition-all duration-200 ease-linear border rounded-full hover:text-white border-stone-600 hover:bg-black"
-                  onClick={toggleSwitchDoctor}
-                >
-  <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
-                stroke="black" fill="none" strokeWidth="10" transform="rotate(90)">
-                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
-                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
-              </svg>
-                </button>
-              </div>
+         
             </div>
             <div className="col-span-5 lg:col-span-3 lg:col-start-7">
               <figure className="relative w-full aspect-[3/4] overflow-hidden">
@@ -1179,6 +965,7 @@ export default function OurTeam() {
   ))}
 </div>
 
+    </div>
     </div>
 
     </div>
