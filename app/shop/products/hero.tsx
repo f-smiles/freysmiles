@@ -33,6 +33,8 @@ const Hero: React.FC = () => {
     { id: 4, containerHeight: 320, translateY: -0 },
   ];
 
+  
+
   return (
     
 <div className="bg-[#FCFAF5]">

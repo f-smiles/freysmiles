@@ -11,7 +11,9 @@ import { gsap, TweenLite, TimelineMax, Sine } from "gsap";
 import { MotionPathPlugin } from "gsap-trial/MotionPathPlugin";
 gsap.registerPlugin(Physics2DPlugin, SplitText, MotionPathPlugin);
 
+
 const YourCare = () => {
+  
   const [activeIndex, setActiveIndex] = useState(0);
   const isAnimating = useRef(false);
 
@@ -63,7 +65,7 @@ const YourCare = () => {
     <>This initial visit includes an in-depth orthodontic evaluation, digital radiographs, and professional imaging.
     </>,
     <>We encourage all decision-makers to attend the initial visit so we can discuss the path ahead with clarity and transparency — ensuring everyone is aligned on expectations, preferences, and the ideal time to begin.</>,
-    <>If treatment isn’t yet needed, your child will be enrolled in our complimentary Future Smiles Club. These fun, no-cost visits — typically every 6 to 12 months — include growth checkups, birthday surprises, and a chance to spin our prize wheel, all while keeping you informed and prepared.</>,
+    <>If treatment isn’t yet needed, no cost observation check-ups will be coordinated every 6-12 months until treatment is needed. These are shorter and fun visits where you'll have access to all four of our locations to play video games and get to know our team. </>,
     // "Our goal is for every patient to leave fully informed, with clarity and confidence about their treatment path.
   ];
 
@@ -169,7 +171,7 @@ const YourCare = () => {
     const trigger = ScrollTrigger.create({
       trigger: diagonalRef.current,
       start: 'top top',
-      end: '+=200',
+      end: '+=00',
       pin: true,
       scrub: true,
     });
@@ -178,7 +180,8 @@ const YourCare = () => {
       trigger.kill(); 
     };
   }, []);
-  
+
+
 
   return (
     <>
@@ -220,7 +223,7 @@ const YourCare = () => {
                         stroke-width="1.5"
                       />
                     </g>
-                    <circle ref={ballRef} id="ball" r="10" fill="orange" />
+                    <circle ref={ballRef} id="ball" r="10" fill="#FF3C00" />
                   </svg>
                   <div className="absolute left-[200px] top-[50px] flex flex-col gap-4">
                     {BUTTONS.map((step, i) => (
@@ -229,7 +232,7 @@ const YourCare = () => {
                         className={`px-6 py-2 border rounded-full transition ${
                           activeIndex === i
                             ? "bg-[#FF3C00] text-white transition duration-300 ease-in-out"
-                            : "bg-white text-black hover:bg-black hover:text-white"
+                            : "bg-white text-black"
                         }`}
                       >
                         {step}
@@ -275,7 +278,13 @@ const YourCare = () => {
         </div>
       </div>
 
-      <footer id="scroll-down" className="bg-[#082B9D] relative overflow-hidden h-[100vh]">
+<div >
+
+<div>
+    </div>
+
+</div>
+      {/* <footer id="scroll-down" className="bg-[#082B9D] relative overflow-hidden h-[100vh]">
   <div className="relative w-full h-full">
     <div
       style={{
@@ -313,7 +322,7 @@ const YourCare = () => {
     </div>
     <div className="w__scroll-down__trigger" />
   </div>
-</footer>
+</footer> */}
 
       {/* <div
         style={{
