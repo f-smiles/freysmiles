@@ -171,7 +171,7 @@ const YourCare = () => {
     const trigger = ScrollTrigger.create({
       trigger: diagonalRef.current,
       start: 'top top',
-      end: '+=00',
+      end: '+=1000',
       pin: true,
       scrub: true,
     });
@@ -180,9 +180,62 @@ const YourCare = () => {
       trigger.kill(); 
     };
   }, []);
-
-
-
+  const sectionRef = useRef(null);
+  const pixelRefs = useRef([]);
+  
+  const NUM_ROWS = 4;
+  const NUM_COLS = 10;
+  useEffect(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1,
+      },
+    });
+  
+    const rowStagger = 0.02, overlapDelay = 0.2, columnDuration = 2 * rowStagger + overlapDelay;
+    const NUM_COLS = pixelRefs.current.length;
+    const [skips, fills] = [[], []];
+    
+    for (let i = NUM_COLS - 1; i >= 0; i -= 2) skips.push(i);
+    for (let i = NUM_COLS - 2; i >= 0; i -= 2) fills.push(i);
+    
+    const orderedCols = [];
+    while (skips.length || fills.length) {
+      if (skips.length) orderedCols.push(skips.shift());
+      if (fills.length) orderedCols.push(fills.shift());
+    }
+  
+    const getOrigin = (colIndex, rowIndex) => 
+      colIndex % 2 !== 0 
+        ? rowIndex % 2 === 0 ? "left center" : "right center" 
+        : rowIndex % 2 === 0 ? "right center" : "left center";
+  
+    const rowOrder = [3, 1], finalPair = [0, 2];
+  
+    orderedCols.forEach((colIndex, stepIndex) => {
+      const column = pixelRefs.current[colIndex];
+      const columnStart = stepIndex * columnDuration;
+      
+      rowOrder.forEach((rowIdx, i) => {
+        if (column[rowIdx]) tl.to(column[rowIdx], {
+          width: "120%", scaleX: 1, transformOrigin: getOrigin(colIndex, rowIdx), ease: "power2.out"
+        }, columnStart + i * rowStagger);
+      });
+  
+      finalPair.forEach(rowIdx => {
+        if (column[rowIdx]) tl.to(column[rowIdx], {
+          width: "120%", scaleX: 1, transformOrigin: getOrigin(colIndex, rowIdx), ease: "power2.out"
+        }, columnStart + rowOrder.length * rowStagger + overlapDelay);
+      });
+    });
+  
+    return () => ScrollTrigger.getAll().forEach(t => t.kill());
+  }, []);
+  
+  
   return (
     <>
     
@@ -227,16 +280,17 @@ const YourCare = () => {
                   </svg>
                   <div className="absolute left-[200px] top-[50px] flex flex-col gap-4">
                     {BUTTONS.map((step, i) => (
-                      <button
-                        key={i}
-                        className={`px-6 py-2 border rounded-full transition ${
-                          activeIndex === i
-                            ? "bg-[#FF3C00] text-white transition duration-300 ease-in-out"
-                            : "bg-white text-black"
-                        }`}
-                      >
-                        {step}
-                      </button>
+          <button
+          key={i}
+          className={`px-6 py-2 border rounded-full transition-all duration-300 ease-in-out ${
+            activeIndex === i
+              ? "bg-[#FF3C00] text-white"
+              : "bg-[#EFEFEF] text-black"
+          }`}
+        >
+          {step}
+        </button>
+        
                     ))}
                   </div>
 
@@ -250,9 +304,11 @@ const YourCare = () => {
                     </div>
 
                     <div class="flex justify-between items-center mt-2">
+                      <a   href="/book-now">
                       <button class="text-sm border border-white px-3 py-1 rounded-full hover:bg-white hover:text-black transition">
                         Book →
                       </button>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -277,6 +333,25 @@ const YourCare = () => {
           </div>
         </div>
       </div>
+      <div ref={sectionRef} className="relative h-[200vh] bg-[#EFEFEF]">
+  <div className="sticky top-0 h-screen flex items-center justify-center z-50">
+    <div className="grid grid-cols-10 grid-rows-4 w-full h-full">
+      {Array.from({ length: NUM_ROWS }).flatMap((_, row) =>
+        Array.from({ length: NUM_COLS }).map((_, col) => (
+          <div
+            key={`${row}-${col}`}
+            ref={(el) => {
+              if (!pixelRefs.current[col]) pixelRefs.current[col] = [];
+              pixelRefs.current[col][row] = el;
+            }}
+            className="bg-[#0119FF] w-full h-full scale-x-0 transform"
+          />
+        ))
+      )}
+    </div>
+  </div>
+</div>
+
 
 <div >
 

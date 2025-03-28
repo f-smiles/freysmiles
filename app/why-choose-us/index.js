@@ -192,8 +192,51 @@ function Hero() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+
+  const pathRef = useRef(null);
+const cardsectionRef =useRef(null)
+
+useEffect(() => {
+  const path = pathRef.current;
+  const pathLength = path.getTotalLength();
+
+  gsap.set(path, {
+    strokeDasharray: pathLength,
+    strokeDashoffset: pathLength,
+  });
+
+
+  gsap.to(path, {
+    strokeDashoffset: 0,
+    duration: 3,
+    ease: "power2.out",
+    onComplete: () => {
+      gsap.to(path, {
+        strokeDashoffset: pathLength, 
+        ease: "none",
+        scrollTrigger: {
+          trigger: cardsectionRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1, 
+        },
+      });
+    },
+  });
+
+  // Pin section 
+  ScrollTrigger.create({
+    trigger: cardsectionRef.current,
+    start: "top top",
+    end: "+=150%", 
+    pin: true,
+    pinSpacing: true,
+  });
+
+}, []);
   return (
     <>
+      
       <div className="relative h-screen w-full bg-[#F1F2F4] text-black">
         <div ref={overlayRef} className="absolute inset-0 bg-black z-50"></div>
 
@@ -264,7 +307,22 @@ function Hero() {
           </div>
         </div>
       </div>
-
+      <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 951 367"
+                fill="none"
+                className="w-full max-w-lg h-auto"
+              >
+                <path
+                  ref={pathRef}
+                  d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
+                  stroke="#0C0EFE"
+                  strokeWidth="40"
+                  strokeMiterlimit="10"
+                  strokeLinejoin="round"
+                  style={{ strokeDasharray: "3202.1", strokeDashoffset: "0px" }}
+                />
+              </svg>
      
     </>
   );

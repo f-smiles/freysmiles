@@ -140,7 +140,7 @@ export default function DesktopNav({ user }) {
               {links.slice(0, 4).map((link, i) => (
                 <motion.p
                   key={`${i} + ${link}`}
-                  className="font-helvetica-neue-light tracking-wider text-[11px] hover:cursor-pointer"
+                  className="filter-button font-helvetica-neue-light tracking-wider text-[11px] hover:cursor-pointer"
                   onClick={() => {
                     setSelectedLink(link.title);
                     setIsActive(!isActive);
@@ -185,7 +185,7 @@ export default function DesktopNav({ user }) {
               {links.slice(4, 7).map((link, i) => (
                 <motion.p
                   key={`${i} + ${link}`}
-                  className="font-helvetica-now-display tracking-wider text-[13px] hover:cursor-pointer"
+                  className=" font-helvetica-now-display tracking-wider text-[13px] hover:cursor-pointer"
                   onClick={() => {
                     setSelectedLink(link.title);
                     setIsActive(!isActive);

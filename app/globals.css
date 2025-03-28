@@ -5261,3 +5261,16 @@ a {
   border-top: none;
 }
 
+
+/* .filter-button {
+  background-color: #0000;
+  border: 1px solid #efeeec00;
+  padding: 1.125em 1.5em;
+  transition: border-color .2s;
+  position: relative;
+} */
+
+/* .filter-button.active {
+  border-color: #efeeec4d;
+  border-radius: .25em;
+} */
