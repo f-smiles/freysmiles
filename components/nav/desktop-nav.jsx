@@ -158,18 +158,9 @@ export default function DesktopNav({ user }) {
             <motion.div
               className={`${
                 isActive ? "hidden" : "block"
-              }    text-black flex justify-center items-center   p-3`}
+              }    text-black flex justify-center items-center  p-3`}
             >
-              {/* <img
-                src="../images/Logo_White.svg"
-                alt="Logo Icon"
-                className="w-[32px] h-auto icon-replacement"
-              />
-              <img
-                src="../images/LetteringSa_Black.svg"
-                alt="Logo Icon"
-                className="w-[48px] h-auto icon-replacement"
-              /> */}
+           FS
             </motion.div>
           </Link>
 

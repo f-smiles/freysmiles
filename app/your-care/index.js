@@ -171,7 +171,7 @@ const YourCare = () => {
     const trigger = ScrollTrigger.create({
       trigger: diagonalRef.current,
       start: 'top top',
-      end: '+=1000',
+      end: '+=000',
       pin: true,
       scrub: true,
     });
@@ -239,8 +239,8 @@ const YourCare = () => {
   return (
     <>
     
-      <div  ref={diagonalRef} className="wrappersection py-10">
-        <div className="diagonal-page">
+      <div  ref={diagonalRef} className="wrappersection py-10 relative overflow-hidden">
+      <div className="diagonal-page min-w-[100vw] relative z-10">
           <div className="section-container">
             <div className="h-full flex items-center justify-center gap-20 px-20 w-full">
               <div className="min-w-[800px]">
@@ -276,7 +276,7 @@ const YourCare = () => {
                         stroke-width="1.5"
                       />
                     </g>
-                    <circle ref={ballRef} id="ball" r="10" fill="#FF3C00" />
+                    <circle ref={ballRef} id="ball" r="10" fill="#0154E5" />
                   </svg>
                   <div className="absolute left-[200px] top-[50px] flex flex-col gap-4">
                     {BUTTONS.map((step, i) => (
@@ -284,7 +284,7 @@ const YourCare = () => {
           key={i}
           className={`px-6 py-2 border rounded-full transition-all duration-300 ease-in-out ${
             activeIndex === i
-              ? "bg-[#FF3C00] text-white"
+              ? "bg-[#0154E5] text-white"
               : "bg-[#EFEFEF] text-black"
           }`}
         >
@@ -294,7 +294,7 @@ const YourCare = () => {
                     ))}
                   </div>
 
-                  <div class="absolute left-[430px] top-[220px] w-[180px] h-[140px] bg-[#FF3C00] rounded-[32px] flex flex-col justify-between px-4 py-6 text-white">
+                  <div class="absolute left-[430px] top-[220px] w-[180px] h-[140px] bg-[#0154E5] rounded-[32px] flex flex-col justify-between px-4 py-6 text-white">
                     <div class="text-sm leading-tight font-medium">
                       1 hour is all
                       <br />
@@ -308,6 +308,16 @@ const YourCare = () => {
                       <button class="text-sm border border-white px-3 py-1 rounded-full hover:bg-white hover:text-black transition">
                         Book →
                       </button>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
+<line x1="25.2553" y1="1.5085e-08" x2="25.2553" y2="49.8197" stroke="#0054E5" stroke-width="0.690211"><script xmlns=""/></line>
+<line x1="7.05187" y1="42.2794" x2="42.2797" y2="7.05158" stroke="#0054E5" stroke-width="0.690211"/>
+<line y1="24.5646" x2="49.8197" y2="24.5646" stroke="#0054E5" stroke-width="0.690211"/>
+<line x1="35.1242" y1="47.6317" x2="14.0695" y2="2.47973" stroke="#0054E5" stroke-width="0.690211"/>
+<line x1="14.1632" y1="47.385" x2="35.0294" y2="2.14562" stroke="#0054E5" stroke-width="0.690211"/>
+<line x1="3.16436" y1="37.0659" x2="46.3095" y2="12.156" stroke="#0054E5" stroke-width="0.690211"/>
+<line x1="7.53993" y1="7.05212" x2="42.7678" y2="42.28" stroke="#0054E5" stroke-width="0.690211"/>
+<line x1="48.1993" y1="33.0636" x2="1.38417" y2="16.0242" stroke="#0054E5" stroke-width="0.690211"/>
+</svg>
                       </a>
                     </div>
                   </div>
@@ -332,25 +342,28 @@ const YourCare = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div ref={sectionRef} className="relative h-[200vh] bg-[#EFEFEF]">
-  <div className="sticky top-0 h-screen flex items-center justify-center z-50">
-    <div className="grid grid-cols-10 grid-rows-4 w-full h-full">
-      {Array.from({ length: NUM_ROWS }).flatMap((_, row) =>
-        Array.from({ length: NUM_COLS }).map((_, col) => (
-          <div
-            key={`${row}-${col}`}
-            ref={(el) => {
-              if (!pixelRefs.current[col]) pixelRefs.current[col] = [];
-              pixelRefs.current[col][row] = el;
-            }}
-            className="bg-[#0119FF] w-full h-full scale-x-0 transform"
-          />
-        ))
-      )}
-    </div>
+        <div ref={sectionRef} className="min-w-[100vw] relative h-screen bg-[#EFEFEF]">
+
+<div className="sticky top-0 h-screen flex items-center justify-center z-50">
+  
+  <div className="grid grid-cols-10 grid-rows-4 w-full h-full">
+    {Array.from({ length: NUM_ROWS }).flatMap((_, row) =>
+      Array.from({ length: NUM_COLS }).map((_, col) => (
+        <div
+          key={`${row}-${col}`}
+          ref={(el) => {
+            if (!pixelRefs.current[col]) pixelRefs.current[col] = [];
+            pixelRefs.current[col][row] = el;
+          }}
+          className="bg-[#0119FF] w-full h-full scale-x-0 transform"
+        />
+      ))
+    )}
   </div>
 </div>
+</div>
+
+      </div>
 
 
 <div >
@@ -359,7 +372,7 @@ const YourCare = () => {
     </div>
 
 </div>
-      {/* <footer id="scroll-down" className="bg-[#082B9D] relative overflow-hidden h-[100vh]">
+      <footer id="scroll-down" className="bg-[#082B9D] relative overflow-hidden h-[100vh]">
   <div className="relative w-full h-full">
     <div
       style={{
@@ -397,7 +410,7 @@ const YourCare = () => {
     </div>
     <div className="w__scroll-down__trigger" />
   </div>
-</footer> */}
+</footer>
 
       {/* <div
         style={{
