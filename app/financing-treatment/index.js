@@ -391,10 +391,10 @@ const FinancingTreatment = () => {
 
   return (
     <>
-     <div ref={sectionRef} className="relative h-[200vh] bg-black">
+     <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
 
       <div className="sticky top-0 h-screen flex items-center justify-center">
-      <div className="relative h-screen bg-black flex items-center justify-center">
+      <div className="relative h-screen bg-[#F2F2F4] flex items-center justify-center">
   {/* Back  */}
   <img
     src="https://cdn.prod.website-files.com/63ca1c298ff20ed7487ad63e/64f9a3f03dd6c2c1edf4901e_sculpture%20Top.svg"

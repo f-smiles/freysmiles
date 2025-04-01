@@ -107,7 +107,6 @@ const YourCare = () => {
   }, []);
 
   const prevIndexRef = useRef(activeIndex);
-
   useEffect(() => {
     if (!ballRef.current) return;
 
@@ -144,19 +143,88 @@ const YourCare = () => {
       end = 1;
     }
 
-    gsap.to(ballRef.current, {
-      duration: 1.2,
-      motionPath: {
-        path: pathRef,
-        align: pathRef,
-        alignOrigin: [0.5, 0.5],
-        start,
-        end,
-        autoRotate: true,
-      },
-      ease: "power2.inOut",
+    const tl = gsap.timeline();
+
+
+    if (prevIndex === 3 && activeIndex === 2) {
+
+      tl.set(ballRef.current, { zIndex: 10 });
+  
+      tl.to(ballRef.current, {
+          scale: 1,
+          duration: 1.5,
+          ease: "power2.out"
+      });
+  
+
+      tl.to(".svg-text-wrapper", {
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.out"
+      }, "<");
+  
+      tl.to(ballRef.current, {
+          duration: 1.2,
+          motionPath: {
+              path: path3Ref.current,
+              align: path3Ref.current,
+              alignOrigin: [0.5, 0.5],
+              start: 0,
+              end: 1,
+              autoRotate: true,
+          },
+          ease: "power2.inOut",
+      }, ">");
+  }
+  
+  else {
+
+      tl.to(ballRef.current, {
+          duration: 1.2,
+          motionPath: {
+              path: pathRef,
+              align: pathRef,
+              alignOrigin: [0.5, 0.5],
+              start,
+              end,
+              autoRotate: true,
+          },
+          ease: "power2.inOut",
+      });
+    }
+    
+
+  if (activeIndex === 3) {
+    tl.set(ballRef.current, { zIndex: 999 });
+
+    tl.to(ballRef.current, {
+        scale: 125,
+        duration: 1,
+        ease: "power2.inOut"
     });
-  }, [activeIndex]);
+    
+    tl.to(".svg-text-wrapper", {
+      opacity: 1, 
+      duration: 0.5,
+      ease: "power2.out"
+  }, ">");
+
+
+} else {
+    tl.set(ballRef.current, { zIndex: 10 });
+
+    tl.to(ballRef.current, {
+        scale: 1,
+        duration: 1.5,
+        ease: "power2.out"
+    }, "<");
+
+
+}
+
+
+}, [activeIndex]);
+  
 
   const BUTTONS = [
     "Initial Consultation",
@@ -165,21 +233,6 @@ const YourCare = () => {
     "Treatment Roadmap",
   ];
 
-  const diagonalRef = useRef();
-
-  useEffect(() => {
-    const trigger = ScrollTrigger.create({
-      trigger: diagonalRef.current,
-      start: 'top top',
-      end: '+=000',
-      pin: true,
-      scrub: true,
-    });
-  
-    return () => {
-      trigger.kill(); 
-    };
-  }, []);
   const sectionRef = useRef(null);
   const pixelRefs = useRef([]);
   
@@ -239,131 +292,114 @@ const YourCare = () => {
   return (
     <>
     
-      <div  ref={diagonalRef} className="wrappersection py-10 relative overflow-hidden">
-      <div className="diagonal-page min-w-[100vw] relative z-10">
-          <div className="section-container">
-            <div className="h-full flex items-center justify-center gap-20 px-20 w-full">
-              <div className="min-w-[800px]">
-                <div className="relative w-full h-[300px]">
-                  <svg
-                    viewBox="-20 -300 1600 900"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g transform="scale(1, -1) translate(0, -600)">
-                      <path
-                        ref={path1Ref}
-                        d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
-                        fill="none"
-                        stroke="black"
-                        stroke-width="1.5"
-                      />
-                    </g>
-                    <g transform="translate(550, -300)">
-                      <path
-                        ref={path2Ref}
-                        d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
-                        fill="none"
-                        stroke="black"
-                        stroke-width="1.5"
-                      />
-                    </g>
-                    <g transform="scale(1, -1) translate(1100, -600)">
-                      <path
-                        ref={path3Ref}
-                        d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
-                        fill="none"
-                        stroke="black"
-                        stroke-width="1.5"
-                      />
-                    </g>
-                    <circle ref={ballRef} id="ball" r="10" fill="#0154E5" />
-                  </svg>
-                  <div className="absolute left-[200px] top-[50px] flex flex-col gap-4">
-                    {BUTTONS.map((step, i) => (
-          <button
-          key={i}
-          className={`px-6 py-2 border rounded-full transition-all duration-300 ease-in-out ${
-            activeIndex === i
-              ? "bg-[#0154E5] text-white"
-              : "bg-[#EFEFEF] text-black"
-          }`}
-        >
-          {step}
-        </button>
-        
-                    ))}
-                  </div>
+    <div className="wrappersection py-10 ">
+    <div id="fullscreenBall" ref={ballRef}
+    className="fixed top-0 left-0 w-[16px] h-[16px] bg-[#293CF0] rounded-full z-[20] pointer-events-none" />
 
-                  <div class="absolute left-[430px] top-[220px] w-[180px] h-[140px] bg-[#0154E5] rounded-[32px] flex flex-col justify-between px-4 py-6 text-white">
-                    <div class="text-sm leading-tight font-medium">
-                      1 hour is all
-                      <br />
-                      it takes to get
-                      <br />
-                      clear answers.
-                    </div>
-
-                    <div class="flex justify-between items-center mt-2">
-                      <a   href="/book-now">
-                      <button class="text-sm border border-white px-3 py-1 rounded-full hover:bg-white hover:text-black transition">
-                        Book →
-                      </button>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" fill="none">
-<line x1="25.2553" y1="1.5085e-08" x2="25.2553" y2="49.8197" stroke="#0054E5" stroke-width="0.690211"><script xmlns=""/></line>
-<line x1="7.05187" y1="42.2794" x2="42.2797" y2="7.05158" stroke="#0054E5" stroke-width="0.690211"/>
-<line y1="24.5646" x2="49.8197" y2="24.5646" stroke="#0054E5" stroke-width="0.690211"/>
-<line x1="35.1242" y1="47.6317" x2="14.0695" y2="2.47973" stroke="#0054E5" stroke-width="0.690211"/>
-<line x1="14.1632" y1="47.385" x2="35.0294" y2="2.14562" stroke="#0054E5" stroke-width="0.690211"/>
-<line x1="3.16436" y1="37.0659" x2="46.3095" y2="12.156" stroke="#0054E5" stroke-width="0.690211"/>
-<line x1="7.53993" y1="7.05212" x2="42.7678" y2="42.28" stroke="#0054E5" stroke-width="0.690211"/>
-<line x1="48.1993" y1="33.0636" x2="1.38417" y2="16.0242" stroke="#0054E5" stroke-width="0.690211"/>
-</svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="overflow-hidden h-[300px] relative">
-  <div
-    className="text-slider"
-    style={{
-      transform: `translateY(-${activeIndex * 100}%)`,
-    }}
-  >
-    {SECTIONS.map((text, i) => (
-      <div key={i} className="text-slide">
-        <div className="text-sliderinner">{text}</div>
-      </div>
-    ))}
-  </div>
+<div class="text-white text-[28px] svg-text-wrapper fixed inset-0 flex items-center justify-center opacity-0 z-[1000] pointer-events-none">
+State-of-the-Art Technology
 </div>
 
+
+<div className="fixed top-0 z-10">
+
+  <div className="section-container">
+    <div className="h-full flex items-center justify-center gap-20 px-20 w-full">
+      <div className="min-w-[800px]">
+        <div className="relative w-full h-[300px]">
+          <svg
+            viewBox="-20 -300 1600 900"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g transform="scale(1, -1) translate(0, -600)">
+              <path
+                ref={path1Ref}
+                d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
+                fill="none"
+                stroke="black"
+                stroke-width="1.5"
+              />
+            </g>
+            <g transform="translate(550, -300)">
+              <path
+                ref={path2Ref}
+                d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
+                fill="none"
+                stroke="black"
+                stroke-width="1.5"
+              />
+            </g>
+            <g transform="scale(1, -1) translate(1100, -600)">
+              <path
+                ref={path3Ref}
+                d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
+                fill="none"
+                stroke="black"
+                stroke-width="1.5"
+              />
+            </g>
+          </svg>
+
+
+          <div className="absolute left-[200px] top-[50px] flex flex-col gap-4">
+            {BUTTONS.map((step, i) => (
+              <button
+                key={i}
+                className={`px-6 py-2 border rounded-full transition-all duration-300 ease-in-out ${
+                  activeIndex === i
+                    ? "bg-[#293CF0] text-white"
+                    : "bg-white text-black"
+                }`}
+              >
+                {step}
+              </button>
+            ))}
+          </div>
+
+     
+          <div className="absolute left-[430px] top-[220px] w-[180px] h-[140px] bg-[#293CF0] rounded-[32px] flex flex-col justify-between px-4 py-6 text-white">
+            <div className="text-sm leading-tight font-medium">
+              1 hour is all
+              <br />
+              it takes to get
+              <br />
+              clear answers.
+            </div>
+
+            <div className="flex justify-between items-center mt-2">
+              <a href="/book-now">
+                <button className="text-sm border border-white px-3 py-1 rounded-full hover:bg-white hover:text-black transition">
+                  Book →
+                </button>
+              </a>
             </div>
           </div>
+
         </div>
-        <div ref={sectionRef} className="min-w-[100vw] relative h-screen bg-[#EFEFEF]">
-
-<div className="sticky top-0 h-screen flex items-center justify-center z-50">
-  
-  <div className="grid grid-cols-10 grid-rows-4 w-full h-full">
-    {Array.from({ length: NUM_ROWS }).flatMap((_, row) =>
-      Array.from({ length: NUM_COLS }).map((_, col) => (
-        <div
-          key={`${row}-${col}`}
-          ref={(el) => {
-            if (!pixelRefs.current[col]) pixelRefs.current[col] = [];
-            pixelRefs.current[col][row] = el;
-          }}
-          className="bg-[#0119FF] w-full h-full scale-x-0 transform"
-        />
-      ))
-    )}
-  </div>
-</div>
-</div>
-
       </div>
+
+   
+      <div className="overflow-hidden h-[300px] relative">
+        <div
+          className="text-slider"
+          style={{
+            transform: `translateY(-${activeIndex * 100}%)`,
+          }}
+        >
+          {SECTIONS.map((text, i) => (
+            <div key={i} className="text-slide">
+              <div className="text-sliderinner">{text}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
 
 
 <div >
@@ -372,7 +408,28 @@ const YourCare = () => {
     </div>
 
 </div>
-      <footer id="scroll-down" className="bg-[#082B9D] relative overflow-hidden h-[100vh]">
+      {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#EFEFEF]">
+
+  <div className="sticky top-0 h-screen flex items-center justify-center z-50">
+    
+    <div className="grid grid-cols-10 grid-rows-4 w-full h-full">
+      {Array.from({ length: NUM_ROWS }).flatMap((_, row) =>
+        Array.from({ length: NUM_COLS }).map((_, col) => (
+          <div
+            key={`${row}-${col}`}
+            ref={(el) => {
+              if (!pixelRefs.current[col]) pixelRefs.current[col] = [];
+              pixelRefs.current[col][row] = el;
+            }}
+            className="bg-[#0119FF] w-full h-full scale-x-0 transform"
+          />
+        ))
+      )}
+    </div>
+  </div>
+</div> */}
+
+      {/* <footer id="scroll-down" className="bg-[#082B9D] relative overflow-hidden h-[100vh]">
   <div className="relative w-full h-full">
     <div
       style={{
@@ -410,20 +467,9 @@ const YourCare = () => {
     </div>
     <div className="w__scroll-down__trigger" />
   </div>
-</footer>
+</footer> */}
 
-      {/* <div
-        style={{
-          height: "400vh",
-          background: `linear-gradient(180deg, rgba(212, 212, 212, ${
-            1 - scroll
-          }) 0%, #FBC705 100%)`,
-          transition: "background 0.3s ease-out",
-          padding: "min(8vw, 40px) 0",
-        }}
-      >
 
-      </div> */}
 
     </>
   );

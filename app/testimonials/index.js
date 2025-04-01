@@ -473,7 +473,7 @@ const StickyColumnScroll = () => {
             />
             <pointLight position={[-4, 3, 2]} intensity={2} color="#000" />
             <pointLight position={[0, 0, -5]} intensity={3} color="#BCC6CC" />
-            <Environment files="../images/empty_warehouse.exr" />
+            <Environment files="../images/studio_small_03_4k.hdr" />
             <EffectComposer></EffectComposer>
             <Suspense fallback={<span>Loading</span>}>
               <RotatingModel />

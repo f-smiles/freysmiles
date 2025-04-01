@@ -140,7 +140,7 @@ export default function DesktopNav({ user }) {
               {links.slice(0, 4).map((link, i) => (
                 <motion.p
                   key={`${i} + ${link}`}
-                  className="filter-button font-helvetica-neue-light tracking-wider text-[11px] hover:cursor-pointer"
+                  className="filter-button font-neuehaas35 tracking-wider text-[11px] hover:cursor-pointer"
                   onClick={() => {
                     setSelectedLink(link.title);
                     setIsActive(!isActive);
@@ -160,6 +160,39 @@ export default function DesktopNav({ user }) {
                 isActive ? "hidden" : "block"
               }    text-black flex justify-center items-center  p-3`}
             >
+                    <div
+                style={{
+                  width: "1.5em",
+                  height: "1.5em",
+                  borderRadius: "50%", 
+                  overflow: "hidden", 
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <video
+                  id="holovideo"
+                  loop
+                  muted
+                  autoPlay
+                  playsInline
+                  preload="metadata"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transform: "scale(1.25)",
+                    boxShadow: "0 0 50px #ebe6ff80",
+                  }}
+                >
+                  <source
+                    src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
            FS
             </motion.div>
           </Link>

@@ -478,10 +478,10 @@ export default function OurTeam() {
   
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedMember = teamMembers[selectedIndex];
-const contentRef = useRef(null)
-  
+
+
   return (
-    <div className="our-team-page ">
+    <div >
   <div
     className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
       isRevealing ? "translate-y-0" : "-translate-y-full"
@@ -503,9 +503,6 @@ const contentRef = useRef(null)
     </div>
   </div>
 
-
-
-<div ref={contentRef} className="relative z-0">
       <div className="bg-[#F7F7F7] relative ">
       <section className="py-[10em] sm:py-[10em]">
           
@@ -517,7 +514,7 @@ const contentRef = useRef(null)
                 {lines.map((line, index) => (
                   <motion.div
                     key={index}
-                    className="font-neuehaasdisplaylight  text-[14px] overflow-hidden"
+                    className="font-neuehaas35  text-[14px] overflow-hidden text-black"
                     initial={{
                       clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
                       y: 20,
@@ -545,7 +542,7 @@ const contentRef = useRef(null)
             <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
             <div
                 id="controls"
-                className="font-neuehaasdisplaylight  flex items-center justify-start row-span-1 row-start-1 space-x-4 "
+                className="font-neuehaas35 flex items-center justify-start row-span-1 row-start-1 space-x-4 "
               >
                 <button
                   className=" z-0 p-3"
@@ -557,7 +554,7 @@ const contentRef = useRef(null)
                 <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
               </svg>
                 </button>
-                <span className="text-[12px] t">
+                <span className="text-[12px] text-black">
                   0{!switchDoctor ? index : index + 1} / 02
                 </span>
                 <button
@@ -585,7 +582,7 @@ const contentRef = useRef(null)
                 ></motion.div>
                 {/* doctor bio */}
                 {switchDoctor ? (
-                  <p ref={doctorBioRef} className="font-neuehaasdisplaylight ">
+                  <p ref={doctorBioRef} className="font-neuehaas35 text-black">
                     Dr. Daniel Frey pursued his pre-dental requisites at the
                     University of Pittsburgh, majoring in Biology. Dr. Frey
                     excelled in his studies and was admitted to Temple
@@ -604,7 +601,7 @@ const contentRef = useRef(null)
                     spending time with loved ones.
                   </p>
                 ) : (
-                  <p style={{ visibility: "hidden" }} ref={doctorBioRef} className="font-neuehaasdisplaylight">
+                  <p style={{ visibility: "hidden" }} ref={doctorBioRef} className="font-neuehaas35 text-black">
                     Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
                     graduated from Temple University School of Dentistry with
                     honors and served in the U.S. Navy Dental Corps before
@@ -738,11 +735,6 @@ const contentRef = useRef(null)
                       it.
                     </p>
 
-                    {/* <img
-                      className="absolute bottom-0 w-90 h-90"
-                      src="../images/threedots.svg"
-                      alt="Green Squiggle"
-                    /> */}
                   </div>
                   <a
                     href="https://g.co/kgs/Sds93Ha"
@@ -761,31 +753,7 @@ const contentRef = useRef(null)
                       position: "relative",
                     }}
                   >
-                    {/* <div className="svg-container">
-                      {svgs.map((svg) => (
-                        <div
-                          key={svg.id}
-                          className="svg-wrapper"
-                          style={{
-                            position: "absolute",
-                            right: `${svg.right}px`,
-                            transition: "right 2s ease-out",
-                          }}
-                        >
-                          <svg
-                            width={svgWidth}
-                            height={svgWidth}
-                            viewBox="0 0 200 200"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M100,0 A100,100 0 0,1 100,200 A100,100 0 0,1 100,0 Z"
-                              fill="#F3F2ED"
-                            />
-                          </svg>
-                        </div>
-                      ))}
-                    </div> */}
+               
                   </div>
                 </div>
                 <div className="horizontalRow">
@@ -831,59 +799,14 @@ const contentRef = useRef(null)
       <div>
       </div>
 
-{/* <ShaderHoverEffect /> */}
-{/* bg-[#E2F600] */}
-      <div className="h-screen w-full flex flex-col items-center justify-center  px-10 relative">
-      {/* <div
-  className="absolute top-10 right-10 text-right text-gray-900"
-  style={{
-    fontSize: "72px",
-    fontWeight: "200",
-    fontFamily: "NeueMontrealBook",
-  }}
->
-<div
-          style={{
-            fontSize: "28px",
-            fontWeight: "200",
-            fontFamily: "HelveticaNeue-Light",
-          }}
-          className="text-right"
-        >
-          We're here to support you
-          <br /> <span className="font-saolitalic">every</span> step of the way
-        </div>
-<div className="w-[60px]">
-            <svg
-      
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M63.93 30.1793H63.9983V0H31.999V0.0690724C49.052 0.0690724 62.9842 13.3921 63.93 30.1793Z"
-        fill="currentColor"
-      />
-      <path
-        d="M63.9315 33.8208C62.9858 50.608 49.0536 63.931 32.0006 63.931V64.0001H63.9999V33.8208H63.9315Z"
-        fill="currentColor"
-      />
-      <path
-        d="M31.9309 30.1793H31.9993V0H0V0.0690724C17.053 0.0690724 30.9852 13.3921 31.9309 30.1793Z"
-        fill="currentColor"
-      />
-      <path
-        d="M31.9309 33.8208C30.9852 50.608 17.053 63.931 0 63.931V64.0001H31.9993V33.8208H31.9309Z"
-        fill="currentColor"
-      />
-    </svg>
-    </div>
-</div> */}
 
-      <div className="flex items-center justify-between w-full max-w-5xl">
+
+<div className="bg-[#F7F7F7]">
+  
+      <div className=" flex justify-between w-full ">
 
         <div className="text-left text-gray-900">
-          <h2 className="text-xl font-editorial-new-italic">
+          <h2 className="text-xl font-neuehaas35">
             {teamMembers[currentIndex].name}
           </h2>
           <p className="text-md font-neue-montreal">
@@ -891,86 +814,39 @@ const contentRef = useRef(null)
           </p>
         </div>
 
+   
 
-        <div className="w-[300px] h-[400px] relative overflow-hidden flex-shrink-0">
-          {teamMembers.map((member, index) => (
-            <img
-              key={member.id}
-              ref={(el) => (imageRefs.current[index] = el)}
-              src={member.src}
-              alt={member.alt}
-              className="absolute w-full h-full object-cover"
-              style={{
-                top: 0,
-                left: 0,
-                zIndex: index === currentIndex ? 2 : 1, 
-              }}
-            />
-          ))}
-        </div>
-      
-        <div
-                style={{
-                  width: "1.5em",
-                  height: "1.5em",
-                  borderRadius: "50%", 
-                  overflow: "hidden", 
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <video
-                  id="holovideo"
-                  loop
-                  muted
-                  autoPlay
-                  playsInline
-                  preload="metadata"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    transform: "scale(1.25)",
-                    boxShadow: "0 0 50px #ebe6ff80",
-                  }}
-                >
-                  <source
-                    src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
       </div>
 
 
-      <div className="absolute bottom-5 w-full flex left-10 space-x-4">
-  {teamMembers.slice(0, 5).map((member, index) => (
-    <div
+<div className=" relative w-[800px] h-[600px]">
+
+  {teamMembers.map((member, index) => (
+    <img
       key={member.id}
-      onClick={() => setCurrentIndex(index)}
-      className={`w-20 h-20 border rounded-md overflow-hidden cursor-pointer transition-all duration-300 ${
-        currentIndex === index ? "border-black" : "border-gray-300 opacity-50"
-      }`}
-    >
-      <img
-        src={member.src}
-        alt={member.alt}
-        className={`w-full h-full object-cover transition-transform duration-300 ${
-          currentIndex === index ? "scale-75" : "hover:scale-75"
-        }`}
-      />
-    </div>
+      src={member.src}
+      alt={member.alt}
+      className="absolute w-[60%] object-cover transition-transform duration-500"
+      style={{
+        top: `${index * 16}px`,          
+        left: `${index * 80}px`,         
+        zIndex: teamMembers.length - index 
+      }}
+    />
   ))}
+
 </div>
 
-    </div>
-    </div>
+</div>
+
+
 
     </div>
   );
 }
+
+{/* <ShaderHoverEffect /> */}
+{/* bg-[#E2F600] */}
 
 
   {/*   

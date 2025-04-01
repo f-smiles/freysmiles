@@ -145,7 +145,7 @@ const CaringForYourBraces = () => {
           }}
         >
           
-          <h1 className="text-[82px] font-neuehaasdisplayextralight">Braces Care</h1>
+          <h1 className="text-[82px] font-neuehaas35">Braces Care</h1>
         </div>
 
         <div
@@ -189,17 +189,14 @@ const CaringForYourBraces = () => {
         }}
       >
 <div className="flex flex-row gap-4">
-  <button className="flex items-center justify-between uppercase text-sm tracking-wide">
-  <span className="mr-4 w-1.5 h-1.5  bg-black rounded-full"></span>
-Time Duration
+  <button className="font-neuehaas35 text-[14px] flex items-center justify-between uppercase tracking-wide">
+  <span className="mr-4 w-1.5 h-1.5  bg-black rounded-full "></span>
+Treatment Duration
   </button>
   </div>
 
-        <p className="font-neue-montreal mt-10">
-          How long you’ll wear braces depends on your treatment plan and how
-          well you follow our team's instructions. At FreySmiles, most patients
-          achieve their ideal smile in 12 to 20 months. Ready to get started?
-          Let’s make it happen.
+        <p className="font-neuehaas35 mt-10 text-[16px]">
+        Your treatment time depends on your plan and how well you follow our team's guidance. Most Frey Smiles patients see their ideal smile in just 12 to 20 months. Ready to begin? We’re here to make it happen.
         </p>
       </div>
 
@@ -254,13 +251,13 @@ Time Duration
                 }}
               >
                 <div className="flex flex-row gap-4">
-  <button className="flex items-center justify-between  text-sm tracking-wide uppercase">
+  <button className="font-neuehaas35 flex items-center justify-between  text-sm tracking-wide uppercase">
   <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
-  Brushing and Flossing
+  Brushing & Flossing
   </button>
   </div>
                 {" "}
-                <p className="font-neue-montreal mt-10">
+                <p className="font-neuehaas35 mt-10">
                   Brushing and flossing during orthodontic treatment is more
                   important than ever. All orthodontic appliances such as clear
                   aligners, brackets, and wires interfere with normal
@@ -323,12 +320,12 @@ Time Duration
                 }}
               >
                     <div className="flex flex-row gap-4">
-  <button className="flex items-center justify-between  text-sm tracking-wide uppercase">
+  <button className="font-neuehaas35 flex items-center justify-between  text-sm tracking-wide uppercase">
   <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
 General Soreness
   </button>
   </div>
-              <div className="mt-10">
+              <div className="mt-10 font-neuehaas35">
                 When you first get braces, your mouth might feel sore, and your
                 teeth may be tender for 3–5 days—kind of like a dull headache.
                 Taking Tylenol or your usual pain reliever can help ease the
@@ -384,12 +381,12 @@ General Soreness
                 }}
               >
                   <div className="flex flex-row gap-4">
-  <button className="flex items-center justify-between  text-sm tracking-wide uppercase">
+  <button className="font-neuehaas35 flex items-center justify-between  text-sm tracking-wide uppercase">
   <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
 Eating with braces
   </button>
   </div>
-  <div className="mt-10">
+  <div className="mt-10 font-neuehaas35">
                 Traditionally, patients have been advised to avoid certain foods
                 during braces treatment, as aggressive or rapid chewing can
                 break brackets. Crunchy, chewy, sugary, and acidic foods should
@@ -445,12 +442,12 @@ Eating with braces
                 }}
               >
                  <div className="flex flex-row gap-4">
-  <button className="flex items-center justify-between  text-sm tracking-wide uppercase">
+  <button className="font-neuehaas35 flex items-center justify-between  text-sm tracking-wide uppercase">
   <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
   Rubberband wear
   </button>
   </div>
-               <div className="mt-10">
+               <div className="mt-10 font-neuehaas35">
                 If your doctor has prescribed rubber bands, it’s essential to
                 follow the prescription for the best results. Not wearing them
                 as directed or frequently breaking brackets can affect your
@@ -506,12 +503,12 @@ Eating with braces
                 }}
               >
                             <div className="flex flex-row gap-4">
-  <button className="flex items-center justify-between  text-sm tracking-wide uppercase">
+  <button className="flex items-center justify-between  text-sm tracking-wide uppercase font-neuehaas35">
   <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
 Final Considerations
   </button>
   </div>
-  <div className="mt-10">
+  <div className="mt-10 font-neuehaas35">
                 Teeth will become loose, and some more than others. The teeth will settle into the bone and soft tissue, and mobility will return to physiologic norms at the end of treatment. Brackets will also break. All orthodontic appliances are temporary; breakages are expected and considered when calculating your treatment time and retention.
 
 Dental professionals, dental hygienists, and other specialists all have different knowledge bases and motivations pertaining to patient care. It is not unlikely that at some point during treatment, you may receive conflicting information. We’re on the cutting edge with our office, and some people may not comprehend what we’re doing. We’re always open to educating other professionals on our cutting-edge treatment plans; however, patient care is our priority. Whenever in doubt, you can always circle back with the doctor who treatment-planned your case. Trust our process.
