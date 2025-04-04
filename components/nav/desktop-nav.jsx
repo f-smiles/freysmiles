@@ -134,7 +134,7 @@ export default function DesktopNav({ user }) {
           >
             {" "}
             {/* styles.el */}
-            <motion.div className="bg-[#F1F1F1]/90 shadow-white/10 rounded-2xl px-6 py-3 flex items-center gap-4">
+            <motion.div className="bg-[#F1F1F1]/20 shadow-white/10 rounded-2xl px-6 py-3 flex items-center gap-4">
               {" "}
               {/* styles.label */}
               {links.slice(0, 4).map((link, i) => (
@@ -193,7 +193,7 @@ export default function DesktopNav({ user }) {
                   Your browser does not support the video tag.
                 </video>
               </div>
-           FS
+           {/* FS */}
             </motion.div>
           </Link>
 
@@ -275,7 +275,7 @@ export default function DesktopNav({ user }) {
             initial="initial"
             animate="enter"
             exit="exit"
-            className={`${styles.nav} z-50  `}
+            className={`${styles.nav} z-50 `}
           >
             <button
               onClick={() => setIsActive(false)}
@@ -336,9 +336,9 @@ export default function DesktopNav({ user }) {
               </div>
 
               {/* RIGHT */}
-              <div className="flex font-neuehaasdisplaylight justify-center text-center flex-col text-sm gap-8 w-1/2">
+              <div className="flex font-neuehaas35 justify-center text-center flex-col text-sm gap-8 w-1/2">
                 <div>
-                  <p className="uppercase font-neuehaasdisplaylight text-xs mb-2 opacity-70">
+                  <p className="uppercase font-neuehaas35 text-xs mb-2 opacity-70">
                     E:
                   </p>
                   <div className="flex flex-col gap-1 underline underline-offset-2">
@@ -347,18 +347,18 @@ export default function DesktopNav({ user }) {
                 </div>
 
                 <div>
-                  <p className="uppercase font-neuehaasdisplaylight text-xs mb-2 opacity-70">
+                  <p className="uppercase font-neuehaas35 text-xs mb-2 opacity-70">
                     T:
                   </p>
                   <div className="flex flex-col gap-1">
-                    <p className="text-xs font-neuehaasdisplaylight">
+                    <p className="text-xs font-neuehaas35">
                       (610) 437-4748
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <p className="font-neuehaasdisplaylight text-xs mb-2 opacity-70">
+                  <p className="font-neuehaas35 text-xs mb-2 opacity-70">
                     Social
                   </p>
                   <div className="flex flex-col gap-1 underline underline-offset-2">

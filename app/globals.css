@@ -21,6 +21,17 @@
 }
 
 @font-face {
+  font-family: "Amribail";
+  src: url("/fonts/Amribail.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "NeueHaasGroteskDisplayPro45Light";
+  src: url("/fonts/Neue Haas Grotesk Display Pro 45 Light.ttf") format("truetype");
+}
+
+
+@font-face {
   font-family: "NeueHaasDisplayThin25";
   src: url("/fonts/Neue Haas Grotesk Display Pro 25 Thin.ttf") format("truetype");
 }
@@ -4884,13 +4895,13 @@ a {
 
 
 
-.purpleSection { background-color: #DDE8F8;}
-.greenSection { background-color:  #DF6137;  }
-.whiteSection { background-color: #D2D2FB }
-.orangeSection { background-color: #F3F3F3;}
-.redSection { background-color:#F2D0E3 }
-.blackSection { background-color: #CADACF}
-
+.purpleSection { background-color: #D8BFD8;}
+.greenSection { background-color:  #F7C96C;  }
+.whiteSection { background-color: #B0BEC5 }
+.orangeSection { background-color: #DED3DA;}
+.redSection { background-color:#F0F8FF }
+.blackSection { background-color: #e6edac }
+/* #CADACF */
 
 .section_intro {
   background-color:#fff ;
@@ -5279,3 +5290,85 @@ a {
   background-color: rgba(0, 0, 0, 0.3);
   transition: all 0.3s;
 }
+
+
+
+/* .container {
+  perspective: 900px;
+}
+
+.hi {
+  position: relative;
+  z-index: 1;
+  font-size: 100px;
+  font-stretch: 400%;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  text-align: center;
+  transform-style: preserve-3d;
+}
+
+.hi__cuboid {
+  position: relative;
+  width: 500px;
+  height: 70px;
+  transform-style: preserve-3d;
+  margin: 30px 0;
+}
+
+
+.face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  width: 400px;
+  height: 70px;
+  background-color: #f3e8ff; 
+  color: #333; 
+  backface-visibility: visible;
+  overflow: hidden;
+}
+
+.face--front {
+  background-image: url('/images/greenchecker.png');
+
+  background-size: cover;
+  background-position: center;
+  color: #222;
+  transform: translateZ(35px);
+}
+
+
+.face--back {
+  background-image: url('/images/greenchecker.png');
+
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  transform: translateZ(-35px) rotateY(180deg) rotate(180deg);
+}
+
+
+.face--top {
+  background-color:#d3f1d4; 
+  color: #222;
+  transform: translateY(-35px) rotateX(90deg);
+}
+
+.face--bottom {
+  background-color: #d3f1d4; 
+  color: #222;
+  transform: translateY(35px) rotateX(-90deg);
+}
+
+
+.hi__word {
+  font-family:"HorizonOutline";
+  font-size: .4em;
+  font-stretch: 300%;
+  font-weight: 100;
+} */

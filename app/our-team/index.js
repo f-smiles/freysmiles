@@ -514,7 +514,7 @@ export default function OurTeam() {
                 {lines.map((line, index) => (
                   <motion.div
                     key={index}
-                    className="font-neuehaas35  text-[14px] overflow-hidden text-black"
+                    className="font-neuehaas45  text-[14px] overflow-hidden text-black"
                     initial={{
                       clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
                       y: 20,
@@ -582,7 +582,7 @@ export default function OurTeam() {
                 ></motion.div>
                 {/* doctor bio */}
                 {switchDoctor ? (
-                  <p ref={doctorBioRef} className="font-neuehaas35 text-black">
+                  <p ref={doctorBioRef} className="font-neue-montreal text-black">
                     Dr. Daniel Frey pursued his pre-dental requisites at the
                     University of Pittsburgh, majoring in Biology. Dr. Frey
                     excelled in his studies and was admitted to Temple
@@ -601,7 +601,7 @@ export default function OurTeam() {
                     spending time with loved ones.
                   </p>
                 ) : (
-                  <p style={{ visibility: "hidden" }} ref={doctorBioRef} className="font-neuehaas35 text-black">
+                  <p style={{ visibility: "hidden" }} ref={doctorBioRef} className="font-neue-montreal text-black">
                     Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
                     graduated from Temple University School of Dentistry with
                     honors and served in the U.S. Navy Dental Corps before

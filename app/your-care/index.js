@@ -107,7 +107,7 @@ const YourCare = () => {
   }, []);
 
   const prevIndexRef = useRef(activeIndex);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!ballRef.current) return;
 
     const prevIndex = prevIndexRef.current;
@@ -195,11 +195,26 @@ const YourCare = () => {
     
 
   if (activeIndex === 3) {
-    tl.set(ballRef.current, { zIndex: 999 });
-
+    tl.set(ballRef.current, { zIndex: 50 });
+    ballRef.current.offsetHeight;
+    
+  //   gsap.to(ballRef.current, {
+  //     scale: 125,
+  //     ease: "power2.inOut",
+  //     transformOrigin: "center center",
+  //     overwrite: "auto",
+  //     scrollTrigger: {
+  //       trigger: ".wrappersection",
+  //         trigger: ballRef.current,
+  //         start: "top center",
+  //         end: "+=3000px",
+  //         scrub: true,
+  //         markers: true
+  //     }
+  // });
     tl.to(ballRef.current, {
         scale: 125,
-        duration: 1,
+        duration: 2,
         ease: "power2.inOut"
     });
     
@@ -208,7 +223,11 @@ const YourCare = () => {
       duration: 0.5,
       ease: "power2.out"
   }, ">");
-
+tl.to(".svg-text-wrapper", {
+    x: "-200px",
+    duration: 1,
+    ease: "power2.inOut"
+}, ">");
 
 } else {
     tl.set(ballRef.current, { zIndex: 10 });
@@ -221,8 +240,9 @@ const YourCare = () => {
 
 
 }
-
-
+    requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+    });
 }, [activeIndex]);
   
 
@@ -293,15 +313,20 @@ const YourCare = () => {
     <>
     
     <div className="wrappersection py-10 ">
-    <div id="fullscreenBall" ref={ballRef}
-    className="fixed top-0 left-0 w-[16px] h-[16px] bg-[#293CF0] rounded-full z-[20] pointer-events-none" />
+    <div 
+        id="fullscreenBall" 
+        ref={ballRef}
+        className="fixed top-1/2 left-1/2 w-[16px] h-[16px] bg-[#293CF0] rounded-full z-[20] pointer-events-none"
+  
+    />
 
 <div class="text-white text-[28px] svg-text-wrapper fixed inset-0 flex items-center justify-center opacity-0 z-[1000] pointer-events-none">
 State-of-the-Art Technology
 </div>
 
 
-<div className="fixed top-0 z-10">
+<div className="fixed top-0 z-[40] pointer-events-none">
+
 
   <div className="section-container">
     <div className="h-full flex items-center justify-center gap-20 px-20 w-full">
