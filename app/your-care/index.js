@@ -316,7 +316,7 @@ tl.to(".svg-text-wrapper", {
     <div 
         id="fullscreenBall" 
         ref={ballRef}
-        className="fixed top-1/2 left-1/2 w-[16px] h-[16px] bg-[#293CF0] rounded-full z-[20] pointer-events-none"
+        className="fixed top-1/2 left-1/2 w-[16px] h-[16px] bg-[#1127FF] rounded-full z-[20] pointer-events-none"
   
     />
 

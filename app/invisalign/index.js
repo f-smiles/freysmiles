@@ -3,7 +3,7 @@ import { useControls } from "leva";
 import Splitting from "splitting";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import Image from "next/image";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, forwardRef } from "react";
 import Link from "next/link";
 // import DotPattern from "../svg/DotPattern";
 import {
@@ -178,10 +178,10 @@ const SmileyFace = ({ position = [0, 0, 0] }) => {
   );
 };
 
-const WavePlane = () => {
+const WavePlane = forwardRef(({ uniformsRef }, ref) => {
   const texture = useTexture("/images/iphonerock.jpg");
   const image = useRef();
-
+  const meshRef = ref || useRef();
   // const { amplitude, waveLength } = useControls({
   //   amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
   //   waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
@@ -199,12 +199,12 @@ const WavePlane = () => {
 
   useFrame(() => {
     uniforms.current.uTime.value += 0.04;
-    uniforms.current.uAmplitude.value = amplitude;
+    // uniforms.current.uAmplitude.value = amplitude;
     uniforms.current.uWaveLength.value = waveLength;
   });
 
   const vertexShader = `
-   uniform float uTime;
+uniform float uTime;
 uniform float uAmplitude;
 uniform float uWaveLength;
 varying vec2 vUv;
@@ -212,12 +212,11 @@ void main() {
     vUv = uv;
     vec3 newPosition = position;
     float wave = uAmplitude * sin(position.x * uWaveLength + uTime);
-    float ripple = 0.01 * sin((position.x + position.y) * 10.0 + uTime * 2.0);
-    float bulge = 0.05 * sin(position.x * 5.0 + uTime) * cos(position.y * 5.0 + uTime * 1.5);
+    float ripple = uAmplitude * 0.01 * sin((position.x + position.y) * 10.0 + uTime * 2.0);
+    float bulge = uAmplitude * 0.05 * sin(position.x * 5.0 + uTime) * cos(position.y * 5.0 + uTime * 1.5);
     newPosition.z += wave + ripple + bulge;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
-
   `;
 
   const fragmentShader = `
@@ -227,10 +226,17 @@ void main() {
   gl_FragColor = texture2D(uTexture, vUv);
     }
   `;
+  useEffect(() => {
+    if (uniformsRef) {
+      uniformsRef.current = uniforms.current;
+    }
+  }, [uniformsRef]);
+
 
   return (
     <mesh
-      ref={image}
+    ref={meshRef}
+      position={[0, 0, 1]}
       scale={[2, 2, 1]}
       rotation={[-Math.PI * 0.4, 0.3, Math.PI / 2]}
     >
@@ -243,7 +249,7 @@ void main() {
       />
     </mesh>
   );
-};
+});
 // function Invisalign() {
 //   const sectionRef = useRef()
 //   const { scrollYProgress } = useScroll({
@@ -497,11 +503,62 @@ const Invisalign = () => {
     };
   }, []);
 
+
+  const meshRef = useRef();
+  useEffect(() => {
+    const amplitudeProxy = { value: 0.3 };
+    const dummyRotation = { 
+      x: -Math.PI * 0.4, 
+      y: 0.3, 
+      z: Math.PI / 2 
+    };
+  
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".canvas-section",
+        start: "top top",
+        end: "+=1200", 
+        scrub: 2,
+        pin: true,
+      },
+    });
+  
+    tl.to(dummyRotation, {
+      x: 0,
+      y: 0,
+      z: 0,
+      ease: "none",
+      onUpdate: () => {
+        if (meshRef.current) {
+          meshRef.current.rotation.set(
+            dummyRotation.x,
+            dummyRotation.y,
+            dummyRotation.z
+          );
+        }
+  
+    
+        if (uniformsRef.current) {
+          uniformsRef.current.uAmplitude.value = gsap.getProperty(amplitudeProxy, "value");
+        }
+      },
+    });
+  
+
+  
+    tl.to(amplitudeProxy, {
+      value: 0,
+      ease: "none",
+    }, "<");
+  
+    tl.to({}, { duration: 0.5 });
+  }, []);
+  const uniformsRef = useRef(); 
   return (
     <>
-      <div className="font-neuehaas35 min-h-screen px-8 pt-32 bg-[radial-gradient(ellipse_at_5%_30%,_#f3f6fd_0%,_#e3eaf5_30%,_#f4e9f1_60%,_#d9e0ee_100%)]  relative text-black overflow-hidden">
+<div className="font-neuehaas35 min-h-screen px-8 pt-32 bg-[radial-gradient(60%_50%_at_0%_0%,_#ffffff_0%,_#f3f6fc_20%,_#e1eaf5_40%,_#d4dff0_100%)] relative text-black overflow-hidden">
 
-     
+
         <div className="relative z-10 max-w-7xl mx-auto">
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
           <div className="w-[800px] h-[800px]">
@@ -579,39 +636,12 @@ const Invisalign = () => {
         <section className="relative h-[100vh] items-center justify-center px-10">
         <Canvas camera={{ position: [0, 0, 3] }}>
           <ambientLight intensity={0.5} />
-          <WavePlane />
+          <WavePlane ref={meshRef} uniformsRef={uniformsRef} />
           <OrbitControls enableZoom={false} />
         </Canvas>
       </section>
-        <div
-        // className="bg-[#F9F7F7]"
-        style={{ display: "flex", height: "100vh", width: "100vw" }}
-      >
-        {/* Left */}
-
-        {/* Right */}
-
-        <div
-          // style={{
-          //   flex: 1,
-          //   display: "flex",
-          //   alignItems: "center",
-          //   justifyContent: "center",
-          //   padding: "2rem",
-          // }}
-        >
-          <div
-            // style={{
-            //   fontFamily: "NeueHaasDisplayThin25",
-            //   fontSize: "2rem",
-            //   lineHeight: "1.1",
-            // }}
-          >
-           
-          </div>
-        </div>
-      </div>
-      <div className="ml-10 text-5xl sm:text-5xl leading-tight text-black font-light font-neuehaasdisplay15light">
+ 
+      <div className="ml-10 text-[32px] sm:text-[32px] leading-tight text-black font-light font-neuehaasdisplaythin">
         <span className="font-normal">Our doctors </span>{" "}
         <span className="font-light">have treated</span>{" "}
         <span className="font-saolitalic">thousands</span>{" "}

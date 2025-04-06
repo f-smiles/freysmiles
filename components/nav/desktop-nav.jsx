@@ -171,7 +171,7 @@ export default function DesktopNav({ user }) {
                   alignItems: "center",
                 }}
               >
-                <video
+                {/* <video
                   id="holovideo"
                   loop
                   muted
@@ -191,9 +191,9 @@ export default function DesktopNav({ user }) {
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.
-                </video>
+                </video> */}
               </div>
-           {/* FS */}
+              <svg width="28" height="34" viewBox="0 0 28 34" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 8H8V34H0V24H8V16H0V8Z" fill="black"></path><rect x="8" width="20" height="8" fill="black"></rect><rect x="8" y="16" width="16" height="8" fill="black"></rect></svg>
             </motion.div>
           </Link>
 
