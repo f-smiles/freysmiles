@@ -179,7 +179,7 @@ const SmileyFace = ({ position = [0, 0, 0] }) => {
 };
 
 const WavePlane = forwardRef(({ uniformsRef }, ref) => {
-  const texture = useTexture("/images/iphonerock.jpg");
+  const texture = useTexture("/images/mockup_c.png");
   const image = useRef();
   const meshRef = ref || useRef();
   // const { amplitude, waveLength } = useControls({

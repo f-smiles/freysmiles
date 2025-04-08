@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
+import Flip from "gsap/Flip";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
@@ -14,9 +15,10 @@ import CartComponent from "@/components/cart/cart-component";
 import UserButton from "@/components/auth/user-button";
 import { useCartStore } from "@/lib/cart-store";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, Flip);
 
 export default function DesktopNav({ user }) {
+  
   const pathname = usePathname();
   const [isActive, setIsActive] = useState(false);
   const [selectedLink, setSelectedLink] = useState(null);
@@ -112,6 +114,37 @@ export default function DesktopNav({ user }) {
       currentYearElement.textContent = currentYear;
     });
   }, []);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const wrapperRef = useRef(null);
+const bgRef = useRef(null);
+
+useEffect(() => {
+  const wrapper = wrapperRef.current;
+  const buttons = wrapper.querySelectorAll("[data-flip-button='button']");
+  const bg = bgRef.current;
+
+  const moveBg = (target) => {
+    const state = Flip.getState(bg);
+    target.appendChild(bg);         
+    Flip.from(state, {
+      duration: 0.4,
+      ease: "power2.out",
+      absolute: true,
+    });
+  };
+
+  buttons.forEach((button, index) => {
+    button.addEventListener("mouseenter", () => moveBg(button));
+    button.addEventListener("focus", () => moveBg(button));
+    button.addEventListener("mouseleave", () => moveBg(buttons[activeIndex]));
+    button.addEventListener("blur", () => moveBg(buttons[activeIndex]));
+  });
+
+
+  if (buttons[activeIndex]) buttons[activeIndex].appendChild(bg);
+}, [activeIndex]);
+
 
   return (
     <>
@@ -128,31 +161,43 @@ export default function DesktopNav({ user }) {
           variants={opacity}
           animate={!isActive ? "open" : "closed"}
         >
-          <motion.div
-            variants={opacity}
-            animate={!isActive ? "open" : "closed"}
-          >
-            {" "}
-            {/* styles.el */}
-            <motion.div className="bg-[#F1F1F1]/20 shadow-white/10 rounded-2xl px-6 py-3 flex items-center gap-4">
-              {" "}
-              {/* styles.label */}
-              {links.slice(0, 4).map((link, i) => (
-                <motion.p
-                  key={`${i} + ${link}`}
-                  className="filter-button font-neuehaas35 tracking-wider text-[11px] hover:cursor-pointer"
-                  onClick={() => {
-                    setSelectedLink(link.title);
-                    setIsActive(!isActive);
-                  }}
-                  variants={opacity}
-                  animate={!isActive ? "open" : "closed"}
-                >
-                  {link.title}
-                </motion.p>
-              ))}
-            </motion.div>
-          </motion.div>
+<motion.div variants={opacity} animate={!isActive ? "open" : "closed"}>
+  {/* styles.el */}
+  <motion.div
+    ref={wrapperRef}
+    className="bg-[#F1F1F1]/20 shadow-white/10 rounded-2xl px-6 py-3 flex items-center gap-4 relative"
+  >
+    {/* styles.label */}
+    {links.slice(0, 4).map((link, i) => (
+      <div
+        key={`${i} + ${link.title}`}
+        data-flip-button="button"
+        className="relative "
+        onClick={() => {
+          setSelectedLink(link.title);
+          setIsActive(!isActive);
+          setActiveIndex(i); 
+        }}
+      >
+        <motion.p
+          className="font-neuehaas35 tracking-wider text-[11px] cursor-pointer"
+          variants={opacity}
+          animate={!isActive ? "open" : "closed"}
+        >
+          {link.title}
+        </motion.p>
+      </div>
+    ))}
+
+
+    <div
+      ref={bgRef}
+      data-flip-button="bg"
+      className="filter-button__bg pointer-events-none"
+    />
+  </motion.div>
+</motion.div>
+
 
           <Link href="/">
             <motion.div
@@ -193,7 +238,24 @@ export default function DesktopNav({ user }) {
                   Your browser does not support the video tag.
                 </video> */}
               </div>
-              <svg width="28" height="34" viewBox="0 0 28 34" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 8H8V34H0V24H8V16H0V8Z" fill="black"></path><rect x="8" width="20" height="8" fill="black"></rect><rect x="8" y="16" width="16" height="8" fill="black"></rect></svg>
+              <svg width="28" height="34" viewBox="0 0 28 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="glassGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#A3A8F0" stop-opacity="0.4" />
+      <stop offset="50%" stop-color="#C6B5F7" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#A0EACF" stop-opacity="0.2" />
+    </linearGradient>
+    <filter id="glassBlur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.6" />
+    </filter>
+  </defs>
+   <g fill="url(#glassGradient)">
+    <path d="M0 8H8V34H0V24H8V16H0V8Z" />
+    <rect x="8" width="20" height="8" />
+    <rect x="8" y="16" width="16" height="8" />
+  </g>
+</svg>
+
             </motion.div>
           </Link>
 

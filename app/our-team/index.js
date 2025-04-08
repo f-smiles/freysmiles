@@ -2,6 +2,7 @@
 import { Item } from "../../utils/Item";
 import Image from "next/image";
 import Lenis from "@studio-freight/lenis";
+import { OrbitControls, Environment} from '@react-three/drei';
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import { SplitText } from "gsap-trial/all";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -11,7 +12,7 @@ import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
-import { TextureLoader } from "three";
+import { TextureLoader,CubeCamera, WebGLCubeRenderTarget, LinearMipmapLinearFilter, RGBFormat } from "three";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
@@ -118,6 +119,61 @@ const ShaderPlane = ({ imageUrl, mouse }) => {
   );
 };
 
+const images = [
+  '../images/team_members/Adriana-Photoroom.jpg',
+  '../images/team_members/Nicollewaving.png',
+  '../images/team_members/Lexiworking.png',
+  '../images/team_members/Elizabethaao.png',
+  '../images/team_members/Alyssascan.png',
+];
+
+function ImageCard({ texture, index }) {
+  
+  const ref = useRef();
+  const z = index * -1.5;
+  const x = 0;
+  const rotation = useMemo(() => [0, 0.1 * index, 0], [index]);
+
+  return (
+    <group ref={ref} position={[x, 0, z]} rotation={rotation}>
+      <mesh>
+        <boxGeometry args={[2, 3, 0.02]} />
+        <meshPhysicalMaterial
+          map={texture}
+          roughness={0.1}
+          metalness={0.2}
+          transparent
+          transmission={0.2}
+          thickness={0.1}
+          ior={1.1}
+          reflectivity={0.2}
+          clearcoat={1}
+          clearcoatRoughness={0.05}
+          toneMapped={false} 
+          opacity={1}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function Scene() {
+  const textures = useLoader(THREE.TextureLoader, images);
+
+  return (
+    <>
+      {textures.map((tex, i) => (
+        <ImageCard key={i} texture={tex} index={i} />
+      ))}
+<Environment preset="sunset" />
+<ambientLight intensity={1.2} />
+<directionalLight intensity={1.5} position={[5, 5, 5]} />
+
+
+      <OrbitControls enableZoom={false} />
+    </>
+  );
+}
 const ShaderHoverEffect = () => {
   const images = [
     { name: "Alyssa", url: "../images/team_members/Alyssascan.png",    description: "Treatment Coordinator",},
@@ -582,7 +638,7 @@ export default function OurTeam() {
                 ></motion.div>
                 {/* doctor bio */}
                 {switchDoctor ? (
-                  <p ref={doctorBioRef} className="font-neue-montreal text-black">
+                  <p ref={doctorBioRef} className="font-neuehaas45 text-black">
                     Dr. Daniel Frey pursued his pre-dental requisites at the
                     University of Pittsburgh, majoring in Biology. Dr. Frey
                     excelled in his studies and was admitted to Temple
@@ -601,7 +657,7 @@ export default function OurTeam() {
                     spending time with loved ones.
                   </p>
                 ) : (
-                  <p style={{ visibility: "hidden" }} ref={doctorBioRef} className="font-neue-montreal text-black">
+                  <p style={{ visibility: "hidden" }} ref={doctorBioRef} className="font-neuehaas45 text-black">
                     Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
                     graduated from Temple University School of Dentistry with
                     honors and served in the U.S. Navy Dental Corps before
@@ -802,7 +858,7 @@ export default function OurTeam() {
 
 
 <div className="bg-[#F7F7F7]">
-  
+{/*   
       <div className=" flex justify-between w-full ">
 
         <div className="text-left text-gray-900">
@@ -816,9 +872,14 @@ export default function OurTeam() {
 
    
 
-      </div>
-
-
+      </div> */}
+     
+     <div className="w-screen h-screen">
+      <Canvas camera={{ position: [0, 2, 5], fov: 50 }}>
+        <Scene />
+      </Canvas>
+    </div>
+{/* 
 <div className=" relative w-[800px] h-[600px]">
 
   {teamMembers.map((member, index) => (
@@ -835,7 +896,7 @@ export default function OurTeam() {
     />
   ))}
 
-</div>
+</div> */}
 
 </div>
 
@@ -845,7 +906,7 @@ export default function OurTeam() {
   );
 }
 
-{/* <ShaderHoverEffect /> */}
+
 {/* bg-[#E2F600] */}
 
 
