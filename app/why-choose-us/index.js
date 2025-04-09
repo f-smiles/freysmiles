@@ -42,7 +42,9 @@ export default function WhyChooseUs() {
     <>
       <Hero />
       {/* <MarqueeAnimation /> */}
+      <div >
 <CardStack />
+</div>
       {/* <ScrollTextReveal /> */}
       <About />
       <StackCards />
@@ -59,64 +61,8 @@ export default function WhyChooseUs() {
   );
 }
 
-const CardStack = () => {
-  const containerRef = useRef(null);
-  const cardsRef = useRef([]);
-
-  useEffect(() => {
-    const cards = cardsRef.current;
-
-    function reset() {
-      cards.forEach((card) => {
-        gsap.set(card, {
-          rotate: gsap.utils.random(-9, 9), 
-        });
-      });
-    }
-
-    reset(); 
-
-    let tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "bottom bottom",
-        end: "top top", 
-        scrub: true, 
-        pin: true, 
-      },
-    });
-
-    tl.add("anime"); 
-
-    cards.forEach((card, i) => {
-      tl.to(
-        card,
-        {
-          x: gsap.utils.random(-10, 10),
-          y: -150 * i,
-          rotate: 0,
-          ease: "power2.out",
-        },
-        "anime"
-      );
-    });
-  }, []);
 
 
-  return (
-    <div ref={containerRef} className="relative flex flex-col items-center justify-center h-screen overflow-hidden">
-      {["Expertise", "Agility", "Quality", "Innovation"].map((text, index) => (
-        <div
-          key={index}
-          ref={(el) => (cardsRef.current[index] = el)}
-          className="absolute w-[60%] text-center text-4xl font-bold p-6 border border-blue-500 bg-white shadow-lg"
-        >
-          {text}
-        </div>
-      ))}
-    </div>
-  );
-};
 function Hero() {
   const overlayRef = useRef(null);
   const contentRef = useRef(null);
@@ -238,10 +184,10 @@ useEffect(() => {
     <>
       
       <div className="relative h-screen w-full bg-[#F1F2F4] text-black">
-        <div ref={overlayRef} className="absolute inset-0 bg-black z-50"></div>
+        <div ref={overlayRef} className="absolute inset-0 bg-black z-20"></div>
 
         <div
-          className="absolute inset-0 flex items-center justify-center text-3xl font-helvetica-neue-light z-50"
+          className="absolute inset-0 flex items-center justify-center text-3xl font-helvetica-neue-light z-20"
           style={{ mixBlendMode: "difference", color: "white" }}
         >
           <section className="relative w-full mx-auto my-16  md:h-16">
@@ -328,6 +274,103 @@ useEffect(() => {
   );
 }
 
+const CardStack = () => {
+  const list1Ref = useRef(null);
+
+  useEffect(() => {
+    const container = list1Ref.current;
+    const listChilds = container.querySelectorAll('.list-child');
+  
+    listChilds.forEach((el, i) => {
+      gsap.set(el, {
+        x: 0,
+        y: 0,
+        rotate: 0,
+        zIndex: listChilds.length - i,
+      });
+    });
+  
+    const offsets = [
+      { x: 100,  y: -200, rotate:  17 },
+      { x: -160, y: -280, rotate: -12 },
+      { x: 200,  y: -400, rotate:  -12 },
+      { x: -100, y: -500, rotate: 10 },
+    ];
+  
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container,
+        start: 'top 200px',
+        end: `+=${listChilds.length * 200}`, 
+        scrub: true,
+        pin: true,
+        // markers: true,
+      },
+    });
+  
+    tl.add('animate');
+    listChilds.forEach((el, i) => {
+      tl.to(el, offsets[i], 'animate');
+    });
+  
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
+  return (
+    <div className="l-wrapper">
+      <div className="list1" id="list1" ref={list1Ref}>
+        <ul className="card-list list">
+<li className="list-child bg-[#c3531d]">
+    <div className="card-inner">
+      <h2 className="card-title">Tech-Savvy Teeth Things</h2>
+      <p className="card-subtitle">Scanned. Not gooped.</p>
+      <div className="card-caption-box">
+      3D iTero scanning /<br />
+      low-dose Radiographs /<br />
+      3D printing
+    </div>
+    </div>
+  </li>
+          <li className="list-child text-type1 bg-[#8dca9c]">
+          <div className="card-inner">
+      <h2 className="card-title">Outcomes</h2>
+      <p className="card-subtitle">Over 25,000 patients</p>
+      <div className="card-caption-box">
+      Web Design & Dev /<br />
+      Art Direction /<br />
+      Illustration
+    </div>
+    </div>
+          </li>
+          <li className="list-child text-type1 bg-[#E5AB38]">
+          <div className="card-inner">
+      <h2 className="card-title">Specialists, not generalists</h2>
+      <p className="card-subtitle">You wouldn’t hire a generalist surgeon</p>
+      <div className="card-caption-box">
+      Board certified /<br />
+      ABO certified /<br />
+      Combined 50+ years experience
+    </div>
+    </div>
+            
+   </li>
+          <li className="list-child text-type1 bg-[#BD8399]">
+          <div className="card-inner">
+      <h2 className="card-title">4 Locations</h2>
+      <p className="card-subtitle">IRL + URL</p>
+      <div className="card-caption-box">
+      Allentown / Bethlehem /<br />
+      Lehighton /<br />
+      Schnecksville
+    </div>
+    </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+};
 const About = () => {
   const timelineRef = useRef(null);
   const [swiper, setSwiper] = useState(null); // (vertical) swiper

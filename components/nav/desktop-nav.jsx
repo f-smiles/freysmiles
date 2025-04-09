@@ -238,7 +238,7 @@ useEffect(() => {
                   Your browser does not support the video tag.
                 </video> */}
               </div>
-              <svg width="28" height="34" viewBox="0 0 28 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="14" height="17" viewBox="0 0 28 34" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="glassGradient" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#A3A8F0" stop-opacity="0.4" />

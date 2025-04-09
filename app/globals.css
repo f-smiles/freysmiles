@@ -5398,3 +5398,82 @@ a {
   z-index: 10;
   /* padding: 0.75rem 1.5rem;  */
 }
+
+.l-wrapper {
+  position: relative;
+}
+
+
+.list1 {
+  margin-top: 200px;
+  position: relative;
+  height: 100vh;  
+}
+
+
+.card-list.list {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+
+.list-child {
+  width: 475px;
+  height: 300px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: left;
+  font-family: "NeueHaasDisplay35", serif;
+  color: #121212;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-family: "SaolDisplay-LightItalic", serif; 
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.card-subtitle {
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+  font-family:"NeueHaasGroteskDisplayPro45Light";
+}
+
+.card-caption {
+  font-size: 0.75rem;
+  font-family: monospace;
+  align-self: flex-end;
+  opacity: 0.8;
+}
+
+.card-caption-box {
+  font-size: 0.75rem;
+  font-family: monospace;
+  line-height: 1.3;
+  padding: 0.5rem;
+  border: 1px dashed #000;
+  width: fit-content;
+  align-self: flex-end;
+  margin-top: auto;
+}
