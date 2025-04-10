@@ -1,8 +1,8 @@
 "use client";
 // gsap
-// import { Curtains, useCurtains, Plane } from "react-curtains";
-// import { Vec2 } from "curtainsjs";
-// import SimplePlane from "./curtains"
+import { Curtains, useCurtains, Plane } from "react-curtains";
+import { Vec2 } from "curtainsjs";
+import SimplePlane from "./curtains"
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
   motion,
@@ -14,7 +14,7 @@ import {
 } from "framer-motion";
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
@@ -41,22 +41,18 @@ export default function WhyChooseUs() {
   return (
     <>
       <Hero />
-      {/* <MarqueeAnimation /> */}
-      <div >
 <CardStack />
-</div>
-      {/* <ScrollTextReveal /> */}
+<StackCards />
+      <ScrollTextReveal />
       <About />
-      <StackCards />
+  
       <VennDiagram />
-      <GridLayout />
-
-      {/* <TextSection /> */}
-      {/* <div className="min-h-screen"> */}
-      {/* <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
+      {/* <GridLayout /> */}
+      <div className="h-[100vh] w-auto">
+      <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
         <SimplePlane />
-      </Curtains> */}
-      {/* </div> */}
+      </Curtains>
+      </div>
     </>
   );
 }
@@ -270,6 +266,33 @@ useEffect(() => {
                 />
               </svg>
      
+     
+              <section className="px-8 py-20">
+  <div className="max-w-5xl ml-20">
+    <div className="flex items-start gap-4">
+      <svg
+        className="min-w-[164px] w-[164px] h-auto mt-2"
+        fill="none"
+        viewBox="0 0 96 94"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m38.9704 60.3997c0-2.4217 1.8628-4.2845 4.2845-4.2845h10.4318c2.4216 0 4.2845-1.8628 4.2845-4.2845v-10.0593c0-2.4216 1.8628-4.2845 4.2845-4.2845h33.7171v18.6283h-33.7171c-2.4217 0-4.2845 1.8628-4.2845 4.2845v32.972h-19.0008zm-38.00165-4.2845v-18.6283h33.71715c2.4216 0 4.2845-1.8628 4.2845-4.2844v-32.972031h19.0008v32.972031c0 2.4216-1.8629 4.2844-4.2845 4.2844h-10.4318c-2.4217 0-4.2845 1.8629-4.2845 4.2845v10.0593c0 2.4217-1.8629 4.2845-4.2845 4.2845z"
+          fill="#B3EA85"
+        />
+      </svg>
+
+      <h2 className="text-[3.5vw] leading-tight font-light">
+        <span className="italic text-[#B3EA85] font-saolitalic">About Us</span>{' '}
+        <span className="font-neuehaas45 text-black">
+          Experts in Invisalign, Braces, Accelerated Treatment, Low Dose 3D Digital Radiographs.
+        </span>
+      </h2>
+    </div>
+  </div>
+</section>
+
+
     </>
   );
 }
@@ -317,7 +340,60 @@ const CardStack = () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);
+ 
+  const numRays = 10;
+  const rays = Array.from({ length: numRays });
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const minHeight = .5;
+      const maxHeight = 110;
+      const spacing = 36;
+
+      Array.from({ length: numRays }).forEach((_, i) => {
+        const baseHeight = maxHeight;
+        const shrinkRatio = 0.85;
+        const finalHeight = baseHeight * Math.pow(shrinkRatio, i);
+        
+        const offset = 24;
+        const initialTop = offset + i * minHeight;
+        const finalTop = Array.from({ length: i }).reduce((sum, _, j) => {
+          const prevHeight = baseHeight * Math.pow(shrinkRatio, j);
+          const spread = spacing * 1.25;
+          return sum + prevHeight + spread;
+        }, 0);
+        
+        
+
+        gsap.fromTo(
+          `.ray-${i}`,
+          {
+            height: minHeight,
+            top: initialTop,
+          },
+          {
+            height: finalHeight,
+            top: finalTop,
+            scrollTrigger: {
+              trigger: ".sun-section",
+              start: "top+=70% bottom",
+              end: "+=160%",
+              scrub: true,
+            },
+            ease: "none",
+          }
+        );
+        
+      });
+    });
+  
+    return () => ctx.revert();
+  }, []);
+  
   return (
+    <>
+    
+   
     <div className="l-wrapper">
       <div className="list1" id="list1" ref={list1Ref}>
         <ul className="card-list list">
@@ -369,6 +445,31 @@ const CardStack = () => {
         </ul>
       </div>
     </div>
+    <section className="sun-section">
+  <div className="sun-wrapper">
+
+
+    <div className="sun-content">
+      Benefits<br />
+      of working<br />
+      with us
+    </div>
+
+ 
+    <div className="sun-mask">
+      <div className="rays">
+      {rays.map((_, i) => (
+  <div className={`ray ray-${i}`} key={i} />
+))}
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+   </>
   );
 };
 const About = () => {
@@ -523,15 +624,15 @@ const About = () => {
               <div className="timeline-grid mod--timeline2">
                 <div className="timeline__col mod--1">
                   <img
-                    src="../images/diamondinvismockup.png"
+                    src="../images/diamondinvismockup1.png"
                     loading="lazy"
                     alt=""
                     className="timeline__ico"
                   />
-                  <div className="timeline__ico-title">
+                  {/* <div className="timeline__ico-title">
                     Invisalign <br />
                     Pioneers
-                  </div>
+                  </div> */}
                 </div>
                 <div className="timeline__col mod--4">
                   <div className="timeline__txt-block">
@@ -558,15 +659,15 @@ const About = () => {
               <div className="timeline-grid mod--timeline2">
                 <div className="timeline__col mod--1">
                   <img
-                    src="../images/doctorphoto.png"
+                    src="../images/doctorphotomasked.png"
                     loading="lazy"
                     alt=""
                     className="timeline__ico"
                   />
-                  <div className="timeline__ico-title">
+                  {/* <div className="timeline__ico-title">
                     Expertise <br />
                     Defined
-                  </div>
+                  </div> */}
                 </div>
                 <div className="timeline__col mod--4">
                   <div className="timeline__txt-block">
@@ -595,10 +696,10 @@ const About = () => {
                     alt=""
                     className="timeline__ico"
                   />
-                  <div className="timeline__ico-title">
+                  {/* <div className="timeline__ico-title">
                     Leading <br />
                     Recognition
-                  </div>
+                  </div> */}
                 </div>
                 <div className="timeline__col mod--4">
                   <div className="timeline__txt-block">
@@ -624,31 +725,6 @@ const About = () => {
     </section>
   );
 };
-const TextSection = () => {
-  const circleRef = useRef(null);
-
-  useEffect(() => {
-    gsap.to(circleRef.current, {
-      width: "600vmax",
-      height: "600vmax",
-      ease: "Power1.easeInOut",
-      scrollTrigger: {
-        trigger: "#text",
-        start: "top 100%",
-        end: "bottom top",
-        scrub: 0.5,
-      },
-    });
-  }, []);
-
-  return (
-    <section id="text">
-      <div ref={circleRef} className="circle"></div>
-    </section>
-  );
-};
-
-
 
 function StackCards() {
   const containerRef = useRef(null);
