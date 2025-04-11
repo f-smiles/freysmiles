@@ -778,7 +778,7 @@ h6 {
   transform: translate(-50%, -50%);
   font-size: 2rem;
   color: #3a2e29; /* be9c83 */
-  font-family: "Editorial New";
+  font-family: "NeueHaasDisplay35";
   text-align: center;
   z-index: -100;
 }
@@ -5497,8 +5497,8 @@ a {
  background: radial-gradient(
   circle at bottom center,
   #d36134 0%,
-  #a1402b 50%,
-  #a1402b 100%
+  #FE8111 50%,
+  #ef7d64 100%
 );
 
 }
@@ -5530,10 +5530,33 @@ a {
   transform: translate(-50%, -50%);
   z-index: 3;
   color: #1F1F1F;
-  text-align: center;
   font-size: 6vw;
   font-weight: bold;
-  font-family:"NeueHaasDisplay35"
+  font-family: "NeueHaasDisplay35";
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+}
+
+.frame-line {
+  padding: 0.1em 0.1em;
+  border-left: 10px solid hotpink;
+  border-right: 10px solid hotpink;
+}
+
+.line-1 {
+  border-top: 10px solid hotpink;
+
+}
+
+.line-2 {
+
+}
+
+.line-3 {
+
+  border-bottom: 10px solid hotpink;
 }
 
 

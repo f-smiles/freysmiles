@@ -2,7 +2,7 @@
 // gsap
 import { Curtains, useCurtains, Plane } from "react-curtains";
 import { Vec2 } from "curtainsjs";
-import SimplePlane from "./curtains"
+import SimplePlane from "./curtains";
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
   motion,
@@ -41,23 +41,21 @@ export default function WhyChooseUs() {
   return (
     <>
       <Hero />
-<CardStack />
-<StackCards />
-      <ScrollTextReveal />
+      <CardStack />
+      <StackCards />
+      {/* <ScrollTextReveal /> */}
       <About />
-  
+
       <VennDiagram />
       {/* <GridLayout /> */}
-      <div className="h-[100vh] w-auto">
-      <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
-        <SimplePlane />
-      </Curtains>
-      </div>
+      {/* <div className="h-[100vh] w-auto">
+        <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
+          <SimplePlane />
+        </Curtains>
+      </div> */}
     </>
   );
 }
-
-
 
 function Hero() {
   const overlayRef = useRef(null);
@@ -98,7 +96,6 @@ function Hero() {
       });
     }, "+=0.2");
 
-
     tl.to(
       contentRef.current,
       { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
@@ -134,51 +131,47 @@ function Hero() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-
   const pathRef = useRef(null);
-const cardsectionRef =useRef(null)
+  const cardsectionRef = useRef(null);
 
-useEffect(() => {
-  const path = pathRef.current;
-  const pathLength = path.getTotalLength();
+  useEffect(() => {
+    const path = pathRef.current;
+    const pathLength = path.getTotalLength();
 
-  gsap.set(path, {
-    strokeDasharray: pathLength,
-    strokeDashoffset: pathLength,
-  });
+    gsap.set(path, {
+      strokeDasharray: pathLength,
+      strokeDashoffset: pathLength,
+    });
 
+    gsap.to(path, {
+      strokeDashoffset: 0,
+      duration: 3,
+      ease: "power2.out",
+      onComplete: () => {
+        gsap.to(path, {
+          strokeDashoffset: pathLength,
+          ease: "none",
+          scrollTrigger: {
+            trigger: cardsectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1,
+          },
+        });
+      },
+    });
 
-  gsap.to(path, {
-    strokeDashoffset: 0,
-    duration: 3,
-    ease: "power2.out",
-    onComplete: () => {
-      gsap.to(path, {
-        strokeDashoffset: pathLength, 
-        ease: "none",
-        scrollTrigger: {
-          trigger: cardsectionRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1, 
-        },
-      });
-    },
-  });
-
-  // Pin section 
-  ScrollTrigger.create({
-    trigger: cardsectionRef.current,
-    start: "top top",
-    end: "+=150%", 
-    pin: true,
-    pinSpacing: true,
-  });
-
-}, []);
+    // Pin section
+    ScrollTrigger.create({
+      trigger: cardsectionRef.current,
+      start: "top top",
+      end: "+=150%",
+      pin: true,
+      pinSpacing: true,
+    });
+  }, []);
   return (
     <>
-      
       <div className="relative h-screen w-full bg-[#F1F2F4] text-black">
         <div ref={overlayRef} className="absolute inset-0 bg-black z-20"></div>
 
@@ -250,49 +243,49 @@ useEffect(() => {
         </div>
       </div>
       <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 951 367"
-                fill="none"
-                className="w-full max-w-lg h-auto"
-              >
-                <path
-                  ref={pathRef}
-                  d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
-                  stroke="#0C0EFE"
-                  strokeWidth="40"
-                  strokeMiterlimit="10"
-                  strokeLinejoin="round"
-                  style={{ strokeDasharray: "3202.1", strokeDashoffset: "0px" }}
-                />
-              </svg>
-     
-     
-              <section className="px-8 py-20">
-  <div className="max-w-5xl ml-20">
-    <div className="flex items-start gap-4">
-      <svg
-        className="min-w-[164px] w-[164px] h-auto mt-2"
-        fill="none"
-        viewBox="0 0 96 94"
         xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 951 367"
+        fill="none"
+        className="w-full max-w-lg h-auto"
       >
         <path
-          d="m38.9704 60.3997c0-2.4217 1.8628-4.2845 4.2845-4.2845h10.4318c2.4216 0 4.2845-1.8628 4.2845-4.2845v-10.0593c0-2.4216 1.8628-4.2845 4.2845-4.2845h33.7171v18.6283h-33.7171c-2.4217 0-4.2845 1.8628-4.2845 4.2845v32.972h-19.0008zm-38.00165-4.2845v-18.6283h33.71715c2.4216 0 4.2845-1.8628 4.2845-4.2844v-32.972031h19.0008v32.972031c0 2.4216-1.8629 4.2844-4.2845 4.2844h-10.4318c-2.4217 0-4.2845 1.8629-4.2845 4.2845v10.0593c0 2.4217-1.8629 4.2845-4.2845 4.2845z"
-          fill="#B3EA85"
+          ref={pathRef}
+          d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
+          stroke="#0C0EFE"
+          strokeWidth="40"
+          strokeMiterlimit="10"
+          strokeLinejoin="round"
+          style={{ strokeDasharray: "3202.1", strokeDashoffset: "0px" }}
         />
       </svg>
 
-      <h2 className="text-[3.5vw] leading-tight font-light">
-        <span className="italic text-[#B3EA85] font-saolitalic">About Us</span>{' '}
-        <span className="font-neuehaas45 text-black">
-          Experts in Invisalign, Braces, Accelerated Treatment, Low Dose 3D Digital Radiographs.
-        </span>
-      </h2>
-    </div>
-  </div>
-</section>
+      <section className="px-8 py-20">
+        <div className="max-w-5xl ml-20">
+          <div className="flex items-start gap-4">
+            <svg
+              className="min-w-[164px] w-[164px] h-auto mt-2"
+              fill="none"
+              viewBox="0 0 96 94"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m38.9704 60.3997c0-2.4217 1.8628-4.2845 4.2845-4.2845h10.4318c2.4216 0 4.2845-1.8628 4.2845-4.2845v-10.0593c0-2.4216 1.8628-4.2845 4.2845-4.2845h33.7171v18.6283h-33.7171c-2.4217 0-4.2845 1.8628-4.2845 4.2845v32.972h-19.0008zm-38.00165-4.2845v-18.6283h33.71715c2.4216 0 4.2845-1.8628 4.2845-4.2844v-32.972031h19.0008v32.972031c0 2.4216-1.8629 4.2844-4.2845 4.2844h-10.4318c-2.4217 0-4.2845 1.8629-4.2845 4.2845v10.0593c0 2.4217-1.8629 4.2845-4.2845 4.2845z"
+                fill="#B3EA85"
+              />
+            </svg>
 
-
+            <h2 className="text-[3.5vw] leading-tight font-light">
+              <span className="italic text-[#B3EA85] font-saolitalic">
+                About Us
+              </span>{" "}
+              <span className="font-neuehaas45 text-black">
+                Experts in Invisalign, Braces, Accelerated Treatment, Low Dose
+                3D Digital Radiographs.
+              </span>
+            </h2>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
@@ -302,8 +295,8 @@ const CardStack = () => {
 
   useEffect(() => {
     const container = list1Ref.current;
-    const listChilds = container.querySelectorAll('.list-child');
-  
+    const listChilds = container.querySelectorAll(".list-child");
+
     listChilds.forEach((el, i) => {
       gsap.set(el, {
         x: 0,
@@ -312,41 +305,41 @@ const CardStack = () => {
         zIndex: listChilds.length - i,
       });
     });
-  
+
     const offsets = [
-      { x: 100,  y: -200, rotate:  17 },
+      { x: 100, y: -200, rotate: 17 },
       { x: -160, y: -280, rotate: -12 },
-      { x: 200,  y: -400, rotate:  -12 },
+      { x: 200, y: -400, rotate: -12 },
       { x: -100, y: -500, rotate: 10 },
     ];
-  
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: container,
-        start: 'top 200px',
-        end: `+=${listChilds.length * 200}`, 
+        start: "top 200px",
+        end: `+=${listChilds.length * 200}`,
         scrub: true,
         pin: true,
         // markers: true,
       },
     });
-  
-    tl.add('animate');
+
+    tl.add("animate");
     listChilds.forEach((el, i) => {
-      tl.to(el, offsets[i], 'animate');
+      tl.to(el, offsets[i], "animate");
     });
-  
+
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
- 
+
   const numRays = 10;
   const rays = Array.from({ length: numRays });
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      const minHeight = .5;
+      const minHeight = 0.5;
       const maxHeight = 110;
       const spacing = 36;
 
@@ -354,7 +347,7 @@ const CardStack = () => {
         const baseHeight = maxHeight;
         const shrinkRatio = 0.85;
         const finalHeight = baseHeight * Math.pow(shrinkRatio, i);
-        
+
         const offset = 24;
         const initialTop = offset + i * minHeight;
         const finalTop = Array.from({ length: i }).reduce((sum, _, j) => {
@@ -362,8 +355,6 @@ const CardStack = () => {
           const spread = spacing * 1.25;
           return sum + prevHeight + spread;
         }, 0);
-        
-        
 
         gsap.fromTo(
           `.ray-${i}`,
@@ -383,95 +374,299 @@ const CardStack = () => {
             ease: "none",
           }
         );
-        
       });
     });
-  
+
     return () => ctx.revert();
   }, []);
-  
+
   return (
     <>
-    
-   
-    <div className="l-wrapper">
-      <div className="list1" id="list1" ref={list1Ref}>
-        <ul className="card-list list">
-<li className="list-child bg-[#c3531d]">
-    <div className="card-inner">
-      <h2 className="card-title">Tech-Savvy Teeth Things</h2>
-      <p className="card-subtitle">Scanned. Not gooped.</p>
-      <div className="card-caption-box">
-      3D iTero scanning /<br />
-      low-dose Radiographs /<br />
-      3D printing
-    </div>
-    </div>
-  </li>
-          <li className="list-child text-type1 bg-[#8dca9c]">
-          <div className="card-inner">
-      <h2 className="card-title">Outcomes</h2>
-      <p className="card-subtitle">Over 25,000 patients</p>
-      <div className="card-caption-box">
-      Web Design & Dev /<br />
-      Art Direction /<br />
-      Illustration
-    </div>
-    </div>
-          </li>
-          <li className="list-child text-type1 bg-[#E5AB38]">
-          <div className="card-inner">
-      <h2 className="card-title">Specialists, not generalists</h2>
-      <p className="card-subtitle">You wouldn’t hire a generalist surgeon</p>
-      <div className="card-caption-box">
-      Board certified /<br />
-      ABO certified /<br />
-      Combined 50+ years experience
-    </div>
-    </div>
-            
-   </li>
-          <li className="list-child text-type1 bg-[#BD8399]">
-          <div className="card-inner">
-      <h2 className="card-title">4 Locations</h2>
-      <p className="card-subtitle">IRL + URL</p>
-      <div className="card-caption-box">
-      Allentown / Bethlehem /<br />
-      Lehighton /<br />
-      Schnecksville
-    </div>
-    </div>
-          </li>
-        </ul>
+      <div className="l-wrapper bg-[#F1F1F1]">
+        <div className="list1" id="list1" ref={list1Ref}>
+          <ul className="card-list list">
+            <li className="list-child bg-[#c3531d]">
+              <div className="card-inner">
+                <h2 className="card-title">Tech-Savvy Teeth Things</h2>
+                <p className="card-subtitle">Scanned. Not gooped.</p>
+                <div className="card-caption-box">
+                  3D iTero scanning /<br />
+                  low-dose Radiographs /<br />
+                  3D printing
+                </div>
+              </div>
+            </li>
+            <li className="list-child text-type1 bg-[#8dca9c]">
+              <div className="card-inner">
+                <h2 className="card-title">Outcomes</h2>
+                <p className="card-subtitle">Over 25,000 patients</p>
+                <div className="card-caption-box">
+                  Web Design & Dev /<br />
+                  Art Direction /<br />
+                  Illustration
+                </div>
+              </div>
+            </li>
+            <li className="list-child text-type1 bg-[#E5AB38]">
+              <div className="card-inner">
+                <h2 className="card-title">Specialists, not generalists</h2>
+                <p className="card-subtitle">
+                  You wouldn’t hire a generalist surgeon
+                </p>
+                <div className="card-caption-box">
+                  Board certified /<br />
+                  ABO certified /<br />
+                  Combined 50+ years experience
+                </div>
+              </div>
+            </li>
+            <li className="list-child text-type1 bg-[#BD8399]">
+              <div className="card-inner">
+                <h2 className="card-title">4 Locations</h2>
+                <p className="card-subtitle">IRL + URL</p>
+                <div className="card-caption-box">
+                  Allentown / Bethlehem /<br />
+                  Lehighton /<br />
+                  Schnecksville
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <section className="flex items-center px-10">
+  <p className="max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
+  Orthodontic Treatment should be a once-in-a-lifetime experience, so making the right choice is an important decision. Here are the reasons we feel you should choose FreySmiles for you or your child’s treatment.
+  </p>
+</section>
+<div className="w-2/3 ml-auto">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-32 min-h-screen">
+    {/* Card 1 */}
+    <div className="rounded-3xl overflow-hidden bg-[#FAFF00] flex flex-col">
+      <div className="aspect-[3/4] w-full">
+        <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
+          <SimplePlane />
+        </Curtains>
+      </div>
+      <div className="p-4 bg-white flex justify-between items-end text-black">
+        <div>
+          <p className="text-sm font-medium">Lorem Ipsum</p>
+          <p className="text-xs text-gray-500">Dolor sit amet consectetur</p>
+        </div>
+        <p className="text-xs text-gray-500">10MG</p>
       </div>
     </div>
-    <section className="sun-section">
-  <div className="sun-wrapper">
 
-
-    <div className="sun-content">
-      Benefits<br />
-      of working<br />
-      with us
+    {/* Card 2 */}
+    <div className="rounded-3xl overflow-hidden bg-[#8B5E3C] flex flex-col">
+      <div className="aspect-[3/4] w-full">
+        <img
+          src="https://source.unsplash.com/600x800/?cbd,box"
+          alt="Placeholder"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="p-4 bg-white flex justify-between items-end text-black">
+        <div>
+          <p className="text-sm font-medium">Lorem Ipsum</p>
+          <p className="text-xs text-gray-500">Adipiscing elit sed do</p>
+        </div>
+        <p className="text-xs text-gray-500">10MG</p>
+      </div>
     </div>
+  </div>
+</div>
+
+
+      </div>
+
+
+
 
  
-    <div className="sun-mask">
-      <div className="rays">
-      {rays.map((_, i) => (
-  <div className={`ray ray-${i}`} key={i} />
-))}
+      <section className="bg-[#F1F1F1] sun-section">
+   
+        <div className="sun-wrapper">
+          <div className="sun-content leading-none">
+            <div className="frame-line line-1">Benefits</div>
 
-      </div>
-    </div>
+            <div className="frame-connector connector-1" />
+            <div className="frame-line line-2">of working</div>
+            <div className="frame-connector connector-2" />
+            <div className="frame-line line-3">with us</div>
+          </div>
 
-  </div>
-</section>
-
-
-   </>
+          <div className="sun-mask">
+            <div className="rays">
+              {rays.map((_, i) => (
+                <div className={`ray ray-${i}`} key={i} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 };
+
+function StackCards() {
+  const containerRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+
+  const topPathLength = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
+  const bottomPathLength = useTransform(scrollYProgress, [0.5, 1], [0, 1]);
+
+  const blockRef = useRef(null);
+  const isInView = useInView(blockRef, {
+    margin: "0px 0px -10% 0px",
+    once: true,
+  });
+
+  return (
+    <section ref={containerRef}>
+      <section className="bg-[#F1F1F1] sm:py-32">
+        {/* <div className=" w-48 h-48 -translate-x-1/4 -z-10">
+          <Shape06 />
+        </div> */}
+
+        {/* <div className="flex justify-center items-center h-screen bg-gray-100">
+            <svg
+              className="hero__middle-line"
+              width="35"
+              height="1000"
+              viewBox="0 0 35 767"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <motion.path
+                id="top-line"
+                d="M17 -8L17 350"
+                stroke="#292929"
+                strokeWidth="1"
+                className="stroke-current text-gray-800"
+                style={{ pathLength: topPathLength }}
+              />
+
+              <motion.path
+                id="middle-icon"
+                d="M28.5729 367.223C28.6362 367.054 28.5981 366.887 28.5221 366.772C28.4614 366.68 28.3867 366.633 28.3579 366.616C28.2975 366.58 28.2432 366.566 28.2305 366.563L28.2296 366.562C28.1944 366.553 28.1645 366.549 28.156 366.548L28.1556 366.548C28.1315 366.545 28.107 366.544 28.0898 366.543C28.0514 366.54 27.9995 366.539 27.9377 366.537C27.8124 366.533 27.6276 366.53 27.3867 366.527C26.9041 366.521 26.1876 366.516 25.253 366.512C23.3833 366.504 20.636 366.5 17.1301 366.5C14.107 366.5 11.3585 366.503 9.36568 366.507C8.36934 366.509 7.5615 366.512 7.00254 366.515C6.72321 366.516 6.50525 366.518 6.35674 366.52C6.2828 366.52 6.22448 366.521 6.18394 366.522C6.16427 366.523 6.14557 366.523 6.13038 366.524C6.12397 366.524 6.11154 366.525 6.09793 366.526L6.0977 366.526C6.09281 366.526 6.07479 366.528 6.05272 366.532L6.05234 366.532C6.04416 366.533 6.01208 366.539 5.97322 366.552C5.94983 366.561 5.88834 366.591 5.85162 366.614C5.78642 366.669 5.66176 366.872 5.6378 367.025C5.64027 367.074 5.65304 367.147 5.65958 367.171C5.66393 367.184 5.67195 367.206 5.67541 367.215C5.68206 367.231 5.68815 367.243 5.69044 367.248C5.69577 367.259 5.70048 367.267 5.70217 367.27C5.70639 367.278 5.71051 367.285 5.7131 367.289C5.71886 367.299 5.72622 367.311 5.73432 367.325C5.75089 367.352 5.77485 367.391 5.80541 367.44C5.86673 367.539 5.9568 367.684 6.07229 367.869C6.30339 368.239 6.63741 368.773 7.0494 369.43C7.87344 370.744 9.00995 372.554 10.2601 374.541C13.0572 378.987 14.6416 381.504 15.5359 382.919C15.9828 383.626 16.2584 384.059 16.4272 384.32C16.5114 384.451 16.5708 384.541 16.6124 384.602L16.6161 384.608C16.644 384.649 16.6921 384.72 16.742 384.769L16.7422 384.77C16.9317 384.957 17.1611 384.918 17.2469 384.891C17.3302 384.865 17.3862 384.823 17.4039 384.809C17.4475 384.776 17.4788 384.742 17.4905 384.729C17.5206 384.695 17.5515 384.655 17.5787 384.618C17.6365 384.539 17.7162 384.424 17.8179 384.272C18.0229 383.966 18.3328 383.489 18.7664 382.812C19.6345 381.456 21.0061 379.286 23.0428 376.05C24.5464 373.66 25.9153 371.482 26.9096 369.899C27.4067 369.107 27.8103 368.464 28.0902 368.017C28.2301 367.793 28.3393 367.618 28.414 367.498C28.4512 367.439 28.4802 367.392 28.5001 367.36L28.5245 367.32L28.5341 367.304L28.5416 367.29C28.5431 367.288 28.5461 367.282 28.5496 367.275L28.5497 367.275C28.5512 367.272 28.5624 367.251 28.5729 367.223ZM28.5729 367.223L28.1047 367.047M28.5729 367.223C28.573 367.222 28.573 367.222 28.5731 367.222L28.1047 367.047M28.1047 367.047C28.1028 367.052 28.0104 367.201 27.8412 367.472M28.1047 367.047C28.1049 367.047 28.1031 367.046 28.0992 367.045C28.0992 367.045 28.0991 367.045 28.0991 367.045C28.0675 367.04 27.9007 367.035 27.6048 367.03C27.6065 366.979 27.6163 366.926 27.6362 366.873L27.8412 367.472M27.8412 367.472C27.8447 367.474 27.8478 367.476 27.8505 367.477C27.9098 367.512 27.9627 367.526 27.974 367.529L27.9749 367.529C28.0071 367.538 28.032 367.541 28.0326 367.541C28.0372 367.541 28.04 367.542 28.04 367.542C28.04 367.542 28.0373 367.541 28.0308 367.541C28.0087 367.54 27.9696 367.538 27.9101 367.536C27.8786 367.536 27.8427 367.535 27.8024 367.534M27.8412 367.472L27.8024 367.534M27.8024 367.534C27.0551 368.729 25.0072 371.989 22.6196 375.783C19.5692 380.631 18.0131 383.082 17.4054 383.989L27.8024 367.534ZM17.1257 370.356C19.6999 370.356 21.0865 370.357 21.8284 370.367C21.6977 370.578 21.5409 370.829 21.3646 371.111C20.8444 371.944 20.1555 373.042 19.4672 374.136C18.779 375.23 18.0918 376.32 17.5749 377.136C17.4044 377.405 17.2527 377.644 17.1256 377.843C16.9985 377.644 16.8467 377.405 16.6763 377.136C16.1594 376.32 15.4721 375.231 14.784 374.137C14.0958 373.043 13.4069 371.945 12.8867 371.113C12.7101 370.83 12.553 370.578 12.4222 370.367C13.1631 370.357 14.549 370.356 17.1257 370.356ZM1.90839 372.718L1.90843 372.718L9.45227 384.757C11.4356 387.922 13.2432 390.799 14.5576 392.886C15.2148 393.929 15.749 394.775 16.1203 395.36C16.3059 395.652 16.4512 395.88 16.5511 396.036C16.6008 396.113 16.6402 396.174 16.6679 396.216C16.6814 396.236 16.6939 396.255 16.7042 396.27C16.7087 396.276 16.7163 396.287 16.7249 396.298C16.7283 396.303 16.7384 396.316 16.7522 396.332C16.7579 396.338 16.7748 396.357 16.799 396.378C16.8124 396.389 16.8482 396.415 16.8712 396.43C16.9123 396.452 17.0396 396.492 17.1266 396.5C17.2625 396.5 17.3575 396.444 17.3805 396.431C17.4167 396.41 17.4426 396.389 17.455 396.378C17.4809 396.356 17.4997 396.335 17.5074 396.327C17.5253 396.307 17.5407 396.287 17.5503 396.274C17.5716 396.246 17.5966 396.211 17.6225 396.173C17.6755 396.097 17.7472 395.989 17.8314 395.861C18.0005 395.602 18.227 395.248 18.4707 394.859L18.047 394.593L18.4707 394.859L19.3522 393.452L19.519 393.186L19.3516 392.92L18.0586 390.868C17.3479 389.74 14.3521 384.962 11.4009 380.25L6.03552 371.683L5.88983 371.45L5.61535 371.448L3.80947 371.435L2.00359 371.422L1.09253 371.416L1.57631 372.188L1.90839 372.718ZM20.5486 390.629C20.5767 390.644 20.6754 390.695 20.8125 390.688L20.8126 390.688C20.9228 390.67 21.0636 390.605 21.099 390.579C21.1159 390.564 21.1414 390.541 21.1506 390.531C21.1662 390.514 21.1774 390.5 21.1808 390.496C21.1897 390.485 21.1967 390.475 21.1995 390.471C21.2065 390.461 21.2138 390.45 21.2199 390.441C21.2329 390.421 21.2505 390.394 21.2719 390.361C21.3149 390.295 21.3773 390.197 21.4576 390.071C21.6183 389.818 21.8525 389.447 22.15 388.976C22.7451 388.032 23.5943 386.681 24.6167 385.053C26.6616 381.795 29.3998 377.424 32.1848 372.971L32.6738 372.189L33.1522 371.424H32.2498H30.4516H28.6535H28.376L28.2292 371.659L28.022 371.991C27.9084 372.174 25.74 375.634 23.2028 379.683C21.934 381.707 20.7805 383.556 19.944 384.905C19.5259 385.579 19.1866 386.128 18.9516 386.512C18.8343 386.704 18.7421 386.856 18.679 386.961C18.6477 387.014 18.6221 387.057 18.6037 387.09C18.5949 387.105 18.5853 387.122 18.577 387.138C18.5733 387.145 18.5664 387.159 18.5593 387.175C18.556 387.182 18.5492 387.198 18.5422 387.218L18.5422 387.218C18.5412 387.22 18.5137 387.293 18.5143 387.386L18.5143 387.386C18.5149 387.469 18.5365 387.533 18.5406 387.545L18.541 387.546C18.5485 387.569 18.5563 387.587 18.5611 387.598C18.5709 387.621 18.5817 387.642 18.5901 387.658C18.6076 387.692 18.6303 387.733 18.6551 387.776C18.7054 387.863 18.7755 387.981 18.8574 388.115C19.0217 388.385 19.2402 388.736 19.4595 389.084C19.6788 389.431 19.9004 389.777 20.0708 390.037C20.1557 390.166 20.2299 390.277 20.2854 390.357C20.3125 390.396 20.339 390.433 20.3619 390.463C20.3722 390.477 20.389 390.498 20.4086 390.519C20.4171 390.529 20.4377 390.551 20.4665 390.574C20.4803 390.585 20.5088 390.608 20.5486 390.629Z"
+                stroke="#292929"
+              />
+
+              <motion.path
+                id="bottom-line"
+                d="M17 410L17 850"
+                stroke="#292929"
+                strokeWidth="1"
+                className="stroke-current text-gray-800"
+                style={{ pathLength: bottomPathLength }}
+              />
+            </svg>
+          </div> */}
+
+        <div className=" min-h-screen font-neuehaas45 text-[20px] leading-[1.1] px-10">
+          <div className="border-t border-black w-full">
+            <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F1F1F1] before:transition-all before:transition-all before:duration-[150ms] before:ease-linear before:rounded-none group-hover:before:rounded-[100px]" />
+
+              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
+                SERVICE / 001
+              </div>
+
+              <div className="relative z-10 text-center leading-tight max-w-4xl text-black">
+                <div>
+                  We strive to attain finished results consistent with the
+                  American Board of Orthodontics (ABO) qualitative standards.
+                  Our doctors place great priority on the certification and
+                  recertification process, ensuring that all diagnostic records
+                  adhere to ABO standards.
+                </div>
+              </div>
+
+              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
+                LEARN MORE
+              </div>
+            </div>
+          </div>
+
+          {/* Block 002 */}
+          <div className="border-t border-black w-full">
+            <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F1F1F1] before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
+
+              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
+                SERVICE / 002
+              </div>
+
+              <div className="relative z-10 text-center leading-tight max-w-4xl text-black">
+                <div>
+                  Currently, Dr. Gregg Frey is a certified orthodontist and is
+                  preparing cases for recertification. Dr. Daniel Frey is in the
+                  final stages of obtaining his initial certification.
+                </div>
+              </div>
+
+              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
+                LEARN MORE
+              </div>
+            </div>
+          </div>
+
+          {/* Block 003 */}
+          <div className="border-t border-black w-full">
+            <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F1F1F1] before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
+
+              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
+                SERVICE / 003
+              </div>
+
+              <div className="relative z-10 text-center leading-tight max-w-4xl text-black">
+                <div>
+                  To complement our use of cutting-edge diagnostic technology,
+                  we uphold the highest standards for our records, ensuring
+                  accuracy and precision throughout the treatment process.
+                </div>
+              </div>
+
+              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
+                LEARN MORE
+              </div>
+            </div>
+          </div>
+
+          {/* Block 004 */}
+          <div className="border-t border-black w-full">
+            <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F1F1F1] before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
+
+              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
+                SERVICE / 004
+              </div>
+
+              <div className="relative z-10 text-center leading-tight max-w-4xl">
+                <div>
+                  Our office holds the distinction of being the
+                  longest-standing, active board-certified orthodontic office in
+                  the area. With four offices in the Lehigh Valley, we have been
+                  providing unparalleled orthodontic care for over four decades.
+                </div>
+              </div>
+
+              <div className="relative z-10 text-sm text-red-500 font-sans">
+                LEARN MORE
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  );
+}
+
 const About = () => {
   const timelineRef = useRef(null);
   const [swiper, setSwiper] = useState(null); // (vertical) swiper
@@ -725,122 +920,6 @@ const About = () => {
     </section>
   );
 };
-
-function StackCards() {
-  const containerRef = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  const topPathLength = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
-  const bottomPathLength = useTransform(scrollYProgress, [0.5, 1], [0, 1]);
-
-  return (
-    <section ref={containerRef}>
-      <section className="rounded-2xl bg-[#F1F1F1] sm:py-32">
-        {/* <div className=" w-48 h-48 -translate-x-1/4 -z-10">
-          <Shape06 />
-        </div> */}
-
-        <div className="flex items-start space-x-8">
-          {/* <div className="flex justify-center items-center h-screen bg-gray-100">
-            <svg
-              className="hero__middle-line"
-              width="35"
-              height="1000"
-              viewBox="0 0 35 767"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <motion.path
-                id="top-line"
-                d="M17 -8L17 350"
-                stroke="#292929"
-                strokeWidth="1"
-                className="stroke-current text-gray-800"
-                style={{ pathLength: topPathLength }}
-              />
-
-              <motion.path
-                id="middle-icon"
-                d="M28.5729 367.223C28.6362 367.054 28.5981 366.887 28.5221 366.772C28.4614 366.68 28.3867 366.633 28.3579 366.616C28.2975 366.58 28.2432 366.566 28.2305 366.563L28.2296 366.562C28.1944 366.553 28.1645 366.549 28.156 366.548L28.1556 366.548C28.1315 366.545 28.107 366.544 28.0898 366.543C28.0514 366.54 27.9995 366.539 27.9377 366.537C27.8124 366.533 27.6276 366.53 27.3867 366.527C26.9041 366.521 26.1876 366.516 25.253 366.512C23.3833 366.504 20.636 366.5 17.1301 366.5C14.107 366.5 11.3585 366.503 9.36568 366.507C8.36934 366.509 7.5615 366.512 7.00254 366.515C6.72321 366.516 6.50525 366.518 6.35674 366.52C6.2828 366.52 6.22448 366.521 6.18394 366.522C6.16427 366.523 6.14557 366.523 6.13038 366.524C6.12397 366.524 6.11154 366.525 6.09793 366.526L6.0977 366.526C6.09281 366.526 6.07479 366.528 6.05272 366.532L6.05234 366.532C6.04416 366.533 6.01208 366.539 5.97322 366.552C5.94983 366.561 5.88834 366.591 5.85162 366.614C5.78642 366.669 5.66176 366.872 5.6378 367.025C5.64027 367.074 5.65304 367.147 5.65958 367.171C5.66393 367.184 5.67195 367.206 5.67541 367.215C5.68206 367.231 5.68815 367.243 5.69044 367.248C5.69577 367.259 5.70048 367.267 5.70217 367.27C5.70639 367.278 5.71051 367.285 5.7131 367.289C5.71886 367.299 5.72622 367.311 5.73432 367.325C5.75089 367.352 5.77485 367.391 5.80541 367.44C5.86673 367.539 5.9568 367.684 6.07229 367.869C6.30339 368.239 6.63741 368.773 7.0494 369.43C7.87344 370.744 9.00995 372.554 10.2601 374.541C13.0572 378.987 14.6416 381.504 15.5359 382.919C15.9828 383.626 16.2584 384.059 16.4272 384.32C16.5114 384.451 16.5708 384.541 16.6124 384.602L16.6161 384.608C16.644 384.649 16.6921 384.72 16.742 384.769L16.7422 384.77C16.9317 384.957 17.1611 384.918 17.2469 384.891C17.3302 384.865 17.3862 384.823 17.4039 384.809C17.4475 384.776 17.4788 384.742 17.4905 384.729C17.5206 384.695 17.5515 384.655 17.5787 384.618C17.6365 384.539 17.7162 384.424 17.8179 384.272C18.0229 383.966 18.3328 383.489 18.7664 382.812C19.6345 381.456 21.0061 379.286 23.0428 376.05C24.5464 373.66 25.9153 371.482 26.9096 369.899C27.4067 369.107 27.8103 368.464 28.0902 368.017C28.2301 367.793 28.3393 367.618 28.414 367.498C28.4512 367.439 28.4802 367.392 28.5001 367.36L28.5245 367.32L28.5341 367.304L28.5416 367.29C28.5431 367.288 28.5461 367.282 28.5496 367.275L28.5497 367.275C28.5512 367.272 28.5624 367.251 28.5729 367.223ZM28.5729 367.223L28.1047 367.047M28.5729 367.223C28.573 367.222 28.573 367.222 28.5731 367.222L28.1047 367.047M28.1047 367.047C28.1028 367.052 28.0104 367.201 27.8412 367.472M28.1047 367.047C28.1049 367.047 28.1031 367.046 28.0992 367.045C28.0992 367.045 28.0991 367.045 28.0991 367.045C28.0675 367.04 27.9007 367.035 27.6048 367.03C27.6065 366.979 27.6163 366.926 27.6362 366.873L27.8412 367.472M27.8412 367.472C27.8447 367.474 27.8478 367.476 27.8505 367.477C27.9098 367.512 27.9627 367.526 27.974 367.529L27.9749 367.529C28.0071 367.538 28.032 367.541 28.0326 367.541C28.0372 367.541 28.04 367.542 28.04 367.542C28.04 367.542 28.0373 367.541 28.0308 367.541C28.0087 367.54 27.9696 367.538 27.9101 367.536C27.8786 367.536 27.8427 367.535 27.8024 367.534M27.8412 367.472L27.8024 367.534M27.8024 367.534C27.0551 368.729 25.0072 371.989 22.6196 375.783C19.5692 380.631 18.0131 383.082 17.4054 383.989L27.8024 367.534ZM17.1257 370.356C19.6999 370.356 21.0865 370.357 21.8284 370.367C21.6977 370.578 21.5409 370.829 21.3646 371.111C20.8444 371.944 20.1555 373.042 19.4672 374.136C18.779 375.23 18.0918 376.32 17.5749 377.136C17.4044 377.405 17.2527 377.644 17.1256 377.843C16.9985 377.644 16.8467 377.405 16.6763 377.136C16.1594 376.32 15.4721 375.231 14.784 374.137C14.0958 373.043 13.4069 371.945 12.8867 371.113C12.7101 370.83 12.553 370.578 12.4222 370.367C13.1631 370.357 14.549 370.356 17.1257 370.356ZM1.90839 372.718L1.90843 372.718L9.45227 384.757C11.4356 387.922 13.2432 390.799 14.5576 392.886C15.2148 393.929 15.749 394.775 16.1203 395.36C16.3059 395.652 16.4512 395.88 16.5511 396.036C16.6008 396.113 16.6402 396.174 16.6679 396.216C16.6814 396.236 16.6939 396.255 16.7042 396.27C16.7087 396.276 16.7163 396.287 16.7249 396.298C16.7283 396.303 16.7384 396.316 16.7522 396.332C16.7579 396.338 16.7748 396.357 16.799 396.378C16.8124 396.389 16.8482 396.415 16.8712 396.43C16.9123 396.452 17.0396 396.492 17.1266 396.5C17.2625 396.5 17.3575 396.444 17.3805 396.431C17.4167 396.41 17.4426 396.389 17.455 396.378C17.4809 396.356 17.4997 396.335 17.5074 396.327C17.5253 396.307 17.5407 396.287 17.5503 396.274C17.5716 396.246 17.5966 396.211 17.6225 396.173C17.6755 396.097 17.7472 395.989 17.8314 395.861C18.0005 395.602 18.227 395.248 18.4707 394.859L18.047 394.593L18.4707 394.859L19.3522 393.452L19.519 393.186L19.3516 392.92L18.0586 390.868C17.3479 389.74 14.3521 384.962 11.4009 380.25L6.03552 371.683L5.88983 371.45L5.61535 371.448L3.80947 371.435L2.00359 371.422L1.09253 371.416L1.57631 372.188L1.90839 372.718ZM20.5486 390.629C20.5767 390.644 20.6754 390.695 20.8125 390.688L20.8126 390.688C20.9228 390.67 21.0636 390.605 21.099 390.579C21.1159 390.564 21.1414 390.541 21.1506 390.531C21.1662 390.514 21.1774 390.5 21.1808 390.496C21.1897 390.485 21.1967 390.475 21.1995 390.471C21.2065 390.461 21.2138 390.45 21.2199 390.441C21.2329 390.421 21.2505 390.394 21.2719 390.361C21.3149 390.295 21.3773 390.197 21.4576 390.071C21.6183 389.818 21.8525 389.447 22.15 388.976C22.7451 388.032 23.5943 386.681 24.6167 385.053C26.6616 381.795 29.3998 377.424 32.1848 372.971L32.6738 372.189L33.1522 371.424H32.2498H30.4516H28.6535H28.376L28.2292 371.659L28.022 371.991C27.9084 372.174 25.74 375.634 23.2028 379.683C21.934 381.707 20.7805 383.556 19.944 384.905C19.5259 385.579 19.1866 386.128 18.9516 386.512C18.8343 386.704 18.7421 386.856 18.679 386.961C18.6477 387.014 18.6221 387.057 18.6037 387.09C18.5949 387.105 18.5853 387.122 18.577 387.138C18.5733 387.145 18.5664 387.159 18.5593 387.175C18.556 387.182 18.5492 387.198 18.5422 387.218L18.5422 387.218C18.5412 387.22 18.5137 387.293 18.5143 387.386L18.5143 387.386C18.5149 387.469 18.5365 387.533 18.5406 387.545L18.541 387.546C18.5485 387.569 18.5563 387.587 18.5611 387.598C18.5709 387.621 18.5817 387.642 18.5901 387.658C18.6076 387.692 18.6303 387.733 18.6551 387.776C18.7054 387.863 18.7755 387.981 18.8574 388.115C19.0217 388.385 19.2402 388.736 19.4595 389.084C19.6788 389.431 19.9004 389.777 20.0708 390.037C20.1557 390.166 20.2299 390.277 20.2854 390.357C20.3125 390.396 20.339 390.433 20.3619 390.463C20.3722 390.477 20.389 390.498 20.4086 390.519C20.4171 390.529 20.4377 390.551 20.4665 390.574C20.4803 390.585 20.5088 390.608 20.5486 390.629Z"
-                stroke="#292929"
-              />
-
-              <motion.path
-                id="bottom-line"
-                d="M17 410L17 850"
-                stroke="#292929"
-                strokeWidth="1"
-                className="stroke-current text-gray-800"
-                style={{ pathLength: bottomPathLength }}
-              />
-            </svg>
-          </div> */}
-          <div className="container relative mx-auto">
-            <div className="max-w-screen-lg mx-auto mt-10 space-y-16">
-              <div className="transition-all duration-150 ease-linear hover:scale-105 hover:rotate-0 relative flex items-center justify-center mx-auto max-w-[80vw]">
-                <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
-
-                <div className="relative w-[110%] bg-[#F1F1F1] px-12 py-6 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
-                  <div className="py-12 font-neue-montreal text-center text-[18px] text-black">
-                    We strive to attain finished results consistent with the{" "}
-                    <span className="font-bold">
-                      American Board of Orthodontics (ABO)
-                    </span>{" "}
-                    qualitative standards. Our doctors place great priority on
-                    the certification and recertification process, ensuring that
-                    all diagnostic records adhere to ABO standards.
-                  </div>
-                </div>
-              </div>
-
-              <div className="transition-all duration-150 ease-linear hover:scale-105 hover:rotate-0 relative flex items-center justify-center mx-auto max-w-[80vw]">
-                <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
-
-                <div className="relative w-[110%] bg-[#F1F1F1] px-12 py-6 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
-                  <div className="py-12 font-neue-montreal text-center text-[18px] text-black">
-                    Currently, Dr. Gregg Frey is a certified orthodontist and is
-                    preparing cases for recertification. Dr. Daniel Frey is in
-                    the final stages of obtaining his initial certification.
-                  </div>
-                </div>
-              </div>
-
-              <div className="transition-all duration-150 ease-linear hover:scale-105  hover:rotate-0 relative flex items-center justify-center mx-auto max-w-[80vw]">
-                <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
-
-                <div className="relative w-[110%] bg-[#F1F1F1] px-12 py-6 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
-                  <div className="py-12 font-neue-montreal text-center text-[18px] text-black">
-                    To complement our use of cutting-edge diagnostic technology,
-                    we uphold the highest standards for our records, ensuring
-                    accuracy and precision throughout the treatment process.
-                  </div>
-                </div>
-              </div>
-
-              <div className="transition-all duration-150 ease-linear hover:scale-105 hover:rotate-0 relative flex items-center justify-center mx-auto max-w-[80vw]">
-                <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
-
-                <div className="relative w-[110%] bg-[#F1F1F1] px-12 py-6 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
-                  <div className="py-12 font-neue-montreal text-center text-[18px] text-black">
-                    Our office holds the distinction of being the
-                    longest-standing, active board-certified orthodontic office
-                    in the area. With four offices in the Lehigh Valley, we have
-                    been providing unparalleled orthodontic care for over four
-                    decades.
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </section>
-  );
-}
 
 function ScrollTextReveal() {
   useEffect(() => {

@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import React, { useEffect, useState, useRef, Suspense } from "react";
+import React, { useEffect, useState, useRef, Suspense, useMemo } from "react";
 import {
   EffectComposer,
   Bloom,
@@ -25,6 +25,7 @@ import { MeshStandardMaterial } from "three";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
+
 
 const RotatingModel = () => {
   const { nodes } = useGLTF("/images/SVOX1F.glb");
@@ -476,6 +477,7 @@ const StickyColumnScroll = () => {
             <Environment files="../images/studio_small_03_4k.hdr" />
             <EffectComposer></EffectComposer>
             <Suspense fallback={<span>Loading</span>}>
+     
               <RotatingModel />
             </Suspense>
             <OrbitControls enableZoom={false} />

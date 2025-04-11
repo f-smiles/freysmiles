@@ -343,11 +343,11 @@ export default function VennDiagram() {
     <div className="sphere">
       <div className="translate-x-10 sphere-item">
         <div ref={leftSphereCanvas} id="sphere-real"></div>
-        <div className="sphere-item__text">FreySmiles Orthodontics</div>
+        <div className="sphere-item__text">Our Office</div>
       </div>
       <div className="-translate-x-10 sphere-item">
         <div ref={rightSphereCanvas} id="sphere-real"></div>
-        <div className="sphere-item__text">Others</div>
+        <div className="sphere-item__text">Their Office</div>
       </div>
     </div>
   )
