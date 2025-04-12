@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree , useLoader} from "@react-three/fiber";
 import React, { useEffect, useState, useRef, Suspense, useMemo } from "react";
 import {
   EffectComposer,
@@ -25,6 +25,125 @@ import { MeshStandardMaterial } from "three";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
+function RibbonAroundSphere() {
+  const ribbonRef = useRef();
+  const segments = 1000;
+
+  const frontTexture = useLoader(THREE.TextureLoader, '/images/text-strip1.png');
+  const backTexture = useLoader(THREE.TextureLoader, '/images/text-strip.png');
+
+  useEffect(() => {
+    [frontTexture, backTexture].forEach((t) => {
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(1, 1);
+      t.offset.setX(0.5);
+      t.flipY = true;
+    });
+    backTexture.repeat.set(-1, 1);
+  }, [frontTexture, backTexture]);
+
+
+  useFrame(() => {
+    if (frontTexture) frontTexture.offset.x += 0.001;
+    if (backTexture) backTexture.offset.x -= 0.001;
+  });
+
+
+  const frontMaterial = useMemo(() => new THREE.MeshStandardMaterial({
+    map: frontTexture,
+    side: THREE.BackSide,
+    roughness: 0.65,
+    metalness: 0.25,
+    alphaTest: 0.1,
+    flatShading: true
+  }), [frontTexture]);
+
+  const backMaterial = useMemo(() => new THREE.MeshStandardMaterial({
+    map: backTexture,
+    side: THREE.FrontSide,
+    roughness: 0.65,
+    metalness: 0.25,
+    alphaTest: 0.1,
+    flatShading: true
+  }), [backTexture]);
+
+
+  const geometry = useMemo(() => {
+    const numPoints = 7;
+    const radius = 5;
+
+    // Create curve around sphere
+    const curvePoints = Array.from({ length: numPoints }, (_, i) => {
+      const theta = (i / numPoints) * Math.PI * 2;
+      return new THREE.Vector3().setFromSphericalCoords(
+        radius,
+        Math.PI / 2 + 0.9 * (Math.random() - 0.5),
+        theta
+      );
+    });
+
+    const curve = new THREE.CatmullRomCurve3(curvePoints, true);
+    curve.tension = 0.7;
+
+    const spacedPoints = curve.getSpacedPoints(segments);
+    const frames = curve.computeFrenetFrames(segments, true);
+
+    const dimensions = [-0.6, 0.6]; 
+    const finalVertices = [];
+
+    // Build ribbon vertices along binormals
+    dimensions.forEach((d) => {
+      for (let i = 0; i <= segments; i++) {
+        const base = spacedPoints[i];
+        const offset = frames.binormals[i].clone().multiplyScalar(d);
+        finalVertices.push(base.clone().add(offset));
+      }
+    });
+
+    // Close ends 
+    finalVertices[0].copy(finalVertices[segments]);
+    finalVertices[segments + 1].copy(finalVertices[2 * segments + 1]);
+
+
+    const geom = new THREE.BufferGeometry().setFromPoints(finalVertices);
+
+
+    const indices = [];
+    for (let i = 0; i < segments; i++) {
+      const a = i;
+      const b = i + segments + 1;
+      const c = i + 1;
+      const d = i + segments + 2;
+
+      indices.push(a, b, c);
+      indices.push(b, d, c);
+    }
+    geom.setIndex(indices);
+    geom.computeVertexNormals();
+
+   
+    const uvs = [];
+    for (let i = 0; i <= 1; i++) {
+      for (let j = 0; j <= segments; j++) {
+        uvs.push(j / segments * 5, i); 
+      }
+    }
+    geom.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+
+
+    geom.clearGroups();
+    geom.addGroup(0, indices.length, 0); // front material
+    geom.addGroup(0, indices.length, 1); // back material
+
+    return geom;
+  }, []);
+
+  return (
+    <mesh ref={ribbonRef} geometry={geometry} material={[frontMaterial, backMaterial]} />
+  );
+}
+
 
 
 const RotatingModel = () => {
@@ -340,11 +459,22 @@ const StickyColumnScroll = () => {
     setPosition({ x: e.clientX + 20, y: e.clientY });
   };
 
+  
   return (
-    <div className="bg-[#F9F9F9]">
-      {" "}
-      <div className=" max-w-[1200px] mx-auto px-6">
-        <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
+    <>
+<Canvas
+  camera={{ position: [0, 6, 12], fov: 45 }}
+  style={{ width: '100vw', height: '100vh' }}
+>
+  <color attach="background" args={['#ffffff']} />
+  <ambientLight intensity={0.86} color={0xffffff} />
+<directionalLight position={[0, -10, -10]} intensity={1} color={0xffffff} />
+
+  <OrbitControls />
+  <RibbonAroundSphere />
+</Canvas>
+
+            {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
           <div className="w-[64px] h-auto">
     
             <img src="../images/whitedots.svg" />
@@ -362,11 +492,14 @@ const StickyColumnScroll = () => {
               </span>
             </h1>
           </nav>
-        </header>
-
-        {/* About Section */}
-        <section className="py-10 border-b grid md:grid-cols-2 gap-12">
-          <p
+        </header> */}
+        <div className="bg-[#F9F9F9]">
+        <section className="h-screen w-full bg-white text-black px-10 py-8 md:px-20 md:py-16 grid grid-rows-2">
+  {/* Top Half */}
+  <div className="flex items-center justify-end">
+    <div className="max-w-[640px] text-left text-gray-500 text-base leading-relaxed">
+ 
+      <p
             ref={textRef}
             className="text-[1.5em] leading-[1.1] font-helvetica-neue max-w-[700px]"
           >
@@ -374,54 +507,35 @@ const StickyColumnScroll = () => {
             Our communication is always open—every question is welcome, and
             every concern is met with care and professionalism.
           </p>
+
+    </div>
+  </div>
+
+
+</section>
+
+
+
+
+      <div className="  mx-auto px-6">
+
+ 
+        <section className="h-screen py-10 border-b grid md:grid-cols-2 gap-12">
+          {/* <p
+            ref={textRef}
+            className="text-[1.5em] leading-[1.1] font-helvetica-neue max-w-[700px]"
+          >
+            We are committed to setting the standard for exceptional service.
+            Our communication is always open—every question is welcome, and
+            every concern is met with care and professionalism.
+          </p> */}
           <div
             className="relative text-[14px] flex justify-between space-x-12"
             onMouseMove={handleMouseMove}
           >
-            {/* Left Column */}
-            <div className="w-1/2">
-              <h3 className="font-bold font-helvetica-neue uppercase tracking-widest text-xs pt-2">
-                Our Patients
-              </h3>
-              <ul className="font-neue-montreal border-t mt-2 pt-1 space-y-1">
-                {patients
-                  .slice(0, Math.ceil(patients.length / 2))
-                  .map((member, index) => (
-                    <li
-                      key={index}
-                      onMouseEnter={() =>
-                        handleMouseEnter(member.image, "left")
-                      }
-                      onMouseLeave={handleMouseLeave}
-                      className="border-b pb-1 cursor-pointer hover:bg-[#d3fd50]"
-                    >
-                      {member.name}
-                    </li>
-                  ))}
-              </ul>
-            </div>
 
-            {/* Right Column */}
-            <div className="w-1/2">
-              <ul className="font-neue-montreal mt-[30px] pt-2 space-y-1">
-                {patients
-                  .slice(Math.ceil(patients.length / 2))
-                  .map((member, index) => (
-                    <li
-                      key={index + patients.length / 2}
-                      onMouseEnter={() =>
-                        handleMouseEnter(member.image, "right")
-                      }
-                      onMouseLeave={handleMouseLeave}
-                      className="border-b pb-1 cursor-pointer hover:bg-[#d3fd50]"
-                    >
-                      {member.name}
-                    </li>
-                  ))}
-              </ul>
-            </div>
 
-            {/* Hover Image */}
+  
             <AnimatePresence mode="popLayout">
   {hoveredImage && (
     <motion.div
@@ -441,6 +555,21 @@ const StickyColumnScroll = () => {
 
           </div>
         </section>
+        <div className="">
+  <h2 className="uppercase font-bold">Our Patients</h2>
+  <ul className="font-neue-montreal mt-[30px] pt-2 space-y-1">
+    {patients.map((member, index) => (
+      <li
+        key={index}
+        onMouseEnter={() => handleMouseEnter(member.image, "right")}
+        onMouseLeave={handleMouseLeave}
+        className="border-b pb-1 cursor-pointer hover:bg-[#d3fd50]"
+      >
+        {member.name}
+      </li>
+    ))}
+  </ul>
+</div>
 
         <section
         // className="bg-[#fb542d] py-10"
@@ -449,7 +578,7 @@ const StickyColumnScroll = () => {
             STICKY SECTION
           </h2> */}
 
-          <Canvas
+          {/* <Canvas
             camera={{ position: [0, 1.5, 4] }}
             gl={{ alpha: true }}
             style={{
@@ -481,10 +610,31 @@ const StickyColumnScroll = () => {
               <RotatingModel />
             </Suspense>
             <OrbitControls enableZoom={false} />
-          </Canvas>
+          </Canvas> */}
         </section>
         <section className="w-2/3 py-16"></section>
       </div>
+      <div className="">
+              <h3 className="font-bold font-helvetica-neue uppercase tracking-widest text-xs pt-2">
+                Our Patients
+              </h3>
+              <ul className="font-neue-montreal border-t mt-2 pt-1 space-y-1">
+                {patients
+                  .slice(0, Math.ceil(patients.length / 2))
+                  .map((member, index) => (
+                    <li
+                      key={index}
+                      onMouseEnter={() =>
+                        handleMouseEnter(member.image, "left")
+                      }
+                      onMouseLeave={handleMouseLeave}
+                      className="border-b pb-1 cursor-pointer hover:bg-[#d3fd50]"
+                    >
+                      {member.name}
+                    </li>
+                  ))}
+              </ul>
+            </div>
       <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
         <div
           id="left-column"
@@ -643,6 +793,8 @@ const StickyColumnScroll = () => {
         </div>
       </div>
     </div>
+    </>
+
   );
 };
 
