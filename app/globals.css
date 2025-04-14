@@ -5558,5 +5558,36 @@ a {
 
   border-bottom: 10px solid hotpink;
 }
+.repeat-title {
+  margin: 10vh 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
+.repeat-title__title {
+  font-family: 'widescreen-ex', sans-serif;
+  font-size: 38vw;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0;
+  display: grid;
+  cursor: default;
+  user-select: none;
+}
 
+.repeat-title__title--left { margin-right: auto; }
+.repeat-title__title--right { margin-left: auto; }
+
+.text-rep span {
+  grid-area: 1 / 1 / 2 / 2;
+  color: #000;
+  background: #fff;
+  line-height: 0.745;
+  padding-top: calc(0.059 * 24vw);
+  will-change: transform;
+}
+
+.text-rep span:not(:last-child) {
+  color: #000;
+}

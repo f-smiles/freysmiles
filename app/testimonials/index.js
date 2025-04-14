@@ -1,5 +1,6 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
+
+import { motion, AnimatePresence, useMotionValue, useSpring} from "framer-motion";
 import { Canvas, useFrame, useThree , useLoader} from "@react-three/fiber";
 import React, { useEffect, useState, useRef, Suspense, useMemo } from "react";
 import {
@@ -29,8 +30,8 @@ function RibbonAroundSphere() {
   const ribbonRef = useRef();
   const segments = 1000;
 
-  const frontTexture = useLoader(THREE.TextureLoader, '/images/text-strip1.png');
-  const backTexture = useLoader(THREE.TextureLoader, '/images/text-strip.png');
+  const frontTexture = useLoader(THREE.TextureLoader, '/images/front.png');
+  const backTexture = useLoader(THREE.TextureLoader, '/images/back.png');
 
   useEffect(() => {
     [frontTexture, backTexture].forEach((t) => {
@@ -43,45 +44,58 @@ function RibbonAroundSphere() {
     backTexture.repeat.set(-1, 1);
   }, [frontTexture, backTexture]);
 
-
   useFrame(() => {
     if (frontTexture) frontTexture.offset.x += 0.001;
     if (backTexture) backTexture.offset.x -= 0.001;
   });
 
-
   const frontMaterial = useMemo(() => new THREE.MeshStandardMaterial({
     map: frontTexture,
     side: THREE.BackSide,
+    transparent: true,
     roughness: 0.65,
     metalness: 0.25,
     alphaTest: 0.1,
-    flatShading: true
+    flatShading: true,
   }), [frontTexture]);
-
+  
   const backMaterial = useMemo(() => new THREE.MeshStandardMaterial({
     map: backTexture,
     side: THREE.FrontSide,
+    transparent: true,
     roughness: 0.65,
     metalness: 0.25,
     alphaTest: 0.1,
-    flatShading: true
+    flatShading: true,
   }), [backTexture]);
-
 
   const geometry = useMemo(() => {
     const numPoints = 7;
     const radius = 5;
 
-    // Create curve around sphere
-    const curvePoints = Array.from({ length: numPoints }, (_, i) => {
-      const theta = (i / numPoints) * Math.PI * 2;
-      return new THREE.Vector3().setFromSphericalCoords(
-        radius,
-        Math.PI / 2 + 0.9 * (Math.random() - 0.5),
-        theta
-      );
-    });
+
+    // const curvePoints = Array.from({ length: numPoints }, (_, i) => {
+    //   const theta = (i / numPoints) * Math.PI * 2;
+    //   return new THREE.Vector3().setFromSphericalCoords(
+    //     radius,
+    //     Math.PI / 2 + 0.9 * (Math.random() - 0.5),
+    //     theta
+    //   );
+    // });
+
+    // console.log("Froze:", curvePoints.map((v) => v.toArray()));
+
+    const curvePoints = [
+      new THREE.Vector3(0, -0.7791210925776592, 4.938924045885809),
+      new THREE.Vector3(3.8972287305003155, 0.390385708530144, 3.107936202961956),
+      new THREE.Vector3(4.859258415665126, -0.3968854951588747, -1.109040237509834),
+      new THREE.Vector3(2.082282719004117, 1.4028390529397634, -4.3239036913044595),
+      new THREE.Vector3(-2.012218566064509, -1.8686426688797089, -4.178414895675252),
+      new THREE.Vector3(-4.730483545820437, -1.2069668652552943, -1.0797020000434934),
+      new THREE.Vector3(-3.6656012860016367, -1.7372838238901793, 2.9232194798394224),
+    ];
+    
+    
 
     const curve = new THREE.CatmullRomCurve3(curvePoints, true);
     curve.tension = 0.7;
@@ -89,10 +103,10 @@ function RibbonAroundSphere() {
     const spacedPoints = curve.getSpacedPoints(segments);
     const frames = curve.computeFrenetFrames(segments, true);
 
-    const dimensions = [-0.6, 0.6]; 
+    const dimensions = [-0.7, 0.7]; 
     const finalVertices = [];
 
-    // Build ribbon vertices along binormals
+    // build ribbon vertices along binormals
     dimensions.forEach((d) => {
       for (let i = 0; i <= segments; i++) {
         const base = spacedPoints[i];
@@ -101,13 +115,10 @@ function RibbonAroundSphere() {
       }
     });
 
-    // Close ends 
     finalVertices[0].copy(finalVertices[segments]);
     finalVertices[segments + 1].copy(finalVertices[2 * segments + 1]);
 
-
     const geom = new THREE.BufferGeometry().setFromPoints(finalVertices);
-
 
     const indices = [];
     for (let i = 0; i < segments; i++) {
@@ -121,12 +132,10 @@ function RibbonAroundSphere() {
     }
     geom.setIndex(indices);
     geom.computeVertexNormals();
-
-   
     const uvs = [];
     for (let i = 0; i <= 1; i++) {
       for (let j = 0; j <= segments; j++) {
-        uvs.push(j / segments * 5, i); 
+        uvs.push(j / segments, i);
       }
     }
     geom.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
@@ -441,39 +450,64 @@ const StickyColumnScroll = () => {
     },
   ];
 
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
   const [hoveredImage, setHoveredImage] = useState(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [hoveredColumn, setHoveredColumn] = useState(null);
+  const [previousImage, setPreviousImage] = useState(null);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
-  const handleMouseEnter = (image, column) => {
-    setHoveredImage(image);
-    setHoveredColumn(column);
+  const handleMouseEnter = (imageUrl, index) => {
+    if (imageUrl !== hoveredImage) {
+      setPreviousImage(hoveredImage);
+      setHoveredImage(imageUrl);
+      setHoveredIndex(index);
+    }
   };
-
+  
   const handleMouseLeave = () => {
     setHoveredImage(null);
-    setHoveredColumn(null);
-  };
-
-  const handleMouseMove = (e) => {
-    setPosition({ x: e.clientX + 20, y: e.clientY });
+    setPreviousImage(null);
   };
 
   
+  const handleMouseMove = (e) => {
+    const offsetY = e.pageY - sectionTop;
+    x.set(e.clientX + 16);
+    y.set(offsetY);
+  };
+  
+  
+  
+  const patientSectionRef = useRef();
+  const [sectionTop, setSectionTop] = useState(0);
+
+  useEffect(() => {
+    if (patientSectionRef.current) {
+      const rect = patientSectionRef.current.getBoundingClientRect();
+      const scrollTop = window.scrollY || window.pageYOffset;
+      setSectionTop(rect.top + scrollTop);
+    }
+  }, []);
+  const pathRef = useRef();
+
+  useEffect(() => {
+    const path = pathRef.current;
+    const length = path.getTotalLength();
+    path.style.strokeDasharray = length;
+    path.style.strokeDashoffset = length;
+
+    gsap.to(path, {
+      strokeDashoffset: 0,
+      duration: 3,
+      ease: "power2.out",
+    });
+  }, []);
+  
   return (
     <>
-<Canvas
-  camera={{ position: [0, 6, 12], fov: 45 }}
-  style={{ width: '100vw', height: '100vh' }}
->
-  <color attach="background" args={['#ffffff']} />
-  <ambientLight intensity={0.86} color={0xffffff} />
-<directionalLight position={[0, -10, -10]} intensity={1} color={0xffffff} />
-
-  <OrbitControls />
-  <RibbonAroundSphere />
-</Canvas>
-
+    
             {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
           <div className="w-[64px] h-auto">
     
@@ -494,8 +528,32 @@ const StickyColumnScroll = () => {
           </nav>
         </header> */}
         <div className="bg-[#F9F9F9]">
-        <section className="h-screen w-full bg-white text-black px-10 py-8 md:px-20 md:py-16 grid grid-rows-2">
-  {/* Top Half */}
+        <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
+
+      <path
+        ref={pathRef}
+        strokeLinecap="round"
+        strokeLinejoin="miter"
+        fillOpacity="0"
+        strokeMiterlimit="4"
+        stroke="rgb(248,134,63)"
+        strokeOpacity="1"
+        strokeWidth="1.5"
+        d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
+      />
+    </svg>
+        <Canvas
+  camera={{ position: [0, 6, 12], fov: 45 }}
+  style={{ width: '100vw', height: '100vh' }}
+>
+  <color attach="background" args={['#ffffff']} />
+  <ambientLight intensity={0.86} color={0xffffff} />
+<directionalLight position={[0, -10, -10]} intensity={1} color={0xffffff} />
+
+  {/* <OrbitControls /> */}
+  <RibbonAroundSphere />
+</Canvas>
+        <section className="w-full text-black px-10 md:px-20 md:py-16 grid grid-rows-2">
   <div className="flex items-center justify-end">
     <div className="max-w-[640px] text-left text-gray-500 text-base leading-relaxed">
  
@@ -515,61 +573,52 @@ const StickyColumnScroll = () => {
 </section>
 
 
-
-
-      <div className="  mx-auto px-6">
-
- 
-        <section className="h-screen py-10 border-b grid md:grid-cols-2 gap-12">
-          {/* <p
-            ref={textRef}
-            className="text-[1.5em] leading-[1.1] font-helvetica-neue max-w-[700px]"
-          >
-            We are committed to setting the standard for exceptional service.
-            Our communication is always open—every question is welcome, and
-            every concern is met with care and professionalism.
-          </p> */}
-          <div
-            className="relative text-[14px] flex justify-between space-x-12"
-            onMouseMove={handleMouseMove}
-          >
-
-
-  
-            <AnimatePresence mode="popLayout">
-  {hoveredImage && (
+<section
+  ref={patientSectionRef}
+  className="min-h-screen w-full px-6 relative"
+  onMouseMove={handleMouseMove}
+>
+  {/* Floating image preview */}
+  <div className="absolute top-0 left-0 pointer-events-none z-50">
     <motion.div
-      key={hoveredImage + Date.now()} //  Unique key to ensure a rerender
-      className="fixed top-1/3 w-[180px] h-[250px] bg-cover bg-center border rounded-lg shadow-lg"
-      style={{
-        backgroundImage: `url(${hoveredImage})`,
-        left: hoveredColumn === "left" ? "50%" : "75%",
-      }}
-      initial={{ clipPath: "inset(0 100% 0 0)", opacity: 0 }}
-      animate={{ clipPath: "inset(0 0% 0 0)", opacity: 1 }}
-      exit={{ clipPath: "inset(0 100% 0 0)", opacity: 0 }}
-      transition={{ duration: 0.4, ease: "easeInOut" }}
-    />
-  )}
-</AnimatePresence>
+      className="w-[180px] h-[250px] rounded-lg overflow-hidden"
+      style={{ x, y }} // 👈 instant tracking now
+    >
+      {previousImage && (
+        <div
+          className="absolute inset-0 bg-cover bg-center z-0"
+          style={{ backgroundImage: `url(${previousImage})` }}
+        />
+      )}
+      {hoveredImage && (
+        <motion.div
+          key={hoveredIndex}
+          initial={{ x: "-100%" }}
+          animate={{ x: "0%" }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          className="absolute inset-0 bg-cover bg-center z-10"
+          style={{ backgroundImage: `url(${hoveredImage})` }}
+        />
+      )}
+    </motion.div>
+  </div>
 
-          </div>
-        </section>
-        <div className="">
-  <h2 className="uppercase font-bold">Our Patients</h2>
-  <ul className="font-neue-montreal mt-[30px] pt-2 space-y-1">
+  {/* Patient list */}
+  <h2 className="uppercase font-neueroman font-bold">Our Patients</h2>
+  <ul className="font-neue-montreal">
     {patients.map((member, index) => (
       <li
         key={index}
-        onMouseEnter={() => handleMouseEnter(member.image, "right")}
+        onMouseEnter={() => handleMouseEnter(member.image, index)}
         onMouseLeave={handleMouseLeave}
-        className="border-b pb-1 cursor-pointer hover:bg-[#d3fd50]"
+        className="border-b py-2"
       >
         {member.name}
       </li>
     ))}
   </ul>
-</div>
+</section>
+
 
         <section
         // className="bg-[#fb542d] py-10"
@@ -613,8 +662,8 @@ const StickyColumnScroll = () => {
           </Canvas> */}
         </section>
         <section className="w-2/3 py-16"></section>
-      </div>
-      <div className="">
+
+      {/* <div className="">
               <h3 className="font-bold font-helvetica-neue uppercase tracking-widest text-xs pt-2">
                 Our Patients
               </h3>
@@ -634,7 +683,7 @@ const StickyColumnScroll = () => {
                     </li>
                   ))}
               </ul>
-            </div>
+            </div> */}
       <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
         <div
           id="left-column"

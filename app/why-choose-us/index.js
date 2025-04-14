@@ -42,9 +42,12 @@ export default function WhyChooseUs() {
     <>
       <Hero />
       <CardStack />
+      <RepeatText text="FSO*" totalWords={7} tyIncrement={108} />
       <StackCards />
       {/* <ScrollTextReveal /> */}
       <About />
+
+
 
       <VennDiagram />
       {/* <GridLayout /> */}
@@ -56,6 +59,67 @@ export default function WhyChooseUs() {
     </>
   );
 }
+
+
+const RepeatText = ({ text, totalWords, tyIncrement }) => {
+  const elRef = useRef();
+  const wordRefs = useRef([]);
+
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+
+    el.innerHTML = '';
+    wordRefs.current = [];
+
+    for (let i = 0; i < totalWords; i++) {
+      const span = document.createElement('span');
+      span.textContent = text;
+      span.style.display = 'block';
+      span.style.transform = `translateY(${i * tyIncrement}px)`; 
+      el.appendChild(span);
+      wordRefs.current.push(span);
+    }
+
+    el.classList.add('text-rep');
+
+   
+    gsap.set(wordRefs.current, { yPercent: 0 });
+
+    
+    wordRefs.current.forEach((span, i) => {
+      if (i === 0) return; 
+
+      gsap.to(span, {
+        yPercent: -i * 24,
+
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: `top+=${i * 50} center-=70`,
+          end:   `top+=${(i + 1) * 50} center-=70`,
+          
+          
+          
+          scrub: true,
+        },
+      });
+    });
+  }, [text, totalWords, tyIncrement]);
+
+  return (
+    <div className="repeat-title-wrapper">
+      <h2
+        className="repeat-title__title repeat-title__title--size-l"
+        data-text-rep
+        ref={elRef}
+      >
+        {text}
+      </h2>
+    </div>
+  );
+};
+
 
 function Hero() {
   const overlayRef = useRef(null);
@@ -433,14 +497,14 @@ const CardStack = () => {
             </li>
           </ul>
         </div>
-        <section className="flex items-center px-10">
+        {/* <section className="flex items-center px-10">
   <p className="max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
   Orthodontic Treatment should be a once-in-a-lifetime experience, so making the right choice is an important decision. Here are the reasons we feel you should choose FreySmiles for you or your child’s treatment.
   </p>
-</section>
-<div className="w-2/3 ml-auto">
+</section> */}
+{/* <div className="w-2/3 ml-auto">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-32 min-h-screen">
-    {/* Card 1 */}
+
     <div className="rounded-3xl overflow-hidden bg-[#FAFF00] flex flex-col">
       <div className="aspect-[3/4] w-full">
         <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
@@ -456,7 +520,6 @@ const CardStack = () => {
       </div>
     </div>
 
-    {/* Card 2 */}
     <div className="rounded-3xl overflow-hidden bg-[#8B5E3C] flex flex-col">
       <div className="aspect-[3/4] w-full">
         <img
@@ -474,14 +537,14 @@ const CardStack = () => {
       </div>
     </div>
   </div>
-</div>
+</div> */}
 
 
       </div>
 
 
 
-
+{/* 
  
       <section className="bg-[#F1F1F1] sun-section">
    
@@ -503,7 +566,7 @@ const CardStack = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </>
   );
 };
