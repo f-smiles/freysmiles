@@ -5103,8 +5103,8 @@ a {
 
 .content__title1 {
 	font-size: 2.2em;
-
-  font-family: "NeueHaasRoman";
+color: white;
+  font-family: "NeueMontrealBook";
 	line-height: 0.8;
 	text-align: center;
   display: inline-block;
@@ -5186,15 +5186,13 @@ a {
 
 
 
-
+/* 
 .wrappersection {
-  margin: 0;
+  margin: 30px;
   padding: 0;
-  height: 100%;
-  overflow: hidden;
   font-family: NeueHaasGroteskDisplayExtraLight;
   background: #EFEFEF;
-}
+} */
 
 /* .diagonal-page {
   width: 100%;
@@ -5205,11 +5203,11 @@ a {
 
 
 .section-container {
-  height: 100vh;
+  /* height: 100vh; */
   width: 100%;
-  overflow: hidden;
-  position: relative;
-  z-index: 2;
+  /* overflow: hidden; */
+  /* position: relative; */
+  /* z-index: 100; */
 }
 
 .text-slider {
@@ -5559,7 +5557,7 @@ a {
   border-bottom: 10px solid hotpink;
 }
 .repeat-title {
-  margin: 10vh 0 0 0;
+  margin: 20vh 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -5567,7 +5565,7 @@ a {
 
 .repeat-title__title {
   font-family: 'widescreen-ex', sans-serif;
-  font-size: 38vw;
+  font-size: 32vw;
   font-weight: 900;
   text-transform: uppercase;
   margin: 0;
@@ -5591,3 +5589,7 @@ a {
 .text-rep span:not(:last-child) {
   color: #000;
 }
+/* .word {
+  display: inline-block;
+  will-change: transform;
+} */

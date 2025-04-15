@@ -10,99 +10,94 @@ const CaringForYourBraces = () => {
 
   useEffect(() => {
     let tl;
-
+  
     const updateGSAPValues = () => {
       const containerWidth = window.innerWidth;
-      const sections = document.querySelectorAll(".allsections");
-
-      const numSections = sections.length;
+      const numSections = document.querySelectorAll(".allsections").length;
       const totalScrollDistance = (numSections - 1) * containerWidth;
-
+  
       const greenOffset = -containerWidth * 0.64;
       const whiteOffset = -containerWidth * 1.44;
       const orangeOffset = -containerWidth * 2.24;
       const redOffset = -containerWidth * 3.04;
       const blackOffset = -containerWidth * 3.84;
-
+  
       if (tl) {
         tl.kill();
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
       }
-
+  
+      // Set initial text content X offsets
       gsap.set(".greenContentText", { x: greenOffset });
       gsap.set(".whiteContentText", { x: whiteOffset });
       gsap.set(".orangeContentText", { x: orangeOffset });
       gsap.set(".redContentText", { x: redOffset });
       gsap.set(".blackContentText", { x: blackOffset });
-
+  
+      // Set initial translateX for sections
+      gsap.set(".purpleSection", { x: "0vw" });
+      gsap.set(".greenSection", { x: "80vw" });
+      gsap.set(".whiteSection", { x: "95vw" });
+      gsap.set(".orangeSection", { x: "100vw" });
+      gsap.set(".redSection", { x: "100vw" });
+      gsap.set(".blackSection", { x: "100vw" });
+  
       tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: () => `+=${totalScrollDistance}`,
-          scrub: .1,
+          end: `+=${totalScrollDistance}`,
+          scrub: 1,
           pin: true,
-          
-        
         },
       });
-
-      gsap.set(".purpleSection", { left: "0vw" });
-      gsap.set(".greenSection", { left: "80vw" });
-      gsap.set(".whiteSection", { left: "95vw" });
-      gsap.set(".orangeSection", { left: "100vw" });
-      gsap.set(".redSection", { left: "100vw" });
-      gsap.set(".blackSection", { left: "100vw" });
-
-      tl.to(".greenSection", { left: "0vw", duration: 1, ease: "none" }, 0);
-      tl.to(".whiteSection", { left: "80vw", duration: 1, ease: "none" }, 0);
-      tl.to(".orangeSection", { left: "95vw", duration: 1, ease: "none" }, 0);
-      tl.to(".redSection", { left: "100vw", duration: 1, ease: "none" }, 0);
-      tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 0);
-
-      tl.to(".whiteSection", { left: "0vw", duration: 1, ease: "none" }, 1);
-      tl.to(".orangeSection", { left: "80vw", duration: 1, ease: "none" }, 1);
-      tl.to(".redSection", { left: "95vw", duration: 1, ease: "none" }, 1);
-      tl.to(".blackSection", { left: "100vw", duration: 1, ease: "none" }, 1);
-
-      tl.to(".orangeSection", { left: "0vw", duration: 1, ease: "none" }, 2);
-      tl.to(".redSection", { left: "80vw", duration: 1, ease: "none" }, 2);
-      tl.to(".blackSection", { left: "95vw", duration: 1, ease: "none" }, 2);
-
-      tl.to(".redSection", { left: "0vw", duration: 1, ease: "none" }, 3);
-      tl.to(".blackSection", { left: "80vw", duration: 1, ease: "none" }, 3);
-
-      tl.to(".blackSection", { left: "0vw", duration: 1, ease: "none" }, 4);
-
+  
+      // Slide each section using translateX
+      tl.to(".greenSection", { x: "0vw", duration: 1, ease: "none" }, 0);
+      tl.to(".whiteSection", { x: "80vw", duration: 1, ease: "none" }, 0);
+      tl.to(".orangeSection", { x: "95vw", duration: 1, ease: "none" }, 0);
+      tl.to(".redSection", { x: "100vw", duration: 1, ease: "none" }, 0);
+      tl.to(".blackSection", { x: "100vw", duration: 1, ease: "none" }, 0);
+  
+      tl.to(".whiteSection", { x: "0vw", duration: 1, ease: "none" }, 1);
+      tl.to(".orangeSection", { x: "80vw", duration: 1, ease: "none" }, 1);
+      tl.to(".redSection", { x: "95vw", duration: 1, ease: "none" }, 1);
+      tl.to(".blackSection", { x: "100vw", duration: 1, ease: "none" }, 1);
+  
+      tl.to(".orangeSection", { x: "0vw", duration: 1, ease: "none" }, 2);
+      tl.to(".redSection", { x: "80vw", duration: 1, ease: "none" }, 2);
+      tl.to(".blackSection", { x: "95vw", duration: 1, ease: "none" }, 2);
+  
+      tl.to(".redSection", { x: "0vw", duration: 1, ease: "none" }, 3);
+      tl.to(".blackSection", { x: "80vw", duration: 1, ease: "none" }, 3);
+  
+      tl.to(".blackSection", { x: "0vw", duration: 1, ease: "none" }, 4);
+  
+      // Reveal content text
       tl.to(".greenContentText", { x: "0%", duration: 0.8, ease: "none" }, 0.2);
       tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 0.2);
-      tl.to(
-        ".orangeContentText",
-        { x: "0%", duration: 2.8, ease: "none" },
-        0.2
-      );
+      tl.to(".orangeContentText", { x: "0%", duration: 2.8, ease: "none" }, 0.2);
       tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 0.2);
       tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 0.2);
-
+  
       setTimeout(() => {
         ScrollTrigger.refresh();
       }, 100);
     };
-
+  
     const ctx = gsap.context(() => {
       updateGSAPValues();
     }, containerRef);
-
+  
     updateGSAPValues();
-    window.addEventListener("resize", () => {
-      updateGSAPValues();
-    });
-
+    window.addEventListener("resize", updateGSAPValues);
+  
     return () => {
       window.removeEventListener("resize", updateGSAPValues);
       ctx.revert();
     };
   }, []);
+  
 
   useEffect(() => {
     gsap.to(".fixedNav", {
@@ -234,7 +229,7 @@ const CaringForYourBraces = () => {
         </div>
       </div>
     </div> */}
-<div className="relative w-fit">
+{/* <div className="relative w-fit">
 
   <div className="absolute inset-0" />
   <svg fill="none" height="83" viewBox="0 0 83 83" width="83" xmlns="http://www.w3.org/2000/svg"><path d="m28.9392 17.858c1.3435 1.3435 3.4104 1.3435 4.7539 0l5.5806-5.5806c1.3434-1.3434 3.4103-1.3434 4.7538 0l5.7872 5.7873c1.3435 1.3435 1.3435 3.4104.0001 4.7538l-49.295211 49.2952 10.541111 10.5411 49.2951-49.2952c1.3435-1.3434 3.4104-1.3434 4.7539 0l5.7873 5.7873c1.3434 1.3435 1.3434 3.4104 0 4.7538l-5.5806 5.5806c-1.3435 1.3435-1.3435 3.4104 0 4.7539l5.7872 5.7872c1.3435 1.3435 1.3435 3.4104 0 4.7539l-5.5805 5.5805c-1.3435 1.3435-1.3435 3.4104 0 4.7539l5.7872 5.7872c1.3435 1.3435 3.4104 1.3435 4.7539 0l5.5805-5.5806c1.3435-1.3434 1.3435-3.4103 0-4.7538l-5.7872-5.7872c-1.3435-1.3435-1.3435-3.4104 0-4.7539l5.5806-5.5806c1.3434-1.3434 1.3434-3.4103-.0001-4.7538l-5.7872-5.7873c-1.3435-1.3434-1.3435-3.4103 0-4.7538l5.5806-5.5806c1.3434-1.3435 1.3434-3.4103 0-4.7538l-5.7873-5.7873c-1.3435-1.3435-1.3435-3.4103 0-4.7538l5.5806-5.5806c1.3435-1.3435 1.3435-3.41035 0-4.75382l-5.7873-5.78728c-1.3435-1.343473-3.4103-1.343472-4.7538 0l-5.5806 5.58059c-1.3435 1.34347-3.4104 1.34346-4.7538-.00001l-5.7873-5.78726c-1.3435-1.34348-3.4104-1.343486-4.7538-.00001l-5.5806 5.58058c-1.3435 1.34348-3.4104 1.34348-4.7539.00001l-5.7872-5.78727c-1.3435-1.343477-3.4104-1.343476-4.7539 0l-5.5805 5.58058c-1.3435 1.34347-3.4104 1.34347-4.7539 0l-5.7872-5.78728c-1.3435-1.34347-3.41039-1.343472-4.75387 0l-5.58058 5.58058c-1.343475 1.34348-1.343473 3.41039 0 4.75379l5.78727 5.7873c1.34348 1.3435 3.41038 1.3435 4.75388 0l5.5805-5.5806c1.3435-1.3434 3.4104-1.3434 4.7539 0zm31.21-5.3739c1.3434-1.3435 3.4103-1.3435 4.7538 0l5.7873 5.7873c1.3434 1.3435 1.3434 3.4103 0 4.7538l-5.5806 5.5806c-1.3435 1.3435-3.4104 1.3435-4.7539 0l-5.7872-5.7873c-1.3435-1.3434-1.3435-3.4103 0-4.7538z" fill="#C9FE6E"/></svg>
@@ -244,11 +239,59 @@ const CaringForYourBraces = () => {
   >
     Braces Care
   </h1>
-</div>
+</div> */}
 
 </div>
 
-        <div
+<div>
+{/* <div className="w-[30vw] min-w-[340px] bg-[#DAD5D2] h-screen fixed top-0 left-0 z-10 flex flex-col justify-between px-8 py-12 border-r border-black text-black font-neuehaas45">
+
+  <div className="absolute top-0 right-0 w-[48px] h-[48px] bg-black text-white flex items-center justify-center">
+    <span className="text-[20px]">☺</span>
+  </div>
+
+
+  <div className="space-y-16">
+
+
+
+
+    <h1 className="text-[32px] mt-10 leading-[1.1]">
+    Treatmen Duration
+
+
+    </h1>
+
+
+    <p className="text-[14px] font-neuehaas35 leading-relaxed max-w-[280px]">
+    Your treatment time depends on your plan and how well you
+                    follow our team's guidance. Most Frey Smiles patients see
+                    their ideal smile in just 12 to 20 months. 
+      <br /><br />
+      Ready to begin?
+      We’re here to make it happen.
+    </p>
+
+
+    <button className="w-[44px] h-[44px] bg-black text-white rounded-full flex items-center justify-center mt-6">
+      <span className="text-[20px] leading-none">→</span>
+    </button>
+  </div>
+
+
+  <div className="text-[12px] tracking-wide">
+    Instagram / Twitter
+  </div>
+
+
+  <div className="absolute right-[-12px] bottom-0 h-full flex items-center justify-center">
+    <p className="text-[18px] tracking-widest uppercase rotate-90 origin-bottom-left">
+      SCROLL
+    </p>
+  </div>
+</div> */}
+
+  <div
           style={{
             fontFamily: "NeueMontrealBook",
             height: "100%",
@@ -641,6 +684,9 @@ const CaringForYourBraces = () => {
             </div>
           </div>
         </div>
+
+  </div>
+       
       </div>
     </div>
   );

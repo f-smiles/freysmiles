@@ -528,6 +528,22 @@ const StickyColumnScroll = () => {
           </nav>
         </header> */}
         <div className="bg-[#F9F9F9]">
+        <svg
+        viewBox="0 0 302 31"
+        className="absolute left-0 -bottom-1 w-full h-[20px] z-0"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M1.3,29.2C3.9,28,6.4,26.7,9,25.5c10.3-4.9,21.2-9.4,31.6-11.4s21.2-1,31,2.8s19.1,9.5,29.3,11.9
+          s20.2-0.2,30.1-4.1c9.4-3.7,18.7-8.3,28.5-9.8s19.1,1.7,28.5,5.7s19.3,8.5,28.9,6.8c9.6-1.7,17.6-10.3,26-17
+          c4.2-3.3,8.3-6.1,13.1-7.6c4.8-1.6,9.8-1.7,14.7-0.9c10.4,1.8,20.3,7.4,30,13.1"
+          stroke="#000"
+          strokeWidth="2"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
         <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
 
       <path

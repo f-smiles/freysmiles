@@ -11,12 +11,9 @@ import { gsap, TweenLite, TimelineMax, Sine } from "gsap";
 import { MotionPathPlugin } from "gsap-trial/MotionPathPlugin";
 gsap.registerPlugin(Physics2DPlugin, SplitText, MotionPathPlugin);
 
-
 const YourCare = () => {
-  
   const [activeIndex, setActiveIndex] = useState(0);
   const isAnimating = useRef(false);
-
 
   const handleScroll = (deltaY) => {
     if (isAnimating.current) return;
@@ -35,38 +32,53 @@ const YourCare = () => {
     window.addEventListener("wheel", onWheel);
     return () => window.removeEventListener("wheel", onWheel);
   }, []);
+  const textRef = useRef();
+  const currentSplitRef = useRef();
+  const textPrevIndexRef = useRef(activeIndex);
+  useLayoutEffect(() => {
+    if (!textRef.current) return;
 
+    const nextText = SECTIONS[activeIndex];
 
+    textPrevIndexRef.current = activeIndex;
+
+    if (currentSplitRef.current) {
+      gsap.to(currentSplitRef.current.words, {
+        opacity: 0,
+        duration: 0.01,
+      });
+      currentSplitRef.current.revert();
+    }
+
+    textRef.current.textContent = nextText;
+
+    const split = new SplitText(textRef.current, {
+      type: "words",
+      wordsClass: "word",
+    });
+
+    currentSplitRef.current = split;
+
+    gsap.fromTo(
+      split.words,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        duration: 1.2,
+        stagger: {
+          each: 0.03,
+          from: "random",
+        },
+        ease: "power2.out",
+      }
+    );
+  }, [activeIndex]);
 
   const SECTIONS = [
-    <>
-    Experience your initial consultation — in person or virtually — at{" "}
-    <span className="relative inline-block">
-      <span className="relative z-10">no cost</span>
-      <svg
-        viewBox="0 0 302 31"
-        className="absolute left-0 -bottom-1 w-full h-[20px] z-0"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M1.3,29.2C3.9,28,6.4,26.7,9,25.5c10.3-4.9,21.2-9.4,31.6-11.4s21.2-1,31,2.8s19.1,9.5,29.3,11.9
-          s20.2-0.2,30.1-4.1c9.4-3.7,18.7-8.3,28.5-9.8s19.1,1.7,28.5,5.7s19.3,8.5,28.9,6.8c9.6-1.7,17.6-10.3,26-17
-          c4.2-3.3,8.3-6.1,13.1-7.6c4.8-1.6,9.8-1.7,14.7-0.9c10.4,1.8,20.3,7.4,30,13.1"
-          stroke="#000"
-          strokeWidth="2"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </span>
-    .
-  </>,
-    <>This initial visit includes an in-depth orthodontic evaluation, digital radiographs, and professional imaging.
-    </>,
-    <>We encourage all decision-makers to attend the initial visit so we can discuss the path ahead with clarity and transparency — ensuring everyone is aligned on expectations, preferences, and the ideal time to begin.</>,
-    <>If treatment isn’t yet needed, no cost observation check-ups will be coordinated every 6-12 months until treatment is needed. These are shorter and fun visits where you'll have access to all four of our locations to play video games and get to know our team. </>,
-    // "Our goal is for every patient to leave fully informed, with clarity and confidence about their treatment path.
+    "Experience your initial consultation — in person or virtually — at no cost.",
+    "This initial visit includes an in-depth orthodontic evaluation, digital radiographs, and professional imaging.",
+    "We encourage all decision-makers to attend the initial visit so we can discuss the path ahead with clarity and transparency — ensuring everyone is aligned on expectations, preferences, and the ideal time to begin.",
+    "If treatment isn’t yet needed, no cost observation check-ups will be coordinated every 6-12 months until treatment is needed. These are shorter and fun visits where you'll have access to all four of our locations to play video games and get to know our team.",
   ];
 
   const ellipsesRef = useRef([]);
@@ -92,7 +104,7 @@ const YourCare = () => {
   const path1Ref = useRef(null);
   const path2Ref = useRef(null);
   const path3Ref = useRef(null);
-
+const revealRef = useRef(null)
   useEffect(() => {
     if (!ballRef.current || !path1Ref.current) return;
 
@@ -107,6 +119,9 @@ const YourCare = () => {
   }, []);
 
   const prevIndexRef = useRef(activeIndex);
+
+  const whiteTextRef = useRef();
+
   useLayoutEffect(() => {
     if (!ballRef.current) return;
 
@@ -145,106 +160,148 @@ const YourCare = () => {
 
     const tl = gsap.timeline();
 
-
     if (prevIndex === 3 && activeIndex === 2) {
-
       tl.set(ballRef.current, { zIndex: 10 });
-  
-      tl.to(ballRef.current, {
-          scale: 1,
-          duration: 1.5,
-          ease: "power2.out"
-      });
-  
-
-      tl.to(".svg-text-wrapper", {
-          opacity: 0,
-          duration: 0.5,
-          ease: "power2.out"
-      }, "<");
-  
-      tl.to(ballRef.current, {
-          duration: 1.2,
-          motionPath: {
-              path: path3Ref.current,
-              align: path3Ref.current,
-              alignOrigin: [0.5, 0.5],
-              start: 0,
-              end: 1,
-              autoRotate: true,
-          },
-          ease: "power2.inOut",
-      }, ">");
-  }
-  
-  else {
 
       tl.to(ballRef.current, {
-          duration: 1.2,
-          motionPath: {
-              path: pathRef,
-              align: pathRef,
-              alignOrigin: [0.5, 0.5],
-              start,
-              end,
-              autoRotate: true,
-          },
-          ease: "power2.inOut",
-      });
-    }
-    
-
-  if (activeIndex === 3) {
-    tl.set(ballRef.current, { zIndex: 50 });
-    ballRef.current.offsetHeight;
-    
-  //   gsap.to(ballRef.current, {
-  //     scale: 125,
-  //     ease: "power2.inOut",
-  //     transformOrigin: "center center",
-  //     overwrite: "auto",
-  //     scrollTrigger: {
-  //       trigger: ".wrappersection",
-  //         trigger: ballRef.current,
-  //         start: "top center",
-  //         end: "+=3000px",
-  //         scrub: true,
-  //         markers: true
-  //     }
-  // });
-    tl.to(ballRef.current, {
-        scale: 125,
-        duration: 2,
-        ease: "power2.inOut"
-    });
-    
-    tl.to(".svg-text-wrapper", {
-      opacity: 1, 
-      duration: 0.5,
-      ease: "power2.out"
-  }, ">");
-tl.to(".svg-text-wrapper", {
-    x: "-200px",
-    duration: 1,
-    ease: "power2.inOut"
-}, ">");
-
-} else {
-    tl.set(ballRef.current, { zIndex: 10 });
-
-    tl.to(ballRef.current, {
         scale: 1,
         duration: 1.5,
-        ease: "power2.out"
-    }, "<");
+        ease: "power2.out",
+      });
+
+      tl.to(
+        ".svg-text-wrapper",
+        {
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.out",
+        },
+        "<"
+      );
+
+      tl.to(
+        ballRef.current,
+        {
+          duration: 1.2,
+          motionPath: {
+            path: path3Ref.current,
+            align: path3Ref.current,
+            alignOrigin: [0.5, 0.5],
+            start: 0,
+            end: 1,
+            autoRotate: true,
+          },
+          ease: "power2.inOut",
+        },
+        ">"
+      );
+    } else {
+      tl.to(ballRef.current, {
+        duration: 1.2,
+        motionPath: {
+          path: pathRef,
+          align: pathRef,
+          alignOrigin: [0.5, 0.5],
+          start,
+          end,
+          autoRotate: true,
+        },
+        ease: "power2.inOut",
+      });
+    }
+
+    if (activeIndex === 3) {
+      gsap.fromTo(
+        ".text-slide:nth-child(4)",
+        {
+          y: 100,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power2.out",
+        }
+      );
 
 
-}
-    requestAnimationFrame(() => {
-        ScrollTrigger.refresh();
-    });
-}, [activeIndex]);
-  
+      const prevTrigger = ScrollTrigger.getById("scaleScrollSequence");
+      if (prevTrigger) prevTrigger.kill();
+
+      gsap.set(ballRef.current, { scale: 1, zIndex: 999 });
+      gsap.set(".svg-text-wrapper", { opacity: 0, x: 0 });
+      gsap.set(".sticky-shift", { x: 0 });
+
+
+      const scrollTL = gsap.timeline({
+        scrollTrigger: {
+          id: "scaleScrollSequence",
+          trigger: ".fake-scroll-wrapper",
+          start: "top top",
+          end: "+=2500",
+          scrub: true,
+          pin: true,
+          markers: true,
+        },
+      });
+
+      scrollTL.to(ballRef.current, {
+        scale: 125,
+        ease: "power2.inOut",
+      });
+
+      scrollTL.to(
+        ".svg-text-wrapper",
+        {
+          opacity: 1,
+          ease: "power2.out",
+        },
+        ">"
+      );
+
+      scrollTL.to(
+        ".svg-text-wrapper",
+        {
+          x: "-200px",
+          ease: "power2.inOut",
+        },
+        ">"
+      );
+
+      scrollTL.fromTo(
+        ".sticky-shift",
+        { clipPath: "inset(0% 0% 0% 0%)" },
+        { clipPath: "inset(0% 50% 0% 0%)", ease: "power4.inOut" },
+        ">"
+      );
+
+      scrollTL.fromTo(
+        revealRef.current,
+        { clipPath: "inset(0% 0% 0% 100%)" },
+        { clipPath: "inset(0% 0% 0% 50%)", ease: "power4.inOut" }, 
+        ">+0.2"
+      );
+      
+      
+      
+      
+    }
+    else {
+      const prevTrigger = ScrollTrigger.getById("scaleScrollSequence");
+      if (prevTrigger) {
+        prevTrigger.revert(); 
+        prevTrigger.kill();   
+      }
+      gsap.set(".sticky-shift", { clipPath: "inset(0% 0% 0% 0%)"});
+      gsap.set(".svg-text-wrapper", { opacity: 0, x: 0 });
+      gsap.set(ballRef.current, { scale: 1 });
+    
+
+    }
+    
+    
+  }, [activeIndex]);
 
   const BUTTONS = [
     "Initial Consultation",
@@ -255,7 +312,7 @@ tl.to(".svg-text-wrapper", {
 
   const sectionRef = useRef(null);
   const pixelRefs = useRef([]);
-  
+
   const NUM_ROWS = 4;
   const NUM_COLS = 10;
   useEffect(() => {
@@ -267,172 +324,192 @@ tl.to(".svg-text-wrapper", {
         scrub: 1,
       },
     });
-  
-    const rowStagger = 0.02, overlapDelay = 0.2, columnDuration = 2 * rowStagger + overlapDelay;
+
+    const rowStagger = 0.02,
+      overlapDelay = 0.2,
+      columnDuration = 2 * rowStagger + overlapDelay;
     const NUM_COLS = pixelRefs.current.length;
     const [skips, fills] = [[], []];
-    
+
     for (let i = NUM_COLS - 1; i >= 0; i -= 2) skips.push(i);
     for (let i = NUM_COLS - 2; i >= 0; i -= 2) fills.push(i);
-    
+
     const orderedCols = [];
     while (skips.length || fills.length) {
       if (skips.length) orderedCols.push(skips.shift());
       if (fills.length) orderedCols.push(fills.shift());
     }
-  
-    const getOrigin = (colIndex, rowIndex) => 
-      colIndex % 2 !== 0 
-        ? rowIndex % 2 === 0 ? "left center" : "right center" 
-        : rowIndex % 2 === 0 ? "right center" : "left center";
-  
-    const rowOrder = [3, 1], finalPair = [0, 2];
-  
+
+    const getOrigin = (colIndex, rowIndex) =>
+      colIndex % 2 !== 0
+        ? rowIndex % 2 === 0
+          ? "left center"
+          : "right center"
+        : rowIndex % 2 === 0
+        ? "right center"
+        : "left center";
+
+    const rowOrder = [3, 1],
+      finalPair = [0, 2];
+
     orderedCols.forEach((colIndex, stepIndex) => {
       const column = pixelRefs.current[colIndex];
       const columnStart = stepIndex * columnDuration;
-      
+
       rowOrder.forEach((rowIdx, i) => {
-        if (column[rowIdx]) tl.to(column[rowIdx], {
-          width: "120%", scaleX: 1, transformOrigin: getOrigin(colIndex, rowIdx), ease: "power2.out"
-        }, columnStart + i * rowStagger);
+        if (column[rowIdx])
+          tl.to(
+            column[rowIdx],
+            {
+              width: "120%",
+              scaleX: 1,
+              transformOrigin: getOrigin(colIndex, rowIdx),
+              ease: "power2.out",
+            },
+            columnStart + i * rowStagger
+          );
       });
-  
-      finalPair.forEach(rowIdx => {
-        if (column[rowIdx]) tl.to(column[rowIdx], {
-          width: "120%", scaleX: 1, transformOrigin: getOrigin(colIndex, rowIdx), ease: "power2.out"
-        }, columnStart + rowOrder.length * rowStagger + overlapDelay);
+
+      finalPair.forEach((rowIdx) => {
+        if (column[rowIdx])
+          tl.to(
+            column[rowIdx],
+            {
+              width: "120%",
+              scaleX: 1,
+              transformOrigin: getOrigin(colIndex, rowIdx),
+              ease: "power2.out",
+            },
+            columnStart + rowOrder.length * rowStagger + overlapDelay
+          );
       });
     });
-  
-    return () => ScrollTrigger.getAll().forEach(t => t.kill());
+
+    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
   }, []);
-  
-  
+
   return (
     <>
-    
-    <div className="wrappersection py-10 ">
-    <div 
-        id="fullscreenBall" 
-        ref={ballRef}
-        className="fixed top-1/2 left-1/2 w-[16px] h-[16px] bg-[#1127FF] rounded-full z-[20] pointer-events-none"
-  
-    />
-
-<div class="text-white text-[28px] svg-text-wrapper fixed inset-0 flex items-center justify-center opacity-0 z-[1000] pointer-events-none">
-State-of-the-Art Technology
+      <div
+        className="h-screen w-full font-neuehaas35"
+        style={{ background: "#EFEFEF" }}
+      >
+        <div className="bg-[#EFEFEF] fake-scroll-wrapper h-[100vh]">
+        <div
+  ref={revealRef}
+  className="z-[60] absolute inset-[10px] bg-[#FF4411] origin-right"
+  style={{ clipPath: "inset(0% 0% 0% 100%)" }}
+>
+  HLI
 </div>
-
-
-<div className="fixed top-0 z-[40] pointer-events-none">
-
-
-  <div className="section-container">
-    <div className="h-full flex items-center justify-center gap-20 px-20 w-full">
-      <div className="min-w-[800px]">
-        <div className="relative w-full h-[300px]">
-          <svg
-            viewBox="-20 -300 1600 900"
-            xmlns="http://www.w3.org/2000/svg"
+          <div
+            className="sticky-shift sticky top-0 h-screen w-full"
+            style={{ padding: "10px" }}
           >
-            <g transform="scale(1, -1) translate(0, -600)">
-              <path
-                ref={path1Ref}
-                d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
-                fill="none"
-                stroke="black"
-                stroke-width="1.5"
-              />
-            </g>
-            <g transform="translate(550, -300)">
-              <path
-                ref={path2Ref}
-                d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
-                fill="none"
-                stroke="black"
-                stroke-width="1.5"
-              />
-            </g>
-            <g transform="scale(1, -1) translate(1100, -600)">
-              <path
-                ref={path3Ref}
-                d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
-                fill="none"
-                stroke="black"
-                stroke-width="1.5"
-              />
-            </g>
-          </svg>
+            <div className="relative overflow-hidden h-full w-full bg-[#EFEFEF] ">
 
 
-          <div className="absolute left-[200px] top-[50px] flex flex-col gap-4">
-            {BUTTONS.map((step, i) => (
-              <button
-                key={i}
-                className={`px-6 py-2 border rounded-full transition-all duration-300 ease-in-out ${
-                  activeIndex === i
-                    ? "bg-[#293CF0] text-white"
-                    : "bg-white text-black"
-                }`}
-              >
-                {step}
-              </button>
-            ))}
-          </div>
+
+              <div
+                ref={ballRef}
+                className="absolute top-1/2 left-1/2 w-[16px] h-[16px] bg-[#1127FF] rounded-full pointer-events-none z-[10]"
+                style={{ transform: "translate(-50%, -50%)" }}
+              />
+
+              <div className="text-white text-[28px] svg-text-wrapper fixed inset-0 flex items-center justify-center opacity-0 z-[1000] pointer-events-none">
+                State-of-the-Art Technology
+              </div>
 
      
-          <div className="absolute left-[430px] top-[220px] w-[180px] h-[140px] bg-[#293CF0] rounded-[32px] flex flex-col justify-between px-4 py-6 text-white">
-            <div className="text-sm leading-tight font-medium">
-              1 hour is all
-              <br />
-              it takes to get
-              <br />
-              clear answers.
-            </div>
 
-            <div className="flex justify-between items-center mt-2">
-              <a href="/book-now">
-                <button className="text-sm border border-white px-3 py-1 rounded-full hover:bg-white hover:text-black transition">
-                  Book →
-                </button>
-              </a>
+              <div className=" pointer-events-none">
+                <div
+                  className="z-[100] section-container absolute top-1/2 left-1/2 w-full"
+                  style={{ transform: "translate(-50%, -50%)" }}
+                >
+                  <div className="h-full flex items-center justify-center gap-20 px-20 w-full">
+                    <div className="min-w-[800px]">
+                      <div className="relative w-full h-[300px]">
+                        <svg
+                          viewBox="-20 -300 1600 900"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g transform="scale(1, -1) translate(0, -600)">
+                            <path
+                              ref={path1Ref}
+                              d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
+                              fill="none"
+                              stroke="black"
+                              strokeWidth="1.5"
+                            />
+                          </g>
+                          <g transform="translate(550, -300)">
+                            <path
+                              ref={path2Ref}
+                              d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
+                              fill="none"
+                              stroke="black"
+                              strokeWidth="1.5"
+                            />
+                          </g>
+                          <g transform="scale(1, -1) translate(1100, -600)">
+                            <path
+                              ref={path3Ref}
+                              d="M443.381 520.542H343.312V172.031a171.281 171.281 0 1 0-342.562 0v79.556"
+                              fill="none"
+                              stroke="black"
+                              strokeWidth="1.5"
+                            />
+                          </g>
+                        </svg>
+                        <div className="z-[50] absolute left-[200px] top-[50px] flex flex-col gap-4">
+                          {BUTTONS.map((step, i) => (
+                            <button
+                              key={i}
+                              className={`px-6 py-2 border rounded-full transition-all duration-300 ease-in-out ${
+                                activeIndex === i
+                                  ? "bg-[#1127FF] text-white"
+                                  : "bg-[#EFEFEF] text-black"
+                              }`}
+                            >
+                              {step}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="absolute left-[430px] top-[220px] w-[180px] h-[140px] bg-[#1127FF] rounded-[32px] flex flex-col justify-between px-4 py-6 text-white">
+                          <div className="text-sm leading-tight font-medium">
+                            1 hour is all
+                            <br />
+                            it takes to get
+                            <br />
+                            clear answers.
+                          </div>
+                          <div className="flex justify-between items-center mt-2">
+                            <a href="/book-now">
+                              <button className="text-sm border border-white px-3 py-1 rounded-full hover:bg-white hover:text-black transition">
+                                Book →
+                              </button>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="overflow-hidden h-[300px] relative">
+                      <div className="text-slide">
+                        <div
+                          ref={textRef}
+                          className="text-sliderinner text-[18px] leading-snug"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
         </div>
       </div>
 
-   
-      <div className="overflow-hidden h-[300px] relative">
-        <div
-          className="text-slider"
-          style={{
-            transform: `translateY(-${activeIndex * 100}%)`,
-          }}
-        >
-          {SECTIONS.map((text, i) => (
-            <div key={i} className="text-slide">
-              <div className="text-sliderinner">{text}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-</div>
-</div>
-
-
-
-<div >
-
-<div>
-    </div>
-
-</div>
       {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#EFEFEF]">
 
   <div className="sticky top-0 h-screen flex items-center justify-center z-50">
@@ -493,9 +570,6 @@ State-of-the-Art Technology
     <div className="w__scroll-down__trigger" />
   </div>
 </footer> */}
-
-
-
     </>
   );
 };

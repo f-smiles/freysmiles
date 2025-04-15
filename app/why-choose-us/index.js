@@ -42,7 +42,7 @@ export default function WhyChooseUs() {
     <>
       <Hero />
       <CardStack />
-      <RepeatText text="FSO*" totalWords={7} tyIncrement={108} />
+      <RepeatText />
       <StackCards />
       {/* <ScrollTextReveal /> */}
       <About />
@@ -61,62 +61,61 @@ export default function WhyChooseUs() {
 }
 
 
-const RepeatText = ({ text, totalWords, tyIncrement }) => {
-  const elRef = useRef();
-  const wordRefs = useRef([]);
+const RepeatText = ({ text = "FSO", totalLayers = 7 }) => {
+  const containerRef = useRef();
 
   useEffect(() => {
-    const el = elRef.current;
-    if (!el) return;
+    const containers = gsap.utils.toArray(".stack-word-layer");
 
-    el.innerHTML = '';
-    wordRefs.current = [];
+    containers.forEach((el, i) => {
+      const inner = el.querySelector(".stack-word-inner");
 
-    for (let i = 0; i < totalWords; i++) {
-      const span = document.createElement('span');
-      span.textContent = text;
-      span.style.display = 'block';
-      span.style.transform = `translateY(${i * tyIncrement}px)`; 
-      el.appendChild(span);
-      wordRefs.current.push(span);
-    }
-
-    el.classList.add('text-rep');
-
-   
-    gsap.set(wordRefs.current, { yPercent: 0 });
-
-    
-    wordRefs.current.forEach((span, i) => {
-      if (i === 0) return; 
-
-      gsap.to(span, {
-        yPercent: -i * 24,
-
-        ease: 'none',
-        scrollTrigger: {
-          trigger: el,
-          start: `top+=${i * 50} center-=70`,
-          end:   `top+=${(i + 1) * 50} center-=70`,
-          
-          
-          
-          scrub: true,
-        },
-      });
+      gsap.fromTo(
+        inner,
+        { yPercent: 0 },
+        {
+          yPercent: 140,
+          ease: "none",
+          scrollTrigger: {
+            trigger: el,
+            start: `top center`,
+            end: "bottom top+=30%", 
+            scrub: true,
+          },
+        }
+      );
     });
-  }, [text, totalWords, tyIncrement]);
+  }, []);
+
 
   return (
-    <div className="repeat-title-wrapper">
-      <h2
-        className="repeat-title__title repeat-title__title--size-l"
-        data-text-rep
-        ref={elRef}
-      >
-        {text}
-      </h2>
-    </div>
+    <section
+      className="relative w-full bg-white overflow-hidden"
+      data-animation="stack-words"
+      ref={containerRef}
+    >
+      {new Array(totalLayers).fill(0).map((_, i) => (
+        <div
+          key={i}
+          className="overflow-hidden stack-word-layer"
+          style={{
+            height: `${5 + i * 1.25}vw`, 
+          }}
+        >
+    <div className="stack-word-inner will-change-transform flex justify-start overflow-visible" style={{ height: "100%" }}>
+  <span
+    className="text-[48vw] font-bold text-black leading-none block"
+    style={{
+      transform: "translateY(-100%)", 
+    }}
+  >
+    {text}
+  </span>
+</div>
+
+        </div>
+      ))}
+    </section>
   );
 };
 

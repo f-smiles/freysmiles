@@ -547,13 +547,13 @@ export default function OurTeam() {
       <div
         key={i}
         ref={(el) => (panelRefs.current[i] = el)}
-        className="h-full w-1/4 bg-[#E1F572]"
+        className="h-full w-1/4 bg-[#191919]"
       />
     ))}
 
 <div className="absolute inset-0 z-40 flex justify-center items-center">
 
-      <h2 ref={titleRef} className="uppercase content__title1">
+      <h2 ref={titleRef} className="content__title1">
         <span style={{ lineHeight: "1.2" }}>Meet Our Team</span>
       </h2>
     </div>
