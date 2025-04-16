@@ -336,6 +336,15 @@ input:-webkit-autofill {
   background-image: none !important;
 }
 
+.carousel-container::-webkit-scrollbar {
+  display: none;
+}
+.carousel-container {
+  -ms-overflow-style: none; 
+  scrollbar-width: none;    
+}
+
+
 @font-face {
   font-family: "HorizonSolid";
   src: url("/fonts/horizon.otf") format("opentype");
@@ -3589,9 +3598,9 @@ img:nth-child(6) {
 
 .timeline__year {
   margin-left: 350px;
-  font-size: 202px;
+  font-size: 142px;
   transition: all 0.5s;
-  font-family: "NeueMontrealMedium";
+  font-family: "NeueMontrealBook";
 }
 
 .timeline__col {
@@ -5391,9 +5400,8 @@ color: white;
   position: relative;
 }
 
-
 .list1 {
-  margin-top: 200px;
+  /* margin-top: 200px; */
   position: relative;
   height: 100vh;  
 }
@@ -5593,3 +5601,9 @@ color: white;
   display: inline-block;
   will-change: transform;
 } */
+
+
+.scramble-wrapper {
+  display: inline-block;
+  position: relative;
+}

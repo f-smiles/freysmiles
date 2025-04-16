@@ -302,125 +302,20 @@ const StickyColumnScroll = () => {
     });
   }, []);
 
-  const btnRef = useRef();
-  const hitRef = useRef();
+  const pathRef = useRef();
 
   useEffect(() => {
-    const btn = btnRef.current;
-    const hit = hitRef.current;
+    const path = pathRef.current;
+    const length = path.getTotalLength();
+    path.style.strokeDasharray = length;
+    path.style.strokeDashoffset = length;
 
-    hit.onpointermove = (e) => {
-      const domPt = new DOMPoint(e.x, e.y);
-      let svgPt = domPt.matrixTransform(btn.getScreenCTM().inverse());
-
-      gsap
-        .timeline({ defaults: { duration: 0.3, ease: "power3" } })
-        .to(".hit", { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
-        .to(".bg", { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
-        .to(".txt", { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
-        .to(".bg", { attr: { fill: "#000" } }, 0)
-        .to(".txt", { attr: { fill: "rgb(0,0,0)" } }, 0);
-    };
-
-    hit.onpointerleave = (e) => {
-      gsap
-        .timeline({ defaults: { duration: 0.3, ease: "power2" } })
-        .to(".bg", { attr: { fill: "#5454EF" } }, 0)
-        .to(".txt", { attr: { fill: "rgb(255,255,255)" } }, 0)
-        .to(
-          ".hit, .bg, .txt",
-          { duration: 0.7, ease: "elastic.out(0.8)", x: 0, y: 0 },
-          0
-        );
-    };
-  }, []);
-
-  const imagesContainerRef = useRef(null);
-  const zIndexRef = useRef(100000000000);
-  const [images, setImages] = useState([
-    "../images/morethansmiles.png",
-    "../images/morethansmiles2.png",
-    "../images/morethansmiles4.png",
-    "../images/morethansmiles3.png",
-    "../images/morethansmiles.png",
-  ]);
-
-  useEffect(() => {
-    if (!imagesContainerRef.current) return;
-
-    const imageElements =
-      imagesContainerRef.current.querySelectorAll(".gallery-img");
-    const timeline = gsap.timeline({ ease: "none" });
-
-    let z = 100000000000;
-    let moveLeft = true;
-
-    // last image=highest z-index
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            imageElements.forEach((image, index) => {
-              gsap.set(image, { zIndex: z - index });
-            });
-
-            timeline.fromTo(
-              imageElements,
-              {
-                x: (i) => (i % 2 === 0 ? -400 : 400),
-                y: "300%",
-              },
-              {
-                x: 0,
-                y: 0,
-                duration: 1.5,
-                stagger: -0.4,
-                rotation: () => 20 * Math.random() - 10,
-              }
-            );
-
-            timeline.play();
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.2 } // Trigger when 20% of the container is visible
-    );
-
-    observer.observe(imagesContainerRef.current);
-
-    // Move clicked image to the back of the stack
-    imageElements.forEach((image) => {
-      image.addEventListener("click", () => {
-        const moveDirection = moveLeft ? "-125%" : "125%";
-        moveLeft = !moveLeft; // alternate direction each click
-
-        // lowest index in stack
-        let minZIndex = Infinity;
-        imageElements.forEach((img) => {
-          let zIndex = parseInt(img.style.zIndex, 10);
-          if (zIndex < minZIndex) {
-            minZIndex = zIndex;
-          }
-        });
-
-        // the clicked image becomes the lowest index
-        z = minZIndex - 1;
-
-        timeline
-          .to(image, { x: moveDirection, duration: 0.5 }) // move out
-          .to(image, { zIndex: z, duration: 0.01 }) // update z-index when it's away from stack
-          .to(image, { x: 0, duration: 0.5 }); // move back under the stack
-      });
+    gsap.to(path, {
+      strokeDashoffset: 0,
+      duration: 3,
+      ease: "power2.out",
     });
-
-    return () => {
-      imageElements.forEach((image) =>
-        image.removeEventListener("click", () => {})
-      );
-    };
-  }, [images]);
-
+  }, []);
   const patients = [
     { name: "Lainie", image: "../images/testimonials/laniepurple.png" },
     { name: "Ron Lucien", image: "../images/testimonials/Ron_Lucien.jpg" },
@@ -490,24 +385,11 @@ const StickyColumnScroll = () => {
       setSectionTop(rect.top + scrollTop);
     }
   }, []);
-  const pathRef = useRef();
 
-  useEffect(() => {
-    const path = pathRef.current;
-    const length = path.getTotalLength();
-    path.style.strokeDasharray = length;
-    path.style.strokeDashoffset = length;
-
-    gsap.to(path, {
-      strokeDashoffset: 0,
-      duration: 3,
-      ease: "power2.out",
-    });
-  }, []);
   
   return (
     <>
-    
+
             {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
           <div className="w-[64px] h-auto">
     
@@ -594,11 +476,11 @@ const StickyColumnScroll = () => {
   className="min-h-screen w-full px-6 relative"
   onMouseMove={handleMouseMove}
 >
-  {/* Floating image preview */}
+
   <div className="absolute top-0 left-0 pointer-events-none z-50">
     <motion.div
       className="w-[180px] h-[250px] rounded-lg overflow-hidden"
-      style={{ x, y }} // 👈 instant tracking now
+      style={{ x, y }} 
     >
       {previousImage && (
         <div
@@ -784,57 +666,7 @@ const StickyColumnScroll = () => {
             <div class="gradient-col-2"></div>
             <div class="gradient-col-2"></div>
           </div>
-          <div className=" pl-10 leading-[1.1] transform -translate-y-1/2 font-helvetica-neue text-[1.5em] max-w-[500px]">
-            Our non-profit, More Than Smiles, provides world-class orthodontic
-            care to deserving kids since 2011.
-          </div>
-          <div className="pl-10 flex">
-            <h4 className="text-[17px] max-w-[450px] font-helvetica-neue-light leading-[1.2]">
-              Part of our More than Smiles mission is to educate our community
-              about their dental and orthodontic health. If you know someone who
-              could benefit from this gift, please visit the website for details
-              on how to nominate a candidate.
-            </h4>
-          </div>
-          <section className="morethansmiles">
-            <div ref={imagesContainerRef} className="imagestack">
-              {images.map((url, index) => (
-                <img
-                  key={index}
-                  src={url}
-                  className="gallery-img"
-                  alt="gallery"
-                />
-              ))}
-            </div>
-          </section>
-          <a
-            href="https://morethansmiles.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg
-              ref={btnRef}
-              className="w-4/5 max-w-xs cursor-pointer h-4/5"
-              viewBox="-50 -50 100 100"
-            >
-              <circle className="bg" r="22.4" fill="#5454EF" />
-              <text
-                className="txt fill-white text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
-                x="0"
-                y="2"
-                textAnchor="middle"
-              >
-                Nominate
-              </text>
-              <circle
-                ref={hitRef}
-                className="hit"
-                r="42"
-                fill="rgba(0,0,0,0)"
-              />
-            </svg>
-          </a>
+
 
           <section style={{ marginBottom: "100vh" }}>
             <h1 className="font-neue-montreal text-xl">

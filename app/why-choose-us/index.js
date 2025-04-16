@@ -42,83 +42,22 @@ export default function WhyChooseUs() {
     <>
       <Hero />
       <CardStack />
-      <RepeatText />
       <StackCards />
-      {/* <ScrollTextReveal /> */}
+      <RepeatText />
+      <MoreThanSmiles />
+
       <About />
-
-
 
       <VennDiagram />
       {/* <GridLayout /> */}
-      {/* <div className="h-[100vh] w-auto">
+      <div className="h-[100vh] w-auto">
         <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
           <SimplePlane />
         </Curtains>
-      </div> */}
+      </div>
     </>
   );
 }
-
-
-const RepeatText = ({ text = "FSO", totalLayers = 7 }) => {
-  const containerRef = useRef();
-
-  useEffect(() => {
-    const containers = gsap.utils.toArray(".stack-word-layer");
-
-    containers.forEach((el, i) => {
-      const inner = el.querySelector(".stack-word-inner");
-
-      gsap.fromTo(
-        inner,
-        { yPercent: 0 },
-        {
-          yPercent: 140,
-          ease: "none",
-          scrollTrigger: {
-            trigger: el,
-            start: `top center`,
-            end: "bottom top+=30%", 
-            scrub: true,
-          },
-        }
-      );
-    });
-  }, []);
-
-
-  return (
-    <section
-      className="relative w-full bg-white overflow-hidden"
-      data-animation="stack-words"
-      ref={containerRef}
-    >
-      {new Array(totalLayers).fill(0).map((_, i) => (
-        <div
-          key={i}
-          className="overflow-hidden stack-word-layer"
-          style={{
-            height: `${5 + i * 1.25}vw`, 
-          }}
-        >
-    <div className="stack-word-inner will-change-transform flex justify-start overflow-visible" style={{ height: "100%" }}>
-  <span
-    className="text-[48vw] font-bold text-black leading-none block"
-    style={{
-      transform: "translateY(-100%)", 
-    }}
-  >
-    {text}
-  </span>
-</div>
-
-        </div>
-      ))}
-    </section>
-  );
-};
-
 
 function Hero() {
   const overlayRef = useRef(null);
@@ -235,7 +174,7 @@ function Hero() {
   }, []);
   return (
     <>
-      <div className="relative h-screen w-full bg-[#F1F2F4] text-black">
+      <div className="relative h-screen w-full bg-[#FEF9F8] text-black">
         <div ref={overlayRef} className="absolute inset-0 bg-black z-20"></div>
 
         <div
@@ -304,8 +243,7 @@ function Hero() {
             ))}
           </div>
         </div>
-      </div>
-      <svg
+        <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 951 367"
         fill="none"
@@ -321,8 +259,24 @@ function Hero() {
           style={{ strokeDasharray: "3202.1", strokeDashoffset: "0px" }}
         />
       </svg>
+      </div>
+      
+      {/* <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 480 480"
+    width="64"
+    height="64"
+    className=""
+    style={{ opacity: "1"}}
+    xmlSpace="preserve"
+  >
+    <path
+      fill="#000"
+      d="M205.2 0H0v205.2C15.3 99.2 99.2 15.3 205.2 0M480 205.2V0H274.8c106.1 15.3 190 99.2 205.2 205.2M274.8 480H480V274.8c-15.2 106.1-99.1 190-205.2 205.2M0 274.8V480h205.2C99.2 464.8 15.3 380.9 0 274.8"
+    />
+  </svg> */}
 
-      <section className="px-8 py-20">
+      {/* <section className="px-8 py-20">
         <div className="max-w-5xl ml-20">
           <div className="flex items-start gap-4">
             <svg
@@ -348,7 +302,7 @@ function Hero() {
             </h2>
           </div>
         </div>
-      </section>
+      </section> */}
     </>
   );
 }
@@ -445,7 +399,9 @@ const CardStack = () => {
 
   return (
     <>
-      <div className="l-wrapper bg-[#F1F1F1]">
+    <div className="bg-[#FEF9F8] ">
+  
+      <div className="l-wrapper ">
         <div className="list1" id="list1" ref={list1Ref}>
           <ul className="card-list list">
             <li className="list-child bg-[#c3531d]">
@@ -496,12 +452,206 @@ const CardStack = () => {
             </li>
           </ul>
         </div>
-        {/* <section className="flex items-center px-10">
+        </div>
+        <section className="w-full min-h-screen grid grid-cols-12">
+
+      <div className="col-span-6 bg-white flex flex-col justify-between p-12 relative overflow-visible">
+
+  <div className="flex justify-start gap-12 text-lg font-neue-montreal z-10">
+    <span className="text-[#DBE1DD]">LOREM</span>
+    <span>IPSUM</span>
+  </div>
+
+
+  <div className="flex flex-col items-center justify-center relative z-10">
+    <img
+      src="../images/retainertracing.gif"
+      alt="k"
+      className="w-[75%] object-cover"
+    />
+    <h2 className="mt-4 text-[2vw] font-light tracking-tight">PHOTO</h2>
+    <p className="text-[1vw] font-light mt-1 font-neuehaas35">Our technicican tracing a retainer</p>
+  </div>
+
+
+  {/* <div className="absolute left-[65%] -top-[5%] z-20">
+    <svg
+      width="360"
+      height="738"
+      viewBox="0 0 630 738"
+      xmlns="http://www.w3.org/2000/svg"
+      className="text-pink-400"
+    >
+      {Array.from({ length: 7 }).map((_, colIndex) => {
+        const x = colIndex * 100;
+        const yOffset = colIndex % 2 === 0 ? 34.275 : -34.275;
+        return (
+          <g key={colIndex} transform={`translate(${x} ${yOffset})`}>
+            {Array.from({ length: 10 }).map((_, rowIndex) => (
+              <rect
+                key={rowIndex}
+                x="0"
+                y={rowIndex * 76}
+                width="20"
+                height="20"
+                fill="currentColor"
+              />
+            ))}
+          </g>
+        );
+      })}
+    </svg>
+  </div> */}
+</div>
+
+
+
+      <div className="col-span-6 bg-[#FEF9F8] p-12 flex flex-col justify-between">
+
+        <div className="font-neuehaas45 flex justify-between text-lg font-light">
+LEARN MORE
+
+        </div>
+
+          <p className="ml-auto max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
+  Orthodontic Treatment should be a once-in-a-lifetime experience, so making the right choice is an important decision. Here are the reasons we feel you should choose FreySmiles for you or your child’s treatment.
+  </p>
+
+      </div>
+    </section>
+        {/* <section className="-mt-[200px] px-10">
   <p className="max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
   Orthodontic Treatment should be a once-in-a-lifetime experience, so making the right choice is an important decision. Here are the reasons we feel you should choose FreySmiles for you or your child’s treatment.
   </p>
 </section> */}
-{/* <div className="w-2/3 ml-auto">
+        <div className="mt-10 w-full flex justify-center flex-row gap-6">
+<div className="w-[540px] ">
+      <svg
+        width="100%"
+        height="100%"
+      
+        viewBox="0 0 792 792"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <mask id="mask-inverse-2">
+            <rect width="792" height="792" fill="white" />
+
+            <path
+              d="M268.094 181.48V-220.57H455.044V181.67L268.094 181.48Z"
+              fill="black"
+            />
+            <path
+              d="M457.805 339.69H824.685V613.44L457.825 613.52C457.825 613.52 457.825 613.52 457.815 613.52V770.55H1010.1V-220.24H824.685V182.58L457.805 182.65V339.68V339.69Z"
+              fill="black"
+            />
+            <path
+              d="M433.78 295.93C333.76 295.93 252.68 377.01 252.68 477.03C252.68 577.05 333.76 658.13 433.78 658.13"
+              fill="black"
+            />
+            <path
+              d="M432.105 658.129H457.805L457.805 295.949H432.105L432.105 658.129Z"
+              fill="black"
+            />
+            <path
+              d="M0.8125 0V792H791.193V0H0.8125ZM765.773 766.62H26.2225V25.38H765.773V766.62Z"
+              fill="black"
+            />
+            <path
+              d="M12.3712 -1360.27H-273.219V2200.43H12.3712V-1360.27Z"
+              fill="black"
+            />
+            <path
+              d="M1068.04 -1360.27H775.172V2228.28H1068.04V-1360.27Z"
+              fill="black"
+            />
+          </mask>
+        </defs>
+        <rect width="792" height="792" fill="#E3C3DA" />
+
+        <image
+          href="../images/freysmiles_insta.gif"
+          width="792"
+          height="792"
+          preserveAspectRatio="xMidYMid slice"
+          mask="url(#mask-inverse-2)"
+        />
+      </svg>
+      </div>
+      <div className="w-[540px]">
+  <svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 792 792"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+
+      <mask id="shape-mask">
+        <rect width="100%" height="100%" fill="white" /> 
+        <path
+          d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"
+          fill="black"
+        />
+      </mask>
+    </defs>
+
+
+    <rect width="100%" height="100%" fill="#e6eee4" />
+
+    <foreignObject width="100%" height="100%" mask="url(#shape-mask)">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        width="792"
+        height="792"
+        style={{ display: 'block' }}
+      >
+        <source src="../images/retaintracing.mp4" type="video/mp4" />
+      </video>
+    </foreignObject>
+  </svg>
+</div>
+      </div>
+      </div>
+      {/* <div className="flex justify-center items-center" style={{ width:'500px', position: 'relative'}}>
+
+  <svg
+  className="masksvgshape"
+        width="100%"
+        height="100%"
+  
+          viewBox="0 0 792 792"
+   >
+    <defs>
+
+      <clipPath id="svg-path" clipPathUnits="userSpaceOnUse">
+        <path d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"/>
+      </clipPath>
+    </defs>
+  </svg>
+
+
+  <video
+    src="../images/retaintracing.mp4"
+    autoPlay
+    muted
+    loop
+    playsInline
+    style={{
+      // width: '100%',
+      // height: 'auto',
+  
+      clipPath: 'url(#svg-path)',
+      WebkitClipPath: 'url(#svg-path)',
+    }}
+  />
+</div> */}
+
+
+        {/* <div className="w-2/3 ml-auto">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-32 min-h-screen">
 
     <div className="rounded-3xl overflow-hidden bg-[#FAFF00] flex flex-col">
@@ -539,12 +689,7 @@ const CardStack = () => {
 </div> */}
 
 
-      </div>
-
-
-
-{/* 
- 
+      {/* 
       <section className="bg-[#F1F1F1] sun-section">
    
         <div className="sun-wrapper">
@@ -570,6 +715,66 @@ const CardStack = () => {
   );
 };
 
+const RepeatText = ({ text = "MTS", totalLayers = 7 }) => {
+  const containerRef = useRef();
+
+  useEffect(() => {
+    const containers = gsap.utils.toArray(".stack-word-layer");
+
+    containers.forEach((el, i) => {
+      const inner = el.querySelector(".stack-word-inner");
+
+      gsap.fromTo(
+        inner,
+        { yPercent: 0 },
+        {
+          yPercent: 140,
+          ease: "none",
+          scrollTrigger: {
+            trigger: el,
+            start: `top center`,
+            end: "bottom top+=30%",
+            scrub: true,
+          },
+        }
+      );
+    });
+  }, []);
+
+  return (
+    <section
+      className="relative w-full bg-[#FEF9F8] overflow-hidden"
+      data-animation="stack-words"
+      ref={containerRef}
+    >
+      {new Array(totalLayers).fill(0).map((_, i) => (
+        <div
+          key={i}
+          className="overflow-hidden stack-word-layer"
+          style={{
+            height: `${5 + i * 1.25}vw`,
+            marginTop: i === 0 ? 0 : "-.5vw",
+          }}
+        >
+          <div
+            className="stack-word-inner will-change-transform flex justify-center overflow-visible"
+            style={{ height: "100%" }}
+          >
+            <span
+              className="text-[48vw] font-bold text-black leading-none block"
+              style={{
+                transform: "translateY(-60%)",
+              }}
+            >
+              {text}
+            </span>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+};
+
 function StackCards() {
   const containerRef = useRef(null);
 
@@ -580,62 +785,95 @@ function StackCards() {
 
   const topPathLength = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
   const bottomPathLength = useTransform(scrollYProgress, [0.5, 1], [0, 1]);
-
+  const textRef = useRef(null);
   const blockRef = useRef(null);
   const isInView = useInView(blockRef, {
     margin: "0px 0px -10% 0px",
     once: true,
   });
 
+  useEffect(() => {
+    if (!textRef.current) return;
+
+    const split = new SplitText(textRef.current, { type: "words, chars" });
+
+    const tl = gsap.fromTo(
+      split.chars,
+      { color: "#d4d4d4" },
+      {
+        color: "#000000",
+        stagger: 0.03,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: textRef.current,
+          start: "top 80%",
+          end: "top 30%",
+          scrub: true,
+        },
+      }
+    );
+
+    return () => {
+      tl.scrollTrigger?.kill();
+      split.revert();
+    };
+  }, []);
+
+  const cardRef = useRef();
+  const handleMouseEnter = () => {
+    gsap.to(cardRef.current, {
+      "--br": "100px",
+      duration: 0.2,
+      ease: "power1.out",
+    });
+  };
+
+  const handleMouseLeave = () => {
+    gsap.to(cardRef.current, {
+      "--br": "0px",
+      duration: 0.2,
+      ease: "power1.inOut",
+    });
+  };
+
   return (
     <section ref={containerRef}>
-      <section className="bg-[#F1F1F1] sm:py-32">
-        {/* <div className=" w-48 h-48 -translate-x-1/4 -z-10">
+      <section className="bg-[#FEF9F8]  sm:py-32">
+        <div className=" w-48 h-48 translate-x-1/3 -z-10">
           <Shape06 />
-        </div> */}
+        </div>
+        <div
+          ref={textRef}
+          className="mx-auto font-neuehaas45 mb-60 text-[2vw] max-w-[900px] leading-[1.3]"
+        >
+          Our doctors aren’t just orthodontists — they’ve gone the extra miles (and
+          years) to become true specialists. Dr. Gregg holds lifetime board
+          certification, and Dr. Daniel is wrapping his up this year — a level
+          fewer than 25% of orthodontists reach. When it comes to Invisalign- we
+          don’t just do it — we lead it. As the region’s top Diamond Plus
+          providers, we’ve treated thousands of cases and helped shape how clear
+          aligners are used today.
+        </div>
 
-        {/* <div className="flex justify-center items-center h-screen bg-gray-100">
-            <svg
-              className="hero__middle-line"
-              width="35"
-              height="1000"
-              viewBox="0 0 35 767"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <motion.path
-                id="top-line"
-                d="M17 -8L17 350"
-                stroke="#292929"
-                strokeWidth="1"
-                className="stroke-current text-gray-800"
-                style={{ pathLength: topPathLength }}
-              />
-
-              <motion.path
-                id="middle-icon"
-                d="M28.5729 367.223C28.6362 367.054 28.5981 366.887 28.5221 366.772C28.4614 366.68 28.3867 366.633 28.3579 366.616C28.2975 366.58 28.2432 366.566 28.2305 366.563L28.2296 366.562C28.1944 366.553 28.1645 366.549 28.156 366.548L28.1556 366.548C28.1315 366.545 28.107 366.544 28.0898 366.543C28.0514 366.54 27.9995 366.539 27.9377 366.537C27.8124 366.533 27.6276 366.53 27.3867 366.527C26.9041 366.521 26.1876 366.516 25.253 366.512C23.3833 366.504 20.636 366.5 17.1301 366.5C14.107 366.5 11.3585 366.503 9.36568 366.507C8.36934 366.509 7.5615 366.512 7.00254 366.515C6.72321 366.516 6.50525 366.518 6.35674 366.52C6.2828 366.52 6.22448 366.521 6.18394 366.522C6.16427 366.523 6.14557 366.523 6.13038 366.524C6.12397 366.524 6.11154 366.525 6.09793 366.526L6.0977 366.526C6.09281 366.526 6.07479 366.528 6.05272 366.532L6.05234 366.532C6.04416 366.533 6.01208 366.539 5.97322 366.552C5.94983 366.561 5.88834 366.591 5.85162 366.614C5.78642 366.669 5.66176 366.872 5.6378 367.025C5.64027 367.074 5.65304 367.147 5.65958 367.171C5.66393 367.184 5.67195 367.206 5.67541 367.215C5.68206 367.231 5.68815 367.243 5.69044 367.248C5.69577 367.259 5.70048 367.267 5.70217 367.27C5.70639 367.278 5.71051 367.285 5.7131 367.289C5.71886 367.299 5.72622 367.311 5.73432 367.325C5.75089 367.352 5.77485 367.391 5.80541 367.44C5.86673 367.539 5.9568 367.684 6.07229 367.869C6.30339 368.239 6.63741 368.773 7.0494 369.43C7.87344 370.744 9.00995 372.554 10.2601 374.541C13.0572 378.987 14.6416 381.504 15.5359 382.919C15.9828 383.626 16.2584 384.059 16.4272 384.32C16.5114 384.451 16.5708 384.541 16.6124 384.602L16.6161 384.608C16.644 384.649 16.6921 384.72 16.742 384.769L16.7422 384.77C16.9317 384.957 17.1611 384.918 17.2469 384.891C17.3302 384.865 17.3862 384.823 17.4039 384.809C17.4475 384.776 17.4788 384.742 17.4905 384.729C17.5206 384.695 17.5515 384.655 17.5787 384.618C17.6365 384.539 17.7162 384.424 17.8179 384.272C18.0229 383.966 18.3328 383.489 18.7664 382.812C19.6345 381.456 21.0061 379.286 23.0428 376.05C24.5464 373.66 25.9153 371.482 26.9096 369.899C27.4067 369.107 27.8103 368.464 28.0902 368.017C28.2301 367.793 28.3393 367.618 28.414 367.498C28.4512 367.439 28.4802 367.392 28.5001 367.36L28.5245 367.32L28.5341 367.304L28.5416 367.29C28.5431 367.288 28.5461 367.282 28.5496 367.275L28.5497 367.275C28.5512 367.272 28.5624 367.251 28.5729 367.223ZM28.5729 367.223L28.1047 367.047M28.5729 367.223C28.573 367.222 28.573 367.222 28.5731 367.222L28.1047 367.047M28.1047 367.047C28.1028 367.052 28.0104 367.201 27.8412 367.472M28.1047 367.047C28.1049 367.047 28.1031 367.046 28.0992 367.045C28.0992 367.045 28.0991 367.045 28.0991 367.045C28.0675 367.04 27.9007 367.035 27.6048 367.03C27.6065 366.979 27.6163 366.926 27.6362 366.873L27.8412 367.472M27.8412 367.472C27.8447 367.474 27.8478 367.476 27.8505 367.477C27.9098 367.512 27.9627 367.526 27.974 367.529L27.9749 367.529C28.0071 367.538 28.032 367.541 28.0326 367.541C28.0372 367.541 28.04 367.542 28.04 367.542C28.04 367.542 28.0373 367.541 28.0308 367.541C28.0087 367.54 27.9696 367.538 27.9101 367.536C27.8786 367.536 27.8427 367.535 27.8024 367.534M27.8412 367.472L27.8024 367.534M27.8024 367.534C27.0551 368.729 25.0072 371.989 22.6196 375.783C19.5692 380.631 18.0131 383.082 17.4054 383.989L27.8024 367.534ZM17.1257 370.356C19.6999 370.356 21.0865 370.357 21.8284 370.367C21.6977 370.578 21.5409 370.829 21.3646 371.111C20.8444 371.944 20.1555 373.042 19.4672 374.136C18.779 375.23 18.0918 376.32 17.5749 377.136C17.4044 377.405 17.2527 377.644 17.1256 377.843C16.9985 377.644 16.8467 377.405 16.6763 377.136C16.1594 376.32 15.4721 375.231 14.784 374.137C14.0958 373.043 13.4069 371.945 12.8867 371.113C12.7101 370.83 12.553 370.578 12.4222 370.367C13.1631 370.357 14.549 370.356 17.1257 370.356ZM1.90839 372.718L1.90843 372.718L9.45227 384.757C11.4356 387.922 13.2432 390.799 14.5576 392.886C15.2148 393.929 15.749 394.775 16.1203 395.36C16.3059 395.652 16.4512 395.88 16.5511 396.036C16.6008 396.113 16.6402 396.174 16.6679 396.216C16.6814 396.236 16.6939 396.255 16.7042 396.27C16.7087 396.276 16.7163 396.287 16.7249 396.298C16.7283 396.303 16.7384 396.316 16.7522 396.332C16.7579 396.338 16.7748 396.357 16.799 396.378C16.8124 396.389 16.8482 396.415 16.8712 396.43C16.9123 396.452 17.0396 396.492 17.1266 396.5C17.2625 396.5 17.3575 396.444 17.3805 396.431C17.4167 396.41 17.4426 396.389 17.455 396.378C17.4809 396.356 17.4997 396.335 17.5074 396.327C17.5253 396.307 17.5407 396.287 17.5503 396.274C17.5716 396.246 17.5966 396.211 17.6225 396.173C17.6755 396.097 17.7472 395.989 17.8314 395.861C18.0005 395.602 18.227 395.248 18.4707 394.859L18.047 394.593L18.4707 394.859L19.3522 393.452L19.519 393.186L19.3516 392.92L18.0586 390.868C17.3479 389.74 14.3521 384.962 11.4009 380.25L6.03552 371.683L5.88983 371.45L5.61535 371.448L3.80947 371.435L2.00359 371.422L1.09253 371.416L1.57631 372.188L1.90839 372.718ZM20.5486 390.629C20.5767 390.644 20.6754 390.695 20.8125 390.688L20.8126 390.688C20.9228 390.67 21.0636 390.605 21.099 390.579C21.1159 390.564 21.1414 390.541 21.1506 390.531C21.1662 390.514 21.1774 390.5 21.1808 390.496C21.1897 390.485 21.1967 390.475 21.1995 390.471C21.2065 390.461 21.2138 390.45 21.2199 390.441C21.2329 390.421 21.2505 390.394 21.2719 390.361C21.3149 390.295 21.3773 390.197 21.4576 390.071C21.6183 389.818 21.8525 389.447 22.15 388.976C22.7451 388.032 23.5943 386.681 24.6167 385.053C26.6616 381.795 29.3998 377.424 32.1848 372.971L32.6738 372.189L33.1522 371.424H32.2498H30.4516H28.6535H28.376L28.2292 371.659L28.022 371.991C27.9084 372.174 25.74 375.634 23.2028 379.683C21.934 381.707 20.7805 383.556 19.944 384.905C19.5259 385.579 19.1866 386.128 18.9516 386.512C18.8343 386.704 18.7421 386.856 18.679 386.961C18.6477 387.014 18.6221 387.057 18.6037 387.09C18.5949 387.105 18.5853 387.122 18.577 387.138C18.5733 387.145 18.5664 387.159 18.5593 387.175C18.556 387.182 18.5492 387.198 18.5422 387.218L18.5422 387.218C18.5412 387.22 18.5137 387.293 18.5143 387.386L18.5143 387.386C18.5149 387.469 18.5365 387.533 18.5406 387.545L18.541 387.546C18.5485 387.569 18.5563 387.587 18.5611 387.598C18.5709 387.621 18.5817 387.642 18.5901 387.658C18.6076 387.692 18.6303 387.733 18.6551 387.776C18.7054 387.863 18.7755 387.981 18.8574 388.115C19.0217 388.385 19.2402 388.736 19.4595 389.084C19.6788 389.431 19.9004 389.777 20.0708 390.037C20.1557 390.166 20.2299 390.277 20.2854 390.357C20.3125 390.396 20.339 390.433 20.3619 390.463C20.3722 390.477 20.389 390.498 20.4086 390.519C20.4171 390.529 20.4377 390.551 20.4665 390.574C20.4803 390.585 20.5088 390.608 20.5486 390.629Z"
-                stroke="#292929"
-              />
-
-              <motion.path
-                id="bottom-line"
-                d="M17 410L17 850"
-                stroke="#292929"
-                strokeWidth="1"
-                className="stroke-current text-gray-800"
-                style={{ pathLength: bottomPathLength }}
-              />
-            </svg>
+        <div className="font-neuehaas35 min-h-screen text-[20px] leading-[1.1] px-10">
+          {/*      
+          <div className="mb-10 text-[30px] max-w-[900px] leading-[1.3]">
+          TL;DR: You’re in very good,
+          very experienced hands.
           </div> */}
-
-        <div className=" min-h-screen font-neuehaas45 text-[20px] leading-[1.1] px-10">
+          {/* Block 1 */}
           <div className="border-t border-black w-full">
-            <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F1F1F1] before:transition-all before:transition-all before:duration-[150ms] before:ease-linear before:rounded-none group-hover:before:rounded-[100px]" />
+            <div
+              ref={cardRef}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black pointer-events-auto"
+              style={{ "--br": "0px" }}
+            >
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-all before:duration-200 before:ease-linear before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
-                SERVICE / 001
+              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+                ABO Treatment Standards
               </div>
 
               <div className="relative z-10 text-center leading-tight max-w-4xl text-black">
@@ -648,19 +886,19 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
                 LEARN MORE
               </div>
             </div>
           </div>
 
-          {/* Block 002 */}
+          {/* Block 2 */}
           <div className="border-t border-black w-full">
             <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F1F1F1] before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8]  before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
 
-              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
-                SERVICE / 002
+              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+                Board Certification Process
               </div>
 
               <div className="relative z-10 text-center leading-tight max-w-4xl text-black">
@@ -671,19 +909,19 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
                 LEARN MORE
               </div>
             </div>
           </div>
 
-          {/* Block 003 */}
+          {/* Block 3 */}
           <div className="border-t border-black w-full">
             <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F1F1F1] before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8]  before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
 
-              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
-                SERVICE / 003
+              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+                Diagnostic Record Accuracy
               </div>
 
               <div className="relative z-10 text-center leading-tight max-w-4xl text-black">
@@ -694,19 +932,19 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
                 LEARN MORE
               </div>
             </div>
           </div>
 
-          {/* Block 004 */}
+          {/* Block 4 */}
           <div className="border-t border-black w-full">
             <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F1F1F1] before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8]  before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
 
-              <div className="relative z-10 text-sm text-[#DF4D34] font-sans">
-                SERVICE / 004
+              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+                Trusted Expertise
               </div>
 
               <div className="relative z-10 text-center leading-tight max-w-4xl">
@@ -718,7 +956,7 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-red-500 font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
                 LEARN MORE
               </div>
             </div>
@@ -814,7 +1052,7 @@ const About = () => {
 
   return (
     <section
-      className="timeline-section timeline-section--timeline"
+      className="bg-[#FEF9F8] timeline-section timeline-section--timeline"
       ref={timelineRef}
     >
       <div className="timeline_sticky">
@@ -899,7 +1137,7 @@ const About = () => {
                     </p>
                     <div className="timeline__tags">
                       <div className="btn-tag">
-                        <span className="btn-tag__star"></span>i-Tero
+                        <span className="btn-tag__star"></span>Top 1%
                       </div>
                       <div className="btn-tag">
                         <span className="btn-tag__star"></span>Diamond Plus
@@ -933,10 +1171,11 @@ const About = () => {
                     </p>
                     <div className="timeline__tags">
                       <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Lorem
+                        <span className="btn-tag__star"></span>Board
+                        Certification
                       </div>
                       <div className="btn-tag">
-                        <span className="btn-tag__star"></span>Ipsum
+                        <span className="btn-tag__star"></span>ABO
                       </div>
                     </div>
                   </div>
@@ -983,170 +1222,413 @@ const About = () => {
   );
 };
 
-function ScrollTextReveal() {
-  useEffect(() => {
-    let tlMain = gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: ".section-height",
-          start: "top top",
-          end: "98% bottom",
-          scrub: 1,
-        },
-      })
-      .to(".track", {
-        xPercent: -100,
-        ease: "none",
-      });
+function MoreThanSmiles() {
+  // useEffect(() => {
+  //   let tlMain = gsap
+  //     .timeline({
+  //       scrollTrigger: {
+  //         trigger: ".section-height",
+  //         start: "top top",
+  //         end: "98% bottom",
+  //         scrub: 1,
+  //       },
+  //     })
+  //     .to(".track", {
+  //       xPercent: -100,
+  //       ease: "none",
+  //     });
 
-    gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: ".giving-panel_wrap",
-          containerAnimation: tlMain,
-          start: "left left",
-          end: "right right",
-          scrub: true,
-        },
-      })
-      .to(".giving-panel", { xPercent: 100, ease: "none" })
-      .to(".giving-panel_photo", { scale: 1 }, 0)
-      .fromTo(
-        ".giving-panel_contain.is-2",
-        { clipPath: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)" },
-        {
-          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-          ease: "none",
-        },
-        0
+  //   gsap
+  //     .timeline({
+  //       scrollTrigger: {
+  //         trigger: ".giving-panel_wrap",
+  //         containerAnimation: tlMain,
+  //         start: "left left",
+  //         end: "right right",
+  //         scrub: true,
+  //       },
+  //     })
+  //     .to(".giving-panel", { xPercent: 100, ease: "none" })
+  //     .to(".giving-panel_photo", { scale: 1 }, 0)
+  //     .fromTo(
+  //       ".giving-panel_contain.is-2",
+  //       { clipPath: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)" },
+  //       {
+  //         clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+  //         ease: "none",
+  //       },
+  //       0
+  //     );
+  // }, []);
+
+  const imagesContainerRef = useRef(null);
+
+  const [images, setImages] = useState([
+    "../images/morethansmiles1.png",
+    "../images/morethansmiles2.png",
+    "../images/morethansmiles3.png",
+    "../images/morethansmiles4.png",
+    "../images/morethansmiles5.png",
+    "../images/morethansmiles6.png",
+  ]);
+
+  useEffect(() => {
+    if (!imagesContainerRef.current) return;
+
+    const imageElements =
+      imagesContainerRef.current.querySelectorAll(".gallery-img");
+    const timeline = gsap.timeline({ ease: "none" });
+
+    let z = 100000000000;
+    let moveLeft = true;
+
+    // last image=highest z-index
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            imageElements.forEach((image, index) => {
+              gsap.set(image, { zIndex: z - index });
+            });
+
+            timeline.fromTo(
+              imageElements,
+              {
+                x: (i) => (i % 2 === 0 ? -400 : 400),
+                y: "300%",
+              },
+              {
+                x: 0,
+                y: 0,
+                duration: 1.5,
+                stagger: -0.4,
+                rotation: () => 20 * Math.random() - 10,
+              }
+            );
+
+            timeline.play();
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.2 } // Trigger when 20% of the container is visible
+    );
+
+    observer.observe(imagesContainerRef.current);
+
+    // Move clicked image to the back of the stack
+    imageElements.forEach((image) => {
+      image.addEventListener("click", () => {
+        const moveDirection = moveLeft ? "-125%" : "125%";
+        moveLeft = !moveLeft; // alternate direction each click
+
+        // lowest index in stack
+        let minZIndex = Infinity;
+        imageElements.forEach((img) => {
+          let zIndex = parseInt(img.style.zIndex, 10);
+          if (zIndex < minZIndex) {
+            minZIndex = zIndex;
+          }
+        });
+
+        // the clicked image becomes the lowest index
+        z = minZIndex - 1;
+
+        timeline
+          .to(image, { x: moveDirection, duration: 0.5 }) // move out
+          .to(image, { zIndex: z, duration: 0.01 }) // update z-index when it's away from stack
+          .to(image, { x: 0, duration: 0.5 }); // move back under the stack
+      });
+    });
+
+    return () => {
+      imageElements.forEach((image) =>
+        image.removeEventListener("click", () => {})
       );
+    };
+  }, [images]);
+  const btnRef = useRef();
+  const hitRef = useRef();
+
+  useEffect(() => {
+    const btn = btnRef.current;
+    const hit = hitRef.current;
+
+    hit.onpointermove = (e) => {
+      const domPt = new DOMPoint(e.x, e.y);
+      let svgPt = domPt.matrixTransform(btn.getScreenCTM().inverse());
+
+      gsap
+        .timeline({ defaults: { duration: 0.3, ease: "power3" } })
+        .to(".hit", { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
+        .to(".bg", { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
+        .to(".txt", { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
+        .to(".bg", { attr: { fill: "#000" } }, 0)
+        .to(".txt", { attr: { fill: "rgb(0,0,0)" } }, 0);
+    };
+
+    hit.onpointerleave = (e) => {
+      gsap
+        .timeline({ defaults: { duration: 0.3, ease: "power2" } })
+        .to(".bg", { attr: { fill: "#E8674A" } }, 0)
+        .to(".txt", { attr: { fill: "rgb(255,255,255)" } }, 0)
+        .to(
+          ".hit, .bg, .txt",
+          { duration: 0.7, ease: "elastic.out(0.8)", x: 0, y: 0 },
+          0
+        );
+    };
   }, []);
 
-  const text =
-    "Frey Smiles believes in providing accessible orthodontic care for everyone. In 2011, they established a non-profit organization called More Than Smiles, which offers orthodontic treatment to deserving individuals who may not have access to world-class orthodontic care or cannot afford it.";
-  return (
-    <section className="w-full min-h-screen ">
-      <div className="section-height">
-        <div className="sticky-element">
-          <div className="track">
-            <div className="track-flex">
-              <div className="giving-panel_wrap">
-                <div className="giving-panel">
-                  <div className="giving-panel_contain">
-                    <p className="giving-panel_text">GIVING</p>
-                    <div className="giving-panel_img is-1">
-                      <div className="giving-panel_img-height">
-                        <img
-                          src="../images/morethansmiles2.png"
-                          loading="eager"
-                          alt=""
-                          className="giving-panel_photo"
-                        />
-                      </div>
-                    </div>
-                    <div className="giving-panel_img is-2">
-                      <div className="giving-panel_img-height">
-                        <img
-                          src="../images/morethansmiles3.png"
-                          loading="eager"
-                          alt=""
-                          className="giving-panel_photo"
-                        />
-                      </div>
-                    </div>
-                    <div className="giving-panel_img is-3">
-                      <div className="giving-panel_img-height">
-                        <img
-                          src="../images/hand.jpeg"
-                          loading="eager"
-                          alt=""
-                          className="giving-panel_photo"
-                        />
-                      </div>
-                    </div>
-                  </div>
+  const imageCarousel = [
+    "../images/morethansmiles1.png",
+    "../images/morethansmiles2.png",
+    "../images/morethansmiles3.png",
+    "../images/morethansmiles4.png",
+    "../images/morethansmiles5.png",
+    "../images/morethansmiles6.png",
+  ];
 
-                  <div className="giving-panel_contain is-2">
-                    <p className="giving-panel_text">GIVING</p>
-                    <div className="giving-panel_img is-1">
-                      <div className="giving-panel_img-height">
-                        <img
-                          src="../images/morethansmiles5.png"
-                          loading="eager"
-                          alt=""
-                          className="giving-panel_photo"
-                        />
-                      </div>
-                    </div>
-                    <div className="giving-panel_img is-2">
-                      <div className="giving-panel_img-height">
-                        <img
-                          src="../images/wavyborderpatient.png"
-                          loading="eager"
-                          alt=""
-                          className="giving-panel_photo"
-                        />
-                      </div>
-                    </div>
-                    <div className="giving-panel_img is-3">
-                      <div className="giving-panel_img-height">
-                        <img
-                          src="../images/morethansmiles4.png"
-                          loading="eager"
-                          alt=""
-                          className="giving-panel_photo"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+  const cardRefs = useRef([]);
+
+  useEffect(() => {
+    const updateScales = () => {
+      const centerX = window.innerWidth / 2;
+
+      cardRefs.current.forEach((el) => {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const distance = Math.abs(centerX - cardCenter);
+
+        const scale = gsap.utils.clamp(0.9, 1.2, 1.2 - distance / 600);
+        gsap.to(el, {
+          scale,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      });
+    };
+
+    window.addEventListener("scroll", updateScales);
+    window.addEventListener("resize", updateScales);
+    updateScales();
+
+    return () => {
+      window.removeEventListener("scroll", updateScales);
+      window.removeEventListener("resize", updateScales);
+    };
+  }, []);
+
+  return (
+    <>
+         <section className="px-8 py-20 min-h-screen ">
+        <div className="ml-20">
+          <div className="flex flex-col items-start gap-6">
+            <h2 className="text-[1vw] leading-tight font-light">
+              <span className="text-[#ff007f] font-neuehaas45">OUR NON-PROFIT</span>{" "}
+              <span className="ml-6 text-[2.5vw] font-neuehaas45 text-black">
+                If you know someone who could benefit from this{" "}
+                <span className="font-saolitalic">gift,</span> please visit our
+                website for details on how to{" "}
+                <span className="font-saolitalic">nominate</span> a candidate.
+              </span>
+            </h2>
+            <div className="w-full flex justify-start -mt-20">
+              <a
+                href="https://morethansmiles.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg
+                  ref={btnRef}
+                  className="w-full max-w-xl cursor-pointer h-full"
+                  viewBox="-50 -50 100 100"
+                >
+                  <circle className="bg" r="22.4" fill="#E8674A" />
+                  <text
+                    className="txt fill-white text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
+                    x="0"
+                    y="2"
+                    textAnchor="middle"
+                  >
+                    Nominate
+                  </text>
+                  <circle
+                    ref={hitRef}
+                    className="hit"
+                    r="42"
+                    fill="rgba(0,0,0,0)"
+                  />
+                </svg>
+              </a>
             </div>
           </div>
         </div>
+      </section>
+      <section className="px-20 py-20 bg-[#FEF9F8] text-black flex flex-col justify-between">
+      <div className="flex justify-between ">
+        <div className="w-[40%] text-left text-neutral-500 leading-snug ">
+          <p className="font-neuehaas35 text-[20px]">
+            Frey Smiles is committed to making world-class orthodontic care
+            accessible to all. In 2011, we launched a non-profit initiative
+            called More Than Smiles, dedicated to providing treatment for
+            individuals who may not have the means to access it. The program
+            also focuses on educating the community about dental and orthodontic
+            health.
+          </p>
+        </div>
       </div>
-
-      {/* <div className="flex flex-col items-center justify-center text-[180px] leading-none">
-        <div className="flex items-center self-start ml-60">
-          <span className="underline-custom">MORE</span>
-          <img
-            className="w-32 h-auto ml-4"
-            src="../images/morethansmiles2.png"
-            alt="More Than Smiles"
-            style={{ transform: "rotate(10deg)" }}
-          />
+ 
+      <div className="flex justify-between items-end text-[14px]">
+        <div className="flex gap-4 overflow-x-auto py-4">
+          {images.map((src, index) => (
+            <img
+              key={index}
+              src={src}
+              alt={`More Than Smiles ${index + 1}`}
+              className="w-[200px] h-auto object-cover rounded"
+            />
+          ))}
         </div>
-        <div className="flex items-center ml-20">
-          <img
-            className="w-32 h-auto mr-2"
-            src="../images/morethansmiles.png"
-            alt="More Than Smiles"
-            style={{ transform: "rotate(-10deg)" }}
-          />
-          <span className="underline-custom">THAN</span>
-        </div>
-        <div className="flex items-center self-start ml-60">
-          <span className="underline-custom">SMILES</span>
-          <img
-            className="w-32 h-auto ml-4"
-            src="../images/morethansmiles3.png"
-            alt="More Than Smiles"
-            style={{ transform: "rotate(10deg)" }}
-          />
-        </div>
-      </div> */}
 
-      {/* <div className="container flex flex-col-reverse mx-auto md:flex-row md:justify-between"> */}
-
-      {/* <div className="flex flex-col items-center justify-center w-full md:w-1/2">
-          <img
-            className="mt-16 rounded-lg"
-            src="/../../images/smilescholarship.jpg"
-            alt="Frey Smiles patient receiving FreySmile scholarship"
-          />
+        {/* 
+        <div className="space-y-2">
+          <p className="font-medium">Services</p>
+          <section className="morethansmiles">
+        <div ref={imagesContainerRef} className="imagestack">
+          {images.map((url, index) => (
+            <img key={index} src={url} className="gallery-img" alt="gallery" />
+          ))}
+        </div>
+      </section>
         </div> */}
-      {/* </div> */}
+      </div>
     </section>
+    </>
+   
+    // <section className="w-full min-h-screen ">
+    //   <div className="section-height">
+    //     <div className="sticky-element">
+    //       <div className="track">
+    //         <div className="track-flex">
+    //           <div className="giving-panel_wrap">
+    //             <div className="giving-panel">
+    //               <div className="giving-panel_contain">
+    //                 <p className="giving-panel_text">GIVING</p>
+    //                 <div className="giving-panel_img is-1">
+    //                   <div className="giving-panel_img-height">
+    //                     <img
+    //                       src="../images/morethansmiles2.png"
+    //                       loading="eager"
+    //                       alt=""
+    //                       className="giving-panel_photo"
+    //                     />
+    //                   </div>
+    //                 </div>
+    //                 <div className="giving-panel_img is-2">
+    //                   <div className="giving-panel_img-height">
+    //                     <img
+    //                       src="../images/morethansmiles3.png"
+    //                       loading="eager"
+    //                       alt=""
+    //                       className="giving-panel_photo"
+    //                     />
+    //                   </div>
+    //                 </div>
+    //                 <div className="giving-panel_img is-3">
+    //                   <div className="giving-panel_img-height">
+    //                     <img
+    //                       src="../images/hand.jpeg"
+    //                       loading="eager"
+    //                       alt=""
+    //                       className="giving-panel_photo"
+    //                     />
+    //                   </div>
+    //                 </div>
+    //               </div>
+
+    //               <div className="giving-panel_contain is-2">
+    //                 <p className="giving-panel_text">GIVING</p>
+    //                 <div className="giving-panel_img is-1">
+    //                   <div className="giving-panel_img-height">
+    //                     <img
+    //                       src="../images/morethansmiles5.png"
+    //                       loading="eager"
+    //                       alt=""
+    //                       className="giving-panel_photo"
+    //                     />
+    //                   </div>
+    //                 </div>
+    //                 <div className="giving-panel_img is-2">
+    //                   <div className="giving-panel_img-height">
+    //                     <img
+    //                       src="../images/wavyborderpatient.png"
+    //                       loading="eager"
+    //                       alt=""
+    //                       className="giving-panel_photo"
+    //                     />
+    //                   </div>
+    //                 </div>
+    //                 <div className="giving-panel_img is-3">
+    //                   <div className="giving-panel_img-height">
+    //                     <img
+    //                       src="../images/morethansmiles4.png"
+    //                       loading="eager"
+    //                       alt=""
+    //                       className="giving-panel_photo"
+    //                     />
+    //                   </div>
+    //                 </div>
+    //               </div>
+    //             </div>
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+
+    //   {/* <div className="flex flex-col items-center justify-center text-[180px] leading-none">
+    //     <div className="flex items-center self-start ml-60">
+    //       <span className="underline-custom">MORE</span>
+    //       <img
+    //         className="w-32 h-auto ml-4"
+    //         src="../images/morethansmiles2.png"
+    //         alt="More Than Smiles"
+    //         style={{ transform: "rotate(10deg)" }}
+    //       />
+    //     </div>
+    //     <div className="flex items-center ml-20">
+    //       <img
+    //         className="w-32 h-auto mr-2"
+    //         src="../images/morethansmiles.png"
+    //         alt="More Than Smiles"
+    //         style={{ transform: "rotate(-10deg)" }}
+    //       />
+    //       <span className="underline-custom">THAN</span>
+    //     </div>
+    //     <div className="flex items-center self-start ml-60">
+    //       <span className="underline-custom">SMILES</span>
+    //       <img
+    //         className="w-32 h-auto ml-4"
+    //         src="../images/morethansmiles3.png"
+    //         alt="More Than Smiles"
+    //         style={{ transform: "rotate(10deg)" }}
+    //       />
+    //     </div>
+    //   </div> */}
+
+    //   {/* <div className="container flex flex-col-reverse mx-auto md:flex-row md:justify-between"> */}
+
+    //   {/* <div className="flex flex-col items-center justify-center w-full md:w-1/2">
+    //       <img
+    //         className="mt-16 rounded-lg"
+    //         src="/../../images/smilescholarship.jpg"
+    //         alt="Frey Smiles patient receiving FreySmile scholarship"
+    //       />
+    //     </div> */}
+    //   {/* </div> */}
+    // </section>
   );
 }
 
