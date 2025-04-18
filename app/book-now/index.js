@@ -6,7 +6,9 @@ import "tw-elements";
 import gsap from "gsap";
 import { MorphSVGPlugin } from "gsap-trial/MorphSVGPlugin";
 import ScrollTrigger from "gsap/ScrollTrigger";
-
+import { Text } from '@react-three/drei';
+import { useThree, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin);
 
 
@@ -142,7 +144,7 @@ export default function BookNow() {
     <div className="pt-40">
   <div className="font-neuehaas45 scramble-wrapper flex flex-col gap-4">
 
-    <div className="flex flex-row">
+    <div className="ml-10 flex flex-row">
       <ScrambleText text="NUMBER" className="mr-10" />
       <ScrambleText 
         text="(610)437-4748" 
@@ -151,7 +153,7 @@ export default function BookNow() {
     </div>
 
 
-    <div className="flex flex-row">
+    <div className="ml-10 flex flex-row">
       <ScrambleText text="EMAIL" className="mr-10" />
       <ScrambleText text="info@freysmiles.com" />
     </div>

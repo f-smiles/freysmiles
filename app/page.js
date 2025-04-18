@@ -237,7 +237,7 @@ const OceanScene = () => {
 export default function LandingComponent() {
   return (
     <>
-    <div style={{ height: "200vh", margin: 0 }}>
+    {/* <div style={{ height: "200vh", margin: 0 }}>
       <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh" }}>
       <Canvas>
       <ScrollControls pages={3} damping={0.1}>
@@ -245,16 +245,16 @@ export default function LandingComponent() {
       </ScrollControls>
     </Canvas>
       </div>
-    </div>
+    </div> */}
       <div style={{ overflowX: 'hidden' }}> 
-      {/* <div class="MainContainer">
+      <div class="MainContainer">
         <div class="ParallaxContainer">
           <Hero />
         </div>
         <div class="StatsContainer">
           <Stats />
         </div>
-      </div> */}
+      </div>
       {/* <MarqueeSection /> */}
 
       <ImageGrid />
@@ -674,7 +674,7 @@ const Hero = () => {
         a2 = 1;
       }
 
-      // Update WebGL uniform values
+
       program.uniforms.res.value = new OGL.Vec4(
         containerWidth,
         containerHeight,

@@ -2,8 +2,14 @@
 import { Item } from "../../utils/Item";
 import Image from "next/image";
 import Lenis from "@studio-freight/lenis";
-import { OrbitControls, Environment} from '@react-three/drei';
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import { OrbitControls, Environment } from "@react-three/drei";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useLayoutEffect,
+} from "react";
 import { SplitText } from "gsap-trial/all";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { gsap } from "gsap";
@@ -12,11 +18,16 @@ import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
-import { TextureLoader,CubeCamera, WebGLCubeRenderTarget, LinearMipmapLinearFilter, RGBFormat } from "three";
+import {
+  TextureLoader,
+  CubeCamera,
+  WebGLCubeRenderTarget,
+  LinearMipmapLinearFilter,
+  RGBFormat,
+} from "three";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
-
 
 const vertexShader = `
 uniform vec2 uOffset;
@@ -70,8 +81,10 @@ const ShaderPlane = ({ imageUrl, mouse }) => {
   const uniforms = useMemo(
     () => ({
       iChannel0: { value: texture },
-      uMeshSize: { value: new THREE.Vector2(300, 400) }, 
-      uMediaSize: { value: new THREE.Vector2(texture.image.width, texture.image.height) },
+      uMeshSize: { value: new THREE.Vector2(300, 400) },
+      uMediaSize: {
+        value: new THREE.Vector2(texture.image.width, texture.image.height),
+      },
       uOffset: { value: new THREE.Vector2(0, 0) },
       uOpacity: { value: 1.0 },
       uMouseEnter: { value: 0 },
@@ -86,7 +99,6 @@ const ShaderPlane = ({ imageUrl, mouse }) => {
     const targetX = mouse.current.x;
     const targetY = mouse.current.y;
 
-
     gsap.to(meshRef.current.position, {
       x: (targetX - 0.5) * window.innerWidth,
       y: -(targetY - 0.5) * window.innerHeight,
@@ -94,16 +106,22 @@ const ShaderPlane = ({ imageUrl, mouse }) => {
       ease: "power3.out",
     });
 
-
     gsap.to(uniforms.uOffset.value, {
       x: (targetX - 0.5) * 0.2,
       y: (targetY - 0.5) * 0.2,
       duration: 0.3,
     });
 
-
-    gsap.to(uniforms.uMouseEnter, { value: 1, duration: 1.2, ease: "power2.out" });
-    gsap.to(uniforms.uMouseEnterMask, { value: 1, duration: 0.7, ease: "power2.out" });
+    gsap.to(uniforms.uMouseEnter, {
+      value: 1,
+      duration: 1.2,
+      ease: "power2.out",
+    });
+    gsap.to(uniforms.uMouseEnterMask, {
+      value: 1,
+      duration: 0.7,
+      ease: "power2.out",
+    });
   });
 
   return (
@@ -120,15 +138,14 @@ const ShaderPlane = ({ imageUrl, mouse }) => {
 };
 
 const images = [
-  '../images/team_members/Adriana-Photoroom.jpg',
-  '../images/team_members/Nicollewaving.png',
-  '../images/team_members/Lexiworking.png',
-  '../images/team_members/Elizabethaao.png',
-  '../images/team_members/Alyssascan.png',
+  "../images/team_members/Adriana-Photoroom.jpg",
+  "../images/team_members/Nicollewaving.png",
+  "../images/team_members/Lexiworking.png",
+  "../images/team_members/Elizabethaao.png",
+  "../images/team_members/Alyssascan.png",
 ];
 
 function ImageCard({ texture, index }) {
-  
   const ref = useRef();
   const z = index * -1.5;
   const x = 0;
@@ -149,7 +166,7 @@ function ImageCard({ texture, index }) {
           reflectivity={0.2}
           clearcoat={1}
           clearcoatRoughness={0.05}
-          toneMapped={false} 
+          toneMapped={false}
           opacity={1}
         />
       </mesh>
@@ -165,10 +182,9 @@ function Scene() {
       {textures.map((tex, i) => (
         <ImageCard key={i} texture={tex} index={i} />
       ))}
-<Environment preset="sunset" />
-<ambientLight intensity={1.2} />
-<directionalLight intensity={1.5} position={[5, 5, 5]} />
-
+      <Environment preset="sunset" />
+      <ambientLight intensity={1.2} />
+      <directionalLight intensity={1.5} position={[5, 5, 5]} />
 
       <OrbitControls enableZoom={false} />
     </>
@@ -176,11 +192,31 @@ function Scene() {
 }
 const ShaderHoverEffect = () => {
   const images = [
-    { name: "Alyssa", url: "../images/team_members/Alyssascan.png",    description: "Treatment Coordinator",},
-    { name: "Nicolle", url: "../images/team_members/Nicollewaving.png",   description: "Specialized Orthodontic Assistant", },
-    { name: "Lexi", url: "../images/team_members/Lexiworking.png",   description: "Treatment Coordinator" },
-    { name: "Elizabeth", url: "../images/team_members/Elizabethaao.png",   description: "Patient Services", },
-    { name: "Adriana", url: "../images/team_members/Adriana-Photoroom.jpg" ,description: "Insurance Coordinator"},
+    {
+      name: "Alyssa",
+      url: "../images/team_members/Alyssascan.png",
+      description: "Treatment Coordinator",
+    },
+    {
+      name: "Nicolle",
+      url: "../images/team_members/Nicollewaving.png",
+      description: "Specialized Orthodontic Assistant",
+    },
+    {
+      name: "Lexi",
+      url: "../images/team_members/Lexiworking.png",
+      description: "Treatment Coordinator",
+    },
+    {
+      name: "Elizabeth",
+      url: "../images/team_members/Elizabethaao.png",
+      description: "Patient Services",
+    },
+    {
+      name: "Adriana",
+      url: "../images/team_members/Adriana-Photoroom.jpg",
+      description: "Insurance Coordinator",
+    },
   ];
   const [hoveredImage, setHoveredImage] = useState(null);
   const mouse = useRef({ x: 0.5, y: 0.5 });
@@ -191,26 +227,26 @@ const ShaderHoverEffect = () => {
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden" onMouseMove={handleMouseMove}>
+    <div
+      className="relative w-screen h-screen overflow-hidden"
+      onMouseMove={handleMouseMove}
+    >
       <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 100] }}>
         {hoveredImage && <ShaderPlane imageUrl={hoveredImage} mouse={mouse} />}
       </Canvas>
       <div className="absolute inset-0 flex items-center justify-center">
-        
         <div className="flex flex-col justify-between space-y-6 text-center">
           {images.map((img) => (
-    <div
-    key={img.name}
-    className="flex flex-row justify-between font-neuehaasdisplaythin text-xl cursor-pointer w-96"
-    onMouseEnter={() => setHoveredImage(img.url)}
-    onMouseLeave={() => setHoveredImage(null)}
-  >
-    <span>{img.name}</span>
-    <span className="text-sm text-gray-400">{img.description}</span>
-  </div>
-     
+            <div
+              key={img.name}
+              className="flex flex-row justify-between font-neuehaasdisplaythin text-xl cursor-pointer w-96"
+              onMouseEnter={() => setHoveredImage(img.url)}
+              onMouseLeave={() => setHoveredImage(null)}
+            >
+              <span>{img.name}</span>
+              <span className="text-sm text-gray-400">{img.description}</span>
+            </div>
           ))}
-          
         </div>
       </div>
     </div>
@@ -221,33 +257,32 @@ export default function OurTeam() {
   const titleRef = useRef(null);
   const [isRevealing, setIsRevealing] = useState(true);
   const [showContent, setShowContent] = useState(false);
-  
-  useEffect(() => {
 
+  useEffect(() => {
     gsap.set(panelRefs.current, { y: "0%" });
-  
+
     const tl = gsap.timeline({
       defaults: { ease: "expo.out" },
     });
-  
+
     if (titleRef.current) {
       const split = new SplitText(titleRef.current, {
         type: "chars",
         charsClass: "char",
       });
-  
+
       split.chars.forEach((char) => {
         const wrap = document.createElement("span");
         wrap.classList.add("char-wrap");
-  
+
         if (char.textContent === " ") {
           char.innerHTML = "&nbsp;";
         }
-  
+
         char.parentNode.insertBefore(wrap, char);
         wrap.appendChild(char);
       });
-  
+
       tl.fromTo(
         split.chars,
         {
@@ -263,7 +298,7 @@ export default function OurTeam() {
           delay: 0.2,
         }
       );
-  
+
       tl.to(
         titleRef.current,
         {
@@ -274,7 +309,7 @@ export default function OurTeam() {
         "+=0.2"
       );
     }
-  
+
     tl.fromTo(
       panelRefs.current,
       { y: "0%" },
@@ -286,14 +321,16 @@ export default function OurTeam() {
       },
       "+=0.1"
     );
-  
-    tl.call(() => {
-      setIsRevealing(false);
-      setShowContent(true);
-    }, null, "+=0.2");
+
+    tl.call(
+      () => {
+        setIsRevealing(false);
+        setShowContent(true);
+      },
+      null,
+      "+=0.2"
+    );
   }, []);
-  
-  
 
   // const [isVisible, setIsVisible] = useState(false);
 
@@ -317,21 +354,20 @@ export default function OurTeam() {
   };
 
   useEffect(() => {
-    if (isRevealing) return; 
-  
+    if (isRevealing) return;
+
     const clearAnimation = () => {
       gsap.killTweensOf(doctorBioRef.current);
     };
-  
+
     const startAnimation = () => {
       setTimeout(() => {
         const doctorBio = doctorBioRef.current;
         if (doctorBio) {
           const splitText = new SplitText(doctorBio, { type: "lines" });
-    
 
           gsap.set(doctorBio, { visibility: "visible" });
-    
+
           gsap.from(splitText.lines, {
             duration: 2,
             xPercent: 20,
@@ -342,26 +378,24 @@ export default function OurTeam() {
         }
       }, 200);
     };
-    
-  
+
     if (doctorBioRef.current) {
       clearAnimation();
       startAnimation();
     }
-  
+
     return () => clearAnimation();
   }, [switchDoctor, isRevealing]);
-  
 
   useEffect(() => {
-    if (!showContent) return; 
-  
+    if (!showContent) return;
+
     const container = document.querySelector(".horizontalScroller");
     if (!container) return;
-  
+
     const containerWidth =
       container.scrollWidth - document.documentElement.clientWidth;
-  
+
     gsap.to(container, {
       x: () => -containerWidth,
       scrollTrigger: {
@@ -374,8 +408,7 @@ export default function OurTeam() {
         invalidateOnRefresh: true,
       },
     });
-  }, [showContent]); 
-  
+  }, [showContent]);
 
   const [cursorPosition, setCursorPosition] = useState({ x: -100, y: -100 });
   const [isFocused, setIsFocused] = useState(false);
@@ -472,101 +505,225 @@ export default function OurTeam() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
-
   const imageRefs = useRef([]);
   useEffect(() => {
     if (imageRefs.current[currentIndex]) {
       gsap.fromTo(
         imageRefs.current[currentIndex],
         {
-          y: "100%",  
+          y: "100%",
           scale: 1.6,
-
         },
         {
-          y: "0%",     
-          scale: 1,     
-          opacity: 1,  
-          duration: 1,  
-          ease: "power3.out"
+          y: "0%",
+          scale: 1,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
         }
       );
     }
   }, [currentIndex]);
-  
+
   const teamMembers = [
-   {
-    id: 1,
-    name: "Alyssa",
-    src: "../images/team_members/Alyssascan.png",
-    alt: "Image 1",
-    description: "Treatment Coordinator",
-  },
-  {
-    id: 2,
-    name: "Nicolle",
-    src: "../images/team_members/Nicollewaving.png",
-    alt: "Image 2",
-    description: "Specialized Orthodontic Assistant",
-  },
-  {
-    id: 3,
-    name: "Lexi",
-    src: "../images/team_members/Lexiworking.png",
-    alt: "Image 3",
-    description: "Treatment Coordinator",
-  },
-  {
-    id: 4,
-    name: "Elizabeth",
-    src: "../images/team_members/Elizabethaao.png",
-    alt: "Image 4",
-    description: "Patient Services",
-  },
-  {
-    id: 5,
-    name: "Adriana",
-    src: "../images/team_members/Adriana-Photoroom.jpg",
-    alt: "Image 5",
-    description: "Insurance Coordinator",
-  },
+    {
+      id: 1,
+      name: "Alyssa",
+      src: "../images/team_members/Alyssascan.png",
+      alt: "Image 1",
+      description: "Treatment Coordinator",
+    },
+    {
+      id: 2,
+      name: "Nicolle",
+      src: "../images/team_members/Nicollewaving.png",
+      alt: "Image 2",
+      description: "Specialized Orthodontic Assistant",
+    },
+    {
+      id: 3,
+      name: "Lexi",
+      src: "../images/team_members/Lexiworking.png",
+      alt: "Image 3",
+      description: "Treatment Coordinator",
+    },
+    {
+      id: 4,
+      name: "Elizabeth",
+      src: "../images/team_members/Elizabethaao.png",
+      alt: "Image 4",
+      description: "Patient Services",
+    },
+    {
+      id: 5,
+      name: "Adriana",
+      src: "../images/team_members/Adriana-Photoroom.jpg",
+      alt: "Image 5",
+      description: "Insurance Coordinator",
+    },
   ];
-  
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedMember = teamMembers[selectedIndex];
 
+  const wrapperRef = useRef(null);
+  const scrollRef = useRef(null);
+  const lastSectionRef = useRef(null);
+  useLayoutEffect(() => {
+    const initScrollTrigger = () => {
+      if (!wrapperRef.current || !scrollRef.current || !lastSectionRef.current)
+        return;
 
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+
+      wrapperRef.current.offsetHeight;
+
+      ScrollTrigger.create({
+        trigger: scrollRef.current,
+        scroller: scrollRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        pin: wrapperRef.current,
+        pinSpacing: false,
+        anticipatePin: 1,
+      });
+
+      gsap.to(wrapperRef.current, {
+        x: "-100vw",
+        ease: "none",
+        scrollTrigger: {
+          trigger: lastSectionRef.current,
+          scroller: scrollRef.current,
+          start: "top top+=50",
+          end: "bottom top-=50",
+          scrub: 0.5,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      const refreshAll = () => {
+        ScrollTrigger.refresh();
+        setTimeout(ScrollTrigger.refresh, 100);
+      };
+
+      if (document.readyState === "complete") {
+        refreshAll();
+      } else {
+        window.addEventListener("load", refreshAll);
+      }
+    };
+
+    const timeout = setTimeout(initScrollTrigger, 300);
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener("load", ScrollTrigger.refresh);
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, []);
+
+  
   return (
-    <div >
-  <div
-    className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
-      isRevealing ? "translate-y-0" : "-translate-y-full"
-    }`}
-  >
-    {[...Array(4)].map((_, i) => (
+    <div>
       <div
-        key={i}
-        ref={(el) => (panelRefs.current[i] = el)}
-        className="h-full w-1/4 bg-[#191919]"
-      />
-    ))}
+        className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
+          isRevealing ? "translate-y-0" : "-translate-y-full"
+        }`}
+      >
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            ref={(el) => (panelRefs.current[i] = el)}
+            className="h-full w-1/4 bg-[#191919]"
+          />
+        ))}
 
-<div className="absolute inset-0 z-40 flex justify-center items-center">
+        <div className="absolute inset-0 z-40 flex justify-center items-center">
+          <h2 ref={titleRef} className="content__title1">
+            <span style={{ lineHeight: "1.2" }}>Meet Our Team</span>
+          </h2>
+        </div>
+      </div>
 
-      <h2 ref={titleRef} className="content__title1">
-        <span style={{ lineHeight: "1.2" }}>Meet Our Team</span>
-      </h2>
-    </div>
-  </div>
+      <div className="bg-black relative ">
+        <div ref={wrapperRef} className="flex w-screen h-screen">
+          <div className=" py-[10em] sm:py-[10em] border-l border-b border-r border-black w-3/5 bg-[#EDECE6] rounded-[24px]">
+            <section className="rounded-[24px] flex justify-center items-center bg-[#EDECE6]">
+              <div className=" flex justify-center gap-6 overflow-hidden">
+                <div className="w-[275px] mr-10">
+                  <figure className="relative w-full aspect-[3/4] overflow-hidden">
+                    <img
+                      style={{
+                        position: "absolute",
+                        width: "100%",
+                        transition: "transform 1s",
+                        transform: switchDoctor
+                          ? "translateX(100%)"
+                          : "translateX(0)",
+                      }}
+                      src="../../images/team_members/GreggFrey.png"
+                      alt="Dr. Gregg Frey"
+                    />
+                    <img
+                      style={{
+                        position: "absolute",
+                        width: "100%",
+                        transition: "transform 1s",
+                        transform: switchDoctor
+                          ? "translateX(0)"
+                          : "translateX(-100%)",
+                      }}
+                      src="../../images/team_members/DanFrey.png"
+                      alt="Dr. Daniel Frey"
+                    />
+                  </figure>
+                  <figcaption className="mt-5 ">
+                    <p className="text-[16px] font-neuehaas45">
+                      {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
+                    </p>
+                    <p className="text-[12px] font-neuehaas45">
+                      {!switchDoctor ? "DDS" : "DMD, MSD"}
+                    </p>
+                  </figcaption>
+                </div>
 
-      <div className="bg-[#F7F7F7] relative ">
-      <section className="py-[10em] sm:py-[10em]">
-          
-          <div className="mx-auto mb-12 lg:px-8 max-w-7xl">
-            <div className="grid grid-cols-2 ">
+                <div className="w-[200px]">
+                  <figure
+                    className="relative grayscale w-full aspect-[3/4] overflow-hidden cursor-pointer"
+                    onClick={toggleSwitchDoctor}
+                  >
+                    <img
+                      style={{
+                        position: "absolute",
+                        width: "100%",
+                        transition: "transform 1s",
+                        transform: switchDoctor
+                          ? "translateX(0)"
+                          : "translateX(-100%)",
+                      }}
+                      src="../../images/team_members/GreggFrey.png"
+                      alt="Dr. Daniel Frey"
+                    />
+                    <img
+                      style={{
+                        position: "absolute",
+                        width: "100%",
+                        transition: "transform 1s",
+                        transform: switchDoctor
+                          ? "translateX(100%)"
+                          : "translateX(0)",
+                      }}
+                      src="../../images/team_members/DanFrey.png"
+                      alt="Dr. Gregg Frey"
+                    />
+                  </figure>
+                </div>
+              </div>
+            </section>
+          </div>
 
+          <div ref={scrollRef} className="w-2/5 overflow-y-scroll h-screen">
+            <div className="rounded-[24px] border-b border-b border-black bg-[#EDECE6]  py-[10em] sm:py-[10em] h-screen mx-auto lg:px-8 ">
               <div className="flex flex-col overflow-hidden">
-     
                 {lines.map((line, index) => (
                   <motion.div
                     key={index}
@@ -575,10 +732,14 @@ export default function OurTeam() {
                       clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
                       y: 20,
                     }}
-                    animate={isRevealing ? {} : {
-                      clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-                      y: 0,
-                    }}
+                    animate={
+                      isRevealing
+                        ? {}
+                        : {
+                            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+                            y: 0,
+                          }
+                    }
                     transition={{
                       duration: 0.8,
                       delay: 0.2 + index * 0.2,
@@ -589,163 +750,127 @@ export default function OurTeam() {
                   </motion.div>
                 ))}
               </div>
-     
-            </div>
-          </div>
+              <div className=" gap-8 px-6 py-1 mx-auto lg:px-8">
+                <div className="lg:col-span-6">
+                  <div
+                    id="controls"
+                    className="font-neuehaas35 flex items-center justify-start row-span-1 row-start-1 space-x-4 "
+                  >
+                    <button className=" z-0 p-3" onClick={toggleSwitchDoctor}>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 100 267"
+                        xmlns="http://www.w3.org/2000/svg"
+                        stroke="black"
+                        fill="none"
+                        strokeWidth="10"
+                        transform="rotate(-90)"
+                      >
+                        <path
+                          d="M49.894 2.766v262.979"
+                          strokeLinecap="square"
+                        ></path>
+                        <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+                      </svg>
+                    </button>
+                    <span className="text-[12px] text-black">
+                      0{!switchDoctor ? index : index + 1} / 02
+                    </span>
+                    <button className="z-3" onClick={toggleSwitchDoctor}>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 100 267"
+                        xmlns="http://www.w3.org/2000/svg"
+                        stroke="black"
+                        fill="none"
+                        strokeWidth="10"
+                        transform="rotate(90)"
+                      >
+                        <path
+                          d="M49.894 2.766v262.979"
+                          strokeLinecap="square"
+                        ></path>
+                        <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+                      </svg>
+                    </button>
+                  </div>
 
-          <div className="grid grid-cols-12 gap-8 px-6 py-1 mx-auto max-w-7xl lg:px-8">
-            
-            <div className="col-span-12 col-start-1 grid-rows-2 space-y-8 lg:col-span-6">
-            <div
-                id="controls"
-                className="font-neuehaas35 flex items-center justify-start row-span-1 row-start-1 space-x-4 "
-              >
-                <button
-                  className=" z-0 p-3"
-                  onClick={toggleSwitchDoctor}
-                >
-     <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
-                stroke="black" fill="none" strokeWidth="10" transform="rotate(-90)">
-                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
-                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
-              </svg>
-                </button>
-                <span className="text-[12px] text-black">
-                  0{!switchDoctor ? index : index + 1} / 02
-                </span>
-                <button
-                  className="z-3"
-                  onClick={toggleSwitchDoctor}
-                >
-  <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
-                stroke="black" fill="none" strokeWidth="10" transform="rotate(90)">
-                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
-                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
-              </svg>
-                </button>
+                  <div className="max-w-[600px]">
+                    <motion.div
+                      className="h-px mb-10 bg-gray-300"
+                      initial={{ width: 0, transformOrigin: "left" }}
+                      animate={isRevealing ? {} : { width: "40vw" }}
+                      transition={{
+                        duration: 1,
+                        delay: 0.4,
+                        ease: "easeInOut",
+                      }}
+                    ></motion.div>
+                    {/* doctor bio */}
+                    {switchDoctor ? (
+                      <p
+                        ref={doctorBioRef}
+                        className="font-neuehaas45 text-black"
+                      >
+                        Dr. Daniel Frey pursued his pre-dental requisites at the
+                        University of Pittsburgh, majoring in Biology. Dr. Frey
+                        excelled in his studies and was admitted to Temple
+                        University&apos;s dental school, graduating at the top
+                        of his class with the prestigious Summa Cum Laude
+                        designation. Continuing his education, Dr. Frey was
+                        admitted to the esteemed orthodontic residency program
+                        at the University of the Pacific in San Francisco where
+                        he worked with students and faculty from around the
+                        world and utilized cutting-edge orthodontic techniques.
+                        During his time in San Francisco, he conducted research
+                        in three-dimensional craniofacial analysis and earned
+                        his Master of Science degree. Dr. Frey is a member of
+                        the American Association of Orthodontists and the
+                        American Dental Association. In his leisure time, he
+                        enjoys staying active outdoors, camping, playing music,
+                        and spending time with loved ones.
+                      </p>
+                    ) : (
+                      <p
+                        style={{ visibility: "hidden" }}
+                        ref={doctorBioRef}
+                        className="font-neuehaas45 text-black"
+                      >
+                        Dr. Gregg Frey is an orthodontist based in Pennsylvania,
+                        who graduated from Temple University School of Dentistry
+                        with honors and served in the U.S. Navy Dental Corps
+                        before establishing his practice in the Lehigh Valley.
+                        He is a Diplomat of the American Board of Orthodontics
+                        and has received numerous distinctions, accreditations,
+                        and honors, including being named one of America&apos;s
+                        Top Orthodontists by the Consumer Review Council of
+                        America. This distinction is held by fewer than 25% of
+                        orthodontists nationwide. ABO certification represents
+                        the culmination of 5-10 years of written and oral
+                        examinations and independent expert review of actual
+                        treated patients. Recently Dr. Frey voluntarily
+                        re-certified. Dr. Frey enjoys coaching soccer, vintage
+                        car racing, and playing the drums.
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
-           
-              <div className="row-span-1 row-start-2">
-              <motion.div
-                  className="h-px mb-10 bg-gray-300"
-                  initial={{ width: 0, transformOrigin: "left" }}
-                  animate={isRevealing ? {} : { width: "40vw" }}
-                  transition={{
-                    duration: 1,
-                    delay: 0.4,
-                    ease: "easeInOut",
-                  }}
-                ></motion.div>
-                {/* doctor bio */}
-                {switchDoctor ? (
-                  <p ref={doctorBioRef} className="font-neuehaas45 text-black">
-                    Dr. Daniel Frey pursued his pre-dental requisites at the
-                    University of Pittsburgh, majoring in Biology. Dr. Frey
-                    excelled in his studies and was admitted to Temple
-                    University&apos;s dental school, graduating at the top of
-                    his class with the prestigious Summa Cum Laude designation.
-                    Continuing his education, Dr. Frey was admitted to the
-                    esteemed orthodontic residency program at the University of
-                    the Pacific in San Francisco where he worked with students
-                    and faculty from around the world and utilized cutting-edge
-                    orthodontic techniques. During his time in San Francisco, he
-                    conducted research in three-dimensional craniofacial
-                    analysis and earned his Master of Science degree. Dr. Frey
-                    is a member of the American Association of Orthodontists and
-                    the American Dental Association. In his leisure time, he
-                    enjoys staying active outdoors, camping, playing music, and
-                    spending time with loved ones.
-                  </p>
-                ) : (
-                  <p style={{ visibility: "hidden" }} ref={doctorBioRef} className="font-neuehaas45 text-black">
-                    Dr. Gregg Frey is an orthodontist based in Pennsylvania, who
-                    graduated from Temple University School of Dentistry with
-                    honors and served in the U.S. Navy Dental Corps before
-                    establishing his practice in the Lehigh Valley. He is a
-                    Diplomat of the American Board of Orthodontics and has
-                    received numerous distinctions, accreditations, and honors,
-                    including being named one of America&apos;s Top
-                    Orthodontists by the Consumer Review Council of America.
-                    This distinction is held by fewer than 25% of orthodontists
-                    nationwide. ABO certification represents the culmination of
-                    5-10 years of written and oral examinations and independent
-                    expert review of actual treated patients. Recently Dr. Frey
-                    voluntarily re-certified. Dr. Frey enjoys coaching soccer,
-                    vintage car racing, and playing the drums.
-                  </p>
-                )}
-              </div>
-         
             </div>
-            <div className="col-span-5 lg:col-span-3 lg:col-start-7">
-              <figure className="relative w-full aspect-[3/4] overflow-hidden">
-                <img
-                  style={{
-                    position: "absolute",
-                    width: "100%",
-                    transition: "transform 1s",
-                    transform: switchDoctor
-                      ? "translateX(100%)"
-                      : "translateX(0)",
-                  }}
-                  src="../../images/team_members/GreggFrey.png"
-                  alt="Dr. Gregg Frey"
-                />
-                <img
-                  style={{
-                    position: "absolute",
-                    width: "100%",
-                    transition: "transform 1s",
-                    transform: switchDoctor
-                      ? "translateX(0)"
-                      : "translateX(-100%)",
-                  }}
-                  src="../../images/team_members/DanFrey.png"
-                  alt="Dr. Daniel Frey"
-                />
-              </figure>
-              <figcaption>
-                <h5 className="mt-5 font-neue-montreal text-[14px]">
-                  {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
-                </h5>
-                <p className="font-neue-montreal text-[14px]">
-                  {!switchDoctor ? "DDS" : "DMD, MSD"}
-                </p>
-              </figcaption>
-            </div>
-            <div className="col-span-5 lg:col-span-2 lg:col-start-11">
-              <figure
-                className="relative grayscale w-full aspect-[3/4] overflow-hidden cursor-pointer"
-                onClick={toggleSwitchDoctor}
-              >
-                <img
-                  style={{
-                    position: "absolute",
-                    width: "100%",
-                    transition: "transform 1s",
-                    transform: switchDoctor
-                      ? "translateX(0)"
-                      : "translateX(-100%)",
-                  }}
-                  src="../../images/team_members/GreggFrey.png"
-                  alt="Dr. Daniel Frey"
-                />
-                <img
-                  style={{
-                    position: "absolute",
-                    width: "100%",
-                    transition: "transform 1s",
-                    transform: switchDoctor
-                      ? "translateX(100%)"
-                      : "translateX(0)",
-                  }}
-                  src="../../images/team_members/DanFrey.png"
-                  alt="Dr. Gregg Frey"
-                />
-              </figure>
-            </div>
+
+            <section
+              ref={lastSectionRef}
+              className=" h-screen flex justify-center items-center rounded-[24px] bg-[#EDECE6]"
+            >
+              <p className="text-[16px] font-neuehaas45 text-center leading-relaxed">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+            </section>
           </div>
-        </section>
+        </div>
 
         <div style={greenCursorStyle}>
           {isFocused && (
@@ -761,6 +886,64 @@ export default function OurTeam() {
             </span>
           )}
         </div>
+        <section className="min-h-screen bg-black overflow-hidden">
+  <div className="w-screen h-screen grid grid-cols-3 grid-rows-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed">
+    
+    {/* Row 1 */}
+    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black"></div>
+    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black"></div>
+    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-black"></div>
+
+    {/* Row 2 */}
+    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black">
+      <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
+        <p className="font-neuehaas35 ">
+          Our members have received the designation of Specialized Orthodontic Assistant. 
+          This is a voluntary certification program started by the American Association of Orthodontists 
+          to recognize those in the profession for their knowledge and experience.
+        </p>
+      </a>
+    </div>
+
+    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black">
+      <p className="font-neuehaas35 ">
+        Fun fact — our team is made up of former FreySmiles patients, something we think is important, 
+        because we have all experienced treatment and can help guide you through it.
+      </p>
+    </div>
+
+    <a
+      href="https://g.co/kgs/Sds93Ha"
+      className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-black"
+    >
+      <p className="font-neuehaas35 ">
+        This office is on 🔥! The orthodontists as well as every single staff member.
+      </p>
+    </a>
+
+    {/* Row 3 */}
+    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-r border-black">
+      <p className="font-neuehaas35 ">Trained in CPR and first aid</p>
+    </div>
+
+    <a
+      href="https://g.co/kgs/YkknjNg"
+      className="bg-[#f3f2ee] rounded-[20px] p-8 border-r border-black"
+    >
+      <p className="font-neuehaas35 ">
+        Had a wonderful experience at FreySmiles. Everyone is extremely professional, 
+        polite, timely. Would highly recommend! — TK
+      </p>
+    </a>
+
+    <div className="bg-[#f3f2ee] rounded-[20px] p-8">
+      <p className="font-neuehaas35 ">
+        We’ve invested in in-office trainings with leading clinical consultants 
+        that have helped us develop systems and protocols streamlining our processes.
+      </p>
+    </div>
+  </div>
+</section>
 
         <section className="overflow-x-auto overflow-y-hidden lg:overflow-hidden">
           <div
@@ -790,7 +973,6 @@ export default function OurTeam() {
                       all experienced treatment and can help guide you through
                       it.
                     </p>
-
                   </div>
                   <a
                     href="https://g.co/kgs/Sds93Ha"
@@ -808,9 +990,7 @@ export default function OurTeam() {
                       alignItems: "center",
                       position: "relative",
                     }}
-                  >
-               
-                  </div>
+                  ></div>
                 </div>
                 <div className="horizontalRow">
                   <div className="horizontalItem horizontalBig">
@@ -826,7 +1006,6 @@ export default function OurTeam() {
                         extremely professional, polite, timely. Would highly
                         recommend! -TK
                       </p>
-                     
                     </a>
                   </div>
 
@@ -840,25 +1019,20 @@ export default function OurTeam() {
                       clinical consultants that have helped us develop systems
                       and protocols streamlining our processes
                     </p>
-                    <a className="horizontalItemLink">
-                 
-                    </a>
+                    <a className="horizontalItemLink"></a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
-
-      
       </div>
-      <div>
-      </div>
+    
 
 
 
-<div className="bg-[#F7F7F7]">
-{/*   
+      {/* <div className="bg-[#F7F7F7]">
+          
       <div className=" flex justify-between w-full ">
 
         <div className="text-left text-gray-900">
@@ -872,14 +1046,14 @@ export default function OurTeam() {
 
    
 
-      </div> */}
-     
-     <div className="w-screen h-screen">
-      <Canvas camera={{ position: [0, 2, 5], fov: 50 }}>
-        <Scene />
-      </Canvas>
-    </div>
-{/* 
+      </div>
+
+        <div className="w-screen h-screen">
+          <Canvas camera={{ position: [0, 2, 5], fov: 50 }}>
+            <Scene />
+          </Canvas>
+        </div>
+        
 <div className=" relative w-[800px] h-[600px]">
 
   {teamMembers.map((member, index) => (
@@ -896,21 +1070,18 @@ export default function OurTeam() {
     />
   ))}
 
-</div> */}
-
 </div>
-
-
-
+      </div> */}
     </div>
   );
 }
 
+{
+  /* bg-[#E2F600] */
+}
 
-{/* bg-[#E2F600] */}
-
-
-  {/*   
+{
+  /*   
         <section ref={container} style={{ marginTop: "50vh" }}>
           {projects.map((project, i) => {
             const targetScale = 1 - (projects.length - i) * 0.05;
@@ -925,9 +1096,11 @@ export default function OurTeam() {
               />
             );
           })}
-        </section> */}
+        </section> */
+}
 
-        {/* <div
+{
+  /* <div
           ref={carouselRef}
           className="relative z-10 min-h-[150vh]  pointer-events-none"
         >
@@ -963,4 +1136,5 @@ export default function OurTeam() {
               </div>
             </div>
           ))}
-        </div> */}
+        </div> */
+}

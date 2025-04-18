@@ -407,7 +407,7 @@ const CardStack = () => {
             <li className="list-child bg-[#c3531d]">
               <div className="card-inner">
                 <h2 className="card-title">Tech-Savvy Teeth Things</h2>
-                <p className="card-subtitle">Scanned. Not gooped.</p>
+                <p className="card-subtitle">Goopless</p>
                 <div className="card-caption-box">
                   3D iTero scanning /<br />
                   low-dose Radiographs /<br />
@@ -439,7 +439,7 @@ const CardStack = () => {
                 </div>
               </div>
             </li>
-            <li className="list-child text-type1 bg-[#BD8399]">
+            <li className="list-child text-type1 bg-[#D6B6D1]">
               <div className="card-inner">
                 <h2 className="card-title">4 Locations</h2>
                 <p className="card-subtitle">IRL + URL</p>
@@ -464,11 +464,15 @@ const CardStack = () => {
 
 
   <div className="flex flex-col items-center justify-center relative z-10">
-    <img
-      src="../images/retainertracing.gif"
-      alt="k"
-      className="w-[75%] object-cover"
-    />
+  <video
+  src="../images/retaintracing.mp4"
+  className="w-[75%] object-cover"
+  autoPlay
+  loop
+  muted
+  playsInline
+/>
+
     <h2 className="mt-4 text-[2vw] font-light tracking-tight">PHOTO</h2>
     <p className="text-[1vw] font-light mt-1 font-neuehaas35">Our technicican tracing a retainer</p>
   </div>
@@ -597,7 +601,7 @@ LEARN MORE
     </defs>
 
 
-    <rect width="100%" height="100%" fill="#e6eee4" />
+    <rect width="100%" height="100%" fill="#AA4032" />
 
     <foreignObject width="100%" height="100%" mask="url(#shape-mask)">
       <video
