@@ -496,11 +496,6 @@ export default function OurTeam() {
     });
   }, []);
 
-  const lines = [
-    "Our experience spans over 50 years-a testament to the precision,",
-    "accuracy, and relevance of our vision, demonstrating our ability to adapt",
-    "to the ever-changing nature of our industry.",
-  ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -566,28 +561,64 @@ export default function OurTeam() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedMember = teamMembers[selectedIndex];
 
+
+  const lines = [
+    "Our experience spans over 50 years—a testament to the ",
+    "precision, accuracy, and relevance of our vision, demonstrating",
+    "our ability to adapt to the ever-changing nature of our industry."
+  ];
+  
+  const fadeUpMasked = (delay = 0) => ({
+    hidden: { y: "100%", opacity: 0 },
+    visible: {
+      y: "0%",
+      opacity: 1,
+      transition: {
+        duration: 1,
+        ease: "easeOut",
+        delay: delay,
+      },
+    },
+  });
+  
   const wrapperRef = useRef(null);
   const scrollRef = useRef(null);
   const lastSectionRef = useRef(null);
+  const newSectionRef = useRef(null)
+  const col1Ref = useRef(null)
+  const col2Ref = useRef(null)
+  const col3Ref = useRef(null)
+
   useLayoutEffect(() => {
-    if (!wrapperRef.current || !lastSectionRef.current ) return;
+    if (!wrapperRef.current || !lastSectionRef.current || !newSectionRef.current) return;
+  
     ScrollTrigger.getAll().forEach(t => t.kill());
+  
+    const horizontalScrollDistance = window.innerWidth;
+    const columnStartDelay = 0.5;
+    const staggerAmount = 0.05;
+  
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: lastSectionRef.current,
         start: "top top",
-        end: `+=${window.innerWidth}`,
+        end: `+=${horizontalScrollDistance}`,
         scrub: 1,
         pin: wrapperRef.current,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        markers: true
       }
     });
   
+    tl.to(wrapperRef.current, { x: "-100%", ease: "none" }, 0);
 
-    tl.to(wrapperRef.current, { x: "-100vw", ease: "none" });
-
+    gsap.utils.toArray([col1Ref, col2Ref, col3Ref]).forEach((colRef, index) => {
+      tl.to(colRef.current, {
+        yPercent: index % 2 === 0 ? -100 : 100,
+        ease: "none",
+      }, columnStartDelay + (index * staggerAmount)); 
+    });
+  
     setTimeout(() => {
       ScrollTrigger.refresh();
     }, 100);
@@ -595,9 +626,9 @@ export default function OurTeam() {
     return () => ScrollTrigger.getAll().forEach(t => t.kill());
   }, []);
   
-
+  
   return (
-    <div>
+    <div className="">
       
       <div
         className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
@@ -619,10 +650,54 @@ export default function OurTeam() {
         </div>
       </div>
 
-      <div className="bg-black relative ">
-        <div ref={wrapperRef} className="flex w-screen">
-          <div className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-black w-3/5 bg-[#EDECE6] rounded-[24px]">
-            <section className="rounded-[24px] flex justify-center items-center bg-[#EDECE6]">
+      <div className="bg-black relative overflow-x-clip">
+
+        <div ref={wrapperRef} className="flex w-full">
+          <div className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-black w-3/5 bg-[#F8F6F0] rounded-[24px]">
+          <div className="max-w-[400px] ml-10 my-10 flex flex-col overflow-hidden">
+          <div className="overflow-hidden inline-block">
+          <div className="text-[12px] leading-[1.1] font-neueroman text-black">
+      {lines.map((line, index) => (
+        <div key={index} className="overflow-hidden">
+          <motion.span
+            variants={fadeUpMasked(index * 0.2)}  
+            initial="hidden"
+            animate="visible"
+            className="inline-block"
+          >
+            {line}
+          </motion.span>
+        </div>
+      ))}
+    </div>
+    </div>
+                {/* {lines.map((line, index) => (
+                  <motion.div
+                    key={index}
+                    className="font-neueroman uppercase  text-[12px] overflow-hidden text-black"
+                    initial={{
+                      clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
+                      y: 20,
+                    }}
+                    animate={
+                      isRevealing
+                        ? {}
+                        : {
+                            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+                            y: 0,
+                          }
+                    }
+                    transition={{
+                      duration: 0.8,
+                      delay: 0.2 + index * 0.2,
+                      ease: "easeOut",
+                    }}
+                  >
+                    {line}
+                  </motion.div>
+                ))} */}
+              </div>
+            <section>
               <div className=" flex justify-center gap-6 overflow-hidden">
                 <div className="w-[275px] mr-10">
                   <figure className="relative w-full aspect-[3/4] overflow-hidden">
@@ -652,10 +727,10 @@ export default function OurTeam() {
                     />
                   </figure>
                   <figcaption className="mt-5 ">
-                    <p className="text-[16px] font-neuehaas45">
+                    <p className="text-[12px] uppercase font-neueroman">
                       {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
                     </p>
-                    <p className="text-[12px] font-neuehaas45">
+                    <p className="text-[12px] font-neueroman">
                       {!switchDoctor ? "DDS" : "DMD, MSD"}
                     </p>
                   </figcaption>
@@ -696,36 +771,10 @@ export default function OurTeam() {
             </section>
           </div>
 
-          <div ref={scrollRef} className="w-2/5 ">
-            <div className="rounded-[24px] border-b border-b border-black bg-[#EDECE6]  py-[10em] sm:py-[10em] h-screen mx-auto lg:px-8 ">
-              <div className="flex flex-col overflow-hidden">
-                {lines.map((line, index) => (
-                  <motion.div
-                    key={index}
-                    className="font-neuehaas45  text-[14px] overflow-hidden text-black"
-                    initial={{
-                      clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
-                      y: 20,
-                    }}
-                    animate={
-                      isRevealing
-                        ? {}
-                        : {
-                            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-                            y: 0,
-                          }
-                    }
-                    transition={{
-                      duration: 0.8,
-                      delay: 0.2 + index * 0.2,
-                      ease: "easeOut",
-                    }}
-                  >
-                    {line}
-                  </motion.div>
-                ))}
-              </div>
-              <div className=" gap-8 px-6 py-1 mx-auto lg:px-8">
+<div ref={scrollRef} className="w-2/5 relative">
+            <div className="rounded-[24px] border-b border-b border-black bg-[#F8F6F0]  py-[10em] sm:py-[10em] h-screen lg:px-8 ">
+          
+            <div className="flex flex-col justify-center items-center h-full gap-8 px-6">
                 <div className="lg:col-span-6">
                   <div
                     id="controls"
@@ -749,7 +798,7 @@ export default function OurTeam() {
                         <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
                       </svg>
                     </button>
-                    <span className="text-[12px] text-black">
+                    <span className="font-neueroman text-[12px] text-black">
                       0{!switchDoctor ? index : index + 1} / 02
                     </span>
                     <button className="z-3" onClick={toggleSwitchDoctor}>
@@ -774,9 +823,9 @@ export default function OurTeam() {
 
                   <div className="max-w-[600px]">
                     <motion.div
-                      className="h-px mb-10 bg-gray-300"
+                      className="h-px mb-10 bg-gray-300 leading-none"
                       initial={{ width: 0, transformOrigin: "left" }}
-                      animate={isRevealing ? {} : { width: "40vw" }}
+                      animate={isRevealing ? {} : { width: "30vw" }}
                       transition={{
                         duration: 1,
                         delay: 0.4,
@@ -787,7 +836,7 @@ export default function OurTeam() {
                     {switchDoctor ? (
                       <p
                         ref={doctorBioRef}
-                        className="font-neuehaas45 text-black"
+                        className="leading-[1.4] font-neueroman uppercase text-[12px] text-black"
                       >
                         Dr. Daniel Frey pursued his pre-dental requisites at the
                         University of Pittsburgh, majoring in Biology. Dr. Frey
@@ -811,7 +860,7 @@ export default function OurTeam() {
                       <p
                         style={{ visibility: "hidden" }}
                         ref={doctorBioRef}
-                        className="font-neuehaas45 text-black"
+                        className="leading-[1.4] font-neueroman uppercase text-[12px] "
                       >
                         Dr. Gregg Frey is an orthodontist based in Pennsylvania,
                         who graduated from Temple University School of Dentistry
@@ -834,82 +883,89 @@ export default function OurTeam() {
                 </div>
               </div>
             </div>
-
+            <div className="relative h-full">
             <section
               ref={lastSectionRef}
-              className=" h-screen flex justify-center items-center rounded-[24px] bg-[#EDECE6]"
+  className="relative flex-col bg-cover h-screen flex justify-center items-center rounded-[24px] bg-[#F8F6F0]"
             >
-              <p className="text-[16px] font-neuehaas45 text-center leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </p>
-            </section>
-          </div>
-        
-          <div style={{ height: "200vh" }} />
-
-        </div>
-        <section
-
-  className="min-h-screen bg-black overflow-hidden translate-x-full"
->
-  <div className="w-screen h-screen grid grid-cols-3 grid-rows-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed">
     
-    {/* Row 1 */}
-    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black"></div>
-    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black"></div>
-    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-black"></div>
+            </section>
 
-    {/* Row 2 */}
-    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black">
-      <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
-        <p className="font-neuehaas35 ">
-          Our members have received the designation of Specialized Orthodontic Assistant. 
-          This is a voluntary certification program started by the American Association of Orthodontists 
-          to recognize those in the profession for their knowledge and experience.
-        </p>
-      </a>
+            <div 
+  ref={newSectionRef}
+  className="absolute top-0 left-full w-full h-full"
+>
+  <div
+    onMouseEnter={() => setIsFocused(true)}
+    onMouseLeave={() => setIsFocused(false)}
+    className="w-screen h-screen grid grid-cols-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed"
+  >
+    {/* Col 1 */}
+    <div className="overflow-hidden">
+      <div ref={col1Ref} className="flex flex-col will-change-transform">
+        <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black border-l h-[33.33vh]"></div>
+        <div className="border-l bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+          <p className="font-neueroman text-[13px] leading-[1.1]">
+            Fun fact — our team is made up of former FreySmiles patients, something we think is important, 
+            because we have all experienced treatment and can help guide you through it.
+          </p>
+        </div>
+        <div className="border-l bg-[#f3f2ee] rounded-[24px] p-8 border-b border-black border-r h-[33.33vh]"></div>
+        <div className="border-l bg-[#f3f2ee] rounded-[24px] p-8 border-b border-black border-r h-[66.66vh]"></div>
+
+      </div>
     </div>
 
-    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black">
-      <p className="font-neuehaas35 ">
-        Fun fact — our team is made up of former FreySmiles patients, something we think is important, 
-        because we have all experienced treatment and can help guide you through it.
-      </p>
+    {/* Col 2 */}
+    <div className="overflow-hidden">
+      <div ref={col2Ref} className="flex flex-col will-change-transform">
+        <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+          <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
+            <p className="font-neueroman text-[13px] leading-[1.1]">
+              Our members have received the designation of Specialized Orthodontic Assistant. 
+              This is a voluntary certification program started by the American Association of Orthodontists 
+              to recognize those in the profession for their knowledge and experience.
+            </p>
+          </a>
+        </div>
+        <div className="bg-[#f3f2ee] rounded-[24px] p-8 border-r border-b border-black h-[33.33vh]"></div>
+        <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black h-[33.33vh]">
+          <p className="leading-[1.1] font-neueroman text-[13px]">
+            This office is on 🔥! The orthodontists as well as every single staff member.
+          </p>
+        </a>
+      </div>
     </div>
 
-    <a
-      href="https://g.co/kgs/Sds93Ha"
-      className="bg-[#f3f2ee] rounded-[20px] p-8 border-b border-black"
-    >
-      <p className="font-neuehaas35 ">
-        This office is on 🔥! The orthodontists as well as every single staff member.
-      </p>
-    </a>
-
-    {/* Row 3 */}
-    <div className="bg-[#f3f2ee] rounded-[20px] p-8 border-r border-black">
-      <p className="font-neuehaas35 ">Trained in CPR and first aid</p>
-    </div>
-
-    <a
-      href="https://g.co/kgs/YkknjNg"
-      className="bg-[#f3f2ee] rounded-[20px] p-8 border-r border-black"
-    >
-      <p className="font-neuehaas35 ">
-        Had a wonderful experience at FreySmiles. Everyone is extremely professional, 
-        polite, timely. Would highly recommend! — TK
-      </p>
-    </a>
-
-    <div className="bg-[#f3f2ee] rounded-[20px] p-8">
-      <p className="font-neuehaas35 ">
-        We’ve invested in in-office trainings with leading clinical consultants 
-        that have helped us develop systems and protocols streamlining our processes.
-      </p>
+    {/* Col 3 */}
+    <div className="overflow-hidden">
+      <div ref={col3Ref} className="flex flex-col will-change-transform">
+        <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+          <p className="font-neueroman text-[13px]">Trained in CPR and first aid</p>
+        </div>
+        <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center bg-[#f3f2ee] rounded-[20px] p-8 border-r border-b border-black h-[33.33vh]">
+          <p className="leading-[1.1] font-neueroman text-[13px]">
+            Had a wonderful experience at FreySmiles. Everyone is extremely professional, 
+            polite, timely. Would highly recommend! — TK
+          </p>
+        </a>
+        <div className="bg-[#f3f2ee] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+          <p className="leading-[1.1] font-neueroman text-[13px]">
+            We've invested in in-office trainings with leading clinical consultants 
+            that have helped us develop systems and protocols streamlining our processes.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
-</section>
+</div>
+     </div>
+          </div>
+      
+        </div>
+
+
+
         <div style={greenCursorStyle}>
           {isFocused && (
             <span
@@ -926,10 +982,9 @@ export default function OurTeam() {
         </div>
 
 
-        <section className="overflow-x-auto overflow-y-hidden lg:overflow-hidden">
+        {/* <section className="overflow-x-auto overflow-y-hidden lg:overflow-hidden">
           <div
-            onMouseEnter={() => setIsFocused(true)}
-            onMouseLeave={() => setIsFocused(false)}
+         
             className=" horizontalContainer"
           >
             <div className="horizontalWrapper">
@@ -1006,7 +1061,8 @@ export default function OurTeam() {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
+
       </div>
     
 
