@@ -92,39 +92,39 @@ export default function BookNow() {
     },
   };
 
-  // const starRef = useRef(null);
-  // const containerRef = useRef(null);
+  const starRef = useRef(null);
+  const containerRef = useRef(null);
   const contentRef = useRef(null);
 
-  // useEffect(() => {
-  //   const width = window.innerWidth;
-  //   const height = window.innerHeight;
-  //   const maxSize = Math.max(width, height);
+  useEffect(() => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const maxSize = Math.max(width, height);
 
-  //   const starRect = starRef.current.getBoundingClientRect();
-  //   const starWidth = starRect.width;
-  //   const targetScale = (maxSize * 4) / starWidth;
+    const starRect = starRef.current.getBoundingClientRect();
+    const starWidth = starRect.width;
+    const targetScale = (maxSize * 4) / starWidth;
 
-  //   gsap.set(contentRef.current, { opacity: 0 });
+    gsap.set(contentRef.current, { opacity: 0 });
 
-  //   const tl = gsap.timeline({
-  //     defaults: { duration: 1.2, ease: "power2.inOut" },
-  //   });
+    const tl = gsap.timeline({
+      defaults: { duration: 2.8, ease: "power2.inOut" },
+    });
 
-  //   tl.set(starRef.current, {
-  //     scale: 0.1,
-  //     transformOrigin: "50% 50%",
-  //   })
-  //   .to(starRef.current, {
-  //     scale: targetScale,
-  //     duration: 1.5,
-  //   })
-  //   .to(contentRef.current, {
-  //     opacity: 1,
-  //     duration: 0.8,
-  //   }, "-=0.6")
-  //   .set(containerRef.current, { zIndex: -1 });
-  // }, []);
+    tl.set(starRef.current, {
+      scale: 0.1,
+      transformOrigin: "50% 50%",
+    })
+    .to(starRef.current, {
+      scale: targetScale,
+      duration: 2.5,
+    })
+    .to(contentRef.current, {
+      opacity: 1,
+      duration: 1.8,
+    }, "-=2.6")
+    .set(containerRef.current, { zIndex: -1 });
+  }, []);
 
   const cardsectionRef = useRef(null);
   const [linesComplete, setLinesComplete] = useState(false);
@@ -140,31 +140,37 @@ export default function BookNow() {
 
 
   return (
+<>
+<div ref={containerRef} className="fixed inset-0 flex items-center justify-center bg-black z-50">
+<svg ref={starRef} width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_119_243)"> <path d="M99.995 200V143.969L0 99.995H56.0313L99.995 0V56.0313L200 99.995H143.969L99.995 200Z" fill="url(#paint0_linear_119_243)"/> </g> <defs> <linearGradient id="paint0_linear_119_243" x1="177" y1="-9.23648e-06" x2="39.5" y2="152.5" gradientUnits="userSpaceOnUse"> <stop stop-color="#B0B9FF"/> <stop offset="1" stop-color="#E7E9FF"/> </linearGradient> <clipPath id="clip0_119_243"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>
+</div>
+<div className="pt-40">
 
-    <div className="pt-40">
-  <div className="font-neuehaas45 scramble-wrapper flex flex-col gap-4">
+<div className="font-neuehaas45 scramble-wrapper flex flex-col gap-4">
 
-    <div className="ml-10 flex flex-row">
-      <ScrambleText text="NUMBER" className="mr-10" />
-      <ScrambleText 
-        text="(610)437-4748" 
-        charsType="numbers"
-      />
-    </div>
-
-
-    <div className="ml-10 flex flex-row">
-      <ScrambleText text="EMAIL" className="mr-10" />
-      <ScrambleText text="info@freysmiles.com" />
-    </div>
+  <div className="ml-10 flex flex-row">
+    <ScrambleText text="NUMBER" className="mr-10" />
+    <ScrambleText 
+      text="(610)437-4748" 
+      charsType="numbers"
+    />
   </div>
 
-      <div className="flex flex-col items-start gap-1">
-        <span className="font-neuehaas35 px-2 py-1 rounded-md font-medium">
-       
-        </span>
-      </div>
+
+  <div className="ml-10 flex flex-row">
+    <ScrambleText text="EMAIL" className="mr-10" />
+    <ScrambleText text="info@freysmiles.com" />
+  </div>
+</div>
+
+    <div className="flex flex-col items-start gap-1">
+      <span className="font-neuehaas35 px-2 py-1 rounded-md font-medium">
+     
+      </span>
     </div>
+  </div>
+</>
+
     //   <div className="relative top-0 my-auto flex items-end justify-end h-full lg:col-span-2">
     //   <iframe
     //     src="https://app.acuityscheduling.com/schedule.php?owner=34613267"

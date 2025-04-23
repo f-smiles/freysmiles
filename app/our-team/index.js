@@ -570,60 +570,35 @@ export default function OurTeam() {
   const scrollRef = useRef(null);
   const lastSectionRef = useRef(null);
   useLayoutEffect(() => {
-    const initScrollTrigger = () => {
-      if (!wrapperRef.current || !scrollRef.current || !lastSectionRef.current)
-        return;
-
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-
-      wrapperRef.current.offsetHeight;
-
-      ScrollTrigger.create({
-        trigger: scrollRef.current,
-        scroller: scrollRef.current,
+    if (!wrapperRef.current || !lastSectionRef.current ) return;
+    ScrollTrigger.getAll().forEach(t => t.kill());
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: lastSectionRef.current,
         start: "top top",
-        end: "bottom bottom",
+        end: `+=${window.innerWidth}`,
+        scrub: 1,
         pin: wrapperRef.current,
-        pinSpacing: false,
         anticipatePin: 1,
-      });
-
-      gsap.to(wrapperRef.current, {
-        x: "-100vw",
-        ease: "none",
-        scrollTrigger: {
-          trigger: lastSectionRef.current,
-          scroller: scrollRef.current,
-          start: "top top+=50",
-          end: "bottom top-=50",
-          scrub: 0.5,
-          invalidateOnRefresh: true,
-        },
-      });
-
-      const refreshAll = () => {
-        ScrollTrigger.refresh();
-        setTimeout(ScrollTrigger.refresh, 100);
-      };
-
-      if (document.readyState === "complete") {
-        refreshAll();
-      } else {
-        window.addEventListener("load", refreshAll);
+        invalidateOnRefresh: true,
+        markers: true
       }
-    };
-
-    const timeout = setTimeout(initScrollTrigger, 300);
-    return () => {
-      clearTimeout(timeout);
-      window.removeEventListener("load", ScrollTrigger.refresh);
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
-  }, []);
-
+    });
   
+
+    tl.to(wrapperRef.current, { x: "-100vw", ease: "none" });
+
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 100);
+  
+    return () => ScrollTrigger.getAll().forEach(t => t.kill());
+  }, []);
+  
+
   return (
     <div>
+      
       <div
         className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
           isRevealing ? "translate-y-0" : "-translate-y-full"
@@ -645,8 +620,8 @@ export default function OurTeam() {
       </div>
 
       <div className="bg-black relative ">
-        <div ref={wrapperRef} className="flex w-screen h-screen">
-          <div className=" py-[10em] sm:py-[10em] border-l border-b border-r border-black w-3/5 bg-[#EDECE6] rounded-[24px]">
+        <div ref={wrapperRef} className="flex w-screen">
+          <div className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-black w-3/5 bg-[#EDECE6] rounded-[24px]">
             <section className="rounded-[24px] flex justify-center items-center bg-[#EDECE6]">
               <div className=" flex justify-center gap-6 overflow-hidden">
                 <div className="w-[275px] mr-10">
@@ -721,7 +696,7 @@ export default function OurTeam() {
             </section>
           </div>
 
-          <div ref={scrollRef} className="w-2/5 overflow-y-scroll h-screen">
+          <div ref={scrollRef} className="w-2/5 ">
             <div className="rounded-[24px] border-b border-b border-black bg-[#EDECE6]  py-[10em] sm:py-[10em] h-screen mx-auto lg:px-8 ">
               <div className="flex flex-col overflow-hidden">
                 {lines.map((line, index) => (
@@ -870,23 +845,14 @@ export default function OurTeam() {
               </p>
             </section>
           </div>
-        </div>
+        
+          <div style={{ height: "200vh" }} />
 
-        <div style={greenCursorStyle}>
-          {isFocused && (
-            <span
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              View
-            </span>
-          )}
         </div>
-        <section className="min-h-screen bg-black overflow-hidden">
+        <section
+
+  className="min-h-screen bg-black overflow-hidden translate-x-full"
+>
   <div className="w-screen h-screen grid grid-cols-3 grid-rows-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed">
     
     {/* Row 1 */}
@@ -944,6 +910,21 @@ export default function OurTeam() {
     </div>
   </div>
 </section>
+        <div style={greenCursorStyle}>
+          {isFocused && (
+            <span
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              View
+            </span>
+          )}
+        </div>
+
 
         <section className="overflow-x-auto overflow-y-hidden lg:overflow-hidden">
           <div

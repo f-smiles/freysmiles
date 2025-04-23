@@ -19,7 +19,7 @@ import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap-trial/all";
 import * as THREE from "three";
-import { Canvas, useLoader, useFrame } from "@react-three/fiber";
+import { Canvas, useLoader, useFrame, useThree} from "@react-three/fiber";
 import { useMemo } from "react";
 import { Environment, OrbitControls, useTexture } from "@react-three/drei";
 
@@ -180,6 +180,13 @@ const SmileyFace = ({ position = [0, 0, 0] }) => {
 
 const WavePlane = forwardRef(({ uniformsRef }, ref) => {
   const texture = useTexture("/images/mockup_c.png");
+  const gl = useThree(state => state.gl);
+  useMemo(() => {
+    texture.encoding   = THREE.sRGBEncoding;
+    texture.anisotropy = Math.min(16, gl.capabilities.getMaxAnisotropy());
+    texture.needsUpdate = true;
+  }, [texture, gl]);
+
   const image = useRef();
   const meshRef = ref || useRef();
   // const { amplitude, waveLength } = useControls({
@@ -187,7 +194,7 @@ const WavePlane = forwardRef(({ uniformsRef }, ref) => {
   //   waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
   // });
 
-  const amplitude = 0.1;
+  const amplitude = 0.2;
   const waveLength = 5;
 
   const uniforms = useRef({
@@ -211,10 +218,13 @@ varying vec2 vUv;
 void main() {
     vUv = uv;
     vec3 newPosition = position;
-    float wave = uAmplitude * sin(position.x * uWaveLength + uTime);
-    float ripple = uAmplitude * 0.01 * sin((position.x + position.y) * 10.0 + uTime * 2.0);
-    float bulge = uAmplitude * 0.05 * sin(position.x * 5.0 + uTime) * cos(position.y * 5.0 + uTime * 1.5);
-    newPosition.z += wave + ripple + bulge;
+
+float wave   = uAmplitude * sin(position.y * uWaveLength + uTime);
+float ripple = uAmplitude * 0.01 * sin((position.y + position.x) * 10.0 + uTime * 2.0);
+float bulge  = uAmplitude * 0.05 * sin(position.y * 5.0 + uTime) *
+                                      cos(position.x * 5.0 + uTime * 1.5);
+newPosition.z += wave + ripple + bulge;
+
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
   `;
@@ -240,7 +250,7 @@ void main() {
       scale={[2, 2, 1]}
       rotation={[-Math.PI * 0.4, 0.3, Math.PI / 2]}
     >
-      <planeGeometry args={[2, 1, 100, 50]} />
+   <planeGeometry args={[1, 2, 100, 200]} />
       <shaderMaterial
         wireframe={false}
         fragmentShader={fragmentShader}
@@ -291,14 +301,14 @@ const Section = ({ children, onHoverStart, onHoverEnd }) => (
       fontSize: "1.2em",
       fontFamily: "HelveticaNeue-Light",
       userSelect: "none",
-      position: "relative", // this is important
+      position: "relative", 
       zIndex: 2,
       width: "100%",
       boxSizing: "border-box",
       paddingLeft: "2rem",
     }}
   >
-    {/* Top gradient line */}
+   
     <div
       style={{
         position: "absolute",
@@ -311,7 +321,7 @@ const Section = ({ children, onHoverStart, onHoverEnd }) => (
         opacity: 0.4,
         transformOrigin: "0% 50%",
         transform: "translate(0px, 0px)",
-        pointerEvents: "none", // ensures it doesn't block hover events
+        pointerEvents: "none", 
       }}
     />
     {children}
@@ -506,7 +516,7 @@ const Invisalign = () => {
 
   const meshRef = useRef();
   useEffect(() => {
-    const amplitudeProxy = { value: 0.3 };
+    const amplitudeProxy = { value: 0.2 };  
     const dummyRotation = { 
       x: -Math.PI * 0.4, 
       y: 0.3, 
@@ -548,8 +558,14 @@ const Invisalign = () => {
   
     tl.to(amplitudeProxy, {
       value: 0,
-      ease: "none",
+      ease : "none",
+      onUpdate: () => {
+        if (uniformsRef.current) {
+          uniformsRef.current.uAmplitude.value = amplitudeProxy.value;
+        }
+      }
     }, "<");
+    
   
     tl.to({}, { duration: 0.5 });
   }, []);
@@ -633,7 +649,7 @@ const Invisalign = () => {
             
           </div>
         </div>
-        <section className="relative h-[100vh] items-center justify-center px-10">
+        <section className="canvas-section relative h-[100vh] items-center justify-center px-10">
         <Canvas camera={{ position: [0, 0, 3] }}>
           <ambientLight intensity={0.5} />
           <WavePlane ref={meshRef} uniformsRef={uniformsRef} />

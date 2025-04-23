@@ -367,6 +367,11 @@ input:-webkit-autofill {
     format("woff2");
 }
 @font-face {
+  font-family: "SaolDisplay-LightItalic";
+  src: url("/fonts/SaolDisplay-LightItalic.ttf")
+    format("truetype");
+}
+@font-face {
   font-family: "MonumentExtended-Regular";
   src: url("/fonts/PPMonumentExtended-Regular.otf") format("opentype");
 }
