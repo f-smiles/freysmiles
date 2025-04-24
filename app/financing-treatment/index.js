@@ -2,6 +2,10 @@
 "use client";
 import { Canvas, useFrame, extend } from "@react-three/fiber";
 import { Sphere, OrbitControls, Environment, shaderMaterial } from "@react-three/drei";
+import { Fluid } from '/utils/FluidCursorTemp.js';
+import {Media} from '/utils/Media.js'
+import { EffectComposer } from '@react-three/postprocessing';
+import { useControls } from "leva";
 import * as THREE from "three";
 import {
   motion,
@@ -392,8 +396,23 @@ const FinancingTreatment = () => {
   return (
     <>
      <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
-
-      <div className="sticky top-0 h-screen flex items-center justify-center">
+<Canvas
+      gl={{ alpha: true }}
+      style={{
+         position: 'fixed',
+         top: 0,
+         left: 0,
+         width: '100%',
+         height: '100%',
+         pointerEvents: 'initial',  
+         zIndex: 10
+      }}
+   >
+      <EffectComposer>
+         <Fluid />
+      </EffectComposer>
+   </Canvas>
+      <div className="pointer-events-none h-screen flex items-center justify-center">
       <div className="relative h-screen bg-[#F2F2F4] flex items-center justify-center">
   {/* Back  */}
   <img

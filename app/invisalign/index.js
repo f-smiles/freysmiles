@@ -1,4 +1,7 @@
 "use client";
+import { Fluid } from "/utils/FluidCursorTemp.js";
+import { Media } from "/utils/Media.js";
+import { EffectComposer } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import Splitting from "splitting";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
@@ -19,7 +22,7 @@ import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap-trial/all";
 import * as THREE from "three";
-import { Canvas, useLoader, useFrame, useThree} from "@react-three/fiber";
+import { Canvas, useLoader, useFrame, useThree } from "@react-three/fiber";
 import { useMemo } from "react";
 import { Environment, OrbitControls, useTexture } from "@react-three/drei";
 
@@ -180,9 +183,9 @@ const SmileyFace = ({ position = [0, 0, 0] }) => {
 
 const WavePlane = forwardRef(({ uniformsRef }, ref) => {
   const texture = useTexture("/images/mockup_c.png");
-  const gl = useThree(state => state.gl);
+  const gl = useThree((state) => state.gl);
   useMemo(() => {
-    texture.encoding   = THREE.sRGBEncoding;
+    texture.encoding = THREE.sRGBEncoding;
     texture.anisotropy = Math.min(16, gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
   }, [texture, gl]);
@@ -242,15 +245,14 @@ newPosition.z += wave + ripple + bulge;
     }
   }, [uniformsRef]);
 
-
   return (
     <mesh
-    ref={meshRef}
+      ref={meshRef}
       position={[0, 0, 1]}
       scale={[2, 2, 1]}
       rotation={[-Math.PI * 0.4, 0.3, Math.PI / 2]}
     >
-   <planeGeometry args={[1, 2, 100, 200]} />
+      <planeGeometry args={[1.5, 2, 100, 200]} />
       <shaderMaterial
         wireframe={false}
         fragmentShader={fragmentShader}
@@ -301,14 +303,13 @@ const Section = ({ children, onHoverStart, onHoverEnd }) => (
       fontSize: "1.2em",
       fontFamily: "HelveticaNeue-Light",
       userSelect: "none",
-      position: "relative", 
+      position: "relative",
       zIndex: 2,
       width: "100%",
       boxSizing: "border-box",
       paddingLeft: "2rem",
     }}
   >
-   
     <div
       style={{
         position: "absolute",
@@ -321,7 +322,7 @@ const Section = ({ children, onHoverStart, onHoverEnd }) => (
         opacity: 0.4,
         transformOrigin: "0% 50%",
         transform: "translate(0px, 0px)",
-        pointerEvents: "none", 
+        pointerEvents: "none",
       }}
     />
     {children}
@@ -513,26 +514,28 @@ const Invisalign = () => {
     };
   }, []);
 
-
   const meshRef = useRef();
   useEffect(() => {
-    const amplitudeProxy = { value: 0.2 };  
-    const dummyRotation = { 
-      x: -Math.PI * 0.4, 
-      y: 0.3, 
-      z: Math.PI / 2 
+    const amplitudeProxy = { value: 0.2 };
+    const dummyRotation = {
+      x: -Math.PI * 0.4,
+      y: 0.3,
+      z: Math.PI / 2,
     };
-  
+
+    const positionProxy = { z: 1 };
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".canvas-section",
         start: "top top",
-        end: "+=1200", 
+        end: "+=1200",
         scrub: 2,
         pin: true,
       },
     });
-  
+
+    // Rotation Animation
     tl.to(dummyRotation, {
       x: 0,
       y: 0,
@@ -545,39 +548,93 @@ const Invisalign = () => {
             dummyRotation.y,
             dummyRotation.z
           );
+          meshRef.current.position.z = positionProxy.z;
         }
-  
-    
         if (uniformsRef.current) {
-          uniformsRef.current.uAmplitude.value = gsap.getProperty(amplitudeProxy, "value");
+          uniformsRef.current.uAmplitude.value = gsap.getProperty(
+            amplitudeProxy,
+            "value"
+          );
         }
       },
     });
-  
 
-  
-    tl.to(amplitudeProxy, {
-      value: 0,
-      ease : "none",
-      onUpdate: () => {
-        if (uniformsRef.current) {
-          uniformsRef.current.uAmplitude.value = amplitudeProxy.value;
-        }
-      }
-    }, "<");
-    
-  
+    // Amplitude Flattening
+    tl.to(
+      amplitudeProxy,
+      {
+        value: 0,
+        ease: "none",
+        onUpdate: () => {
+          if (uniformsRef.current) {
+            uniformsRef.current.uAmplitude.value = amplitudeProxy.value;
+          }
+        },
+      },
+      "<"
+    );
+
+    tl.to(
+      positionProxy,
+      {
+        z: 2,
+        ease: "none",
+      },
+      "<"
+    );
+
     tl.to({}, { duration: 0.5 });
   }, []);
-  const uniformsRef = useRef(); 
+
+  const uniformsRef = useRef();
   return (
     <>
-<div className="font-neuehaas35 min-h-screen px-8 pt-32 bg-[radial-gradient(60%_50%_at_0%_0%,_#ffffff_0%,_#f3f6fc_20%,_#e1eaf5_40%,_#d4dff0_100%)] relative text-black overflow-hidden">
 
+      <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
+        <Canvas
+          gl={{ alpha: true }}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            pointerEvents: "initial",
+            background: "transparent",
+            zIndex: 0,
+          }}
+        >
+          <EffectComposer>
+            <Fluid backgroundColor="#F9F8F7"/>
+          </EffectComposer>
+        </Canvas>
+
+        <section className="pointer-events-none canvas-section relative h-[100vh] z-10">
+          <Canvas camera={{ position: [0, 0, 4] }}>
+            <ambientLight intensity={0.5} />
+            <WavePlane ref={meshRef} uniformsRef={uniformsRef} />
+            <OrbitControls enableZoom={false} />
+          </Canvas>
+        </section>
+
+        <div className="pointer-events-none flex flex-row items-center">
+          <div
+            ref={textRef}
+            className="text-4xl md:text-[4vw] leading-[1.1] content__title"
+          >
+            <span>We obsess over details so</span>
+            <span>the result feels effortless. </span>
+            <span></span>
+          </div>
+          
+
+          
+        </div>
 
         <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-          <div className="w-[800px] h-[800px]">
+  
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+          {/* <div className="w-[800px] h-[800px]">
             <Canvas>
               <ambientLight intensity={0.5} />
               <pointLight color="#ffe9c4" intensity={2} position={[0, 0, -2]} />
@@ -587,208 +644,206 @@ const Invisalign = () => {
 
               <OrbitControls enableZoom={false} />
             </Canvas>
-          </div>
+          </div> */}
         </div>
 
-        {/* <div className="absolute inset-0 z-0 flex items-center justify-center">
+          {/* <div className=" flex items-center justify-center">
   <img
     src="https://cdn.prod.website-files.com/6749e677c74b3f0e424aab25/67c2314d8792ff4df3b1512b_Icon%20Estratti%20Secchi%20Pura.webp"
     className="w-[300px] h-auto object-contain z-0"
     alt="Background Icon"
   />
 </div> */}
-          <div className="flex flex-row justify-between items-center">
-          <div ref={textRef} className="text-4xl md:text-[4vw] leading-[1.1] content__title">
-              <span>We obsess over details so</span>
-              <span>the result feels effortless. </span>
-              <span></span>
-            </div>
-           
-            <p className="text-lg font-neuehaas35">
-              Barely There. Always Working.
-            </p>
-            <p className="text-lg font-neuehaas35">Bespoke Solutions</p>
-          </div>
-          <div className="font-neuehaas35 grid grid-cols-1 md:grid-cols-2 gap-12">
-            {/* Left column */}
-            <div className="space-y-12 relative">
-
-                <div className="relative z-10">
-                <h4 className="text-[14px] mt-18 font-neueroman uppercase mb-1">
-                  Expertise
-                </h4>
-                <p className="text-lg font-neuehaas35">
-                  Diamond Plus
-                  <br />
-                  Invisalign
-                  <br />
-                  Invisalign Teen
-                </p>
-                </div>
-              <div>
-             
-              </div>
-            </div>
-
-            {/* Right column */}
-            <div className=" text-black px-8 py-12">
-              <div className="font-neuehaas35 gap-8 items-start">
-                <div>
-                  <h4 className="text-sm mb-6 z-10">Synopsis</h4>
-                  <p className="font-neuehaas35 text-lg leading-relaxed">
-  <span className="inline-block align-baseline border-l border-gray-400 pl-4 mr-2">
-    Trusted by millions around the world,
-  </span>
-  Invisalign is a clear, comfortable, and confident choice for straightening smiles. We've proudly ranked among the top
-  1% of certified Invisalign providers nationwide — every year since 2000.
-</p>
-
-                </div>
-              </div>
-            </div>
-            
-          </div>
-        </div>
-        <section className="canvas-section relative h-[100vh] items-center justify-center px-10">
-        <Canvas camera={{ position: [0, 0, 3] }}>
-          <ambientLight intensity={0.5} />
-          <WavePlane ref={meshRef} uniformsRef={uniformsRef} />
-          <OrbitControls enableZoom={false} />
-        </Canvas>
-      </section>
- 
-      <div className="ml-10 text-[32px] sm:text-[32px] leading-tight text-black font-light font-neuehaasdisplaythin">
-        <span className="font-normal">Our doctors </span>{" "}
-        <span className="font-light">have treated</span>{" "}
-        <span className="font-saolitalic">thousands</span>{" "}
-        <span className="font-medium">of patients</span> <br />
-        <span className="font-normal">with this </span>{" "}
-        <span className="font-light font-saolitalic">leading edge</span>{" "}
-        <span className="font-light ">appliance</span>{" "}
-        <span className="font-normal">system.</span>{" "}
-      </div>
-
-
-      <section className="relative w-full min-h-screen flex flex-col justify-between px-16 py-20 pb-10">
-        <div className="font-neue-montreal flex space-x-3">
-          {["Diamond Plus", "Invisalign", "Invisalign Teen"].map(
-            (tag, index) => (
-              <span key={index} className="px-2  text-sm relative tag-brackets">
-                {tag}
-              </span>
-            )
-          )}
         </div>
 
-        <div
-          className="relative bg-[#FFF]"
-          style={{ height: "600px", overflow: "hidden" }}
-        >
-          <motion.div
-            initial={{ y: "0%" }}
-            animate={controls}
-            style={{
-              position: "absolute",
-              width: "100%",
-              height: "15%",
-              background: "rgb(245,227,24,.8)",
-              zIndex: 1,
-            }}
-          />
+        <div className="ml-10 text-[32px] sm:text-[32px] leading-tight text-black font-light font-neuehaasdisplaythin">
+          <span className="font-normal">Our doctors </span>{" "}
+          <span className="font-light">have treated</span>{" "}
+          <span className="font-saolitalic">thousands</span>{" "}
+          <span className="font-medium">of patients</span> <br />
+          <span className="font-normal">with this </span>{" "}
+          <span className="font-light font-saolitalic">leading edge</span>{" "}
+          <span className="font-light ">appliance</span>{" "}
+          <span className="font-normal">system.</span>{" "}
+        </div>
 
-          {[
-            {
-              text: "Fewer appointments, faster treatment",
-              gradient:
-                "radial-gradient(circle, #FF9A8B 0%, #FF6A88 50%, #FF99AC 100%)",
-            },
-            {
-              text: "Personalized care for every patient",
-              gradient: "radial-gradient(circle, #A18CD1 0%, #FBC2EB 100%)",
-            },
-            {
-              text: "Advanced technology at your service",
-              gradient:
-                "radial-gradient(circle, #FA8BFF 0%, #2BD2FF 50%, #2BFF88 100%)",
-            },
-            {
-              text: "Comfortable and stress-free visits",
-              gradient: "radial-gradient(circle, #FFD3A5 0%, #FD6585 100%)",
-            },
-          ].map((item, index) => (
-            <Section key={index} onHoverStart={() => handleHover(index)}>
-              <div className="relative flex items-center w-full">
+        <section className="relative w-full flex flex-col h-screen px-16 py-20 pb-10">
+        <h4 className="text-sm mb-6 ">Synopsis</h4>
+              <p className="font-neuehaas35 text-[24px] leading-relaxed max-w-[650px]" >
+                Trusted by millions around the world, Invisalign is a clear, comfortable, and confident choice for
+                straightening smiles. We've proudly ranked among the top 1% of
+                certified Invisalign providers nationwide — every year since
+                2000.
+              </p>
+              
+              <div className=" font-neuehaas35 w-full border-t border-gray-300 text-sm leading-relaxed">
+
+<div className="flex border-b border-gray-300">
+  <div className="w-1/3 p-5">
+    <p className="font-neuehaas35 text-black">Accolades</p>
+  </div>
+  <div className="w-1/3 flex items-center justify-center p-5">
+
+  </div>
+  <div className="w-1/3 p-5 w-full">
+  <div className="w-full  text-sm leading-relaxed font-neuehaas35">
+  <div className="flex border-b border-gray-300 py-3">
+    <div className="w-1/2 text-gray-500">6x Winner Best Orthodontist</div>
+    <div className="flex-1 text-black">Best of the Valley</div>
+  </div>
+  <div className="flex border-b border-gray-300 py-3">
+    <div className="w-1/2 text-gray-500">5x Winner Best Orthodontist</div>
+    <div className="flex-1 text-black">Readers' Choice The Morning Call</div>
+  </div>
+  <div className="flex border-b border-gray-300 py-3">
+    <div className="w-1/2 text-gray-500"> Nationally Recognized Top Orthodontist</div>
+    <div className="flex-1 text-black">Top Dentists</div>
+  </div>
+  <div className="flex py-3">
+    <div className="w-1/2 text-gray-500">Top 1%</div>
+    <div className="flex-1 text-black">Diamond Plus Invisalign Provider</div>
+  </div>
+</div>
+
+  </div>
+</div>
+
+
+<div className="flex border-b border-gray-300">
+  <div className="w-1/3 p-5">
+    <p className="font-neuehaas35 text-black">Expertise</p>
+  </div>
+  <div className="w-1/3 p-5"></div>
+  <div className="w-1/3 p-5 w-full">
+  <div className="flex border-b border-gray-300 py-3">
+    <div className="w-1/2 text-gray-500">Invisalign</div>
+    <div className="flex-1 text-black">25+ Years of Experience</div>
+  </div>
+  <div className="flex border-b border-gray-300 py-3">
+    <div className="w-1/2 text-gray-500">Invisalign Teen</div>
+    <div className="flex-1 text-black">5000+ Cases Treated</div>
+  </div>
+  <div className="flex py-3">
+    <div className="w-1/2 text-gray-500">Diamond Plus</div>
+    <div className="flex-1 text-black">Top 1% of All Providers</div>
+  </div>
+</div>
+
+</div>
+</div>
+          {/* <div
+            className="relative bg-[#FFF]"
+            style={{ height: "600px", overflow: "hidden" }}
+          >
+            <motion.div
+              initial={{ y: "0%" }}
+              animate={controls}
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: "15%",
+                background: "rgb(245,227,24,.8)",
+                zIndex: 1,
+              }}
+            />
+
+            {[
+              {
+                text: "Fewer appointments, faster treatment",
+                gradient:
+                  "radial-gradient(circle, #FF9A8B 0%, #FF6A88 50%, #FF99AC 100%)",
+              },
+              {
+                text: "Personalized care for every patient",
+                gradient: "radial-gradient(circle, #A18CD1 0%, #FBC2EB 100%)",
+              },
+              {
+                text: "Advanced technology at your service",
+                gradient:
+                  "radial-gradient(circle, #FA8BFF 0%, #2BD2FF 50%, #2BFF88 100%)",
+              },
+              {
+                text: "Comfortable and stress-free visits",
+                gradient: "radial-gradient(circle, #FFD3A5 0%, #FD6585 100%)",
+              },
+            ].map((item, index) => (
+              <Section key={index} onHoverStart={() => handleHover(index)}>
+                <div className="relative flex items-center w-full">
+                  <div
+                    className="w-4 h-4 rounded-full absolute left-[40px]"
+                    style={{ background: item.gradient }}
+                  ></div>
+                  <span className="pl-40">{item.text}</span>
+                </div>
+              </Section>
+            ))}
+          </div> */}
+
+
+        </section>
+
+        <div className="flex flex-row justify-between">
+          <div className="max-w-[700px] mt-10">
+            <div className="flex items-center gap-24">
+              <div className="font-neuehaas35 text-md whitespace-nowrap relative">
+                Why Invisalign
                 <div
-                  className="w-4 h-4 rounded-full absolute left-[40px]"
-                  style={{ background: item.gradient }}
-                ></div>
-                <span className="pl-40">{item.text}</span>
+                  ref={squigglyTextRef}
+                  className="absolute left-0 bottom-[-5px] w-full"
+                >
+                  <svg className="w-full" height="9" viewBox="0 0 101 9">
+                    <path
+                      d="M1 6.86925C5.5 5.89529 20.803 1.24204 22.5 1.30925C24.6212 1.39327 20.5 3.73409 19.5 4.26879C18.8637 4.60904 14.9682 6.39753 15.7268 6.96472C16.4853 7.5319 34.2503 1.07424 35.8216 1.00703C37.3928 0.939816 37.2619 1.37115 37 1.59522C37 1.59522 24.5598 6.65262 24.84 6.96472C25.1202 7.27681 39.3546 4.85181 45.5 3.73407C51.6454 2.61634 61.4661 1.31205 62.525 2.12081C63.3849 2.77753 57.6549 3.25627 55.6997 4.04288C48.4368 6.96472 69.5845 5.83575 70 6.14029"
+                      stroke="#1D64EF"
+                      fill="none"
+                      strokeWidth="1.5"
+                      pathLength="1"
+                      style={{
+                        strokeDasharray: "1",
+                        strokeDashoffset: isVisible ? "0" : "1",
+                        transition:
+                          "stroke-dashoffset 0.6s cubic-bezier(0.7, 0, 0.3, 1)",
+                      }}
+                    />
+                  </svg>
+                </div>
               </div>
-            </Section>
-          ))}
-        </div>
 
-        {/* <div className="image-content mt-16">
-              <img
-                ref={alignerRef}
-                src="../images/invisalignset.png"
-                alt="aligner"
-                className="w-[400px] h-[400px] object-contain"
-                style={{
-                  willChange: "transform",
-                }}
-              />
-             <img src='../images/alignercase.png'/>
-            </div> */}
-      </section>
-
-      <div className="flex flex-row justify-between">
-        <div className="max-w-[700px] mt-10">
-          <div className="flex items-center gap-24">
-            <div className="font-neuehaasdisplayextralight text-sm whitespace-nowrap relative">
-              Why Invisalign
-              <div
-                ref={squigglyTextRef}
-                className="absolute left-0 bottom-[-5px] w-full"
-              >
-                <svg className="w-full" height="9" viewBox="0 0 101 9">
-                  <path
-                    d="M1 6.86925C5.5 5.89529 20.803 1.24204 22.5 1.30925C24.6212 1.39327 20.5 3.73409 19.5 4.26879C18.8637 4.60904 14.9682 6.39753 15.7268 6.96472C16.4853 7.5319 34.2503 1.07424 35.8216 1.00703C37.3928 0.939816 37.2619 1.37115 37 1.59522C37 1.59522 24.5598 6.65262 24.84 6.96472C25.1202 7.27681 39.3546 4.85181 45.5 3.73407C51.6454 2.61634 61.4661 1.31205 62.525 2.12081C63.3849 2.77753 57.6549 3.25627 55.6997 4.04288C48.4368 6.96472 69.5845 5.83575 70 6.14029"
-                    stroke="#1D64EF"
-                    fill="none"
-                    strokeWidth="1.5"
-                    pathLength="1"
-                    style={{
-                      strokeDasharray: "1",
-                      strokeDashoffset: isVisible ? "0" : "1",
-                      transition:
-                        "stroke-dashoffset 0.6s cubic-bezier(0.7, 0, 0.3, 1)",
-                    }}
-                  />
-                </svg>
-              </div>
+              <h2 className="font-neuehaasdisplaylight text-[3rem] leading-[1.1] font-light">
+                Invisalign has continued to
+              </h2>
             </div>
 
             <h2 className="font-neuehaasdisplaylight text-[3rem] leading-[1.1] font-light">
-              Invisalign has continued to
+              work for millions worldwide.
+              <br />
+              <span className="text-[#1D64EF]">Clear,&nbsp;</span>
+              <span className="text-[#1D64EF]">comfortable,&nbsp;</span>
+              <span className="text-[#1D64EF]">confident.</span>
+              <br />
             </h2>
           </div>
-
-          <h2 className="font-neuehaasdisplaylight text-[3rem] leading-[1.1] font-light">
-            work for millions worldwide.
-            <br />
-            <span className="text-[#1D64EF]">Clear,&nbsp;</span>
-            <span className="text-[#1D64EF]">comfortable,&nbsp;</span>
-            <span className="text-[#1D64EF]">confident.</span>
-            <br />
-          </h2>
         </div>
       </div>
-      </div>
-
- 
-
-      {/* <div className="feature-jacket">
+  
+  
+    </>
+  );
+};
+export default Invisalign;
+          {/* <div className="image-content mt-16">
+            <img
+              ref={alignerRef}
+              src="../images/invisalignset.png"
+              alt="aligner"
+              className="w-[400px] h-[400px] object-contain"
+              style={{
+                willChange: "transform",
+              }}
+            />
+            <img src="../images/alignercase.png" />
+          </div> */}
+              {/* <div className="feature-jacket">
         <ul className="feature-cards">
           {features.map((feature, index) => (
             <li
@@ -810,7 +865,3 @@ const Invisalign = () => {
         </ul>
       </div>
    */}
-    </>
-  );
-};
-export default Invisalign;

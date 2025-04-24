@@ -1,0 +1,20 @@
+export const OPTS = {
+    blend: 10,
+    force: 1.1,
+    radius: 0.3,
+    curl:   1.9,
+    swirl:  4,
+    pressure: 0.8,
+    intensity: 10,
+    distortion: 0.4,
+    rainbow:   1,     
+    fluidColor: '#C0C0C0',
+    // backgroundColor: '#FFFFFF',
+    densityDissipation: 0.92,
+    velocityDissipation: 1.0,
+    showBackground: true,
+    dyeRes: 512,
+    simRes: 128,
+    refreshRate: 60,
+  };
+  
