@@ -404,7 +404,7 @@ const CardStack = () => {
       <div className="l-wrapper ">
         <div className="list1" id="list1" ref={list1Ref}>
           <ul className="card-list list">
-            <li className="list-child bg-[#c3531d]">
+            <li className="list-child bg-[#c3531d] ">
               <div className="card-inner">
                 <h2 className="card-title">Tech-Savvy Teeth Things</h2>
                 <p className="card-subtitle">Goopless</p>

@@ -356,6 +356,7 @@ const Marquee = () => {
     </div>
   );
 };
+
 const Invisalign = () => {
   const headingRef = useRef(null);
 
@@ -441,20 +442,6 @@ const Invisalign = () => {
     });
   }, []);
 
-  const features = [
-    {
-      text: "Invisalign has worked for over a million smiles across the country. Some dentists and orthodontists may not feel comfortable recommending Invisalign to their patients, but as Diamond Plus providers of Invisalign and Invisalign Teen (top 1% of Invisalign providers in the US) we have the experience to deliver the smile you deserve. Dr. Gregg Frey and Dr. Daniel Frey have treated many hundreds of patients with this leading-edge appliance system. Their expertise shows in the smile results of their satisfied patients. The cost of Invisalign treatment is comparable to the cost of braces.",
-      image: "https://picsum.photos/400/300?random=1",
-    },
-    {
-      text: "Invisalign uses a series of customized, clear aligners to straighten teeth faster and with fewer office visits than traditional braces. Thousands of orthodontists in the United States and Canada use Invisalign to accurately and effectively treat their patients. This type of treatment in the hands of experts delivers fantastic results. Aligners are:",
-      image: "https://picsum.photos/400/300?random=1",
-    },
-    {
-      text: "Customized just for you – Your aligners are customized to fit your mouth. Dr. Frey and Dr. Frey uses advanced 3-D computer imaging technology to replicate an exact impression of your mouth and teeth, then our doctors customize each aligner treatment plan specific to your needs. This RX is sent to the lab that fabricates a series of your custom aligners so that they fit your mouth, and over time they move your teeth into the proper position.",
-      image: "https://picsum.photos/400/300?random=1",
-    },
-  ];
   const textRef = useRef(null);
   useEffect(() => {
     gsap.registerPlugin(SplitText);
@@ -587,9 +574,16 @@ const Invisalign = () => {
   }, []);
 
   const uniformsRef = useRef();
+
+  const services = [
+    { normal: "Nearly ", italic: "Invisible" },
+    { normal: "Designed for Comfort" },
+    { normal: "Tailored to", italic: "You" },
+    { normal: "Removable", italic: "& Flexible" },
+    { normal: "Proven", italic: "Results" },
+  ];
   return (
     <>
-
       <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
         <Canvas
           gl={{ alpha: true }}
@@ -605,7 +599,7 @@ const Invisalign = () => {
           }}
         >
           <EffectComposer>
-            <Fluid backgroundColor="#F9F8F7"/>
+            <Fluid backgroundColor="#F9F8F7" />
           </EffectComposer>
         </Canvas>
 
@@ -626,15 +620,11 @@ const Invisalign = () => {
             <span>the result feels effortless. </span>
             <span></span>
           </div>
-          
-
-          
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto">
-  
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-          {/* <div className="w-[800px] h-[800px]">
+          {/* <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+            <div className="w-[800px] h-[800px]">
             <Canvas>
               <ambientLight intensity={0.5} />
               <pointLight color="#ffe9c4" intensity={2} position={[0, 0, -2]} />
@@ -644,8 +634,8 @@ const Invisalign = () => {
 
               <OrbitControls enableZoom={false} />
             </Canvas>
+          </div>
           </div> */}
-        </div>
 
           {/* <div className=" flex items-center justify-center">
   <img
@@ -668,71 +658,106 @@ const Invisalign = () => {
         </div>
 
         <section className="relative w-full flex flex-col h-screen px-16 py-20 pb-10">
-        <h4 className="text-sm mb-6 ">Synopsis</h4>
-              <p className="font-neuehaas35 text-[24px] leading-relaxed max-w-[650px]" >
-                Trusted by millions around the world, Invisalign is a clear, comfortable, and confident choice for
-                straightening smiles. We've proudly ranked among the top 1% of
-                certified Invisalign providers nationwide — every year since
-                2000.
-              </p>
-              
-              <div className=" font-neuehaas35 w-full border-t border-gray-300 text-sm leading-relaxed">
+          <h4 className="text-sm mb-6">Synopsis</h4>
+          <p className="font-neuehaas35 text-[24px] leading-[1.2] max-w-[650px] mb-20">
+            Trusted by millions around the world, Invisalign is a clear,
+            comfortable, and confident choice for straightening smiles. We've
+            proudly ranked among the top 1% of certified Invisalign providers
+            nationwide — every year since 2000.
+          </p>
 
-<div className="flex border-b border-gray-300">
-  <div className="w-1/3 p-5">
-    <p className="font-neuehaas35 text-black">Accolades</p>
-  </div>
-  <div className="w-1/3 flex items-center justify-center p-5">
+          <div className=" font-neuehaas35 w-full border-t border-gray-300 text-sm leading-relaxed">
+            <div className="flex border-b border-gray-300">
+              <div className="w-1/3 p-5">
+                <p className="font-neuehaas35 text-black">Accolades</p>
+              </div>
+              <div className="w-1/3 flex items-center justify-center p-5"></div>
+              <div className="w-1/3 p-5 w-full">
+                <div className="w-full  text-sm leading-relaxed font-neuehaas35">
+                  <div className="flex border-b border-gray-300 py-3">
+                    <div className="w-1/2 text-gray-500">
+                      6x Winner Best Orthodontist
+                    </div>
+                    <div className="flex-1 text-black">Best of the Valley</div>
+                  </div>
+                  <div className="flex border-b border-gray-300 py-3">
+                    <div className="w-1/2 text-gray-500">
+                      5x Winner Best Orthodontist
+                    </div>
+                    <div className="flex-1 text-black">
+                      Readers' Choice The Morning Call
+                    </div>
+                  </div>
+                  <div className="flex border-b border-gray-300 py-3">
+                    <div className="w-1/2 text-gray-500">
+                      {" "}
+                      Nationally Recognized Top Orthodontist
+                    </div>
+                    <div className="flex-1 text-black">Top Dentists</div>
+                  </div>
+                  <div className="flex py-3">
+                    <div className="w-1/2 text-gray-500">Top 1%</div>
+                    <div className="flex-1 text-black">
+                      Diamond Plus Invisalign Provider
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-  </div>
-  <div className="w-1/3 p-5 w-full">
-  <div className="w-full  text-sm leading-relaxed font-neuehaas35">
-  <div className="flex border-b border-gray-300 py-3">
-    <div className="w-1/2 text-gray-500">6x Winner Best Orthodontist</div>
-    <div className="flex-1 text-black">Best of the Valley</div>
-  </div>
-  <div className="flex border-b border-gray-300 py-3">
-    <div className="w-1/2 text-gray-500">5x Winner Best Orthodontist</div>
-    <div className="flex-1 text-black">Readers' Choice The Morning Call</div>
-  </div>
-  <div className="flex border-b border-gray-300 py-3">
-    <div className="w-1/2 text-gray-500"> Nationally Recognized Top Orthodontist</div>
-    <div className="flex-1 text-black">Top Dentists</div>
-  </div>
-  <div className="flex py-3">
-    <div className="w-1/2 text-gray-500">Top 1%</div>
-    <div className="flex-1 text-black">Diamond Plus Invisalign Provider</div>
-  </div>
-</div>
+            <div className="flex border-b border-gray-300">
+              <div className="w-1/3 p-5">
+                <p className="font-neuehaas35 text-black">Expertise</p>
+              </div>
+              <div className="w-1/3 p-5"></div>
+              <div className="w-1/3 p-5 w-full">
+                <div className="flex border-b border-gray-300 py-3">
+                  <div className="w-1/2 text-gray-500">Invisalign</div>
+                  <div className="flex-1 text-black">
+                    25+ Years of Experience
+                  </div>
+                </div>
+                <div className="flex border-b border-gray-300 py-3">
+                  <div className="w-1/2 text-gray-500">Invisalign Teen</div>
+                  <div className="flex-1 text-black">5000+ Cases Treated</div>
+                </div>
+                <div className="flex py-3">
+                  <div className="w-1/2 text-gray-500">Diamond Plus</div>
+                  <div className="flex-1 text-black">
+                    Top 1% of All Providers
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  </div>
-</div>
+          <div className="flex items-center gap-24">
+            <div className="font-neuehaas35 text-md whitespace-nowrap relative">
+              What's Invisalign
+              <div
+                ref={squigglyTextRef}
+                className="absolute left-0 bottom-[-5px] w-full"
+              >
+                <svg className="w-full" height="9" viewBox="0 0 101 9">
+                  <path
+                    d="M1 6.86925C5.5 5.89529 20.803 1.24204 22.5 1.30925C24.6212 1.39327 20.5 3.73409 19.5 4.26879C18.8637 4.60904 14.9682 6.39753 15.7268 6.96472C16.4853 7.5319 34.2503 1.07424 35.8216 1.00703C37.3928 0.939816 37.2619 1.37115 37 1.59522C37 1.59522 24.5598 6.65262 24.84 6.96472C25.1202 7.27681 39.3546 4.85181 45.5 3.73407C51.6454 2.61634 61.4661 1.31205 62.525 2.12081C63.3849 2.77753 57.6549 3.25627 55.6997 4.04288C48.4368 6.96472 69.5845 5.83575 70 6.14029"
+                    stroke="#1D64EF"
+                    fill="none"
+                    strokeWidth="1.5"
+                    pathLength="1"
+                    style={{
+                      strokeDasharray: "1",
+                      strokeDashoffset: isVisible ? "0" : "1",
+                      transition:
+                        "stroke-dashoffset 0.6s cubic-bezier(0.7, 0, 0.3, 1)",
+                    }}
+                  />
+                </svg>
+              </div>
+            </div>
 
-
-<div className="flex border-b border-gray-300">
-  <div className="w-1/3 p-5">
-    <p className="font-neuehaas35 text-black">Expertise</p>
-  </div>
-  <div className="w-1/3 p-5"></div>
-  <div className="w-1/3 p-5 w-full">
-  <div className="flex border-b border-gray-300 py-3">
-    <div className="w-1/2 text-gray-500">Invisalign</div>
-    <div className="flex-1 text-black">25+ Years of Experience</div>
-  </div>
-  <div className="flex border-b border-gray-300 py-3">
-    <div className="w-1/2 text-gray-500">Invisalign Teen</div>
-    <div className="flex-1 text-black">5000+ Cases Treated</div>
-  </div>
-  <div className="flex py-3">
-    <div className="w-1/2 text-gray-500">Diamond Plus</div>
-    <div className="flex-1 text-black">Top 1% of All Providers</div>
-  </div>
-</div>
-
-</div>
-</div>
-          {/* <div
-            className="relative bg-[#FFF]"
+            {/* <div
+            className="mt-10 relative"
             style={{ height: "600px", overflow: "hidden" }}
           >
             <motion.div
@@ -750,88 +775,96 @@ const Invisalign = () => {
             {[
               {
                 text: "Fewer appointments, faster treatment",
-                gradient:
-                  "radial-gradient(circle, #FF9A8B 0%, #FF6A88 50%, #FF99AC 100%)",
+
               },
               {
                 text: "Personalized care for every patient",
-                gradient: "radial-gradient(circle, #A18CD1 0%, #FBC2EB 100%)",
+
               },
               {
                 text: "Advanced technology at your service",
-                gradient:
-                  "radial-gradient(circle, #FA8BFF 0%, #2BD2FF 50%, #2BFF88 100%)",
+         
               },
               {
                 text: "Comfortable and stress-free visits",
-                gradient: "radial-gradient(circle, #FFD3A5 0%, #FD6585 100%)",
+            
               },
             ].map((item, index) => (
               <Section key={index} onHoverStart={() => handleHover(index)}>
                 <div className="relative flex items-center w-full">
                   <div
                     className="w-4 h-4 rounded-full absolute left-[40px]"
-                    style={{ background: item.gradient }}
+                 
                   ></div>
                   <span className="pl-40">{item.text}</span>
                 </div>
               </Section>
             ))}
           </div> */}
-
-
+          </div>
         </section>
-
-        <div className="flex flex-row justify-between">
-          <div className="max-w-[700px] mt-10">
-            <div className="flex items-center gap-24">
-              <div className="font-neuehaas35 text-md whitespace-nowrap relative">
-                Why Invisalign
-                <div
-                  ref={squigglyTextRef}
-                  className="absolute left-0 bottom-[-5px] w-full"
-                >
-                  <svg className="w-full" height="9" viewBox="0 0 101 9">
-                    <path
-                      d="M1 6.86925C5.5 5.89529 20.803 1.24204 22.5 1.30925C24.6212 1.39327 20.5 3.73409 19.5 4.26879C18.8637 4.60904 14.9682 6.39753 15.7268 6.96472C16.4853 7.5319 34.2503 1.07424 35.8216 1.00703C37.3928 0.939816 37.2619 1.37115 37 1.59522C37 1.59522 24.5598 6.65262 24.84 6.96472C25.1202 7.27681 39.3546 4.85181 45.5 3.73407C51.6454 2.61634 61.4661 1.31205 62.525 2.12081C63.3849 2.77753 57.6549 3.25627 55.6997 4.04288C48.4368 6.96472 69.5845 5.83575 70 6.14029"
-                      stroke="#1D64EF"
-                      fill="none"
-                      strokeWidth="1.5"
-                      pathLength="1"
-                      style={{
-                        strokeDasharray: "1",
-                        strokeDashoffset: isVisible ? "0" : "1",
-                        transition:
-                          "stroke-dashoffset 0.6s cubic-bezier(0.7, 0, 0.3, 1)",
-                      }}
-                    />
-                  </svg>
+        <div className="min-h-screen relative">
+          <img className="w-1/3" src="../images/Invisalign1.png" />
+          <div className="font-neuehaas45 perspective-1500 text-[#0414EA]">
+            <div className="flip-wrapper">
+              <div className="flip-container">
+                <div className="face front">Nearly Invisible</div>
+                <div className="face back">
+                  Treatment so discreet, only your smile tells the story.
                 </div>
               </div>
 
-              <h2 className="font-neuehaasdisplaylight text-[3rem] leading-[1.1] font-light">
-                Invisalign has continued to
-              </h2>
-            </div>
+              <div className="flip-container">
+                <div className="face front">Designed for Comfort</div>
+                <div className="face back">
+                  Engineered for comfort with smooth, precision-fit aligners.
+                </div>
+              </div>
 
-            <h2 className="font-neuehaasdisplaylight text-[3rem] leading-[1.1] font-light">
-              work for millions worldwide.
-              <br />
-              <span className="text-[#1D64EF]">Clear,&nbsp;</span>
-              <span className="text-[#1D64EF]">comfortable,&nbsp;</span>
-              <span className="text-[#1D64EF]">confident.</span>
-              <br />
-            </h2>
+              <div className="flip-container">
+                <div className="face front">Tailored to You</div>
+                <div className="face back">
+                  Your journey starts with advanced 3D imaging. From there,
+                  doctor-personalized plans guide a series of custom
+                  aligners—engineered to move your teeth perfectly into place.
+                </div>
+              </div>
+
+              <div className="flip-container">
+                <div className="face front">Removable & Flexible</div>
+                <div className="face back">No wires. No food rules.</div>
+              </div>
+
+              <div className="flip-container">
+                <div className="face front">Proven Results</div>
+                <div className="face back">
+                  See real progress in months—not years.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+        <div className="max-w-[650px] relative min-h-screen">
+          The power of Invisalign isn’t just in the clear aligners—it’s in the
+          custom treatment designed by our doctors. At FreySmiles, every plan
+          starts with a full facial evaluation, digital x-rays, and
+          expert-crafted prescriptions to move your teeth safely and
+          beautifully. As top providers in clear aligner therapy, Dr. Gregg and
+          Dr. Daniel combine advanced technology with years of orthodontic
+          experience to deliver personalized, safe results. While mail-order
+          aligner companies offer convenience, they skip critical steps—no
+          in-person exams, no x-rays, and no expert supervision. Aligners
+          without expert oversight can lead to more than disappointment—they can
+          cause lasting damage. Trust doctors, not delivery boxes, when it comes
+          to your smile.
+        </div>
       </div>
-  
-  
     </>
   );
 };
 export default Invisalign;
-          {/* <div className="image-content mt-16">
+{
+  /* <div className="image-content mt-16">
             <img
               ref={alignerRef}
               src="../images/invisalignset.png"
@@ -842,26 +875,5 @@ export default Invisalign;
               }}
             />
             <img src="../images/alignercase.png" />
-          </div> */}
-              {/* <div className="feature-jacket">
-        <ul className="feature-cards">
-          {features.map((feature, index) => (
-            <li
-              className={`feature-card feature-card-${index + 1}`}
-              key={index}
-              ref={(el) => (cardRefs.current[index] = el)}
-            >
-              <div>
-                <span className="feature-card-bg"></span>
-                <img
-                  src={feature.image}
-                  alt={`Feature ${index + 1}`}
-                  className="feature-card w-full h-auto rounded-lg mb-4"
-                />
-                <p className="feature-card">{feature.text}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-   */}
+          </div> */
+}

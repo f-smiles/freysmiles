@@ -10,30 +10,30 @@ const CaringForYourBraces = () => {
 
   useEffect(() => {
     let tl;
-  
+
     const updateGSAPValues = () => {
       const containerWidth = window.innerWidth;
       const numSections = document.querySelectorAll(".allsections").length;
       const totalScrollDistance = (numSections - 1) * containerWidth;
-  
+
       const greenOffset = -containerWidth * 0.64;
       const whiteOffset = -containerWidth * 1.44;
       const orangeOffset = -containerWidth * 2.24;
       const redOffset = -containerWidth * 3.04;
       const blackOffset = -containerWidth * 3.84;
-  
+
       if (tl) {
         tl.kill();
-        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       }
-  
+
       // Set initial text content X offsets
       gsap.set(".greenContentText", { x: greenOffset });
       gsap.set(".whiteContentText", { x: whiteOffset });
       gsap.set(".orangeContentText", { x: orangeOffset });
       gsap.set(".redContentText", { x: redOffset });
       gsap.set(".blackContentText", { x: blackOffset });
-  
+
       // Set initial translateX for sections
       gsap.set(".purpleSection", { x: "0vw" });
       gsap.set(".greenSection", { x: "80vw" });
@@ -41,7 +41,54 @@ const CaringForYourBraces = () => {
       gsap.set(".orangeSection", { x: "100vw" });
       gsap.set(".redSection", { x: "100vw" });
       gsap.set(".blackSection", { x: "100vw" });
-  
+
+      gsap.set(".purpleSectionImage", {
+        scale: 1,
+        xPercent: -60,
+        transformOrigin: "100% 100%",
+      });
+      gsap.set(".greenSectionImage", {
+        scale: 0.45,
+        xPercent: -15,
+        transformOrigin: "100% 100%",
+      });
+      gsap.set(".whiteSectionImage", {
+        scale: 0.15,
+        xPercent: 0,
+        transformOrigin: "100% 100%",
+      });
+      gsap.set(".orangeSectionImage", {
+        scale: 0,
+        xPercent: 0,
+        transformOrigin: "100% 100%",
+      });
+      gsap.set(".redSectionImage", {
+        scale: 0,
+        xPercent: 0,
+        transformOrigin: "100% 100%",
+      });
+
+      gsap.set(".purpleSectionImage .imageInnerContainer", {
+        scale: 1,
+        transformOrigin: "50% 50%",
+      });
+      gsap.set(".greenSectionImage  .imageInnerContainer", {
+        scale: 1.55,
+        transformOrigin: "50% 50%",
+      });
+      gsap.set(".whiteSectionImage  .imageInnerContainer", {
+        scale: 1.85,
+        transformOrigin: "50% 50%",
+      });
+      gsap.set(".orangeSectionImage .imageInnerContainer", {
+        scale: 2,
+        transformOrigin: "50% 50%",
+      });
+      gsap.set(".redSectionImage    .imageInnerContainer", {
+        scale: 2,
+        transformOrigin: "50% 50%",
+      });
+
       tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
@@ -51,53 +98,113 @@ const CaringForYourBraces = () => {
           pin: true,
         },
       });
-  
+
       // Slide each section using translateX
       tl.to(".greenSection", { x: "0vw", duration: 1, ease: "none" }, 0);
       tl.to(".whiteSection", { x: "80vw", duration: 1, ease: "none" }, 0);
       tl.to(".orangeSection", { x: "95vw", duration: 1, ease: "none" }, 0);
       tl.to(".redSection", { x: "100vw", duration: 1, ease: "none" }, 0);
       tl.to(".blackSection", { x: "100vw", duration: 1, ease: "none" }, 0);
-  
+
       tl.to(".whiteSection", { x: "0vw", duration: 1, ease: "none" }, 1);
       tl.to(".orangeSection", { x: "80vw", duration: 1, ease: "none" }, 1);
       tl.to(".redSection", { x: "95vw", duration: 1, ease: "none" }, 1);
       tl.to(".blackSection", { x: "100vw", duration: 1, ease: "none" }, 1);
-  
+
       tl.to(".orangeSection", { x: "0vw", duration: 1, ease: "none" }, 2);
       tl.to(".redSection", { x: "80vw", duration: 1, ease: "none" }, 2);
       tl.to(".blackSection", { x: "95vw", duration: 1, ease: "none" }, 2);
-  
+
       tl.to(".redSection", { x: "0vw", duration: 1, ease: "none" }, 3);
       tl.to(".blackSection", { x: "80vw", duration: 1, ease: "none" }, 3);
-  
+
       tl.to(".blackSection", { x: "0vw", duration: 1, ease: "none" }, 4);
-  
+
       // Reveal content text
       tl.to(".greenContentText", { x: "0%", duration: 0.8, ease: "none" }, 0.2);
       tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 0.2);
-      tl.to(".orangeContentText", { x: "0%", duration: 2.8, ease: "none" }, 0.2);
+      tl.to(
+        ".orangeContentText",
+        { x: "0%", duration: 2.8, ease: "none" },
+        0.2
+      );
       tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 0.2);
       tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 0.2);
-  
+
+      tl.to(".purpleSectionImage", { 
+        scale: 0.2, 
+        xPercent: -150, 
+        ease: "power2.out",
+        duration: 4  
+      }, 0); 
+      tl.to(".greenSectionImage", { 
+        scale: 0.8, 
+        xPercent: -150, 
+        ease: "power2.out",
+        duration: 1 
+      }, 0); 
+      tl.to(".whiteSectionImage", { 
+        scale: 0.8, 
+        xPercent: -150, 
+        ease: "power2.out", 
+        duration: 1 
+      }, 1.5); 
+      tl.to(".orangeSectionImage", {
+        scale: 0.8,
+        xPercent: -150,
+        ease: "power2.out",
+      duration: 1
+      },1.5);
+      tl.to(".redSectionImage", {
+        scale: 0.8,
+        xPercent: -150,
+        ease: "power2.out",
+       duration: 1,
+      },1);
+
+      tl.to(".purpleSectionImage .imageInnerContainer", { 
+        scale: 1.2, 
+        ease: "power2.out", 
+        duration: 2 
+      }, 0); 
+      tl.to(".greenSectionImage .imageInnerContainer", { 
+        scale: 1.2, 
+        ease: "power2.out", 
+        duration: 1
+      }, 0); 
+      tl.to(".whiteSectionImage .imageInnerContainer", {
+        scale: 1.2,
+        ease: "power2.out",
+     duration: 1
+      }, 1);
+      tl.to(".orangeSectionImage .imageInnerContainer", {
+        scale: 1.2,
+        ease: "power2.out",
+  duration: 1
+      },1);
+      tl.to(".redSectionImage .imageInnerContainer", {
+        scale: 1.2,
+        ease: "power2.out",
+      duration: 1,
+      },1);
+
       setTimeout(() => {
         ScrollTrigger.refresh();
       }, 100);
     };
-  
+
     const ctx = gsap.context(() => {
       updateGSAPValues();
     }, containerRef);
-  
+
     updateGSAPValues();
     window.addEventListener("resize", updateGSAPValues);
-  
+
     return () => {
       window.removeEventListener("resize", updateGSAPValues);
       ctx.revert();
     };
   }, []);
-  
 
   useEffect(() => {
     gsap.to(".fixedNav", {
@@ -108,7 +215,6 @@ const CaringForYourBraces = () => {
       },
     });
   }, []);
-
 
   const cubeRef = useRef(null);
   const cuboidRefs = useRef([]);
@@ -150,14 +256,12 @@ const CaringForYourBraces = () => {
       setWinDimensions();
       gsap.set(container, { visibility: "visible", opacity: 1 });
 
-
-      gsap.timeline({ delay: 0.5 })
-        .from(cuboids, {
-          y: 0,
-          duration: 3,
-          stagger: 0.14,
-          ease: "elastic(0.4,0.3)",
-        });
+      gsap.timeline({ delay: 0.5 }).from(cuboids, {
+        y: 0,
+        duration: 3,
+        stagger: 0.14,
+        ease: "elastic(0.4,0.3)",
+      });
 
       gsap.to(cuboids, {
         rotateX: -360,
@@ -181,7 +285,8 @@ const CaringForYourBraces = () => {
     };
 
     const handleMove = (e) => followPointer(e.clientX, e.clientY);
-    const handleTouch = (e) => followPointer(e.touches[0].clientX, e.touches[0].clientY);
+    const handleTouch = (e) =>
+      followPointer(e.touches[0].clientX, e.touches[0].clientY);
 
     window.addEventListener("mousemove", handleMove);
     window.addEventListener("touchmove", handleTouch);
@@ -200,18 +305,17 @@ const CaringForYourBraces = () => {
   return (
     <div ref={containerRef} className=" min-h-screen">
       <div>
-      
-  <div
-  style={{
-    position: "fixed",
-    top: "20vh",
-    width: "100%",
-    paddingLeft: "15rem",
-    zIndex: 10,
-    pointerEvents: "none",
-  }}
->
-{/* <div className="containercube" ref={cubeRef}>
+        <div
+          style={{
+            position: "fixed",
+            top: "20vh",
+            width: "100%",
+            paddingLeft: "15rem",
+            zIndex: 10,
+            pointerEvents: "none",
+          }}
+        >
+          {/* <div className="containercube" ref={cubeRef}>
       <div className="hi">
         <div className="hi__cuboid" ref={(el) => (cuboidRefs.current[0] = el)}>
           <div className="face face--front">
@@ -229,7 +333,7 @@ const CaringForYourBraces = () => {
         </div>
       </div>
     </div> */}
-{/* <div className="relative w-fit">
+          {/* <div className="relative w-fit">
 
   <div className="absolute inset-0" />
   <svg fill="none" height="83" viewBox="0 0 83 83" width="83" xmlns="http://www.w3.org/2000/svg"><path d="m28.9392 17.858c1.3435 1.3435 3.4104 1.3435 4.7539 0l5.5806-5.5806c1.3434-1.3434 3.4103-1.3434 4.7538 0l5.7872 5.7873c1.3435 1.3435 1.3435 3.4104.0001 4.7538l-49.295211 49.2952 10.541111 10.5411 49.2951-49.2952c1.3435-1.3434 3.4104-1.3434 4.7539 0l5.7873 5.7873c1.3434 1.3435 1.3434 3.4104 0 4.7538l-5.5806 5.5806c-1.3435 1.3435-1.3435 3.4104 0 4.7539l5.7872 5.7872c1.3435 1.3435 1.3435 3.4104 0 4.7539l-5.5805 5.5805c-1.3435 1.3435-1.3435 3.4104 0 4.7539l5.7872 5.7872c1.3435 1.3435 3.4104 1.3435 4.7539 0l5.5805-5.5806c1.3435-1.3434 1.3435-3.4103 0-4.7538l-5.7872-5.7872c-1.3435-1.3435-1.3435-3.4104 0-4.7539l5.5806-5.5806c1.3434-1.3434 1.3434-3.4103-.0001-4.7538l-5.7872-5.7873c-1.3435-1.3434-1.3435-3.4103 0-4.7538l5.5806-5.5806c1.3434-1.3435 1.3434-3.4103 0-4.7538l-5.7873-5.7873c-1.3435-1.3435-1.3435-3.4103 0-4.7538l5.5806-5.5806c1.3435-1.3435 1.3435-3.41035 0-4.75382l-5.7873-5.78728c-1.3435-1.343473-3.4103-1.343472-4.7538 0l-5.5806 5.58059c-1.3435 1.34347-3.4104 1.34346-4.7538-.00001l-5.7873-5.78726c-1.3435-1.34348-3.4104-1.343486-4.7538-.00001l-5.5806 5.58058c-1.3435 1.34348-3.4104 1.34348-4.7539.00001l-5.7872-5.78727c-1.3435-1.343477-3.4104-1.343476-4.7539 0l-5.5805 5.58058c-1.3435 1.34347-3.4104 1.34347-4.7539 0l-5.7872-5.78728c-1.3435-1.34347-3.41039-1.343472-4.75387 0l-5.58058 5.58058c-1.343475 1.34348-1.343473 3.41039 0 4.75379l5.78727 5.7873c1.34348 1.3435 3.41038 1.3435 4.75388 0l5.5805-5.5806c1.3435-1.3434 3.4104-1.3434 4.7539 0zm31.21-5.3739c1.3434-1.3435 3.4103-1.3435 4.7538 0l5.7873 5.7873c1.3434 1.3435 1.3434 3.4103 0 4.7538l-5.5806 5.5806c-1.3435 1.3435-3.4104 1.3435-4.7539 0l-5.7872-5.7873c-1.3435-1.3434-1.3435-3.4103 0-4.7538z" fill="#C9FE6E"/></svg>
@@ -240,79 +344,227 @@ const CaringForYourBraces = () => {
     Braces Care
   </h1>
 </div> */}
+        </div>
 
-</div>
-
-<div>
-{/* <div className="w-[30vw] min-w-[340px] bg-[#DAD5D2] h-screen fixed top-0 left-0 z-10 flex flex-col justify-between px-8 py-12 border-r border-black text-black font-neuehaas45">
-
-  <div className="absolute top-0 right-0 w-[48px] h-[48px] bg-black text-white flex items-center justify-center">
-    <span className="text-[20px]">☺</span>
-  </div>
+        <div>
 
 
-  <div className="space-y-16">
-
-
-
-
-    <h1 className="text-[32px] mt-10 leading-[1.1]">
-    Treatmen Duration
-
-
-    </h1>
-
-
-    <p className="text-[14px] font-neuehaas35 leading-relaxed max-w-[280px]">
-    Your treatment time depends on your plan and how well you
-                    follow our team's guidance. Most Frey Smiles patients see
-                    their ideal smile in just 12 to 20 months. 
-      <br /><br />
-      Ready to begin?
-      We’re here to make it happen.
-    </p>
-
-
-    <button className="w-[44px] h-[44px] bg-black text-white rounded-full flex items-center justify-center mt-6">
-      <span className="text-[20px] leading-none">→</span>
-    </button>
-  </div>
-
-
-  <div className="text-[12px] tracking-wide">
-    Instagram / Twitter
-  </div>
-
-
-  <div className="absolute right-[-12px] bottom-0 h-full flex items-center justify-center">
-    <p className="text-[18px] tracking-widest uppercase rotate-90 origin-bottom-left">
-      SCROLL
-    </p>
-  </div>
-</div> */}
-
-  <div
-          style={{
-            fontFamily: "NeueMontrealBook",
-            height: "100%",
-            position: "absolute",
-            top: "0",
-            width: "100%",
-          }}
-        >
           <div
             style={{
-              height: "100vh",
-              overflow: "hidden",
-              position: "absolute",
+              fontFamily: "NeueMontrealBook",
+              height: "100%",
+              position: "relative",
               top: "0",
               width: "100%",
             }}
-            className="purpleSection allsections"
           >
-            <div>
+            <div
+              style={{
+                height: "100vh",
+                overflow: "hidden",
+                position: "absolute",
+                top: "0",
+                width: "100%",
+              }}
+              className="purpleSection allsections"
+            >
+              <div>
+                <div
+                  className="purpleInner"
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    justifyContent: "flex-start",
+                    paddingLeft: "12rem",
+                    paddingTop: "0vh",
+                  }}
+                >
+                  <div
+                    className="contentText"
+                    style={{
+                      marginTop: "18.25rem",
+                      overflow: "hidden",
+                      width: "475px",
+                    }}
+                  >
+                    <div className="flex flex-row gap-4">
+                      <button className="font-neueroman flex items-center justify-between text-[12px] uppercase">
+                        <span className="mr-4 w-1.5 h-1.5 bg-black rounded-full"></span>
+                        Treatment Duration
+                      </button>
+                    </div>{" "}
+                    <p className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                      Your treatment time will depend on your customized plan
+                      and how closely you follow our team’s instructions. Most
+                      Frey Smiles patients see their ideal smile in just 12 to
+                      20 months with the right guidance along the way. When
+                      you’re ready to begin, schedule a consultation, and we’ll
+                      handle the rest.
+                    </p>
+                  </div>
+                  <div className="purpleSectionImage">
+                    <div
+                      className="imageInnerContainer"
+                     
+                    >
+                      <img
+                        src="../images/stayontrack.png"
+                        alt="portal"
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                height: "100vh",
+                overflow: "hidden",
+                position: "absolute",
+                top: "0",
+                width: "100%",
+              }}
+              className="greenSection allsections"
+            >
               <div
-                className="purpleInner"
+                style={{
+                  display: "flex",
+                  overflow: "hidden",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  paddingLeft: "12rem",
+                  paddingTop: "0vh",
+                }}
+              >
+                <div
+                  className="greenContentText"
+                  style={{
+                    marginTop: "18.25rem",
+                    overflow: "hidden",
+                    width: "475px",
+                  }}
+                >
+                  <div className="flex flex-row gap-4">
+                  <button className="font-neueroman flex items-center justify-between text-[12px] uppercase">
+                      <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
+                      Brushing & Flossing
+                    </button>
+                  </div>{" "}
+                  <p className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                    Brushing and flossing during orthodontic treatment is as
+                    important as ever. all orthodontic appliances like clear
+                    aligners, brackets, and wires interfere with the mouth's
+                    normal self-cleansing mechanisms. Research shows only 10% of
+                    patients brush and floss consistently during active
+                    treatment. We recommend three cleanings a year for braces
+                    patients; check if your insurance covers the third. When you
+                    begin treatment, we'll equip you with tools such as spare
+                    toothbrushes and dental floss to help with cleaning.
+                  </p>
+                  <div className="flex items-center space-x-2"></div>
+                </div>
+                <div className="greenSectionImage">
+                  <div
+                    className="imageInnerContainer"
+                    style={{
+                      marginTop: "18.25rem",
+                    }}
+                  >
+                    <img
+                      src="../images/flossbrush.png"
+                      alt="brushing"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                height: "100vh",
+                overflow: "hidden",
+                position: "absolute",
+                top: "0",
+                width: "100%",
+              }}
+              className="whiteSection allsections"
+            >
+              <div
+                style={{
+                  display: "flex",
+                  overflow: "hidden",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  paddingLeft: "16rem",
+                  paddingTop: "0vh",
+                }}
+              >
+                <div
+                  className="whiteContentText"
+                  style={{
+                    marginTop: "18.25rem",
+                    overflow: "hidden",
+                    width: "475px",
+                  }}
+                >
+                  <div className="flex flex-row gap-4">
+                  <button className="font-neueroman flex items-center justify-between text-[12px] uppercase">
+                      <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
+                      General Soreness
+                    </button>
+                  </div>
+                  <div className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                    When you first get braces, your mouth might feel sore, and
+                    your teeth may be tender for 3–5 days—kind of like a dull
+                    headache. Taking Tylenol or your usual pain reliever can
+                    help ease the discomfort. Your lips, cheeks, and tongue
+                    might also feel irritated for a week or two as they adjust.
+                    No worries—we’ve got you covered with wax to prevent rubbing
+                    and irritation. Hang in there—it gets easier!
+                  </div>
+                </div>
+                <div className="whiteSectionImage">
+                  <div
+                    className="imageInnerContainer w-1/3"
+                    style={{
+                      marginTop: "3.25rem",
+                    }}
+                  >
+                    <img
+                      src="../images/hanginthere.png"
+                      alt="portal"
+                      style={{
+                        maxHeight: "100%",
+                        width: "auto",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              style={{
+                height: "100vh",
+                overflow: "hidden",
+                position: "absolute",
+                top: "0",
+                width: "100%",
+              }}
+              className="orangeSection allsections"
+            >
+              <div
                 style={{
                   display: "flex",
                   alignItems: "flex-start",
@@ -322,36 +574,99 @@ const CaringForYourBraces = () => {
                 }}
               >
                 <div
-                  className="contentText"
+                  className="orangeContentText"
                   style={{
+                    width: "475px",
                     marginTop: "18.25rem",
                     overflow: "hidden",
-                    width: "475px",
                   }}
                 >
                   <div className="flex flex-row gap-4">
-                    <button className="font-neueroman text-[14px] flex items-center justify-between uppercase tracking-wide">
-                      <span className="mr-4 w-1.5 h-1.5  bg-black rounded-full "></span>
-                      Treatment Duration
+                  <button className="font-neueroman flex items-center justify-between text-[12px] uppercase">
+                      <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
+                      Eating with braces
                     </button>
                   </div>
-
-                  <p className="font-neuehaas45 mt-10 text-[16px]">
-                    Your treatment time depends on your plan and how well you
-                    follow our team's guidance. Most Frey Smiles patients see
-                    their ideal smile in just 12 to 20 months. Ready to begin?
-                    We’re here to make it happen.
-                  </p>
+                  <div className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                    Traditionally, patients have been advised to avoid certain
+                    foods during braces treatment, as aggressive or rapid
+                    chewing can break brackets. Crunchy, chewy, sugary, and
+                    acidic foods should be avoided. While this is not a
+                    comprehensive list, some examples include dense breads,
+                    caramel, gum, soda, and lean meats. Apples should be sliced,
+                    and corn on the cob may require careful navigation.
+                  </div>
                 </div>
-
                 <div
-                  className="w-1/3 imageContainer"
+                  className="w-1/3 "
                   style={{
-                    marginTop: "23.25rem",
+                    marginTop: "20.25rem",
                   }}
                 >
                   <img
-                    src="../images/mockupfs.jpg"
+                    src="../images/soda1.png"
+                    alt="portal"
+                    style={{
+                      maxHeight: "70%",
+                      width: "auto",
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              style={{
+                height: "100vh",
+                overflow: "hidden",
+                position: "absolute",
+                top: "0",
+                width: "100%",
+              }}
+              className=" redSection allsections"
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  paddingLeft: "16rem",
+                  paddingTop: "0vh",
+                }}
+              >
+                <div
+                  className="redContentText"
+                  style={{
+                    width: "475px",
+                    marginTop: "18.25rem",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div className="flex flex-row gap-4">
+                  <button className="font-neueroman flex items-center justify-between text-[12px] uppercase">
+                      <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
+                      Rubberband wear
+                    </button>
+                  </div>
+                  <div className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                    If your doctor has prescribed rubber bands, it’s essential
+                    to follow the prescription for the best results. Not wearing
+                    them as directed or frequently breaking brackets can affect
+                    your treatment outcome. During treatment, you’ll receive
+                    different rubber band sizes based on wire size and planned
+                    corrections. While you may accumulate various elastics, keep
+                    in mind that not all are interchangeable for every
+                    configuration.
+                  </div>
+                </div>
+                <div
+                  className="w-1/3 "
+                  style={{
+                    marginTop: "13.25rem",
+                  }}
+                >
+                  <img
+                    src="../images/rubberbands2.png"
                     alt="portal"
                     style={{
                       maxHeight: "80%",
@@ -362,331 +677,75 @@ const CaringForYourBraces = () => {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div
-            style={{
-              height: "100vh",
-              overflow: "hidden",
-              position: "absolute",
-              top: "0",
-              width: "100%",
-            }}
-            className="greenSection allsections"
-          >
             <div
               style={{
-                display: "flex",
+                height: "100vh",
                 overflow: "hidden",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                paddingLeft: "16rem",
-                paddingTop: "0vh",
+                position: "absolute",
+                top: "0",
+                width: "100%",
               }}
+              className=" blackSection allsections"
             >
               <div
-                className="greenContentText"
                 style={{
-                  marginTop: "18.25rem",
-                  overflow: "hidden",
-                  width: "475px",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  paddingLeft: "16rem",
+                  paddingTop: "0vh",
                 }}
               >
-                <div className="flex flex-row gap-4">
-                  <button className="font-neueroman flex items-center justify-between  text-sm tracking-wide uppercase">
-                    <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
-                    Brushing & Flossing
-                  </button>
-                </div>{" "}
-                <p className="font-neuehaas45 mt-10">
-                  Brushing and flossing during orthodontic treatment is more
-                  important than ever. All orthodontic appliances such as clear
-                  aligners, brackets, and wires interfere with normal
-                  self-cleansing mechanisms of the mouth. Research shows that
-                  only 10% of patients brush and floss consistently during
-                  active treatment. We always recommend patients with braces get
-                  three cleanings a year. Check with your insurance to see if
-                  they’ll cover a third cleaning. When you begin treatment, we
-                  will equip you with a number of tools to help with cleaning,
-                  including spare toothbrushes and dental floss.
-                </p>
-                <div className="flex items-center space-x-2"></div>
-              </div>
-              <div
-                className="w-1/3 "
-                style={{
-                  marginTop: "18.25rem",
-                }}
-              >
-                <img
-                  src="../images/flossbrush.png"
-                  alt="brushing"
+                <div
+                  className="blackContentText"
                   style={{
-                    maxHeight: "60%",
-                    width: "auto",
-                    objectFit: "contain",
+                    width: "475px",
+                    marginTop: "18.25rem",
+                    overflow: "hidden",
                   }}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              height: "100vh",
-              overflow: "hidden",
-              position: "absolute",
-              top: "0",
-              width: "100%",
-            }}
-            className="whiteSection allsections"
-          >
-            <div
-              style={{
-                display: "flex",
-                overflow: "hidden",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                paddingLeft: "16rem",
-                paddingTop: "0vh",
-              }}
-            >
-              <div
-                className="whiteContentText"
-                style={{
-                  marginTop: "18.25rem",
-                  overflow: "hidden",
-                  width: "475px",
-                }}
-              >
-                <div className="flex flex-row gap-4">
-                  <button className="font-neueroman flex items-center justify-between  text-sm tracking-wide uppercase">
-                    <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
-                    General Soreness
-                  </button>
+                >
+                  <div className="flex flex-row gap-4">
+                  <button className="font-neueroman flex items-center justify-between text-[12px] uppercase">
+                      <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
+                      Final Considerations
+                    </button>
+                  </div>
+                  <div className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                    Teeth will become loose, and some more than others. The
+                    teeth will settle into the bone and soft tissue, and
+                    mobility will return to physiologic norms at the end of
+                    treatment. Brackets and other orthodontic appliances are
+                    temporary, and occasional breakages are expected. These are
+                    factored into your treatment time and retention plan. During
+                    your treatment, you may encounter dental professionals,
+                    hygienists, or specialists with different perspectives on
+                    care. Our office uses advanced techniques that some may not
+                    fully understand. While we're always open to discussing our
+                    approach with other professionals, patient care remains our
+                    priority. If you're ever unsure, you can always circle back
+                    with the doctor who planned your treatment. Trust the
+                    process—we're here to guide you.
+                  </div>
                 </div>
-                <div className="mt-10 font-neuehaas45">
-                  When you first get braces, your mouth might feel sore, and
-                  your teeth may be tender for 3–5 days—kind of like a dull
-                  headache. Taking Tylenol or your usual pain reliever can help
-                  ease the discomfort. Your lips, cheeks, and tongue might also
-                  feel irritated for a week or two as they adjust. No
-                  worries—we’ve got you covered with wax to prevent rubbing and
-                  irritation. Hang in there—it gets easier!
-                </div>
-              </div>
-              <div
-                className="w-1/4 "
-                style={{
-                  marginTop: "3.25rem",
-                }}
-              >
-                <img
-                  src="../images/hanginthere.png"
-                  alt="portal"
+                <div
+                  className="w-1/3 "
                   style={{
-                    maxHeight: "80%",
-                    width: "auto",
-                    objectFit: "contain",
+                    marginTop: "20.25rem",
                   }}
-                />
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              height: "100vh",
-              overflow: "hidden",
-              position: "absolute",
-              top: "0",
-              width: "100%",
-            }}
-            className="orangeSection allsections"
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                paddingLeft: "16rem",
-                paddingTop: "0vh",
-              }}
-            >
-              <div
-                className="orangeContentText"
-                style={{
-                  width: "475px",
-                  marginTop: "18.25rem",
-                  overflow: "hidden",
-                }}
-              >
-                <div className="flex flex-row gap-4">
-                  <button className="font-neueroman flex items-center justify-between  text-sm tracking-wide uppercase">
-                    <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
-                    Eating with braces
-                  </button>
+                >
+                  <video
+                    src="https://video.wixstatic.com/video/11062b_163d7539f7824eb895994a6460f0995b/720p/mp4/file.mp4"
+                    className="object-cover w-full h-full"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  ></video>
                 </div>
-                <div className="mt-10 font-neuehaas45">
-                  Traditionally, patients have been advised to avoid certain
-                  foods during braces treatment, as aggressive or rapid chewing
-                  can break brackets. Crunchy, chewy, sugary, and acidic foods
-                  should be avoided. While this is not a comprehensive list,
-                  some examples include dense breads, caramel, gum, soda, and
-                  lean meats. Apples should be sliced, and corn on the cob may
-                  require careful navigation.
-                </div>
-              </div>
-              <div
-                className="w-1/3 "
-                style={{
-                  marginTop: "20.25rem",
-                }}
-              >
-                <img
-                  src="../images/soda.png"
-                  alt="portal"
-                  style={{
-                    maxHeight: "70%",
-                    width: "auto",
-                    objectFit: "contain",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              height: "100vh",
-              overflow: "hidden",
-              position: "absolute",
-              top: "0",
-              width: "100%",
-            }}
-            className=" redSection allsections"
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                paddingLeft: "16rem",
-                paddingTop: "0vh",
-              }}
-            >
-              <div
-                className="redContentText"
-                style={{
-                  width: "475px",
-                  marginTop: "18.25rem",
-                  overflow: "hidden",
-                }}
-              >
-                <div className="flex flex-row gap-4">
-                  <button className="font-neueroman flex items-center justify-between  text-sm tracking-wide uppercase">
-                    <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
-                    Rubberband wear
-                  </button>
-                </div>
-                <div className="mt-10 font-neuehaas45">
-                  If your doctor has prescribed rubber bands, it’s essential to
-                  follow the prescription for the best results. Not wearing them
-                  as directed or frequently breaking brackets can affect your
-                  treatment outcome. During treatment, you’ll receive different
-                  rubber band sizes based on wire size and planned corrections.
-                  While you may accumulate various elastics, keep in mind that
-                  not all are interchangeable for every configuration.
-                </div>
-              </div>
-              <div
-                className="w-1/3 "
-                style={{
-                  marginTop: "13.25rem",
-                }}
-              >
-                <img
-                  src="../images/rubberbands2.png"
-                  alt="portal"
-                  style={{
-                    maxHeight: "80%",
-                    width: "auto",
-                    objectFit: "contain",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              height: "100vh",
-              overflow: "hidden",
-              position: "absolute",
-              top: "0",
-              width: "100%",
-            }}
-            className=" blackSection allsections"
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                paddingLeft: "16rem",
-                paddingTop: "0vh",
-              }}
-            >
-              <div
-                className="blackContentText"
-                style={{
-                  width: "475px",
-                  marginTop: "18.25rem",
-                  overflow: "hidden",
-                }}
-              >
-                <div className="flex flex-row gap-4">
-                  <button className="flex items-center justify-between  text-sm tracking-wide uppercase font-neueroman">
-                    <span className="mr-4 w-1.5 h-1.5 uppercase bg-black rounded-full"></span>
-                    Final Considerations
-                  </button>
-                </div>
-                <div className="mt-10 font-neuehaas45">
-                  Teeth will become loose, and some more than others. The teeth
-                  will settle into the bone and soft tissue, and mobility will
-                  return to physiologic norms at the end of treatment. Brackets
-                  will also break. All orthodontic appliances are temporary;
-                  breakages are expected and considered when calculating your
-                  treatment time and retention. Dental professionals, dental
-                  hygienists, and other specialists all have different knowledge
-                  bases and motivations pertaining to patient care. It is not
-                  unlikely that at some point during treatment, you may receive
-                  conflicting information. We’re on the cutting edge with our
-                  office, and some people may not comprehend what we’re doing.
-                  We’re always open to educating other professionals on our
-                  cutting-edge treatment plans; however, patient care is our
-                  priority. Whenever in doubt, you can always circle back with
-                  the doctor who treatment-planned your case. Trust our process.
-                </div>
-              </div>
-              <div
-                className="w-1/3 "
-                style={{
-                  marginTop: "20.25rem",
-                }}
-              >
-                <video
-                  src="https://video.wixstatic.com/video/11062b_163d7539f7824eb895994a6460f0995b/720p/mp4/file.mp4"
-                  className="object-cover w-full h-full"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                ></video>
               </div>
             </div>
           </div>
         </div>
-
-  </div>
-       
       </div>
     </div>
   );
