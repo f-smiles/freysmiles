@@ -302,6 +302,7 @@ const CaringForYourBraces = () => {
       window.removeEventListener("resize", setWinDimensions);
     };
   }, []);
+
   return (
     <div ref={containerRef} className=" min-h-screen">
       <div>
@@ -403,20 +404,37 @@ const CaringForYourBraces = () => {
                     </p>
                   </div>
                   <div className="purpleSectionImage">
-                    <div
-                      className="imageInnerContainer"
-                     
-                    >
-                      <img
-                        src="../images/stayontrack.png"
-                        alt="portal"
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                          objectFit: "contain",
-                        }}
-                      />
-                    </div>
+                  <div className="imageInnerContainer" style={{ position: "relative", width: "100%" }}>
+  <img
+    src="../images/stayontrack.png"
+    alt="portal"
+    style={{
+      width: "100%",
+      height: "auto",
+      objectFit: "contain",
+    }}
+  />
+ 
+  <div 
+     style={{
+      position: "absolute",
+      top: "70%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      textAlign: "center",
+      pointerEvents: "none" ,
+      display:"flex",
+      gap: "20px",
+      fontFamily:"NeueHaasRoman"
+    }}
+>
+
+ <h1 id="effect">STAY ON TRACK</h1>
+
+
+</div>
+</div>
+
                   </div>
                 </div>
               </div>
@@ -477,7 +495,7 @@ const CaringForYourBraces = () => {
                     }}
                   >
                     <img
-                      src="../images/flossbrush.png"
+                      src="../images/handholdingtoothbrush.jpg"
                       alt="brushing"
                       style={{
                         width: "100%",
@@ -534,18 +552,18 @@ const CaringForYourBraces = () => {
                     and irritation. Hang in there—it gets easier!
                   </div>
                 </div>
-                <div className="whiteSectionImage">
+                <div >
                   <div
-                    className="imageInnerContainer w-1/3"
+                    className="imageInnerContainer "
                     style={{
                       marginTop: "3.25rem",
                     }}
                   >
                     <img
-                      src="../images/hanginthere.png"
+                      src="../images/dentalwax3.png"
                       alt="portal"
                       style={{
-                        maxHeight: "100%",
+                        maxHeight: "60%",
                         width: "auto",
                         objectFit: "contain",
                       }}
@@ -604,7 +622,7 @@ const CaringForYourBraces = () => {
                   }}
                 >
                   <img
-                    src="../images/soda1.png"
+                    src="../images/soda2.png"
                     alt="portal"
                     style={{
                       maxHeight: "70%",
@@ -733,14 +751,14 @@ const CaringForYourBraces = () => {
                     marginTop: "20.25rem",
                   }}
                 >
-                  <video
+                  {/* <video
                     src="https://video.wixstatic.com/video/11062b_163d7539f7824eb895994a6460f0995b/720p/mp4/file.mp4"
                     className="object-cover w-full h-full"
                     autoPlay
                     loop
                     muted
                     playsInline
-                  ></video>
+                  ></video> */}
                 </div>
               </div>
             </div>
