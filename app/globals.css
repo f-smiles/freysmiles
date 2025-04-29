@@ -4846,13 +4846,7 @@ a {
 
 
 
-.purpleSection { background-color: #E6E6E5;}
-.greenSection { background-color:  #F3C744;  }
-.whiteSection { background-color: #96CCD5 }
-.orangeSection { background-color: #CFB2D4}
-.redSection { background-color:#DD5310}
-.blackSection { background-color: #e6edac }
-/* #CADACF */
+
 
 .section_intro {
   background-color:#fff ;
@@ -5242,85 +5236,6 @@ color: white;
 
 
 
-/* .container {
-  perspective: 900px;
-}
-
-.hi {
-  position: relative;
-  z-index: 1;
-  font-size: 100px;
-  font-stretch: 400%;
-  font-weight: 600;
-  line-height: 1;
-  text-transform: uppercase;
-  text-align: center;
-  transform-style: preserve-3d;
-}
-
-.hi__cuboid {
-  position: relative;
-  width: 500px;
-  height: 70px;
-  transform-style: preserve-3d;
-  margin: 30px 0;
-}
-
-
-.face {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: start;
-  justify-content: start;
-  width: 400px;
-  height: 70px;
-  background-color: #f3e8ff; 
-  color: #333; 
-  backface-visibility: visible;
-  overflow: hidden;
-}
-
-.face--front {
-  background-image: url('/images/greenchecker.png');
-
-  background-size: cover;
-  background-position: center;
-  color: #222;
-  transform: translateZ(35px);
-}
-
-
-.face--back {
-  background-image: url('/images/greenchecker.png');
-
-  background-size: cover;
-  background-position: center;
-  color: #fff;
-  transform: translateZ(-35px) rotateY(180deg) rotate(180deg);
-}
-
-
-.face--top {
-  background-color:#d3f1d4; 
-  color: #222;
-  transform: translateY(-35px) rotateX(90deg);
-}
-
-.face--bottom {
-  background-color: #d3f1d4; 
-  color: #222;
-  transform: translateY(35px) rotateX(-90deg);
-}
-
-
-.hi__word {
-  font-family:"HorizonOutline";
-  font-size: .4em;
-  font-stretch: 300%;
-  font-weight: 100;
-} */
 
 .filter-button__bg {
   position: absolute;
@@ -5467,6 +5382,7 @@ border-radius: 1rem;
 
 .sun-mask {
   position: absolute;
+  
   bottom: 0;
   left: 0;
   width: 100%;
@@ -5475,8 +5391,8 @@ border-radius: 1rem;
   pointer-events: none;
   /* background: #dde2e7; */
 
-  -webkit-mask-image: radial-gradient(circle at center 45%, transparent 500px, #1F1F1F 501px);
-  mask-image: radial-gradient(circle at center 45%, transparent 500px, #1F1F1F 501px);
+  -webkit-mask-image: radial-gradient(circle at center 43%, transparent 500px, #1F1F1F 501px);
+  mask-image: radial-gradient(circle at center 43%, transparent 500px, #1F1F1F 501px);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-size: contain;
@@ -5611,19 +5527,31 @@ text-transform: uppercase;
   overflow: hidden;  
 }
 
+.purpleSection { background-color: #DF9DF3;}
+.greenSection { background-color:  #F3C744;  }
+.whiteSection { background-color: #DD5310; }
+.orangeSection { background-color: #D8F000}
+.redSection { background-color:#FBE0FF}
+.blackSection { background-color: #199054}
+/* #CADACF */
+
 .purpleSectionImage,
 .greenSectionImage,
 .whiteSectionImage,
 .orangeSectionImage,
-.redSectionImage {
+.redSectionImage
+.blackSectionImage {
   position: absolute;
-  right: 0;            
-  top: 6%;          
-  width: 33.333%;      
-  max-height: 60%; 
+  right: 0vw;
+  /* top: 50%; */
+  transform: translateY(-50%);   /* Center vertically */
+  width: 33.333vw;               /* Use vw for consistent scaling */
+  height: auto;                  /* Maintain aspect ratio */
+  aspect-ratio: 480 / 348;   
 
 }
-.imageInnerContainer {
+
+.purpleImageInnerContainer {
   position: absolute;
   top: 0;
   left: 0;
@@ -5631,6 +5559,13 @@ text-transform: uppercase;
   height: 100%;
 }
 
+.greenImageInnerContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 
 
 #effect {

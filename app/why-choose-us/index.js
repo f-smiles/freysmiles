@@ -751,30 +751,35 @@ const RepeatText = ({ text = "MTS", totalLayers = 7 }) => {
       data-animation="stack-words"
       ref={containerRef}
     >
-      {new Array(totalLayers).fill(0).map((_, i) => (
-        <div
-          key={i}
-          className="overflow-hidden stack-word-layer"
+{new Array(totalLayers).fill(0).map((_, i) => {
+  const isLast = i === totalLayers - 1;
+
+  return (
+    <div
+      key={i}
+      className="overflow-hidden stack-word-layer"
+      style={{
+        height: isLast ? "22vw" : `${5 + i * 1.25}vw`,   // Give last layer a big boost
+        marginTop: i === 0 ? 0 : "-.5vw",
+      }}
+    >
+      <div
+        className="stack-word-inner will-change-transform flex justify-center overflow-visible"
+        style={{ height: "100%" }}
+      >
+        <span
+          className="text-[48vw] font-bold text-black leading-none block"
           style={{
-            height: `${5 + i * 1.25}vw`,
-            marginTop: i === 0 ? 0 : "-.5vw",
+            transform: `translateY(calc(-60% + ${i * 3}px))`,
           }}
         >
-          <div
-            className="stack-word-inner will-change-transform flex justify-center overflow-visible"
-            style={{ height: "100%" }}
-          >
-            <span
-              className="text-[48vw] font-bold text-black leading-none block"
-              style={{
-                transform: "translateY(-60%)",
-              }}
-            >
-              {text}
-            </span>
-          </div>
-        </div>
-      ))}
+          {text}
+        </span>
+      </div>
+    </div>
+  );
+})}
+
     </section>
   );
 };
@@ -824,21 +829,87 @@ function StackCards() {
   }, []);
 
   const cardRef = useRef();
-  const handleMouseEnter = () => {
-    gsap.to(cardRef.current, {
-      "--br": "100px",
-      duration: 0.2,
-      ease: "power1.out",
-    });
-  };
+  // const handleMouseEnter = () => {
+  //   gsap.to(cardRef.current, {
+  //     "--br": "100px",
+  //     duration: 0.2,
+  //     ease: "power1.out",
+  //   });
+  // };
 
-  const handleMouseLeave = () => {
-    gsap.to(cardRef.current, {
-      "--br": "0px",
-      duration: 0.2,
-      ease: "power1.inOut",
-    });
-  };
+  // const handleMouseLeave = () => {
+  //   gsap.to(cardRef.current, {
+  //     "--br": "0px",
+  //     duration: 0.2,
+  //     ease: "power1.inOut",
+  //   });
+  // };
+  useEffect(() => {
+    let activeCard = null;
+    let mouseX = 0;
+    let mouseY = 0;
+  
+    const updateHoverState = () => {
+      const blocks = document.querySelectorAll(".card-block");
+      let hoveredCard = null;
+  
+      blocks.forEach((block) => {
+        const rect = block.getBoundingClientRect();
+        const isHovering =
+          mouseX >= rect.left &&
+          mouseX <= rect.right &&
+          mouseY >= rect.top &&
+          mouseY <= rect.bottom;
+  
+        if (isHovering) hoveredCard = block;
+      });
+  
+      if (hoveredCard !== activeCard) {
+
+        if (activeCard) {
+          gsap.to(activeCard, {
+            "--br": "0px",
+            duration: 0.2,       
+            ease: "power2.out",
+            overwrite: true,
+          });
+        }
+      
+
+        if (hoveredCard) {
+          gsap.to(hoveredCard, {
+            "--br": "100px",
+            duration: 0.4,      
+            ease: "power2.out",
+            overwrite: true,
+          });
+        }
+      
+        activeCard = hoveredCard;
+      }
+      
+    };
+  
+    const handlePointerMove = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      updateHoverState();
+    };
+  
+    const handleScroll = () => {
+      updateHoverState();
+    };
+  
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("scroll", handleScroll);
+  
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+  
+  
 
   return (
     <section ref={containerRef}>
@@ -858,23 +929,20 @@ function StackCards() {
           providers, we’ve treated thousands of cases and helped shape how clear
           aligners are used today.
         </div>
-
-        <div className="font-neuehaas35 min-h-screen text-[20px] leading-[1.1] px-10">
           {/*      
           <div className="mb-10 text-[30px] max-w-[900px] leading-[1.3]">
           TL;DR: You’re in very good,
           very experienced hands.
           </div> */}
+        <div className="font-neuehaas35 min-h-screen text-[20px] leading-[1.1] px-10">
+
           {/* Block 1 */}
           <div className="border-t border-black w-full">
-            <div
-              ref={cardRef}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black pointer-events-auto"
-              style={{ "--br": "0px" }}
-            >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-all before:duration-200 before:ease-linear before:rounded-[var(--br)]" />
+          <div
+    className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
+    style={{ "--br": "0px" }}
+  >
+    <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
 
               <div className="relative z-10 text-sm text-[#ff007f] font-sans">
                 ABO Treatment Standards
@@ -898,8 +966,11 @@ function StackCards() {
 
           {/* Block 2 */}
           <div className="border-t border-black w-full">
-            <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8]  before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
+          <div
+  className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
+  style={{ "--br": "0px" }}
+>
+<div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
 
               <div className="relative z-10 text-sm text-[#ff007f] font-sans">
                 Board Certification Process
@@ -907,8 +978,8 @@ function StackCards() {
 
               <div className="relative z-10 text-center leading-tight max-w-4xl text-black">
                 <div>
-                  Currently, Dr. Gregg Frey is a certified orthodontist and is
-                  preparing cases for recertification. Dr. Daniel Frey is in the
+                  Currently, Dr. Gregg is a certified orthodontist and is
+                  preparing cases for recertification. Dr. Daniel is in the
                   final stages of obtaining his initial certification.
                 </div>
               </div>
@@ -921,8 +992,11 @@ function StackCards() {
 
           {/* Block 3 */}
           <div className="border-t border-black w-full">
-            <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8]  before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
+          <div
+  className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
+  style={{ "--br": "0px" }}
+>
+<div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
 
               <div className="relative z-10 text-sm text-[#ff007f] font-sans">
                 Diagnostic Record Accuracy
@@ -944,8 +1018,11 @@ function StackCards() {
 
           {/* Block 4 */}
           <div className="border-t border-black w-full">
-            <div className="group relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black">
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8]  before:transition-all before:duration-300 before:rounded-none group-hover:before:rounded-[100px]" />
+          <div
+  className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
+  style={{ "--br": "0px" }}
+>
+<div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
 
               <div className="relative z-10 text-sm text-[#ff007f] font-sans">
                 Trusted Expertise
