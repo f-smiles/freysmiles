@@ -598,6 +598,11 @@ const Invisalign = () => {
             zIndex: 0,
           }}
         >
+          <mesh>
+  <planeGeometry args={[2, 2]} />
+  <meshBasicMaterial color="#F9F8F7" />
+</mesh>
+
           <EffectComposer>
             <Fluid backgroundColor="#F9F8F7" />
           </EffectComposer>

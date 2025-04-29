@@ -1,5 +1,6 @@
 "use client";
 // gsap
+import { Observer } from "gsap/Observer";
 import { Curtains, useCurtains, Plane } from "react-curtains";
 import { Vec2 } from "curtainsjs";
 import SimplePlane from "./curtains";
@@ -244,23 +245,23 @@ function Hero() {
           </div>
         </div>
         <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 951 367"
-        fill="none"
-        className="w-full max-w-lg h-auto"
-      >
-        <path
-          ref={pathRef}
-          d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
-          stroke="#0C0EFE"
-          strokeWidth="40"
-          strokeMiterlimit="10"
-          strokeLinejoin="round"
-          style={{ strokeDasharray: "3202.1", strokeDashoffset: "0px" }}
-        />
-      </svg>
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 951 367"
+          fill="none"
+          className="w-full max-w-lg h-auto"
+        >
+          <path
+            ref={pathRef}
+            d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
+            stroke="#0C0EFE"
+            strokeWidth="40"
+            strokeMiterlimit="10"
+            strokeLinejoin="round"
+            style={{ strokeDasharray: "3202.1", strokeDashoffset: "0px" }}
+          />
+        </svg>
       </div>
-      
+
       {/* <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 480 480"
@@ -399,86 +400,85 @@ const CardStack = () => {
 
   return (
     <>
-    <div className="bg-[#FEF9F8] ">
-  
-      <div className="l-wrapper ">
-        <div className="list1" id="list1" ref={list1Ref}>
-          <ul className="card-list list">
-            <li className="list-child bg-[#c3531d] ">
-              <div className="card-inner">
-                <h2 className="card-title">Tech-Savvy Teeth Things</h2>
-                <p className="card-subtitle">Goopless</p>
-                <div className="card-caption-box">
-                  3D iTero scanning /<br />
-                  low-dose Radiographs /<br />
-                  3D printing
+      <div className="bg-[#FEF9F8] ">
+        <div className="l-wrapper ">
+          <div className="list1" id="list1" ref={list1Ref}>
+            <ul className="card-list list">
+              <li className="list-child bg-[#c3531d] ">
+                <div className="card-inner">
+                  <h2 className="card-title">Tech-Savvy Teeth Things</h2>
+                  <p className="card-subtitle">Goopless</p>
+                  <div className="card-caption-box">
+                    3D iTero scanning /<br />
+                    low-dose Radiographs /<br />
+                    3D printing
+                  </div>
                 </div>
-              </div>
-            </li>
-            <li className="list-child text-type1 bg-[#8dca9c]">
-              <div className="card-inner">
-                <h2 className="card-title">Outcomes</h2>
-                <p className="card-subtitle">Over 25,000 patients</p>
-                <div className="card-caption-box">
-                  Web Design & Dev /<br />
-                  Art Direction /<br />
-                  Illustration
+              </li>
+              <li className="list-child text-type1 bg-[#8dca9c]">
+                <div className="card-inner">
+                  <h2 className="card-title">Outcomes</h2>
+                  <p className="card-subtitle">Over 25,000 patients</p>
+                  <div className="card-caption-box">
+                    Web Design & Dev /<br />
+                    Art Direction /<br />
+                    Illustration
+                  </div>
                 </div>
-              </div>
-            </li>
-            <li className="list-child text-type1 bg-[#E5AB38]">
-              <div className="card-inner">
-                <h2 className="card-title">Specialists, not generalists</h2>
-                <p className="card-subtitle">
-                  You wouldn’t hire a generalist surgeon
-                </p>
-                <div className="card-caption-box">
-                  Board certified /<br />
-                  ABO certified /<br />
-                  Combined 50+ years experience
+              </li>
+              <li className="list-child text-type1 bg-[#E5AB38]">
+                <div className="card-inner">
+                  <h2 className="card-title">Specialists, not generalists</h2>
+                  <p className="card-subtitle">
+                    You wouldn’t hire a generalist surgeon
+                  </p>
+                  <div className="card-caption-box">
+                    Board certified /<br />
+                    ABO certified /<br />
+                    Combined 50+ years experience
+                  </div>
                 </div>
-              </div>
-            </li>
-            <li className="list-child text-type1 bg-[#D6B6D1]">
-              <div className="card-inner">
-                <h2 className="card-title">4 Locations</h2>
-                <p className="card-subtitle">IRL + URL</p>
-                <div className="card-caption-box">
-                  Allentown / Bethlehem /<br />
-                  Lehighton /<br />
-                  Schnecksville
+              </li>
+              <li className="list-child text-type1 bg-[#D6B6D1]">
+                <div className="card-inner">
+                  <h2 className="card-title">4 Locations</h2>
+                  <p className="card-subtitle">IRL + URL</p>
+                  <div className="card-caption-box">
+                    Allentown / Bethlehem /<br />
+                    Lehighton /<br />
+                    Schnecksville
+                  </div>
                 </div>
-              </div>
-            </li>
-          </ul>
-        </div>
+              </li>
+            </ul>
+          </div>
         </div>
         <section className="w-full min-h-screen grid grid-cols-12">
+          <div className="col-span-6 bg-white flex flex-col justify-between p-12 relative overflow-visible">
+            <div className="flex justify-start gap-12 text-lg font-neue-montreal z-10">
+              <span className="text-[#DBE1DD]">LOREM</span>
+              <span>IPSUM</span>
+            </div>
 
-      <div className="col-span-6 bg-white flex flex-col justify-between p-12 relative overflow-visible">
+            <div className="flex flex-col items-center justify-center relative z-10">
+              <video
+                src="../images/retaintracing.mp4"
+                className="w-[75%] object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
 
-  <div className="flex justify-start gap-12 text-lg font-neue-montreal z-10">
-    <span className="text-[#DBE1DD]">LOREM</span>
-    <span>IPSUM</span>
-  </div>
+              <h2 className="mt-4 text-[2vw] font-light tracking-tight">
+                PHOTO
+              </h2>
+              <p className="text-[1vw] font-light mt-1 font-neuehaas35">
+                Our technicican tracing a retainer
+              </p>
+            </div>
 
-
-  <div className="flex flex-col items-center justify-center relative z-10">
-  <video
-  src="../images/retaintracing.mp4"
-  className="w-[75%] object-cover"
-  autoPlay
-  loop
-  muted
-  playsInline
-/>
-
-    <h2 className="mt-4 text-[2vw] font-light tracking-tight">PHOTO</h2>
-    <p className="text-[1vw] font-light mt-1 font-neuehaas35">Our technicican tracing a retainer</p>
-  </div>
-
-
-  {/* <div className="absolute left-[65%] -top-[5%] z-20">
+            {/* <div className="absolute left-[65%] -top-[5%] z-20">
     <svg
       width="360"
       height="738"
@@ -506,119 +506,114 @@ const CardStack = () => {
       })}
     </svg>
   </div> */}
-</div>
+          </div>
 
+          <div className="col-span-6 bg-[#FEF9F8] p-12 flex flex-col justify-between">
+            <div className="font-neuehaas45 flex justify-between text-lg font-light">
+              LEARN MORE
+            </div>
 
-
-      <div className="col-span-6 bg-[#FEF9F8] p-12 flex flex-col justify-between">
-
-        <div className="font-neuehaas45 flex justify-between text-lg font-light">
-LEARN MORE
-
-        </div>
-
-          <p className="ml-auto max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
-  Orthodontic Treatment should be a once-in-a-lifetime experience, so making the right choice is an important decision. Here are the reasons we feel you should choose FreySmiles for you or your child’s treatment.
-  </p>
-
-      </div>
-    </section>
+            <p className="ml-auto max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
+              Orthodontic Treatment should be a once-in-a-lifetime experience,
+              so making the right choice is an important decision. Here are the
+              reasons we feel you should choose FreySmiles for you or your
+              child’s treatment.
+            </p>
+          </div>
+        </section>
         {/* <section className="-mt-[200px] px-10">
   <p className="max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
   Orthodontic Treatment should be a once-in-a-lifetime experience, so making the right choice is an important decision. Here are the reasons we feel you should choose FreySmiles for you or your child’s treatment.
   </p>
 </section> */}
         <div className="mt-10 w-full flex justify-center flex-row gap-6">
-<div className="w-[540px] ">
-      <svg
-        width="100%"
-        height="100%"
-      
-        viewBox="0 0 792 792"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <mask id="mask-inverse-2">
-            <rect width="792" height="792" fill="white" />
+          <div className="w-[540px] ">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 792 792"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <mask id="mask-inverse-2">
+                  <rect width="792" height="792" fill="white" />
 
-            <path
-              d="M268.094 181.48V-220.57H455.044V181.67L268.094 181.48Z"
-              fill="black"
-            />
-            <path
-              d="M457.805 339.69H824.685V613.44L457.825 613.52C457.825 613.52 457.825 613.52 457.815 613.52V770.55H1010.1V-220.24H824.685V182.58L457.805 182.65V339.68V339.69Z"
-              fill="black"
-            />
-            <path
-              d="M433.78 295.93C333.76 295.93 252.68 377.01 252.68 477.03C252.68 577.05 333.76 658.13 433.78 658.13"
-              fill="black"
-            />
-            <path
-              d="M432.105 658.129H457.805L457.805 295.949H432.105L432.105 658.129Z"
-              fill="black"
-            />
-            <path
-              d="M0.8125 0V792H791.193V0H0.8125ZM765.773 766.62H26.2225V25.38H765.773V766.62Z"
-              fill="black"
-            />
-            <path
-              d="M12.3712 -1360.27H-273.219V2200.43H12.3712V-1360.27Z"
-              fill="black"
-            />
-            <path
-              d="M1068.04 -1360.27H775.172V2228.28H1068.04V-1360.27Z"
-              fill="black"
-            />
-          </mask>
-        </defs>
-        <rect width="792" height="792" fill="#E3C3DA" />
+                  <path
+                    d="M268.094 181.48V-220.57H455.044V181.67L268.094 181.48Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M457.805 339.69H824.685V613.44L457.825 613.52C457.825 613.52 457.825 613.52 457.815 613.52V770.55H1010.1V-220.24H824.685V182.58L457.805 182.65V339.68V339.69Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M433.78 295.93C333.76 295.93 252.68 377.01 252.68 477.03C252.68 577.05 333.76 658.13 433.78 658.13"
+                    fill="black"
+                  />
+                  <path
+                    d="M432.105 658.129H457.805L457.805 295.949H432.105L432.105 658.129Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M0.8125 0V792H791.193V0H0.8125ZM765.773 766.62H26.2225V25.38H765.773V766.62Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M12.3712 -1360.27H-273.219V2200.43H12.3712V-1360.27Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M1068.04 -1360.27H775.172V2228.28H1068.04V-1360.27Z"
+                    fill="black"
+                  />
+                </mask>
+              </defs>
+              <rect width="792" height="792" fill="#E3C3DA" />
 
-        <image
-          href="../images/freysmiles_insta.gif"
-          width="792"
-          height="792"
-          preserveAspectRatio="xMidYMid slice"
-          mask="url(#mask-inverse-2)"
-        />
-      </svg>
-      </div>
-      <div className="w-[540px]">
-  <svg
-    width="100%"
-    height="100%"
-    viewBox="0 0 792 792"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <defs>
+              <image
+                href="../images/freysmiles_insta.gif"
+                width="792"
+                height="792"
+                preserveAspectRatio="xMidYMid slice"
+                mask="url(#mask-inverse-2)"
+              />
+            </svg>
+          </div>
+          <div className="w-[540px]">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 792 792"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <mask id="shape-mask">
+                  <rect width="100%" height="100%" fill="white" />
+                  <path
+                    d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"
+                    fill="black"
+                  />
+                </mask>
+              </defs>
 
-      <mask id="shape-mask">
-        <rect width="100%" height="100%" fill="white" /> 
-        <path
-          d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"
-          fill="black"
-        />
-      </mask>
-    </defs>
+              <rect width="100%" height="100%" fill="#AA4032" />
 
-
-    <rect width="100%" height="100%" fill="#AA4032" />
-
-    <foreignObject width="100%" height="100%" mask="url(#shape-mask)">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        width="792"
-        height="792"
-        style={{ display: 'block' }}
-      >
-        <source src="../images/retaintracing.mp4" type="video/mp4" />
-      </video>
-    </foreignObject>
-  </svg>
-</div>
-      </div>
+              <foreignObject width="100%" height="100%" mask="url(#shape-mask)">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  width="792"
+                  height="792"
+                  style={{ display: "block" }}
+                >
+                  <source src="../images/retaintracing.mp4" type="video/mp4" />
+                </video>
+              </foreignObject>
+            </svg>
+          </div>
+        </div>
       </div>
       {/* <div className="flex justify-center items-center" style={{ width:'500px', position: 'relative'}}>
 
@@ -654,8 +649,7 @@ LEARN MORE
   />
 </div> */}
 
-
-        {/* <div className="w-2/3 ml-auto">
+      {/* <div className="w-2/3 ml-auto">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-32 min-h-screen">
 
     <div className="rounded-3xl overflow-hidden bg-[#FAFF00] flex flex-col">
@@ -692,10 +686,7 @@ LEARN MORE
   </div>
 </div> */}
 
-
-      
       <section className="bg-[#F1F1F1] sun-section">
-   
         <div className="sun-wrapper">
           <div className="sun-content leading-none">
             <div className="frame-line line-1">Benefits</div>
@@ -751,35 +742,34 @@ const RepeatText = ({ text = "MTS", totalLayers = 7 }) => {
       data-animation="stack-words"
       ref={containerRef}
     >
-{new Array(totalLayers).fill(0).map((_, i) => {
-  const isLast = i === totalLayers - 1;
+      {new Array(totalLayers).fill(0).map((_, i) => {
+        const isLast = i === totalLayers - 1;
 
-  return (
-    <div
-      key={i}
-      className="overflow-hidden stack-word-layer"
-      style={{
-        height: isLast ? "22vw" : `${5 + i * 1.25}vw`,   // Give last layer a big boost
-        marginTop: i === 0 ? 0 : "-.5vw",
-      }}
-    >
-      <div
-        className="stack-word-inner will-change-transform flex justify-center overflow-visible"
-        style={{ height: "100%" }}
-      >
-        <span
-          className="text-[48vw] font-bold text-black leading-none block"
-          style={{
-            transform: `translateY(calc(-60% + ${i * 3}px))`,
-          }}
-        >
-          {text}
-        </span>
-      </div>
-    </div>
-  );
-})}
-
+        return (
+          <div
+            key={i}
+            className="overflow-hidden stack-word-layer"
+            style={{
+              height: isLast ? "20vw" : `${5 + i * 1.25}vw`,
+              marginTop: i === 0 ? 0 : "-.5vw",
+            }}
+          >
+            <div
+              className="stack-word-inner will-change-transform flex justify-center overflow-visible"
+              style={{ height: "100%" }}
+            >
+              <span
+                className="text-[48vw] font-bold text-black leading-none block"
+                style={{
+                  transform: `translateY(calc(-60% + ${i * 3}px))`,
+                }}
+              >
+                {text}
+              </span>
+            </div>
+          </div>
+        );
+      })}
     </section>
   );
 };
@@ -828,31 +818,15 @@ function StackCards() {
     };
   }, []);
 
-  const cardRef = useRef();
-  // const handleMouseEnter = () => {
-  //   gsap.to(cardRef.current, {
-  //     "--br": "100px",
-  //     duration: 0.2,
-  //     ease: "power1.out",
-  //   });
-  // };
-
-  // const handleMouseLeave = () => {
-  //   gsap.to(cardRef.current, {
-  //     "--br": "0px",
-  //     duration: 0.2,
-  //     ease: "power1.inOut",
-  //   });
-  // };
   useEffect(() => {
     let activeCard = null;
     let mouseX = 0;
     let mouseY = 0;
-  
+
     const updateHoverState = () => {
       const blocks = document.querySelectorAll(".card-block");
       let hoveredCard = null;
-  
+
       blocks.forEach((block) => {
         const rect = block.getBoundingClientRect();
         const isHovering =
@@ -860,56 +834,51 @@ function StackCards() {
           mouseX <= rect.right &&
           mouseY >= rect.top &&
           mouseY <= rect.bottom;
-  
+
         if (isHovering) hoveredCard = block;
       });
-  
-      if (hoveredCard !== activeCard) {
 
+      if (hoveredCard !== activeCard) {
         if (activeCard) {
           gsap.to(activeCard, {
             "--br": "0px",
-            duration: 0.2,       
+            duration: 0.2,
             ease: "power2.out",
             overwrite: true,
           });
         }
-      
 
         if (hoveredCard) {
           gsap.to(hoveredCard, {
             "--br": "100px",
-            duration: 0.4,      
+            duration: 0.4,
             ease: "power2.out",
             overwrite: true,
           });
         }
-      
+
         activeCard = hoveredCard;
       }
-      
     };
-  
+
     const handlePointerMove = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
       updateHoverState();
     };
-  
+
     const handleScroll = () => {
       updateHoverState();
     };
-  
+
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("scroll", handleScroll);
-  
+
     return () => {
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  
-  
 
   return (
     <section ref={containerRef}>
@@ -921,34 +890,33 @@ function StackCards() {
           ref={textRef}
           className="mx-auto font-neuehaas45 mb-60 text-[2vw] max-w-[900px] leading-[1.3]"
         >
-          Our doctors aren’t just orthodontists — they’ve gone the extra miles (and
-          years) to become true specialists. Dr. Gregg holds lifetime board
+          Our doctors aren’t just orthodontists — they’ve gone the extra miles
+          (and years) to become true specialists. Dr. Gregg holds lifetime board
           certification, and Dr. Daniel is wrapping his up this year — a level
           fewer than 25% of orthodontists reach. When it comes to Invisalign- we
           don’t just do it — we lead it. As the region’s top Diamond Plus
           providers, we’ve treated thousands of cases and helped shape how clear
           aligners are used today.
         </div>
-          {/*      
+        {/*      
           <div className="mb-10 text-[30px] max-w-[900px] leading-[1.3]">
           TL;DR: You’re in very good,
           very experienced hands.
           </div> */}
-        <div className="font-neuehaas35 min-h-screen text-[20px] leading-[1.1] px-10">
-
+        <div className="font-neuehaas35 min-h-screen text-[16px] leading-[1.1] px-10">
           {/* Block 1 */}
           <div className="border-t border-black w-full">
-          <div
-    className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
-    style={{ "--br": "0px" }}
-  >
-    <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
+            <div
+              className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
+              style={{ "--br": "0px" }}
+            >
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] ">
                 ABO Treatment Standards
               </div>
 
-              <div className="relative z-10 text-center leading-tight max-w-4xl text-black">
+              <div className="relative z-10 leading-tight max-w-4xl text-black">
                 <div>
                   We strive to attain finished results consistent with the
                   American Board of Orthodontics (ABO) qualitative standards.
@@ -958,7 +926,7 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f]">
                 LEARN MORE
               </div>
             </div>
@@ -966,17 +934,17 @@ function StackCards() {
 
           {/* Block 2 */}
           <div className="border-t border-black w-full">
-          <div
-  className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
-  style={{ "--br": "0px" }}
->
-<div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
+            <div
+              className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
+              style={{ "--br": "0px" }}
+            >
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] ">
                 Board Certification Process
               </div>
 
-              <div className="relative z-10 text-center leading-tight max-w-4xl text-black">
+              <div className="relative z-10  leading-tight max-w-4xl text-black">
                 <div>
                   Currently, Dr. Gregg is a certified orthodontist and is
                   preparing cases for recertification. Dr. Daniel is in the
@@ -984,7 +952,7 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] ">
                 LEARN MORE
               </div>
             </div>
@@ -992,17 +960,17 @@ function StackCards() {
 
           {/* Block 3 */}
           <div className="border-t border-black w-full">
-          <div
-  className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
-  style={{ "--br": "0px" }}
->
-<div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
+            <div
+              className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
+              style={{ "--br": "0px" }}
+            >
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] ">
                 Diagnostic Record Accuracy
               </div>
 
-              <div className="relative z-10 text-center leading-tight max-w-4xl text-black">
+              <div className="relative z-10 leading-tight max-w-4xl text-black">
                 <div>
                   To complement our use of cutting-edge diagnostic technology,
                   we uphold the highest standards for our records, ensuring
@@ -1010,7 +978,7 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] ">
                 LEARN MORE
               </div>
             </div>
@@ -1018,17 +986,17 @@ function StackCards() {
 
           {/* Block 4 */}
           <div className="border-t border-black w-full">
-          <div
-  className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
-  style={{ "--br": "0px" }}
->
-<div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
+            <div
+              className="card-block relative flex justify-between items-start py-16 px-20 w-full overflow-hidden bg-black"
+              style={{ "--br": "0px" }}
+            >
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] ">
                 Trusted Expertise
               </div>
 
-              <div className="relative z-10 text-center leading-tight max-w-4xl">
+              <div className="relative z-10 leading-tight max-w-4xl">
                 <div>
                   Our office holds the distinction of being the
                   longest-standing, active board-certified orthodontic office in
@@ -1037,7 +1005,7 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#ff007f] font-sans">
+              <div className="relative z-10 text-sm text-[#ff007f] ">
                 LEARN MORE
               </div>
             </div>
@@ -1303,6 +1271,85 @@ const About = () => {
   );
 };
 
+const ProjectImage = ({
+  imageUrl,
+  elems = 4,
+  index = 0, 
+  stagger = -0.12,
+  initialScale = 1.2,
+  ease = "power2.inOut",
+  duration = 0.8,
+  animate = "scale",
+  origin = "50% 50%",
+  className = "project-img-wrapper",
+}) => {
+  const containerRef = useRef(null);
+  const innerElemsRef = useRef([]);
+  useEffect(() => {
+    const container = containerRef.current;
+    const innerElems = innerElemsRef.current;
+  
+    if (!container || innerElems.length === 0) return;
+  
+    const rotation = (index % 2 === 0) ? 2 : 2; // even index = left, odd index = right
+    gsap.set(container, { rotate: rotation });
+  
+    gsap.set([container, innerElems[0]], { transformOrigin: origin });
+  
+    const hoverTimeline = gsap.timeline({ paused: true });
+  
+    gsap.set(innerElems[0], {
+      [animate]: initialScale,
+    });
+  
+    hoverTimeline.to(
+      innerElems,
+      {
+        [animate]: (i) => +!i,
+        duration,
+        ease,
+        stagger,
+      },
+      0
+    );
+  
+    const handleMouseEnter = () => hoverTimeline.play();
+    const handleMouseLeave = () => hoverTimeline.reverse();
+  
+    container.addEventListener("mouseenter", handleMouseEnter);
+    container.addEventListener("mouseleave", handleMouseLeave);
+  
+    return () => {
+      container.removeEventListener("mouseenter", handleMouseEnter);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [elems, stagger, initialScale, ease, duration, animate, origin]);
+  
+
+  return (
+    <div ref={containerRef} className={className}>
+      {Array.from({ length: elems }).map((_, i) =>
+        i === 0 ? (
+          <div key={i} className="image-element__wrap">
+            <div
+              ref={(el) => (innerElemsRef.current[i] = el)}
+              className="image__element"
+              style={{ backgroundImage: `url(${imageUrl})` }}
+            />
+          </div>
+        ) : (
+          <div
+            key={i}
+            ref={(el) => (innerElemsRef.current[i] = el)}
+            className="image__element"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          />
+        )
+      )}
+    </div>
+  );
+};
+
 function MoreThanSmiles() {
   // useEffect(() => {
   //   let tlMain = gsap
@@ -1501,13 +1548,164 @@ function MoreThanSmiles() {
     };
   }, []);
 
+  const wrapperRef = useRef(null);
+  const itemsRef = useRef([]);
+  const [scrollY, setScrollY] = useState(0);
+
+  
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+  
+    let ctx = gsap.context(() => {
+      const section = wrapperRef.current;
+      const list = section.querySelector(".projects-collection-list");
+  
+      const totalWidth = list.scrollWidth;
+      const viewportWidth = window.innerWidth;
+      const scrollDistance = totalWidth - viewportWidth;
+  
+      gsap.to(list, {
+        x: -scrollDistance,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: `+=${totalWidth}`,
+          scrub: true,
+          pin: true,
+          anticipatePin: 1,
+        },
+      });
+    }, wrapperRef);
+  
+    return () => ctx.revert();
+  }, []);
+
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    const numLines = 120;
+    const lineSpacing = width / numLines;
+    const lines = Array.from({ length: numLines }, (_, i) => ({
+      x: i * lineSpacing,
+      baseY: height / 2,
+    }));
+
+    let mouse = { x: width / 2, y: height / 2 };
+
+    const handleMouseMove = (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 4;
+
+      lines.forEach((line) => {
+        const dx = line.x - mouse.x;
+        const dist = Math.abs(dx);
+        const maxDist = 150;
+        const maxOffset = 100;
+        const offset = dist < maxDist ? (1 - dist / maxDist) * maxOffset : 0;
+
+        ctx.beginPath();
+        ctx.moveTo(line.x, line.baseY - offset);
+        ctx.lineTo(line.x, height);
+        ctx.stroke();
+      });
+
+      // Red ball
+      ctx.beginPath();
+      ctx.arc(mouse.x, mouse.y, 12, 0, Math.PI * 2);
+      ctx.fillStyle = "red";
+      ctx.fill();
+
+      requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("resize", () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    });
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
   return (
     <>
-         <section className="px-8 py-20 min-h-screen ">
+      <canvas
+      ref={canvasRef}
+      style={{ display: "block", background: "black", width: "100vw", height: "100vh" }}
+    />
+<div className="horizontal-section" ref={wrapperRef}>
+  <div className="page-wrapper">
+    <div className="projects-collection-list">
+      {images.map((img, i) => (
+        <div key={i} className="project-item">
+          <a href="#" className="project-tile w-inline-block">
+            <ProjectImage imageUrl={img}  index={i}/>
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+
+
+      <section className="px-20 py-20 bg-[#FEF9F8] text-black flex flex-col justify-between">
+        <div className="flex justify-between ">
+          <div className="w-[40%] text-left text-neutral-500 leading-snug ">
+            <p className="font-neuehaas45 text-[17px]">
+              Frey Smiles is committed to making world-class orthodontic care
+              accessible to all. In 2011, we launched a non-profit initiative
+              called More Than Smiles, dedicated to providing treatment for
+              individuals who may not have the means to access it. The program
+              also focuses on educating the community about dental and
+              orthodontic health.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-end text-[14px]">
+
+
+          {/* 
+        <div className="space-y-2">
+          <p className="font-medium">Services</p>
+          <section className="morethansmiles">
+        <div ref={imagesContainerRef} className="imagestack">
+          {images.map((url, index) => (
+            <img key={index} src={url} className="gallery-img" alt="gallery" />
+          ))}
+        </div>
+      </section>
+        </div> */}
+        </div>
+      </section>
+      <section className="px-8 py-20 min-h-screen ">
         <div className="ml-20">
           <div className="flex flex-col items-start gap-6">
             <h2 className="text-[1vw] leading-tight font-light">
-              <span className="text-[#ff007f] font-neuehaas45">OUR NON-PROFIT</span>{" "}
+              <span className="text-[#ff007f] font-neuehaas45">
+                OUR NON-PROFIT
+              </span>{" "}
               <span className="ml-6 text-[2.5vw] font-neuehaas45 text-black">
                 If you know someone who could benefit from this{" "}
                 <span className="font-saolitalic">gift,</span> please visit our
@@ -1547,47 +1745,8 @@ function MoreThanSmiles() {
           </div>
         </div>
       </section>
-      <section className="px-20 py-20 bg-[#FEF9F8] text-black flex flex-col justify-between">
-      <div className="flex justify-between ">
-        <div className="w-[40%] text-left text-neutral-500 leading-snug ">
-          <p className="font-neuehaas35 text-[20px]">
-            Frey Smiles is committed to making world-class orthodontic care
-            accessible to all. In 2011, we launched a non-profit initiative
-            called More Than Smiles, dedicated to providing treatment for
-            individuals who may not have the means to access it. The program
-            also focuses on educating the community about dental and orthodontic
-            health.
-          </p>
-        </div>
-      </div>
- 
-      <div className="flex justify-between items-end text-[14px]">
-        <div className="flex gap-4 overflow-x-auto py-4">
-          {images.map((src, index) => (
-            <img
-              key={index}
-              src={src}
-              alt={`More Than Smiles ${index + 1}`}
-              className="w-[200px] h-auto object-cover rounded"
-            />
-          ))}
-        </div>
-
-        {/* 
-        <div className="space-y-2">
-          <p className="font-medium">Services</p>
-          <section className="morethansmiles">
-        <div ref={imagesContainerRef} className="imagestack">
-          {images.map((url, index) => (
-            <img key={index} src={url} className="gallery-img" alt="gallery" />
-          ))}
-        </div>
-      </section>
-        </div> */}
-      </div>
-    </section>
     </>
-   
+
     // <section className="w-full min-h-screen ">
     //   <div className="section-height">
     //     <div className="sticky-element">

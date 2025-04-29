@@ -7,7 +7,7 @@ export const OPTS = {
     pressure: 0.8,
     intensity: 10,
     distortion: 0.4,
-    rainbow:   1,     
+    rainbow:   false,     
     fluidColor: '#C0C0C0',
     // backgroundColor: '#FFFFFF',
     densityDissipation: 0.92,

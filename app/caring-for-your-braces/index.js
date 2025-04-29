@@ -48,9 +48,8 @@ const CaringForYourBraces = () => {
         transformOrigin: "100% 100%",
       });
       gsap.set(".greenSectionImage", {
+        x:"80vw",
         scale: 0.45,
-        xPercent: -15,  
-        transformOrigin: "100% 100%",
       });
       gsap.set(".whiteSectionImage", {
         scale: 0.15,
@@ -72,19 +71,19 @@ const CaringForYourBraces = () => {
         scale: 1,
         transformOrigin: "50% 50%",
       });
-      gsap.set(" .greenImageInnerContainer", {
-        scale: 1.55,
-        transformOrigin: "50% 50%",
-      });
-      gsap.set(".whiteSectionImage  .imageInnerContainer", {
+      // gsap.set(" .greenImageInnerContainer", {
+      //   // scale: 1.55,
+      //   // transformOrigin: "50% 50%",
+      // });
+      gsap.set(".whiteImageInnerContainer", {
         scale: 1.85,
         transformOrigin: "50% 50%",
       });
-      gsap.set(".orangeSectionImage .imageInnerContainer", {
+      gsap.set(".orangeImageInnerContainer", {
         scale: 2,
         transformOrigin: "50% 50%",
       });
-      gsap.set(".redSectionImage    .imageInnerContainer", {
+      gsap.set(".redImageInnerContainer", {
         scale: 2,
         transformOrigin: "50% 50%",
       });
@@ -145,11 +144,13 @@ const CaringForYourBraces = () => {
         ".greenSectionImage",
         {
           scale: 0.8,
-          xPercent: -150,
-          ease: "power2.out",
+          x: "0vw",
+          // xPercent: 0,
+          // right: "-50%",
+          ease: "none",
           duration: 1,
         },
-        0
+        .5
       );
       tl.to(
         ".whiteSectionImage",
@@ -191,26 +192,17 @@ const CaringForYourBraces = () => {
         },
         0
       );
+      // tl.to(
+      //   ".greenimageInnerContainer",
+      //   {
+      //     scale: 1.2,
+      //     ease: "power2.out",
+      //     duration: 1,
+      //   },
+      //   0
+      // );
       tl.to(
-        ".greenimageInnerContainer",
-        {
-          scale: 1.2,
-          ease: "power2.out",
-          duration: 1,
-        },
-        0
-      );
-      tl.to(
-        ".whiteSectionImage .imageInnerContainer",
-        {
-          scale: 1.2,
-          ease: "power2.out",
-          duration: 1,
-        },
-        1
-      );
-      tl.to(
-        ".orangeSectionImage .imageInnerContainer",
+        ".whiteImageInnerContainer",
         {
           scale: 1.2,
           ease: "power2.out",
@@ -219,7 +211,16 @@ const CaringForYourBraces = () => {
         1
       );
       tl.to(
-        ".redSectionImage .imageInnerContainer",
+        ".orangeImageInnerContainer",
+        {
+          scale: 1.2,
+          ease: "power2.out",
+          duration: 1,
+        },
+        1
+      );
+      tl.to(
+        ".redImageInnerContainer",
         {
           scale: 1.2,
           ease: "power2.out",
@@ -339,11 +340,11 @@ const CaringForYourBraces = () => {
                   <div className="purpleSectionImage">
                     <div
               className="purpleImageInnerContainer"
-              style={{
-                marginTop: "18.25rem",
-              }}
+              // style={{
+              //   marginTop: "18.25rem",
+              // }}
                     >
-                      <img
+                      {/* <img
                         src="../images/stayontrack.png"
                         alt="portal"
                         style={{
@@ -351,7 +352,7 @@ const CaringForYourBraces = () => {
                           height: "auto",
                           objectFit: "contain",
                         }}
-                      />
+                      /> */}
 
                       <div
                         style={{
@@ -424,11 +425,11 @@ const CaringForYourBraces = () => {
                 <div className="greenSectionImage">
                   <div
                     className="greenImageInnerContainer"
-                    style={{
-                      marginTop: "18.25rem",
-                    }}
+                    // style={{
+                    //   marginTop: "18.25rem",
+                    // }}
                   >
-                    <img
+                    {/* <img
                       src="../images/handholdingtoothbrush.jpg"
                       alt="brushing"
                       style={{
@@ -436,7 +437,7 @@ const CaringForYourBraces = () => {
                         height: "auto",
                         objectFit: "contain",
                       }}
-                    />
+                    /> */}
                   </div>
                 </div>
               </div>
@@ -488,7 +489,7 @@ const CaringForYourBraces = () => {
                 </div>
                 <div className="whiteSectionImage">
                 <div
-              className="imageInnerContainer"
+              className="whiteImageInnerContainer"
               style={{
                 marginTop: "18.25rem",
               }}
@@ -551,7 +552,7 @@ const CaringForYourBraces = () => {
                 </div>
                 <div className="orangeSectionImage">
                    <div
-              className="imageInnerContainer"
+              className="orangeImageInnerContainer"
               style={{
                 marginTop: "18.25rem",
               }}
@@ -615,7 +616,7 @@ const CaringForYourBraces = () => {
                 </div>
                 <div className="redSectionImage">
                 <div
-              className="imageInnerContainer"
+              className="redImageInnerContainer"
               style={{
                 marginTop: "18.25rem",
               }}
