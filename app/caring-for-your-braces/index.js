@@ -16,19 +16,25 @@ const CaringForYourBraces = () => {
       const numSections = document.querySelectorAll(".allsections").length;
       const totalScrollDistance = (numSections - 1) * containerWidth;
 
-      const greenOffset = -containerWidth * 0.64;
+      const yellowOffset = -containerWidth * 0.64;
       const whiteOffset = -containerWidth * 1.44;
       const orangeOffset = -containerWidth * 2.24;
       const redOffset = -containerWidth * 3.04;
       const blackOffset = -containerWidth * 3.84;
+      const imageWidth = containerWidth * 0.33333;
+      const yellowImageOffset =
+        yellowOffset + containerWidth * 0.77777 - imageWidth - containerWidth * 0.00;
+      
+      
 
+      
       if (tl) {
         tl.kill();
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       }
 
       // Set initial text content X offsets
-      gsap.set(".greenContentText", { x: greenOffset });
+      gsap.set(".yellowContentText", { x: yellowOffset });
       gsap.set(".whiteContentText", { x: whiteOffset });
       gsap.set(".orangeContentText", { x: orangeOffset });
       gsap.set(".redContentText", { x: redOffset });
@@ -36,57 +42,24 @@ const CaringForYourBraces = () => {
 
       // Set initial translateX for sections
       gsap.set(".purpleSection", { x: "0vw" });
-      gsap.set(".greenSection", { x: "80vw" });
+      gsap.set(".yellowSection", { x: "80vw" });
       gsap.set(".whiteSection", { x: "95vw" });
       gsap.set(".orangeSection", { x: "100vw" });
       gsap.set(".redSection", { x: "100vw" });
       gsap.set(".blackSection", { x: "100vw" });
-
-      gsap.set(".purpleSectionImage", {
-        xPercent: -60,   
-
-        transformOrigin: "100% 100%",
+      gsap.set(".yellowImageWrapper", {
+        width: "15vw"
       });
-      gsap.set(".greenSectionImage", {
-        x:"80vw",
-        scale: 0.45,
+      gsap.set(".whiteImageWrapper", {
+        width: "15vw"
       });
-      gsap.set(".whiteSectionImage", {
-        scale: 0.15,
-        xPercent: 0,
-        transformOrigin: "100% 100%",
+      gsap.set(".orangeImageWrapper", {
+        width: "15vw"
       });
-      gsap.set(".orangeSectionImage", {
-        scale: 0,
-        xPercent: 0,
-        transformOrigin: "100% 100%",
-      });
-      gsap.set(".redSectionImage", {
-        scale: 0,
-        xPercent: 0,
-        transformOrigin: "100% 100%",
+      gsap.set(".redImageWrapper", {
+        width: "15vw"
       });
 
-      gsap.set(".purpleImageInnerContainer", {
-        scale: 1,
-        transformOrigin: "50% 50%",
-      });
-      // gsap.set(" .greenImageInnerContainer", {
-      //   // scale: 1.55,
-      //   // transformOrigin: "50% 50%",
-      // });
-      gsap.set(".whiteImageInnerContainer", {
-        scale: 1.85,
-        transformOrigin: "50% 50%",
-      });
-      gsap.set(".orangeImageInnerContainer", {
-        scale: 2,
-        transformOrigin: "50% 50%",
-      });
-      gsap.set(".redImageInnerContainer", {
-        scale: 2,
-        transformOrigin: "50% 50%",
-      });
 
       tl = gsap.timeline({
         scrollTrigger: {
@@ -99,7 +72,7 @@ const CaringForYourBraces = () => {
       });
 
       // Slide each section using translateX
-      tl.to(".greenSection", { x: "0vw", duration: 1, ease: "none" }, 0);
+      tl.to(".yellowSection", { x: "0vw", duration: 1, ease: "none" }, 0);
       tl.to(".whiteSection", { x: "80vw", duration: 1, ease: "none" }, 0);
       tl.to(".orangeSection", { x: "95vw", duration: 1, ease: "none" }, 0);
       tl.to(".redSection", { x: "100vw", duration: 1, ease: "none" }, 0);
@@ -120,7 +93,7 @@ const CaringForYourBraces = () => {
       tl.to(".blackSection", { x: "0vw", duration: 1, ease: "none" }, 4);
 
       // Reveal content text
-      tl.to(".greenContentText", { x: "0%", duration: 0.8, ease: "none" }, 0.2);
+      tl.to(".yellowContentText", { x: "0%", duration: 0.8, ease: "none" }, 0.2);
       tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 0.2);
       tl.to(
         ".orangeContentText",
@@ -129,105 +102,37 @@ const CaringForYourBraces = () => {
       );
       tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 0.2);
       tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 0.2);
+      tl.to(".yellowImageWrapper", {
+        width: "33.333vw",
+        duration: 2,
+        ease: "none"
+      }, 1); 
+      tl.to(".whiteImageWrapper", {
+        width: "33.333vw",
+        duration: 1,
+        ease: "none"
+      },0)
 
-      tl.to(
-        ".purpleSectionImage",
-        {
-          scale: 0.8,
-          xPercent: -150,  
-          ease: "power2.out",
-          duration: 4,
-        },
-        0
-      );
-      tl.to(
-        ".greenSectionImage",
-        {
-          scale: 0.8,
-          x: "0vw",
-          // xPercent: 0,
-          // right: "-50%",
-          ease: "none",
-          duration: 1,
-        },
-        .5
-      );
-      tl.to(
-        ".whiteSectionImage",
-        {
-          scale: 0.8,
-          xPercent: -150,
-          ease: "power2.out",
-          duration: 1,
-        },
-        1.5
-      );
-      tl.to(
-        ".orangeSectionImage",
-        {
-          scale: 0.8,
-          xPercent: -150,
-          ease: "power2.out",
-          duration: 1,
-        },
-        1.5
-      );
-      tl.to(
-        ".redSectionImage",
-        {
-          scale: 0.8,
-          xPercent: -150,
-          ease: "power2.out",
-          duration: 1,
-        },
-        1
-      );
+      tl.to(".orangeImageWrapper", {
+  width: "33.333vw",
+  duration: 2,
+  ease: "none"
+}, 2.2);
+tl.to(".redImageWrapper", {
+  width: "33.333vw",
+  duration: 2,
+  ease: "none"
+}, 2.2);
 
-      tl.to(
-        ".purpleImageInnerContainer",
-        {
-          scale: 1.2,
-          ease: "power2.out",
-          duration: 2,
-        },
-        0
-      );
       // tl.to(
-      //   ".greenimageInnerContainer",
+      //   ".purpleImageInnerContainer",
       //   {
       //     scale: 1.2,
-      //     ease: "power2.out",
-      //     duration: 1,
+      //     ease: "none",
+      //     duration: 2,
       //   },
       //   0
       // );
-      tl.to(
-        ".whiteImageInnerContainer",
-        {
-          scale: 1.2,
-          ease: "power2.out",
-          duration: 1,
-        },
-        1
-      );
-      tl.to(
-        ".orangeImageInnerContainer",
-        {
-          scale: 1.2,
-          ease: "power2.out",
-          duration: 1,
-        },
-        1
-      );
-      tl.to(
-        ".redImageInnerContainer",
-        {
-          scale: 1.2,
-          ease: "power2.out",
-          duration: 1,
-        },
-        1
-      );
 
       setTimeout(() => {
         ScrollTrigger.refresh();
@@ -310,7 +215,7 @@ const CaringForYourBraces = () => {
                     display: "flex",
                     alignItems: "flex-start",
                     justifyContent: "flex-start",
-                    paddingLeft: "12rem",
+                    paddingLeft: "10rem",
                     paddingTop: "0vh",
                   }}
                 >
@@ -337,7 +242,7 @@ const CaringForYourBraces = () => {
                       handle the rest.
                     </p>
                   </div>
-                  <div className="purpleSectionImage">
+                  <div className="purpleImageWrapper">
                     <div
               className="purpleImageInnerContainer"
               // style={{
@@ -383,7 +288,7 @@ const CaringForYourBraces = () => {
                 top: "0",
                 width: "100%",
               }}
-              className="greenSection allsections"
+              className="yellowSection allsections"
             >
               <div
                 style={{
@@ -391,12 +296,12 @@ const CaringForYourBraces = () => {
                   overflow: "hidden",
                   alignItems: "flex-start",
                   justifyContent: "flex-start",
-                  paddingLeft: "12rem",
+                  paddingLeft: "10rem",
                   paddingTop: "0vh",
                 }}
               >
                 <div
-                  className="greenContentText"
+                  className="yellowContentText"
                   style={{
                     marginTop: "18.25rem",
                     overflow: "hidden",
@@ -422,12 +327,10 @@ const CaringForYourBraces = () => {
                   </p>
                   <div className="flex items-center space-x-2"></div>
                 </div>
-                <div className="greenSectionImage">
+                <div className="yellowImageWrapper">
                   <div
-                    className="greenImageInnerContainer"
-                    // style={{
-                    //   marginTop: "18.25rem",
-                    // }}
+                    className="yellowImageInnerContainer"
+                  
                   >
                     {/* <img
                       src="../images/handholdingtoothbrush.jpg"
@@ -459,7 +362,7 @@ const CaringForYourBraces = () => {
                   overflow: "hidden",
                   alignItems: "flex-start",
                   justifyContent: "flex-start",
-                  paddingLeft: "16rem",
+                  paddingLeft: "10rem",
                   paddingTop: "0vh",
                 }}
               >
@@ -487,22 +390,12 @@ const CaringForYourBraces = () => {
                     and irritation. Hang in there—it gets easier!
                   </div>
                 </div>
-                <div className="whiteSectionImage">
+                <div className="whiteImageWrapper">
                 <div
               className="whiteImageInnerContainer"
-              style={{
-                marginTop: "18.25rem",
-              }}
+
                     >
-                    <img
-                      src="../images/dentalwax3.png"
-                      alt="portal"
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "contain",
-                      }}
-                    />
+   
                   </div>
                 </div>
               </div>
@@ -522,7 +415,7 @@ const CaringForYourBraces = () => {
                   display: "flex",
                   alignItems: "flex-start",
                   justifyContent: "flex-start",
-                  paddingLeft: "16rem",
+                  paddingLeft: "10rem",
                   paddingTop: "0vh",
                 }}
               >
@@ -550,14 +443,14 @@ const CaringForYourBraces = () => {
                     and corn on the cob may require careful navigation.
                   </div>
                 </div>
-                <div className="orangeSectionImage">
+                <div className="orangeImageWrapper">
                    <div
               className="orangeImageInnerContainer"
-              style={{
-                marginTop: "18.25rem",
-              }}
+              // style={{
+              //   marginTop: "18.25rem",
+              // }}
                     >
-                  <img
+                  {/* <img
                     src="../images/soda3.png"
                     alt="portal"
                     style={{
@@ -565,7 +458,7 @@ const CaringForYourBraces = () => {
                       height: "auto",
                       objectFit: "contain",
                     }}
-                  />
+                  /> */}
                 </div>
 </div>
               </div>
@@ -585,7 +478,7 @@ const CaringForYourBraces = () => {
                   display: "flex",
                   alignItems: "flex-start",
                   justifyContent: "flex-start",
-                  paddingLeft: "16rem",
+                  paddingLeft: "10rem",
                   paddingTop: "0vh",
                 }}
               >
@@ -614,22 +507,12 @@ const CaringForYourBraces = () => {
                     configuration.
                   </div>
                 </div>
-                <div className="redSectionImage">
+                <div className="redImageWrapper">
                 <div
               className="redImageInnerContainer"
-              style={{
-                marginTop: "18.25rem",
-              }}
+         
                     >
-                  <img
-                    src="../images/rubberbands2.png"
-                    alt="portal"
-                    style={{
-                      maxHeight: "100%",
-                      width: "auto",
-                      objectFit: "contain",
-                    }}
-                  />
+               
                 </div>
 </div>
               </div>
@@ -649,7 +532,7 @@ const CaringForYourBraces = () => {
                   display: "flex",
                   alignItems: "flex-start",
                   justifyContent: "flex-start",
-                  paddingLeft: "16rem",
+                  paddingLeft: "10rem",
                   paddingTop: "0vh",
                 }}
               >
@@ -686,10 +569,11 @@ const CaringForYourBraces = () => {
                 </div>
                 <div className="blackSectionImage">
                 <div
-              className="imageInnerContainer"
-              style={{
-                marginTop: "18.25rem",
-              }}>
+              // className="imageInnerContainer"
+              // style={{
+              //   marginTop: "18.25rem",
+              // }}
+              >
                   <video
                     src="https://video.wixstatic.com/video/11062b_163d7539f7824eb895994a6460f0995b/720p/mp4/file.mp4"
                     className="object-cover w-full h-full"

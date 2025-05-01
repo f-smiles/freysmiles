@@ -165,7 +165,7 @@ useEffect(() => {
   {/* styles.el */}
   <motion.div
     ref={wrapperRef}
-    className="bg-[#F1F1F1]/20 shadow-white/10 rounded-2xl px-6 py-3 flex items-center gap-4 relative"
+    className="bg-[#DDDBD3] text-black rounded-[6px] px-6 py-4 flex items-center gap-4 relative"
   >
     {/* styles.label */}
     {links.slice(0, 4).map((link, i) => (
@@ -265,52 +265,41 @@ useEffect(() => {
           >
             {" "}
             {/* styles.el */}
-            <motion.div className=" flex items-center gap-4">
-              {" "}
-              {/* styles.label */}
-              {links.slice(4, 7).map((link, i) => (
-                <motion.p
-                  key={`${i} + ${link}`}
-                  className=" font-helvetica-now-display tracking-wider text-[13px] hover:cursor-pointer"
-                  onClick={() => {
-                    setSelectedLink(link.title);
-                    setIsActive(!isActive);
-                  }}
-                  variants={opacity}
-                  animate={!isActive ? "open" : "closed"}
-                >
-                  {link.title}
-                </motion.p>
-              ))}
-              <Link href="/book-now">
-                <p className="bg-[#F2F2F2]/90 backdrop-blur-lg shadow-lg shadow-white/10 text-[#595959] rounded-2xl px-6 py-3 font-helvetica-neue-light tracking-wider text-[11px] tracking-wider">
-                  Book Now
-                </p>
-              </Link>
-              <Link href="/shop/products">
-                <motion.div
-                  className="bg-[#C2C1C7]/50 backdrop-blur-lg shadow-lg shadow-white/10  rounded-full px-6 flex items-center cursor-pointer transition-all h-12"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span className="text-white font-helvetica-neue-light tracking-wider text-[11px]">
-                    Shop
-                  </span>
-                  <div className="ml-2 flex items-center justify-center h-full">
-                    <motion.div
-                      className="py-2 px-4 flex justify-center items-center rounded-full"
-                      style={{
-                        background: "linear-gradient(to right, #fff, #f0d7ff)",
-                      }}
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      <span className="text-[#C8C8C8] text-lg">&rarr;</span>
-                    </motion.div>
-                  </div>
-                </motion.div>
-              </Link>
-              {cart.length > 0 && <CartComponent isScrolled={isScrolled} />}
-            </motion.div>
+            <motion.div className="flex items-center ">
+
+  <Link href="/book-now">
+    <motion.div
+      className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 text-[white] rounded-full px-6 py-5 font-helvetica-neue-light tracking-wider text-[11px]"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      Book
+    </motion.div>
+  </Link>
+
+
+  <motion.div
+    className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center text-[11px] font-helvetica-neue-light"
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    In
+  </motion.div>
+
+
+  <Link href="/shop/products">
+    <motion.div
+      className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 rounded-full w-10 h-16 flex items-center justify-center cursor-pointer transition-all"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <span className="rotate-90 text-white font-helvetica-neue-light text-[11px]">
+        Shop
+      </span>
+    </motion.div>
+  </Link>
+</motion.div>
+
           </motion.div>
         </motion.div>
         <motion.div

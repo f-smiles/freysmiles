@@ -629,7 +629,7 @@ export default function OurTeam() {
   
   return (
     <div className="">
-      
+{/*       
       <div
         className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
           isRevealing ? "translate-y-0" : "-translate-y-full"
@@ -648,7 +648,7 @@ export default function OurTeam() {
             <span style={{ lineHeight: "1.2" }}>Meet Our Team</span>
           </h2>
         </div>
-      </div>
+      </div> */}
 
       <div className="bg-black relative overflow-x-clip">
 
@@ -903,8 +903,8 @@ export default function OurTeam() {
     {/* Col 1 */}
     <div className="overflow-hidden">
       <div ref={col1Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black border-l h-[33.33vh]"></div>
-        <div className="border-l bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+        <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black border-l h-[33.33vh] "></div>
+        <div className="border-l bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh] hover:bg-[#DFDAFF]">
           <p className="font-neueroman text-[13px] leading-[1.1]">
             Fun fact — our team is made up of former FreySmiles patients, something we think is important, 
             because we have all experienced treatment and can help guide you through it.
@@ -919,7 +919,7 @@ export default function OurTeam() {
     {/* Col 2 */}
     <div className="overflow-hidden">
       <div ref={col2Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+        <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh] hover:bg-[#FEEAC7] ">
           <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
             <p className="font-neueroman text-[13px] leading-[1.1]">
               Our members have received the designation of Specialized Orthodontic Assistant. 
@@ -929,7 +929,7 @@ export default function OurTeam() {
           </a>
         </div>
         <div className="bg-[#f3f2ee] rounded-[24px] p-8 border-r border-b border-black h-[33.33vh]"></div>
-        <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black h-[33.33vh]">
+        <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#f3f2ee] rounded-[20px] p-8 border-b border-r border-black h-[33.33vh] hover:bg-[#FFE5FB]">
           <p className="leading-[1.1] font-neueroman text-[13px]">
             This office is on 🔥! The orthodontists as well as every single staff member.
           </p>
@@ -940,16 +940,16 @@ export default function OurTeam() {
     {/* Col 3 */}
     <div className="overflow-hidden">
       <div ref={col3Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+        <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh] hover:bg-[#DCF5EF]">
           <p className="font-neueroman text-[13px]">Trained in CPR and first aid</p>
         </div>
-        <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center bg-[#f3f2ee] rounded-[20px] p-8 border-r border-b border-black h-[33.33vh]">
+        <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center bg-[#f3f2ee] rounded-[20px] p-8 border-r border-b border-black h-[33.33vh] hover:bg-[#FFDEDA]">
           <p className="leading-[1.1] font-neueroman text-[13px]">
             Had a wonderful experience at FreySmiles. Everyone is extremely professional, 
             polite, timely. Would highly recommend! — TK
           </p>
         </a>
-        <div className="bg-[#f3f2ee] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+        <div className="bg-[#f3f2ee] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh] hover:bg-[#D5E3FA]">
           <p className="leading-[1.1] font-neueroman text-[13px]">
             We've invested in in-office trainings with leading clinical consultants 
             that have helped us develop systems and protocols streamlining our processes.

@@ -1,10 +1,14 @@
-
 "use client";
 import { Canvas, useFrame, extend } from "@react-three/fiber";
-import { Sphere, OrbitControls, Environment, shaderMaterial } from "@react-three/drei";
-import { Fluid } from '/utils/FluidCursorTemp.js';
-import {Media} from '/utils/Media.js'
-import { EffectComposer } from '@react-three/postprocessing';
+import {
+  Sphere,
+  OrbitControls,
+  Environment,
+  shaderMaterial,
+} from "@react-three/drei";
+import { Fluid } from "/utils/FluidCursorTemp.js";
+import { Media } from "/utils/Media.js";
+import { EffectComposer } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import * as THREE from "three";
 import {
@@ -32,7 +36,7 @@ const StepsSection = () => {
   //       scrub: true,
   //     },
   //   });
-  
+
   //   // Morph icon-1 to icon-2
   //   iconPaths[0].paths.forEach((_, i) => {
   //     timeline.to(
@@ -42,10 +46,10 @@ const StepsSection = () => {
   //         duration: 2,
   //         ease: "power1.inOut",
   //       },
-  //       "start" 
+  //       "start"
   //     );
   //   });
-  
+
   //   // Morph icon-2 to icon-3
   //   iconPaths[1].paths.forEach((_, i) => {
   //     timeline.to(
@@ -58,7 +62,7 @@ const StepsSection = () => {
   //       "start+=2"
   //     );
   //   });
-  
+
   //   // Morph icon-3 to icon-4
   //   iconPaths[2].paths.forEach((_, i) => {
   //     timeline.to(
@@ -68,10 +72,10 @@ const StepsSection = () => {
   //         duration: 2,
   //         ease: "power1.inOut",
   //       },
-  //       "start+=4" 
+  //       "start+=4"
   //     );
   //   });
-  
+
   //   // Morph icon-4 to icon-5
   //   iconPaths[3].paths.forEach((_, i) => {
   //     timeline.to(
@@ -81,10 +85,10 @@ const StepsSection = () => {
   //         duration: 2,
   //         ease: "power1.inOut",
   //       },
-  //       "start+=6" 
+  //       "start+=6"
   //     );
   //   });
-  
+
   //   // Morph icon-5 back to icon-1 (optional for looping)
   //   iconPaths[4].paths.forEach((_, i) => {
   //     timeline.to(
@@ -94,7 +98,7 @@ const StepsSection = () => {
   //         duration: 2,
   //         ease: "power1.inOut",
   //       },
-  //       "start+=8" 
+  //       "start+=8"
   //     );
   //   });
   // }, []);
@@ -105,7 +109,7 @@ const StepsSection = () => {
       ref={containerRef}
       className="relative flex w-full bg-[#D9CDE5] px-20 py-36 min-h-[200vh]"
     >
-  <div className="w-3/5 flex overflow-y-auto"> 
+      <div className="w-3/5 flex overflow-y-auto">
         <div className="w-1/2 flex flex-col relative">
           <div className="relative h-full flex flex-col justify-between">
             {steps.map((step, index) => (
@@ -136,10 +140,9 @@ const StepsSection = () => {
       </div>
 
       <div className="w-2/5 sticky top-0 h-screen flex flex-col justify-center items-center relative">
-      <div className="flex flex-col items-center space-y-10">
-      <div className="flex flex-col items-center space-y-6">
-
-{/* 
+        <div className="flex flex-col items-center space-y-10">
+          <div className="flex flex-col items-center space-y-6">
+            {/* 
           <div className="flex justify-center">
    <div ref={container1Ref} >
     <svg viewBox="0 0 180 180" className="w-32 h-32">
@@ -204,7 +207,6 @@ const StepsSection = () => {
       ))}
     </svg>
   </div> */}
-
           </div>
         </div>
       </div>
@@ -212,191 +214,404 @@ const StepsSection = () => {
   );
 };
 
-
-
-
-
-
-
 const FinancingTreatment = () => {
+  // const canvasRef = useRef();
 
-    const canvasRef = useRef();
+  // useEffect(() => {
+  //   const camera = new THREE.PerspectiveCamera(
+  //     45,
+  //     window.innerWidth / window.innerHeight,
+  //     1,
+  //     100
+  //   );
+  //   camera.position.set(0, -0.5, 25);
+  //   const scene = new THREE.Scene();
+  //   const renderer = new THREE.WebGLRenderer({ alpha: true });
+  //   renderer.setClearColor(0x000000, 0);
+
+  //   renderer.setSize(window.innerWidth, window.innerHeight);
+  //   canvasRef.current.appendChild(renderer.domElement);
+
+  //   const vertexShader = `
+  //       varying vec2 vUv;
+  //       void main() {
+  //         vUv = uv;
+  //         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  //       }
+  //     `;
+
+  //   const fragmentShader = `
+  //       precision highp float;
+  //       varying vec2 vUv;
+  //       uniform vec3 u_c1;
+  //       uniform vec3 u_c2;
+  //       uniform float u_time;
+  //       void main() {
+  //         vec3 pX = vec3(vUv.x);
+  //         vec3 pY = vec3(vUv.y);
+  //         vec3 c1 = u_c1;
+  //         vec3 c2 = u_c2;
+  //         vec3 c3 = vec3(0.0, 1.0, 1.0); // aqua
+  //         vec3 cmix1 = mix(c1, c2, pX + pY/2. + cos(u_time));
+  //         vec3 cmix2 = mix(c2, c3, (pY - sin(u_time))*0.5);
+  //         vec3 color = mix(cmix1, cmix2, pX * cos(u_time+2.));
+  //         gl_FragColor = vec4(color, 1.0);
+  //       }
+  //     `;
+
+  //   const uniforms = {
+  //     u_c1: { type: "v3", value: new THREE.Vector3(0.9, 0.8, 0.3) },
+  //     u_c2: { type: "v3", value: new THREE.Vector3(1.0, 0.54, 0.4) },
+  //     u_time: { type: "f", value: 0 },
+  //   };
+  //   const shaderMaterial = new THREE.ShaderMaterial({
+  //     uniforms,
+  //     vertexShader,
+  //     fragmentShader,
+  //   });
+
+  //   // const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
+  //   // const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
+  //   // scene.add(gum);
+
+  //   // const bgGeometry = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
+  //   // const bgMesh = new THREE.Mesh(bgGeometry, shaderMaterial);
+  //   // scene.add(bgMesh);
+
+  //   const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
+  //   const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
+  //   scene.add(gum);
+  //   const clock = new THREE.Clock();
+  //   const animate = () => {
+  //     uniforms.u_time.value = clock.getElapsedTime();
+  //     renderer.render(scene, camera);
+  //     requestAnimationFrame(animate);
+  //   };
+  //   animate();
+
+  //   const handleResize = () => {
+  //     camera.aspect = window.innerWidth / window.innerHeight;
+  //     camera.updateProjectionMatrix();
+  //     renderer.setSize(window.innerWidth, window.innerHeight);
+  //   };
+  //   window.addEventListener("resize", handleResize);
+
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //     const canvasElement = renderer.domElement;
+  //     if (canvasRef.current?.contains(canvasElement)) {
+  //       canvasRef.current.removeChild(canvasElement);
+  //     }
+  //   };
+  // }, []);
+
+  // const containerRef = useRef(null);
+  // const pathRef = useRef(null);
+  // const dottedEllipsesRef = useRef([]);
+  // const [ellipseFinalY, setEllipseFinalY] = useState(null);
+  // const [isEllipseDrawn, setIsEllipseDrawn] = useState(false);
+  // const [isOrbScaledDown, setIsOrbScaledDown] = useState(false);
+
+  // useEffect(() => {
+  //   if (containerRef.current) {
+  //     gsap.fromTo(
+  //       containerRef.current,
+  //       { opacity: 0 },
+  //       { opacity: 1, duration: 2.5, ease: "power2.out" }
+  //     );
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (!pathRef.current || !isOrbScaledDown) return;
+
+  //   const path = pathRef.current;
+  //   const pathLength = path.getTotalLength();
+
+  //   gsap.set(path, {
+  //     strokeDasharray: pathLength,
+  //     strokeDashoffset: pathLength,
+  //   });
+
+  //   gsap.to(path, {
+  //     strokeDashoffset: 0,
+  //     duration: 2,
+  //     ease: "power2.out",
+  //     scrollTrigger: {
+  //       trigger: path,
+  //       start: "top 80%",
+  //       end: "top 30%",
+  //       scrub: 1,
+  //     },
+  //     onComplete: () => setIsEllipseDrawn(true),
+  //   });
+  // }, [isOrbScaledDown]);
+
+  // useEffect(() => {
+  //   if (!isEllipseDrawn) return;
+
+  //   dottedEllipsesRef.current.forEach((el, i) => {
+  //     if (el) {
+  //       gsap.to(el, {
+  //         opacity: 1,
+  //         duration: 1,
+  //         delay: i * 0.3,
+  //         ease: "power2.out",
+  //         scrollTrigger: {
+  //           trigger: el,
+  //           start: "top 70%",
+  //           end: "top 20%",
+  //           scrub: true,
+  //         },
+  //         top: ellipseFinalY ? `${ellipseFinalY + (i + 1) * 20}px` : "50%",
+  //       });
+  //     }
+  //   });
+  // }, [isEllipseDrawn]);
+
+  // const ballRef = useRef(null);
+  // const sectionRef = useRef(null);
+
+  // useEffect(() => {
+  //   gsap.fromTo(
+  //     ballRef.current,
+  //     { y: 0 },
+  //     {
+  //       y: 400,
+  //       scrollTrigger: {
+  //         trigger: sectionRef.current,
+  //         start: "top center",
+  //         end: "bottom center",
+  //         scrub: true,
+  //       },
+  //       ease: "power1.out",
+  //     }
+  //   );
+  // }, []);
+
+  const [criticalPoints, setCriticalPoints] = useState([]);
+  const sectionRef = useRef(null);
+  const scrollContainerRef = useRef(null);
+  const drawPathRef = useRef(null);
+
+  const stepsRef = useRef(null)
   
-    useEffect(() => {
-      const camera = new THREE.PerspectiveCamera(
-        45,
-        window.innerWidth / window.innerHeight,
-        1,
-        100
-      );
-      camera.position.set(0, -0.5, 25);
-      const scene = new THREE.Scene();
-      const renderer = new THREE.WebGLRenderer({ alpha: true });
-      renderer.setClearColor(0x000000, 0);
+  useEffect(() => {
+
+    const section = sectionRef.current;
+    const scrollContainer = scrollContainerRef.current;
+    const path = drawPathRef.current;
   
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      canvasRef.current.appendChild(renderer.domElement);
+
+    if (!section || !scrollContainer || !path) return;
   
-      const vertexShader = `
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  
+    const scrollDistance = scrollContainer.scrollWidth - window.innerWidth;
+    const pathLength = path.getTotalLength();
+  
+
+    gsap.set(path, {
+      strokeDasharray: pathLength,
+      strokeDashoffset: pathLength,
+    });
+  
+    const mainTrigger = ScrollTrigger.create({
+      trigger: section,
+      start: "top top",
+      end: () => `+=${scrollDistance}`,
+      pin: true,
+      pinSpacing: false,
+      scrub: true,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        scrollContainer.style.transform = `translateX(${-scrollDistance * progress}px)`;
+        path.style.strokeDashoffset = pathLength * (1 - progress);
+      },
+    });
+  
+
+    const detectCriticalPoints = () => {
+      const points = [];
+      let prevAngle = null;
+      const sampleCount = 100; 
+      const angleThreshold = 0.3; // lower = more sensitive
+  
+      for (let i = 0; i <= sampleCount; i++) {
+        const progress = i / sampleCount;
+        const currentPoint = path.getPointAtLength(progress * pathLength);
+        
+        
+        if (i === 0) continue;
+  
+        const prevPoint = path.getPointAtLength(((i - 1) / sampleCount) * pathLength);
+        const currentAngle = Math.atan2(
+          currentPoint.y - prevPoint.y,
+          currentPoint.x - prevPoint.x
+        );
+  
+
+        if (prevAngle !== null && Math.abs(currentAngle - prevAngle) > angleThreshold) {
+          points.push({
+            point: currentPoint,
+            progress,
+            scrollPosition: scrollDistance * progress,
+          });
         }
+        prevAngle = currentAngle;
+      }
+      return points;
+    };
+  
+    const criticalPoints = detectCriticalPoints();
+  
+
+    const textMarkers = criticalPoints.map(({ point, scrollPosition }, index) => {
+      const marker = document.createElement('div');
+      marker.className = 'path-marker';
+      marker.innerHTML = `
+        <p class="text-xs font-neuehaas45">Step ${index + 1}</p>
+        <p class="text-[14px] font-neuehaas45">Scroll position: ${Math.round(scrollPosition)}px</p>
       `;
   
-      const fragmentShader = `
-        precision highp float;
-        varying vec2 vUv;
-        uniform vec3 u_c1;
-        uniform vec3 u_c2;
-        uniform float u_time;
-        void main() {
-          vec3 pX = vec3(vUv.x);
-          vec3 pY = vec3(vUv.y);
-          vec3 c1 = u_c1;
-          vec3 c2 = u_c2;
-          vec3 c3 = vec3(0.0, 1.0, 1.0); // aqua
-          vec3 cmix1 = mix(c1, c2, pX + pY/2. + cos(u_time));
-          vec3 cmix2 = mix(c2, c3, (pY - sin(u_time))*0.5);
-          vec3 color = mix(cmix1, cmix2, pX * cos(u_time+2.));
-          gl_FragColor = vec4(color, 1.0);
-        }
-      `;
   
-      const uniforms = {
-        u_c1: { type: "v3", value: new THREE.Vector3(0.9, 0.8, 0.3) },
-        u_c2: { type: "v3", value: new THREE.Vector3(1.0, 0.54, 0.4) },
-        u_time: { type: "f", value: 0 },
-      };
-      const shaderMaterial = new THREE.ShaderMaterial({
-        uniforms,
-        vertexShader,
-        fragmentShader,
+      Object.assign(marker.style, {
+        position: 'absolute',
+        left: `${point.x}px`,
+        top: `${point.y}px`,
+        transform: 'translate(-50%, -50%)',
+        opacity: '0',
+        willChange: 'opacity',
       });
   
-      // const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
-      // const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
-      // scene.add(gum);
+      scrollContainer.appendChild(marker);
   
-      // const bgGeometry = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
-      // const bgMesh = new THREE.Mesh(bgGeometry, shaderMaterial);
-      // scene.add(bgMesh);
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: `top top+=${scrollPosition - 200}`,
+        end: `top top+=${scrollPosition + 200}`,
+        scrub: 0.5,
+        onEnter: () => gsap.to(marker, { opacity: 1, duration: 0.3 }),
+        onLeaveBack: () => gsap.to(marker, { opacity: 0, duration: 0.3 }),
+      });
   
-      const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
-      const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
-      scene.add(gum);
-      const clock = new THREE.Clock();
-      const animate = () => {
-        uniforms.u_time.value = clock.getElapsedTime();
-        renderer.render(scene, camera);
-        requestAnimationFrame(animate);
-      };
-      animate();
-  
-      const handleResize = () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      };
-      window.addEventListener("resize", handleResize);
-  
-      return () => {
-        window.removeEventListener("resize", handleResize);
-        const canvasElement = renderer.domElement;
-        if (canvasRef.current?.contains(canvasElement)) {
-          canvasRef.current.removeChild(canvasElement);
+      return marker;
+    });
+
+    return () => {
+
+      ScrollTrigger.getAll().forEach(t => t.kill());
+
+      textMarkers.forEach(marker => {
+        if (marker.parentNode === scrollContainer) {
+          scrollContainer.removeChild(marker);
         }
-      };
-    }, []);
+      });
+    };
+  }, []); 
+  
+  
 
-  const containerRef = useRef(null);
-  const pathRef = useRef(null);
-  const dottedEllipsesRef = useRef([]);
-  const [ellipseFinalY, setEllipseFinalY] = useState(null);
-  const [isEllipseDrawn, setIsEllipseDrawn] = useState(false);
-  const [isOrbScaledDown, setIsOrbScaledDown] = useState(false);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      gsap.fromTo(
-        containerRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 2.5, ease: "power2.out" }
-      );
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!pathRef.current || !isOrbScaledDown) return; 
-
-    const path = pathRef.current;
-    const pathLength = path.getTotalLength();
-
-    gsap.set(path, { strokeDasharray: pathLength, strokeDashoffset: pathLength });
-
-    gsap.to(path, {
-      strokeDashoffset: 0,
-      duration: 2,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: path,
-        start: "top 80%",
-        end: "top 30%",
-        scrub: 1,
-      },
-      onComplete: () => setIsEllipseDrawn(true),
-    });
-  }, [isOrbScaledDown]); 
-
-
-  useEffect(() => {
-    if (!isEllipseDrawn) return;
-
-    dottedEllipsesRef.current.forEach((el, i) => {
-      if (el) {
-        gsap.to(el, {
-          opacity: 1,
-          duration: 1,
-          delay: i * 0.3,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 70%",
-            end: "top 20%",
-            scrub: true,
-          },
-          top: ellipseFinalY ? `${ellipseFinalY + (i + 1) * 20}px` : "50%",
-        });
-      }
-    });
-  }, [isEllipseDrawn]);
-
-
-  const ballRef = useRef(null);
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    gsap.fromTo(
-      ballRef.current,
-      { y: 0 },
-      {
-        y: 400, 
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top center",
-          end: "bottom center",
-          scrub: true,
-        },
-        ease: "power1.out",
-      }
-    );
-  }, []);
 
   return (
     <>
-     <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
-<Canvas
+      <section className="relative w-full h-screen font-neuehaas45">
+        <div className="items-start flex flex-col px-6">
+          <div className="mt-36">
+            <span className="text-[6vw]">Get</span>
+            <span className="text-[6vw] ml-[1vw] -mt-[1vw] font-saolitalic">
+              started
+            </span>
+            <p className="font-neuehaas35 text-[16px] mt-4 max-w-[550px]">
+              Orthodontic treatment is a transformative investment in both your
+              appearance and long-term dental health — ideally, a
+              once-in-a-lifetime experience. While many orthodontists can
+              straighten teeth with braces or Invisalign, the quality of
+              outcomes varies widely. With today’s advanced technology,
+              treatment goes far beyond alignment — it can enhance facial
+              aesthetics and deliver truly life-changing results.
+            </p>
+          </div>
+        </div>
+
+
+        <div className="absolute right-10 bottom-10 text-right z-10">
+          <p className="text-xl mb-[-1rem] font-neuehaas45 ">April</p>
+          <h1 className="text-[20vw] leading-[0.85] font-bold">30</h1>
+        </div>
+
+
+        <div className="absolute bottom-6 left-6 animate-bounce">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+   
+      </section>
+      <div style={{ height: "400vh" }}>
+  <section 
+    ref={sectionRef}  
+    className="w-screen h-screen overflow-hidden flex items-center px-10"
+  >
+    <div
+      ref={scrollContainerRef}
+
+    >
+      <svg
+        width="3370"
+        height="671"
+        viewBox="0 0 3370 671"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          ref={drawPathRef}
+          d="M0.998047 1C0.998047 1 849.498 764.605 786.498 659.553C723.498 554.5 1725.51 370.052 1660.51 419.052C1595.5 468.052 2515.02 616.409 2491.26 660.981C2467.5 705.553 3369 419.052 3369 419.052"
+          stroke="#B1DD40"
+          strokeWidth="3"
+        />
+         {/* {criticalPoints.map(({ point }, index) => (
+    <foreignObject
+      key={index}
+      x={point.x - 100}
+      y={point.y - 50} 
+      width="200"
+      height="100"
+      className="text-container"
+    >
+      <div className="text-center">
+        <p className="text-xs font-neuehaas45">Complimentary consultation</p>
+        <p className="text-[14px] leading-[0.9] font-neuehaas45">
+          Initial consultations are free.
+        </p>
+      </div>
+    </foreignObject>
+  ))} */}
+      </svg>
+    </div>
+    <div
+  ref={stepsRef}
+  className="absolute text-center opacity-0"
+  
+>
+  <p className="text-xs  font-neuehaas45">Complimentary consultation</p>
+  <p className="text-[14px] leading-[0.9]  font-neuehaas45">Initial consultations are always free of charge.</p>
+</div>
+
+  </section>
+</div>
+
+      {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
+        <Canvas
       gl={{ alpha: true }}
       style={{
          position: 'fixed',
@@ -412,37 +627,31 @@ const FinancingTreatment = () => {
          <Fluid />
       </EffectComposer>
    </Canvas>
-      <div className="pointer-events-none h-screen flex items-center justify-center">
-      <div className="relative h-screen bg-[#F2F2F4] flex items-center justify-center">
-  {/* Back  */}
-  <img
-    src="https://cdn.prod.website-files.com/63ca1c298ff20ed7487ad63e/64f9a3f03dd6c2c1edf4901e_sculpture%20Top.svg"
-    alt="Sculpture Back"
-    className="z-10 w-[300px] h-auto"
-  />
+        <div className="pointer-events-none h-screen flex items-center justify-center">
+          <div className="relative h-screen bg-[#F2F2F4] flex items-center justify-center">
 
+            <img
+              src="https://cdn.prod.website-files.com/63ca1c298ff20ed7487ad63e/64f9a3f03dd6c2c1edf4901e_sculpture%20Top.svg"
+              alt="Sculpture Back"
+              className="z-10 w-[300px] h-auto"
+            />
 
+            <img
+              src="https://cdn.prod.website-files.com/63ca1c298ff20ed7487ad63e/64f9b95746e31c40a01c2762_sculpture%20Bottom.svg"
+              alt="Sculpture Front"
+              className="absolute z-30 w-[300px] h-auto"
+            />
+          </div>
 
-
-  <img
-    src="https://cdn.prod.website-files.com/63ca1c298ff20ed7487ad63e/64f9b95746e31c40a01c2762_sculpture%20Bottom.svg"
-    alt="Sculpture Front"
-    className="absolute z-30 w-[300px] h-auto"
-  />
-</div>
-
-
-        <div
-          ref={ballRef}
-          className="absolute -top-10 z-20 w-24 h-24 bg-[#FDBA12] rounded-full"
-        />
-      </div>
-    </div>
-      <div ref={canvasRef} className="w-32 h-32"></div>
-
+          <div
+            ref={ballRef}
+            className="absolute -top-10 z-20 w-24 h-24 bg-[#FDBA12] rounded-full"
+          />
+        </div>
+      </div> */}
+      {/* <div ref={canvasRef} className="w-32 h-32"></div> */}
     </>
   );
 };
-
 
 export default FinancingTreatment;

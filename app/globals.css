@@ -5248,7 +5248,7 @@ color: white;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(80, 80, 80, 0.1); 
+  background-color: white; 
   border: 0.5px solid rgba(120, 120, 120, 0.1);
 
   border-radius: 0.25rem;
@@ -5528,7 +5528,7 @@ text-transform: uppercase;
 }
 
 .purpleSection { background-color: #DF9DF3;}
-.greenSection { background-color:  #F3C744;  }
+.yellowSection { background-color:  #F3C744;  }
 .whiteSection { background-color: #DD5310; }
 .orangeSection { background-color: #D8F000}
 .redSection { background-color:#2448C6}
@@ -5536,9 +5536,8 @@ text-transform: uppercase;
 /* #CADACF */
 
 
-.purpleSectionImage,
-/* .greenSectionImage, */
-.whiteSectionImage,
+/* .purpleSectionImage,
+
 .orangeSectionImage,
 .redSectionImage
 .blackSectionImage {
@@ -5548,68 +5547,125 @@ text-transform: uppercase;
   transform: translateY(-50%);   
   width: 33.333vw;              
   height: auto;
-  border: 10px dashed green;                 
-  /* aspect-ratio: 348 / 400;    */
-  /* overflow:hidden; */
 
-}
+} */
 
-.greenSectionImage{
+.purpleImageWrapper {
   position: absolute;
-  right:50%;
   top: 50%;
-  transform: translate(-77.777%,-50%);   
-  width: 33.333vw;              
-  height: auto;
-  border: 10px dashed green;   
+  left: 60%;
+  transform: translate(-100%, -50%);
+  width: 15vw;
+  height: 40vh; 
+  overflow: hidden;
 }
-.purpleSectionImage , .greenSectionImage{
-  aspect-ratio: 348 / 400;  
+.yellowImageWrapper {
+  position: absolute;
+  top: 50%;
+  left: 77.777%;
+  transform: translate(-100%, -50%);
+  /* width: 15vw; */
+  height: 40vh; 
+  overflow: hidden;
+}
+.whiteImageWrapper {
+  position: absolute;
+  top: 50%;
+  left: 87.777%;
+  transform: translate(-100%, -50%);
+  /* width: 15vw;            */
+  height: 40vh;            
+  overflow: hidden;
+
+}
+.orangeImageWrapper {
+  position: absolute;
+  top: 50%;
+  left: 83.333%;
+  transform: translate(-100%, -50%);
+  /* width: 15vw; */
+  height: 40vh;
+  overflow: hidden;
+  z-index: 10;
+}
+.redImageWrapper {
+  position: absolute;
+  top: 50%;
+  left: 83.333%;
+  transform: translate(-100%, -50%);
+  /* width: 15vw; */
+  height: 40vh;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.orangeSectionImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+.yellowSectionImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: absolute;
+  top: 50%;
+  width: 33.333vw;
+  height: auto;
+  transform-origin: bottom right; 
+}
+
+
+.whiteSectionImage{
+  position: absolute;
+  right: 50%;
+  top: 50%;
+  width: 33.333vw;
+  height: auto;
+}
+
+.purpleSectionImage , .yellowSectionImage , .whiteSectionImage{
+  aspect-ratio: 328 / 440;  
 }
 
 
 .purpleImageInnerContainer {
-  position: absolute;
   background: url(/images/stayontrack.png) no-repeat center center ;
-  background-size: cover;
-  top: 0;
-  right: 0;
+  background-size: cover; 
   width: 100%;
   height: 100%;
-
-  border:3px solid red ;
 }
 
-.greenImageInnerContainer {
-  position: absolute;
-  background: url(/images/handholdingtoothbrush.jpg) no-repeat center center ;
-  background-size: cover;
-  top: 0;
-  left: 0;
+.yellowImageInnerContainer {
   width: 100%;
-  height: 100%;  border:3px solid red ;
+  height: 100%;
+  background: url(/images/handholdingtoothbrush.jpg) no-repeat center center;
+  background-size: cover; 
 }
 
 .whiteImageInnerContainer {
-  position: absolute;
-  top: 0;
-  left: 0;
+
+  background: url(/images/dentalwax3.png) no-repeat center center ;
+  background-size: cover;
+
   width: 100%;
   height: 100%;
 }
 
 .orangeImageInnerContainer {
-  position: absolute;
-  top: 0;
-  left: 0;
+  background: url(/images/soda3.png) no-repeat center center ;
+  background-size: cover;
   width: 100%;
   height: 100%;
 }
 
 .redImageInnerContainer {
-  position: absolute;
-  top: 0;
-  left: 0;
+  background-size: cover;
+  background: url(/images/rubberbands2.png) no-repeat center center ;
   width: 100%;
   height: 100%;
 }
