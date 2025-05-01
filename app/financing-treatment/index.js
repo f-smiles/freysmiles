@@ -389,22 +389,33 @@ const FinancingTreatment = () => {
   //   );
   // }, []);
 
-  const [criticalPoints, setCriticalPoints] = useState([]);
+
   const sectionRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const drawPathRef = useRef(null);
 
-  const stepsRef = useRef(null)
   
   useEffect(() => {
-
+    const stepContent = [
+      {
+        title: "Complimentary consultation",
+        description: "Initial consultations are always free of charge."
+      },
+      {
+        title: "Payment plans are available",
+        description: "We offer a variety of payment plans at no interest."
+      },
+      {
+        title: "No hidden fees",
+        description: "Comprehensive treatment plans include retainers and supervision"
+      },
+     
+    ];
     const section = sectionRef.current;
     const scrollContainer = scrollContainerRef.current;
     const path = drawPathRef.current;
   
-
     if (!section || !scrollContainer || !path) return;
-  
   
     const scrollDistance = scrollContainer.scrollWidth - window.innerWidth;
     const pathLength = path.getTotalLength();
@@ -429,51 +440,61 @@ const FinancingTreatment = () => {
       },
     });
   
-
-    const detectCriticalPoints = () => {
+    
+    const getCriticalPoints = () => {
       const points = [];
       let prevAngle = null;
-      const sampleCount = 100; 
-      const angleThreshold = 0.3; // lower = more sensitive
+      const samples = 150; 
+      const angleThreshold = 0.4; // the more speciifc the angle the more logged steps
+      const minProgressDistance = 0.03; // dist etween points
+      let lastValidProgress = -Infinity;
   
-      for (let i = 0; i <= sampleCount; i++) {
-        const progress = i / sampleCount;
+      for (let i = 1; i <= samples; i++) {
+        const progress = i / samples;
         const currentPoint = path.getPointAtLength(progress * pathLength);
+        const prevPoint = path.getPointAtLength(((i-1)/samples) * pathLength);
         
-        
-        if (i === 0) continue;
-  
-        const prevPoint = path.getPointAtLength(((i - 1) / sampleCount) * pathLength);
-        const currentAngle = Math.atan2(
+        const angle = Math.atan2(
           currentPoint.y - prevPoint.y,
           currentPoint.x - prevPoint.x
         );
   
-
-        if (prevAngle !== null && Math.abs(currentAngle - prevAngle) > angleThreshold) {
+        // Only count large direction changes
+        if (prevAngle !== null && 
+            Math.abs(angle - prevAngle) > angleThreshold &&
+            (progress - lastValidProgress) >= minProgressDistance) {
+          
           points.push({
             point: currentPoint,
             progress,
-            scrollPosition: scrollDistance * progress,
+            scrollPosition: scrollDistance * progress
           });
+          lastValidProgress = progress;
         }
-        prevAngle = currentAngle;
+        prevAngle = angle;
       }
+  
+  
       return points;
     };
   
-    const criticalPoints = detectCriticalPoints();
+    const criticalPoints = getCriticalPoints();
   
-
     const textMarkers = criticalPoints.map(({ point, scrollPosition }, index) => {
+      const content = stepContent[index] || {
+        title: `Phase ${index + 1}`,
+        description: ""
+      };
+  
       const marker = document.createElement('div');
       marker.className = 'path-marker';
       marker.innerHTML = `
-        <p class="text-xs font-neuehaas45">Step ${index + 1}</p>
-        <p class="text-[14px] font-neuehaas45">Scroll position: ${Math.round(scrollPosition)}px</p>
+        <div class="marker-content">
+          <p class="font-neuehaas45 marker-title">${content.title}</p>
+          <p class="font-neuehaas45  marker-desc">${content.description}</p>
+        </div>
       `;
-  
-  
+      
       Object.assign(marker.style, {
         position: 'absolute',
         left: `${point.x}px`,
@@ -481,10 +502,11 @@ const FinancingTreatment = () => {
         transform: 'translate(-50%, -50%)',
         opacity: '0',
         willChange: 'opacity',
+        border: '2px solid red',
+        padding: '4px'
       });
   
       scrollContainer.appendChild(marker);
-  
 
       ScrollTrigger.create({
         trigger: section,
@@ -497,18 +519,17 @@ const FinancingTreatment = () => {
   
       return marker;
     });
+  
 
     return () => {
-
       ScrollTrigger.getAll().forEach(t => t.kill());
-
       textMarkers.forEach(marker => {
-        if (marker.parentNode === scrollContainer) {
-          scrollContainer.removeChild(marker);
+        if (marker.parentNode) {
+          marker.parentNode.removeChild(marker);
         }
       });
     };
-  }, []); 
+  }, []);
   
   
 
@@ -579,33 +600,10 @@ const FinancingTreatment = () => {
           stroke="#B1DD40"
           strokeWidth="3"
         />
-         {/* {criticalPoints.map(({ point }, index) => (
-    <foreignObject
-      key={index}
-      x={point.x - 100}
-      y={point.y - 50} 
-      width="200"
-      height="100"
-      className="text-container"
-    >
-      <div className="text-center">
-        <p className="text-xs font-neuehaas45">Complimentary consultation</p>
-        <p className="text-[14px] leading-[0.9] font-neuehaas45">
-          Initial consultations are free.
-        </p>
-      </div>
-    </foreignObject>
-  ))} */}
+       
       </svg>
     </div>
-    <div
-  ref={stepsRef}
-  className="absolute text-center opacity-0"
-  
->
-  <p className="text-xs  font-neuehaas45">Complimentary consultation</p>
-  <p className="text-[14px] leading-[0.9]  font-neuehaas45">Initial consultations are always free of charge.</p>
-</div>
+   
 
   </section>
 </div>
