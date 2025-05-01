@@ -5790,4 +5790,142 @@ text-transform: uppercase;
         margin-right: 2.5em;
       }
     } */
+    .cube-outline {
+      width: 500px;
+      height: 250px; 
+      perspective: 1000px;
+      margin: 100px auto;
+    }
+    
+    .cube {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: spinCube 10s infinite linear;
+    }
+    
+    .cube-face {
+      position: absolute;
+      background-color:#FEDFF4;
+      font-size: 1em;
+    }
+    .cube-face--front {
+      width: 500px;
+      height: 250px;
+      transform: translateZ(125px);
+      background-image: url('/images/borders.png');
+      background-size: 100% 100%;
+
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+    
+    .text-overlay {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .text-overlay p {
+      width: 80%; 
+      white-space: normal;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: left;
+      font-size: 1rem;
+      margin: 0;
+    }
+    
+    .first-line {
+      top: 10%
+    }
+    
+    .text-overlay p:last-child {
+      top: 30%;
+    }
+    
+    .cube-face--left {
+      width: 250px;
+      height: 250px;
+      transform: rotateY(-90deg) translateZ(125px);
+      background-image: url('/images/wavyneonyellowgrid.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    
+    .cube-face--right {
+      width: 250px;
+      height: 250px;
+      transform: rotateY(-90deg) translateZ(125px);
+      background-image: url('/images/wavybluegrid.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    
+    .cube-face--back {
+      width: 500px;
+      height: 250px;
+      transform: rotateX(90deg) translateZ(125px);
+      background-image: url('/images/arches.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .cube-face--top {
+      width: 500px;
+      height: 250px;
+      transform: rotateX(90deg) translateZ(125px);
+      background-image: url('/images/wavypinkonorange.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    
+    
+    .cube-face--front,
+    .cube-face--back {
+      width: 500px;
+      height: 250px;
+    }
+    
+    .cube-face--front  { transform: translateZ(125px); }
+    .cube-face--back   { transform: rotateY(180deg) translateZ(125px); }
+    
+
+    .cube-face--left,
+    .cube-face--right {
+      width: 250px;
+      height: 250px;
+    }
+    
+    .cube-face--left   { transform: rotateY(-90deg) translateZ(125px); }
+    .cube-face--right  { transform: rotateY(90deg) translateZ(375px); }
+    
+
+    .cube-face--top,
+    .cube-face--bottom {
+      width: 500px;
+      height: 250px;
+    }
+    
+    .cube-face--top    { transform: rotateX(90deg) translateZ(125px); }
+    .cube-face--bottom { transform: rotateX(-90deg) translateZ(125px); }
+    @keyframes spinCube {
+      0%, 70% {
+        transform: rotateY(0deg) rotateZ(0deg) translateZ(-125px); /* Hold front */
+      }
+      75% {
+        transform: rotateY(120deg) rotateZ(45deg) translateZ(-125px); /* Start spin */
+      }
+      80% {
+        transform: rotateY(240deg) rotateZ(90deg) translateZ(-125px); /* Mid spin */
+      }
+      100% {
+        transform: rotateY(360deg) rotateZ(0deg) translateZ(-125px); /* Full forward spin back to front */
+      }
+    }
     

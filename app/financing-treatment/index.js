@@ -490,7 +490,7 @@ const FinancingTreatment = () => {
       marker.className = 'path-marker';
       marker.innerHTML = `
         <div class="marker-content">
-          <p class="font-neuehaas45 marker-title">${content.title}</p>
+          <p class="font-neuehaas45 marker-title text-[20px]">${content.title}</p>
           <p class="font-neuehaas45  marker-desc">${content.description}</p>
         </div>
       `;
@@ -502,7 +502,7 @@ const FinancingTreatment = () => {
         transform: 'translate(-50%, -50%)',
         opacity: '0',
         willChange: 'opacity',
-        border: '2px solid red',
+        // border: '2px solid red',
         padding: '4px'
       });
   
@@ -531,7 +531,17 @@ const FinancingTreatment = () => {
     };
   }, []);
   
-  
+  const cubeRef = useRef();
+
+  useEffect(() => {
+    gsap.to(cubeRef.current, {
+      rotateY: 360,
+      rotateX: 360,
+      duration: 20,
+      repeat: -1,
+      ease: "linear",
+    });
+  }, []);
 
 
   return (
@@ -557,8 +567,14 @@ const FinancingTreatment = () => {
 
 
         <div className="absolute right-10 bottom-10 text-right z-10">
-          <p className="text-xl mb-[-1rem] font-neuehaas45 ">April</p>
-          <h1 className="text-[20vw] leading-[0.85] font-bold">30</h1>
+        <p className="text-xl mb-[-1rem] font-neuehaas45">
+  {new Date().toLocaleString('default', { month: 'long' })}
+</p>
+
+<h1 className="text-[20vw] leading-[0.85] font-bold">
+  {new Date().toLocaleString('default', { day: 'numeric' })}
+</h1>
+
         </div>
 
 
@@ -597,7 +613,7 @@ const FinancingTreatment = () => {
         <path
           ref={drawPathRef}
           d="M0.998047 1C0.998047 1 849.498 764.605 786.498 659.553C723.498 554.5 1725.51 370.052 1660.51 419.052C1595.5 468.052 2515.02 616.409 2491.26 660.981C2467.5 705.553 3369 419.052 3369 419.052"
-          stroke="#B1DD40"
+          stroke="#EBFD15"
           strokeWidth="3"
         />
        
@@ -607,6 +623,39 @@ const FinancingTreatment = () => {
 
   </section>
 </div>
+<div className="cube-outline">
+      <div class="cube">
+      <div className="cube-face cube-face--front">
+  <div className="text-overlay">
+    <p className="first-line font-neueroman uppercase">One year post-treatment follow-up</p>
+    <p className=" font-neueroman uppercase"
+
+  style={{
+    position: "absolute",
+    transform: "rotate(90deg)",
+    transformOrigin: "left top",
+    top: "40%",
+    left: "70%",
+    fontSize: ".8rem",
+    lineHeight: "1.2",
+    color: "black",
+    maxWidth:"120px"
+  }}
+>
+  Retainers and retention visits for one year post-treatment included.
+</p>
+
+
+  </div>
+</div>
+
+          <div class="cube-face cube-face--back">2</div>
+          <div class="cube-face cube-face--top "></div>
+          <div class="cube-face cube-face--bottom">4</div>
+          <div class="cube-face cube-face--left"></div>
+          <div class="cube-face cube-face--right"></div>
+          </div>
+      </div>
 
       {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
         <Canvas
