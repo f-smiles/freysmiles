@@ -103,7 +103,6 @@ const StepsSection = () => {
   //   });
   // }, []);
 
-
   return (
     <div
       ref={containerRef}
@@ -389,43 +388,40 @@ const FinancingTreatment = () => {
   //   );
   // }, []);
 
-
   const sectionRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const drawPathRef = useRef(null);
 
-  
   useEffect(() => {
     const stepContent = [
       {
         title: "Complimentary consultation",
-        description: "Initial consultations are always free of charge."
+        description: "Initial consultations are always free of charge.",
       },
       {
         title: "Payment plans are available",
-        description: "We offer a variety of payment plans at no interest."
+        description: "We offer a variety of payment plans at no interest.",
       },
       {
         title: "No hidden fees",
-        description: "Comprehensive treatment plans include retainers and supervision"
+        description:
+          "Comprehensive treatment plans include retainers and supervision",
       },
-     
     ];
     const section = sectionRef.current;
     const scrollContainer = scrollContainerRef.current;
     const path = drawPathRef.current;
-  
+
     if (!section || !scrollContainer || !path) return;
-  
+
     const scrollDistance = scrollContainer.scrollWidth - window.innerWidth;
     const pathLength = path.getTotalLength();
-  
 
     gsap.set(path, {
       strokeDasharray: pathLength,
       strokeDashoffset: pathLength,
     });
-  
+
     const mainTrigger = ScrollTrigger.create({
       trigger: section,
       start: "top top",
@@ -435,102 +431,106 @@ const FinancingTreatment = () => {
       scrub: true,
       onUpdate: (self) => {
         const progress = self.progress;
-        scrollContainer.style.transform = `translateX(${-scrollDistance * progress}px)`;
+        scrollContainer.style.transform = `translateX(${
+          -scrollDistance * progress
+        }px)`;
         path.style.strokeDashoffset = pathLength * (1 - progress);
       },
     });
-  
-    
+
     const getCriticalPoints = () => {
       const points = [];
       let prevAngle = null;
-      const samples = 150; 
+      const samples = 150;
       const angleThreshold = 0.4; // the more speciifc the angle the more logged steps
       const minProgressDistance = 0.03; // dist etween points
       let lastValidProgress = -Infinity;
-  
+
       for (let i = 1; i <= samples; i++) {
         const progress = i / samples;
         const currentPoint = path.getPointAtLength(progress * pathLength);
-        const prevPoint = path.getPointAtLength(((i-1)/samples) * pathLength);
-        
+        const prevPoint = path.getPointAtLength(
+          ((i - 1) / samples) * pathLength
+        );
+
         const angle = Math.atan2(
           currentPoint.y - prevPoint.y,
           currentPoint.x - prevPoint.x
         );
-  
+
         // Only count large direction changes
-        if (prevAngle !== null && 
-            Math.abs(angle - prevAngle) > angleThreshold &&
-            (progress - lastValidProgress) >= minProgressDistance) {
-          
+        if (
+          prevAngle !== null &&
+          Math.abs(angle - prevAngle) > angleThreshold &&
+          progress - lastValidProgress >= minProgressDistance
+        ) {
           points.push({
             point: currentPoint,
             progress,
-            scrollPosition: scrollDistance * progress
+            scrollPosition: scrollDistance * progress,
           });
           lastValidProgress = progress;
         }
         prevAngle = angle;
       }
-  
-  
+
       return points;
     };
-  
+
     const criticalPoints = getCriticalPoints();
-  
-    const textMarkers = criticalPoints.map(({ point, scrollPosition }, index) => {
-      const content = stepContent[index] || {
-        title: `Phase ${index + 1}`,
-        description: ""
-      };
-  
-      const marker = document.createElement('div');
-      marker.className = 'path-marker';
-      marker.innerHTML = `
+
+    const textMarkers = criticalPoints.map(
+      ({ point, scrollPosition }, index) => {
+        const content = stepContent[index] || {
+          title: `Phase ${index + 1}`,
+          description: "",
+        };
+
+        const marker = document.createElement("div");
+        marker.className = "path-marker";
+        marker.innerHTML = `
         <div class="marker-content">
           <p class="font-neuehaas45 marker-title text-[20px]">${content.title}</p>
           <p class="font-neuehaas45  marker-desc">${content.description}</p>
         </div>
       `;
-      
-      Object.assign(marker.style, {
-        position: 'absolute',
-        left: `${point.x}px`,
-        top: `${point.y}px`,
-        transform: 'translate(-50%, -50%)',
-        opacity: '0',
-        willChange: 'opacity',
-        // border: '2px solid red',
-        padding: '4px'
-      });
-  
-      scrollContainer.appendChild(marker);
 
-      ScrollTrigger.create({
-        trigger: section,
-        start: `top top+=${scrollPosition - 200}`,
-        end: `top top+=${scrollPosition + 200}`,
-        scrub: 0.5,
-        onEnter: () => gsap.to(marker, { opacity: 1, duration: 0.3 }),
-        onLeaveBack: () => gsap.to(marker, { opacity: 0, duration: 0.3 }),
-      });
-  
-      return marker;
-    });
-  
+        Object.assign(marker.style, {
+          position: "absolute",
+          left: `${point.x}px`,
+          top: `${point.y}px`,
+          transform: "translate(-50%, -50%)",
+          opacity: "0",
+          willChange: "opacity",
+          // border: '2px solid red',
+          padding: "4px",
+        });
+
+        scrollContainer.appendChild(marker);
+
+        ScrollTrigger.create({
+          trigger: section,
+          start: `top top+=${scrollPosition - 200}`,
+          end: `top top+=${scrollPosition + 200}`,
+          scrub: 0.5,
+          onEnter: () => gsap.to(marker, { opacity: 1, duration: 0.3 }),
+          onLeaveBack: () => gsap.to(marker, { opacity: 0, duration: 0.3 }),
+        });
+
+        return marker;
+      }
+    );
 
     return () => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
-      textMarkers.forEach(marker => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+      textMarkers.forEach((marker) => {
         if (marker.parentNode) {
           marker.parentNode.removeChild(marker);
         }
       });
     };
   }, []);
-  
+
   const cubeRef = useRef();
 
   useEffect(() => {
@@ -543,9 +543,126 @@ const FinancingTreatment = () => {
     });
   }, []);
 
+  const textPathRef = useRef();
+  const svgRef = useRef();
+
+  useEffect(() => {
+    if (!textPathRef.current || !svgRef.current) return;
+  
+    gsap.to(textPathRef.current, {
+      scrollTrigger: {
+        trigger: svgRef.current,
+        start: "top +=40", 
+        end: "bottom center",   
+        scrub: true,
+      },
+      attr: { startOffset: "100%" },
+      ease: "none",
+    });
+  }, []);
+  
 
   return (
     <>
+<div className="bg-[#E5E5E4] min-h-screen pt-[160px] relative ">
+<section className="relative flex items-center justify-center">
+
+
+  <div className=" w-[40vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
+    <p className="font-neueroman text-[20px] uppercase leading-snug text-black">
+    Orthodontic treatment is a transformative investment in both your
+    appearance and long-term dental health — ideally, a once-in-a-lifetime
+    experience. While many orthodontists can straighten teeth with braces or
+    Invisalign, the quality of outcomes varies widely. With today's advanced
+    technology, treatment goes far beyond alignment — it can enhance facial
+    aesthetics and deliver truly life-changing results.
+    </p>
+  </div>
+
+  <svg
+    width="90vw"
+    height="170vh"
+    viewBox="-100 0 1100 1800" 
+    xmlns="http://www.w3.org/2000/svg"
+    ref={svgRef}
+    className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
+  >
+    <defs>
+      <path
+        id="text-arc-path"
+        d="M0,820 
+           A450,450 0 0 1 900,820 
+           L900,1440 
+           L0,1440 
+           Z"
+        fill="none"
+      />
+    </defs>
+
+
+    <path
+      d="M0,820 
+         A450,450 0 0 1 900,820 
+         L900,1400 
+         L0,1400 
+         Z"
+      fill="none"
+      // stroke="#fe6531"
+      // strokeWidth="4"
+    />
+
+ 
+<text
+  className="text-[12vw] font-neueroman fill-[#FEB448] font-saol"
+  textAnchor="middle"
+  dominantBaseline="middle"
+>
+
+      <textPath
+        ref={textPathRef}
+        href="#text-arc-path"
+        startOffset="4%" 
+
+        
+      >
+        GETTING STARTED
+      </textPath>
+    </text>
+  </svg>
+</section>
+
+
+
+
+
+
+      <div style={{ height: "400vh" }}>
+        <section
+          ref={sectionRef}
+          className="w-screen h-screen overflow-hidden flex items-center px-10"
+        >
+          <div ref={scrollContainerRef}>
+            <svg
+              width="3370"
+              height="671"
+              viewBox="0 0 3370 671"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                ref={drawPathRef}
+                d="M0.998047 1C0.998047 1 849.498 764.605 786.498 659.553C723.498 554.5 1725.51 370.052 1660.51 419.052C1595.5 468.052 2515.02 616.409 2491.26 660.981C2467.5 705.553 3369 419.052 3369 419.052"
+                stroke="#EBFD15"
+                strokeWidth="3"
+              />
+            </svg>
+          </div>
+        </section>
+      </div>
+
+
+
+
       <section className="relative w-full h-screen font-neuehaas45">
         <div className="items-start flex flex-col px-6">
           <div className="mt-36">
@@ -553,30 +670,19 @@ const FinancingTreatment = () => {
             <span className="text-[6vw] ml-[1vw] -mt-[1vw] font-saolitalic">
               started
             </span>
-            <p className="font-neuehaas35 text-[16px] mt-4 max-w-[550px]">
-              Orthodontic treatment is a transformative investment in both your
-              appearance and long-term dental health — ideally, a
-              once-in-a-lifetime experience. While many orthodontists can
-              straighten teeth with braces or Invisalign, the quality of
-              outcomes varies widely. With today’s advanced technology,
-              treatment goes far beyond alignment — it can enhance facial
-              aesthetics and deliver truly life-changing results.
-            </p>
+      
           </div>
         </div>
 
-
         <div className="absolute right-10 bottom-10 text-right z-10">
-        <p className="text-xl mb-[-1rem] font-neuehaas45">
-  {new Date().toLocaleString('default', { month: 'long' })}
-</p>
+          <p className="text-xl mb-[-1rem] font-neuehaas45">
+            {new Date().toLocaleString("default", { month: "long" })}
+          </p>
 
-<h1 className="text-[20vw] leading-[0.85] font-bold">
-  {new Date().toLocaleString('default', { day: 'numeric' })}
-</h1>
-
+          <h1 className="text-[20vw] leading-[0.85] font-bold">
+            {new Date().toLocaleString("default", { day: "numeric" })}
+          </h1>
         </div>
-
 
         <div className="absolute bottom-6 left-6 animate-bounce">
           <svg
@@ -592,71 +698,42 @@ const FinancingTreatment = () => {
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </div>
-   
       </section>
-      <div style={{ height: "400vh" }}>
-  <section 
-    ref={sectionRef}  
-    className="w-screen h-screen overflow-hidden flex items-center px-10"
-  >
-    <div
-      ref={scrollContainerRef}
-
-    >
-      <svg
-        width="3370"
-        height="671"
-        viewBox="0 0 3370 671"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          ref={drawPathRef}
-          d="M0.998047 1C0.998047 1 849.498 764.605 786.498 659.553C723.498 554.5 1725.51 370.052 1660.51 419.052C1595.5 468.052 2515.02 616.409 2491.26 660.981C2467.5 705.553 3369 419.052 3369 419.052"
-          stroke="#EBFD15"
-          strokeWidth="3"
-        />
-       
-      </svg>
-    </div>
-   
-
-  </section>
-</div>
-<div className="cube-outline">
-      <div class="cube">
-      <div className="cube-face cube-face--front">
-  <div className="text-overlay">
-    <p className="first-line font-neueroman uppercase">One year post-treatment follow-up</p>
-    <p className=" font-neueroman uppercase"
-
-  style={{
-    position: "absolute",
-    transform: "rotate(90deg)",
-    transformOrigin: "left top",
-    top: "40%",
-    left: "70%",
-    fontSize: ".8rem",
-    lineHeight: "1.2",
-    color: "black",
-    maxWidth:"120px"
-  }}
->
-  Retainers and retention visits for one year post-treatment included.
-</p>
-
-
-  </div>
-</div>
+      <div className="cube-outline">
+        <div class="cube">
+          <div className="cube-face cube-face--front">
+            <div className="text-overlay">
+              <p className="first-line font-neueroman uppercase">
+                One year post-treatment follow-up
+              </p>
+              <p
+                className=" font-neueroman uppercase"
+                style={{
+                  position: "absolute",
+                  transform: "rotate(90deg)",
+                  transformOrigin: "left top",
+                  top: "40%",
+                  left: "70%",
+                  fontSize: ".8rem",
+                  lineHeight: "1.2",
+                  color: "black",
+                  maxWidth: "120px",
+                }}
+              >
+                Retainers and retention visits for one year post-treatment
+                included.
+              </p>
+            </div>
+          </div>
 
           <div class="cube-face cube-face--back">2</div>
           <div class="cube-face cube-face--top "></div>
           <div class="cube-face cube-face--bottom">4</div>
           <div class="cube-face cube-face--left"></div>
           <div class="cube-face cube-face--right"></div>
-          </div>
+        </div>
       </div>
-
+      </div>
       {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
         <Canvas
       gl={{ alpha: true }}

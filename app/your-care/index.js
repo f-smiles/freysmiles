@@ -9,6 +9,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Physics2DPlugin } from "gsap-trial/Physics2DPlugin";
 import { gsap, TweenLite, TimelineMax, Sine } from "gsap";
 import { MotionPathPlugin } from "gsap-trial/MotionPathPlugin";
+
 gsap.registerPlugin(Physics2DPlugin, SplitText, MotionPathPlugin);
 
 const YourCare = () => {
@@ -104,7 +105,7 @@ const YourCare = () => {
   const path1Ref = useRef(null);
   const path2Ref = useRef(null);
   const path3Ref = useRef(null);
-const revealRef = useRef(null)
+  const revealRef = useRef(null);
   useEffect(() => {
     if (!ballRef.current || !path1Ref.current) return;
 
@@ -225,14 +226,12 @@ const revealRef = useRef(null)
         }
       );
 
-
       const prevTrigger = ScrollTrigger.getById("scaleScrollSequence");
       if (prevTrigger) prevTrigger.kill();
 
       gsap.set(ballRef.current, { scale: 1, zIndex: 999 });
       gsap.set(".svg-text-wrapper", { opacity: 0, x: 0 });
       gsap.set(".sticky-shift", { x: 0 });
-
 
       const scrollTL = gsap.timeline({
         scrollTrigger: {
@@ -279,28 +278,19 @@ const revealRef = useRef(null)
       scrollTL.fromTo(
         revealRef.current,
         { clipPath: "inset(0% 0% 0% 100%)" },
-        { clipPath: "inset(0% 0% 0% 50%)", ease: "power4.inOut" }, 
+        { clipPath: "inset(0% 0% 0% 50%)", ease: "power4.inOut" },
         ">+0.2"
       );
-      
-      
-      
-      
-    }
-    else {
+    } else {
       const prevTrigger = ScrollTrigger.getById("scaleScrollSequence");
       if (prevTrigger) {
-        prevTrigger.revert(); 
-        prevTrigger.kill();   
+        prevTrigger.revert();
+        prevTrigger.kill();
       }
-      gsap.set(".sticky-shift", { clipPath: "inset(0% 0% 0% 0%)"});
+      gsap.set(".sticky-shift", { clipPath: "inset(0% 0% 0% 0%)" });
       gsap.set(".svg-text-wrapper", { opacity: 0, x: 0 });
       gsap.set(ballRef.current, { scale: 1 });
-    
-
     }
-    
-    
   }, [activeIndex]);
 
   const BUTTONS = [
@@ -388,28 +378,112 @@ const revealRef = useRef(null)
     return () => ScrollTrigger.getAll().forEach((t) => t.kill());
   }, []);
 
+  const svgRef = useRef();
+const pathRef = useRef();
+const dotRef = useRef();
+useEffect(() => {
+  if (!pathRef.current || !dotRef.current) return;
+
+  gsap.set(dotRef.current, {
+    motionPath: {
+      path: pathRef.current,
+      align: pathRef.current,
+      alignOrigin: [0.5, 0.5],
+      start: 0,
+      end: 0,
+    },
+  });
+
+  gsap.to(dotRef.current, {
+    scrollTrigger: {
+      trigger: svgRef.current,
+      start: "top center",
+      end: "bottom center",
+      scrub: true,
+    },
+    motionPath: {
+      path: pathRef.current,
+      align: pathRef.current,
+      autoRotate: false,
+      alignOrigin: [0.5, 0.5],
+    },
+    duration: 1,
+    ease: "none",
+  });
+}, []);
   return (
     <>
+      <svg
+        ref={svgRef}
+  xmlns="http://www.w3.org/2000/svg"
+  xmlnsXlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 1484 3804"
+  width="1484"
+  height="3804"
+  preserveAspectRatio="xMidYMid meet"
+  style={{
+    width: '100%',
+    height: '100%',
+    transform: 'translate3d(0px, 0px, 0px)',
+    contentVisibility: 'visible',
+  }} 
+      >
+        <defs>
+          <clipPath id="__lottie_element_2">
+            <rect width="1484" height="3804" x="0" y="0"></rect>
+          </clipPath>
+        </defs>
+        <g clip-path="url(#__lottie_element_2)">
+          <g
+            transform="matrix(1,0,0,1,742,1902)"
+            opacity="1"
+            style={{display: "block"}}
+          >
+            <g opacity="1" transform="matrix(1,0,0,1,0,0)">
+              <path
+                  ref={pathRef}
+                stroke-linecap="butt"
+                stroke-linejoin="miter"
+                fill-opacity="0"
+                stroke-miterlimit="4"
+                stroke="rgb(0,0,19)"
+                stroke-opacity="1"
+                stroke-width="1"
+                d=" M-110,-1890 C-110,-1890 -110,-1780 -110,-1780 C-110,-1780 -630,-1780 -630,-1780 C-685.22900390625,-1780 -730,-1735.22900390625 -730,-1680 C-730,-1680 -730,-1310 -730,-1310 C-730,-1254.77099609375 -685.22900390625,-1210 -630,-1210 C-630,-1210 -10,-1210 -10,-1210 C45.229000091552734,-1210 90,-1165.22900390625 90,-1110 C90,-1110 90,-1050 90,-1050 C90,-1050 630,-1050 630,-1050 C685.22802734375,-1050 730,-1005.22900390625 730,-950 C730,-950 730,240 730,240 C730,295.22900390625 685.22802734375,340 630,340 C630,340 -270,340 -270,340 C-270,340 -270,1000 -270,1000 C-270,1000 390,1000 390,1000 C445.22900390625,1000 490,1044.77099609375 490,1100 C490,1100 490,1630 490,1630 C490,1685.22900390625 445.22900390625,1730 390,1730 C390,1730 -110,1730 -110,1730 C-110,1730 -110,1890 -110,1890"
+              ></path>
+            </g>
+          </g>
+          <g
+            transform="matrix(1,0,0,1,132.8538055419922,692)"
+            opacity="1"
+            style={{display: "block"}}
+          >
+            <g opacity="1" transform="matrix(1,0,0,1,0,0)">
+              <path
+                ref={dotRef}
+                fill="rgb(0,0,254)"
+                fill-opacity="1"
+                d=" M0,-12 C6.622799873352051,-12 12,-6.622799873352051 12,0 C12,6.622799873352051 6.622799873352051,12 0,12 C-6.622799873352051,12 -12,6.622799873352051 -12,0 C-12,-6.622799873352051 -6.622799873352051,-12 0,-12z"
+              ></path>
+            </g>
+          </g>
+        </g>
+      </svg>
       <div
         className="h-screen w-full font-neuehaas35"
         style={{ background: "#EFEFEF" }}
       >
         <div className="bg-[#EFEFEF] fake-scroll-wrapper h-[100vh]">
-        <div
-  ref={revealRef}
-  className="z-[60] absolute inset-[10px] bg-[#FF4411] origin-right"
-  style={{ clipPath: "inset(0% 0% 0% 100%)" }}
->
-  HLI
-</div>
+          <div
+            ref={revealRef}
+            className="z-[60] absolute inset-[10px] bg-[#FF4411] origin-right"
+            style={{ clipPath: "inset(0% 0% 0% 100%)" }}
+          ></div>
           <div
             className="sticky-shift sticky top-0 h-screen w-full"
             style={{ padding: "10px" }}
           >
             <div className="relative overflow-hidden h-full w-full bg-[#EFEFEF] ">
-
-
-
               <div
                 ref={ballRef}
                 className="absolute top-1/2 left-1/2 w-[16px] h-[16px] bg-[#1127FF] rounded-full pointer-events-none z-[10]"
@@ -419,8 +493,6 @@ const revealRef = useRef(null)
               <div className="text-white text-[28px] svg-text-wrapper fixed inset-0 flex items-center justify-center opacity-0 z-[1000] pointer-events-none">
                 State-of-the-Art Technology
               </div>
-
-     
 
               <div className=" pointer-events-none">
                 <div
