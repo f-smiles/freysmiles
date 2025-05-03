@@ -5698,68 +5698,66 @@ text-transform: uppercase;
     }
 
       
-    .horizontal-section {
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-      position: relative;
-    }
-    
-    .home-hero_components {
-      flex-direction: column;
-      /* justify-content: space-between; */
-      width: 100%;
-      height: 100%;
-      display: flex;
-    }
-    
-    .projects-collection-list {
-      perspective-origin: 50%;
-      transform-origin: 50%;
-      display: flex;
-      flex-direction: row;
-      position: absolute;
-      transform: translate(0);
-    }
-    
-    .project-item {
-      flex: none;
-      width: auto;
-      display: flex;
-      align-items: center;
-    }
-    
-    .project-tile {
-      width: 22em;
-      height: 29em;
-      margin-right: 1em; 
-      position: relative;
-    }
-    
-    .project-img-wrapper {
-      
-      width: 100%;
-      height: 100%;
-      position: relative;
-      display: grid;
-      /* place-items: center; */
-      overflow: hidden;
-    }
-    
-    .image-element__wrap,
-    .image__element {
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      grid-area: 1 / 1 / 2 / 2;
-      position: relative;
-      will-change: transform;
-      border-radius: inherit;
-    }
-    
- 
+   .horizontal-section {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.projects-collection-list {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.project-item {
+  flex: none;
+  width: 22em;
+  margin-right: 1em;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+/* Add staggered margin-tops to break visual symmetry */
+.project-item:nth-child(3n + 2) .project-tile {
+  margin-top: 5.12em;
+}
+.project-item:nth-child(3n + 3) .project-tile {
+  margin-top: 3em;
+}
+
+.project-tile {
+  width: 100%;
+  height: 29em;
+  position: relative;
+  display: block;
+}
+
+.project-img-wrapper {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-element__wrap,
+.image__element {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  grid-area: 1 / 1 / 2 / 2;
+  position: relative;
+  will-change: transform;
+  border-radius: inherit;
+}
+
 /* 
     @media screen and (max-width: 991px) {
       .project-tile {
@@ -5929,3 +5927,4 @@ text-transform: uppercase;
       }
     }
     
+ 

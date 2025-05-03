@@ -212,6 +212,127 @@ const StepsSection = () => {
     </div>
   );
 };
+function PixelCanvas({
+  colors = ["#f8fafc", "#f1f5f9", "#cbd5e1"],
+  gap = 5,
+  speed = 35,
+}) {
+  const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+  const pixelsRef = useRef([]);
+  const reducedMotion = useRef(
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+
+  class Pixel {
+    constructor(ctx, x, y, color, speed, delay) {
+      this.ctx = ctx;
+      this.x = x;
+      this.y = y;
+      this.color = color;
+      this.speed = this.getRandom(0.1, 0.9) * speed;
+      this.size = 0;
+      this.sizeStep = Math.random() * 0.4;
+      this.minSize = 0.5;
+      this.maxSizeInteger = 2;
+      this.maxSize = this.getRandom(this.minSize, this.maxSizeInteger);
+      this.delay = delay;
+      this.counter = 0;
+      this.counterStep = Math.random() * 4 + 1;
+      this.isIdle = false;
+      this.isReverse = false;
+      this.isShimmer = false;
+    }
+
+    getRandom(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    draw() {
+      const offset = this.maxSizeInteger * 0.5 - this.size * 0.5;
+      this.ctx.fillStyle = this.color;
+      this.ctx.fillRect(this.x + offset, this.y + offset, this.size, this.size);
+    }
+
+    appear() {
+      this.isIdle = false;
+      if (this.counter <= this.delay) {
+        this.counter += this.counterStep;
+        return;
+      }
+
+      if (this.size >= this.maxSize) {
+        this.isShimmer = true;
+      }
+
+      if (this.isShimmer) {
+        this.shimmer();
+      } else {
+        this.size += this.sizeStep;
+      }
+
+      this.draw();
+    }
+
+    shimmer() {
+      if (this.size >= this.maxSize) this.isReverse = true;
+      else if (this.size <= this.minSize) this.isReverse = false;
+
+      this.size += this.isReverse ? -this.speed : this.speed;
+    }
+  }
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    const resize = () => {
+      const { width, height } = canvas.getBoundingClientRect();
+      canvas.width = width;
+      canvas.height = height;
+
+      pixelsRef.current = [];
+      for (let x = 0; x < width; x += gap) {
+        for (let y = 0; y < height; y += gap) {
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const dx = x - width / 2;
+          const dy = y - height / 2;
+          const delay = reducedMotion.current ? 0 : Math.sqrt(dx * dx + dy * dy);
+
+          pixelsRef.current.push(new Pixel(ctx, x, y, color, speed * 0.001, delay));
+        }
+      }
+    };
+
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pixelsRef.current.forEach((p) => p.appear());
+      animationRef.current = requestAnimationFrame(render);
+    };
+
+    resize();
+    render();
+
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
+
+    return () => {
+      cancelAnimationFrame(animationRef.current);
+      observer.disconnect();
+    };
+  }, [colors, gap, speed]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "block",
+      }}
+    />
+  );
+}
 
 const FinancingTreatment = () => {
   // const canvasRef = useRef();
@@ -437,7 +558,20 @@ const FinancingTreatment = () => {
         path.style.strokeDashoffset = pathLength * (1 - progress);
       },
     });
-
+    gsap.fromTo(
+      textCurveRef.current,
+      { attr: { startOffset: "150%" } },
+      {
+        attr: { startOffset: "-50%" },
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${scrollDistance}`,
+          scrub: true,
+        },
+        ease: "none",
+      }
+    );
     const getCriticalPoints = () => {
       const points = [];
       let prevAngle = null;
@@ -562,6 +696,85 @@ const FinancingTreatment = () => {
   }, []);
   
 
+  const curveSvgRef = useRef();
+  const textCurveRef = useRef();
+  const filterRef = useRef();
+
+  const map = (x, a, b, c, d) => (x - a) * (d - c) / (b - a) + c;
+  const lerp = (a, b, n) => (1 - n) * a + n * b;
+  const clamp = (val, min, max) => Math.max(Math.min(val, max), min);
+
+  useEffect(() => {
+    let pathLength;
+    let positionY;
+    let svgRect;
+
+    const startOffset = { value: 0, amt: 0.22 };
+    const scroll = { value: window.scrollY, amt: 0.17 };
+    let entered = false;
+
+    const updateMetrics = () => {
+      svgRect = curveSvgRef.current.getBoundingClientRect();
+      positionY = svgRect.top + window.scrollY;
+      pathLength = curveSvgRef.current.querySelector('path').getTotalLength();
+    };
+
+    const computeOffset = () => {
+      return map(
+        positionY - window.scrollY,
+        window.innerHeight,
+        0,
+        pathLength,
+        -pathLength / 2
+      );
+    };
+
+    const updateTextOffset = () => {
+      if (textCurveRef.current) {
+        textCurveRef.current.setAttribute('startOffset', startOffset.value);
+      }
+    };
+
+    const updateFilter = (distance) => {
+      const maxScale = parseFloat(filterRef.current?.dataset.maxScale || 100);
+      const minScale = parseFloat(filterRef.current?.dataset.minScale || 0);
+      const newScale = clamp(map(distance, 0, 200, minScale, maxScale), minScale, maxScale);
+      if (filterRef.current) {
+        filterRef.current.scale.baseVal = newScale;
+      }
+    };
+
+    const update = () => {
+      const currentOffset = computeOffset();
+      startOffset.value = !entered
+        ? currentOffset
+        : lerp(startOffset.value, currentOffset, startOffset.amt);
+      updateTextOffset();
+
+      const currentScroll = window.scrollY;
+      scroll.value = !entered
+        ? currentScroll
+        : lerp(scroll.value, currentScroll, scroll.amt);
+      const distance = Math.abs(scroll.value - currentScroll);
+      updateFilter(distance);
+
+      if (!entered) entered = true;
+    };
+
+    const render = () => {
+      update();
+      requestAnimationFrame(render);
+    };
+
+    updateMetrics();
+    window.addEventListener('resize', updateMetrics);
+    render();
+
+    return () => {
+      window.removeEventListener('resize', updateMetrics);
+    };
+  }, []);
+
   return (
     <>
 <div className="bg-[#E5E5E4] min-h-screen pt-[160px] relative ">
@@ -636,7 +849,44 @@ const FinancingTreatment = () => {
 
 
 
-      <div style={{ height: "400vh" }}>
+      <div className="overflow-hidden" style={{ height: "400vh" }}>
+        
+      <svg
+        ref={curveSvgRef}
+        className="svgtext"
+        data-filter-type="distortion"
+        width="120%"
+        viewBox="0 0 1000 200"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <filter id="distortionFilter">
+            <feTurbulence type="turbulence" baseFrequency="0.01" numOctaves="1" result="noise" />
+            <feDisplacementMap
+              ref={filterRef}
+              in="SourceGraphic"
+              in2="noise"
+              scale="0"
+              xChannelSelector="R"
+              yChannelSelector="G"
+              data-min-scale="0"
+              data-max-scale="80"
+            />
+          </filter>
+        </defs>
+
+        <path
+          id="text-curve"
+          d="M 0 50 Q 100 0 200 100 Q 300 200 650 50 C 750 0 750 150 1000 50"
+          fill="none"
+        />
+        <text filter="url(#distortionFilter)">
+          <textPath className="font-neueroman uppercase text-[20px] fill-[#624B48]" ref={textCurveRef} href="#text-curve">
+          Invest in your smile, with flexibility built in.
+          </textPath>
+        </text>
+      </svg>
+
         <section
           ref={sectionRef}
           className="w-screen h-screen overflow-hidden flex items-center px-10"
@@ -664,42 +914,12 @@ const FinancingTreatment = () => {
 
 
       <section className="relative w-full h-screen font-neuehaas45">
+      <section className="bg-[#FF621D]">
+
+
+</section>
         <div className="items-start flex flex-col px-6">
-          <div className="mt-36">
-            <span className="text-[6vw]">Get</span>
-            <span className="text-[6vw] ml-[1vw] -mt-[1vw] font-saolitalic">
-              started
-            </span>
-      
-          </div>
-        </div>
-
-        <div className="absolute right-10 bottom-10 text-right z-10">
-          <p className="text-xl mb-[-1rem] font-neuehaas45">
-            {new Date().toLocaleString("default", { month: "long" })}
-          </p>
-
-          <h1 className="text-[20vw] leading-[0.85] font-bold">
-            {new Date().toLocaleString("default", { day: "numeric" })}
-          </h1>
-        </div>
-
-        <div className="absolute bottom-6 left-6 animate-bounce">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-      </section>
-      <div className="cube-outline">
+        <div className="cube-outline">
         <div class="cube">
           <div className="cube-face cube-face--front">
             <div className="text-overlay">
@@ -733,6 +953,18 @@ const FinancingTreatment = () => {
           <div class="cube-face cube-face--right"></div>
         </div>
       </div>
+        </div>
+
+    
+  
+      </section>
+   {/* <div style={{ width: '100vw', height: '100vh', background: '#09090b' }}>
+      <PixelCanvas
+        colors={["#e879f9", "#38bdf8", "#a855f7"]} 
+        gap={6}
+        speed={45}
+      />
+    </div> */}
       </div>
       {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
         <Canvas

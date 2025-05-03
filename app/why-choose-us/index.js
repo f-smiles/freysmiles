@@ -1285,23 +1285,22 @@ const ProjectImage = ({
 }) => {
   const containerRef = useRef(null);
   const innerElemsRef = useRef([]);
+
   useEffect(() => {
     const container = containerRef.current;
     const innerElems = innerElemsRef.current;
   
     if (!container || innerElems.length === 0) return;
-  
-    const rotation = (index % 2 === 0) ? 2 : 2; // even index = left, odd index = right
-    gsap.set(container, { rotate: rotation });
-  
+
+
     gsap.set([container, innerElems[0]], { transformOrigin: origin });
-  
+
     const hoverTimeline = gsap.timeline({ paused: true });
-  
+
     gsap.set(innerElems[0], {
       [animate]: initialScale,
     });
-  
+
     hoverTimeline.to(
       innerElems,
       {
@@ -1312,19 +1311,18 @@ const ProjectImage = ({
       },
       0
     );
-  
+
     const handleMouseEnter = () => hoverTimeline.play();
     const handleMouseLeave = () => hoverTimeline.reverse();
-  
+
     container.addEventListener("mouseenter", handleMouseEnter);
     container.addEventListener("mouseleave", handleMouseLeave);
-  
+
     return () => {
       container.removeEventListener("mouseenter", handleMouseEnter);
       container.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [elems, stagger, initialScale, ease, duration, animate, origin]);
-  
 
   return (
     <div ref={containerRef} className={className}>
@@ -1349,6 +1347,7 @@ const ProjectImage = ({
     </div>
   );
 };
+
 
 function MoreThanSmiles() {
   // useEffect(() => {
@@ -1399,6 +1398,7 @@ function MoreThanSmiles() {
     "../images/morethansmiles5.png",
     "../images/morethansmiles6.png",
   ]);
+  
 
   useEffect(() => {
     if (!imagesContainerRef.current) return;
@@ -1508,14 +1508,7 @@ function MoreThanSmiles() {
     };
   }, []);
 
-  const imageCarousel = [
-    "../images/morethansmiles1.png",
-    "../images/morethansmiles2.png",
-    "../images/morethansmiles3.png",
-    "../images/morethansmiles4.png",
-    "../images/morethansmiles5.png",
-    "../images/morethansmiles6.png",
-  ];
+
 
   const cardRefs = useRef([]);
 
@@ -1581,78 +1574,10 @@ function MoreThanSmiles() {
     return () => ctx.revert();
   }, []);
 
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const numLines = 120;
-    const lineSpacing = width / numLines;
-    const lines = Array.from({ length: numLines }, (_, i) => ({
-      x: i * lineSpacing,
-      baseY: height / 2,
-    }));
-
-    let mouse = { x: width / 2, y: height / 2 };
-
-    const handleMouseMove = (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    };
-
-    const draw = () => {
-      ctx.clearRect(0, 0, width, height);
-      ctx.strokeStyle = "white";
-      ctx.lineWidth = 4;
-
-      lines.forEach((line) => {
-        const dx = line.x - mouse.x;
-        const dist = Math.abs(dx);
-        const maxDist = 150;
-        const maxOffset = 100;
-        const offset = dist < maxDist ? (1 - dist / maxDist) * maxOffset : 0;
-
-        ctx.beginPath();
-        ctx.moveTo(line.x, line.baseY - offset);
-        ctx.lineTo(line.x, height);
-        ctx.stroke();
-      });
-
-      // Red ball
-      ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 12, 0, Math.PI * 2);
-      ctx.fillStyle = "red";
-      ctx.fill();
-
-      requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("resize", () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    });
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
+ 
   return (
     <>
-      <canvas
-      ref={canvasRef}
-      style={{ display: "block", background: "black", width: "100vw", height: "100vh" }}
-    />
+   
 <div className="horizontal-section" ref={wrapperRef}>
   <div className="page-wrapper">
     <div className="projects-collection-list">

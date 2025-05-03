@@ -809,7 +809,7 @@ const Invisalign = () => {
           </div>
         </section>
         <div className="min-h-screen relative">
-          <img className="w-1/3" src="../images/Invisalign1.png" />
+          <img className="w-full" src="../images/invisalign_mockup_3.jpg" />
           <div className="font-neuehaas45 perspective-1500 text-[#0414EA]">
             <div className="flip-wrapper">
               <div className="flip-container">

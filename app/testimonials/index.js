@@ -1,7 +1,13 @@
 "use client";
+import MouseTrail from "./mouse.js";
 
-import { motion, AnimatePresence, useMotionValue, useSpring} from "framer-motion";
-import { Canvas, useFrame, useThree , useLoader} from "@react-three/fiber";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
+import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
 import React, { useEffect, useState, useRef, Suspense, useMemo } from "react";
 import {
   EffectComposer,
@@ -30,8 +36,8 @@ function RibbonAroundSphere() {
   const ribbonRef = useRef();
   const segments = 1000;
 
-  const frontTexture = useLoader(THREE.TextureLoader, '/images/front.png');
-  const backTexture = useLoader(THREE.TextureLoader, '/images/back.png');
+  const frontTexture = useLoader(THREE.TextureLoader, "/images/front.png");
+  const backTexture = useLoader(THREE.TextureLoader, "/images/back.png");
 
   useEffect(() => {
     [frontTexture, backTexture].forEach((t) => {
@@ -49,30 +55,37 @@ function RibbonAroundSphere() {
     if (backTexture) backTexture.offset.x -= 0.001;
   });
 
-  const frontMaterial = useMemo(() => new THREE.MeshStandardMaterial({
-    map: frontTexture,
-    side: THREE.BackSide,
-    transparent: true,
-    roughness: 0.65,
-    metalness: 0.25,
-    alphaTest: 0.1,
-    flatShading: true,
-  }), [frontTexture]);
-  
-  const backMaterial = useMemo(() => new THREE.MeshStandardMaterial({
-    map: backTexture,
-    side: THREE.FrontSide,
-    transparent: true,
-    roughness: 0.65,
-    metalness: 0.25,
-    alphaTest: 0.1,
-    flatShading: true,
-  }), [backTexture]);
+  const frontMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        map: frontTexture,
+        side: THREE.BackSide,
+        transparent: true,
+        roughness: 0.65,
+        metalness: 0.25,
+        alphaTest: 0.1,
+        flatShading: true,
+      }),
+    [frontTexture]
+  );
+
+  const backMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        map: backTexture,
+        side: THREE.FrontSide,
+        transparent: true,
+        roughness: 0.65,
+        metalness: 0.25,
+        alphaTest: 0.1,
+        flatShading: true,
+      }),
+    [backTexture]
+  );
 
   const geometry = useMemo(() => {
     const numPoints = 7;
     const radius = 5;
-
 
     // const curvePoints = Array.from({ length: numPoints }, (_, i) => {
     //   const theta = (i / numPoints) * Math.PI * 2;
@@ -87,15 +100,37 @@ function RibbonAroundSphere() {
 
     const curvePoints = [
       new THREE.Vector3(0, -0.7791210925776592, 4.938924045885809),
-      new THREE.Vector3(3.8972287305003155, 0.390385708530144, 3.107936202961956),
-      new THREE.Vector3(4.859258415665126, -0.3968854951588747, -1.109040237509834),
-      new THREE.Vector3(2.082282719004117, 1.4028390529397634, -4.3239036913044595),
-      new THREE.Vector3(-2.012218566064509, -1.8686426688797089, -4.178414895675252),
-      new THREE.Vector3(-4.730483545820437, -1.2069668652552943, -1.0797020000434934),
-      new THREE.Vector3(-3.6656012860016367, -1.7372838238901793, 2.9232194798394224),
+      new THREE.Vector3(
+        3.8972287305003155,
+        0.390385708530144,
+        3.107936202961956
+      ),
+      new THREE.Vector3(
+        4.859258415665126,
+        -0.3968854951588747,
+        -1.109040237509834
+      ),
+      new THREE.Vector3(
+        2.082282719004117,
+        1.4028390529397634,
+        -4.3239036913044595
+      ),
+      new THREE.Vector3(
+        -2.012218566064509,
+        -1.8686426688797089,
+        -4.178414895675252
+      ),
+      new THREE.Vector3(
+        -4.730483545820437,
+        -1.2069668652552943,
+        -1.0797020000434934
+      ),
+      new THREE.Vector3(
+        -3.6656012860016367,
+        -1.7372838238901793,
+        2.9232194798394224
+      ),
     ];
-    
-    
 
     const curve = new THREE.CatmullRomCurve3(curvePoints, true);
     curve.tension = 0.7;
@@ -103,7 +138,7 @@ function RibbonAroundSphere() {
     const spacedPoints = curve.getSpacedPoints(segments);
     const frames = curve.computeFrenetFrames(segments, true);
 
-    const dimensions = [-0.7, 0.7]; 
+    const dimensions = [-0.7, 0.7];
     const finalVertices = [];
 
     // build ribbon vertices along binormals
@@ -138,8 +173,7 @@ function RibbonAroundSphere() {
         uvs.push(j / segments, i);
       }
     }
-    geom.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-
+    geom.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
 
     geom.clearGroups();
     geom.addGroup(0, indices.length, 0); // front material
@@ -149,11 +183,13 @@ function RibbonAroundSphere() {
   }, []);
 
   return (
-    <mesh ref={ribbonRef} geometry={geometry} material={[frontMaterial, backMaterial]} />
+    <mesh
+      ref={ribbonRef}
+      geometry={geometry}
+      material={[frontMaterial, backMaterial]}
+    />
   );
 }
-
-
 
 const RotatingModel = () => {
   const { nodes } = useGLTF("/images/SVOX1F.glb");
@@ -345,10 +381,9 @@ const StickyColumnScroll = () => {
     },
   ];
 
-
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  
+
   const [hoveredImage, setHoveredImage] = useState(null);
   const [previousImage, setPreviousImage] = useState(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -360,21 +395,18 @@ const StickyColumnScroll = () => {
       setHoveredIndex(index);
     }
   };
-  
+
   const handleMouseLeave = () => {
     setHoveredImage(null);
     setPreviousImage(null);
   };
 
-  
   const handleMouseMove = (e) => {
     const offsetY = e.pageY - sectionTop;
     x.set(e.clientX + 16);
     y.set(offsetY);
   };
-  
-  
-  
+
   const patientSectionRef = useRef();
   const [sectionTop, setSectionTop] = useState(0);
 
@@ -386,11 +418,41 @@ const StickyColumnScroll = () => {
     }
   }, []);
 
-  
   return (
     <>
+      <section className="relative min-h-screen bg-[#EAF879] text-black flex flex-col items-center justify-center px-6 text-center">
+        <MouseTrail
+          images={[
+            "../images/mousetrail/flame.png",
+            "../images/mousetrail/cat.png",
+            "../images/mousetrail/pixelstar.png",
+            "../images/mousetrail/avocado.png",
+            "../images/mousetrail/ghost.png",
+            "../images/mousetrail/pacman.png",
+            "../images/mousetrail/evilrobot.png",
+            "../images/mousetrail/thirdeye.png",
+            "../images/mousetrail/alientcat.png",
+            "../images/mousetrail/gotcha.png",
+            "../images/mousetrail/karaokekawaii.png",
+            "../images/mousetrail/mushroom.png",
+            "../images/mousetrail/pixelcloud.png",
+            "../images/mousetrail/pineapple.png",
+          ]}
+        />
 
-            {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
+        <h1 className="text-[8vw] leading-[0.9] font-neueroman uppercase max-w-[800px]">
+          JOIN THE SMILE CLUB
+        </h1>
+
+        <p className="max-w-3xl mt-10 text-[18px] leading-relaxed font-neuehaas45">
+          We are committed to setting the standard for exceptional service. Our
+          communication is always open—every question is welcome, and every
+          concern is met with care and professionalism.
+        </p>
+
+   
+      </section>
+      {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
           <div className="w-[64px] h-auto">
     
             <img src="../images/whitedots.svg" />
@@ -409,49 +471,52 @@ const StickyColumnScroll = () => {
             </h1>
           </nav>
         </header> */}
-        <div className="bg-[#F9F9F9]">
+      <div className="bg-[#F9F9F9]">
         <svg
-        viewBox="0 0 302 31"
-        className="absolute left-0 -bottom-1 w-full h-[20px] z-0"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M1.3,29.2C3.9,28,6.4,26.7,9,25.5c10.3-4.9,21.2-9.4,31.6-11.4s21.2-1,31,2.8s19.1,9.5,29.3,11.9
+          viewBox="0 0 302 31"
+          className="absolute left-0 -bottom-1 w-full h-[20px] z-0"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M1.3,29.2C3.9,28,6.4,26.7,9,25.5c10.3-4.9,21.2-9.4,31.6-11.4s21.2-1,31,2.8s19.1,9.5,29.3,11.9
           s20.2-0.2,30.1-4.1c9.4-3.7,18.7-8.3,28.5-9.8s19.1,1.7,28.5,5.7s19.3,8.5,28.9,6.8c9.6-1.7,17.6-10.3,26-17
           c4.2-3.3,8.3-6.1,13.1-7.6c4.8-1.6,9.8-1.7,14.7-0.9c10.4,1.8,20.3,7.4,30,13.1"
-          stroke="#000"
-          strokeWidth="2"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+            stroke="#000"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
         <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
-
-      <path
-        ref={pathRef}
-        strokeLinecap="round"
-        strokeLinejoin="miter"
-        fillOpacity="0"
-        strokeMiterlimit="4"
-        stroke="rgb(248,134,63)"
-        strokeOpacity="1"
-        strokeWidth="1.5"
-        d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
-      />
-    </svg>
+          <path
+            ref={pathRef}
+            strokeLinecap="round"
+            strokeLinejoin="miter"
+            fillOpacity="0"
+            strokeMiterlimit="4"
+            stroke="rgb(248,134,63)"
+            strokeOpacity="1"
+            strokeWidth="1.5"
+            d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
+          />
+        </svg>
         <Canvas
-  camera={{ position: [0, 6, 12], fov: 45 }}
-  style={{ width: '100vw', height: '100vh' }}
->
-  <color attach="background" args={['#ffffff']} />
-  <ambientLight intensity={0.86} color={0xffffff} />
-<directionalLight position={[0, -10, -10]} intensity={1} color={0xffffff} />
+          camera={{ position: [0, 6, 12], fov: 45 }}
+          style={{ width: "100vw", height: "100vh" }}
+        >
+          <color attach="background" args={["#ffffff"]} />
+          <ambientLight intensity={0.86} color={0xffffff} />
+          <directionalLight
+            position={[0, -10, -10]}
+            intensity={1}
+            color={0xffffff}
+          />
 
-  {/* <OrbitControls /> */}
-  <RibbonAroundSphere />
-</Canvas>
-        <section className="w-full text-black px-10 md:px-20 md:py-16 grid grid-rows-2">
+          {/* <OrbitControls /> */}
+          <RibbonAroundSphere />
+        </Canvas>
+        {/* <section className="w-full text-black px-10 md:px-20 md:py-16 grid grid-rows-2">
   <div className="flex items-center justify-end">
     <div className="max-w-[640px] text-left text-gray-500 text-base leading-relaxed">
  
@@ -468,55 +533,50 @@ const StickyColumnScroll = () => {
   </div>
 
 
-</section>
+</section> */}
 
+        <section
+          ref={patientSectionRef}
+          className="min-h-screen w-full px-6 relative"
+          onMouseMove={handleMouseMove}
+        >
+          <div className="absolute top-0 left-0 pointer-events-none z-50">
+            <motion.div
+              className="w-[180px] h-[250px] rounded-lg overflow-hidden"
+              style={{ x, y }}
+            >
+              {previousImage && (
+                <div
+                  className="absolute inset-0 bg-cover bg-center z-0"
+                  style={{ backgroundImage: `url(${previousImage})` }}
+                />
+              )}
+              {hoveredImage && (
+                <motion.div
+                  key={hoveredIndex}
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "0%" }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="absolute inset-0 bg-cover bg-center z-10"
+                  style={{ backgroundImage: `url(${hoveredImage})` }}
+                />
+              )}
+            </motion.div>
+          </div>
 
-<section
-  ref={patientSectionRef}
-  className="min-h-screen w-full px-6 relative"
-  onMouseMove={handleMouseMove}
->
-
-  <div className="absolute top-0 left-0 pointer-events-none z-50">
-    <motion.div
-      className="w-[180px] h-[250px] rounded-lg overflow-hidden"
-      style={{ x, y }} 
-    >
-      {previousImage && (
-        <div
-          className="absolute inset-0 bg-cover bg-center z-0"
-          style={{ backgroundImage: `url(${previousImage})` }}
-        />
-      )}
-      {hoveredImage && (
-        <motion.div
-          key={hoveredIndex}
-          initial={{ x: "-100%" }}
-          animate={{ x: "0%" }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="absolute inset-0 bg-cover bg-center z-10"
-          style={{ backgroundImage: `url(${hoveredImage})` }}
-        />
-      )}
-    </motion.div>
-  </div>
-
-  {/* Patient list */}
-  <h2 className="uppercase font-neueroman font-bold">Our Patients</h2>
-  <ul className="font-neue-montreal">
-    {patients.map((member, index) => (
-      <li
-        key={index}
-        onMouseEnter={() => handleMouseEnter(member.image, index)}
-        onMouseLeave={handleMouseLeave}
-        className="border-b py-2"
-      >
-        {member.name}
-      </li>
-    ))}
-  </ul>
-</section>
-
+          <ul className="font-neueroman uppercase text-[14px]">
+            {patients.map((member, index) => (
+              <li
+                key={index}
+                onMouseEnter={() => handleMouseEnter(member.image, index)}
+                onMouseLeave={handleMouseLeave}
+                className="border-b py-2"
+              >
+                <span className="pl-[15%] block">{member.name}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <section
         // className="bg-[#fb542d] py-10"
@@ -561,7 +621,7 @@ const StickyColumnScroll = () => {
         </section>
         <section className="w-2/3 py-16"></section>
 
-      {/* <div className="">
+        {/* <div className="">
               <h3 className="font-bold font-helvetica-neue uppercase tracking-widest text-xs pt-2">
                 Our Patients
               </h3>
@@ -582,116 +642,113 @@ const StickyColumnScroll = () => {
                   ))}
               </ul>
             </div> */}
-      <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
-        <div
-          id="left-column"
-          style={{
-            width: "40%",
+        <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
+          <div
+            id="left-column"
+            style={{
+              width: "40%",
 
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            position: "relative",
-          }}
-        >
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              position: "relative",
+            }}
+          >
+            <div
+              ref={text1Ref}
+              className="leading-[1.2] font-helvetica-neue text-[2em] max-w-[500px] ml-10 relative "
+            >
+              Voted the best orthodontist in Lehigh Valley year after year
+            </div>
+          </div>
 
           <div
-            ref={text1Ref}
-            className="leading-[1.2] font-helvetica-neue text-[2em] max-w-[500px] ml-10 relative "
+            id="right-column"
+            className="relative"
+            style={{
+              width: "60%",
+              overflowY: "auto",
+              // padding: "40px",
+            }}
           >
-            Voted the best orthodontist in Lehigh Valley year after year
-          </div>
-        </div>
-
-        <div
-          id="right-column"
-          className="relative"
-          style={{
-            width: "60%",
-            overflowY: "auto",
-            // padding: "40px",
-          }}
-        >
-          <section className="relative" style={{ marginBottom: "0vh" }}>
-            <div className="relative w-full h-full">
-              <div ref={gradient1Ref} className="gradient-container">
-                <div className="gradient-col">
-                  <div className="gradient-1 h-full"></div>
+            <section className="relative" style={{ marginBottom: "0vh" }}>
+              <div className="relative w-full h-full">
+                <div ref={gradient1Ref} className="gradient-container">
+                  <div className="gradient-col">
+                    <div className="gradient-1 h-full"></div>
+                  </div>
+                  <div className="gradient-col">
+                    <div className="gradient-2 h-full"></div>
+                  </div>
+                  <div className="gradient-col">
+                    <div className="gradient-1 h-full"></div>
+                  </div>
+                  <div className="gradient-col">
+                    <div className="gradient-2 h-full"></div>
+                  </div>
                 </div>
-                <div className="gradient-col">
-                  <div className="gradient-2 h-full"></div>
-                </div>
-                <div className="gradient-col">
-                  <div className="gradient-1 h-full"></div>
-                </div>
-                <div className="gradient-col">
-                  <div className="gradient-2 h-full"></div>
+                <div>
+                  <img
+                    ref={image1Ref}
+                    src="../images/patient25k.png"
+                    alt="patient"
+                    className="absolute top-[45%] right-[15%] w-[250px] h-auto "
+                  />
                 </div>
               </div>
-              <div>
-                <img
-                  ref={image1Ref}
-                  src="../images/patient25k.png"
-                  alt="patient"
-                  className="absolute top-[45%] right-[15%] w-[250px] h-auto "
-                />
+            </section>
+            <div className="flex items-center justify-center pl-10  h-auto">
+              <img
+                className="h-[350px] max-w-[250px] object-contain rounded-[20px]"
+                src="../images/testimonial1.png"
+                alt="Testimonial"
+              />
+            </div>
+            <div
+              style={{ marginBottom: "10vh" }}
+              className="mt-40 leading-[1.2] max-w-[560px] ml-auto "
+            >
+              <div className="flex items-end font-helvetica-neue-light text-[18px] ">
+                I had an open bite and misaligned teeth most of my life. Dr Frey
+                fixed it and in record time. 1 1/2 yrs with Invisalign’s. Highly
+                recommended! Friendly staff and easy to make appointments!
               </div>
+              <p className="text-[16px] font-helvetica-neue-light">Karen O.</p>
             </div>
-          </section>
-          <div className="flex items-center justify-center pl-10  h-auto">
-            <img
-              className="h-[350px] max-w-[250px] object-contain rounded-[20px]"
-              src="../images/testimonial1.png"
-              alt="Testimonial"
-            />
-          </div>
-          <div
-            style={{ marginBottom: "10vh" }}
-            className="mt-40 leading-[1.2] max-w-[560px] ml-auto "
-          >
-            <div className="flex items-end font-helvetica-neue-light text-[18px] ">
-              I had an open bite and misaligned teeth most of my life. Dr Frey
-              fixed it and in record time. 1 1/2 yrs with Invisalign’s. Highly
-              recommended! Friendly staff and easy to make appointments!
+            <p className="pl-10 max-w-[300px] justify-center items-center font-helvetica-neue-light text-black text-[16px]">
+              “FreySmiles is the best! I'm so happy with my smile and the
+              confidence it's brought me!” -Lainie
+            </p>
+            <div class="gradient-container-2">
+              <div class="gradient-col-2"></div>
+              <div class="gradient-col-2"></div>
+              <div class="gradient-col-2"></div>
+              <div class="gradient-col-2"></div>
             </div>
-            <p className="text-[16px] font-helvetica-neue-light">Karen O.</p>
+
+            <section style={{ marginBottom: "100vh" }}>
+              <h1 className="font-neue-montreal text-xl">
+                I am certainly going to miss Dr. Frey and his team!! The
+                professionalism and kindness by each person does not go
+                unnoticed! Dr. Frey has always been very patient and such a
+                pleasure to be around. They celebrate the end of your Invisalign
+                journey as if it was their own! I would, and do recommend Frey
+                Smiles to anyone looking for perfect their smile. I came in for
+                minor cosmetic adjustments, and Dr. Frey somehow made magic
+                happen in ways I didn’t expect. I love my smile! Thank you so
+                much team - and thank you to all the girls. I would mention
+                names, but truly - everyone was so amazing!
+              </h1>
+              <h2 className="text-xl">-Stephanie N.</h2>
+            </section>
+
+            <section className="relative overflow-hidden">
+              <img src="../images/neonsunpattern.svg" />
+            </section>
           </div>
-          <p className="pl-10 max-w-[300px] justify-center items-center font-helvetica-neue-light text-black text-[16px]">
-            “FreySmiles is the best! I'm so happy with my smile and the
-            confidence it's brought me!” -Lainie
-          </p>
-          <div class="gradient-container-2">
-            <div class="gradient-col-2"></div>
-            <div class="gradient-col-2"></div>
-            <div class="gradient-col-2"></div>
-            <div class="gradient-col-2"></div>
-          </div>
-
-
-          <section style={{ marginBottom: "100vh" }}>
-            <h1 className="font-neue-montreal text-xl">
-              I am certainly going to miss Dr. Frey and his team!! The
-              professionalism and kindness by each person does not go unnoticed!
-              Dr. Frey has always been very patient and such a pleasure to be
-              around. They celebrate the end of your Invisalign journey as if it
-              was their own! I would, and do recommend Frey Smiles to anyone
-              looking for perfect their smile. I came in for minor cosmetic
-              adjustments, and Dr. Frey somehow made magic happen in ways I
-              didn’t expect. I love my smile! Thank you so much team - and thank
-              you to all the girls. I would mention names, but truly - everyone
-              was so amazing!
-            </h1>
-            <h2 className="text-xl">-Stephanie N.</h2>
-          </section>
-
-          <section className="relative overflow-hidden">
-            <img src="../images/neonsunpattern.svg" />
-          </section>
         </div>
       </div>
-    </div>
     </>
-
   );
 };
 
