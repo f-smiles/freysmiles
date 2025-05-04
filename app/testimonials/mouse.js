@@ -49,6 +49,8 @@ export default function MouseTrail({ images = [] }) {
     };
   }, [images]);
 
+  
+
   const showNextImage = () => {
     if (!imageRefs.current.length) return;
 
@@ -91,37 +93,33 @@ export default function MouseTrail({ images = [] }) {
         scale: 0.2,
       }, 0.45);
 
-    imgIndex.current = (imgIndex.current + 1) % imageRefs.current.length;
+      imgIndex.current = Math.floor(Math.random() * imageRefs.current.length);
+
   };
 
   return (
     <div ref={containerRef} className="pointer-events-none fixed top-0 left-0 w-full h-full z-50">
       {images.map((src, idx) => (
-        <div
-          key={idx}
-          ref={(el) => (imageRefs.current[idx] = el)}
-          className="content__img"
-          style={{
-            width: '96px',
-            aspectRatio: '1.1',
-            borderRadius: '7px',
-            overflow: 'hidden',
-            opacity: 0,
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            className="content__img-inner"
-            style={{
-              backgroundImage: `url(${src})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              width: 'calc(100% + 20px)',
-              height: 'calc(100% + 20px)',
-              transform: 'translate(-10px, -10px)',
-            }}
-          />
-        </div>
+      <div
+      key={idx}
+      ref={(el) => (imageRefs.current[idx] = el)}
+      style={{
+        opacity: 0,
+        pointerEvents: 'none',
+        position: 'absolute',
+      }}
+    >
+      <img
+        src={src}
+        style={{
+          maxWidth: '100px',
+          height: 'auto',
+          display: 'block',
+        }}
+        alt=""
+      />
+    </div>
+    
       ))}
     </div>
   );

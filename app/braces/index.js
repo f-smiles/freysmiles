@@ -308,13 +308,13 @@ const Braces = () => {
   return (
     <>
 <section className="relative w-full h-screen overflow-hidden text-white font-neueroman">
-  {/* Background or canvas layer */}
+
   <div
     ref={containerRef}
     className="pointer-events-none absolute top-0 left-0 w-screen h-screen z-0"
   />
 
-  {/* Foreground content */}
+
   <div className="relative z-10 h-full px-6 md:px-20 py-16 flex flex-col justify-between">
     {/* Top Text */}
     <div className="flex flex-col items-center justify-center text-center mt-24">
@@ -334,12 +334,10 @@ const Braces = () => {
       <path d="M20 0 Q40 120 20 240" stroke="white" fill="none" />
     </svg>
 
-    {/* Paragraph in bottom-right */}
+
     <div className="absolute bottom-6 right-6 max-w-sm text-[13px] leading-snug font-sans text-white/90">
       <p>
-        TUX Karma is a young organization in development. We are trying things out,
-        seeing what works, what doesn't. The approach you see on this page is what we are
-        currently using. Come back in a few months, and we might be trying something else!
+
       </p>
     </div>
   </div>

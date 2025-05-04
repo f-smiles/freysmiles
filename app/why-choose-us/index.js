@@ -39,27 +39,197 @@ if (typeof window !== "undefined") {
 }
 
 export default function WhyChooseUs() {
+    const [showIntro, setShowIntro] = useState(true);
   return (
     <>
-      <Hero />
-      <CardStack />
-      <StackCards />
-      <RepeatText />
-      <MoreThanSmiles />
+   {showIntro && <Intro onFinished={() => setShowIntro(false)} />}
 
-      <About />
-
-      <VennDiagram />
-      {/* <GridLayout /> */}
-      <div className="h-[100vh] w-auto">
-        <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
-          <SimplePlane />
-        </Curtains>
-      </div>
+{!showIntro && (
+  <>
+<Hero />
+    <CardStack />
+    <StackCards />
+    <RepeatText />
+    <MoreThanSmiles />
+    <About />
+    <VennDiagram />
+    <div className="h-[100vh] w-auto">
+      <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
+        <SimplePlane />
+      </Curtains>
+    </div>
+  </>
+)}
     </>
   );
 }
 
+
+const Intro = ({ texts = [], onFinished }) => {
+
+  const wrapperRef = useRef(null);
+  const circleTextRefs = useRef([]);
+  const enterCtrlRef = useRef(null);
+  const enterBgRef = useRef(null);
+
+  const contentRef = useRef(null);
+  
+  useEffect(() => {
+
+    const circleEls = circleTextRefs.current;
+    const enterCtrl = enterCtrlRef.current;
+    const enterBg = enterBgRef.current;
+
+    const contentKids = contentRef.current.children;
+
+
+    gsap.set(circleEls,           { transformOrigin: '50% 50%' });
+    gsap.set([circleEls, contentKids], { opacity: 0 });
+    gsap.set(enterCtrl,           { pointerEvents: 'none' });
+
+
+    const onEnterHover = () => {
+      gsap.killTweensOf([enterBg, circleEls]);
+      gsap.to(enterBg, {
+        duration: 1, ease: 'expo',
+        scale: 1.4
+      });
+      gsap.to(circleEls, {
+        duration: 1, ease: 'expo',
+        scale: 1.15,
+        rotation: i => i % 2 ? '-=90' : '+=90',
+        opacity: 0.4
+      });
+    };
+    const onEnterOut = () => {
+      gsap.to(enterBg, {
+        duration: 1, ease: 'expo',
+        scale: 1
+      });
+      gsap.to(circleEls, {
+        duration: 1, ease: 'expo',
+        scale: 1,
+        rotation: i => i % 2 ? '+=120' : '-=120',
+        opacity: 1,
+        stagger: { amount: -0.2 }
+      });
+    };
+    const onEnterClick = () => {
+      startExitAnimation();
+    };
+
+   
+    enterCtrl.addEventListener('mouseenter', onEnterHover);
+    enterCtrl.addEventListener('mouseleave', onEnterOut);
+    enterCtrl.addEventListener('click', onEnterClick);
+
+
+    const introTL = gsap.timeline()
+      .addLabel('start', 0)
+      .to(circleEls, {
+        duration: 3,
+        ease: 'expo.inOut',
+        rotation: i => i % 2 ? 90 : -90,
+        stagger: { amount: 0.4 }
+      }, 'start')
+      .to([circleEls, enterCtrl], {
+        duration: 3,
+        ease: 'expo.inOut',
+        startAt: { opacity: 0, scale: 0.8 },
+        scale: 1,
+        opacity: 1,
+        stagger: { amount: 0.4 }
+      }, 'start')
+      .add(() => gsap.set(enterCtrl, { pointerEvents: 'auto' }), 'start+=2');
+
+
+    function startExitAnimation() {
+      introTL.kill();
+      gsap.set(enterCtrl, { pointerEvents: 'none' });
+      enterCtrl.removeEventListener('mouseenter', onEnterHover);
+      enterCtrl.removeEventListener('mouseleave', onEnterOut);
+      enterCtrl.removeEventListener('click', onEnterClick);
+
+      gsap.set([contentRef.current], { opacity: 1 });
+      const exitTL = gsap.timeline()
+        .to(enterCtrl, {
+          duration: 0.6,
+          ease: 'back.in',
+          scale: 0.2,
+          opacity: 0
+        }, 0)
+        .to(circleEls, {
+          duration: 0.8,
+          ease: 'back.in',
+          scale: 0,
+          opacity: 0,
+          stagger: { amount: -0.4 }
+        }, 0)
+        .to([contentKids], {
+          duration: 0.9,
+          ease: 'back.out',
+          startAt: { opacity: 0, scale: 1.2 },
+          scale: 1,
+          opacity: 1,
+          stagger: { amount: 0.3 }
+        }, 1.3)
+        .add(() => onFinished && onFinished());
+    }
+
+
+    return () => {
+      introTL.kill();
+      enterCtrl.removeEventListener('mouseenter', onEnterHover);
+      enterCtrl.removeEventListener('mouseleave', onEnterOut);
+      enterCtrl.removeEventListener('click', onEnterClick);
+    };
+  }, [onFinished]);
+
+  return (
+<main ref={wrapperRef} className="demo-2 relative w-full h-screen overflow-hidden bg-black text-white">
+
+    <svg className="circles w-full h-full" viewBox="0 0 1400 1400">
+      <defs>
+        <path id="circle-1" d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5" />
+        <path id="circle-2" d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5" />
+        <path id="circle-3" d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5" />
+        <path id="circle-4" d="M567.5,700.5A133,133 0 1 1833.5,700.5A133,133 0 1 1567.5,700.5" />
+      </defs>
+
+      <text ref={el => (circleTextRefs.current[0] = el)} className="circles__text circles__text--1">
+        <textPath xlinkHref="#circle-1" textLength="2830">
+          Low dose 3d digital radiographs&nbsp;
+        </textPath>
+      </text>
+      <text ref={el => (circleTextRefs.current[1] = el)} className="circles__text circles__text--2">
+        <textPath xlinkHref="#circle-2" textLength="2001">
+          Accelerated Treatment&nbsp;
+        </textPath>
+      </text>
+      <text ref={el => (circleTextRefs.current[2] = el)} className="circles__text circles__text--3">
+        <textPath xlinkHref="#circle-3" textLength="1341">
+          Invisalign Invisalign Invisalign&nbsp;
+        </textPath>
+      </text>
+      <text ref={el => (circleTextRefs.current[3] = el)} className="circles__text circles__text--4">
+        <textPath xlinkHref="#circle-4" textLength="836">
+          Why choose us Why choose us Why choose us&nbsp;
+        </textPath>
+      </text>
+    </svg>
+
+
+    <div className="content" ref={contentRef}>
+      <p>We are a creative agency that focuses on human-centric design and ergonomic workplace innovations.</p>
+    </div>
+
+    <button className="enter" ref={enterCtrlRef}>
+      <div className="enter__bg" ref={enterBgRef} />
+      <span className="enter__text">Enter</span>
+    </button>
+  </main>
+  );
+};
 function Hero() {
   const overlayRef = useRef(null);
   const contentRef = useRef(null);
@@ -882,6 +1052,7 @@ function StackCards() {
 
   return (
     <section ref={containerRef}>
+      
       <section className="bg-[#FEF9F8]  sm:py-32">
         <div className=" w-48 h-48 translate-x-1/3 -z-10">
           <Shape06 />

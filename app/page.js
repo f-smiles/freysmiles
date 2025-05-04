@@ -4229,7 +4229,7 @@ function GiftCards() {
           Send a Gift Card
         </Link>
         <img
-          src="../images/giftcardbg.png"
+          src="../images/mockupgiftcardtest.png"
           alt="gift cards mockup"
           className="absolute inset-0 object-cover object-center w-full h-full -z-10"
         />

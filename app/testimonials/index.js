@@ -384,28 +384,67 @@ const StickyColumnScroll = () => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const [hoveredImage, setHoveredImage] = useState(null);
-  const [previousImage, setPreviousImage] = useState(null);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
 
-  const handleMouseEnter = (imageUrl, index) => {
-    if (imageUrl !== hoveredImage) {
-      setPreviousImage(hoveredImage);
-      setHoveredImage(imageUrl);
-      setHoveredIndex(index);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const lastIndex = useRef(null);
+  const animationQueue = useRef([]);
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseEnter = (index) => {
+    setHoveredIndex(index);
+    
+    if (lastIndex.current === null) {
+
+      setActiveIndex(index);
+      lastIndex.current = index;
+      return;
     }
+
+    const direction = index > lastIndex.current ? "down" : "up";
+    const step = direction === "down" ? 1 : -1;
+    
+ 
+    const sequence = [];
+    for (let i = lastIndex.current; i !== index; i += step) {
+      sequence.push(i + step);
+    }
+
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      animationQueue.current = [];
+    }
+
+
+    sequence.forEach((seqIndex, i) => {
+      timeoutRef.current = setTimeout(() => {
+        setActiveIndex(seqIndex);
+      }, i ); 
+    });
+
+    lastIndex.current = index;
   };
 
   const handleMouseLeave = () => {
-    setHoveredImage(null);
-    setPreviousImage(null);
+    setHoveredIndex(null);
+    setActiveIndex(null);
+    lastIndex.current = null;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    animationQueue.current = [];
   };
 
-  const handleMouseMove = (e) => {
-    const offsetY = e.pageY - sectionTop;
-    x.set(e.clientX + 16);
-    y.set(offsetY);
-  };
+
 
   const patientSectionRef = useRef();
   const [sectionTop, setSectionTop] = useState(0);
@@ -418,9 +457,85 @@ const StickyColumnScroll = () => {
     }
   }, []);
 
+  const containerRef = useRef(null);
+
+  const testimonials = [
+    {
+      name: "JAMES PICA",
+      text: "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!",
+      color: "bg-[#d85749]" ,
+       height: "h-[320px]",
+       width: "w-[360px]",
+    },
+    {
+      name: "Thomas StPierre",
+      text: "I had a pretty extreme case and it took some time, but FreySmiles gave me the smile I had always hoped for. Thank you!",
+      color: "bg-[#16b5c2]",
+      height: "h-[240px]",
+      width: "w-[240px]",
+    },
+    {
+      name: "FEI ZHAO",
+      text: "Our whole experience for the past 10 years of being under Dr. Gregg Frey’s care and his wonderful staff has been amazing. My son and my daughter have most beautiful smiles, and they received so many compliments on their teeth. It has made a dramatic and positive change in their lives. Dr. Frey is a perfectionist, and his treatment is second to none. I recommend Dr. Frey highly and without any reservation.",
+      color: "bg-[#cbb52a]",
+      height: "h-[320px]",
+      width: "w-[360px]",
+    },
+    {
+      name: "Diana Gomez",
+      text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don’t have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
+      color: "bg-[#E4A0F6]",
+      height: "h-[320px]",
+      width: "w-[360px]",
+      
+    },
+    {
+      name: "Brandi Moyer",
+      text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
+      color: "bg-[#FEBD01]",
+    },
+    {
+      name: "Tracee Benton",
+      text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
+      color: "bg-[#72A806]",
+    },
+
+      {
+      name: "Sara Moyer",
+      text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
+      color: "bg-[#9b84fb]",
+      height: "h-[300px]",
+      width: "w-[340px]",
+    },
+    {
+      name: "Vicki Weaver",
+      text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
+      color: "bg-[#FF984F]",
+    },
+    {
+      name: "Andrew Cornell",
+      text: "Over 20 years ago, I went to Dr. Frey to fix my cross bite and get braces. Since then, my smile looks substantially nicer. My entire mouth feels better as well. The benefits of orthodontics under Dr. Frey continue paying dividends.",
+      color: "bg-[#08a1dc]",
+    },
+    {
+      name: "Shelby Loucks",
+      text: "THEY ARE AMAZING!! Great staff and wonderful building. HIGHLY recommend to anyone looking for an orthodontist.",
+      color: "bg-[#bc5935]",
+      height: "h-[240px]",
+      width: "w-[240px]",
+    },
+    {
+      name: "Mandee Kaur",
+      text: "I would highly recommend FreySmiles! Excellent orthodontic care, whether it’s braces or Invisalign, Dr. Frey and his team pay attention to detail in making sure your smile is flawless! I would not trust anyone else for my daughter’s care other than FreySmiles.",
+      color: "bg-[#7ca6f5]",
+    },
+    
+
+  ];
+  
   return (
     <>
-      <section className="relative min-h-screen bg-[#EAF879] text-black flex flex-col items-center justify-center px-6 text-center">
+      <section className=" justify-center  items-center relative min-h-screen bg-[#EAF879] text-black flex flex-col ">
         <MouseTrail
           images={[
             "../images/mousetrail/flame.png",
@@ -437,21 +552,103 @@ const StickyColumnScroll = () => {
             "../images/mousetrail/mushroom.png",
             "../images/mousetrail/pixelcloud.png",
             "../images/mousetrail/pineapple.png",
+            // "../images/mousetrail/upsidedowncat.png",
+            "../images/mousetrail/pixelsun.png",
+            "../images/mousetrail/cherries.png",
+            "../images/mousetrail/watermelon.png",
+            "../images/mousetrail/dolphins.png",
+            "../images/mousetrail/jellyfish.png",
+            "../images/mousetrail/nyancat.png",
+            "../images/mousetrail/donut.png",
+            "../images/mousetrail/controller.png",
+            "../images/mousetrail/dinosaur.png",
+            "../images/mousetrail/headphones.png",
+            "../images/mousetrail/porsche.png",
           ]}
         />
 
-        <h1 className="text-[8vw] leading-[0.9] font-neueroman uppercase max-w-[800px]">
+        <h1 className="items-center px-6 text-center text-[7vw] leading-[0.9] font-neueroman uppercase max-w-[800px]">
           JOIN THE SMILE CLUB
         </h1>
 
-        <p className="max-w-3xl mt-10 text-[18px] leading-relaxed font-neuehaas45">
+        <p className="max-w-[500px] mt-10 text-[18px] leading-relaxed font-neuehaas45">
           We are committed to setting the standard for exceptional service. Our
           communication is always open—every question is welcome, and every
           concern is met with care and professionalism.
         </p>
-
-   
       </section>
+
+      <section className="min-h-screen w-full px-6">
+      <ul className="font-neueroman uppercase text-[14px]">
+        {patients.map((member, index) => (
+          <li
+            key={index}
+            onMouseEnter={() => handleMouseEnter(index)}
+            onMouseLeave={handleMouseLeave}
+            className="border-b relative"
+          >
+            <div className="flex items-center py-2 relative">
+              <span className="pl-[15%]">DATE COMPLETED</span>
+              <span className="pl-[25%]">{member.name}</span>
+              
+              <AnimatePresence>
+                {(hoveredIndex === index || activeIndex === index) && (
+                  <motion.div
+                    key={activeIndex === index ? `active-${activeIndex}` : `hover-${hoveredIndex}`}
+                    className="absolute left-[66%] bottom-0 w-[180px] origin-bottom"
+                    initial={{ height: 0 }}
+                    animate={{ height: "250px"}}
+                    exit={{ height: 0}}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    style={{
+                      backgroundImage: `url(${
+                        activeIndex === index 
+                          ? patients[activeIndex].image 
+                          : patients[hoveredIndex].image
+                      })`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      zIndex: 10,
+                    }}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+    
+      <section
+  ref={containerRef}
+  className="min-h-screen bg-[#EEE3FF] flex flex-wrap justify-center items-center gap-4 p-8 relative overflow-hidden"
+>
+  {testimonials.map((t, i) => (
+    <motion.div
+      key={i}
+      drag
+      dragConstraints={containerRef}
+      dragElastic={0.1}
+      whileDrag={{ scale: 1.05 }}
+      dragMomentum={false} 
+      className={`
+        ${t.width || "w-[320px]"}
+        ${t.height || "h-[270px]"}
+        p-4 rounded-lg shadow-lg text-white
+        ${t.color}
+        cursor-grab active:cursor-grabbing
+      `}
+      style={{
+        rotate: `${(i % 2 === 0 ? 1 : -1) * (5 + i * 2)}deg`,
+        zIndex: i + 1,
+      }}
+    >
+      <p className="text-[14px] leading-snug font-neueroman mb-4">“{t.text}”</p>
+      <div className="text-[14px] font-neueroman uppercase">{t.name}</div>
+    </motion.div>
+  ))}
+</section>
+
       {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
           <div className="w-[64px] h-auto">
     
@@ -472,22 +669,6 @@ const StickyColumnScroll = () => {
           </nav>
         </header> */}
       <div className="bg-[#F9F9F9]">
-        <svg
-          viewBox="0 0 302 31"
-          className="absolute left-0 -bottom-1 w-full h-[20px] z-0"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M1.3,29.2C3.9,28,6.4,26.7,9,25.5c10.3-4.9,21.2-9.4,31.6-11.4s21.2-1,31,2.8s19.1,9.5,29.3,11.9
-          s20.2-0.2,30.1-4.1c9.4-3.7,18.7-8.3,28.5-9.8s19.1,1.7,28.5,5.7s19.3,8.5,28.9,6.8c9.6-1.7,17.6-10.3,26-17
-          c4.2-3.3,8.3-6.1,13.1-7.6c4.8-1.6,9.8-1.7,14.7-0.9c10.4,1.8,20.3,7.4,30,13.1"
-            stroke="#000"
-            strokeWidth="2"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
         <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
           <path
             ref={pathRef}
@@ -501,7 +682,7 @@ const StickyColumnScroll = () => {
             d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
           />
         </svg>
-        <Canvas
+        {/* <Canvas
           camera={{ position: [0, 6, 12], fov: 45 }}
           style={{ width: "100vw", height: "100vh" }}
         >
@@ -513,79 +694,12 @@ const StickyColumnScroll = () => {
             color={0xffffff}
           />
 
-          {/* <OrbitControls /> */}
+          <OrbitControls />
           <RibbonAroundSphere />
-        </Canvas>
-        {/* <section className="w-full text-black px-10 md:px-20 md:py-16 grid grid-rows-2">
-  <div className="flex items-center justify-end">
-    <div className="max-w-[640px] text-left text-gray-500 text-base leading-relaxed">
- 
-      <p
-            ref={textRef}
-            className="text-[1.5em] leading-[1.1] font-helvetica-neue max-w-[700px]"
-          >
-            We are committed to setting the standard for exceptional service.
-            Our communication is always open—every question is welcome, and
-            every concern is met with care and professionalism.
-          </p>
+        </Canvas> */}
 
-    </div>
-  </div>
-
-
-</section> */}
-
-        <section
-          ref={patientSectionRef}
-          className="min-h-screen w-full px-6 relative"
-          onMouseMove={handleMouseMove}
-        >
-          <div className="absolute top-0 left-0 pointer-events-none z-50">
-            <motion.div
-              className="w-[180px] h-[250px] rounded-lg overflow-hidden"
-              style={{ x, y }}
-            >
-              {previousImage && (
-                <div
-                  className="absolute inset-0 bg-cover bg-center z-0"
-                  style={{ backgroundImage: `url(${previousImage})` }}
-                />
-              )}
-              {hoveredImage && (
-                <motion.div
-                  key={hoveredIndex}
-                  initial={{ x: "-100%" }}
-                  animate={{ x: "0%" }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="absolute inset-0 bg-cover bg-center z-10"
-                  style={{ backgroundImage: `url(${hoveredImage})` }}
-                />
-              )}
-            </motion.div>
-          </div>
-
-          <ul className="font-neueroman uppercase text-[14px]">
-            {patients.map((member, index) => (
-              <li
-                key={index}
-                onMouseEnter={() => handleMouseEnter(member.image, index)}
-                onMouseLeave={handleMouseLeave}
-                className="border-b py-2"
-              >
-                <span className="pl-[15%] block">{member.name}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section
-        // className="bg-[#fb542d] py-10"
-        >
-          {/* <h2 className="uppercase text-sm font-bold tracking-widest pb-2">
-            STICKY SECTION
-          </h2> */}
-
-          {/* <Canvas
+        {/* <section className="bg-[#fb542d] py-10">
+          <Canvas
             camera={{ position: [0, 1.5, 4] }}
             gl={{ alpha: true }}
             style={{
@@ -613,64 +727,31 @@ const StickyColumnScroll = () => {
             <Environment files="../images/studio_small_03_4k.hdr" />
             <EffectComposer></EffectComposer>
             <Suspense fallback={<span>Loading</span>}>
-     
               <RotatingModel />
             </Suspense>
             <OrbitControls enableZoom={false} />
-          </Canvas> */}
-        </section>
-        <section className="w-2/3 py-16"></section>
+          </Canvas>
+        </section> */}
 
-        {/* <div className="">
-              <h3 className="font-bold font-helvetica-neue uppercase tracking-widest text-xs pt-2">
-                Our Patients
-              </h3>
-              <ul className="font-neue-montreal border-t mt-2 pt-1 space-y-1">
-                {patients
-                  .slice(0, Math.ceil(patients.length / 2))
-                  .map((member, index) => (
-                    <li
-                      key={index}
-                      onMouseEnter={() =>
-                        handleMouseEnter(member.image, "left")
-                      }
-                      onMouseLeave={handleMouseLeave}
-                      className="border-b pb-1 cursor-pointer hover:bg-[#d3fd50]"
-                    >
-                      {member.name}
-                    </li>
-                  ))}
-              </ul>
-            </div> */}
-        <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
-          <div
-            id="left-column"
-            style={{
-              width: "40%",
-
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              position: "relative",
-            }}
+        {/* <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
+          <svg
+            viewBox="0 0 302 31"
+            className="absolute left-0 -bottom-1 w-full h-[20px] z-0"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <div
-              ref={text1Ref}
-              className="leading-[1.2] font-helvetica-neue text-[2em] max-w-[500px] ml-10 relative "
-            >
-              Voted the best orthodontist in Lehigh Valley year after year
-            </div>
-          </div>
+            <path
+              d="M1.3,29.2C3.9,28,6.4,26.7,9,25.5c10.3-4.9,21.2-9.4,31.6-11.4s21.2-1,31,2.8s19.1,9.5,29.3,11.9
+          s20.2-0.2,30.1-4.1c9.4-3.7,18.7-8.3,28.5-9.8s19.1,1.7,28.5,5.7s19.3,8.5,28.9,6.8c9.6-1.7,17.6-10.3,26-17
+          c4.2-3.3,8.3-6.1,13.1-7.6c4.8-1.6,9.8-1.7,14.7-0.9c10.4,1.8,20.3,7.4,30,13.1"
+              stroke="#000"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
 
-          <div
-            id="right-column"
-            className="relative"
-            style={{
-              width: "60%",
-              overflowY: "auto",
-              // padding: "40px",
-            }}
-          >
+          <div id="right-column" className="relative w-1/2">
             <section className="relative" style={{ marginBottom: "0vh" }}>
               <div className="relative w-full h-full">
                 <div ref={gradient1Ref} className="gradient-container">
@@ -704,131 +785,19 @@ const StickyColumnScroll = () => {
                 alt="Testimonial"
               />
             </div>
-            <div
-              style={{ marginBottom: "10vh" }}
-              className="mt-40 leading-[1.2] max-w-[560px] ml-auto "
-            >
-              <div className="flex items-end font-helvetica-neue-light text-[18px] ">
-                I had an open bite and misaligned teeth most of my life. Dr Frey
-                fixed it and in record time. 1 1/2 yrs with Invisalign’s. Highly
-                recommended! Friendly staff and easy to make appointments!
-              </div>
-              <p className="text-[16px] font-helvetica-neue-light">Karen O.</p>
-            </div>
-            <p className="pl-10 max-w-[300px] justify-center items-center font-helvetica-neue-light text-black text-[16px]">
-              “FreySmiles is the best! I'm so happy with my smile and the
-              confidence it's brought me!” -Lainie
-            </p>
+
+
             <div class="gradient-container-2">
               <div class="gradient-col-2"></div>
               <div class="gradient-col-2"></div>
               <div class="gradient-col-2"></div>
               <div class="gradient-col-2"></div>
             </div>
-
-            <section style={{ marginBottom: "100vh" }}>
-              <h1 className="font-neue-montreal text-xl">
-                I am certainly going to miss Dr. Frey and his team!! The
-                professionalism and kindness by each person does not go
-                unnoticed! Dr. Frey has always been very patient and such a
-                pleasure to be around. They celebrate the end of your Invisalign
-                journey as if it was their own! I would, and do recommend Frey
-                Smiles to anyone looking for perfect their smile. I came in for
-                minor cosmetic adjustments, and Dr. Frey somehow made magic
-                happen in ways I didn’t expect. I love my smile! Thank you so
-                much team - and thank you to all the girls. I would mention
-                names, but truly - everyone was so amazing!
-              </h1>
-              <h2 className="text-xl">-Stephanie N.</h2>
-            </section>
-
-            <section className="relative overflow-hidden">
-              <img src="../images/neonsunpattern.svg" />
-            </section>
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );
 };
 
 export default StickyColumnScroll;
-
-{
-  /* <div>
-      <header className="flex flex-row w-full py-8 justify-center items-center fixed top-0 left-0 bg-slate-950 z-10">
-        <div className="flex items-center justify-center max-w-6xl w-full">
-          <a href="/" className="text-3xl text-slate-50" id="testimonials">
-            Testimonials
-          </a>
-        </div>
-      </header>
-
-      <div id="smooth-wrapper" className="w-full">
-        <main id="smooth-content">
-
-          <section className="h-[100vh] w-full grid place-items-center bg-slate-950"></section>
-
-    
-          <section
-            id="section-2"
-            className="h-[100vh] w-full grid place-items-center bg-slate-900"
-            aria-labelledby="section-2-heading"
-          >
-            <div
-              id="img-container"
-              className="share-grid gap-4 w-full h-full justify-center images-grid images-initial-grid"
-            >
-              <a
-                id="image-1"
-                href="https://www.google.com"
-                className="grid-image block w-full aspect-square max-w-[400px]"
-              >
-                <img
-                  src="https://a.storyblok.com/f/187090/800x801/ac1f2976aa/package-starter.jpg/m/"
-                  alt="Image 1"
-                  className="w-full h-full object-cover"
-                />
-              </a>
-
-              <a
-                id="image-2"
-                href="https://www.google.com"
-                className="grid-image block w-full aspect-square max-w-[400px]"
-              >
-                <img
-                  src="https://a.storyblok.com/f/187090/500x501/32480d7ad2/process-analysis.jpg/m/"
-                  alt="Image 2"
-                  className="w-full h-full object-cover"
-                />
-              </a>
-
-              <a
-                id="image-3"
-                href="https://www.google.com"
-                className="grid-image block w-full aspect-square max-w-[400px]"
-              >
-                <img
-                  src="https://a.storyblok.com/f/187090/501x501/44fb6f9a2f/process-development.jpg/m/"
-                  alt="Image 3"
-                  className="w-full h-full object-cover"
-                />
-              </a>
-            </div>
-
-            <h1
-              id="section-2-heading"
-              className="text-5xl font-sans font-bold text-slate-50 max-w-[32rem] text-center share-grid"
-            >
-              How do we know we are who we say we are?
-            </h1>
-          </section>
-
-       
-          <section className="h-screen w-full grid place-items-center bg-yellow-100">
-            <h1 className="text-5xl font-sans font-bold">Eh? World</h1>
-          </section>
-        </main>
-      </div>
-    </div> */
-}
