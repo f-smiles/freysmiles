@@ -223,10 +223,15 @@ const Intro = ({ texts = [], onFinished }) => {
       <p>We are a creative agency that focuses on human-centric design and ergonomic workplace innovations.</p>
     </div>
 
-    <button className="enter" ref={enterCtrlRef}>
-      <div className="enter__bg" ref={enterBgRef} />
-      <span className="enter__text">Enter</span>
-    </button>
+    <button
+  className="enter"
+  ref={enterCtrlRef}
+  style={{ opacity: 0, pointerEvents: "none" }} 
+>
+  <div className="enter__bg" ref={enterBgRef} />
+  <span className="enter__text">Enter</span>
+</button>
+
   </main>
   );
 };

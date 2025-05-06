@@ -82,6 +82,7 @@ module.exports = withUt({
   		poppins: 'Poppins',
   		saol: 'SaolDisplay-Regular',
   		saolitalic: 'SaolDisplay-LightItalic',
+		sinistre:"Sinistre-Regular",
   		syne: 'syne-extra',
   		'TerminaTest-Bold': 'TerminaTest-Bold'
   	},

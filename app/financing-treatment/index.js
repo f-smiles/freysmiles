@@ -826,7 +826,7 @@ const FinancingTreatment = () => {
 
  
 <text
-  className="text-[12vw] font-neueroman fill-[#FEB448] font-saol"
+  className="text-[12vw] tracking-wide font-neueroman fill-[#000] font-sinistre"
   textAnchor="middle"
   dominantBaseline="middle"
 >

@@ -354,7 +354,7 @@ const StickyColumnScroll = () => {
   }, []);
   const patients = [
     { name: "Lainie", image: "../images/testimonials/laniepurple.png" },
-    { name: "Ron Lucien", image: "../images/testimonials/Ron_Lucien.jpg" },
+    { name: "Ron L.", image: "../images/testimonials/Ron_Lucien.jpg" },
     {
       name: "Elizabeth",
       image: "../images/testimonials/elizabethpatient.jpeg",
@@ -367,29 +367,86 @@ const StickyColumnScroll = () => {
     { name: "Hobson", image: "../images/testimonials/hobsonblue.png" },
     { name: "Hurlburt", image: "../images/testimonials/hurlburt.jpeg" },
     { name: "Kara", image: "../images/testimonials/Kara.jpeg" },
-    { name: "Sophia Lee", image: "../images/testimonials/Sophia_Lee.jpg" },
-    { name: "Brynn", image: "../images/testimonials/Brynn.jpeg" },
+    { name: "Sophia L.", image: "../images/testimonials/Sophia_Lee.jpg" },
+    // { name: "Brynn", image: "../images/testimonials/Brynn.jpeg" },
+      { name: "Brynn", image: "../images/testimonials/brynnportrait.png" },
     { name: "Emma", image: "../images/testimonials/Emma.png" },
     {
-      name: "Brooke Walker",
+      name: "Brooke W.",
       image: "../images/testimonials/Brooke_Walker.jpg",
     },
     { name: "Nilaya", image: "../images/testimonials/nilaya.jpeg" },
     {
-      name: "Maria Anagnostou",
+      name: "Maria A.",
       image: "../images/testimonials/Maria_Anagnostou.jpg",
     },
+    {
+      name:"Natasha K.", image:"../images/testimonials/Natasha_Khela.jpg"
+    },
+    {
+      name:"James C.", image:"../images/testimonials/James_Cipolla.jpg"
+    },
+    {
+      name:"Devika K.", image:"/images/testimonials/Devika_Knafo.jpg"
+    },
+    {
+      name:"Ibis S.", image:"../images/testimonials/Ibis_Subero.jpg"
+    },
+    {
+      name:"Abigail", image:"../images/testimonials/abigail.png"
+    },
+    {
+      name:"Emma", image:"../images/testimonials/EmmaF.png"
+    }
   ];
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
 
-
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  
   const [activeIndex, setActiveIndex] = useState(null);
-  const lastIndex = useRef(null);
-  const animationQueue = useRef([]);
   const timeoutRef = useRef(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [displayIndex, setDisplayIndex] = useState(null); 
+  const firstNameRef = useRef(null);
+
+
+  const handleMouseEnter = (index) => {
+    setActiveIndex(index);
+  
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  
+    const animateIndices = (current) => {
+      if (current === index) {
+        setDisplayIndex(index);
+        return;
+      }
+      
+      const step = current < index ? 1 : -1;
+      setDisplayIndex(current);
+      
+      timeoutRef.current = setTimeout(() => {
+        animateIndices(current + step);
+      }, 200);
+    };
+  
+    const startFrom = displayIndex !== null ? displayIndex : activeIndex !== null ? activeIndex : 0;
+    animateIndices(startFrom);
+  };
+  const handleMouseLeave = () => {
+    setActiveIndex(null);
+
+    setDisplayIndex(null); 
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+  
+
+  const handleMouseMove = (e) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  };
+
 
   useEffect(() => {
     return () => {
@@ -399,52 +456,37 @@ const StickyColumnScroll = () => {
     };
   }, []);
 
-  const handleMouseEnter = (index) => {
-    setHoveredIndex(index);
-    
-    if (lastIndex.current === null) {
+  const [lerpedPos, setLerpedPos] = useState({ x: 0, y: 0 });
+  const lerp = (start, end, amt) => (1 - amt) * start + amt * end;
 
-      setActiveIndex(index);
-      lastIndex.current = index;
-      return;
+  useEffect(() => {
+    let animationFrame;
+  
+    const update = () => {
+      setLerpedPos((prev) => ({
+        x: lerp(prev.x, mousePos.x, 0.15),
+        y: lerp(prev.y, mousePos.y, 0.15),
+      }));
+  
+      animationFrame = requestAnimationFrame(update);
+    };
+  
+    update();
+  
+    return () => cancelAnimationFrame(animationFrame);
+  }, [mousePos]);
+  
+  useEffect(() => {
+    if (firstNameRef.current) {
+      const rect = firstNameRef.current.getBoundingClientRect();
+  
+      setMousePos({
+        x: rect.right + 24, 
+        y: rect.top + rect.height / 2, 
+      });
     }
-
-    const direction = index > lastIndex.current ? "down" : "up";
-    const step = direction === "down" ? 1 : -1;
-    
- 
-    const sequence = [];
-    for (let i = lastIndex.current; i !== index; i += step) {
-      sequence.push(i + step);
-    }
-
-
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      animationQueue.current = [];
-    }
-
-
-    sequence.forEach((seqIndex, i) => {
-      timeoutRef.current = setTimeout(() => {
-        setActiveIndex(seqIndex);
-      }, i ); 
-    });
-
-    lastIndex.current = index;
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredIndex(null);
-    setActiveIndex(null);
-    lastIndex.current = null;
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    animationQueue.current = [];
-  };
-
-
+  }, []);
+  
 
   const patientSectionRef = useRef();
   const [sectionTop, setSectionTop] = useState(0);
@@ -533,9 +575,30 @@ const StickyColumnScroll = () => {
 
   ];
   
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+
+    gsap.to(el, {
+      yPercent: -100,
+      ease: "none",
+      scrollTrigger: {
+        trigger: el,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+  
+      },
+    });
+  }, []);
+
   return (
     <>
-      <section className=" justify-center  items-center relative min-h-screen bg-[#EAF879] text-black flex flex-col ">
+     <section
+        ref={sectionRef}
+        className="justify-center items-center min-h-screen bg-[#EAF879] text-black flex flex-col"
+      >
         <MouseTrail
           images={[
             "../images/mousetrail/flame.png",
@@ -578,45 +641,63 @@ const StickyColumnScroll = () => {
         </p>
       </section>
 
-      <section className="min-h-screen w-full px-6">
+      <section className="min-h-screen w-full px-6 relative" onMouseMove={handleMouseMove}>
       <ul className="font-neueroman uppercase text-[14px]">
         {patients.map((member, index) => (
           <li
             key={index}
             onMouseEnter={() => handleMouseEnter(index)}
             onMouseLeave={handleMouseLeave}
-            className="border-b relative"
+            className="border-b py-4 relative"
           >
-            <div className="flex items-center py-2 relative">
+            <div className="flex items-center relative">
               <span className="pl-[15%]">DATE COMPLETED</span>
-              <span className="pl-[25%]">{member.name}</span>
-              
-              <AnimatePresence>
-                {(hoveredIndex === index || activeIndex === index) && (
-                  <motion.div
-                    key={activeIndex === index ? `active-${activeIndex}` : `hover-${hoveredIndex}`}
-                    className="absolute left-[66%] bottom-0 w-[180px] origin-bottom"
-                    initial={{ height: 0 }}
-                    animate={{ height: "250px"}}
-                    exit={{ height: 0}}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                    style={{
-                      backgroundImage: `url(${
-                        activeIndex === index 
-                          ? patients[activeIndex].image 
-                          : patients[hoveredIndex].image
-                      })`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      zIndex: 10,
-                    }}
-                  />
-                )}
-              </AnimatePresence>
+              <span ref={index === 0 ? firstNameRef : null} className="pl-[25%]">{member.name}</span>
+
             </div>
           </li>
         ))}
       </ul>
+      <AnimatePresence mode="wait">
+  {displayIndex !== null && (
+    <motion.div
+      className="fixed pointer-events-none z-50 w-[200px] h-[250px] rounded-2xl"
+      style={{
+        top: lerpedPos.y,
+        left: lerpedPos.x + 24,
+        transform: "translate(0, -50%)",
+      }}
+      
+      
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      {displayIndex > 0 && (
+        <motion.img
+          src={patients[displayIndex - 1]?.image}
+          alt="previous"
+          className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+      )}
+      
+      <motion.img
+        key={`img-${displayIndex}`}
+        src={patients[displayIndex].image}
+        alt="current"
+        className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+        initial={{ clipPath: "inset(0% 100% 0% 0%)" }}
+        animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+        exit={{ clipPath: "inset(0% 100% 0% 0%)" }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      />
+    </motion.div>
+  )}
+</AnimatePresence>
     </section>
     
       <section

@@ -629,7 +629,7 @@ export default function OurTeam() {
   
   return (
     <div className="">
-{/*       
+      
       <div
         className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
           isRevealing ? "translate-y-0" : "-translate-y-full"
@@ -648,7 +648,7 @@ export default function OurTeam() {
             <span style={{ lineHeight: "1.2" }}>Meet Our Team</span>
           </h2>
         </div>
-      </div> */}
+      </div>
 
       <div className="bg-black relative overflow-x-clip">
 
