@@ -9,10 +9,9 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import { Text } from '@react-three/drei';
 import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin);
 
-
-gsap.registerPlugin(ScrambleTextPlugin);
 
 const ScrambleText = ({ 
   text, 

@@ -47,18 +47,11 @@ const CaringForYourBraces = () => {
       gsap.set(".orangeSection", { x: "100vw" });
       gsap.set(".redSection", { x: "100vw" });
       gsap.set(".blackSection", { x: "100vw" });
-      gsap.set(".yellowImageWrapper", {
-        width: "15vw"
-      });
-      gsap.set(".whiteImageWrapper", {
-        width: "15vw"
-      });
-      gsap.set(".orangeImageWrapper", {
-        width: "15vw"
-      });
-      gsap.set(".redImageWrapper", {
-        width: "15vw"
-      });
+      gsap.set(".yellowImageWrapper .image-inner", { scale: 0.6, transformOrigin: "center center" });
+      gsap.set(".whiteImageWrapper .image-inner", { scale: 0.4, transformOrigin: "center center" });
+      gsap.set(".orangeImageWrapper .image-inner", { scale: 0.4, transformOrigin: "center center" });
+      gsap.set(".redImageWrapper .image-inner", { scale: 0.4, transformOrigin: "center center" });
+      
 
 
       tl = gsap.timeline({
@@ -72,7 +65,7 @@ const CaringForYourBraces = () => {
       });
 
       // Slide each section using translateX
-      tl.to(".yellowSection", { x: "0vw", duration: 1, ease: "none" }, 0);
+      tl.to(".yellowSection", { x: "0vw", duration: .8, ease: "none" }, 0);
       tl.to(".whiteSection", { x: "80vw", duration: 1, ease: "none" }, 0);
       tl.to(".orangeSection", { x: "95vw", duration: 1, ease: "none" }, 0);
       tl.to(".redSection", { x: "100vw", duration: 1, ease: "none" }, 0);
@@ -93,7 +86,7 @@ const CaringForYourBraces = () => {
       tl.to(".blackSection", { x: "0vw", duration: 1, ease: "none" }, 4);
 
       // Reveal content text
-      tl.to(".yellowContentText", { x: "0%", duration: 0.8, ease: "none" }, 0.2);
+      tl.to(".yellowContentText", { x: "0%", duration: 0.64, ease: "none" }, 0.16);
       tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 0.2);
       tl.to(
         ".orangeContentText",
@@ -102,27 +95,28 @@ const CaringForYourBraces = () => {
       );
       tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 0.2);
       tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 0.2);
-      tl.to(".yellowImageWrapper", {
-        width: "33.333vw",
-        duration: 2,
-        ease: "none"
-      }, 1); 
-      tl.to(".whiteImageWrapper", {
-        width: "33.333vw",
+      tl.to(".yellowImageWrapper .image-inner", {
+        scale: 1,
         duration: 1,
         ease: "none"
-      },0)
+      }, 0);
+      
+    tl.to(".whiteImageWrapper .image-inner", {
+  scale: 1,
+  duration: 1,
+  ease: "none"
+}, 0); 
 
-      tl.to(".orangeImageWrapper", {
-  width: "33.333vw",
-  duration: 2,
+      tl.to(".orangeImageWrapper .image-inner", {
+        scale: 1,
+        duration: 1.5,
+        ease: "none"
+}, 3);
+tl.to(".redImageWrapper .image-inner", {
+  scale: 1,
+  duration: 1.5,
   ease: "none"
-}, 2.2);
-tl.to(".redImageWrapper", {
-  width: "33.333vw",
-  duration: 2,
-  ease: "none"
-}, 2.2);
+}, 4);
 
       // tl.to(
       //   ".purpleImageInnerContainer",
@@ -328,21 +322,19 @@ tl.to(".redImageWrapper", {
                   <div className="flex items-center space-x-2"></div>
                 </div>
                 <div className="yellowImageWrapper">
-                  <div
-                    className="yellowImageInnerContainer"
-                  
-                  >
-                    {/* <img
-                      src="../images/handholdingtoothbrush.jpg"
-                      alt="brushing"
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "contain",
-                      }}
-                    /> */}
-                  </div>
-                </div>
+  <div className="image-inner">
+    <img
+      src="../images/handholdingtoothbrush.jpg"
+      alt="brushing"
+      style={{
+        width: "100%",
+        height: "auto",
+        objectFit: "cover",
+      }}
+    />
+  </div>
+</div>
+
               </div>
             </div>
 
@@ -391,13 +383,19 @@ tl.to(".redImageWrapper", {
                   </div>
                 </div>
                 <div className="whiteImageWrapper">
-                <div
-              className="whiteImageInnerContainer"
+  <div className="image-inner">
+    <img
+      src="../images/dentalwax3.png"
+      alt="dental wax"
+      style={{
+        width: "100%",
+        height: "auto",
+        objectFit: "contain",
+      }}
+    />
+  </div>
+</div>
 
-                    >
-   
-                  </div>
-                </div>
               </div>
             </div>
             <div

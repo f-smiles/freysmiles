@@ -910,7 +910,7 @@ export default function OurTeam() {
             because we have all experienced treatment and can help guide you through it.
           </p>
         </div>
-        <div className="border-l bg-[#f3f2ee] rounded-[24px] p-8 border-b border-black border-r h-[33.33vh]"></div>
+        <div className="border-l bg-[#ED8CD7] rounded-[24px] p-8 border-b border-black border-r h-[33.33vh]"></div>
         <div className="border-l bg-[#f3f2ee] rounded-[24px] p-8 border-b border-black border-r h-[66.66vh]"></div>
 
       </div>
@@ -919,7 +919,7 @@ export default function OurTeam() {
     {/* Col 2 */}
     <div className="overflow-hidden">
       <div ref={col2Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh] hover:bg-[#FEEAC7] ">
+        <div className="bg-[#ED8CD7] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh] hover:bg-[#FEEAC7] ">
           <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
             <p className="font-neueroman text-[13px] leading-[1.1]">
               Our members have received the designation of Specialized Orthodontic Assistant. 
@@ -943,13 +943,13 @@ export default function OurTeam() {
         <div className="bg-[#F8F6F0] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh] hover:bg-[#DCF5EF]">
           <p className="font-neueroman text-[13px]">Trained in CPR and first aid</p>
         </div>
-        <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center bg-[#f3f2ee] rounded-[20px] p-8 border-r border-b border-black h-[33.33vh] hover:bg-[#FFDEDA]">
+        <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center bg-[#ED8CD7] rounded-[20px] p-8 border-r border-b border-black h-[33.33vh] hover:bg-[#FFDEDA]">
           <p className="leading-[1.1] font-neueroman text-[13px]">
             Had a wonderful experience at FreySmiles. Everyone is extremely professional, 
             polite, timely. Would highly recommend! — TK
           </p>
         </a>
-        <div className="bg-[#f3f2ee] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh] hover:bg-[#D5E3FA]">
+        <div className="bg-[#ED8CD7] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh] hover:bg-[#D5E3FA]">
           <p className="leading-[1.1] font-neueroman text-[13px]">
             We've invested in in-office trainings with leading clinical consultants 
             that have helped us develop systems and protocols streamlining our processes.

@@ -28,10 +28,77 @@ import {
 import * as THREE from "three";
 import { useControls } from "leva";
 import { MeshStandardMaterial } from "three";
+import { ScrambleTextPlugin } from "gsap-trial/ScrambleTextPlugin";
 
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger, SplitText);
+  gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin);
 }
+
+const ScrambleText = ({ 
+  text, 
+  className, 
+  scrambleOnLoad = true,
+  charsType = "default" // 'default' | 'numbers' | 'letters'
+}) => {
+  const scrambleRef = useRef(null);
+  const originalText = useRef(text);
+
+  
+  const charSets = {
+    default: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+    numbers: "0123456789",
+    letters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  };
+
+  const scrambleAnimation = () => {
+    return gsap.to(scrambleRef.current, {
+      duration: 0.8,
+      scrambleText: {
+        text: originalText.current,
+        characters: charSets[charsType],
+        speed: 1,
+        revealDelay: 0.1,
+        delimiter: "",
+        tweenLength: false,
+      },
+      ease: "power1.out",
+    });
+  };
+
+  
+  useEffect(() => {
+    const element = scrambleRef.current;
+    if (!element) return;
+
+    if (scrambleOnLoad) {
+      gsap.set(element, {
+        scrambleText: {
+          text: originalText.current,
+          chars: charSets[charsType], 
+          revealDelay: 0.5,
+        }
+      });
+      scrambleAnimation();
+    }
+
+    const handleMouseEnter = () => scrambleAnimation();
+    element.addEventListener('mouseenter', handleMouseEnter);
+
+    return () => {
+      element.removeEventListener('mouseenter', handleMouseEnter);
+    };
+  }, [scrambleOnLoad, charsType]);
+
+  return (
+    <span 
+      ref={scrambleRef} 
+      className={`scramble-text ${className || ''}`}
+    >
+      {text}
+    </span>
+  );
+};
+
 function RibbonAroundSphere() {
   const ribbonRef = useRef();
   const segments = 1000;
@@ -435,8 +502,6 @@ const StickyColumnScroll = () => {
   };
   const handleMouseLeave = () => {
     setActiveIndex(null);
-
-    setDisplayIndex(null); 
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -507,47 +572,47 @@ const StickyColumnScroll = () => {
       text: "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!",
       color: "bg-[#d85749]" ,
        height: "h-[320px]",
-       width: "w-[360px]",
+       width: "w-[320px]",
     },
     {
       name: "Thomas StPierre",
       text: "I had a pretty extreme case and it took some time, but FreySmiles gave me the smile I had always hoped for. Thank you!",
-      color: "bg-[#16b5c2]",
+      color: "bg-[#63A3D7]",
       height: "h-[240px]",
       width: "w-[240px]",
     },
     {
       name: "FEI ZHAO",
       text: "Our whole experience for the past 10 years of being under Dr. Gregg Frey’s care and his wonderful staff has been amazing. My son and my daughter have most beautiful smiles, and they received so many compliments on their teeth. It has made a dramatic and positive change in their lives. Dr. Frey is a perfectionist, and his treatment is second to none. I recommend Dr. Frey highly and without any reservation.",
-      color: "bg-[#cbb52a]",
+      color: "bg-[#E8CA69]",
       height: "h-[320px]",
-      width: "w-[360px]",
+      width: "w-[320px]",
     },
     {
       name: "Diana Gomez",
       text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don’t have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
-      color: "bg-[#E4A0F6]",
+      color: "bg-[#EF9690]",
       height: "h-[320px]",
-      width: "w-[360px]",
+      width: "w-[320px]",
       
     },
     {
       name: "Brandi Moyer",
       text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
-      color: "bg-[#FEBD01]",
+      color: "bg-[#F8B254]",
     },
     {
       name: "Tracee Benton",
       text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
-      color: "bg-[#72A806]",
+      color: "bg-[#158368]",
     },
 
       {
       name: "Sara Moyer",
       text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
       color: "bg-[#9b84fb]",
-      height: "h-[300px]",
-      width: "w-[340px]",
+      height: "h-[320px]",
+      width: "w-[320px]",
     },
     {
       name: "Vicki Weaver",
@@ -569,7 +634,7 @@ const StickyColumnScroll = () => {
     {
       name: "Mandee Kaur",
       text: "I would highly recommend FreySmiles! Excellent orthodontic care, whether it’s braces or Invisalign, Dr. Frey and his team pay attention to detail in making sure your smile is flawless! I would not trust anyone else for my daughter’s care other than FreySmiles.",
-      color: "bg-[#7ca6f5]",
+      color: "bg-[#73ab0c]",
     },
     
 
@@ -593,12 +658,32 @@ const StickyColumnScroll = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const lines = gsap.utils.toArray("#smile-scroll-section .line");
+  
+    lines.forEach((line, index) => {
+      const direction = index % 2 === 0 ? -1 : 1;
+  
+      gsap.to(line, {
+        xPercent: direction * 50, 
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#smile-scroll-section",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    });
+  }, []);
+
   return (
     <>
-     <section
-        ref={sectionRef}
-        className="justify-center items-center min-h-screen bg-[#EAF879] text-black flex flex-col"
-      >
+<section
+  ref={sectionRef}
+  className="absolute top-0 left-0 w-full min-h-screen z-10 bg-[#EAF879] text-black flex flex-col justify-center items-center"
+>
+
         <MouseTrail
           images={[
             "../images/mousetrail/flame.png",
@@ -629,26 +714,57 @@ const StickyColumnScroll = () => {
             "../images/mousetrail/porsche.png",
           ]}
         />
+{/* <section className="uppercase px-6 py-20"  id="smile-scroll-section">
+  <div className="flex flex-col items-center space-y-6 text-center leading-[1.1]">
 
+    <div className="line flex flex-wrap justify-center gap-3 text-[7vw] uppercase">
+      <span className="font-neueroman">Join</span>
+      <span className="font-neueroman">the</span>
+      <span className="font-neueroman">Smile</span>
+      <span className="font-neueroman">Club</span>
+    </div>
+
+    <div className="line uppercase flex flex-wrap justify-center gap-3 text-[7vw] uppercase">
+    <span className="font-neueroman">What</span>
+      <span className="font-neueroman">patients</span>
+      <span className="w-[60px] h-[60px] overflow-hidden rounded-md">
+        <img src="/images/mousetrail/donut.png" className="w-full h-full object-cover" alt="donut" />
+      </span>
+      <span className="font-neueroman">say</span>
+    </div>
+
+
+    <div className="line flex flex-wrap justify-center gap-3 text-[7vw] uppercase">
+      <span className="font-neueroman">Over</span>
+      <span className="font-neueroman">25,000</span>
+      <span className="font-neueroman">cases</span>
+
+    </div>
+
+
+   
+  </div>
+</section> */}
         <h1 className="items-center px-6 text-center text-[7vw] leading-[0.9] font-neueroman uppercase max-w-[800px]">
           JOIN THE SMILE CLUB
         </h1>
 
-        <p className="max-w-[500px] mt-10 text-[18px] leading-relaxed font-neuehaas45">
+        <p className="max-w-[500px] mt-10 text-[18px] leading-[1.1] font-neuehaas45">
           We are committed to setting the standard for exceptional service. Our
           communication is always open—every question is welcome, and every
           concern is met with care and professionalism.
         </p>
       </section>
 
-      <section className="min-h-screen w-full px-6 relative" onMouseMove={handleMouseMove}>
+      <section className="min-h-screen w-full px-6 relative z-0 pt-[60vh]" onMouseMove={handleMouseMove}>
+
       <ul className="font-neueroman uppercase text-[14px]">
         {patients.map((member, index) => (
           <li
             key={index}
             onMouseEnter={() => handleMouseEnter(index)}
             onMouseLeave={handleMouseLeave}
-            className="border-b py-4 relative"
+            className="border-b py-6 relative"
           >
             <div className="flex items-center relative">
               <span className="pl-[15%]">DATE COMPLETED</span>
@@ -705,28 +821,30 @@ const StickyColumnScroll = () => {
   className="min-h-screen bg-[#EEE3FF] flex flex-wrap justify-center items-center gap-4 p-8 relative overflow-hidden"
 >
   {testimonials.map((t, i) => (
-    <motion.div
-      key={i}
-      drag
-      dragConstraints={containerRef}
-      dragElastic={0.1}
-      whileDrag={{ scale: 1.05 }}
-      dragMomentum={false} 
-      className={`
-        ${t.width || "w-[320px]"}
-        ${t.height || "h-[270px]"}
-        p-4 rounded-lg shadow-lg text-white
-        ${t.color}
-        cursor-grab active:cursor-grabbing
-      `}
-      style={{
-        rotate: `${(i % 2 === 0 ? 1 : -1) * (5 + i * 2)}deg`,
-        zIndex: i + 1,
-      }}
-    >
-      <p className="text-[14px] leading-snug font-neueroman mb-4">“{t.text}”</p>
-      <div className="text-[14px] font-neueroman uppercase">{t.name}</div>
-    </motion.div>
+   <motion.div
+   key={i}
+   drag
+   dragConstraints={containerRef}
+   dragElastic={0.1}
+   whileDrag={{ scale: 1.05 }}
+   dragMomentum={false} 
+   className={`
+     ${t.width || "w-[300px]"}
+     ${t.height || "h-[300px]"}
+     p-4 rounded-lg shadow-lg text-white
+     ${t.color}
+     cursor-grab active:cursor-grabbing
+     flex flex-col justify-between
+   `}
+   style={{
+     rotate: `${(i % 2 === 0 ? 1 : -1) * (5 + i * 2)}deg`,
+     zIndex: i + 1,
+   }}
+ >
+   <p className="text-[14px] leading-snug font-neueroman">“{t.text}”</p>
+   <div className="text-[16px] font-neuehaas45 uppercase">{t.name}</div>
+ </motion.div>
+ 
   ))}
 </section>
 

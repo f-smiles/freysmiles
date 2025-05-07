@@ -1,6 +1,8 @@
 "use client";
+import normalizeWheel from 'normalize-wheel';
+import { Renderer, Camera, Transform, Mesh, Program, Texture, Plane } from 'ogl';
 import { Fluid } from "/utils/FluidCursorTemp.js";
-import { Media } from "/utils/Media.js";
+import Media from '/utils/OGLMedia.js';
 import { EffectComposer } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import Splitting from "splitting";
@@ -25,8 +27,135 @@ import * as THREE from "three";
 import { Canvas, useLoader, useFrame, useThree } from "@react-three/fiber";
 import { useMemo } from "react";
 import { Environment, OrbitControls, useTexture } from "@react-three/drei";
+import { TextureLoader } from 'three';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
+
+function BulgeGallery() {
+  const containerRef = useRef();
+  const scrollData = useRef({ target: 0, current: 0, last: 0 });
+  const meshes = useRef([]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const renderer = new Renderer({ alpha: true });
+    const gl = renderer.gl;
+    const camera = new Camera(gl, { fov: 45 });
+    const scene = new Transform();
+    camera.position.z = 5;
+
+    containerRef.current.appendChild(gl.canvas);
+
+    
+    const images = ["/images/dragon.png"]; 
+    
+    const layoutPositions = [
+      { width: 400, height: 500, top: 10, left: 50 },
+      { width: 500, height: 400, top: 150, left: window.innerWidth - 550 },
+      { width: 600, height: 500, top: 700, left: 100 },
+      { width: 450, height: 550, top: 750, left: window.innerWidth - 550 },
+    ];
+
+    const screen = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+
+    const viewport = {
+      width: 2,
+      height: 2 * (screen.height / screen.width),
+    };
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    screen.width = window.innerWidth;
+    screen.height = window.innerHeight;
+    viewport.height = 2 * (screen.height / screen.width);
+
+    images.forEach((src, i) => {
+      const image = new window.Image();
+
+      image.src = src;
+
+      image.onload = () => {
+        const geometry = new Plane(gl, {
+          widthSegments: 100,
+          heightSegments: 100,
+        });
+      
+        const bounds = {
+          width: 500,
+          height: 600,
+          top: 150,
+          left: 100,
+        };
+      
+        const fakeElement = {
+          getBoundingClientRect: () => bounds,
+        };
+      
+        const media = new Media({
+          element: fakeElement,
+          image,
+          geometry, 
+          gl,
+          height: 2000,
+          scene,
+          screen,
+          viewport,
+          customBounds: bounds,
+        });
+      
+        media.update({ current: 0, last: 0 }, "down");
+        meshes.current.push(media);
+      };
+      
+    });
+
+    const onResize = () => {
+
+
+      meshes.current.forEach((media) => {
+        media.onResize({ screen, viewport, height: 2000 });
+      });
+    };
+
+    const onScroll = () => {
+      scrollData.current.target = window.scrollY;
+    };
+
+    const animate = () => {
+      const y = scrollData.current;
+      y.current += (y.target - y.current) * 0.1;
+
+      const direction = y.target > y.last ? "down" : "up";
+
+      meshes.current.forEach((media) => {
+        media.update(y, direction);
+      });
+
+      y.last = y.current;
+
+      renderer.render({ scene, camera });
+      requestAnimationFrame(animate);
+    };
+
+    window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onScroll);
+
+    onResize();
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  return <div ref={containerRef} className="relative w-full h-[2000px]" />;
+}
+
+
 const SmileyFace = ({ position = [0, 0, 0] }) => {
   const groupRef = useRef();
 
@@ -582,10 +711,17 @@ const Invisalign = () => {
     { normal: "Removable", italic: "& Flexible" },
     { normal: "Proven", italic: "Results" },
   ];
+
+
+ 
+
+
   return (
     <>
+<BulgeGallery />
       <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
-        <Canvas
+
+        {/* <Canvas
           gl={{ alpha: true }}
           style={{
             position: "fixed",
@@ -606,7 +742,7 @@ const Invisalign = () => {
           <EffectComposer>
             <Fluid backgroundColor="#F9F8F7" />
           </EffectComposer>
-        </Canvas>
+        </Canvas> */}
 
         <section className="pointer-events-none canvas-section relative h-[100vh] z-10">
           <Canvas camera={{ position: [0, 0, 4] }}>

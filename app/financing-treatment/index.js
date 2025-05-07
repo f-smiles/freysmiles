@@ -297,9 +297,13 @@ function PixelCanvas({
           const color = colors[Math.floor(Math.random() * colors.length)];
           const dx = x - width / 2;
           const dy = y - height / 2;
-          const delay = reducedMotion.current ? 0 : Math.sqrt(dx * dx + dy * dy);
+          const delay = reducedMotion.current
+            ? 0
+            : Math.sqrt(dx * dx + dy * dy);
 
-          pixelsRef.current.push(new Pixel(ctx, x, y, color, speed * 0.001, delay));
+          pixelsRef.current.push(
+            new Pixel(ctx, x, y, color, speed * 0.001, delay)
+          );
         }
       }
     };
@@ -623,10 +627,27 @@ const FinancingTreatment = () => {
         const marker = document.createElement("div");
         marker.className = "path-marker";
         marker.innerHTML = `
-        <div class="marker-content">
-          <p class="font-neuehaas45 marker-title text-[20px]">${content.title}</p>
-          <p class="font-neuehaas45  marker-desc">${content.description}</p>
-        </div>
+      <div class="relative inline-block">
+
+  <img
+    src="../images/filleddiamond.svg"
+    alt="diamond background"
+    class="block w-[400px] h-[400px]"  
+  />
+
+
+  <div
+    class="marker-content absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none"
+  >
+    <p class="font-neuehaas45 marker-title text-[20px]">
+      ${content.title}
+    </p>
+    <p class="font-neuehaas45 marker-desc">
+      ${content.description}
+    </p>
+  </div>
+</div>
+
       `;
 
         Object.assign(marker.style, {
@@ -682,25 +703,24 @@ const FinancingTreatment = () => {
 
   useEffect(() => {
     if (!textPathRef.current || !svgRef.current) return;
-  
+
     gsap.to(textPathRef.current, {
       scrollTrigger: {
         trigger: svgRef.current,
-        start: "top +=40", 
-        end: "bottom center",   
+        start: "top +=40",
+        end: "bottom center",
         scrub: true,
       },
       attr: { startOffset: "100%" },
       ease: "none",
     });
   }, []);
-  
 
   const curveSvgRef = useRef();
   const textCurveRef = useRef();
   const filterRef = useRef();
 
-  const map = (x, a, b, c, d) => (x - a) * (d - c) / (b - a) + c;
+  const map = (x, a, b, c, d) => ((x - a) * (d - c)) / (b - a) + c;
   const lerp = (a, b, n) => (1 - n) * a + n * b;
   const clamp = (val, min, max) => Math.max(Math.min(val, max), min);
 
@@ -716,7 +736,7 @@ const FinancingTreatment = () => {
     const updateMetrics = () => {
       svgRect = curveSvgRef.current.getBoundingClientRect();
       positionY = svgRect.top + window.scrollY;
-      pathLength = curveSvgRef.current.querySelector('path').getTotalLength();
+      pathLength = curveSvgRef.current.querySelector("path").getTotalLength();
     };
 
     const computeOffset = () => {
@@ -731,14 +751,18 @@ const FinancingTreatment = () => {
 
     const updateTextOffset = () => {
       if (textCurveRef.current) {
-        textCurveRef.current.setAttribute('startOffset', startOffset.value);
+        textCurveRef.current.setAttribute("startOffset", startOffset.value);
       }
     };
 
     const updateFilter = (distance) => {
       const maxScale = parseFloat(filterRef.current?.dataset.maxScale || 100);
       const minScale = parseFloat(filterRef.current?.dataset.minScale || 0);
-      const newScale = clamp(map(distance, 0, 200, minScale, maxScale), minScale, maxScale);
+      const newScale = clamp(
+        map(distance, 0, 200, minScale, maxScale),
+        minScale,
+        maxScale
+      );
       if (filterRef.current) {
         filterRef.current.scale.baseVal = newScale;
       }
@@ -767,205 +791,550 @@ const FinancingTreatment = () => {
     };
 
     updateMetrics();
-    window.addEventListener('resize', updateMetrics);
+    window.addEventListener("resize", updateMetrics);
     render();
 
     return () => {
-      window.removeEventListener('resize', updateMetrics);
+      window.removeEventListener("resize", updateMetrics);
     };
+  }, []);
+
+  const starRef = useRef(null);
+  useEffect(() => {
+    const svg = starRef.current;
+    const group = svg.querySelector(".shape-wrapper");
+    const content = svg.querySelector(".scrolling-content");
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const scaleFactor = Math.min(viewportWidth, viewportHeight) / 162;
+
+    gsap.set(group, {
+      scale: 0.1,
+      opacity: 0,
+      transformOrigin: "center center",
+    });
+
+    gsap.set(content, {
+      opacity: 0,
+      y: "20%",
+    });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: svg,
+        start: "center center",
+        end: "+=1500",
+        scrub: 1,
+        markers: false,
+        pin: true,
+        toggleActions: "play none none reverse",
+      },
+    });
+
+    tl.to(group, {
+      opacity: 1,
+      duration: 0.5,
+    })
+      .to(group, {
+        rotation: 130,
+        scale: scaleFactor * 1.1,
+        duration: 4,
+        ease: "none",
+      })
+      .to(
+        content,
+        {
+          opacity: 1,
+          y: "0%",
+          duration: 2,
+          ease: "power2.out",
+        },
+        "-=2"
+      );
+
+    return () => {
+      tl.kill();
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
+  const [progress, setProgress] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const progressInterval = useRef(null);
+  const loadingDelay = useRef(null);
+
+  useEffect(() => {
+    startLoadingAnimation();
+
+    return () => {
+      if (progressInterval.current) clearInterval(progressInterval.current);
+      if (loadingDelay.current) clearTimeout(loadingDelay.current);
+    };
+  }, []);
+
+  const startLoadingAnimation = () => {
+    loadingDelay.current = setTimeout(() => {
+      progressInterval.current = setInterval(() => {
+        setProgress((prev) => {
+          const newProgress = prev + 10;
+          if (newProgress >= 100) {
+            clearInterval(progressInterval.current);
+            setTimeout(reverseAnimation, 300);
+          }
+          return newProgress;
+        });
+      }, 300);
+    }, 2000);
+  };
+
+  const reverseAnimation = () => {
+    setIsComplete(true);
+  };
+
+  const processingRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          startLoadingAnimation();
+          observer.disconnect();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    if (processingRef.current) {
+      observer.observe(processingRef.current);
+    }
+
+    return () => observer.disconnect();
   }, []);
 
   return (
     <>
-<div className="bg-[#E5E5E4] min-h-screen pt-[160px] relative ">
-<section className="relative flex items-center justify-center">
-
-
-  <div className=" w-[40vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
-    <p className="font-neueroman text-[20px] uppercase leading-snug text-black">
-    Orthodontic treatment is a transformative investment in both your
-    appearance and long-term dental health — ideally, a once-in-a-lifetime
-    experience. While many orthodontists can straighten teeth with braces or
-    Invisalign, the quality of outcomes varies widely. With today's advanced
-    technology, treatment goes far beyond alignment — it can enhance facial
-    aesthetics and deliver truly life-changing results.
-    </p>
-  </div>
-
-  <svg
-    width="90vw"
-    height="170vh"
-    viewBox="-100 0 1100 1800" 
-    xmlns="http://www.w3.org/2000/svg"
-    ref={svgRef}
-    className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
-  >
-    <defs>
-      <path
-        id="text-arc-path"
-        d="M0,820 
-           A450,450 0 0 1 900,820 
-           L900,1440 
-           L0,1440 
-           Z"
-        fill="none"
-      />
-    </defs>
-
-
-    <path
-      d="M0,820 
-         A450,450 0 0 1 900,820 
-         L900,1400 
-         L0,1400 
-         Z"
-      fill="none"
-      // stroke="#fe6531"
-      // strokeWidth="4"
-    />
-
- 
-<text
-  className="text-[12vw] tracking-wide font-neueroman fill-[#000] font-sinistre"
-  textAnchor="middle"
-  dominantBaseline="middle"
->
-
-      <textPath
-        ref={textPathRef}
-        href="#text-arc-path"
-        startOffset="4%" 
-
-        
-      >
-        GETTING STARTED
-      </textPath>
-    </text>
-  </svg>
-</section>
-
-
-
-
-
-
-      <div className="overflow-hidden" style={{ height: "400vh" }}>
-        
-      <svg
-        ref={curveSvgRef}
-        className="svgtext"
-        data-filter-type="distortion"
-        width="120%"
-        viewBox="0 0 1000 200"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <defs>
-          <filter id="distortionFilter">
-            <feTurbulence type="turbulence" baseFrequency="0.01" numOctaves="1" result="noise" />
-            <feDisplacementMap
-              ref={filterRef}
-              in="SourceGraphic"
-              in2="noise"
-              scale="0"
-              xChannelSelector="R"
-              yChannelSelector="G"
-              data-min-scale="0"
-              data-max-scale="80"
-            />
-          </filter>
-        </defs>
-
-        <path
-          id="text-curve"
-          d="M 0 50 Q 100 0 200 100 Q 300 200 650 50 C 750 0 750 150 1000 50"
-          fill="none"
-        />
-        <text filter="url(#distortionFilter)">
-          <textPath className="font-neueroman uppercase text-[20px] fill-[#624B48]" ref={textCurveRef} href="#text-curve">
-          Invest in your smile, with flexibility built in.
-          </textPath>
-        </text>
-      </svg>
-
-        <section
-          ref={sectionRef}
-          className="w-screen h-screen overflow-hidden flex items-center px-10"
-        >
-          <div ref={scrollContainerRef}>
-            <svg
-              width="3370"
-              height="671"
-              viewBox="0 0 3370 671"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                ref={drawPathRef}
-                d="M0.998047 1C0.998047 1 849.498 764.605 786.498 659.553C723.498 554.5 1725.51 370.052 1660.51 419.052C1595.5 468.052 2515.02 616.409 2491.26 660.981C2467.5 705.553 3369 419.052 3369 419.052"
-                stroke="#EBFD15"
-                strokeWidth="3"
-              />
-            </svg>
-          </div>
-        </section>
-      </div>
-
-
-
-
-      <section className="relative w-full h-screen font-neuehaas45">
-      <section className="bg-[#FF621D]">
-
-
-</section>
-        <div className="items-start flex flex-col px-6">
-        <div className="cube-outline">
-        <div class="cube">
-          <div className="cube-face cube-face--front">
-            <div className="text-overlay">
-              <p className="first-line font-neueroman uppercase">
-                One year post-treatment follow-up
-              </p>
-              <p
-                className=" font-neueroman uppercase"
-                style={{
-                  position: "absolute",
-                  transform: "rotate(90deg)",
-                  transformOrigin: "left top",
-                  top: "40%",
-                  left: "70%",
-                  fontSize: ".8rem",
-                  lineHeight: "1.2",
-                  color: "black",
-                  maxWidth: "120px",
-                }}
-              >
-                Retainers and retention visits for one year post-treatment
-                included.
-              </p>
-            </div>
-          </div>
-
-          <div class="cube-face cube-face--back">2</div>
-          <div class="cube-face cube-face--top "></div>
-          <div class="cube-face cube-face--bottom">4</div>
-          <div class="cube-face cube-face--left"></div>
-          <div class="cube-face cube-face--right"></div>
-        </div>
-      </div>
-        </div>
-
-    
-  
-      </section>
-   {/* <div style={{ width: '100vw', height: '100vh', background: '#09090b' }}>
+      {/* <div style={{ width: '100vw', height: '100vh', background: '#09090b' }}>
       <PixelCanvas
         colors={["#e879f9", "#38bdf8", "#a855f7"]} 
         gap={6}
         speed={45}
       />
     </div> */}
+      <div className="bg-[#F2F3F5] min-h-screen pt-[160px] relative ">
+        <section className="relative flex items-center justify-center">
+          <div className=" w-[40vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
+            <p className="font-neueroman text-[20px] uppercase leading-snug text-black">
+              Orthodontic treatment is a transformative investment in both your
+              appearance and long-term dental health — ideally, a
+              once-in-a-lifetime experience. While many orthodontists can
+              straighten teeth with braces or Invisalign, the quality of
+              outcomes varies widely. With today's advanced technology,
+              treatment goes far beyond alignment — it can enhance facial
+              aesthetics and deliver truly life-changing results.
+            </p>
+          </div>
+
+          <svg
+            width="90vw"
+            height="170vh"
+            viewBox="-100 0 1100 1800"
+            xmlns="http://www.w3.org/2000/svg"
+            ref={svgRef}
+            className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
+          >
+            <defs>
+              <path
+                id="text-arc-path"
+                d="M0,820 
+           A450,450 0 0 1 900,820 
+           L900,1440 
+           L0,1440 
+           Z"
+                fill="none"
+              />
+            </defs>
+
+            <path
+              d="M0,820 
+         A450,450 0 0 1 900,820 
+         L900,1400 
+         L0,1400 
+         Z"
+              fill="none"
+              // stroke="#fe6531"
+              // strokeWidth="4"
+            />
+
+            <text
+              className="text-[12vw] tracking-wide font-neueroman fill-[#FEB448] font-sinistre"
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
+              <textPath
+                ref={textPathRef}
+                href="#text-arc-path"
+                startOffset="4%"
+              >
+                GETTING STARTED
+              </textPath>
+            </text>
+          </svg>
+        </section>
+
+        <div className="overflow-hidden" style={{ height: "400vh" }}>
+          <svg
+            ref={curveSvgRef}
+            className="svgtext"
+            data-filter-type="distortion"
+            width="120%"
+            viewBox="0 0 1000 200"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <defs>
+              <filter id="distortionFilter">
+                <feTurbulence
+                  type="turbulence"
+                  baseFrequency="0.01"
+                  numOctaves="1"
+                  result="noise"
+                />
+                <feDisplacementMap
+                  ref={filterRef}
+                  in="SourceGraphic"
+                  in2="noise"
+                  scale="0"
+                  xChannelSelector="R"
+                  yChannelSelector="G"
+                  data-min-scale="0"
+                  data-max-scale="80"
+                />
+              </filter>
+            </defs>
+
+            <path
+              id="text-curve"
+              d="M 0 50 Q 100 0 200 100 Q 300 200 650 50 C 750 0 750 150 1000 50"
+              fill="none"
+            />
+            <text filter="url(#distortionFilter)">
+              <textPath
+                className="font-neueroman uppercase text-[20px] fill-[#624B48]"
+                ref={textCurveRef}
+                href="#text-curve"
+              >
+                Invest in your smile, with flexibility built in.
+              </textPath>
+            </text>
+          </svg>
+
+          <section
+            ref={sectionRef}
+            className="w-screen h-screen overflow-hidden flex items-center px-10"
+          >
+            <div ref={scrollContainerRef}>
+              <svg
+                width="3370"
+                height="671"
+                viewBox="0 0 3370 671"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  ref={drawPathRef}
+                  d="M0.998047 1C0.998047 1 849.498 764.605 786.498 659.553C723.498 554.5 1725.51 370.052 1660.51 419.052C1595.5 468.052 2515.02 616.409 2491.26 660.981C2467.5 705.553 3369 419.052 3369 419.052"
+                  stroke="#EBFD15"
+                  strokeWidth="3"
+                />
+              </svg>
+            </div>
+          </section>
+        </div>
+        <section className="flex flex-col lg:flex-row items-center justify-between px-8 py-24 gap-12 w-full">
+          {/* LEFT CONTENT */}
+          <div className="flex-1 flex flex-col gap-8">
+            <h2 className="text-5xl font-neueroman leading-tight">
+              {" "}
+              Stress-Free Payments
+              <br />
+              Made Simple
+            </h2>
+
+            <p className="text-base font-neuehaas45 max-w-md">
+              We’ve partnered with Klarna to offer flexible, hassle-fre payment options .Split your costs over time with zero fuss, zero stress — no forms, no fine print. Just flexibility that fits your flow.
+            </p>
+          </div>
+
+          <div className="flex-1 flex flex-col items-center relative">
+            <div className="relative w-2/3">
+              <img src="../images/iphoneoutline.png" className="w-full" />
+              <div
+                ref={processingRef}
+                id="processing"
+                className={`absolute inset-0 flex flex-col justify-center items-center ${
+                  isComplete ? "complete" : "uncomplete"
+                }`}
+              >
+                <div className="text-[14px] font-neuehaas45 mx-auto text-center">
+                  <h1 className="text-[20px]">Processing</h1>
+                  <h2 className="text-[14px]">
+                    Please wait while we process your request
+                  </h2>
+                </div>
+                <div className="relative mx-auto my-[30px]">
+                  <div class="gears">
+                    <div class="gear-wrapper gear-wrapper-1">
+                      <svg
+                        version="1.1"
+                        className="gear gear-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlnsXlink="http://www.w3.org/1999/xlink"
+                        x="0px"
+                        y="0px"
+                        viewBox="0 0 512 512"
+                        style={{ enableBackground: "new 0 0 512 512" }}
+                        xmlSpace="preserve"
+                      >
+                        <path
+                          class="st0"
+                          d="M507.6,232.1c0,0-9.3-3.5-36.2-6c-32.9-3-42.8-15.4-53.7-30.7h-0.2c-1.4-3.6-2.8-7.2-4.4-10.8l0.1-0.1
+		c-3.1-18.6-4.8-34.3,16.3-59.7C446.7,104,450.8,95,450.8,95c-4-10.3-13.8-20-13.8-20s-9.7-9.7-20-13.8c0,0-9.1,4.1-29.8,21.4
+		c-25.4,21.1-41.1,19.4-59.7,16.3l-0.1,0.1c-3.5-1.6-7.1-3.1-10.8-4.4v-0.2c-15.3-10.9-27.7-20.9-30.7-53.7c-2.5-26.9-6-36.2-6-36.2
+		C269.8,0,256,0,256,0s-13.8,0-23.9,4.4c0,0-3.5,9.3-6,36.2c-3,32.9-15.4,42.8-30.7,53.7v0.2c-3.6,1.4-7.3,2.8-10.8,4.4l-0.1-0.1
+		c-18.6,3.1-34.3,4.8-59.7-16.3C104,65.3,95,61.2,95,61.2C84.7,65.3,75,75,75,75s-9.7,9.7-13.8,20c0,0,4.1,9.1,21.4,29.8
+		c21.1,25.4,19.4,41.1,16.3,59.7l0.1,0.1c-1.6,3.5-3.1,7.1-4.4,10.8h-0.2c-10.9,15.4-20.9,27.7-53.7,30.7c-26.9,2.5-36.2,6-36.2,6
+		C0,242.3,0,256,0,256s0,13.8,4.4,23.9c0,0,9.3,3.5,36.2,6c32.9,3,42.8,15.4,53.7,30.7h0.2c1.4,3.7,2.8,7.3,4.4,10.8l-0.1,0.1
+		c3.1,18.6,4.8,34.3-16.3,59.7C65.3,408,61.2,417,61.2,417c4.1,10.3,13.8,20,13.8,20s9.7,9.7,20,13.8c0,0,9-4.1,29.8-21.4
+		c25.4-21.1,41.1-19.4,59.7-16.3l0.1-0.1c3.5,1.6,7.1,3.1,10.8,4.4v0.2c15.3,10.9,27.7,20.9,30.7,53.7c2.5,26.9,6,36.2,6,36.2
+		C242.3,512,256,512,256,512s13.8,0,23.9-4.4c0,0,3.5-9.3,6-36.2c3-32.9,15.4-42.8,30.7-53.7v-0.2c3.7-1.4,7.3-2.8,10.8-4.4l0.1,0.1
+		c18.6-3.1,34.3-4.8,59.7,16.3c20.8,17.3,29.8,21.4,29.8,21.4c10.3-4.1,20-13.8,20-13.8s9.7-9.7,13.8-20c0,0-4.1-9.1-21.4-29.8
+		c-21.1-25.4-19.4-41.1-16.3-59.7l-0.1-0.1c1.6-3.5,3.1-7.1,4.4-10.8h0.2c10.9-15.3,20.9-27.7,53.7-30.7c26.9-2.5,36.2-6,36.2-6
+		C512,269.8,512,256,512,256S512,242.2,507.6,232.1z M256,375.7c-66.1,0-119.7-53.6-119.7-119.7S189.9,136.3,256,136.3
+		c66.1,0,119.7,53.6,119.7,119.7S322.1,375.7,256,375.7z"
+                        />
+                      </svg>
+                    </div>
+                    <div class="gear-wrapper gear-wrapper-2">
+                      <svg
+                        version="1.1"
+                        className="gear gear-2"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlnsXlink="http://www.w3.org/1999/xlink"
+                        x="0px"
+                        y="0px"
+                        viewBox="0 0 512 512"
+                        style={{ enableBackground: "new 0 0 512 512" }}
+                        xmlSpace="preserve"
+                      >
+                        <path
+                          class="st0"
+                          d="M507.6,232.1c0,0-9.3-3.5-36.2-6c-32.9-3-42.8-15.4-53.7-30.7h-0.2c-1.4-3.6-2.8-7.2-4.4-10.8l0.1-0.1
+		c-3.1-18.6-4.8-34.3,16.3-59.7C446.7,104,450.8,95,450.8,95c-4-10.3-13.8-20-13.8-20s-9.7-9.7-20-13.8c0,0-9.1,4.1-29.8,21.4
+		c-25.4,21.1-41.1,19.4-59.7,16.3l-0.1,0.1c-3.5-1.6-7.1-3.1-10.8-4.4v-0.2c-15.3-10.9-27.7-20.9-30.7-53.7c-2.5-26.9-6-36.2-6-36.2
+		C269.8,0,256,0,256,0s-13.8,0-23.9,4.4c0,0-3.5,9.3-6,36.2c-3,32.9-15.4,42.8-30.7,53.7v0.2c-3.6,1.4-7.3,2.8-10.8,4.4l-0.1-0.1
+		c-18.6,3.1-34.3,4.8-59.7-16.3C104,65.3,95,61.2,95,61.2C84.7,65.3,75,75,75,75s-9.7,9.7-13.8,20c0,0,4.1,9.1,21.4,29.8
+		c21.1,25.4,19.4,41.1,16.3,59.7l0.1,0.1c-1.6,3.5-3.1,7.1-4.4,10.8h-0.2c-10.9,15.4-20.9,27.7-53.7,30.7c-26.9,2.5-36.2,6-36.2,6
+		C0,242.3,0,256,0,256s0,13.8,4.4,23.9c0,0,9.3,3.5,36.2,6c32.9,3,42.8,15.4,53.7,30.7h0.2c1.4,3.7,2.8,7.3,4.4,10.8l-0.1,0.1
+		c3.1,18.6,4.8,34.3-16.3,59.7C65.3,408,61.2,417,61.2,417c4.1,10.3,13.8,20,13.8,20s9.7,9.7,20,13.8c0,0,9-4.1,29.8-21.4
+		c25.4-21.1,41.1-19.4,59.7-16.3l0.1-0.1c3.5,1.6,7.1,3.1,10.8,4.4v0.2c15.3,10.9,27.7,20.9,30.7,53.7c2.5,26.9,6,36.2,6,36.2
+		C242.3,512,256,512,256,512s13.8,0,23.9-4.4c0,0,3.5-9.3,6-36.2c3-32.9,15.4-42.8,30.7-53.7v-0.2c3.7-1.4,7.3-2.8,10.8-4.4l0.1,0.1
+		c18.6-3.1,34.3-4.8,59.7,16.3c20.8,17.3,29.8,21.4,29.8,21.4c10.3-4.1,20-13.8,20-13.8s9.7-9.7,13.8-20c0,0-4.1-9.1-21.4-29.8
+		c-21.1-25.4-19.4-41.1-16.3-59.7l-0.1-0.1c1.6-3.5,3.1-7.1,4.4-10.8h0.2c10.9-15.3,20.9-27.7,53.7-30.7c26.9-2.5,36.2-6,36.2-6
+		C512,269.8,512,256,512,256S512,242.2,507.6,232.1z M256,375.7c-66.1,0-119.7-53.6-119.7-119.7S189.9,136.3,256,136.3
+		c66.1,0,119.7,53.6,119.7,119.7S322.1,375.7,256,375.7z"
+                        />
+                      </svg>
+                    </div>
+                    <div class="gear-wrapper gear-wrapper-3">
+                      <svg
+                        version="1.1"
+                        className="gear gear-3"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlnsXlink="http://www.w3.org/1999/xlink"
+                        x="0px"
+                        y="0px"
+                        viewBox="0 0 512 512"
+                        style={{ enableBackground: "new 0 0 512 512" }}
+                        xmlSpace="preserve"
+                      >
+                        <path
+                          class="st0"
+                          d="M507.6,232.1c0,0-9.3-3.5-36.2-6c-32.9-3-42.8-15.4-53.7-30.7h-0.2c-1.4-3.6-2.8-7.2-4.4-10.8l0.1-0.1
+		c-3.1-18.6-4.8-34.3,16.3-59.7C446.7,104,450.8,95,450.8,95c-4-10.3-13.8-20-13.8-20s-9.7-9.7-20-13.8c0,0-9.1,4.1-29.8,21.4
+		c-25.4,21.1-41.1,19.4-59.7,16.3l-0.1,0.1c-3.5-1.6-7.1-3.1-10.8-4.4v-0.2c-15.3-10.9-27.7-20.9-30.7-53.7c-2.5-26.9-6-36.2-6-36.2
+		C269.8,0,256,0,256,0s-13.8,0-23.9,4.4c0,0-3.5,9.3-6,36.2c-3,32.9-15.4,42.8-30.7,53.7v0.2c-3.6,1.4-7.3,2.8-10.8,4.4l-0.1-0.1
+		c-18.6,3.1-34.3,4.8-59.7-16.3C104,65.3,95,61.2,95,61.2C84.7,65.3,75,75,75,75s-9.7,9.7-13.8,20c0,0,4.1,9.1,21.4,29.8
+		c21.1,25.4,19.4,41.1,16.3,59.7l0.1,0.1c-1.6,3.5-3.1,7.1-4.4,10.8h-0.2c-10.9,15.4-20.9,27.7-53.7,30.7c-26.9,2.5-36.2,6-36.2,6
+		C0,242.3,0,256,0,256s0,13.8,4.4,23.9c0,0,9.3,3.5,36.2,6c32.9,3,42.8,15.4,53.7,30.7h0.2c1.4,3.7,2.8,7.3,4.4,10.8l-0.1,0.1
+		c3.1,18.6,4.8,34.3-16.3,59.7C65.3,408,61.2,417,61.2,417c4.1,10.3,13.8,20,13.8,20s9.7,9.7,20,13.8c0,0,9-4.1,29.8-21.4
+		c25.4-21.1,41.1-19.4,59.7-16.3l0.1-0.1c3.5,1.6,7.1,3.1,10.8,4.4v0.2c15.3,10.9,27.7,20.9,30.7,53.7c2.5,26.9,6,36.2,6,36.2
+		C242.3,512,256,512,256,512s13.8,0,23.9-4.4c0,0,3.5-9.3,6-36.2c3-32.9,15.4-42.8,30.7-53.7v-0.2c3.7-1.4,7.3-2.8,10.8-4.4l0.1,0.1
+		c18.6-3.1,34.3-4.8,59.7,16.3c20.8,17.3,29.8,21.4,29.8,21.4c10.3-4.1,20-13.8,20-13.8s9.7-9.7,13.8-20c0,0-4.1-9.1-21.4-29.8
+		c-21.1-25.4-19.4-41.1-16.3-59.7l-0.1-0.1c1.6-3.5,3.1-7.1,4.4-10.8h0.2c10.9-15.3,20.9-27.7,53.7-30.7c26.9-2.5,36.2-6,36.2-6
+		C512,269.8,512,256,512,256S512,242.2,507.6,232.1z M256,375.7c-66.1,0-119.7-53.6-119.7-119.7S189.9,136.3,256,136.3
+		c66.1,0,119.7,53.6,119.7,119.7S322.1,375.7,256,375.7z"
+                        />
+                      </svg>
+                    </div>
+                    <div class="gear-wrapper gear-wrapper-4">
+                      <svg
+                        version="1.1"
+                        className="gear gear-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlnsXlink="http://www.w3.org/1999/xlink"
+                        x="0px"
+                        y="0px"
+                        viewBox="0 0 512 512"
+                        enableBackground="new 0 0 512 512"
+                        xmlSpace="preserve"
+                      >
+                        <path
+                          class="st0"
+                          d="M507.6,232.1c0,0-9.3-3.5-36.2-6c-32.9-3-42.8-15.4-53.7-30.7h-0.2c-1.4-3.6-2.8-7.2-4.4-10.8l0.1-0.1
+		c-3.1-18.6-4.8-34.3,16.3-59.7C446.7,104,450.8,95,450.8,95c-4-10.3-13.8-20-13.8-20s-9.7-9.7-20-13.8c0,0-9.1,4.1-29.8,21.4
+		c-25.4,21.1-41.1,19.4-59.7,16.3l-0.1,0.1c-3.5-1.6-7.1-3.1-10.8-4.4v-0.2c-15.3-10.9-27.7-20.9-30.7-53.7c-2.5-26.9-6-36.2-6-36.2
+		C269.8,0,256,0,256,0s-13.8,0-23.9,4.4c0,0-3.5,9.3-6,36.2c-3,32.9-15.4,42.8-30.7,53.7v0.2c-3.6,1.4-7.3,2.8-10.8,4.4l-0.1-0.1
+		c-18.6,3.1-34.3,4.8-59.7-16.3C104,65.3,95,61.2,95,61.2C84.7,65.3,75,75,75,75s-9.7,9.7-13.8,20c0,0,4.1,9.1,21.4,29.8
+		c21.1,25.4,19.4,41.1,16.3,59.7l0.1,0.1c-1.6,3.5-3.1,7.1-4.4,10.8h-0.2c-10.9,15.4-20.9,27.7-53.7,30.7c-26.9,2.5-36.2,6-36.2,6
+		C0,242.3,0,256,0,256s0,13.8,4.4,23.9c0,0,9.3,3.5,36.2,6c32.9,3,42.8,15.4,53.7,30.7h0.2c1.4,3.7,2.8,7.3,4.4,10.8l-0.1,0.1
+		c3.1,18.6,4.8,34.3-16.3,59.7C65.3,408,61.2,417,61.2,417c4.1,10.3,13.8,20,13.8,20s9.7,9.7,20,13.8c0,0,9-4.1,29.8-21.4
+		c25.4-21.1,41.1-19.4,59.7-16.3l0.1-0.1c3.5,1.6,7.1,3.1,10.8,4.4v0.2c15.3,10.9,27.7,20.9,30.7,53.7c2.5,26.9,6,36.2,6,36.2
+		C242.3,512,256,512,256,512s13.8,0,23.9-4.4c0,0,3.5-9.3,6-36.2c3-32.9,15.4-42.8,30.7-53.7v-0.2c3.7-1.4,7.3-2.8,10.8-4.4l0.1,0.1
+		c18.6-3.1,34.3-4.8,59.7,16.3c20.8,17.3,29.8,21.4,29.8,21.4c10.3-4.1,20-13.8,20-13.8s9.7-9.7,13.8-20c0,0-4.1-9.1-21.4-29.8
+		c-21.1-25.4-19.4-41.1-16.3-59.7l-0.1-0.1c1.6-3.5,3.1-7.1,4.4-10.8h0.2c10.9-15.3,20.9-27.7,53.7-30.7c26.9-2.5,36.2-6,36.2-6
+		C512,269.8,512,256,512,256S512,242.2,507.6,232.1z M256,375.7c-66.1,0-119.7-53.6-119.7-119.7S189.9,136.3,256,136.3
+		c66.1,0,119.7,53.6,119.7,119.7S322.1,375.7,256,375.7z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="loading-bar">
+  <span style={{ width: `${progress}%` }}></span>
+</div>
+                  <svg
+                    className="checkmark checkmark-success"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 50 50"
+                  >
+                    <circle
+                      className="checkmark-circle"
+                      cx="25"
+                      cy="25"
+                      r="25"
+                      fill="none"
+                    />
+                    <path
+                      className="checkmark-check"
+                      fill="none"
+                      d="M14.1 27.2l7.1 7.2 16.7-16.8"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-[300px] space-y-4">
+              <div>
+                <div className="flex justify-between text-xs mb-1 font-neuehaas45 uppercase">
+                  <span>Remaining balance</span>
+                </div>
+                <div className="bg-black/10 h-2 rounded-full relative overflow-hidden">
+                  <div className="bg-lime-300 h-full rounded-full w-[75%]"></div>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs mb-1 font-neuehaas45 uppercase">
+                  <span>NEXT PAYMENT DUE</span>
+                </div>
+                <div className="bg-black/10 h-2 rounded-full relative overflow-hidden">
+                  <div className="bg-purple-300 h-full rounded-full w-[45%]"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <svg
+          ref={starRef}
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 162 162"
+          style={{ enableBackground: "new 0 0 162 162" }}
+        >
+          <g
+            className="shape-wrapper"
+            style={{ transformOrigin: "center center" }}
+          >
+            <path
+              className="hsc-img-path"
+              d="M108 88.7c-10.8 0-19.7 8.8-19.7 19.7v47.4c0 1.9-1.5 3.4-3.4 3.4h-8.6c-1.9 0-3.4-1.5-3.4-3.4v-47.4c0-10.8-8.8-19.7-19.7-19.7H6.4c-1.9 0-3.4-1.5-3.4-3.4v-8c0-1.9 1.5-3.4 3.4-3.4h46.9c10.8 0 19.7-8.8 19.6-19.7V6.4c0-1.9 1.5-3.4 3.4-3.4H85c1.9 0 3.4 1.5 3.4 3.4v47.8c0 10.8 8.8 19.7 19.7 19.7h46.6c1.9 0 3.4 1.5 3.4 3.4v8c0 1.9-1.5 3.4-3.4 3.4H108z"
+              fill="#E9FE1D"
+            />
+          </g>
+
+          <text
+            x="50%"
+            y="50%"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            className="scrolling-content"
+            style={{
+              fontFamily: "sans-serif",
+              fontSize: "4px",
+              fill: "black",
+              opacity: 0,
+              pointerEvents: "none",
+            }}
+          >
+            <tspan x="50%" dy="-1em">
+              AFFORDABLE FINANCING
+            </tspan>
+            <tspan x="50%" dy="1.2em">
+              NO HIDDEN COSTS
+            </tspan>
+          </text>
+        </svg>
+        <section className="relative w-full h-screen font-neuehaas45">
+          <section className="bg-[#FF621D]"></section>
+          <div className="items-start flex flex-col px-6">
+            <div className="cube-outline">
+              <div class="cube">
+                <div className="cube-face cube-face--front">
+                  <div className="text-overlay">
+                    <p className="first-line font-neueroman uppercase">
+                      One year post-treatment follow-up
+                    </p>
+                    <p
+                      className=" font-neueroman uppercase"
+                      style={{
+                        position: "absolute",
+                        transform: "rotate(90deg)",
+                        transformOrigin: "left top",
+                        top: "40%",
+                        left: "70%",
+                        fontSize: ".8rem",
+                        lineHeight: "1.2",
+                        color: "black",
+                        maxWidth: "120px",
+                      }}
+                    >
+                      Retainers and retention visits for one year post-treatment
+                      included.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="cube-face cube-face--back">2</div>
+                <div class="cube-face cube-face--top "></div>
+                <div class="cube-face cube-face--bottom">4</div>
+                <div class="cube-face cube-face--left"></div>
+                <div class="cube-face cube-face--right"></div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
+
       {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
         <Canvas
       gl={{ alpha: true }}
