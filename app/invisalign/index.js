@@ -8,7 +8,7 @@ import { useControls } from "leva";
 import Splitting from "splitting";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import Image from "next/image";
-import React, { useState, useEffect, useRef, forwardRef } from "react";
+import React, { useState, useEffect, useRef, forwardRef, Suspense } from "react";
 import Link from "next/link";
 // import DotPattern from "../svg/DotPattern";
 import {
@@ -31,6 +31,33 @@ import { TextureLoader } from 'three';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
+const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
+  const ref = useRef();
+  const texture = useTexture(imageSrc);
+  const { viewport, size } = useThree();
+
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollY = window.scrollY;
+      const scrollOffset = (scrollY / size.height) * viewport.height;
+      ref.current.position.y = yOffset + scrollOffset;
+    };
+
+    window.addEventListener('scroll', onScroll);
+    onScroll();
+
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [viewport.height, size.height, yOffset]);
+
+  return (
+    <mesh ref={ref} position={[xOffset, 0, 0]} scale={[2.5, 2, 1]}>
+      <planeGeometry args={[2, 3]} />
+      <meshBasicMaterial map={texture} transparent />
+    </mesh>
+  );
+};
+
+
 function BulgeGallery() {
   const containerRef = useRef();
   const scrollData = useRef({ target: 0, current: 0, last: 0 });
@@ -44,18 +71,7 @@ function BulgeGallery() {
     const camera = new Camera(gl, { fov: 45 });
     const scene = new Transform();
     camera.position.z = 5;
-
     containerRef.current.appendChild(gl.canvas);
-
-    
-    const images = ["/images/dragon.png"]; 
-    
-    const layoutPositions = [
-      { width: 400, height: 500, top: 10, left: 50 },
-      { width: 500, height: 400, top: 150, left: window.innerWidth - 550 },
-      { width: 600, height: 500, top: 700, left: 100 },
-      { width: 450, height: 550, top: 750, left: window.innerWidth - 550 },
-    ];
 
     const screen = {
       width: window.innerWidth,
@@ -66,54 +82,63 @@ function BulgeGallery() {
       width: 2,
       height: 2 * (screen.height / screen.width),
     };
-    renderer.setSize(window.innerWidth, window.innerHeight);
 
-    screen.width = window.innerWidth;
-    screen.height = window.innerHeight;
-    viewport.height = 2 * (screen.height / screen.width);
+    renderer.setSize(screen.width, screen.height);
 
-    images.forEach((src, i) => {
-      const image = new window.Image();
 
-      image.src = src;
+    const domImages = containerRef.current.querySelectorAll(".media");
 
-      image.onload = () => {
+    domImages.forEach((element) => {
+      const img = element.querySelector("img");
+
+      if (!img.complete) {
+        img.onload = () => {
+          const geometry = new Plane(gl, {
+            widthSegments: 100,
+            heightSegments: 100,
+          });
+
+          const media = new Media({
+            element,
+            image: img,
+            geometry,
+            gl,
+            height: 2000,
+            scene,
+            screen,
+            viewport,
+          });
+
+          media.update({ current: 0, last: 0 }, "down");
+          meshes.current.push(media);
+        };
+      } else {
         const geometry = new Plane(gl, {
           widthSegments: 100,
           heightSegments: 100,
         });
-      
-        const bounds = {
-          width: 500,
-          height: 600,
-          top: 150,
-          left: 100,
-        };
-      
-        const fakeElement = {
-          getBoundingClientRect: () => bounds,
-        };
-      
+
         const media = new Media({
-          element: fakeElement,
-          image,
-          geometry, 
+          element,
+          image: img,
+          geometry,
           gl,
           height: 2000,
           scene,
           screen,
           viewport,
-          customBounds: bounds,
         });
-      
+
         media.update({ current: 0, last: 0 }, "down");
         meshes.current.push(media);
-      };
-      
+      }
     });
 
     const onResize = () => {
-
+      screen.width = window.innerWidth;
+      screen.height = window.innerHeight;
+      viewport.height = 2 * (screen.height / screen.width);
+      renderer.setSize(screen.width, screen.height);
 
       meshes.current.forEach((media) => {
         media.onResize({ screen, viewport, height: 2000 });
@@ -152,8 +177,17 @@ function BulgeGallery() {
     };
   }, []);
 
-  return <div ref={containerRef} className="relative w-full h-[2000px]" />;
+  return (
+<div ref={containerRef} className="relative w-full min-h-[100vh] overflow-visible" >
+  <div className="media fixed  w-[400px] h-[600px] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0">
+    <img src="/images/invisalignphonemockup.png" className="w-full h-full object-contain" />
+  </div>
+</div>
+
+
+  );
 }
+
 
 
 const SmileyFace = ({ position = [0, 0, 0] }) => {
@@ -721,28 +755,30 @@ const Invisalign = () => {
 <BulgeGallery />
       <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
 
-        {/* <Canvas
-          gl={{ alpha: true }}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            pointerEvents: "initial",
-            background: "transparent",
-            zIndex: 0,
-          }}
-        >
-          <mesh>
-  <planeGeometry args={[2, 2]} />
-  <meshBasicMaterial color="#F9F8F7" />
-</mesh>
+      <Canvas
+  gl={{ alpha: true }}
+  style={{
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    pointerEvents: "initial",
+    background: "transparent",
+    zIndex: 0,
+  }}
+>
+<Suspense fallback={null}>
+  <DistortedImage imageSrc="/images/invisalign_mockup_3.jpg" xOffset={-3.5} yOffset={0}  />
+  <DistortedImage imageSrc="/images/invisalign_mockup_3.jpg"  xOffset={3.5} yOffset={-2.5}/>
 
-          <EffectComposer>
-            <Fluid backgroundColor="#F9F8F7" />
-          </EffectComposer>
-        </Canvas> */}
+  <EffectComposer>
+    <Fluid backgroundColor="#F9F8F7" />
+  </EffectComposer>
+</Suspense>
+
+</Canvas>
+
 
         <section className="pointer-events-none canvas-section relative h-[100vh] z-10">
           <Canvas camera={{ position: [0, 0, 4] }}>
@@ -945,7 +981,7 @@ const Invisalign = () => {
           </div>
         </section>
         <div className="min-h-screen relative">
-          <img className="w-full" src="../images/invisalign_mockup_3.jpg" />
+
           <div className="font-neuehaas45 perspective-1500 text-[#0414EA]">
             <div className="flip-wrapper">
               <div className="flip-container">

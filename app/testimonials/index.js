@@ -570,28 +570,28 @@ const StickyColumnScroll = () => {
     {
       name: "JAMES PICA",
       text: "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!",
-      color: "bg-[#d85749]" ,
+      color: "bg-[#9482A3]" ,
        height: "h-[320px]",
        width: "w-[320px]",
     },
     {
       name: "Thomas StPierre",
       text: "I had a pretty extreme case and it took some time, but FreySmiles gave me the smile I had always hoped for. Thank you!",
-      color: "bg-[#63A3D7]",
+      color: "bg-[#EB7104]",
       height: "h-[240px]",
       width: "w-[240px]",
     },
     {
       name: "FEI ZHAO",
       text: "Our whole experience for the past 10 years of being under Dr. Gregg Frey’s care and his wonderful staff has been amazing. My son and my daughter have most beautiful smiles, and they received so many compliments on their teeth. It has made a dramatic and positive change in their lives. Dr. Frey is a perfectionist, and his treatment is second to none. I recommend Dr. Frey highly and without any reservation.",
-      color: "bg-[#E8CA69]",
+      color: "bg-[#80A192]",
       height: "h-[320px]",
       width: "w-[320px]",
     },
     {
       name: "Diana Gomez",
       text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don’t have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
-      color: "bg-[#EF9690]",
+      color: "bg-[#F3B700]",
       height: "h-[320px]",
       width: "w-[320px]",
       
@@ -599,42 +599,42 @@ const StickyColumnScroll = () => {
     {
       name: "Brandi Moyer",
       text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
-      color: "bg-[#F8B254]",
+      color: "bg-[#4C90B3]",
     },
     {
       name: "Tracee Benton",
       text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
-      color: "bg-[#158368]",
+      color: "bg-[#036523]",
     },
 
       {
       name: "Sara Moyer",
       text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
-      color: "bg-[#9b84fb]",
+      color: "bg-[#525252]",
       height: "h-[320px]",
       width: "w-[320px]",
     },
     {
       name: "Vicki Weaver",
       text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
-      color: "bg-[#FF984F]",
+      color: "bg-[#EA9CBE]",
     },
     {
       name: "Andrew Cornell",
       text: "Over 20 years ago, I went to Dr. Frey to fix my cross bite and get braces. Since then, my smile looks substantially nicer. My entire mouth feels better as well. The benefits of orthodontics under Dr. Frey continue paying dividends.",
-      color: "bg-[#08a1dc]",
+      color: "bg-[#56A0FC]",
     },
     {
       name: "Shelby Loucks",
       text: "THEY ARE AMAZING!! Great staff and wonderful building. HIGHLY recommend to anyone looking for an orthodontist.",
-      color: "bg-[#bc5935]",
+      color: "bg-[#A81919]",
       height: "h-[240px]",
       width: "w-[240px]",
     },
     {
       name: "Mandee Kaur",
       text: "I would highly recommend FreySmiles! Excellent orthodontic care, whether it’s braces or Invisalign, Dr. Frey and his team pay attention to detail in making sure your smile is flawless! I would not trust anyone else for my daughter’s care other than FreySmiles.",
-      color: "bg-[#73ab0c]",
+      color: "bg-[#49ABA3]",
     },
     
 
@@ -831,7 +831,7 @@ const StickyColumnScroll = () => {
    className={`
      ${t.width || "w-[300px]"}
      ${t.height || "h-[300px]"}
-     p-4 rounded-lg shadow-lg text-white
+     p-4  text-white
      ${t.color}
      cursor-grab active:cursor-grabbing
      flex flex-col justify-between
