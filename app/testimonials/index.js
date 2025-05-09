@@ -7,7 +7,13 @@ import {
   useMotionValue,
   useSpring,
 } from "framer-motion";
-import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
+import {
+  Canvas,
+  useFrame,
+  useThree,
+  useLoader,
+  extend,
+} from "@react-three/fiber";
 import React, { useEffect, useState, useRef, Suspense, useMemo } from "react";
 import {
   EffectComposer,
@@ -24,6 +30,7 @@ import {
   useGLTF,
   MeshTransmissionMaterial,
   Environment,
+  shaderMaterial,
 } from "@react-three/drei";
 import * as THREE from "three";
 import { useControls } from "leva";
@@ -34,25 +41,24 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin);
 }
 
-const ScrambleText = ({ 
-  text, 
-  className, 
+const ScrambleText = ({
+  text,
+  className,
   scrambleOnLoad = true,
-  charsType = "default" // 'default' | 'numbers' | 'letters'
+  charsType = "default", // 'default' | 'numbers' | 'letters'
 }) => {
   const scrambleRef = useRef(null);
   const originalText = useRef(text);
 
-  
   const charSets = {
     default: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     numbers: "0123456789",
-    letters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    letters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
   };
 
   const scrambleAnimation = () => {
     return gsap.to(scrambleRef.current, {
-      duration: 0.8,
+      duration: 1.8,
       scrambleText: {
         text: originalText.current,
         characters: charSets[charsType],
@@ -65,7 +71,6 @@ const ScrambleText = ({
     });
   };
 
-  
   useEffect(() => {
     const element = scrambleRef.current;
     if (!element) return;
@@ -74,189 +79,63 @@ const ScrambleText = ({
       gsap.set(element, {
         scrambleText: {
           text: originalText.current,
-          chars: charSets[charsType], 
+          chars: charSets[charsType],
           revealDelay: 0.5,
-        }
+        },
       });
       scrambleAnimation();
     }
 
     const handleMouseEnter = () => scrambleAnimation();
-    element.addEventListener('mouseenter', handleMouseEnter);
+    element.addEventListener("mouseenter", handleMouseEnter);
 
     return () => {
-      element.removeEventListener('mouseenter', handleMouseEnter);
+      element.removeEventListener("mouseenter", handleMouseEnter);
     };
   }, [scrambleOnLoad, charsType]);
 
   return (
-    <span 
-      ref={scrambleRef} 
-      className={`scramble-text ${className || ''}`}
+    <span
+      className={`scramble-wrapper ${className || ""}`}
+      style={{ position: "relative", display: "inline-block" }}
     >
-      {text}
+      <span style={{ visibility: "hidden", whiteSpace: "nowrap" }}>{text}</span>
+
+      <span
+        ref={scrambleRef}
+        className="scramble-text"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {text}
+      </span>
     </span>
   );
 };
 
-function RibbonAroundSphere() {
-  const ribbonRef = useRef();
-  const segments = 1000;
-
-  const frontTexture = useLoader(THREE.TextureLoader, "/images/front.png");
-  const backTexture = useLoader(THREE.TextureLoader, "/images/back.png");
-
-  useEffect(() => {
-    [frontTexture, backTexture].forEach((t) => {
-      t.wrapS = THREE.RepeatWrapping;
-      t.wrapT = THREE.RepeatWrapping;
-      t.repeat.set(1, 1);
-      t.offset.setX(0.5);
-      t.flipY = true;
-    });
-    backTexture.repeat.set(-1, 1);
-  }, [frontTexture, backTexture]);
-
-  useFrame(() => {
-    if (frontTexture) frontTexture.offset.x += 0.001;
-    if (backTexture) backTexture.offset.x -= 0.001;
-  });
-
-  const frontMaterial = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        map: frontTexture,
-        side: THREE.BackSide,
-        transparent: true,
-        roughness: 0.65,
-        metalness: 0.25,
-        alphaTest: 0.1,
-        flatShading: true,
-      }),
-    [frontTexture]
-  );
-
-  const backMaterial = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        map: backTexture,
-        side: THREE.FrontSide,
-        transparent: true,
-        roughness: 0.65,
-        metalness: 0.25,
-        alphaTest: 0.1,
-        flatShading: true,
-      }),
-    [backTexture]
-  );
-
-  const geometry = useMemo(() => {
-    const numPoints = 7;
-    const radius = 5;
-
-    // const curvePoints = Array.from({ length: numPoints }, (_, i) => {
-    //   const theta = (i / numPoints) * Math.PI * 2;
-    //   return new THREE.Vector3().setFromSphericalCoords(
-    //     radius,
-    //     Math.PI / 2 + 0.9 * (Math.random() - 0.5),
-    //     theta
-    //   );
-    // });
-
-    // console.log("Froze:", curvePoints.map((v) => v.toArray()));
-
-    const curvePoints = [
-      new THREE.Vector3(0, -0.7791210925776592, 4.938924045885809),
-      new THREE.Vector3(
-        3.8972287305003155,
-        0.390385708530144,
-        3.107936202961956
-      ),
-      new THREE.Vector3(
-        4.859258415665126,
-        -0.3968854951588747,
-        -1.109040237509834
-      ),
-      new THREE.Vector3(
-        2.082282719004117,
-        1.4028390529397634,
-        -4.3239036913044595
-      ),
-      new THREE.Vector3(
-        -2.012218566064509,
-        -1.8686426688797089,
-        -4.178414895675252
-      ),
-      new THREE.Vector3(
-        -4.730483545820437,
-        -1.2069668652552943,
-        -1.0797020000434934
-      ),
-      new THREE.Vector3(
-        -3.6656012860016367,
-        -1.7372838238901793,
-        2.9232194798394224
-      ),
-    ];
-
-    const curve = new THREE.CatmullRomCurve3(curvePoints, true);
-    curve.tension = 0.7;
-
-    const spacedPoints = curve.getSpacedPoints(segments);
-    const frames = curve.computeFrenetFrames(segments, true);
-
-    const dimensions = [-0.7, 0.7];
-    const finalVertices = [];
-
-    // build ribbon vertices along binormals
-    dimensions.forEach((d) => {
-      for (let i = 0; i <= segments; i++) {
-        const base = spacedPoints[i];
-        const offset = frames.binormals[i].clone().multiplyScalar(d);
-        finalVertices.push(base.clone().add(offset));
-      }
-    });
-
-    finalVertices[0].copy(finalVertices[segments]);
-    finalVertices[segments + 1].copy(finalVertices[2 * segments + 1]);
-
-    const geom = new THREE.BufferGeometry().setFromPoints(finalVertices);
-
-    const indices = [];
-    for (let i = 0; i < segments; i++) {
-      const a = i;
-      const b = i + segments + 1;
-      const c = i + 1;
-      const d = i + segments + 2;
-
-      indices.push(a, b, c);
-      indices.push(b, d, c);
-    }
-    geom.setIndex(indices);
-    geom.computeVertexNormals();
-    const uvs = [];
-    for (let i = 0; i <= 1; i++) {
-      for (let j = 0; j <= segments; j++) {
-        uvs.push(j / segments, i);
-      }
-    }
-    geom.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-
-    geom.clearGroups();
-    geom.addGroup(0, indices.length, 0); // front material
-    geom.addGroup(0, indices.length, 1); // back material
-
-    return geom;
-  }, []);
-
+const ScrambleBlock = ({
+  lines = [],
+  className = "",
+  scrambleOnLoad = true,
+  charsType = "letters",
+}) => {
   return (
-    <mesh
-      ref={ribbonRef}
-      geometry={geometry}
-      material={[frontMaterial, backMaterial]}
-    />
+    <div className={`space-y-2 ${className}`}>
+      {lines.map((line, i) => (
+        <ScrambleText
+          key={i}
+          text={line}
+          scrambleOnLoad={scrambleOnLoad}
+          charsType={charsType}
+        />
+      ))}
+    </div>
   );
-}
+};
 
 const RotatingModel = () => {
   const { nodes } = useGLTF("/images/SVOX1F.glb");
@@ -436,7 +315,7 @@ const StickyColumnScroll = () => {
     { name: "Kara", image: "../images/testimonials/Kara.jpeg" },
     { name: "Sophia L.", image: "../images/testimonials/Sophia_Lee.jpg" },
     // { name: "Brynn", image: "../images/testimonials/Brynn.jpeg" },
-      { name: "Brynn", image: "../images/testimonials/brynnportrait.png" },
+    { name: "Brynn", image: "../images/testimonials/brynnportrait.png" },
     { name: "Emma", image: "../images/testimonials/Emma.png" },
     {
       name: "Brooke W.",
@@ -448,56 +327,64 @@ const StickyColumnScroll = () => {
       image: "../images/testimonials/Maria_Anagnostou.jpg",
     },
     {
-      name:"Natasha K.", image:"../images/testimonials/Natasha_Khela.jpg"
+      name: "Natasha K.",
+      image: "../images/testimonials/Natasha_Khela.jpg",
     },
     {
-      name:"James C.", image:"../images/testimonials/James_Cipolla.jpg"
+      name: "James C.",
+      image: "../images/testimonials/James_Cipolla.jpg",
     },
     {
-      name:"Devika K.", image:"/images/testimonials/Devika_Knafo.jpg"
+      name: "Devika K.",
+      image: "/images/testimonials/Devika_Knafo.jpg",
     },
     {
-      name:"Ibis S.", image:"../images/testimonials/Ibis_Subero.jpg"
+      name: "Ibis S.",
+      image: "../images/testimonials/Ibis_Subero.jpg",
     },
     {
-      name:"Abigail", image:"../images/testimonials/abigail.png"
+      name: "Abigail",
+      image: "../images/testimonials/abigail.png",
     },
     {
-      name:"Emma", image:"../images/testimonials/EmmaF.png"
-    }
+      name: "Emma",
+      image: "../images/testimonials/EmmaF.png",
+    },
   ];
 
-
-  
   const [activeIndex, setActiveIndex] = useState(null);
   const timeoutRef = useRef(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [displayIndex, setDisplayIndex] = useState(null); 
+  const [displayIndex, setDisplayIndex] = useState(null);
   const firstNameRef = useRef(null);
-
 
   const handleMouseEnter = (index) => {
     setActiveIndex(index);
-  
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-  
+
     const animateIndices = (current) => {
       if (current === index) {
         setDisplayIndex(index);
         return;
       }
-      
+
       const step = current < index ? 1 : -1;
       setDisplayIndex(current);
-      
+
       timeoutRef.current = setTimeout(() => {
         animateIndices(current + step);
       }, 200);
     };
-  
-    const startFrom = displayIndex !== null ? displayIndex : activeIndex !== null ? activeIndex : 0;
+
+    const startFrom =
+      displayIndex !== null
+        ? displayIndex
+        : activeIndex !== null
+        ? activeIndex
+        : 0;
     animateIndices(startFrom);
   };
   const handleMouseLeave = () => {
@@ -506,12 +393,10 @@ const StickyColumnScroll = () => {
       clearTimeout(timeoutRef.current);
     }
   };
-  
 
   const handleMouseMove = (e) => {
     setMousePos({ x: e.clientX, y: e.clientY });
   };
-
 
   useEffect(() => {
     return () => {
@@ -526,32 +411,31 @@ const StickyColumnScroll = () => {
 
   useEffect(() => {
     let animationFrame;
-  
+
     const update = () => {
       setLerpedPos((prev) => ({
         x: lerp(prev.x, mousePos.x, 0.15),
         y: lerp(prev.y, mousePos.y, 0.15),
       }));
-  
+
       animationFrame = requestAnimationFrame(update);
     };
-  
+
     update();
-  
+
     return () => cancelAnimationFrame(animationFrame);
   }, [mousePos]);
-  
+
   useEffect(() => {
     if (firstNameRef.current) {
       const rect = firstNameRef.current.getBoundingClientRect();
-  
+
       setMousePos({
-        x: rect.right + 24, 
-        y: rect.top + rect.height / 2, 
+        x: rect.right + 24,
+        y: rect.top + rect.height / 2,
       });
     }
   }, []);
-  
 
   const patientSectionRef = useRef();
   const [sectionTop, setSectionTop] = useState(0);
@@ -570,9 +454,10 @@ const StickyColumnScroll = () => {
     {
       name: "JAMES PICA",
       text: "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!",
-      color: "bg-[#9482A3]" ,
-       height: "h-[320px]",
-       width: "w-[320px]",
+      color: "bg-[#9482A3]",
+      image: "/images/dragon.png",
+      height: "h-[320px]",
+      width: "w-[320px]",
     },
     {
       name: "Thomas StPierre",
@@ -594,7 +479,6 @@ const StickyColumnScroll = () => {
       color: "bg-[#F3B700]",
       height: "h-[320px]",
       width: "w-[320px]",
-      
     },
     {
       name: "Brandi Moyer",
@@ -607,7 +491,7 @@ const StickyColumnScroll = () => {
       color: "bg-[#036523]",
     },
 
-      {
+    {
       name: "Sara Moyer",
       text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
       color: "bg-[#525252]",
@@ -636,36 +520,34 @@ const StickyColumnScroll = () => {
       text: "I would highly recommend FreySmiles! Excellent orthodontic care, whether it’s braces or Invisalign, Dr. Frey and his team pay attention to detail in making sure your smile is flawless! I would not trust anyone else for my daughter’s care other than FreySmiles.",
       color: "bg-[#49ABA3]",
     },
-    
-
   ];
-  
-  const sectionRef = useRef(null);
 
-  useEffect(() => {
-    const el = sectionRef.current;
+  // const sectionRef = useRef(null);
 
-    gsap.to(el, {
-      yPercent: -100,
-      ease: "none",
-      scrollTrigger: {
-        trigger: el,
-        start: "top top",
-        end: "bottom top",
-        scrub: true,
-  
-      },
-    });
-  }, []);
+  // useEffect(() => {
+  //   const el = sectionRef.current;
+
+  //   gsap.to(el, {
+  //     yPercent: -100,
+  //     ease: "none",
+  //     scrollTrigger: {
+  //       trigger: el,
+  //       start: "top top",
+  //       end: "bottom top",
+  //       scrub: true,
+
+  //     },
+  //   });
+  // }, []);
 
   useEffect(() => {
     const lines = gsap.utils.toArray("#smile-scroll-section .line");
-  
+
     lines.forEach((line, index) => {
       const direction = index % 2 === 0 ? -1 : 1;
-  
+
       gsap.to(line, {
-        xPercent: direction * 50, 
+        xPercent: direction * 50,
         ease: "none",
         scrollTrigger: {
           trigger: "#smile-scroll-section",
@@ -677,176 +559,250 @@ const StickyColumnScroll = () => {
     });
   }, []);
 
+  const canvasContainerRef = useRef();
+
+  const sectionOneRef = useRef(null);
+  const navBarRef = useRef(null);
+
+  useEffect(() => {
+    if (!sectionOneRef.current || !navBarRef.current) return;
+
+    ScrollTrigger.create({
+      trigger: sectionOneRef.current,
+      start: "75% top",
+      end: () => `+=${navBarRef.current.offsetTop + window.innerHeight}`,
+      pin: true,
+      pinSpacing: false,
+    });
+
+    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
+  }, []);
+
   return (
     <>
-<section
-  ref={sectionRef}
-  className="absolute top-0 left-0 w-full min-h-screen z-10 bg-[#EAF879] text-black flex flex-col justify-center items-center"
->
+      <section
+        ref={sectionOneRef}
+        className="z-10 relative w-full min-h-[110vh] bg-[#E3DEEA] flex flex-col px-12"
+      >
+        <div
+          ref={canvasContainerRef}
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 0,
+            width: "50vw",
+            height: "100vh",
+          }}
+        >
+          <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 5] }}>
+            <PixelImage
+              containerRef={canvasContainerRef}
+              imgSrc="/images/shinycircle.png"
+            />
+          </Canvas>
+        </div>
 
-        <MouseTrail
-          images={[
-            "../images/mousetrail/flame.png",
-            "../images/mousetrail/cat.png",
-            "../images/mousetrail/pixelstar.png",
-            "../images/mousetrail/avocado.png",
-            "../images/mousetrail/ghost.png",
-            "../images/mousetrail/pacman.png",
-            "../images/mousetrail/evilrobot.png",
-            "../images/mousetrail/thirdeye.png",
-            "../images/mousetrail/alientcat.png",
-            "../images/mousetrail/gotcha.png",
-            "../images/mousetrail/karaokekawaii.png",
-            "../images/mousetrail/mushroom.png",
-            "../images/mousetrail/pixelcloud.png",
-            "../images/mousetrail/pineapple.png",
-            // "../images/mousetrail/upsidedowncat.png",
-            "../images/mousetrail/pixelsun.png",
-            "../images/mousetrail/cherries.png",
-            "../images/mousetrail/watermelon.png",
-            "../images/mousetrail/dolphins.png",
-            "../images/mousetrail/jellyfish.png",
-            "../images/mousetrail/nyancat.png",
-            "../images/mousetrail/donut.png",
-            "../images/mousetrail/controller.png",
-            "../images/mousetrail/dinosaur.png",
-            "../images/mousetrail/headphones.png",
-            "../images/mousetrail/porsche.png",
-          ]}
-        />
-{/* <section className="uppercase px-6 py-20"  id="smile-scroll-section">
-  <div className="flex flex-col items-center space-y-6 text-center leading-[1.1]">
+        <div className="z-10 max-w-[1400px] w-full flex flex-col md:flex-row items-center gap-12">
+          <div className="flex-1"></div>
+          <MouseTrail
+            images={[
+              "../images/mousetrail/flame.png",
+              "../images/mousetrail/cat.png",
+              "../images/mousetrail/pixelstar.png",
+              "../images/mousetrail/avocado.png",
+              "../images/mousetrail/ghost.png",
+              "../images/mousetrail/pacman.png",
+              "../images/mousetrail/evilrobot.png",
+              "../images/mousetrail/thirdeye.png",
+              "../images/mousetrail/alientcat.png",
+              "../images/mousetrail/gotcha.png",
+              "../images/mousetrail/karaokekawaii.png",
+              "../images/mousetrail/mushroom.png",
+              "../images/mousetrail/pixelcloud.png",
+              "../images/mousetrail/pineapple.png",
+              // "../images/mousetrail/upsidedowncat.png",
+              "../images/mousetrail/pixelsun.png",
+              "../images/mousetrail/cherries.png",
+              "../images/mousetrail/watermelon.png",
+              "../images/mousetrail/dolphins.png",
+              "../images/mousetrail/jellyfish.png",
+              "../images/mousetrail/nyancat.png",
+              "../images/mousetrail/donut.png",
+              "../images/mousetrail/controller.png",
+              "../images/mousetrail/dinosaur.png",
+              "../images/mousetrail/headphones.png",
+              "../images/mousetrail/porsche.png",
+            ]}
+          />
+          <div className="flex-1 max-w-[500px] flex flex-col justify-center h-full min-h-[100vh]">
+            <h2 className="flex justify-center font-neuehaas45 text-4xl md:text-5xl mb-6 uppercase">
+              Join the smile club
+            </h2>
 
-    <div className="line flex flex-wrap justify-center gap-3 text-[7vw] uppercase">
-      <span className="font-neueroman">Join</span>
-      <span className="font-neueroman">the</span>
-      <span className="font-neueroman">Smile</span>
-      <span className="font-neueroman">Club</span>
-    </div>
+            <div className="font-ibmregular text-sm leading-none tracking-tight uppercase font-bold relative">
+              <span className="invisible block absolute">
+                We are committed to setting the standard for exceptional
+                service. Our communication is always open—every question is
+                welcome, and every concern is met with care and professionalism.
+              </span>
 
-    <div className="line uppercase flex flex-wrap justify-center gap-3 text-[7vw] uppercase">
-    <span className="font-neueroman">What</span>
-      <span className="font-neueroman">patients</span>
-      <span className="w-[60px] h-[60px] overflow-hidden rounded-md">
-        <img src="/images/mousetrail/donut.png" className="w-full h-full object-cover" alt="donut" />
-      </span>
-      <span className="font-neueroman">say</span>
-    </div>
+              <ScrambleBlock
+                lines={[
+                  "We are committed to setting the standard for exceptional service.",
+                  "Our communication is always open—every question and every concern",
+                  "is met with care and professionalism is welcome.",
+                ]}
+                scrambleOnLoad={true}
+                charsType="letters"
+              />
+            </div>
+          </div>
+        </div>
 
+        <div
+          ref={navBarRef}
+          className="absolute bottom-0 left-0 w-full bg-[#E3DEEA] pb-2" // remove py-6, control padding manually
+        >
+          <div className="flex items-center justify-center text-xs uppercase font-ibmregular text-black">
+            OUR PATIENTS RESULTS
+          </div>
 
-    <div className="line flex flex-wrap justify-center gap-3 text-[7vw] uppercase">
-      <span className="font-neueroman">Over</span>
-      <span className="font-neueroman">25,000</span>
-      <span className="font-neueroman">cases</span>
-
-    </div>
-
-
-   
-  </div>
-</section> */}
-        <h1 className="items-center px-6 text-center text-[7vw] leading-[0.9] font-neueroman uppercase max-w-[800px]">
-          JOIN THE SMILE CLUB
-        </h1>
-
-        <p className="max-w-[500px] mt-10 text-[18px] leading-[1.1] font-neuehaas45">
-          We are committed to setting the standard for exceptional service. Our
-          communication is always open—every question is welcome, and every
-          concern is met with care and professionalism.
-        </p>
+          <div className="mt-1 w-full border-b border-[#D3D3D3]"></div>
+        </div>
       </section>
 
-      <section className="min-h-screen w-full px-6 relative z-0 pt-[60vh]" onMouseMove={handleMouseMove}>
-
-      <ul className="font-neueroman uppercase text-[14px]">
-        {patients.map((member, index) => (
-          <li
-            key={index}
-            onMouseEnter={() => handleMouseEnter(index)}
-            onMouseLeave={handleMouseLeave}
-            className="border-b py-6 relative"
-          >
-            <div className="flex items-center relative">
-              <span className="pl-[15%]">DATE COMPLETED</span>
-              <span ref={index === 0 ? firstNameRef : null} className="pl-[25%]">{member.name}</span>
-
-            </div>
-          </li>
-        ))}
-      </ul>
-      <AnimatePresence mode="wait">
-  {displayIndex !== null && (
-    <motion.div
-      className="fixed pointer-events-none z-50 w-[200px] h-[250px] rounded-2xl"
-      style={{
-        top: lerpedPos.y,
-        left: lerpedPos.x + 24,
-        transform: "translate(0, -50%)",
-      }}
-      
-      
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      {displayIndex > 0 && (
-        <motion.img
-          src={patients[displayIndex - 1]?.image}
-          alt="previous"
-          className="absolute inset-0 w-full h-full object-cover rounded-2xl"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        />
-      )}
-      
-      <motion.img
-        key={`img-${displayIndex}`}
-        src={patients[displayIndex].image}
-        alt="current"
-        className="absolute inset-0 w-full h-full object-cover rounded-2xl"
-        initial={{ clipPath: "inset(0% 100% 0% 0%)" }}
-        animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
-        exit={{ clipPath: "inset(0% 100% 0% 0%)" }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-      />
-    </motion.div>
-  )}
-</AnimatePresence>
-    </section>
-    
       <section
-  ref={containerRef}
-  className="min-h-screen bg-[#EEE3FF] flex flex-wrap justify-center items-center gap-4 p-8 relative overflow-hidden"
->
-  {testimonials.map((t, i) => (
-   <motion.div
-   key={i}
-   drag
-   dragConstraints={containerRef}
-   dragElastic={0.1}
-   whileDrag={{ scale: 1.05 }}
-   dragMomentum={false} 
-   className={`
-     ${t.width || "w-[300px]"}
-     ${t.height || "h-[300px]"}
-     p-4  text-white
-     ${t.color}
-     cursor-grab active:cursor-grabbing
-     flex flex-col justify-between
-   `}
-   style={{
-     rotate: `${(i % 2 === 0 ? 1 : -1) * (5 + i * 2)}deg`,
-     zIndex: i + 1,
-   }}
- >
-   <p className="text-[14px] leading-snug font-neueroman">“{t.text}”</p>
-   <div className="text-[16px] font-neuehaas45 uppercase">{t.name}</div>
- </motion.div>
- 
-  ))}
-</section>
+        className="bg-[#E3DEEA] min-h-screen w-full px-6 relative "
+        onMouseMove={handleMouseMove}
+      >
+        <div className="flex items-center justify-between w-full">
+          <span className="w-3 h-3 inline-block transition-transform duration-300 ease-in-out hover:rotate-180">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 13 12"
+              fill="none"
+              className="w-full h-full"
+            >
+              <path
+                d="M0.5 6.46154V5.53846H6.03846V0H6.96154V5.53846H12.5V6.46154H6.96154V12H6.03846V6.46154H0.5Z"
+                fill="#000"
+              />
+            </svg>
+          </span>
+
+          {/* <div className="flex-1 border-b mx-2"></div> */}
+          <span className="w-3 h-3 inline-block transition-transform duration-300 ease-in-out hover:rotate-180">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 13 12"
+              fill="none"
+              className="w-full h-full"
+            >
+              <path
+                d="M0.5 6.46154V5.53846H6.03846V0H6.96154V5.53846H12.5V6.46154H6.96154V12H6.03846V6.46154H0.5Z"
+                fill="#000"
+              />
+            </svg>
+          </span>
+        </div>
+
+        <ul className="font-ibmplex uppercase text-[12px]">
+          {patients.map((member, index) => (
+            <li
+              key={index}
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={handleMouseLeave}
+              className="border-b border-[#D3D3D3] py-6 relative"
+            >
+              <div className="flex items-center relative">
+                <span className="pl-[15%]">DATE COMPLETED</span>
+                <span
+                  ref={index === 0 ? firstNameRef : null}
+                  className="pl-[25%]"
+                >
+                  {member.name}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <AnimatePresence mode="wait">
+          {displayIndex !== null && (
+            <motion.div
+              className="fixed pointer-events-none z-50 w-[200px] h-[250px] rounded-2xl"
+              style={{
+                top: lerpedPos.y,
+                left: lerpedPos.x + 24,
+                transform: "translate(0, -50%)",
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {displayIndex > 0 && (
+                <motion.img
+                  src={patients[displayIndex - 1]?.image}
+                  alt="previous"
+                  className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                />
+              )}
+
+              <motion.img
+                key={`img-${displayIndex}`}
+                src={patients[displayIndex].image}
+                alt="current"
+                className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+                initial={{ clipPath: "inset(0% 100% 0% 0%)" }}
+                animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+                exit={{ clipPath: "inset(0% 100% 0% 0%)" }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </section>
+
+      <section
+        ref={containerRef}
+        className="min-h-screen bg-[#EEE3FF] flex flex-wrap justify-center items-center gap-4 p-8 relative overflow-hidden"
+      >
+        {testimonials.map((t, i) => (
+          <motion.div
+            key={i}
+            drag
+            dragConstraints={containerRef}
+            dragElastic={0.1}
+            whileDrag={{ scale: 1.03 }}
+            dragMomentum={false}
+            className={`
+      bg-[#F3F2F6]/70 text-black backdrop-blur-md
+      w-[320px] min-h-[450px] flex flex-col justify-start
+      border border-gray-300  relative cursor-grab active:cursor-grabbing
+    `}
+            style={{
+              zIndex: i + 1,
+            }}
+          >
+            <div className="p-4 flex flex-col gap-2">
+              <div
+                className="w-full h-[240px] bg-cover bg-center"
+                style={{ backgroundImage: `url(${t.image})` }}
+              />
+
+              <h3 className="font-neuehaas45 text-xl leading-tight uppercase">
+                {t.name}
+              </h3>
+              <p className="font-ibmregular text-[12px] leading-snug tracking-tight">
+                {t.text}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+      </section>
 
       {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
           <div className="w-[64px] h-auto">
@@ -881,21 +837,6 @@ const StickyColumnScroll = () => {
             d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
           />
         </svg>
-        {/* <Canvas
-          camera={{ position: [0, 6, 12], fov: 45 }}
-          style={{ width: "100vw", height: "100vh" }}
-        >
-          <color attach="background" args={["#ffffff"]} />
-          <ambientLight intensity={0.86} color={0xffffff} />
-          <directionalLight
-            position={[0, -10, -10]}
-            intensity={1}
-            color={0xffffff}
-          />
-
-          <OrbitControls />
-          <RibbonAroundSphere />
-        </Canvas> */}
 
         {/* <section className="bg-[#fb542d] py-10">
           <Canvas
@@ -999,4 +940,165 @@ const StickyColumnScroll = () => {
   );
 };
 
+const ImageShaderMaterial = shaderMaterial(
+  {
+    uTexture: null,
+    uDataTexture: null,
+    resolution: new THREE.Vector4(),
+  },
+  // vertex shader
+  `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+  `,
+  // fragment shader
+  `
+  uniform sampler2D uTexture;
+  uniform sampler2D uDataTexture;
+  uniform vec4 resolution;
+  varying vec2 vUv;
+
+  void main() {
+
+    float gridSize = 20.0;
+    vec2 snappedUV = floor(vUv * gridSize) / gridSize;
+    
+    // get distortion values
+    vec2 offset = texture2D(uDataTexture, snappedUV).rg;
+    
+    // apply distortion strenthg here
+    vec2 distortedUV = vUv - 0.1 * offset; 
+    
+
+    vec4 color = texture2D(uTexture, distortedUV);
+    
+    gl_FragColor = color;
+  }
+  `
+);
+
+extend({ ImageShaderMaterial });
+
+const PixelImage = ({ imgSrc, containerRef }) => {
+  const materialRef = useRef();
+  const { size, viewport } = useThree();
+  const [textureReady, setTextureReady] = useState(false);
+  const textureRef = useRef();
+  const dataTextureRef = useRef();
+
+  const mouseRef = useRef({
+    x: 0,
+    y: 0,
+    prevX: 0,
+    prevY: 0,
+    vX: 0,
+    vY: 0,
+  });
+
+  const grid = 20;
+  const settings = {
+    mouseRadius: 0.2,
+    strength: 0.9,
+    relaxation: 0.9,
+  };
+
+  useEffect(() => {
+    new THREE.TextureLoader().load(imgSrc, (tex) => {
+      tex.encoding = THREE.sRGBEncoding;
+      textureRef.current = tex;
+      setTextureReady(true);
+    });
+
+    const data = new Float32Array(4 * grid * grid);
+    for (let i = 0; i < grid * grid; i++) {
+      const stride = i * 4;
+      data[stride] = 0; // R (X distortion)
+      data[stride + 1] = 0; // G (Y distortion)
+      data[stride + 2] = 0; // B (not unused)
+      data[stride + 3] = 1; // A
+    }
+
+    const dataTex = new THREE.DataTexture(
+      data,
+      grid,
+      grid,
+      THREE.RGBAFormat,
+      THREE.FloatType
+    );
+    dataTex.needsUpdate = true;
+    dataTextureRef.current = dataTex;
+  }, [imgSrc]);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!containerRef?.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      const mouse = mouseRef.current;
+
+      mouse.x = (e.clientX - rect.left) / rect.width;
+      mouse.y = 1 - (e.clientY - rect.top) / rect.height;
+
+      mouse.vX = (mouse.x - mouse.prevX) * 10;
+      mouse.vY = (mouse.y - mouse.prevY) * 10;
+
+      mouse.prevX = mouse.x;
+      mouse.prevY = mouse.y;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [containerRef]);
+
+  useFrame(() => {
+    const texture = dataTextureRef.current;
+    if (!texture) return;
+
+    const data = texture.image.data;
+    const mouse = mouseRef.current;
+    const maxDist = grid * settings.mouseRadius;
+
+    for (let i = 0; i < data.length; i += 4) {
+      data[i] *= settings.relaxation; // R
+      data[i + 1] *= settings.relaxation; // G
+    }
+
+    const gridMouseX = mouse.x * grid;
+    const gridMouseY = mouse.y * grid;
+
+    for (let i = 0; i < grid; i++) {
+      for (let j = 0; j < grid; j++) {
+        const dx = gridMouseX - i;
+        const dy = gridMouseY - j;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < maxDist) {
+          const index = 4 * (i + j * grid);
+          const power = (1 - distance / maxDist) * settings.strength;
+
+          data[index] += mouse.vX * power; // R channel (X distortion)
+          data[index + 1] += mouse.vY * power; // G channel (Y distortion)
+        }
+      }
+    }
+
+    texture.needsUpdate = true;
+  });
+
+  if (!textureReady) return null;
+
+  return (
+    <mesh>
+      <planeGeometry args={[viewport.width, viewport.height]} />
+      <imageShaderMaterial
+        ref={materialRef}
+        uTexture={textureRef.current}
+        uDataTexture={dataTextureRef.current}
+      />
+    </mesh>
+  );
+};
 export default StickyColumnScroll;

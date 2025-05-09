@@ -1,5 +1,13 @@
 "use client";
 // gsap
+import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
+import {
+  OrbitControls,
+  useGLTF,
+  MeshTransmissionMaterial,
+  Environment,
+} from "@react-three/drei";
+import * as THREE from "three";
 import { Observer } from "gsap/Observer";
 import { Curtains, useCurtains, Plane } from "react-curtains";
 import { Vec2 } from "curtainsjs";
@@ -15,7 +23,7 @@ import {
 } from "framer-motion";
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
-import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
+import React, { useRef, useState, useEffect, useLayoutEffect, useMemo } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
@@ -46,7 +54,22 @@ export default function WhyChooseUs() {
 
 {!showIntro && (
   <>
-<Hero />
+        <Canvas
+          camera={{ position: [0, 6, 12], fov: 45 }}
+          style={{ width: "100vw", height: "100vh" }}
+        >
+          <color attach="background" args={["#ffffff"]} />
+          <ambientLight intensity={0.86} color={0xffffff} />
+          <directionalLight
+            position={[0, -10, -10]}
+            intensity={1}
+            color={0xffffff}
+          />
+
+          {/* <OrbitControls /> */}
+          <RibbonAroundSphere />
+        </Canvas>
+{/* <Hero /> */}
     <CardStack />
     <StackCards />
     <RepeatText />
@@ -64,6 +87,166 @@ export default function WhyChooseUs() {
   );
 }
 
+
+
+function RibbonAroundSphere() {
+  const ribbonRef = useRef();
+  const segments = 1000;
+
+  const frontTexture = useLoader(THREE.TextureLoader, "/images/front.png");
+  const backTexture = useLoader(THREE.TextureLoader, "/images/back.png");
+
+  useEffect(() => {
+    [frontTexture, backTexture].forEach((t) => {
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(1, 1);
+      t.offset.setX(0.5);
+      t.flipY = true;
+    });
+    backTexture.repeat.set(-1, 1);
+  }, [frontTexture, backTexture]);
+
+  useFrame(() => {
+    if (frontTexture) frontTexture.offset.x += 0.001;
+    if (backTexture) backTexture.offset.x -= 0.001;
+  });
+
+  const frontMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        map: frontTexture,
+        side: THREE.BackSide,
+        transparent: true,
+        roughness: 0.65,
+        metalness: 0.25,
+        alphaTest: 0.1,
+        flatShading: true,
+      }),
+    [frontTexture]
+  );
+
+  const backMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        map: backTexture,
+        side: THREE.FrontSide,
+        transparent: true,
+        roughness: 0.65,
+        metalness: 0.25,
+        alphaTest: 0.1,
+        flatShading: true,
+      }),
+    [backTexture]
+  );
+
+  const geometry = useMemo(() => {
+    const numPoints = 7;
+    const radius = 5;
+
+    // const curvePoints = Array.from({ length: numPoints }, (_, i) => {
+    //   const theta = (i / numPoints) * Math.PI * 2;
+    //   return new THREE.Vector3().setFromSphericalCoords(
+    //     radius,
+    //     Math.PI / 2 + 0.9 * (Math.random() - 0.5),
+    //     theta
+    //   );
+    // });
+
+    // console.log("Froze:", curvePoints.map((v) => v.toArray()));
+
+    const curvePoints = [
+      new THREE.Vector3(0, -0.7791210925776592, 4.938924045885809),
+      new THREE.Vector3(
+        3.8972287305003155,
+        0.390385708530144,
+        3.107936202961956
+      ),
+      new THREE.Vector3(
+        4.859258415665126,
+        -0.3968854951588747,
+        -1.109040237509834
+      ),
+      new THREE.Vector3(
+        2.082282719004117,
+        1.4028390529397634,
+        -4.3239036913044595
+      ),
+      new THREE.Vector3(
+        -2.012218566064509,
+        -1.8686426688797089,
+        -4.178414895675252
+      ),
+      new THREE.Vector3(
+        -4.730483545820437,
+        -1.2069668652552943,
+        -1.0797020000434934
+      ),
+      new THREE.Vector3(
+        -3.6656012860016367,
+        -1.7372838238901793,
+        2.9232194798394224
+      ),
+    ];
+
+    const curve = new THREE.CatmullRomCurve3(curvePoints, true);
+    curve.tension = 0.7;
+
+    const spacedPoints = curve.getSpacedPoints(segments);
+    const frames = curve.computeFrenetFrames(segments, true);
+
+    const dimensions = [-0.7, 0.7];
+    const finalVertices = [];
+
+    // build ribbon vertices along binormals
+    dimensions.forEach((d) => {
+      for (let i = 0; i <= segments; i++) {
+        const base = spacedPoints[i];
+        const offset = frames.binormals[i].clone().multiplyScalar(d);
+        finalVertices.push(base.clone().add(offset));
+      }
+    });
+
+    finalVertices[0].copy(finalVertices[segments]);
+    finalVertices[segments + 1].copy(finalVertices[2 * segments + 1]);
+
+    const geom = new THREE.BufferGeometry().setFromPoints(finalVertices);
+
+    const indices = [];
+    for (let i = 0; i < segments; i++) {
+      const a = i;
+      const b = i + segments + 1;
+      const c = i + 1;
+      const d = i + segments + 2;
+
+      indices.push(a, b, c);
+      indices.push(b, d, c);
+    }
+    geom.setIndex(indices);
+    geom.computeVertexNormals();
+    const uvs = [];
+    for (let i = 0; i <= 1; i++) {
+      for (let j = 0; j <= segments; j++) {
+        uvs.push(j / segments, i);
+      }
+    }
+    geom.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+
+    geom.clearGroups();
+    geom.addGroup(0, indices.length, 0); // front material
+    geom.addGroup(0, indices.length, 1); // back material
+
+    return geom;
+  }, []);
+
+  return (
+    <mesh
+      ref={ribbonRef}
+      geometry={geometry}
+      material={[frontMaterial, backMaterial]}
+    />
+  );
+}
 
 const Intro = ({ texts = [], onFinished }) => {
 

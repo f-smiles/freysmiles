@@ -14,7 +14,20 @@
   url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.ttf")format("truetype"),
   url("https://db.onlinewebfonts.com/t/c0de8fb6038e76e28f87f58c819bbda8.svg#SaolDisplay-LightItalic")format("svg");
 }
+@font-face {
+  font-family: "IBMPlexMono-Light";
+  src: url("/fonts/IBMPlexMono-Light.ttf") format("truetype");
+}
 
+@font-face {
+  font-family: "IBMPlexMono-Regular";
+  src: url("/fonts/IBMPlexMono-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "NeueMontrealLight";
+  src: url("/fonts/NeueMontreal-Light.ttf") format("truetype");
+}
 @font-face {
   font-family: "NeueMontrealLight";
   src: url("/fonts/NeueMontreal-Light.ttf") format("truetype");
@@ -6530,4 +6543,3 @@ text-transform: uppercase;
 		stroke-dashoffset: 0px;
 	}
 }
-

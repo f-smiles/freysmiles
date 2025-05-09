@@ -57,6 +57,8 @@ module.exports = withUt({
 		'helvetica-now-display': 'HelveticaNowDisplay-Light',
   		horizon: 'HorizonSolid',
   		horizonOutline: 'HorizonOutline',
+		ibmplex: 'IBMPlexMono-Light',
+		ibmregular: 'IBMPlexMono-Regular',
   		'iCiel-Gotham-Ultra': 'iCiel-Gotham-Ultra',
   		larken: 'Larken',
   		'larken-italic': 'Larken Italic',
