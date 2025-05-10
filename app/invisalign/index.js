@@ -1,14 +1,27 @@
 "use client";
-import normalizeWheel from 'normalize-wheel';
-import { Renderer, Camera, Transform, Mesh, Program, Texture, Plane } from 'ogl';
+import normalizeWheel from "normalize-wheel";
+import {
+  Renderer,
+  Camera,
+  Transform,
+  Mesh,
+  Program,
+  Texture,
+  Plane,
+} from "ogl";
 import { Fluid } from "/utils/FluidCursorTemp.js";
-import Media from '/utils/OGLMedia.js';
 import { EffectComposer } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import Splitting from "splitting";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import Image from "next/image";
-import React, { useState, useEffect, useRef, forwardRef, Suspense } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  Suspense,
+} from "react";
 import Link from "next/link";
 // import DotPattern from "../svg/DotPattern";
 import {
@@ -27,7 +40,7 @@ import * as THREE from "three";
 import { Canvas, useLoader, useFrame, useThree } from "@react-three/fiber";
 import { useMemo } from "react";
 import { Environment, OrbitControls, useTexture } from "@react-three/drei";
-import { TextureLoader } from 'three';
+import { TextureLoader } from "three";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
@@ -43,10 +56,10 @@ const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
       ref.current.position.y = yOffset + scrollOffset;
     };
 
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll);
     onScroll();
 
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, [viewport.height, size.height, yOffset]);
 
   return (
@@ -57,138 +70,154 @@ const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
   );
 };
 
+const BulgeGallery = ({ slides }) => {
+  const canvasWrapperRef = useRef();
 
-function BulgeGallery() {
-  const containerRef = useRef();
-  const scrollData = useRef({ target: 0, current: 0, last: 0 });
-  const meshes = useRef([]);
+  const vertexShader = `
+varying vec2 vUv;
+uniform float uScrollIntensity;
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const renderer = new Renderer({ alpha: true });
-    const gl = renderer.gl;
-    const camera = new Camera(gl, { fov: 45 });
-    const scene = new Transform();
-    camera.position.z = 5;
-    containerRef.current.appendChild(gl.canvas);
-
-    const screen = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
-
-    const viewport = {
-      width: 2,
-      height: 2 * (screen.height / screen.width),
-    };
-
-    renderer.setSize(screen.width, screen.height);
+void main() {
+  vUv = uv;
+  vec3 pos = position;
 
 
-    const domImages = containerRef.current.querySelectorAll(".media");
+  float wave = sin(uv.y * 3.1416); // 0 at top & bottom, 1 in center
+  float zOffset = wave * uScrollIntensity * 1.0; 
+  pos.z += zOffset;
 
-    domImages.forEach((element) => {
-      const img = element.querySelector("img");
-
-      if (!img.complete) {
-        img.onload = () => {
-          const geometry = new Plane(gl, {
-            widthSegments: 100,
-            heightSegments: 100,
-          });
-
-          const media = new Media({
-            element,
-            image: img,
-            geometry,
-            gl,
-            height: 2000,
-            scene,
-            screen,
-            viewport,
-          });
-
-          media.update({ current: 0, last: 0 }, "down");
-          meshes.current.push(media);
-        };
-      } else {
-        const geometry = new Plane(gl, {
-          widthSegments: 100,
-          heightSegments: 100,
-        });
-
-        const media = new Media({
-          element,
-          image: img,
-          geometry,
-          gl,
-          height: 2000,
-          scene,
-          screen,
-          viewport,
-        });
-
-        media.update({ current: 0, last: 0 }, "down");
-        meshes.current.push(media);
-      }
-    });
-
-    const onResize = () => {
-      screen.width = window.innerWidth;
-      screen.height = window.innerHeight;
-      viewport.height = 2 * (screen.height / screen.width);
-      renderer.setSize(screen.width, screen.height);
-
-      meshes.current.forEach((media) => {
-        media.onResize({ screen, viewport, height: 2000 });
-      });
-    };
-
-    const onScroll = () => {
-      scrollData.current.target = window.scrollY;
-    };
-
-    const animate = () => {
-      const y = scrollData.current;
-      y.current += (y.target - y.current) * 0.1;
-
-      const direction = y.target > y.last ? "down" : "up";
-
-      meshes.current.forEach((media) => {
-        media.update(y, direction);
-      });
-
-      y.last = y.current;
-
-      renderer.render({ scene, camera });
-      requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("resize", onResize);
-    window.addEventListener("scroll", onScroll);
-
-    onResize();
-    animate();
-
-    return () => {
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, []);
-
-  return (
-<div ref={containerRef} className="relative w-full min-h-[100vh] overflow-visible" >
-  <div className="media fixed  w-[400px] h-[600px] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0">
-    <img src="/images/invisalignphonemockup.png" className="w-full h-full object-contain" />
-  </div>
-</div>
-
-
-  );
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 }
 
 
+  `;
+
+  const fragmentShader = `
+    varying vec2 vUv;
+    uniform sampler2D uTexture;
+
+    void main() {
+      gl_FragColor = texture2D(uTexture, vUv);
+    }
+  `;
+
+  useEffect(() => {
+    if (!canvasWrapperRef.current || !slides.length) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.z = 10;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    canvasWrapperRef.current.appendChild(renderer.domElement);
+
+    const calculatePlaneDimensions = () => {
+      const fov = (camera.fov * Math.PI) / 180;
+      const viewHeight = 2 * Math.tan(fov / 2) * camera.position.z;
+      const height = viewHeight * 0.7;
+      const width = height * (8 / 11);
+      return { width, height };
+    };
+
+    const dimensions = calculatePlaneDimensions();
+    const loader = new THREE.TextureLoader();
+    const planes = [];
+    const textures = [];
+
+    slides.forEach((slide, index) => {
+      const texture = loader.load(slide.image);
+      texture.minFilter = THREE.LinearFilter;
+      textures.push(texture);
+
+      const material = new THREE.ShaderMaterial({
+        vertexShader,
+        fragmentShader,
+        uniforms: {
+          uScrollIntensity: { value: 0 },
+          uTexture: { value: texture },
+        },
+        side: THREE.DoubleSide,
+        transparent: true,
+      });
+
+      const geometry = new THREE.PlaneGeometry(
+        dimensions.width,
+        dimensions.height,
+        32,
+        32
+      );
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.y = -index * (dimensions.height + 1); // space out
+      scene.add(mesh);
+      planes.push(mesh);
+    });
+
+    let scrollY = 0;
+    let lastScroll = 0;
+    let scrollIntensity = 0;
+    let animationId;
+
+    const handleScroll = () => {
+      scrollY = (window.scrollY / window.innerHeight) * (dimensions.height + 1);
+    };
+
+    const animate = () => {
+      animationId = requestAnimationFrame(animate);
+
+      const delta = scrollY - lastScroll;
+      lastScroll = THREE.MathUtils.lerp(lastScroll, scrollY, 0.1);
+      scrollIntensity = THREE.MathUtils.lerp(
+        scrollIntensity,
+        Math.abs(delta) * 0.25,
+        0.2
+      );
+
+      camera.position.y = -lastScroll;
+
+      planes.forEach((plane) => {
+        plane.material.uniforms.uScrollIntensity.value = scrollIntensity;
+      });
+
+      renderer.render(scene, camera);
+    };
+
+    handleScroll();
+    animate();
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener("scroll", handleScroll);
+      renderer.dispose();
+      planes.forEach((p) => {
+        p.geometry.dispose();
+        p.material.dispose();
+      });
+      textures.forEach((t) => t.dispose());
+      canvasWrapperRef.current?.removeChild(renderer.domElement);
+    };
+  }, [slides]);
+
+  return (
+    <div className="relative w-full">
+      {slides.map((_, i) => (
+        <div key={i} className="h-screen w-full" />
+      ))}
+
+      <div
+        ref={canvasWrapperRef}
+        className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none"
+      />
+    </div>
+  );
+};
 
 const SmileyFace = ({ position = [0, 0, 0] }) => {
   const groupRef = useRef();
@@ -746,52 +775,60 @@ const Invisalign = () => {
     { normal: "Proven", italic: "Results" },
   ];
 
-
- 
-
-
   return (
     <>
-<BulgeGallery />
       <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
+        <Suspense fallback={null}>
+          <BulgeGallery
+            slides={[
+              { image: "/images/invisalignphonemockup.png" },
+              { image: "/images/totebag2.jpg" },
+            ]}
+          />
+        </Suspense>
+        <Canvas
+          gl={{ alpha: true }}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            pointerEvents: "initial",
+            background: "transparent",
+            zIndex: 0,
+          }}
+        >
+          <Suspense fallback={null}>
+            <DistortedImage
+              imageSrc="/images/invisalign_mockup_3.jpg"
+              xOffset={-3.5}
+              yOffset={0}
+            />
+            <DistortedImage
+              imageSrc="/images/invisalign_mockup_3.jpg"
+              xOffset={3.5}
+              yOffset={-2.5}
+            />
 
-      <Canvas
-  gl={{ alpha: true }}
-  style={{
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    pointerEvents: "initial",
-    background: "transparent",
-    zIndex: 0,
-  }}
->
-<Suspense fallback={null}>
-  <DistortedImage imageSrc="/images/invisalign_mockup_3.jpg" xOffset={-3.5} yOffset={0}  />
-  <DistortedImage imageSrc="/images/invisalign_mockup_3.jpg"  xOffset={3.5} yOffset={-2.5}/>
+            <EffectComposer>
+              <Fluid backgroundColor="#F9F8F7" />
+            </EffectComposer>
+          </Suspense>
+        </Canvas>
 
-  <EffectComposer>
-    <Fluid backgroundColor="#F9F8F7" />
-  </EffectComposer>
-</Suspense>
-
-</Canvas>
-
-
-        <section className="pointer-events-none canvas-section relative h-[100vh] z-10">
+        {/* <section className="pointer-events-none canvas-section relative h-[100vh] z-10">
           <Canvas camera={{ position: [0, 0, 4] }}>
             <ambientLight intensity={0.5} />
             <WavePlane ref={meshRef} uniformsRef={uniformsRef} />
             <OrbitControls enableZoom={false} />
           </Canvas>
-        </section>
+        </section> */}
 
         <div className="pointer-events-none flex flex-row items-center">
           <div
             ref={textRef}
-            className="text-4xl md:text-[4vw] leading-[1.1] content__title"
+            className="text-3xl md:text-[3vw] leading-[1.1] content__title"
           >
             <span>We obsess over details so</span>
             <span>the result feels effortless. </span>
@@ -981,7 +1018,6 @@ const Invisalign = () => {
           </div>
         </section>
         <div className="min-h-screen relative">
-
           <div className="font-neuehaas45 perspective-1500 text-[#0414EA]">
             <div className="flip-wrapper">
               <div className="flip-container">

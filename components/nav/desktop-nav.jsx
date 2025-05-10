@@ -119,31 +119,31 @@ export default function DesktopNav({ user }) {
   const wrapperRef = useRef(null);
 const bgRef = useRef(null);
 
-useEffect(() => {
-  const wrapper = wrapperRef.current;
-  const buttons = wrapper.querySelectorAll("[data-flip-button='button']");
-  const bg = bgRef.current;
+// useEffect(() => {
+//   const wrapper = wrapperRef.current;
+//   const buttons = wrapper.querySelectorAll("[data-flip-button='button']");
+//   const bg = bgRef.current;
 
-  const moveBg = (target) => {
-    const state = Flip.getState(bg);
-    target.appendChild(bg);         
-    Flip.from(state, {
-      duration: 0.4,
-      ease: "power2.out",
-      absolute: true,
-    });
-  };
+//   const moveBg = (target) => {
+//     const state = Flip.getState(bg);
+//     target.appendChild(bg);         
+//     Flip.from(state, {
+//       duration: 0.4,
+//       ease: "power2.out",
+//       absolute: true,
+//     });
+//   };
 
-  buttons.forEach((button, index) => {
-    button.addEventListener("mouseenter", () => moveBg(button));
-    button.addEventListener("focus", () => moveBg(button));
-    button.addEventListener("mouseleave", () => moveBg(buttons[activeIndex]));
-    button.addEventListener("blur", () => moveBg(buttons[activeIndex]));
-  });
+//   buttons.forEach((button, index) => {
+//     button.addEventListener("mouseenter", () => moveBg(button));
+//     button.addEventListener("focus", () => moveBg(button));
+//     button.addEventListener("mouseleave", () => moveBg(buttons[activeIndex]));
+//     button.addEventListener("blur", () => moveBg(buttons[activeIndex]));
+//   });
 
 
-  if (buttons[activeIndex]) buttons[activeIndex].appendChild(bg);
-}, [activeIndex]);
+//   if (buttons[activeIndex]) buttons[activeIndex].appendChild(bg);
+// }, [activeIndex]);
 
 
   return (
@@ -162,41 +162,35 @@ useEffect(() => {
           animate={!isActive ? "open" : "closed"}
         >
 <motion.div variants={opacity} animate={!isActive ? "open" : "closed"}>
-  {/* styles.el */}
   <motion.div
     ref={wrapperRef}
-    className="bg-[#DDDBD3] text-black rounded-[6px] px-6 py-4 flex items-center gap-4 relative"
+    className="py-4 flex items-center relative"
   >
-    {/* styles.label */}
-    {links.slice(0, 4).map((link, i) => (
-      <div
-        key={`${i} + ${link.title}`}
-        data-flip-button="button"
-        className="relative "
-        onClick={() => {
-          setSelectedLink(link.title);
-          setIsActive(!isActive);
-          setActiveIndex(i); 
-        }}
-      >
-        <motion.p
-          className="font-neuehaas35 tracking-wider text-[11px] cursor-pointer"
-          variants={opacity}
-          animate={!isActive ? "open" : "closed"}
+    <div className="flex gap-1">
+      {links.slice(0, 4).map((link, i) => (
+        <motion.div
+          key={`${i}-${link.title}`}
+          data-flip-button="button"
+          className="bg-[#F2F2F2]/70 text-black rounded-[8px] px-6 py-3 flex items-center relative border border-gray-300 transition-colors duration-200 hover:border-gray-500"
+          onClick={() => {
+            setSelectedLink(link.title);
+            setIsActive(!isActive);
+            setActiveIndex(i);
+          }}
         >
-          {link.title}
-        </motion.p>
-      </div>
-    ))}
-
-
-    <div
-      ref={bgRef}
-      data-flip-button="bg"
-      className="filter-button__bg pointer-events-none"
-    />
+          <motion.p
+            className="text-gray-500 font-neuehaas35 tracking-wider text-[11px] cursor-pointer"
+            variants={opacity}
+            animate={!isActive ? "open" : "closed"}
+          >
+            {link.title}
+          </motion.p>
+        </motion.div>
+      ))}
+    </div>
   </motion.div>
 </motion.div>
+
 
 
           <Link href="/">
