@@ -1,4 +1,12 @@
-import React from "react";
+'use client'
+
+import { useRef, useEffect, useMemo } from "react";
+import { useFrame, extend, useThree } from "@react-three/fiber";
+import FlutedGlassEffect from "./glass";
+
+
+
+
 const Marquee = () => {
   const items = [
     { word: "Click here to shop gift cards" },
@@ -8,12 +16,12 @@ const Marquee = () => {
   ];
 
   return (
-    <div className="relative overflow-hidden w-screen bg-[#FCFAF5]">
+    <div className="relative overflow-hidden w-screen bg-[#F0EF59]">
       <div className="flex animate-marquee min-w-full hover:[animation-play-state:paused]">
         {[...items, ...items].map((item, index) => (
           <div
             key={index}
-            className="px-4 text-[1em] font-neue-montreal whitespace-nowrap"
+            className="px-4 py-4 text-[12px] whitespace-nowrap"
           >
             {item.word}
           </div>
@@ -38,15 +46,23 @@ const Hero: React.FC = () => {
   return (
     
 <div className="bg-[#FCFAF5]">
+   <section className="font-neueroman uppercase flex justify-center overflow-hidden">
+    <Marquee />
+  </section>
   <div className="flex justify-center px-4">
     <section className="w-full min-h-screen grid grid-cols-1 md:grid-cols-2">
-      <div className="relative w-full h-[50vh] md:h-full">
-        <img
-          src="../images/shoptest1.png"
-          alt="mockup"
-          className="w-full h-full object-cover"
-        />
-        <div className="shop-sectionslice">
+    <div className="relative w-full h-[50vh] md:h-full">
+  <FlutedGlassEffect
+    imageUrl="/images/GIFTCARD1.png"
+    mode="mouse" 
+    motionFactor={-50}
+    rotationAngle={45}
+    segments={60}
+    overlayOpacity={50}
+    style={{ width: "100%", height: "100%" }}
+  />
+
+        {/* <div className="shop-sectionslice">
           <div className="flex relative flex-col justify-center text-center items-center z-10">
             {slices.map((slice, index) => (
               <div
@@ -68,18 +84,18 @@ const Hero: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
 
 
-      <div className="flex flex-col items-center justify-center px-12 text-center h-[50vh] md:h-auto">
-      <div className="w-[64px]">
+      <div className="flex flex-col items-center justify-center px-12 h-[50vh] md:h-auto">
+      {/* <div className="w-[64px]">
   <img src="https://cdn.prod.website-files.com/6749e677c74b3f0e424aab25/67c23233f1a330defe27c954_Icon%20Quality%20Pura.webp" />
-</div>
-        <div className="font-helvetica-neue-light mb-10 text-[#0249FD]">
+</div> */}
+        <div className="text-[12px] text-center font-neueroman uppercase mb-10 text-[#0249FD]">
           Shop smarter, smile brighter.
         </div>
-        <h1 className="text-xl font-helvetica-neue-light leading-tight">
+        <h1 className="text-[12px] font-neueroman uppercase leading-tight max-w-[500px]">
         We’ve carefully curated a selection of premium products designed to elevate your 
       experience during treatment. From gentle yet effective whitening solutions to 
       comfort-enhancing essentials, each product is handpicked to support your journey 
@@ -90,9 +106,7 @@ const Hero: React.FC = () => {
     </section>
   </div>
 
-  <section className="font-neue-montreal pt-10 overflow-hidden">
-    <Marquee />
-  </section>
+ 
 </div>
 
   );

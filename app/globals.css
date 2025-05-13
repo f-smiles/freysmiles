@@ -6550,7 +6550,7 @@ text-transform: uppercase;
   inset: 0;
   border-radius: 8px;
   pointer-events: none;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(0px);
 
   background-image: repeating-conic-gradient(
     rgba(255, 255, 255, 0.15) 0% 25%,

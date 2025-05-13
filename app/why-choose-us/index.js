@@ -47,12 +47,9 @@ if (typeof window !== "undefined") {
 }
 
 export default function WhyChooseUs() {
-    const [showIntro, setShowIntro] = useState(true);
+
   return (
     <>
-   {showIntro && <Intro onFinished={() => setShowIntro(false)} />}
-
-{!showIntro && (
   <>
         <Canvas
           camera={{ position: [0, 6, 12], fov: 45 }}
@@ -70,6 +67,7 @@ export default function WhyChooseUs() {
           <RibbonAroundSphere />
         </Canvas>
 {/* <Hero /> */}
+<Intro />
     <CardStack />
     <StackCards />
     <RepeatText />
@@ -82,7 +80,7 @@ export default function WhyChooseUs() {
       </Curtains>
     </div>
   </>
-)}
+
     </>
   );
 }

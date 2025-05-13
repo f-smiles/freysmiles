@@ -1,6 +1,6 @@
 "use client";
-
-import { useRef, useEffect } from "react";
+import * as THREE from "three";
+import { useRef, useEffect, useState } from "react";
 import { Disclosure, Transition } from "@headlessui/react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
@@ -11,9 +11,293 @@ import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
 import { SplitText } from "gsap-trial/SplitText";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
 import * as OGL from "ogl";
-import { ScrollControls, useScroll as useThreeScroll,Scroll, Text,OrbitControls,useGLTF  } from "@react-three/drei";
-import { Canvas, useFrame, useThree , extend} from "@react-three/fiber";
+import {
+  ScrollControls,
+  useScroll as useThreeScroll,
+  Scroll,
+  Text,
+  OrbitControls,
+  useGLTF,
+} from "@react-three/drei";
+import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
 
+const vertexShader = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+`;
+
+const fragmentShader = `
+precision mediump float;
+uniform sampler2D uTexture;
+uniform vec4 resolution;
+varying vec2 vUv;
+uniform float uImageAspect;
+uniform vec3 uOverlayColor;
+uniform vec3 uOverlayColorWhite;
+uniform float uMotionValue;
+uniform float uRotation;
+uniform float uSegments;
+uniform float uOverlayOpacity;
+
+void main() {
+    float canvasAspect = resolution.x / resolution.y;
+    float numSlices = uSegments;
+    float rotationRadians = uRotation * (3.14159265 / 180.0); 
+
+
+    vec2 scaledUV = vUv;
+    if (uImageAspect > canvasAspect) {
+        float scale = canvasAspect / uImageAspect;
+        scaledUV.x = (vUv.x - 0.5) * scale + 0.5;
+    } else {
+        float scale = uImageAspect / canvasAspect;
+        scaledUV.y = (vUv.y - 0.5) * scale + 0.5;
+    }
+
+
+    vec2 rotatedUV = vec2(
+        cos(rotationRadians) * (scaledUV.x - 0.5) - sin(rotationRadians) * (scaledUV.y - 0.5) + 0.5,
+        sin(rotationRadians) * (scaledUV.x - 0.5) + cos(rotationRadians) * (scaledUV.y - 0.5) + 0.5
+    );
+
+
+    float sliceProgress = fract(rotatedUV.x * numSlices + uMotionValue);
+    float amplitude = 0.015; // The amplitude of the sine wave
+    rotatedUV.x += amplitude * sin(sliceProgress * 3.14159265 * 2.0) * (1.0 - 0.5 * abs(sliceProgress - 0.5));
+
+
+    vec2 finalUV = vec2(
+        cos(-rotationRadians) * (rotatedUV.x - 0.5) - sin(-rotationRadians) * (rotatedUV.y - 0.5) + 0.5,
+        sin(-rotationRadians) * (rotatedUV.x - 0.5) + cos(-rotationRadians) * (rotatedUV.y - 0.5) + 0.5
+    );
+
+vec2 clampedUV = clamp(finalUV, 0.0, 1.0);
+vec4 color = texture2D(uTexture, clampedUV);
+
+
+    if (uOverlayOpacity > 0.0) {
+   
+        float blackOverlayAlpha = 0.05 * (1.0 - abs(sin(sliceProgress * 3.14159265 * 0.5 + 1.57))) * (uOverlayOpacity / 100.0);
+        color.rgb *= (1.0 - blackOverlayAlpha);
+
+        float whiteOverlayAlpha = 0.15 * (1.0 - abs(sin(sliceProgress * 3.14159265 * 0.7 - 0.7))) * (uOverlayOpacity / 100.0);
+        color.rgb = mix(color.rgb, uOverlayColorWhite, whiteOverlayAlpha);
+    }
+
+    gl_FragColor = color;
+}
+`;
+
+const FlutedGlassEffect = ({
+  imageUrl,
+  mode = "static",
+  motionFactor = -50,
+  rotationAngle = 0,
+  segments = 80,
+  overlayOpacity = 0,
+  style = {},
+  className = "",
+}) => {
+  const containerRef = useRef(null);
+  const [imageAspect, setImageAspect] = useState(1);
+  const mouse = useRef(new THREE.Vector2(0.5, 0.5));
+  const scene = useRef(new THREE.Scene());
+  const camera = useRef(null);
+  const renderer = useRef(null);
+  const material = useRef(null);
+  const plane = useRef(null);
+  const animationId = useRef(null);
+  const texture = useRef(null);
+
+  const init = () => {
+    const container = containerRef.current;
+
+    const position = window.getComputedStyle(container).position;
+    if (!["relative", "absolute", "fixed", "sticky"].includes(position)) {
+      container.style.position = "relative";
+    }
+
+    const width = container.offsetWidth;
+    const height = container.offsetHeight;
+
+    renderer.current = new THREE.WebGLRenderer({ antialias: true });
+    renderer.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.current.setSize(width, height);
+    renderer.current.setClearColor(0xeeeeee, 1);
+
+    const rendererElement = renderer.current.domElement;
+    rendererElement.style.position = "absolute";
+    rendererElement.style.top = "0";
+    rendererElement.style.left = "0";
+    container.appendChild(rendererElement);
+
+    const frustumSize = 1;
+    camera.current = new THREE.OrthographicCamera(
+      frustumSize / -2,
+      frustumSize / 2,
+      frustumSize / 2,
+      frustumSize / -2,
+      -1000,
+      1000
+    );
+    camera.current.position.set(0, 0, 2);
+
+    const img = new Image();
+    img.onload = () => {
+      const aspect = img.naturalWidth / img.naturalHeight;
+      setImageAspect(aspect);
+      texture.current = new THREE.Texture(img);
+      texture.current.needsUpdate = true;
+
+      if (material.current) {
+        material.current.uniforms.uTexture.value = texture.current;
+        material.current.uniforms.uImageAspect.value = aspect;
+      }
+    };
+    img.src = imageUrl;
+
+    material.current = new THREE.ShaderMaterial({
+      extensions: {
+        derivatives: "#extension GL_OES_standard_derivatives : enable",
+      },
+      side: THREE.DoubleSide,
+      uniforms: {
+        resolution: { value: new THREE.Vector4(width, height, 1, 1) },
+        uTexture: { value: null },
+        uMotionValue: { value: 0.5 },
+        uRotation: { value: rotationAngle },
+        uSegments: { value: segments },
+        uOverlayColor: { value: new THREE.Vector3(0.0, 0.0, 0.0) },
+        uOverlayColorWhite: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
+        uImageAspect: { value: imageAspect },
+        uOverlayOpacity: { value: overlayOpacity },
+      },
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader,
+    });
+
+    const geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
+    plane.current = new THREE.Mesh(geometry, material.current);
+    scene.current.add(plane.current);
+
+    animate();
+  };
+
+  const animate = () => {
+    animationId.current = requestAnimationFrame(animate);
+    renderer.current.render(scene.current, camera.current);
+  };
+
+  const handleResize = () => {
+    const container = containerRef.current;
+    const width = container.offsetWidth;
+    const height = container.offsetHeight;
+
+    if (renderer.current) {
+      renderer.current.setSize(width, height);
+    }
+
+    if (camera.current) {
+      camera.current.aspect = width / height;
+      camera.current.updateProjectionMatrix();
+    }
+
+    if (material.current) {
+      material.current.uniforms.resolution.value.x = width;
+      material.current.uniforms.resolution.value.y = height;
+    }
+  };
+
+  const handleMouseMove = (event) => {
+    if (mode !== "mouse" || !material.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    mouse.current.x = x;
+    material.current.uniforms.uMotionValue.value = 0.5 + x * motionFactor * 0.1;
+
+    mouse.current.y = 1.0 - event.clientY / window.innerHeight;
+    material.current.uniforms.uMotionValue.value =
+      0.5 + mouse.current.x * motionFactor * 0.1;
+  };
+
+  const handleScroll = () => {
+    if (mode !== "scroll" || !material.current) return;
+
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
+    const elemTop = rect.top;
+    const elemBottom = rect.bottom;
+
+    const isInViewport = elemTop < window.innerHeight && elemBottom >= 0;
+
+    if (isInViewport) {
+      const totalHeight = window.innerHeight + container.offsetHeight;
+      const scrolled = window.innerHeight - elemTop;
+      const progress = scrolled / totalHeight;
+      const maxMovement = 0.2;
+      material.current.uniforms.uMotionValue.value =
+        progress * maxMovement * motionFactor;
+    }
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (mode === "mouse") {
+      window.addEventListener("mousemove", handleMouseMove);
+    }
+
+    if (mode === "scroll") {
+      window.addEventListener("scroll", handleScroll);
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      if (mode === "mouse") {
+        window.removeEventListener("mousemove", handleMouseMove);
+      }
+
+      if (mode === "scroll") {
+        window.removeEventListener("scroll", handleScroll);
+      }
+
+      window.removeEventListener("resize", handleResize);
+
+      if (animationId.current) {
+        cancelAnimationFrame(animationId.current);
+      }
+
+      if (renderer.current && container.contains(renderer.current.domElement)) {
+        container.removeChild(renderer.current.domElement);
+      }
+    };
+  }, [mode]);
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  useEffect(() => {
+    if (material.current) {
+      material.current.uniforms.uRotation.value = rotationAngle;
+      material.current.uniforms.uSegments.value = segments;
+      material.current.uniforms.uOverlayOpacity.value = overlayOpacity;
+    }
+  }, [rotationAngle, segments, overlayOpacity]);
+
+  return (
+    <div
+      ref={containerRef}
+      className={className}
+      style={{ width: "100%", height: "100%", ...style }}
+    />
+  );
+};
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
     DrawSVGPlugin,
@@ -28,237 +312,6 @@ if (typeof window !== "undefined") {
 gsap.registerPlugin(ScrollTrigger);
 
 const Braces = () => {
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const imgSize = [1250, 833];
-
-    const vertex = `
-      attribute vec2 uv;
-      attribute vec2 position;
-      varying vec2 vUv;
-      void main() {
-        vUv = uv;
-        gl_Position = vec4(position, 0, 1);
-      }
-    `;
-
-    const fragment = `
-      precision highp float;
-      uniform sampler2D tWater;
-      uniform sampler2D tFlow;
-      uniform float uTime;
-      varying vec2 vUv;
-      uniform vec4 res;
-      void main() {
-        vec3 flow = texture2D(tFlow, vUv).rgb;
-        vec2 uv = .5 * gl_FragCoord.xy / res.xy ;
-        vec2 myUV = (uv - vec2(0.5)) * res.zw + vec2(0.5);
-        myUV -= flow.xy * (0.15 * 0.7);
-        vec3 tex = texture2D(tWater, myUV).rgb;
-        gl_FragColor = vec4(tex, 1.0);
-      }
-    `;
-
-    // const renderer = new OGL.Renderer({ dpr: 2 });
-    // const gl = renderer.gl;
-    // containerRef.current.appendChild(gl.canvas);
-
-    const renderer = new OGL.Renderer({ dpr: 2 });
-    const gl = renderer.gl;
-    containerRef.current.appendChild(gl.canvas);
-
-    gl.canvas.style.borderRadius = "20px";
-    gl.canvas.style.clipPath = "inset(0% round 20px)";
-    // gl.canvas.style.clipPath = "none";
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    let aspect = 1;
-    const mouse = new OGL.Vec2(-1);
-    const velocity = new OGL.Vec2();
-
-    function resize() {
-      if (!containerRef.current) return;
-
-      const containerWidth = containerRef.current.clientWidth;
-      const containerHeight = containerRef.current.clientHeight;
-
-      renderer.setSize(containerWidth, containerHeight);
-
-
-      let a1, a2;
-      var imageAspect = imgSize[1] / imgSize[0]; 
-      var containerAspect = containerHeight / containerWidth;
-
-      if (containerAspect < imageAspect) {
-        a1 = 1;
-        a2 = containerAspect / imageAspect;
-      } else {
-        a1 = imageAspect / containerAspect;
-        a2 = 1;
-      }
-
-
-      program.uniforms.res.value = new OGL.Vec4(
-        containerWidth,
-        containerHeight,
-        a1,
-        a2
-      );
-
-      aspect = containerWidth / containerHeight;
-    }
-
-    const flowmap = new OGL.Flowmap(gl);
-    const geometry = new OGL.Geometry(gl, {
-      position: {
-        size: 2,
-        data: new Float32Array([-1, -1, 3, -1, -1, 3]), // Covers full screen
-      },
-      uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
-    });
-
-    const texture = new OGL.Texture(gl, {
-      minFilter: gl.LINEAR,
-      magFilter: gl.LINEAR,
-    });
-
-    const img = new Image();
-    img.onload = () => (texture.image = img);
-    img.crossOrigin = "Anonymous";
-    // img.src = "../images/bubble.jpg";
-    img.src = "../images/pinkredgradient.png";
-
-    let a1, a2;
-    var imageAspect = imgSize[1] / imgSize[0];
-    if (window.innerHeight / window.innerWidth < imageAspect) {
-      a1 = 1;
-      a2 = window.innerHeight / window.innerWidth / imageAspect;
-    } else {
-      a1 = (window.innerWidth / window.innerHeight) * imageAspect;
-      a2 = 1;
-    }
-
-    const program = new OGL.Program(gl, {
-      vertex,
-      fragment,
-      uniforms: {
-        uTime: { value: 0 },
-        tWater: { value: texture },
-        res: {
-          value: new OGL.Vec4(window.innerWidth, window.innerHeight, a1, a2),
-        },
-        tFlow: flowmap.uniform,
-      },
-    });
-
-    const mesh = new OGL.Mesh(gl, { geometry, program });
-
-    window.addEventListener("resize", resize, false);
-    resize();
-
-    const isTouchCapable = "ontouchstart" in window;
-    if (isTouchCapable) {
-      window.addEventListener("touchstart", updateMouse, true);
-      window.addEventListener("touchmove", updateMouse, { passive: true });
-    } else {
-      window.addEventListener("mousemove", updateMouse, true);
-    }
-
-    let lastTime;
-    const lastMouse = new OGL.Vec2();
-
-    function updateMouse(e) {
-      e.preventDefault();
-
-      const rect = gl.canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      mouse.set(x / rect.width, 1 - y / rect.height);
-
-      const minDimension = Math.min(window.innerWidth, window.innerHeight);
-      const baseFactor = 300;
-      const scaleFactor = minDimension / baseFactor;
-
-      if (!lastTime) {
-        lastTime = performance.now();
-        lastMouse.set(x, y);
-      }
-
-      const deltaX = (x - lastMouse.x) * scaleFactor * 0.3;
-      const deltaY = (y - lastMouse.y) * scaleFactor * 0.3;
-      lastMouse.set(x, y);
-
-      const time = performance.now();
-      const delta = Math.max(5, time - lastTime);
-      lastTime = time;
-
-      velocity.x = deltaX / delta;
-      velocity.y = deltaY / delta;
-      velocity.needsUpdate = true;
-    }
-
-    // function updateMouse(e) {
-    //   e.preventDefault();
-
-    //   const rect = gl.canvas.getBoundingClientRect();
-    //   const x = e.clientX - rect.left;
-    //   const y = e.clientY - rect.top;
-
-    //   mouse.set(x / rect.width, 1 - y / rect.height);
-
-    //   const sensitivity = (Math.min(rect.width, rect.height) / 300) * 3;
-
-    //   if (!lastTime) {
-    //     lastTime = performance.now();
-    //     lastMouse.set(x, y);
-    //   }
-
-    //   const deltaX = (x - lastMouse.x) * sensitivity;
-    //   const deltaY = (y - lastMouse.y) * sensitivity;
-    //   lastMouse.set(x, y);
-
-    //   const time = performance.now();
-    //   const delta = Math.max(5, time - lastTime);
-    //   lastTime = time;
-
-    //   velocity.x = deltaX / delta;
-    //   velocity.y = deltaY / delta;
-    //   velocity.needsUpdate = true;
-    // }
-    function update(t) {
-      requestAnimationFrame(update);
-
-      if (!velocity.needsUpdate) {
-        mouse.set(-1);
-        velocity.set(0);
-      }
-      velocity.needsUpdate = false;
-
-      flowmap.aspect = aspect;
-      flowmap.mouse.copy(mouse);
-      flowmap.velocity.lerp(velocity, velocity.len ? 0.25 : 0.15);
-      flowmap.update();
-
-      program.uniforms.uTime.value = t * 0.01;
-      renderer.render({ scene: mesh });
-    }
-    requestAnimationFrame(update);
-
-    return () => {
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", updateMouse);
-      window.removeEventListener("touchstart", updateMouse);
-      window.removeEventListener("touchmove", updateMouse);
-      if (containerRef.current && gl?.canvas) {
-        containerRef.current.removeChild(gl.canvas);
-      }
-    };
-  }, []);
-
   const slide = [
     {
       title: "Brush and Floss",
@@ -307,44 +360,17 @@ const Braces = () => {
 
   return (
     <>
-<section className="relative w-full h-screen overflow-hidden text-white font-neueroman">
-
-  <div
-    ref={containerRef}
-    className="pointer-events-none absolute top-0 left-0 w-screen h-screen z-0"
-  />
-
-
-  <div className="relative z-10 h-full px-6 md:px-20 py-16 flex flex-col justify-between">
-    {/* Top Text */}
-    <div className="flex flex-col items-center justify-center text-center mt-24">
-      <div className="text-[10vw] leading-[0.9] font-bold uppercase whitespace-nowrap">
-        DAMON
+      <div style={{ width: "50vw", height: "100vh" }}>
+        <FlutedGlassEffect
+          imageUrl="/images/1.jpg"
+          mode="mouse"
+          motionFactor={-50}
+          rotationAngle={45}
+          segments={50}
+          overlayOpacity={50}
+          style={{ width: "100%", height: "100%" }}
+        />
       </div>
-      <div className="text-[10vw] leading-[0.9] font-bold uppercase whitespace-nowrap">
-        BRACES
-      </div>
-    </div>
-
-    {/* Curved SVG lines */}
-    <svg className="absolute left-[14%] top-[42%] z-10" height="240" width="40">
-      <path d="M20 0 Q0 120 20 240" stroke="white" fill="none" />
-    </svg>
-    <svg className="absolute left-[44%] top-[42%] z-10" height="240" width="40">
-      <path d="M20 0 Q40 120 20 240" stroke="white" fill="none" />
-    </svg>
-
-
-    <div className="absolute bottom-6 right-6 max-w-sm text-[13px] leading-snug font-sans text-white/90">
-      <p>
-
-      </p>
-    </div>
-  </div>
-</section>
-
-
-
     </>
   );
 };

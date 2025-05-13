@@ -1061,7 +1061,7 @@ const FinancingTreatment = () => {
             </h2>
 
             <p className="text-base font-neuehaas45 max-w-md">
-              We’ve partnered with Klarna to offer flexible, hassle-fre payment options .Split your costs over time with zero fuss, zero stress — no forms, no fine print. Just flexibility that fits your flow.
+              We’ve partnered with Klarna to offer flexible, hassle-free payment options. Split your costs over time with zero fuss, zero stress — no forms, no fine print. Just flexibility that fits your flow.
             </p>
           </div>
 

@@ -26,13 +26,13 @@ export default function Variants({ variants }: ProductVariantsProps) {
     <div className="space-y-8">
       {groupedVariants.map((group, index) => (
         <div key={index} className="space-y-4">
-          <h2 className="text-xl text-zinc-900">{group.label}</h2>
+          <h2 className="text-[12px] font-neueroman">{group.label}</h2>
           <div className="">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {group.variants.map((variant, variantIndex) => (
                 <div
                   key={variant.id}
-                  className={`group text-sm p-4 flex flex-col justify-between ${
+                  className={`font-neueroman group text-sm p-4 flex flex-col justify-between ${
                     variantIndex !== group.variants.length - 1 ? '' : ''
                   }`}
                 >
@@ -50,11 +50,11 @@ export default function Variants({ variants }: ProductVariantsProps) {
                       />
                     </figure>
                     <div className="w-full flex justify-between items-center">
-  <h3 className="font-neue-montreal text-[16px] text-zinc-900">
+  <h3 className="font-neueroman text-[12px] text-zinc-900">
     {variant.product.title}
   </h3>
 
-  <span className="font-neue-montreal text-[15px] text-zinc-900">
+  <span className="font-neueroman text-[12px] text-zinc-900">
     {formatPrice(variant.product.price)}
   </span>
 </div>
@@ -63,9 +63,10 @@ export default function Variants({ variants }: ProductVariantsProps) {
 <div className="w-full h-[1px] bg-gray-300"></div>
 
 <div className="mt-4">
-  <span className="font-neue-montreal text-sm text-zinc-500">
-    {variant.variantName}
-  </span>
+<span className="font-neueroman text-[12px] text-zinc-900">
+  {variant.variantName}
+</span>
+
 </div>
 
                   </Link>

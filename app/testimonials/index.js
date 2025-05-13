@@ -769,6 +769,11 @@ const Testimonials = () => {
   const handleMouseMove = (e) => {
     setMousePos({ x: e.clientX, y: e.clientY });
   };
+  
+  useEffect(() => {
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -1094,7 +1099,7 @@ const Testimonials = () => {
 
       <section
         ref={patientSectionRef}
-        className=" min-h-screen w-full px-6 relative "
+        className=" min-h-screen w-full px-6 relative overflow-hidden"
         onMouseMove={handleMouseMove}
       >
         <div className="flex items-center justify-between w-full">
