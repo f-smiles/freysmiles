@@ -37,7 +37,7 @@ export const height = {
     transition: {
       duration: 0.8, 
       ease: [0.33, 1, 0.68, 1],
-      delay: 0,
+      delay: 0.2,
     },
   },
 };
@@ -93,5 +93,33 @@ export const translate = {
     y: "100%",
     opacity: 0,
     transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: i[1] },
+  }),
+};
+
+export const sublinkVariants = {
+  initial: {
+    y: 30,
+    opacity: 0,
+    clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+  },
+  open: (i) => ({
+    y: 0,
+    opacity: 1,
+    clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+    transition: {
+      duration: 0.75,
+      delay: i * 0.2,
+      ease: [0.76, 0, 0.24, 1],
+    },
+  }),
+  closed: (i) => ({
+    y: 30,
+    opacity: 0,
+    clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+    transition: {
+      duration: 0.5,
+      delay: i * 0.05,
+      ease: [0.76, 0, 0.24, 1],
+    },
   }),
 };

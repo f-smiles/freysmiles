@@ -2089,27 +2089,6 @@ const NewSection = () => {
                 `}</style>
               </div>
 
-              {/* <button
-                type="submit"
-                className="font-neue-montreal rounded-full bg-[#CFF174] text-black font-medium px-6 py-3 hover:bg-lime-500"
-              >
-                Start a conversation
-              </button> */}
-
-              {/* <p className="mt-6 text-sm text-gray-500">
-            © 2025 TVP, L.L.C.
-            <br />
-            <a
-              href="#privacy-policy"
-              className="underline hover:no-underline"
-            >
-              Privacy Policy
-            </a>{" "}
-            |{" "}
-            <a href="#terms" className="underline hover:no-underline">
-              Terms & Services
-            </a>
-          </p> */}
             </div>
           </div>
         </div>

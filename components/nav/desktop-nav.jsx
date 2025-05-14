@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
 import { XIcon } from "lucide-react";
-import { background, height, opacity, translate } from "./desktop-anim";
+import { background, height, opacity, translate, sublinkVariants } from "./desktop-anim";
 import { links } from "./desktop-links";
 import styles from "./style.module.css";
 import CartComponent from "@/components/cart/cart-component";
@@ -271,15 +271,16 @@ const bgRef = useRef(null);
     </motion.div>
   </Link>
 
-
+  <Link href="/">
   <motion.div
     className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center text-[11px] font-helvetica-neue-light"
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
   >
-    In
-  </motion.div>
+MAIN
 
+  </motion.div>
+  </Link>
 
   <Link href="/shop/products">
     <motion.div
@@ -331,55 +332,58 @@ const bgRef = useRef(null);
             <div className="flex  w-full px-12 py-24">
               {/* LEFT */}
               <div className="flex flex-col gap-6 w-1/2">
-                {links.map(
-                  (link, i) =>
-                    selectedLink === link.title && (
-                      <>
-                        {link.sublinks.map((sublink, j) => (
-                          <motion.div
-                            key={sublink}
-                            whileHover="hover"
-                            initial="initial"
-                            className="relative flex flex-col cursor-pointer py-2"
-                          >
-                            <Link
-                              href={link.hrefs[j]}
-                              onClick={() => setIsActive(false)}
-                              className="contents"
-                            >
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                  <p className="text-sm font-saolitalic opacity-60">
-                                    ({j + 1})
-                                  </p>
-                                  <h2 className="text-[24px] font-light uppercase font-neueroman">
-                                    {sublink}
-                                  </h2>
-                                </div>
-                              </div>
+  {links.map(
+    (link, i) =>
+      selectedLink === link.title && (
+        <div key={link.title} className="contents">
+          {link.sublinks.map((sublink, j) => (
+            <motion.div
+              key={sublink}
+              variants={sublinkVariants}
+              initial="initial"
+              animate="open"
+              exit="closed"
+              custom={j} // This passes the index to your variant functions
+              whileHover="hover"
+              className="relative flex flex-col cursor-pointer py-2 overflow-hidden"
+            >
+              <Link
+                href={link.hrefs[j]}
+                onClick={() => setIsActive(false)}
+                className="contents"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <p className="text-sm font-saolitalic opacity-60">
+                      ({j + 1})
+                    </p>
+                    <h2 className="text-[24px] font-light uppercase font-neueroman">
+                      {sublink}
+                    </h2>
+                  </div>
+                </div>
 
-                              <div className="relative w-full mt-2 h-[1px] bg-neutral-200 overflow-hidden">
-                                <motion.div
-                                  className="absolute left-0 top-0 h-full bg-black"
-                                  variants={{
-                                    initial: { width: 0 },
-                                    hover: { width: "100%" },
-                                  }}
-                                  transition={{
-                                    duration: 0.4,
-                                    ease: [0.65, 0, 0.35, 1],
-                                  }}
-                                />
-                              </div>
-                            </Link>
-                          </motion.div>
-                        ))}
-                        {link.component && link.component(user)}
-                      </>
-                    )
-                )}
-              </div>
-
+                <div className="relative w-full mt-2 h-[1px] bg-neutral-200 overflow-hidden">
+                  <motion.div
+                    className="absolute left-0 top-0 h-full bg-black"
+                    variants={{
+                      initial: { width: 0 },
+                      hover: { width: "100%" },
+                    }}
+                    transition={{
+                      duration: 0.4,
+                      ease: [0.65, 0, 0.35, 1],
+                    }}
+                  />
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+          {link.component && link.component(user)}
+        </div>
+      )
+  )}
+</div>
               {/* RIGHT */}
               <div className="flex font-neuehaas35 justify-center text-center flex-col text-sm gap-8 w-1/2">
                 <div>

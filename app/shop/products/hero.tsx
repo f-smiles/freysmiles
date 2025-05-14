@@ -46,9 +46,12 @@ const Hero: React.FC = () => {
   return (
     
 <div className="bg-[#FCFAF5]">
+  
    <section className="font-neueroman uppercase flex justify-center overflow-hidden">
     <Marquee />
   </section>
+
+
   <div className="flex justify-center px-4">
     <section className="w-full min-h-screen grid grid-cols-1 md:grid-cols-2">
     <div className="relative w-full h-[50vh] md:h-full">
