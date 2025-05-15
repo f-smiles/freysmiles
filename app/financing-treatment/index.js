@@ -963,215 +963,7 @@ const FinancingTreatment = () => {
 
   return (
     <>
-          <div
-        style={{ background: "#EFEFEF" }}
-        className="min-h-screen flex items-center justify-center text-center text-5xl font-neuehaas45"
-      >
-        <span class="_14aeea">YOUR CARE</span>
-      </div>
-      <section className="relative">
-        <div className="absolute inset-0 z-0 pointer-events-none flex justify-center items-center overflow-hidden px-5">
-          <svg
-            ref={svgPathRef}
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 1484 3804"
-            preserveAspectRatio="xMidYMid meet"
-            className="w-full h-auto"
-          >
-            <defs>
-              <clipPath id="svg-clip-path">
-                <rect width="1484" height="3804" x="0" y="0" />
-              </clipPath>
-            </defs>
-
-            <g clipPath="url(#svg-clip-path)">
-              <g
-                transform="matrix(1,0,0,1,742,1902)"
-                opacity="1"
-                style={{ display: "block" }}
-              >
-                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                  <path
-                    id="text-follow-path"
-                    ref={pathRef}
-                    strokeLinecap="butt"
-                    strokeLinejoin="miter"
-                    fillOpacity="0"
-                    strokeMiterlimit="4"
-                    stroke="rgb(0,0,19)"
-                    strokeOpacity="1"
-                    strokeWidth="1"
-                    d="M-110,-1890 C-110,-1890 -110,-1780 -110,-1780 C-110,-1780 -630,-1780 -630,-1780 C-685.22900390625,-1780 -730,-1735.22900390625 -730,-1680 C-730,-1680 -730,-1310 -730,-1310 C-730,-1254.77099609375 -685.22900390625,-1210 -630,-1210 C-630,-1210 -10,-1210 -10,-1210 C45.229000091552734,-1210 90,-1165.22900390625 90,-1110 C90,-1110 90,-1050 90,-1050 C90,-1050 630,-1050 630,-1050 C685.22802734375,-1050 730,-1005.22900390625 730,-950 C730,-950 730,240 730,240 C730,295.22900390625 685.22802734375,340 630,340 C630,340 -270,340 -270,340 C-270,340 -270,1000 -270,1000 C-270,1000 390,1000 390,1000 C445.22900390625,1000 490,1044.77099609375 490,1100 C490,1100 490,1630 490,1630 C490,1685.22900390625 445.22900390625,1730 390,1730 C390,1730 -110,1730 -110,1730 C-110,1730 -110,1890 -110,1890"
-                  />
-<image
-  href="/images/outlineshape.png"
-  x="-100"
-  y="-1940"
-  width="800"
-  height="800"
-/>
-                  <text
-                    x="50"
-                    y="-1720"
-                    fill="black"
-                    font-size="46"
-                    font-family="NeueHaasRoman, sans-serif"
-                  >
-                    <tspan x="20" dy="1.4em">
-                      Initial consultations
-                    </tspan>
-                    <tspan  x="20" dy="4.5em">
-                    Whether in person or virtual,
-  </tspan>
-  <tspan x="20" dy="1.2em">your first consultation is free.</tspan>
-                  </text>
-
-
-                  <image
-  href="/images/chatbubble.svg"
-  x="-500"
-  y="-940"
-  width="800"
-  height="800"
-/>
-<text
-                    x="-300"
-                    y="-620"
-                    fill="white"
-                    font-size="40"
-                    font-family="NeueHaasRoman, sans-serif"
-                  >
-                    <tspan x="-300" dy="-5.2em">
-                      Full Evaluation
-                    </tspan>
-                    <tspan x="-400" dy="1.4em">
-                      This initial visit includes an
-                    </tspan>
-                    <tspan x="-400" dy="1.4em">
-                    in-depth orthodontic evaluation
-                    </tspan>
-                    <tspan x="-250" dy="5.4em">
-                    digital radiographs and
-                    
-                    </tspan>
-                    <tspan x="-250" dy="1.2em">
-                    professional imaging.
-                    </tspan>
-                  </text>
-
-                  <image
-  href="/images/outlineshape2.png"
-  x="-100"
-  y="240"
-  width="800"
-  height="800"
-/>
-                  <text
-                    x="-100"
-                    y="520"
-                    fill="black"
-                    font-size="30"
-                    font-family="NeueHaasRoman, sans-serif"
-                  >
-                    <tspan x="100" dy="1.4em">
-                      Plan and Prepare
-                    </tspan>
-                    <tspan x="-60" dy="1.4em">
-                      We encourage all decision-makers to attend
-                    </tspan>
-                    <tspan x="-40" dy="1.2em">
-                      the initial visit so we can discuss the path
-                    </tspan>
-                    <tspan x="-40" dy="1.2em">
-                      ahead with clarity and transparency —
-                    </tspan>
-                    <tspan x="-40" dy="1.2em">
-                      ensuring everyone is aligned on expectations,
-                    </tspan>
-                    <tspan x="-40" dy="1.2em">
-                      preferences, and the ideal time to begin.
-                    </tspan>
-                  </text>
-                  <image
-  href="/images/outlineshape3.png"
-  x="-400"
-  y="940"
-  width="800"
-  height="800"
-/>
-                  <text
-                    x="-300"
-                    y="1050"
-                    fill="white"
-                    font-size="30"
-                    font-family="NeueHaasRoman, sans-serif"
-                  >
-                    <tspan x="-300" dy="3.4em">
-                      Treatment Roadmap
-                    </tspan>
-                    <tspan x="-360" dy="1.4em">
-                      {" "}
-                    If treatment isn’t yet needed, 
-                    </tspan>
-                    <tspan x="-360" dy="1.2em">
-                    no cost observation check-ups will be
-                    </tspan>
-                    <tspan x="-360" dy="1.4em">
-                    
-                    coordinated every 6-12 months until
-                    </tspan>
-                    <tspan x="-360" dy="1.5em">
-                      {" "}
-                    treatment is needed. These are
-                    </tspan>
-                    <tspan x="-360" dy="3.6em">
-                    shorter and fun visits where
-                    </tspan>
-                    <tspan x="-360" dy="1.2em">
-                    where you'll have access to 
-                    </tspan>
-                    <tspan x="-360" dy="1.2em">
-                     to all four of our locations 
-                    </tspan>
-                    <tspan x="-360" dy="1.3em">
-                    to play video games and
-                    </tspan>
-                    <tspan x="-340" dy="1.3em">
-                    get to know our team.
-                    </tspan>
-                  </text>
-                </g>
-              </g>
-
-              <g
-                ref={dotRef}
-                transform="matrix(.7,0,0,.7,132.8538055419922,692)"
-                opacity="1"
-                style={{ display: "block" }}
-              >
-                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                  <path
-                    fill="rgb(0,0,254)"
-                    fillOpacity="1"
-                    d="M0,-12 C6.622799873352051,-12 12,-6.622799873352051 12,0 C12,6.622799873352051 6.622799873352051,12 0,12 C-6.622799873352051,12 -12,6.622799873352051 -12,0 C-12,-6.622799873352051 -6.622799873352051,-12 0,-12z"
-                  />
-                </g>
-              </g>
-            </g>
-          </svg>
-        </div>
-
-
-      </section>
-
-      {/* <div style={{ width: '100vw', height: '100vh', background: '#09090b' }}>
-      <PixelCanvas
-        colors={["#e879f9", "#38bdf8", "#a855f7"]} 
-        gap={6}
-        speed={45}
-      />
-    </div> */}
-      <div className="bg-[#F2F3F5] min-h-screen pt-[160px] relative ">
+             <div className="bg-[#F2F3F5] min-h-screen pt-[160px] relative ">
         <section className="relative flex items-center justify-center">
           <div className=" w-[40vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
             <p className="font-neueroman text-[20px] uppercase leading-snug text-black">
@@ -1584,6 +1376,209 @@ const FinancingTreatment = () => {
           </div>
         </section>
       </div>
+      <section className="relative">
+        <div className="absolute inset-0 z-0 pointer-events-none flex justify-center items-center overflow-hidden px-5">
+          <svg
+            ref={svgPathRef}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1484 3804"
+            preserveAspectRatio="xMidYMid meet"
+            className="w-full h-auto"
+          >
+            <defs>
+              <clipPath id="svg-clip-path">
+                <rect width="1484" height="3804" x="0" y="0" />
+              </clipPath>
+            </defs>
+
+            <g clipPath="url(#svg-clip-path)">
+              <g
+                transform="matrix(1,0,0,1,742,1902)"
+                opacity="1"
+                style={{ display: "block" }}
+              >
+                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
+                  <path
+                    id="text-follow-path"
+                    ref={pathRef}
+                    strokeLinecap="butt"
+                    strokeLinejoin="miter"
+                    fillOpacity="0"
+                    strokeMiterlimit="4"
+                    stroke="rgb(0,0,19)"
+                    strokeOpacity="1"
+                    strokeWidth="1"
+                    d="M-110,-1890 C-110,-1890 -110,-1780 -110,-1780 C-110,-1780 -630,-1780 -630,-1780 C-685.22900390625,-1780 -730,-1735.22900390625 -730,-1680 C-730,-1680 -730,-1310 -730,-1310 C-730,-1254.77099609375 -685.22900390625,-1210 -630,-1210 C-630,-1210 -10,-1210 -10,-1210 C45.229000091552734,-1210 90,-1165.22900390625 90,-1110 C90,-1110 90,-1050 90,-1050 C90,-1050 630,-1050 630,-1050 C685.22802734375,-1050 730,-1005.22900390625 730,-950 C730,-950 730,240 730,240 C730,295.22900390625 685.22802734375,340 630,340 C630,340 -270,340 -270,340 C-270,340 -270,1000 -270,1000 C-270,1000 390,1000 390,1000 C445.22900390625,1000 490,1044.77099609375 490,1100 C490,1100 490,1630 490,1630 C490,1685.22900390625 445.22900390625,1730 390,1730 C390,1730 -110,1730 -110,1730 C-110,1730 -110,1890 -110,1890"
+                  />
+<image
+  href="/images/outlineshape.png"
+  x="-100"
+  y="-1940"
+  width="800"
+  height="800"
+/>
+                  <text
+                    x="50"
+                    y="-1720"
+                    fill="black"
+                    font-size="46"
+                    font-family="NeueHaasRoman, sans-serif"
+                  >
+                    <tspan x="20" dy="1.4em">
+                      Initial consultations
+                    </tspan>
+                    <tspan  x="20" dy="4.5em">
+                    Whether in person or virtual,
+  </tspan>
+  <tspan x="20" dy="1.2em">your first consultation is free.</tspan>
+                  </text>
+
+
+                  <image
+  href="/images/chatbubble.svg"
+  x="-500"
+  y="-940"
+  width="800"
+  height="800"
+/>
+<text
+                    x="-300"
+                    y="-620"
+                    fill="white"
+                    font-size="40"
+                    font-family="NeueHaasRoman, sans-serif"
+                  >
+                    <tspan x="-300" dy="-5.2em">
+                      Full Evaluation
+                    </tspan>
+                    <tspan x="-400" dy="1.4em">
+                      This initial visit includes an
+                    </tspan>
+                    <tspan x="-400" dy="1.4em">
+                    in-depth orthodontic evaluation
+                    </tspan>
+                    <tspan x="-250" dy="5.4em">
+                    digital radiographs and
+                    
+                    </tspan>
+                    <tspan x="-250" dy="1.2em">
+                    professional imaging.
+                    </tspan>
+                  </text>
+
+                  <image
+  href="/images/outlineshape2.png"
+  x="-100"
+  y="240"
+  width="800"
+  height="800"
+/>
+                  <text
+                    x="-100"
+                    y="520"
+                    fill="black"
+                    font-size="30"
+                    font-family="NeueHaasRoman, sans-serif"
+                  >
+                    <tspan x="100" dy="1.4em">
+                      Plan and Prepare
+                    </tspan>
+                    <tspan x="-60" dy="1.4em">
+                      We encourage all decision-makers to attend
+                    </tspan>
+                    <tspan x="-40" dy="1.2em">
+                      the initial visit so we can discuss the path
+                    </tspan>
+                    <tspan x="-40" dy="1.2em">
+                      ahead with clarity and transparency —
+                    </tspan>
+                    <tspan x="-40" dy="1.2em">
+                      ensuring everyone is aligned on expectations,
+                    </tspan>
+                    <tspan x="-40" dy="1.2em">
+                      preferences, and the ideal time to begin.
+                    </tspan>
+                  </text>
+                  <image
+  href="/images/outlineshape3.png"
+  x="-400"
+  y="940"
+  width="800"
+  height="800"
+/>
+                  <text
+                    x="-300"
+                    y="1050"
+                    fill="white"
+                    font-size="30"
+                    font-family="NeueHaasRoman, sans-serif"
+                  >
+                    <tspan x="-300" dy="3.4em">
+                      Treatment Roadmap
+                    </tspan>
+                    <tspan x="-360" dy="1.4em">
+                      {" "}
+                    If treatment isn’t yet needed, 
+                    </tspan>
+                    <tspan x="-360" dy="1.2em">
+                    no cost observation check-ups will be
+                    </tspan>
+                    <tspan x="-360" dy="1.4em">
+                    
+                    coordinated every 6-12 months until
+                    </tspan>
+                    <tspan x="-360" dy="1.5em">
+                      {" "}
+                    treatment is needed. These are
+                    </tspan>
+                    <tspan x="-360" dy="3.6em">
+                    shorter and fun visits where
+                    </tspan>
+                    <tspan x="-360" dy="1.2em">
+                    where you'll have access to 
+                    </tspan>
+                    <tspan x="-360" dy="1.2em">
+                     to all four of our locations 
+                    </tspan>
+                    <tspan x="-360" dy="1.3em">
+                    to play video games and
+                    </tspan>
+                    <tspan x="-340" dy="1.3em">
+                    get to know our team.
+                    </tspan>
+                  </text>
+                </g>
+              </g>
+
+              <g
+                ref={dotRef}
+                transform="matrix(.7,0,0,.7,132.8538055419922,692)"
+                opacity="1"
+                style={{ display: "block" }}
+              >
+                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
+                  <path
+                    fill="rgb(0,0,254)"
+                    fillOpacity="1"
+                    d="M0,-12 C6.622799873352051,-12 12,-6.622799873352051 12,0 C12,6.622799873352051 6.622799873352051,12 0,12 C-6.622799873352051,12 -12,6.622799873352051 -12,0 C-12,-6.622799873352051 -6.622799873352051,-12 0,-12z"
+                  />
+                </g>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+
+      </section>
+
+      {/* <div style={{ width: '100vw', height: '100vh', background: '#09090b' }}>
+      <PixelCanvas
+        colors={["#e879f9", "#38bdf8", "#a855f7"]} 
+        gap={6}
+        speed={45}
+      />
+    </div> */}
+
 
       {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
         <Canvas

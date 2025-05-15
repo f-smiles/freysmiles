@@ -51,7 +51,9 @@ export default function WhyChooseUs() {
   return (
     <>
   <>
-        <Canvas
+
+<Hero />
+<Canvas
           camera={{ position: [0, 6, 12], fov: 45 }}
           style={{ width: "100vw", height: "100vh" }}
         >
@@ -66,10 +68,10 @@ export default function WhyChooseUs() {
           {/* <OrbitControls /> */}
           <RibbonAroundSphere />
         </Canvas>
-{/* <Hero /> */}
-<Intro />
+{/* <Intro /> */}
     <CardStack />
     <StackCards />
+    <Rays />
     <RepeatText />
     <MoreThanSmiles />
     <About />
@@ -708,51 +710,6 @@ const CardStack = () => {
     };
   }, []);
 
-  const numRays = 10;
-  const rays = Array.from({ length: numRays });
-
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const minHeight = 0.5;
-      const maxHeight = 110;
-      const spacing = 36;
-
-      Array.from({ length: numRays }).forEach((_, i) => {
-        const baseHeight = maxHeight;
-        const shrinkRatio = 0.85;
-        const finalHeight = baseHeight * Math.pow(shrinkRatio, i);
-
-        const offset = 24;
-        const initialTop = offset + i * minHeight;
-        const finalTop = Array.from({ length: i }).reduce((sum, _, j) => {
-          const prevHeight = baseHeight * Math.pow(shrinkRatio, j);
-          const spread = spacing * 1.25;
-          return sum + prevHeight + spread;
-        }, 0);
-
-        gsap.fromTo(
-          `.ray-${i}`,
-          {
-            height: minHeight,
-            top: initialTop,
-          },
-          {
-            height: finalHeight,
-            top: finalTop,
-            scrollTrigger: {
-              trigger: ".sun-section",
-              start: "top+=70% bottom",
-              end: "+=160%",
-              scrub: true,
-            },
-            ease: "none",
-          }
-        );
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
 
   return (
     <>
@@ -809,169 +766,225 @@ const CardStack = () => {
             </ul>
           </div>
         </div>
-        <section className="w-full min-h-screen grid grid-cols-12">
-          <div className="col-span-6 bg-white flex flex-col justify-between p-12 relative overflow-visible">
-            <div className="flex justify-start gap-12 text-lg font-neue-montreal z-10">
-              <span className="text-[#DBE1DD]">LOREM</span>
-              <span>IPSUM</span>
-            </div>
 
-            <div className="flex flex-col items-center justify-center relative z-10">
-              <video
-                src="../images/retaintracing.mp4"
-                className="w-[75%] object-cover"
-                autoPlay
-                loop
-                muted
-                playsInline
-              />
 
-              <h2 className="mt-4 text-[2vw] font-light tracking-tight">
-                PHOTO
-              </h2>
-              <p className="text-[1vw] font-light mt-1 font-neuehaas35">
-                Our technicican tracing a retainer
-              </p>
-            </div>
-
-            {/* <div className="absolute left-[65%] -top-[5%] z-20">
-    <svg
-      width="360"
-      height="738"
-      viewBox="0 0 630 738"
-      xmlns="http://www.w3.org/2000/svg"
-      className="text-pink-400"
-    >
-      {Array.from({ length: 7 }).map((_, colIndex) => {
-        const x = colIndex * 100;
-        const yOffset = colIndex % 2 === 0 ? 34.275 : -34.275;
-        return (
-          <g key={colIndex} transform={`translate(${x} ${yOffset})`}>
-            {Array.from({ length: 10 }).map((_, rowIndex) => (
-              <rect
-                key={rowIndex}
-                x="0"
-                y={rowIndex * 76}
-                width="20"
-                height="20"
-                fill="currentColor"
-              />
-            ))}
-          </g>
-        );
-      })}
-    </svg>
-  </div> */}
-          </div>
-
-          <div className="col-span-6 bg-[#FEF9F8] p-12 flex flex-col justify-between">
-            <div className="font-neuehaas45 flex justify-between text-lg font-light">
-              LEARN MORE
-            </div>
-
-            <p className="ml-auto max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
-              Orthodontic Treatment should be a once-in-a-lifetime experience,
-              so making the right choice is an important decision. Here are the
-              reasons we feel you should choose FreySmiles for you or your
-              child’s treatment.
-            </p>
-          </div>
-        </section>
-        {/* <section className="-mt-[200px] px-10">
-  <p className="max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
-  Orthodontic Treatment should be a once-in-a-lifetime experience, so making the right choice is an important decision. Here are the reasons we feel you should choose FreySmiles for you or your child’s treatment.
-  </p>
-</section> */}
-        <div className="mt-10 w-full flex justify-center flex-row gap-6">
-          <div className="w-[540px] ">
-            <svg
-              width="100%"
-              height="100%"
-              viewBox="0 0 792 792"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <mask id="mask-inverse-2">
-                  <rect width="792" height="792" fill="white" />
-
-                  <path
-                    d="M268.094 181.48V-220.57H455.044V181.67L268.094 181.48Z"
-                    fill="black"
-                  />
-                  <path
-                    d="M457.805 339.69H824.685V613.44L457.825 613.52C457.825 613.52 457.825 613.52 457.815 613.52V770.55H1010.1V-220.24H824.685V182.58L457.805 182.65V339.68V339.69Z"
-                    fill="black"
-                  />
-                  <path
-                    d="M433.78 295.93C333.76 295.93 252.68 377.01 252.68 477.03C252.68 577.05 333.76 658.13 433.78 658.13"
-                    fill="black"
-                  />
-                  <path
-                    d="M432.105 658.129H457.805L457.805 295.949H432.105L432.105 658.129Z"
-                    fill="black"
-                  />
-                  <path
-                    d="M0.8125 0V792H791.193V0H0.8125ZM765.773 766.62H26.2225V25.38H765.773V766.62Z"
-                    fill="black"
-                  />
-                  <path
-                    d="M12.3712 -1360.27H-273.219V2200.43H12.3712V-1360.27Z"
-                    fill="black"
-                  />
-                  <path
-                    d="M1068.04 -1360.27H775.172V2228.28H1068.04V-1360.27Z"
-                    fill="black"
-                  />
-                </mask>
-              </defs>
-              <rect width="792" height="792" fill="#E3C3DA" />
-
-              <image
-                href="../images/freysmiles_insta.gif"
-                width="792"
-                height="792"
-                preserveAspectRatio="xMidYMid slice"
-                mask="url(#mask-inverse-2)"
-              />
-            </svg>
-          </div>
-          <div className="w-[540px]">
-            <svg
-              width="100%"
-              height="100%"
-              viewBox="0 0 792 792"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <mask id="shape-mask">
-                  <rect width="100%" height="100%" fill="white" />
-                  <path
-                    d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"
-                    fill="black"
-                  />
-                </mask>
-              </defs>
-
-              <rect width="100%" height="100%" fill="#AA4032" />
-
-              <foreignObject width="100%" height="100%" mask="url(#shape-mask)">
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  width="792"
-                  height="792"
-                  style={{ display: "block" }}
-                >
-                  <source src="../images/retaintracing.mp4" type="video/mp4" />
-                </video>
-              </foreignObject>
-            </svg>
-          </div>
-        </div>
       </div>
-      {/* <div className="flex justify-center items-center" style={{ width:'500px', position: 'relative'}}>
+   
+    </>
+  );
+};
+
+const Rays = () => {
+  const numRays = 10;
+  const rays = Array.from({ length: numRays });
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const minHeight = 0.5;
+      const maxHeight = 110;
+      const spacing = 36;
+
+      Array.from({ length: numRays }).forEach((_, i) => {
+        const baseHeight = maxHeight;
+        const shrinkRatio = 0.85;
+        const finalHeight = baseHeight * Math.pow(shrinkRatio, i);
+
+        const offset = 24;
+        const initialTop = offset + i * minHeight;
+        const finalTop = Array.from({ length: i }).reduce((sum, _, j) => {
+          const prevHeight = baseHeight * Math.pow(shrinkRatio, j);
+          const spread = spacing * 1.25;
+          return sum + prevHeight + spread;
+        }, 0);
+
+        gsap.fromTo(
+          `.ray-${i}`,
+          {
+            height: minHeight,
+            top: initialTop,
+          },
+          {
+            height: finalHeight,
+            top: finalTop,
+            scrollTrigger: {
+              trigger: ".sun-section",
+              start: "top+=70% bottom",
+              end: "+=160%",
+              scrub: true,
+            },
+            ease: "none",
+          }
+        );
+      });
+    });
+
+    return () => ctx.revert();
+
+
+  
+  }, []);
+
+  return(
+    <>
+    <div className="bg-[#FEF9F8]">
+    <p className=" ml-10 mb-10 max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
+    At FreySmiles, we use cutting-edge CBCT 3D imaging to capture every detail with unmatched precision—empowering our team to plan with clarity, accuracy, and the level of expertise your smile deserves.
+  </p>
+  <div className="relative flex justify-center items-center h-full">
+  <video
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    className="w-2/3 h-auto"
+  >
+    <source src="/videos/cbctscan.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+<div className="flex justify-end">
+  <p className="mt-10 mr-10 max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
+    Our office was the first in the region to pioneer fully digital orthodontics—leading the way with 3D iTero scanning and in-house 3D printing for appliance design and fabrication.
+  </p>
+</div>
+
+<div className="flex justify-start ml-20">
+<video
+      src="../images/retaintracing.mp4"
+      className="w-1/3 object-contain"
+      autoPlay
+      loop
+      muted
+      playsInline
+    />
+</div>
+
+<section className="w-full min-h-screen grid grid-cols-12">
+
+  {/* <div className="absolute left-[65%] -top-[5%] z-20">
+<svg
+width="360"
+height="738"
+viewBox="0 0 630 738"
+xmlns="http://www.w3.org/2000/svg"
+className="text-pink-400"
+>
+{Array.from({ length: 7 }).map((_, colIndex) => {
+const x = colIndex * 100;
+const yOffset = colIndex % 2 === 0 ? 34.275 : -34.275;
+return (
+<g key={colIndex} transform={`translate(${x} ${yOffset})`}>
+  {Array.from({ length: 10 }).map((_, rowIndex) => (
+    <rect
+      key={rowIndex}
+      x="0"
+      y={rowIndex * 76}
+      width="20"
+      height="20"
+      fill="currentColor"
+    />
+  ))}
+</g>
+);
+})}
+</svg>
+</div> */}
+
+
+
+</section>
+
+<div className="mt-10 w-full flex justify-center flex-row gap-6">
+<div className="w-[540px] ">
+  <svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 792 792"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <mask id="mask-inverse-2">
+        <rect width="792" height="792" fill="white" />
+
+        <path
+          d="M268.094 181.48V-220.57H455.044V181.67L268.094 181.48Z"
+          fill="black"
+        />
+        <path
+          d="M457.805 339.69H824.685V613.44L457.825 613.52C457.825 613.52 457.825 613.52 457.815 613.52V770.55H1010.1V-220.24H824.685V182.58L457.805 182.65V339.68V339.69Z"
+          fill="black"
+        />
+        <path
+          d="M433.78 295.93C333.76 295.93 252.68 377.01 252.68 477.03C252.68 577.05 333.76 658.13 433.78 658.13"
+          fill="black"
+        />
+        <path
+          d="M432.105 658.129H457.805L457.805 295.949H432.105L432.105 658.129Z"
+          fill="black"
+        />
+        <path
+          d="M0.8125 0V792H791.193V0H0.8125ZM765.773 766.62H26.2225V25.38H765.773V766.62Z"
+          fill="black"
+        />
+        <path
+          d="M12.3712 -1360.27H-273.219V2200.43H12.3712V-1360.27Z"
+          fill="black"
+        />
+        <path
+          d="M1068.04 -1360.27H775.172V2228.28H1068.04V-1360.27Z"
+          fill="black"
+        />
+      </mask>
+    </defs>
+    <rect width="792" height="792" fill="#E3C3DA" />
+
+    <image
+      href="../images/freysmiles_insta.gif"
+      width="792"
+      height="792"
+      preserveAspectRatio="xMidYMid slice"
+      mask="url(#mask-inverse-2)"
+    />
+  </svg>
+</div>
+<div className="w-[540px]">
+  <svg
+    width="100%"
+    height="100%"
+    viewBox="0 0 792 792"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <mask id="shape-mask">
+        <rect width="100%" height="100%" fill="white" />
+        <path
+          d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"
+          fill="black"
+        />
+      </mask>
+    </defs>
+
+    <rect width="100%" height="100%" fill="#AA4032" />
+
+    <foreignObject width="100%" height="100%" mask="url(#shape-mask)">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        width="792"
+        height="792"
+        style={{ display: "block" }}
+      >
+        <source src="../images/retaintracing.mp4" type="video/mp4" />
+      </video>
+    </foreignObject>
+  </svg>
+</div>
+</div>
+   {/* <div className="flex justify-center items-center" style={{ width:'500px', position: 'relative'}}>
 
   <svg
   className="masksvgshape"
@@ -1042,7 +1055,7 @@ const CardStack = () => {
   </div>
 </div> */}
 
-      <section className="bg-[#F1F1F1] sun-section">
+<section className="bg-[#F1F1F1] sun-section">
         <div className="sun-wrapper">
           <div className="sun-content leading-none">
             <div className="frame-line line-1">Benefits</div>
@@ -1062,9 +1075,11 @@ const CardStack = () => {
           </div>
         </div>
       </section>
-    </>
-  );
-};
+      </div>
+</>
+  )
+
+}
 
 const RepeatText = ({ text = "MTS", totalLayers = 7 }) => {
   const containerRef = useRef();
@@ -1238,9 +1253,8 @@ function StackCards() {
 
   return (
     <section ref={containerRef}>
-      
-      <section className="bg-[#FEF9F8]  sm:py-32">
-        <div className=" w-48 h-48 translate-x-1/3 -z-10">
+      <section className="bg-[#FEF9F8]">
+        <div className="w-48 h-48 translate-x-1/3 -z-10">
           <Shape06 />
         </div>
         <div
@@ -1260,7 +1274,7 @@ function StackCards() {
           TL;DR: You’re in very good,
           very experienced hands.
           </div> */}
-        <div className="font-neuehaas35 min-h-screen text-[16px] leading-[1.1] px-10">
+        <div className="font-neuehaas45 min-h-screen text-[16px] leading-[1.1] px-10">
           {/* Block 1 */}
           <div className="border-t border-black w-full">
             <div

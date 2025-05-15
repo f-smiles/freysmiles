@@ -1,7 +1,7 @@
 "use client";
 import * as THREE from "three";
 import { MeshDistortMaterial } from "@react-three/drei";
-import { useRef, useEffect, useState, Suspense} from "react";
+import { useRef, useEffect, useState, Suspense } from "react";
 import { Disclosure, Transition } from "@headlessui/react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
@@ -20,7 +20,13 @@ import {
   OrbitControls,
   useGLTF,
 } from "@react-three/drei";
-import { Canvas, useFrame, useThree, extend, useLoader } from "@react-three/fiber";
+import {
+  Canvas,
+  useFrame,
+  useThree,
+  extend,
+  useLoader,
+} from "@react-three/fiber";
 const Slideshow = () => {
   const settings = {
     wheelSensitivity: 0.01,
@@ -96,12 +102,18 @@ const Slideshow = () => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'ArrowLeft') {
+    if (e.key === "ArrowLeft") {
       targetPosition.current += slideUnit;
-      targetDistortionFactor.current = Math.min(1.0, targetDistortionFactor.current + 0.3);
-    } else if (e.key === 'ArrowRight') {
+      targetDistortionFactor.current = Math.min(
+        1.0,
+        targetDistortionFactor.current + 0.3
+      );
+    } else if (e.key === "ArrowRight") {
       targetPosition.current -= slideUnit;
-      targetDistortionFactor.current = Math.min(1.0, targetDistortionFactor.current + 0.3);
+      targetDistortionFactor.current = Math.min(
+        1.0,
+        targetDistortionFactor.current + 0.3
+      );
     }
   };
 
@@ -162,32 +174,35 @@ const Slideshow = () => {
   };
 
   useEffect(() => {
-    // Initialize event listeners
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('touchstart', handleTouchStart, { passive: false });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: false });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd);
 
     return () => {
-      // Clean up event listeners
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
   return (
     <Canvas
-      camera={{ position: [0, 0, 5], fov: 45 }}
-      gl={{ antialias: true, preserveDrawingBuffer: true }}
-      onCreated={({ gl, scene }) => {
-        scene.background = new THREE.Color(0xe3e3db);
+      dpr={[1, 2]}
+      camera={{ position: [0, 0, 5], fov: 30 }}
+      gl={{
+        antialias: true,
+        toneMapping: THREE.NoToneMapping,
+        outputColorSpace: THREE.SRGBColorSpace,
       }}
+      // onCreated={({ gl, scene }) => {
+      //   scene.background = new THREE.Color(0xe3e3db);
+      // }}
     >
-      <Slides 
+      <Slides
         slideCount={slideCount}
         slideWidth={slideWidth}
         slideHeight={slideHeight}
@@ -229,87 +244,78 @@ const Slides = ({
   prevPosition,
   lastTime,
   updateCurve,
-  settings
+  settings,
 }) => {
   const slidesRef = useRef([]);
   const { scene } = useThree();
-  
 
   const imagePaths = [
-    '/images/blobnew.png',
-    '/images/fscards.png',
-    '/images/sch.png',
-    '/images/fsstickers.png',
-    '/images/blobnew.png',
+    "/images/blobnew.png",
+    "/images/fscards.png",
+    "/images/sch.png",
+    "/images/fsstickers.png",
+    "/images/futurefreysmiles.png",
+    "/images/iteromockupnoborder.png",
   ];
-
 
   const textures = useLoader(THREE.TextureLoader, imagePaths);
 
-
   useEffect(() => {
-    textures.forEach(texture => {
+    textures.forEach((texture) => {
       texture.colorSpace = THREE.SRGBColorSpace;
+      texture.premultiplyAlpha = true;
     });
   }, [textures]);
-
 
   useEffect(() => {
     if (textures.length === 0) return;
 
     const slides = [];
-    
+
     const createSlide = (index) => {
       const geometry = new THREE.PlaneGeometry(slideWidth, slideHeight, 32, 16);
       const textureIndex = index % textures.length;
-      
+
       const material = new THREE.MeshBasicMaterial({
         map: textures[textureIndex],
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 1
+        opacity: 1,
       });
 
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.x = index * (slideWidth + gap);
-      
 
       mesh.userData = {
         originalVertices: Float32Array.from(geometry.attributes.position.array),
         index,
         targetX: 0,
-        currentX: 0
+        currentX: 0,
       };
 
-    
       adjustAspectRatio(mesh, textures[textureIndex]);
-      
+
       scene.add(mesh);
       slides.push(mesh);
       return mesh;
     };
-
 
     const adjustAspectRatio = (mesh, texture) => {
       const imgAspect = texture.image.width / texture.image.height;
       const slideAspect = slideWidth / slideHeight;
 
       if (imgAspect > slideAspect) {
-
         mesh.scale.y = slideAspect / imgAspect;
       } else {
-
         mesh.scale.x = imgAspect / slideAspect;
       }
     };
-
 
     for (let i = 0; i < slideCount; i++) {
       slides.push(createSlide(i));
     }
 
-
-    slides.forEach(slide => {
+    slides.forEach((slide) => {
       slide.position.x -= totalWidth / 2;
       slide.userData.targetX = slide.position.x;
       slide.userData.currentX = slide.position.x;
@@ -318,7 +324,7 @@ const Slides = ({
     slidesRef.current = slides;
 
     return () => {
-      slides.forEach(slide => {
+      slides.forEach((slide) => {
         scene.remove(slide);
         slide.geometry.dispose();
         slide.material.dispose();
@@ -326,15 +332,15 @@ const Slides = ({
     };
   }, [textures, slideCount, slideWidth, slideHeight, gap, scene, totalWidth]);
 
-
   useFrame(({ clock }) => {
     const time = clock.getElapsedTime() * 1000;
-    const deltaTime = lastTime.current ? (time - lastTime.current) / 1000 : 0.016;
+    const deltaTime = lastTime.current
+      ? (time - lastTime.current) / 1000
+      : 0.016;
     lastTime.current = time;
 
- 
     const prevPos = currentPosition.current;
-    
+
     if (isScrolling.current) {
       targetPosition.current += autoScrollSpeed.current;
       const speedBasedDecay = 0.97 - Math.abs(autoScrollSpeed.current) * 0.5;
@@ -345,20 +351,20 @@ const Slides = ({
       }
     }
 
-    currentPosition.current += 
+    currentPosition.current +=
       (targetPosition.current - currentPosition.current) * settings.smoothing;
 
-   
-    const currentVelocity = Math.abs(currentPosition.current - prevPos) / deltaTime;
+    const currentVelocity =
+      Math.abs(currentPosition.current - prevPos) / deltaTime;
     velocityHistory.current.push(currentVelocity);
     velocityHistory.current.shift();
 
-    const avgVelocity = velocityHistory.current.reduce((sum, val) => sum + val, 0) / 
-                       velocityHistory.current.length;
+    const avgVelocity =
+      velocityHistory.current.reduce((sum, val) => sum + val, 0) /
+      velocityHistory.current.length;
 
     peakVelocity.current = Math.max(peakVelocity.current, avgVelocity);
-    peakVelocity.current *= 0.99; 
-
+    peakVelocity.current *= 0.99;
 
     const movementDistortion = Math.min(1.0, currentVelocity * 0.1);
     if (currentVelocity > 0.05) {
@@ -389,8 +395,8 @@ const Slides = ({
         baseX -= totalWidth;
       }
 
-
-      const isWrapping = Math.abs(baseX - slide.userData.targetX) > slideWidth * 2;
+      const isWrapping =
+        Math.abs(baseX - slide.userData.targetX) > slideWidth * 2;
       if (isWrapping) {
         slide.userData.currentX = baseX;
       }
@@ -398,7 +404,6 @@ const Slides = ({
       slide.userData.targetX = baseX;
       slide.userData.currentX +=
         (slide.userData.targetX - slide.userData.currentX) * settings.slideLerp;
-
 
       const wrapThreshold = totalWidth / 2 + slideWidth;
       if (Math.abs(slide.userData.currentX) < wrapThreshold * 1.5) {
@@ -410,60 +415,49 @@ const Slides = ({
 
   return null;
 };
-const YourCare = () => {
-  const slide = [
-    {
-      title: "Brush and Floss",
-      imageUrl: "../images/purplefloss.jpeg",
-      text: "Brushing and flossing during orthodontic treatment is more important than ever. Orthodontic appliances such as clear aligners, brackets, and wires interfere with normal self-cleansing mechanisms of the mouth. Research shows that only 10% of patients brush and floss consistently during active treatment. We're here to ensure you don't just get lost in the statistics.",
-    },
-    {
-      title: "General Soreness",
-      imageUrl: "../images/soreness.jpg",
-      text: "When you get your braces on, you may feel general soreness in your mouth and teeth may be tender to biting pressures for 3 –5 days. Take Tylenol or whatever you normally take for headache or discomfort. The lips, cheeks and tongue may also become irritated for one to two weeks as they toughen and become accustomed to the braces. We will supply wax to put on the braces in irritated areas to lessen discomfort.",
-    },
-    {
-      title: "Loose teeth",
-      imageUrl: "../images/lime_worm.svg",
-      text: "This is to be expected throughout treatment. The teeth must loosen first so they can move. The teeth will settle into the bone and soft tissue in their desired position after treatment is completed if retainers are worn correctly.",
-    },
-    {
-      title: "Loose wire/band",
-      imageUrl: "../images/lime_worm.svg",
-      text: "When crowding and/or significant dental rotations is the case initially, a new wire placed at the office may eventually slide longer than the last bracket. In this case, depending on the orientation of the last tooth, it may poke into your cheek or gums. If irritation to the lips or You  can place orthodontic wax on the wire to reduce prevent stabbing. If the wire doesn't settle in on its own, it will benefit from being clipped within two weeks. Call our office to schedule an appointment.",
-    },
-    {
-      title: "Rubberbands",
-      imageUrl: "../images/lime_worm.svg",
-      text: "To successfully complete orthodontic treatment, the patient must work together with the orthodontist. If the doctor has prescribed rubber bands it will be necessary for you to follow the prescription for an ideal result. Failure to follow protocol will lead to a less than ideal treatment result. Excessive broken brackets will delay treatment and lead to an incomplete result. Compromised results due to lack of compliance is not grounds for financial reconciliation. ",
-    },
-    {
-      title: "Athletics",
-      imageUrl:
-        "https://i.postimg.cc/g09w3j9Q/e21673ee1426e49ea1cd7bc5b895cbec.jpg",
-      text: "Braces and mouthguards typically don't mix. Molded mouthguards will prevent planned tooth movement. If you require a mouthguard for contact sports, we stock ortho-friendly mouthguards which may work. ",
-    },
-    {
-      title: "How long will I be in braces?",
-      imageUrl:
-        "https://i.postimg.cc/T35Lymsn/597b0f5fc5aa015c0ca280ebd1e4293b.jpg",
-      text: "Every year hundreds of parents trust our experience to provide beautiful, healthy smiles for their children. Deepending on case complexity and compliance, your time in braces may vary, but at FreySmiles Orthodontics case completion may only be typically only 12-22 months away.",
-    },
-    {
-      title: "Eating with braces",
-      imageUrl:
-        "https://i.postimg.cc/NMB5Pnjx/62f64bc801260984785ff729f001a120.gif",
-      text: "Something to keep in mind with braces is to take caution when eating hard foods, i.e., tough meats,hard breads, granola, and the like.  But you’ll need to protect yourorthodontic appliances when you eat for as long as you’re wearing braces.",
-    },
+
+const ThumbnailStrip = () => {
+  const thumbnails = [
+    "/images/blobnew.png",
+    "/images/fscards.png",
+    "/images/sch.png",
+    "/images/fsstickers.png",
+    "/images/futurefreysmiles.png",
+    "/images/iteromockupnoborder.png",
   ];
 
   return (
-    <>
-<div className="relative w-full h-[100vh]">
-  <Slideshow />
-</div>
+    <div className="flex overflow-x-auto  p-4">
+      {thumbnails.map((src, idx) => (
+        <div
+          key={idx}
+          className="min-w-[80px] h-[60px] flex-shrink-0 overflow-hidden rounded-md border border-neutral-200 hover:scale-105 transition-transform"
+        >
+          <img
+            src={src}
+            alt={`thumb-${idx}`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
 
-{/* <div className="relative z-10">
+const YourCare = () => {
+  return (
+    <>
+      <div className="relative h-screen w-full overflow-hidden">
+        <div className="absolute inset-0 top-0 h-[85%]">
+          <Slideshow />
+        </div>
+
+        <div className="absolute bottom-0 w-full h-[15%] z-10">
+          <ThumbnailStrip />
+        </div>
+      </div>
+
+      {/* <div className="relative z-10">
   <FluidSimulation />
   <TextEffect 
     text="Braces" 
@@ -488,4 +482,4 @@ const YourCare = () => {
   );
 };
 
-export default YourCare
+export default YourCare;
