@@ -23,7 +23,13 @@ import {
 } from "framer-motion";
 import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
-import React, { useRef, useState, useEffect, useLayoutEffect, useMemo } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+} from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
@@ -47,13 +53,11 @@ if (typeof window !== "undefined") {
 }
 
 export default function WhyChooseUs() {
-
   return (
     <>
-  <>
-
-<Hero />
-<Canvas
+      <>
+        {/* <Hero /> */}
+        <Canvas
           camera={{ position: [0, 6, 12], fov: 45 }}
           style={{ width: "100vw", height: "100vh" }}
         >
@@ -66,28 +70,26 @@ export default function WhyChooseUs() {
           />
 
           {/* <OrbitControls /> */}
-          <RibbonAroundSphere />
+          {/* <RibbonAroundSphere /> */}
         </Canvas>
-{/* <Intro /> */}
-    <CardStack />
-    <StackCards />
-    <Rays />
-    <RepeatText />
-    <MoreThanSmiles />
-    <About />
-    <VennDiagram />
-    <div className="h-[100vh] w-auto">
-      <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
-        <SimplePlane />
-      </Curtains>
-    </div>
-  </>
 
+        <CardStack />
+        <StackCards />
+        <Rays />
+        <RepeatText />
+        <MoreThanSmiles />
+        <About />
+        <VennDiagram />
+        <Intro />
+        {/* <div className="h-[100vh] w-auto">
+          <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
+            <SimplePlane />
+          </Curtains>
+        </div> */}
+      </>
     </>
   );
 }
-
-
 
 function RibbonAroundSphere() {
   const ribbonRef = useRef();
@@ -249,173 +251,100 @@ function RibbonAroundSphere() {
 }
 
 const Intro = ({ texts = [], onFinished }) => {
-
   const wrapperRef = useRef(null);
   const circleTextRefs = useRef([]);
-  const enterCtrlRef = useRef(null);
-  const enterBgRef = useRef(null);
 
-  const contentRef = useRef(null);
-  
   useEffect(() => {
-
     const circleEls = circleTextRefs.current;
-    const enterCtrl = enterCtrlRef.current;
-    const enterBg = enterBgRef.current;
+    gsap.set(circleEls, { transformOrigin: "50% 50%" });
 
-    const contentKids = contentRef.current.children;
-
-
-    gsap.set(circleEls,           { transformOrigin: '50% 50%' });
-    gsap.set([circleEls, contentKids], { opacity: 0 });
-    gsap.set(enterCtrl,           { pointerEvents: 'none' });
-
-
-    const onEnterHover = () => {
-      gsap.killTweensOf([enterBg, circleEls]);
-      gsap.to(enterBg, {
-        duration: 1, ease: 'expo',
-        scale: 1.4
-      });
-      gsap.to(circleEls, {
-        duration: 1, ease: 'expo',
-        scale: 1.15,
-        rotation: i => i % 2 ? '-=90' : '+=90',
-        opacity: 0.4
-      });
-    };
-    const onEnterOut = () => {
-      gsap.to(enterBg, {
-        duration: 1, ease: 'expo',
-        scale: 1
-      });
-      gsap.to(circleEls, {
-        duration: 1, ease: 'expo',
-        scale: 1,
-        rotation: i => i % 2 ? '+=120' : '-=120',
-        opacity: 1,
-        stagger: { amount: -0.2 }
-      });
-    };
-    const onEnterClick = () => {
-      startExitAnimation();
-    };
-
-   
-    enterCtrl.addEventListener('mouseenter', onEnterHover);
-    enterCtrl.addEventListener('mouseleave', onEnterOut);
-    enterCtrl.addEventListener('click', onEnterClick);
-
-
-    const introTL = gsap.timeline()
-      .addLabel('start', 0)
-      .to(circleEls, {
-        duration: 3,
-        ease: 'expo.inOut',
-        rotation: i => i % 2 ? 90 : -90,
-        stagger: { amount: 0.4 }
-      }, 'start')
-      .to([circleEls, enterCtrl], {
-        duration: 3,
-        ease: 'expo.inOut',
-        startAt: { opacity: 0, scale: 0.8 },
-        scale: 1,
-        opacity: 1,
-        stagger: { amount: 0.4 }
-      }, 'start')
-      .add(() => gsap.set(enterCtrl, { pointerEvents: 'auto' }), 'start+=2');
-
-
-    function startExitAnimation() {
-      introTL.kill();
-      gsap.set(enterCtrl, { pointerEvents: 'none' });
-      enterCtrl.removeEventListener('mouseenter', onEnterHover);
-      enterCtrl.removeEventListener('mouseleave', onEnterOut);
-      enterCtrl.removeEventListener('click', onEnterClick);
-
-      gsap.set([contentRef.current], { opacity: 1 });
-      const exitTL = gsap.timeline()
-        .to(enterCtrl, {
-          duration: 0.6,
-          ease: 'back.in',
-          scale: 0.2,
-          opacity: 0
-        }, 0)
-        .to(circleEls, {
-          duration: 0.8,
-          ease: 'back.in',
-          scale: 0,
-          opacity: 0,
-          stagger: { amount: -0.4 }
-        }, 0)
-        .to([contentKids], {
-          duration: 0.9,
-          ease: 'back.out',
-          startAt: { opacity: 0, scale: 1.2 },
-          scale: 1,
-          opacity: 1,
-          stagger: { amount: 0.3 }
-        }, 1.3)
-        .add(() => onFinished && onFinished());
-    }
+    const introTL = gsap
+      .timeline()
+      .addLabel("start", 0)
+      .to(
+        circleEls,
+        {
+          duration: 30,
+          ease: "linear",
+          rotation: (i) => (i % 2 ? 360 : -360),
+          repeat: -1,
+          transformOrigin: "50% 50%",
+        },
+        "start"
+      )
 
 
     return () => {
       introTL.kill();
-      enterCtrl.removeEventListener('mouseenter', onEnterHover);
-      enterCtrl.removeEventListener('mouseleave', onEnterOut);
-      enterCtrl.removeEventListener('click', onEnterClick);
     };
   }, [onFinished]);
 
   return (
-<main ref={wrapperRef} className="demo-2 relative w-full h-screen overflow-hidden bg-black text-white">
-
-    <svg className="circles w-full h-full" viewBox="0 0 1400 1400">
-      <defs>
-        <path id="circle-1" d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5" />
-        <path id="circle-2" d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5" />
-        <path id="circle-3" d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5" />
-        <path id="circle-4" d="M567.5,700.5A133,133 0 1 1833.5,700.5A133,133 0 1 1567.5,700.5" />
-      </defs>
-
-      <text ref={el => (circleTextRefs.current[0] = el)} className="circles__text circles__text--1">
-        <textPath xlinkHref="#circle-1" textLength="2830">
-          Low dose 3d digital radiographs&nbsp;
-        </textPath>
-      </text>
-      <text ref={el => (circleTextRefs.current[1] = el)} className="circles__text circles__text--2">
-        <textPath xlinkHref="#circle-2" textLength="2001">
-          Accelerated Treatment&nbsp;
-        </textPath>
-      </text>
-      <text ref={el => (circleTextRefs.current[2] = el)} className="circles__text circles__text--3">
-        <textPath xlinkHref="#circle-3" textLength="1341">
-          Invisalign Invisalign Invisalign&nbsp;
-        </textPath>
-      </text>
-      <text ref={el => (circleTextRefs.current[3] = el)} className="circles__text circles__text--4">
-        <textPath xlinkHref="#circle-4" textLength="836">
-          Why choose us Why choose us Why choose us&nbsp;
-        </textPath>
-      </text>
-    </svg>
-
-
-    <div className="content" ref={contentRef}>
-      <p>We are a creative agency that focuses on human-centric design and ergonomic workplace innovations.</p>
-    </div>
-
-    <button
-  className="enter"
-  ref={enterCtrlRef}
-  style={{ opacity: 0, pointerEvents: "none" }} 
+<main
+  ref={wrapperRef}
+  className="relative w-full h-screen overflow-hidden"
 >
-  <div className="enter__bg" ref={enterBgRef} />
-  <span className="enter__text">Enter</span>
-</button>
+  <svg className="circles w-full h-full" viewBox="0 0 1400 1400">
+    <defs>
 
-  </main>
+      <path
+        id="circle-0"
+        d="M150,700.5A550.5,550.5 0 1 11251,700.5A550.5,550.5 0 1 1150,700.5"
+      />
+      <path
+        id="circle-1"
+        d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
+      />
+      <path
+        id="circle-2"
+        d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
+      />
+      <path
+        id="circle-3"
+        d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
+      />
+
+    </defs>
+    
+    <path d="M100,700.5A600,600 0 1 11301,700.5A600,600 0 1 1100,700.5" fill="none" stroke="black" strokeWidth="1" />
+  <path d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5" fill="none" stroke="black" strokeWidth="1" />
+  <path d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5" fill="none" stroke="black" strokeWidth="1" />
+  <path d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5" fill="none" stroke="black" strokeWidth="1" />
+
+
+
+    
+    <text
+     dy="-20"
+      ref={(el) => (circleTextRefs.current[1] = el)}
+      className="circles__text circles__text--1"
+    >
+<textPath xlinkHref="#circle-1" textLength="2550">
+  Low dose 3d digital radiographs Low dose 3d digital radiographs
+</textPath>
+
+    </text>
+    <text
+         dy="-20"
+      ref={(el) => (circleTextRefs.current[2] = el)}
+      className="circles__text circles__text--2"
+    >
+      <textPath xlinkHref="#circle-2" textLength="2001">
+        Accelerated Treatment&nbsp;
+      </textPath>
+    </text>
+    <text
+         dy="-20"
+      ref={(el) => (circleTextRefs.current[3] = el)}
+      className="circles__text circles__text--3"
+    >
+      <textPath xlinkHref="#circle-3" textLength="1341">
+        Invisalign Invisalign Invisalign&nbsp;
+      </textPath>
+    </text>
+
+  </svg>
+</main>
   );
 };
 function Hero() {
@@ -710,7 +639,6 @@ const CardStack = () => {
     };
   }, []);
 
-
   return (
     <>
       <div className="bg-[#FEF9F8] ">
@@ -766,10 +694,7 @@ const CardStack = () => {
             </ul>
           </div>
         </div>
-
-
       </div>
-   
     </>
   );
 };
@@ -819,51 +744,98 @@ const Rays = () => {
     });
 
     return () => ctx.revert();
-
-
-  
   }, []);
 
-  return(
+  return (
     <>
-    <div className="bg-[#FEF9F8]">
-    <p className=" ml-10 mb-10 max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
-    At FreySmiles, we use cutting-edge CBCT 3D imaging to capture every detail with unmatched precision—empowering our team to plan with clarity, accuracy, and the level of expertise your smile deserves.
-  </p>
-  <div className="relative flex justify-center items-center h-full">
-  <video
-    autoPlay
-    loop
-    muted
-    playsInline
-    preload="auto"
-    className="w-2/3 h-auto"
-  >
-    <source src="/videos/cbctscan.mp4" type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
-</div>
+      <div className="bg-[#F0EEE9]">
+        <section className="px-6 py-12 md:px-12">
+          <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue uppercase">
+            <span className="font-neuehaas45">
+              All. <sup className="text-xs align-super">(16)</sup>
+            </span>
+            <span>
+              — INVISALIGN. <sup className="text-xs align-super">(2k)</sup>
+            </span>
+            <span>
+              — Accelerated Treatment.{" "}
+              <sup className="text-xs align-super">(12)</sup>
+            </span>
+            <span>
+              — Low-dose digital 3d radiographs{" "}
+              <sup className="text-xs align-super">(15)</sup>
+            </span>
+            <span>
+              Damon Braces. <sup className="text-xs align-super">(2k)</sup>
+            </span>
+            <span>
+              — Experiences. <sup className="text-xs align-super">(5)</sup>
+            </span>
+            <span>
+              — Technology. <sup className="text-xs align-super">(8)</sup>
+            </span>
+          </div>
 
-<div className="flex justify-end">
-  <p className="mt-10 mr-10 max-w-md text-[#ff007f] font-neueroman leading-tight tracking-tight uppercase">
-    Our office was the first in the region to pioneer fully digital orthodontics—leading the way with 3D iTero scanning and in-house 3D printing for appliance design and fabrication.
-  </p>
-</div>
+          <div className="mt-12 w-full flex gap-4">
+            {/* Left image */}
+            <div className="w-1/2">
+              <img
+                src="/images/signonmetalrack.png"
+                alt="metalrack"
+                className="w-full h-full object-contain"
+              />
+            </div>
 
-<div className="flex justify-start ml-20">
-<video
-      src="../images/retaintracing.mp4"
-      className="w-1/3 object-contain"
-      autoPlay
-      loop
-      muted
-      playsInline
-    />
-</div>
+            <div className="w-1/2">
+              <img
+                src="/images/testdisplay.png"
+                alt="placeholder"
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+        </section>
 
-<section className="w-full min-h-screen grid grid-cols-12">
+        <p className="text-[18px] ml-10 mb-10 max-w-lg font-neuehaas45 leading-tight tracking-tight">
+          At Frey Smiles, we use cutting-edge CBCT 3D imaging to capture every
+          detail with unmatched precision—empowering our team to plan with
+          clarity, accuracy, and the level of expertise your smile deserves.
+        </p>
+        <div className="relative flex justify-center items-center h-full">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="w-2/3 h-auto"
+          >
+            <source src="/videos/cbctscan.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
 
-  {/* <div className="absolute left-[65%] -top-[5%] z-20">
+        <div className="flex justify-end">
+          <p className="text-[18px] mt-10 mr-10 max-w-lg font-neuehaas45 leading-tight tracking-tight">
+            Our office was the first in the region to pioneer fully digital
+            orthodontics—leading the way with 3D iTero scanning and in-house 3D
+            printing for appliance design and fabrication.
+          </p>
+        </div>
+
+        <div className="flex justify-start ml-20">
+          <video
+            src="../images/retaintracing.mp4"
+            className="w-1/3 object-contain"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        </div>
+
+        <section className="w-full min-h-screen ">
+          {/* <div className="absolute left-[65%] -top-[5%] z-20">
 <svg
 width="360"
 height="738"
@@ -891,100 +863,97 @@ return (
 })}
 </svg>
 </div> */}
+        </section>
 
+        <div className="mt-10 w-full flex justify-center flex-row gap-6">
+          <div className="w-[540px] ">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 792 792"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <mask id="mask-inverse-2">
+                  <rect width="792" height="792" fill="white" />
 
+                  <path
+                    d="M268.094 181.48V-220.57H455.044V181.67L268.094 181.48Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M457.805 339.69H824.685V613.44L457.825 613.52C457.825 613.52 457.825 613.52 457.815 613.52V770.55H1010.1V-220.24H824.685V182.58L457.805 182.65V339.68V339.69Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M433.78 295.93C333.76 295.93 252.68 377.01 252.68 477.03C252.68 577.05 333.76 658.13 433.78 658.13"
+                    fill="black"
+                  />
+                  <path
+                    d="M432.105 658.129H457.805L457.805 295.949H432.105L432.105 658.129Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M0.8125 0V792H791.193V0H0.8125ZM765.773 766.62H26.2225V25.38H765.773V766.62Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M12.3712 -1360.27H-273.219V2200.43H12.3712V-1360.27Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M1068.04 -1360.27H775.172V2228.28H1068.04V-1360.27Z"
+                    fill="black"
+                  />
+                </mask>
+              </defs>
+              <rect width="792" height="792" fill="#E3C3DA" />
 
-</section>
+              <image
+                href="../images/freysmiles_insta.gif"
+                width="792"
+                height="792"
+                preserveAspectRatio="xMidYMid slice"
+                mask="url(#mask-inverse-2)"
+              />
+            </svg>
+          </div>
+          <div className="w-[540px]">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 792 792"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <mask id="shape-mask">
+                  <rect width="100%" height="100%" fill="white" />
+                  <path
+                    d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"
+                    fill="black"
+                  />
+                </mask>
+              </defs>
 
-<div className="mt-10 w-full flex justify-center flex-row gap-6">
-<div className="w-[540px] ">
-  <svg
-    width="100%"
-    height="100%"
-    viewBox="0 0 792 792"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <defs>
-      <mask id="mask-inverse-2">
-        <rect width="792" height="792" fill="white" />
+              <rect width="100%" height="100%" fill="#AA4032" />
 
-        <path
-          d="M268.094 181.48V-220.57H455.044V181.67L268.094 181.48Z"
-          fill="black"
-        />
-        <path
-          d="M457.805 339.69H824.685V613.44L457.825 613.52C457.825 613.52 457.825 613.52 457.815 613.52V770.55H1010.1V-220.24H824.685V182.58L457.805 182.65V339.68V339.69Z"
-          fill="black"
-        />
-        <path
-          d="M433.78 295.93C333.76 295.93 252.68 377.01 252.68 477.03C252.68 577.05 333.76 658.13 433.78 658.13"
-          fill="black"
-        />
-        <path
-          d="M432.105 658.129H457.805L457.805 295.949H432.105L432.105 658.129Z"
-          fill="black"
-        />
-        <path
-          d="M0.8125 0V792H791.193V0H0.8125ZM765.773 766.62H26.2225V25.38H765.773V766.62Z"
-          fill="black"
-        />
-        <path
-          d="M12.3712 -1360.27H-273.219V2200.43H12.3712V-1360.27Z"
-          fill="black"
-        />
-        <path
-          d="M1068.04 -1360.27H775.172V2228.28H1068.04V-1360.27Z"
-          fill="black"
-        />
-      </mask>
-    </defs>
-    <rect width="792" height="792" fill="#E3C3DA" />
-
-    <image
-      href="../images/freysmiles_insta.gif"
-      width="792"
-      height="792"
-      preserveAspectRatio="xMidYMid slice"
-      mask="url(#mask-inverse-2)"
-    />
-  </svg>
-</div>
-<div className="w-[540px]">
-  <svg
-    width="100%"
-    height="100%"
-    viewBox="0 0 792 792"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <defs>
-      <mask id="shape-mask">
-        <rect width="100%" height="100%" fill="white" />
-        <path
-          d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"
-          fill="black"
-        />
-      </mask>
-    </defs>
-
-    <rect width="100%" height="100%" fill="#AA4032" />
-
-    <foreignObject width="100%" height="100%" mask="url(#shape-mask)">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        width="792"
-        height="792"
-        style={{ display: "block" }}
-      >
-        <source src="../images/retaintracing.mp4" type="video/mp4" />
-      </video>
-    </foreignObject>
-  </svg>
-</div>
-</div>
-   {/* <div className="flex justify-center items-center" style={{ width:'500px', position: 'relative'}}>
+              <foreignObject width="100%" height="100%" mask="url(#shape-mask)">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  width="792"
+                  height="792"
+                  style={{ display: "block" }}
+                >
+                  <source src="../images/retaintracing.mp4" type="video/mp4" />
+                </video>
+              </foreignObject>
+            </svg>
+          </div>
+        </div>
+        {/* <div className="flex justify-center items-center" style={{ width:'500px', position: 'relative'}}>
 
   <svg
   className="masksvgshape"
@@ -1018,7 +987,7 @@ return (
   />
 </div> */}
 
-      {/* <div className="w-2/3 ml-auto">
+        {/* <div className="w-2/3 ml-auto">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-32 min-h-screen">
 
     <div className="rounded-3xl overflow-hidden bg-[#FAFF00] flex flex-col">
@@ -1055,31 +1024,30 @@ return (
   </div>
 </div> */}
 
-<section className="bg-[#F1F1F1] sun-section">
-        <div className="sun-wrapper">
-          <div className="sun-content leading-none">
-            <div className="frame-line line-1">Benefits</div>
+        <section className="bg-[#F1F1F1] sun-section">
+          <div className="sun-wrapper">
+            <div className="sun-content leading-none">
+              <div className="frame-line line-1">Benefits</div>
 
-            <div className="frame-connector connector-1" />
-            <div className="frame-line line-2">of working</div>
-            <div className="frame-connector connector-2" />
-            <div className="frame-line line-3">with us</div>
-          </div>
+              <div className="frame-connector connector-1" />
+              <div className="frame-line line-2">of working</div>
+              <div className="frame-connector connector-2" />
+              <div className="frame-line line-3">with us</div>
+            </div>
 
-          <div className="sun-mask">
-            <div className="rays">
-              {rays.map((_, i) => (
-                <div className={`ray ray-${i}`} key={i} />
-              ))}
+            <div className="sun-mask">
+              <div className="rays">
+                {rays.map((_, i) => (
+                  <div className={`ray ray-${i}`} key={i} />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
       </div>
-</>
-  )
-
-}
+    </>
+  );
+};
 
 const RepeatText = ({ text = "MTS", totalLayers = 7 }) => {
   const containerRef = useRef();
@@ -1144,6 +1112,7 @@ const RepeatText = ({ text = "MTS", totalLayers = 7 }) => {
     </section>
   );
 };
+
 
 function StackCards() {
   const containerRef = useRef(null);
@@ -1254,12 +1223,28 @@ function StackCards() {
   return (
     <section ref={containerRef}>
       <section className="bg-[#FEF9F8]">
+      <div className="blockcontainer">
+  <p>
+    <span></span>
+    <span></span>
+    
+  </p>
+  <p>
+    <span></span>
+    <span></span>
+  </p>
+  <p>
+    <span></span>
+    <span></span>
+  </p>
+</div>
+
         <div className="w-48 h-48 translate-x-1/3 -z-10">
           <Shape06 />
         </div>
         <div
           ref={textRef}
-          className="mx-auto font-neuehaas45 mb-60 text-[2vw] max-w-[900px] leading-[1.3]"
+          className="mx-auto font-neuehaas45 mb-60 text-[1.6vw] max-w-[900px] leading-[1.3]"
         >
           Our doctors aren’t just orthodontists — they’ve gone the extra miles
           (and years) to become true specialists. Dr. Gregg holds lifetime board
@@ -1268,11 +1253,15 @@ function StackCards() {
           don’t just do it — we lead it. As the region’s top Diamond Plus
           providers, we’ve treated thousands of cases and helped shape how clear
           aligners are used today.
+            
+  <br />
+  <br />
+          <span>TL;DR: You’re in very good hands.</span>
+
         </div>
-        {/*      
-          <div className="mb-10 text-[30px] max-w-[900px] leading-[1.3]">
-          TL;DR: You’re in very good,
-          very experienced hands.
+             
+          {/* <div className="mb-10 text-[30px] max-w-[900px] leading-[1.3]">
+   
           </div> */}
         <div className="font-neuehaas45 min-h-screen text-[16px] leading-[1.1] px-10">
           {/* Block 1 */}
@@ -1645,7 +1634,7 @@ const About = () => {
 const ProjectImage = ({
   imageUrl,
   elems = 4,
-  index = 0, 
+  index = 0,
   stagger = -0.12,
   initialScale = 1.2,
   ease = "power2.inOut",
@@ -1660,9 +1649,8 @@ const ProjectImage = ({
   useEffect(() => {
     const container = containerRef.current;
     const innerElems = innerElemsRef.current;
-  
-    if (!container || innerElems.length === 0) return;
 
+    if (!container || innerElems.length === 0) return;
 
     gsap.set([container, innerElems[0]], { transformOrigin: origin });
 
@@ -1719,7 +1707,6 @@ const ProjectImage = ({
   );
 };
 
-
 function MoreThanSmiles() {
   // useEffect(() => {
   //   let tlMain = gsap
@@ -1769,7 +1756,6 @@ function MoreThanSmiles() {
     "../images/morethansmiles5.png",
     "../images/morethansmiles6.png",
   ]);
-  
 
   useEffect(() => {
     if (!imagesContainerRef.current) return;
@@ -1879,8 +1865,6 @@ function MoreThanSmiles() {
     };
   }, []);
 
-
-
   const cardRefs = useRef([]);
 
   useEffect(() => {
@@ -1916,18 +1900,17 @@ function MoreThanSmiles() {
   const itemsRef = useRef([]);
   const [scrollY, setScrollY] = useState(0);
 
-  
   useEffect(() => {
     if (!wrapperRef.current) return;
-  
+
     let ctx = gsap.context(() => {
       const section = wrapperRef.current;
       const list = section.querySelector(".projects-collection-list");
-  
+
       const totalWidth = list.scrollWidth;
       const viewportWidth = window.innerWidth;
       const scrollDistance = totalWidth - viewportWidth;
-  
+
       gsap.to(list, {
         x: -scrollDistance,
         ease: "none",
@@ -1941,29 +1924,25 @@ function MoreThanSmiles() {
         },
       });
     }, wrapperRef);
-  
+
     return () => ctx.revert();
   }, []);
 
- 
   return (
     <>
-   
-<div className="horizontal-section" ref={wrapperRef}>
-  <div className="page-wrapper">
-    <div className="projects-collection-list">
-      {images.map((img, i) => (
-        <div key={i} className="project-item">
-          <a href="#" className="project-tile w-inline-block">
-            <ProjectImage imageUrl={img}  index={i}/>
-          </a>
+      <div className="horizontal-section" ref={wrapperRef}>
+        <div className="page-wrapper">
+          <div className="projects-collection-list">
+            {images.map((img, i) => (
+              <div key={i} className="project-item">
+                <a href="#" className="project-tile w-inline-block">
+                  <ProjectImage imageUrl={img} index={i} />
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
-
-
+      </div>
 
       <section className="px-20 py-20 bg-[#FEF9F8] text-black flex flex-col justify-between">
         <div className="flex justify-between ">
@@ -1980,8 +1959,6 @@ function MoreThanSmiles() {
         </div>
 
         <div className="flex justify-between items-end text-[14px]">
-
-
           {/* 
         <div className="space-y-2">
           <p className="font-medium">Services</p>
