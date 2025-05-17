@@ -262,7 +262,6 @@ export default function LandingComponent() {
       <Testimonials />
       <LogoGrid />
       <Locations />
-      <ContactUs />
       <GiftCards />
      </div>
     </>
@@ -897,7 +896,7 @@ const Hero = () => {
           />
         </div>
 
-        {/* Wavy Line Main Section */}
+
         <svg
           viewBox="0 0 96 1332"
           fill="none"
@@ -1680,174 +1679,6 @@ const NewSection = () => {
     };
   }, []);
 
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    let engine;
-    let render;
-
-    const initSimulation = () => {
-      const Engine = Matter.Engine;
-      const Render = Matter.Render;
-      const World = Matter.World;
-      const Bodies = Matter.Bodies;
-      const Mouse = Matter.Mouse;
-      const MouseConstraint = Matter.MouseConstraint;
-
-      engine = Engine.create();
-      const world = engine.world;
-
-      const containerElement = canvasRef.current;
-      const containerWidth = containerElement.clientWidth;
-      const containerHeight = containerElement.clientHeight;
-
-      render = Render.create({
-        element: containerElement,
-        engine: engine,
-        options: {
-          width: containerWidth,
-          height: containerHeight,
-          pixelRatio: 2,
-          background: "transparent",
-          wireframes: false,
-        },
-      });
-
-      // wall boundaries
-      const ground = Bodies.rectangle(
-        containerWidth / 2,
-        containerHeight + 50,
-        containerWidth,
-        100,
-        {
-          isStatic: true,
-          render: {
-            fillStyle: "#000",
-          },
-        }
-      );
-      const wallLeft = Bodies.rectangle(
-        -50,
-        containerHeight / 2,
-        100,
-        containerHeight,
-        {
-          isStatic: true,
-          render: {
-            fillStyle: "#000",
-          },
-        }
-      );
-      const wallRight = Bodies.rectangle(
-        containerWidth + 50,
-        containerHeight / 2,
-        100,
-        containerHeight,
-        {
-          isStatic: true,
-          render: {
-            fillStyle: "#000",
-          },
-        }
-      );
-      const roof = Bodies.rectangle(
-        containerWidth / 2,
-        -50,
-        containerWidth,
-        100,
-        {
-          isStatic: true,
-          render: {
-            fillStyle: "#000",
-          },
-        }
-      );
-
-      const tags = [
-        {
-          y: 100,
-          w: 164,
-          h: 56,
-          texture: "../images/ico_star2.svg",
-        },
-        {
-          x: 200,
-          y: 100,
-          w: 164,
-          h: 56,
-          texture: "../images/240by56(01).svg",
-        },
-        {
-          x: 300,
-          y: 200,
-          w: 240,
-          h: 56,
-          texture: "../images/240by56(02).svg",
-        },
-        {
-          x: 400,
-          y: 300,
-          w: 200,
-          h: 56,
-          texture: "../images/240by56(03).svg",
-        },
-        {
-          x: 400,
-          y: 300,
-          w: 200,
-          h: 56,
-          texture: "../images/240by56(04).svg",
-        },
-      ];
-
-      const radius = 20;
-      const dynamicBodies = tags.map((tag) =>
-        Bodies.rectangle(tag.x, tag.y, tag.w, tag.h, {
-          chamfer: { radius },
-          render: {
-            sprite: {
-              texture: tag.texture,
-              xScale: 1,
-              yScale: 1,
-            },
-          },
-        })
-      );
-
-      // Add objects to world
-      World.add(world, [ground, wallLeft, wallRight, roof, ...dynamicBodies]);
-
-      // mouse dragging
-      const mouse = Mouse.create(render.canvas);
-      const mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: {
-          stiffness: 0.2,
-          render: { visible: false },
-        },
-      });
-
-      World.add(world, mouseConstraint);
-      render.mouse = mouse;
-
-      Engine.run(engine);
-      Render.run(render);
-    };
-
-    initSimulation();
-
-    return () => {
-      if (engine) {
-        Matter.World.clear(engine.world);
-        Matter.Engine.clear(engine);
-      }
-      if (render) {
-        render.canvas.remove();
-        render.textures = {};
-      }
-    };
-  }, []);
-
   const [hover, setHover] = useState(false);
 
   return (
@@ -1861,10 +1692,7 @@ const NewSection = () => {
             </h1>
        
 
-            <div
-              ref={canvasRef}
-              style={{ height: "400px", width: "500px" }}
-            ></div>
+
                  <div className="relative flex items-center justify-center mx-auto max-w-[80vw]">
             <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
             <div className="relative w-[110%] bg-[#CFF174] px-48 py-2 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
@@ -3135,7 +2963,7 @@ const LogoGrid = () => {
       let wallThickness = 50;
 
       let walls = [
-        // 🔥 Adjusted Top Wall - Moves higher
+ 
         Bodies.rectangle(
           boxX,
           boxY - boxHeight / 2 - wallThickness / 2,
@@ -3147,7 +2975,7 @@ const LogoGrid = () => {
           }
         ),
 
-        // 🔥 Adjusted Bottom Wall - Moves lower so balls align with bottom
+
         Bodies.rectangle(boxX, boxY + boxHeight / 2, boxWidth, wallThickness, {
           isStatic: true,
           render: { fillStyle: "transparent" },
@@ -4107,94 +3935,7 @@ function Locations() {
   );
 }
 
-function ContactUs() {
-  const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const parentdiv = document.querySelector(".parentdiv");
-      if (!parentdiv) return;
-
-      const rect = parentdiv.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      if (rect.top <= windowHeight * 0.5) {
-        setIsExpanded(true);
-      } else {
-        setIsExpanded(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  return (
-    <>
-      <div className="parentdiv relative w-full h-[100vh] ">
-        <div
-          className="absolute top-0 left-0 w-full h-full  bg-[#F4F4F4] transition-all duration-700 ease-in-out"
-          style={{
-            borderRadius: isExpanded ? "0" : "50vw 50vw 0px 0px",
-            transform: isExpanded ? "translate(0%, 0%)" : "translate(0%, -5%)",
-          }}
-        ></div>
-        <div className="relative my-[10vh] mx-auto p-0 rounded-[2.5rem] overflow-hidden w-[90vw] h-[80vh]">
-          <div className="flex items-start justify-start ml-10 font-neue-montreal text-[4em]">
-            Connect with us
-          </div>
-          <div className="font-helvetica-neue absolute left-[25%] bottom-[5%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[15deg]">
-            Email
-          </div>
-
-          <div className="font-helvetica-neue  absolute left-[40%] bottom-[5%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[-15deg]">
-            Facebook
-          </div>
-
-          <div className="font-helvetica-neue  absolute left-[45%] bottom-[25%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[5deg]">
-            Instagram
-          </div>
-
-          <div className="font-helvetica-neue absolute right-[20%] bottom-[5%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[5deg]">
-            Call Us
-          </div>
-
-          <div className="absolute right-[20%] top-[60%] w-[200px] rotate-[25deg]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 2000 2000"
-              fill="none"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <g transform="scale(.4)">
-                <path
-                  d="M917.582 2000L956.044 1208.79L692.308 1956.04L538.462 1895.6L879.121 1175.82L351.648 1769.23L230.769 1648.35L824.176 1120.88L104.396 1461.54L43.956 1307.69L791.209 1043.96L0 1082.42V917.582L791.209 961.538L43.956 692.308L104.396 543.956L824.176 884.615L230.769 351.648L351.648 236.264L879.121 824.176L538.462 109.89L692.308 43.956L956.044 796.703L917.582 0H1082.42L1038.46 791.209L1307.69 43.956L1456.04 109.89L1115.38 824.176L1648.35 236.264L1763.74 351.648L1175.82 884.615L1890.11 543.956L1956.04 692.308L1203.3 961.538L2000 917.582V1082.42L1203.3 1043.96L1956.04 1307.69L1890.11 1461.54L1175.82 1120.88L1763.74 1648.35L1648.35 1769.23L1115.38 1175.82L1456.04 1895.6L1307.69 1956.04L1038.46 1208.79L1082.42 2000H917.582Z"
-                  fill="#202020"
-                />
-              </g>
-            </svg>
-          </div>
-          <div className="absolute left-[20%] top-[40%] w-[300px] rotate-[20deg]">
-            <img src="../images/shapes/greenandpinkshape.png" alt="pinkgreen" />
-          </div>
-          <div className="absolute left-[70%] top-[20%] w-[300px] rotate-[20deg]">
-            <img src="../images/shapes/silverstar.svg" alt="star" />
-          </div>
-
-          <div className="absolute left-[35%] top-[65%] w-[200px] rotate-[-10deg]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 995.94 574.21"
-              fill="currentColor"
-            >
-              <path d="M 100 449 Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z M 0 0 l 112.42 112.42 H 0 v 112.42 c 0 124.17 100.66 224.83 224.83 224.83 h 224.83 V 224.84 H 224.83 l 224.83 -112.42 V 0 H 0" />
-            </svg>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
 function GiftCards() {
   return (
     <>

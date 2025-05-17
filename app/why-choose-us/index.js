@@ -6,6 +6,7 @@ import {
   useGLTF,
   MeshTransmissionMaterial,
   Environment,
+  Text,
 } from "@react-three/drei";
 import * as THREE from "three";
 import { Observer } from "gsap/Observer";
@@ -56,29 +57,34 @@ export default function WhyChooseUs() {
   return (
     <>
       <>
-        {/* <Hero /> */}
-        <Canvas
-          camera={{ position: [0, 6, 12], fov: 45 }}
-          style={{ width: "100vw", height: "100vh" }}
-        >
-          <color attach="background" args={["#ffffff"]} />
-          <ambientLight intensity={0.86} color={0xffffff} />
-          <directionalLight
-            position={[0, -10, -10]}
-            intensity={1}
-            color={0xffffff}
-          />
 
-          {/* <OrbitControls /> */}
-          {/* <RibbonAroundSphere /> */}
-        </Canvas>
+        {/* <Hero /> */}
+
+        <div className="relative w-full h-screen">
+  <Canvas
+    className="absolute inset-0 z-10"
+    camera={{ position: [0, 6, 12], fov: 45 }}
+    style={{ pointerEvents: "none" }}
+  >
+    <color attach="background" args={["#ffffff"]} />
+    <ambientLight intensity={0.86} color={0xffffff} />
+    <directionalLight position={[0, -10, -10]} intensity={1} color={0xffffff} />
+    <RibbonAroundSphere />
+  </Canvas>
+
+
+  <div className="absolute inset-0 z-20 flex items-center justify-center">
+    <h1 className="text-5xl font-neuehaas45 text-black">HELLO WORLD</h1>
+  </div>
+</div>
+
 
         <CardStack />
         <StackCards />
         <Rays />
         <RepeatText />
         <MoreThanSmiles />
-        <About />
+        {/* <About /> */}
         <VennDiagram />
         <Intro />
         {/* <div className="h-[100vh] w-auto">
@@ -90,6 +96,8 @@ export default function WhyChooseUs() {
     </>
   );
 }
+
+
 
 function RibbonAroundSphere() {
   const ribbonRef = useRef();
@@ -104,9 +112,9 @@ function RibbonAroundSphere() {
       t.wrapT = THREE.RepeatWrapping;
       t.repeat.set(1, 1);
       t.offset.setX(0.5);
-      t.flipY = true;
+      t.flipY = false; // Keep this true for both textures
     });
-    backTexture.repeat.set(-1, 1);
+    backTexture.repeat.set(-1, 1); // Only flip horizontally for back texture
   }, [frontTexture, backTexture]);
 
   useFrame(() => {
@@ -158,38 +166,16 @@ function RibbonAroundSphere() {
     // console.log("Froze:", curvePoints.map((v) => v.toArray()));
 
     const curvePoints = [
-      new THREE.Vector3(0, -0.7791210925776592, 4.938924045885809),
-      new THREE.Vector3(
-        3.8972287305003155,
-        0.390385708530144,
-        3.107936202961956
-      ),
-      new THREE.Vector3(
-        4.859258415665126,
-        -0.3968854951588747,
-        -1.109040237509834
-      ),
-      new THREE.Vector3(
-        2.082282719004117,
-        1.4028390529397634,
-        -4.3239036913044595
-      ),
-      new THREE.Vector3(
-        -2.012218566064509,
-        -1.8686426688797089,
-        -4.178414895675252
-      ),
-      new THREE.Vector3(
-        -4.730483545820437,
-        -1.2069668652552943,
-        -1.0797020000434934
-      ),
-      new THREE.Vector3(
-        -3.6656012860016367,
-        -1.7372838238901793,
-        2.9232194798394224
-      ),
+      new THREE.Vector3(5, 0, 0),
+      new THREE.Vector3(3.5, 2, 2.5),
+      new THREE.Vector3(0, 3, 0),
+      new THREE.Vector3(-3.5, 2, -2.5),
+      new THREE.Vector3(-5, 0, 0),
+      new THREE.Vector3(-3.5, -2, 2.5),
+      new THREE.Vector3(0, -3, 0),
+      new THREE.Vector3(3.5, -2, -2.5),
     ];
+    
 
     const curve = new THREE.CatmullRomCurve3(curvePoints, true);
     curve.tension = 0.7;
@@ -229,7 +215,8 @@ function RibbonAroundSphere() {
     const uvs = [];
     for (let i = 0; i <= 1; i++) {
       for (let j = 0; j <= segments; j++) {
-        uvs.push(j / segments, i);
+        uvs.push(1 - j / segments, i);
+
       }
     }
     geom.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
@@ -271,8 +258,7 @@ const Intro = ({ texts = [], onFinished }) => {
           transformOrigin: "50% 50%",
         },
         "start"
-      )
-
+      );
 
     return () => {
       introTL.kill();
@@ -280,262 +266,164 @@ const Intro = ({ texts = [], onFinished }) => {
   }, [onFinished]);
 
   return (
-<main
-  ref={wrapperRef}
-  className="relative w-full h-screen overflow-hidden"
->
-  <svg className="circles w-full h-full" viewBox="0 0 1400 1400">
-    <defs>
+    <main ref={wrapperRef} className="relative w-full h-screen overflow-hidden">
+      <svg className="circles w-full h-full" viewBox="0 0 1400 1400">
+        <defs>
+          <path
+            id="circle-0"
+            d="M150,700.5A550.5,550.5 0 1 11251,700.5A550.5,550.5 0 1 1150,700.5"
+          />
+          <path
+            id="circle-1"
+            d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
+          />
+          <path
+            id="circle-2"
+            d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
+          />
+          <path
+            id="circle-3"
+            d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
+          />
+        </defs>
 
-      <path
-        id="circle-0"
-        d="M150,700.5A550.5,550.5 0 1 11251,700.5A550.5,550.5 0 1 1150,700.5"
-      />
-      <path
-        id="circle-1"
-        d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
-      />
-      <path
-        id="circle-2"
-        d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
-      />
-      <path
-        id="circle-3"
-        d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
-      />
+        <path
+          d="M100,700.5A600,600 0 1 11301,700.5A600,600 0 1 1100,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
 
-    </defs>
-    
-    <path d="M100,700.5A600,600 0 1 11301,700.5A600,600 0 1 1100,700.5" fill="none" stroke="black" strokeWidth="1" />
-  <path d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5" fill="none" stroke="black" strokeWidth="1" />
-  <path d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5" fill="none" stroke="black" strokeWidth="1" />
-  <path d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5" fill="none" stroke="black" strokeWidth="1" />
-
-
-
-    
-    <text
-     dy="-20"
-      ref={(el) => (circleTextRefs.current[1] = el)}
-      className="circles__text circles__text--1"
-    >
-<textPath xlinkHref="#circle-1" textLength="2550">
-  Low dose 3d digital radiographs Low dose 3d digital radiographs
-</textPath>
-
-    </text>
-    <text
-         dy="-20"
-      ref={(el) => (circleTextRefs.current[2] = el)}
-      className="circles__text circles__text--2"
-    >
-      <textPath xlinkHref="#circle-2" textLength="2001">
-        Accelerated Treatment&nbsp;
-      </textPath>
-    </text>
-    <text
-         dy="-20"
-      ref={(el) => (circleTextRefs.current[3] = el)}
-      className="circles__text circles__text--3"
-    >
-      <textPath xlinkHref="#circle-3" textLength="1341">
-        Invisalign Invisalign Invisalign&nbsp;
-      </textPath>
-    </text>
-
-  </svg>
-</main>
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[1] = el)}
+          className="circles__text circles__text--1"
+        >
+          <textPath
+            xlinkHref="#circle-1"
+            textLength="2800"
+            lengthAdjust="spacing"
+          >
+            Low-dose&nbsp; 3D&nbsp; digital&nbsp; radiographs&nbsp;
+            Low-dose&nbsp; 3D&nbsp; digital&nbsp; radiographs&nbsp;
+          </textPath>
+        </text>
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[2] = el)}
+          className="circles__text circles__text--2"
+        >
+          <textPath xlinkHref="#circle-2" textLength="2000">
+            Accelerated&nbsp;&nbsp;&nbsp; Treatment&nbsp;&nbsp;&nbsp;Accelerated
+            &nbsp;&nbsp;&nbsp;Treatment&nbsp;&nbsp;&nbsp;
+          </textPath>
+        </text>
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[3] = el)}
+          className="circles__text circles__text--3"
+        >
+          <textPath xlinkHref="#circle-3" textLength="1341">
+            Invisalign &nbsp;&nbsp;&nbsp;Invisalign&nbsp;&nbsp;&nbsp;
+            Invisalign&nbsp;&nbsp;&nbsp; Invisalign&nbsp;&nbsp;&nbsp;
+          </textPath>
+        </text>
+      </svg>
+    </main>
   );
 };
 function Hero() {
   const overlayRef = useRef(null);
-  const contentRef = useRef(null);
-  const imageRefs = useRef([]);
-  const boxRefs = useRef([]);
-
-  useEffect(() => {
-    const tl = gsap.timeline();
-
-    gsap.set(imageRefs.current, { opacity: 0, y: "100%" });
-    gsap.set(boxRefs.current, { y: "0%" });
-    gsap.set(contentRef.current, { opacity: 0 });
-
-    tl.to(overlayRef.current, {
-      y: "-100%",
-      duration: 1.5,
-      ease: "power2.inOut",
-    });
-
-    tl.add(() => {
-      imageRefs.current.forEach((image, index) => {
-        gsap.to(boxRefs.current[index], {
-          y: "-100%",
-          duration: 1.8,
-          ease: "power2.inOut",
-          delay: index * 0.2,
-        });
-
-        gsap.to(image, {
-          opacity: 1,
-          y: "0%",
-          rotate: 0,
-          duration: 1.5,
-          ease: "power2.out",
-          delay: index * 0.2,
-        });
-      });
-    }, "+=0.2");
-
-    tl.to(
-      contentRef.current,
-      { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
-      "-=1"
-    );
-  }, []);
-
-  const title = "Experts in";
-  const imageUrl = "../images/crystal.png";
-  const svgRef = useRef(null);
-  let lastScrollTop = 0;
-  const rotationFactor = 5;
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
-
-      if (svgRef.current) {
-        if (scrollTop > lastScrollTop) {
-          svgRef.current.style.transform = `rotate(${
-            scrollTop / rotationFactor
-          }deg)`;
-        } else {
-          svgRef.current.style.transform = `rotate(${
-            scrollTop / rotationFactor
-          }deg)`;
-        }
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // mobile
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const pathRef = useRef(null);
   const cardsectionRef = useRef(null);
 
   useEffect(() => {
-    const path = pathRef.current;
-    const pathLength = path.getTotalLength();
+    // Lock scroll
+    document.body.style.overflow = "hidden";
 
-    gsap.set(path, {
-      strokeDasharray: pathLength,
-      strokeDashoffset: pathLength,
-    });
-
-    gsap.to(path, {
-      strokeDashoffset: 0,
-      duration: 3,
-      ease: "power2.out",
+    // Animate overlay
+    gsap.to(overlayRef.current, {
+      y: "-100%",
+      duration: 1.5,
+      ease: "power2.inOut",
       onComplete: () => {
-        gsap.to(path, {
-          strokeDashoffset: pathLength,
-          ease: "none",
-          scrollTrigger: {
-            trigger: cardsectionRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
+        // Unlock scroll
+        document.body.style.overflow = "auto";
       },
     });
-
-    // Pin section
-    ScrollTrigger.create({
-      trigger: cardsectionRef.current,
-      start: "top top",
-      end: "+=150%",
-      pin: true,
-      pinSpacing: true,
-    });
   }, []);
+
+  // useEffect(() => {
+  //   const path = pathRef.current;
+  //   const pathLength = path.getTotalLength();
+
+  //   gsap.set(path, {
+  //     strokeDasharray: pathLength,
+  //     strokeDashoffset: pathLength,
+  //   });
+
+  //   gsap.to(path, {
+  //     strokeDashoffset: 0,
+  //     duration: 3,
+  //     ease: "power2.out",
+  //     onComplete: () => {
+  //       gsap.to(path, {
+  //         strokeDashoffset: pathLength,
+  //         ease: "none",
+  //         scrollTrigger: {
+  //           trigger: cardsectionRef.current,
+  //           start: "top top",
+  //           end: "bottom top",
+  //           scrub: 1,
+  //         },
+  //       });
+  //     },
+  //   });
+
+  //   ScrollTrigger.create({
+  //     trigger: cardsectionRef.current,
+  //     start: "top top",
+  //     end: "+=150%",
+  //     pin: true,
+  //     pinSpacing: true,
+  //   });
+  // }, []);
+
   return (
-    <>
-      <div className="relative h-screen w-full bg-[#FEF9F8] text-black">
-        <div ref={overlayRef} className="absolute inset-0 bg-black z-20"></div>
+    <div className="border border-red-500 relative min-h-screen w-full bg-[#FEF9F8] text-black overflow-hidden">
+  
+      <div
+        ref={overlayRef}
+        className="fixed inset-0 bg-blue-100 z-50"
+      ></div>
 
-        <div
-          className="absolute inset-0 flex items-center justify-center text-3xl font-helvetica-neue-light z-20"
-          style={{ mixBlendMode: "difference", color: "white" }}
-        >
-          <section className="relative w-full mx-auto my-16  md:h-16">
-            <h2 className="text-[3vw] ml-20">{title}</h2>
-
-            <div className="mt-4 ml-20 h-[3rem] overflow-hidden">
-              <ul
-                style={{
-                  animation: "scroll-text-up 5s infinite",
-                }}
-              >
-                <li className="py-1">
-                  <h1 className="font-neue-montreal text-3xl">Invisalign</h1>
-                </li>
-                <li className="py-1">
-                  <h1 className="font-neue-montreal text-3xl">Damon Braces</h1>
-                </li>
-                <li className="py-1">
-                  <h1 className="font-neue-montreal text-3xl">
-                    Accelerated Treatment
-                  </h1>
-                </li>
-                <li className="py-1">
-                  <h1 className="font-neue-montreal text-3xl">
-                    Low-Dose 3D Radiographs
-                  </h1>
-                </li>
-                <li className="py-1">
-                  <h1 className="font-neue-montreal text-3xl">Invisalign</h1>
-                </li>
-              </ul>
-            </div>
-          </section>
-        </div>
-
-        <div ref={contentRef}>
-          <div className="absolute top-1/4 right-10 flex flex-col gap-8">
-            {[
-              "../images/landscapeimage.jpg ",
-              "../images/iphonemockup.jpg",
-            ].map((src, index) => (
-              <div
-                key={index}
-                className={`wrapper-img relative overflow-hidden ${
-                  index === 0
-                    ? "w-[300px] h-[388px] absolute top-[120px] right-[-100px] rotate-[-10deg]"
-                    : "w-[450px] h-[275px] absolute bottom-[80px] left-[-400px] rotate-[8deg]"
-                }`}
-              >
-                <div
-                  ref={(el) => (boxRefs.current[index] = el)}
-                  className="box absolute inset-0 bg-black"
-                ></div>
-
-                <img
-                  ref={(el) => (imageRefs.current[index] = el)}
-                  src={src}
-                  alt={`Placeholder ${index + 1}`}
-                  className="absolute w-full h-full object-cover opacity-0"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* <section
+        ref={cardsectionRef}
+        className="h-[100vh] relative z-10 flex items-center justify-center"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 951 367"
           fill="none"
-          className="w-full max-w-lg h-auto"
+          className="w-full max-w-5xl mx-auto h-auto pt-40"
         >
           <path
             ref={pathRef}
@@ -544,54 +432,10 @@ function Hero() {
             strokeWidth="40"
             strokeMiterlimit="10"
             strokeLinejoin="round"
-            style={{ strokeDasharray: "3202.1", strokeDashoffset: "0px" }}
           />
         </svg>
-      </div>
-
-      {/* <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 480 480"
-    width="64"
-    height="64"
-    className=""
-    style={{ opacity: "1"}}
-    xmlSpace="preserve"
-  >
-    <path
-      fill="#000"
-      d="M205.2 0H0v205.2C15.3 99.2 99.2 15.3 205.2 0M480 205.2V0H274.8c106.1 15.3 190 99.2 205.2 205.2M274.8 480H480V274.8c-15.2 106.1-99.1 190-205.2 205.2M0 274.8V480h205.2C99.2 464.8 15.3 380.9 0 274.8"
-    />
-  </svg> */}
-
-      {/* <section className="px-8 py-20">
-        <div className="max-w-5xl ml-20">
-          <div className="flex items-start gap-4">
-            <svg
-              className="min-w-[164px] w-[164px] h-auto mt-2"
-              fill="none"
-              viewBox="0 0 96 94"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="m38.9704 60.3997c0-2.4217 1.8628-4.2845 4.2845-4.2845h10.4318c2.4216 0 4.2845-1.8628 4.2845-4.2845v-10.0593c0-2.4216 1.8628-4.2845 4.2845-4.2845h33.7171v18.6283h-33.7171c-2.4217 0-4.2845 1.8628-4.2845 4.2845v32.972h-19.0008zm-38.00165-4.2845v-18.6283h33.71715c2.4216 0 4.2845-1.8628 4.2845-4.2844v-32.972031h19.0008v32.972031c0 2.4216-1.8629 4.2844-4.2845 4.2844h-10.4318c-2.4217 0-4.2845 1.8629-4.2845 4.2845v10.0593c0 2.4217-1.8629 4.2845-4.2845 4.2845z"
-                fill="#B3EA85"
-              />
-            </svg>
-
-            <h2 className="text-[3.5vw] leading-tight font-light">
-              <span className="italic text-[#B3EA85] font-saolitalic">
-                About Us
-              </span>{" "}
-              <span className="font-neuehaas45 text-black">
-                Experts in Invisalign, Braces, Accelerated Treatment, Low Dose
-                3D Digital Radiographs.
-              </span>
-            </h2>
-          </div>
-        </div>
       </section> */}
-    </>
+    </div>
   );
 }
 
@@ -749,30 +593,34 @@ const Rays = () => {
   return (
     <>
       <div className="bg-[#F0EEE9]">
+        {/* <div className="bg-[#DCDCDC] text-[#d2ff8c]"> */}
         <section className="px-6 py-12 md:px-12">
-          <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue uppercase">
-            <span className="font-neuehaas45">
-              All. <sup className="text-xs align-super">(16)</sup>
+          <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
+            <span className="uppercase text-[#d2ff8c] font-neuehaas45">
+              All. <sup className="text-xs  align-super">(16)</sup>
             </span>
             <span>
-              — INVISALIGN. <sup className="text-xs align-super">(2k)</sup>
+              — Invisalign <sup className="text-xs align-super">(2k)</sup>
             </span>
-            <span>
+            <span className="">
               — Accelerated Treatment.{" "}
               <sup className="text-xs align-super">(12)</sup>
             </span>
             <span>
-              — Low-dose digital 3d radiographs{" "}
+              — Low-Dose Digital 3D Radiographs{" "}
               <sup className="text-xs align-super">(15)</sup>
             </span>
             <span>
               Damon Braces. <sup className="text-xs align-super">(2k)</sup>
             </span>
             <span>
-              — Experiences. <sup className="text-xs align-super">(5)</sup>
+              — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
             </span>
             <span>
-              — Technology. <sup className="text-xs align-super">(8)</sup>
+              — 3D Printing. <sup className="text-xs align-super">(8)</sup>
+            </span>
+            <span>
+              — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
             </span>
           </div>
 
@@ -865,7 +713,7 @@ return (
 </div> */}
         </section>
 
-        <div className="mt-10 w-full flex justify-center flex-row gap-6">
+        {/* <div className="mt-10 w-full flex justify-center flex-row gap-6">
           <div className="w-[540px] ">
             <svg
               width="100%"
@@ -952,7 +800,7 @@ return (
               </foreignObject>
             </svg>
           </div>
-        </div>
+        </div> */}
         {/* <div className="flex justify-center items-center" style={{ width:'500px', position: 'relative'}}>
 
   <svg
@@ -1113,7 +961,6 @@ const RepeatText = ({ text = "MTS", totalLayers = 7 }) => {
   );
 };
 
-
 function StackCards() {
   const containerRef = useRef(null);
 
@@ -1223,21 +1070,20 @@ function StackCards() {
   return (
     <section ref={containerRef}>
       <section className="bg-[#FEF9F8]">
-      <div className="blockcontainer">
-  <p>
-    <span></span>
-    <span></span>
-    
-  </p>
-  <p>
-    <span></span>
-    <span></span>
-  </p>
-  <p>
-    <span></span>
-    <span></span>
-  </p>
-</div>
+        <div className="blockcontainer">
+          <p>
+            <span></span>
+            <span></span>
+          </p>
+          <p>
+            <span></span>
+            <span></span>
+          </p>
+          <p>
+            <span></span>
+            <span></span>
+          </p>
+        </div>
 
         <div className="w-48 h-48 translate-x-1/3 -z-10">
           <Shape06 />
@@ -1253,14 +1099,12 @@ function StackCards() {
           don’t just do it — we lead it. As the region’s top Diamond Plus
           providers, we’ve treated thousands of cases and helped shape how clear
           aligners are used today.
-            
-  <br />
-  <br />
+          <br />
+          <br />
           <span>TL;DR: You’re in very good hands.</span>
-
         </div>
-             
-          {/* <div className="mb-10 text-[30px] max-w-[900px] leading-[1.3]">
+
+        {/* <div className="mb-10 text-[30px] max-w-[900px] leading-[1.3]">
    
           </div> */}
         <div className="font-neuehaas45 min-h-screen text-[16px] leading-[1.1] px-10">
@@ -1707,6 +1551,7 @@ const ProjectImage = ({
   );
 };
 
+
 function MoreThanSmiles() {
   // useEffect(() => {
   //   let tlMain = gsap
@@ -1832,38 +1677,38 @@ function MoreThanSmiles() {
       );
     };
   }, [images]);
-  const btnRef = useRef();
-  const hitRef = useRef();
+  // const btnRef = useRef();
+  // const hitRef = useRef();
 
-  useEffect(() => {
-    const btn = btnRef.current;
-    const hit = hitRef.current;
+  // useEffect(() => {
+  //   const btn = btnRef.current;
+  //   const hit = hitRef.current;
 
-    hit.onpointermove = (e) => {
-      const domPt = new DOMPoint(e.x, e.y);
-      let svgPt = domPt.matrixTransform(btn.getScreenCTM().inverse());
+  //   hit.onpointermove = (e) => {
+  //     const domPt = new DOMPoint(e.x, e.y);
+  //     let svgPt = domPt.matrixTransform(btn.getScreenCTM().inverse());
 
-      gsap
-        .timeline({ defaults: { duration: 0.3, ease: "power3" } })
-        .to(".hit", { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
-        .to(".bg", { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
-        .to(".txt", { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
-        .to(".bg", { attr: { fill: "#000" } }, 0)
-        .to(".txt", { attr: { fill: "rgb(0,0,0)" } }, 0);
-    };
+  //     gsap
+  //       .timeline({ defaults: { duration: 0.3, ease: "power3" } })
+  //       .to(".hit", { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
+  //       .to(".bg", { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
+  //       .to(".txt", { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
+  //       .to(".bg", { attr: { fill: "#000" } }, 0)
+  //       .to(".txt", { attr: { fill: "rgb(0,0,0)" } }, 0);
+  //   };
 
-    hit.onpointerleave = (e) => {
-      gsap
-        .timeline({ defaults: { duration: 0.3, ease: "power2" } })
-        .to(".bg", { attr: { fill: "#E8674A" } }, 0)
-        .to(".txt", { attr: { fill: "rgb(255,255,255)" } }, 0)
-        .to(
-          ".hit, .bg, .txt",
-          { duration: 0.7, ease: "elastic.out(0.8)", x: 0, y: 0 },
-          0
-        );
-    };
-  }, []);
+  //   hit.onpointerleave = (e) => {
+  //     gsap
+  //       .timeline({ defaults: { duration: 0.3, ease: "power2" } })
+  //       .to(".bg", { attr: { fill: "#E8674A" } }, 0)
+  //       .to(".txt", { attr: { fill: "rgb(255,255,255)" } }, 0)
+  //       .to(
+  //         ".hit, .bg, .txt",
+  //         { duration: 0.7, ease: "elastic.out(0.8)", x: 0, y: 0 },
+  //         0
+  //       );
+  //   };
+  // }, []);
 
   const cardRefs = useRef([]);
 
@@ -1928,36 +1773,38 @@ function MoreThanSmiles() {
     return () => ctx.revert();
   }, []);
 
+  const textRef = useRef(null);
+  const blockRef = useRef(null);
+
+  useEffect(() => {
+    if (!textRef.current) return;
+
+    const split = new SplitText(textRef.current, { type: "words, chars" });
+
+    const tl = gsap.fromTo(
+      split.chars,
+      { color: "#d4d4d4" },
+      {
+        color: "#000000",
+        stagger: 0.03,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: textRef.current,
+          start: "top center",
+          end: "bottom bottom",
+          scrub: true,
+        },
+      }
+    );
+
+    return () => {
+      tl.scrollTrigger?.kill();
+      split.revert();
+    };
+  }, []);
   return (
     <>
-      <div className="horizontal-section" ref={wrapperRef}>
-        <div className="page-wrapper">
-          <div className="projects-collection-list">
-            {images.map((img, i) => (
-              <div key={i} className="project-item">
-                <a href="#" className="project-tile w-inline-block">
-                  <ProjectImage imageUrl={img} index={i} />
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
       <section className="px-20 py-20 bg-[#FEF9F8] text-black flex flex-col justify-between">
-        <div className="flex justify-between ">
-          <div className="w-[40%] text-left text-neutral-500 leading-snug ">
-            <p className="font-neuehaas45 text-[17px]">
-              Frey Smiles is committed to making world-class orthodontic care
-              accessible to all. In 2011, we launched a non-profit initiative
-              called More Than Smiles, dedicated to providing treatment for
-              individuals who may not have the means to access it. The program
-              also focuses on educating the community about dental and
-              orthodontic health.
-            </p>
-          </div>
-        </div>
-
         <div className="flex justify-between items-end text-[14px]">
           {/* 
         <div className="space-y-2">
@@ -1972,52 +1819,73 @@ function MoreThanSmiles() {
         </div> */}
         </div>
       </section>
-      <section className="px-8 py-20 min-h-screen ">
-        <div className="ml-20">
-          <div className="flex flex-col items-start gap-6">
-            <h2 className="text-[1vw] leading-tight font-light">
-              <span className="text-[#ff007f] font-neuehaas45">
-                OUR NON-PROFIT
-              </span>{" "}
-              <span className="ml-6 text-[2.5vw] font-neuehaas45 text-black">
-                If you know someone who could benefit from this{" "}
-                <span className="font-saolitalic">gift,</span> please visit our
-                website for details on how to{" "}
-                <span className="font-saolitalic">nominate</span> a candidate.
-              </span>
-            </h2>
-            <div className="w-full flex justify-start -mt-20">
-              <a
-                href="https://morethansmiles.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <svg
-                  ref={btnRef}
-                  className="w-full max-w-xl cursor-pointer h-full"
-                  viewBox="-50 -50 100 100"
-                >
-                  <circle className="bg" r="22.4" fill="#E8674A" />
-                  <text
-                    className="txt fill-white text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
-                    x="0"
-                    y="2"
-                    textAnchor="middle"
-                  >
-                    Nominate
-                  </text>
-                  <circle
-                    ref={hitRef}
-                    className="hit"
-                    r="42"
-                    fill="rgba(0,0,0,0)"
-                  />
-                </svg>
-              </a>
+      {/* <div className="z-10 w-full">
+     <Cube />
+     </div> */}
+      <section
+        style={{ backgroundImage: "url(/images/pinkgradient.png)" }}
+        className="relative min-h-screen overflow-hidden bg-no-repeat bg-cover bg-center"
+      >
+<div
+  // ref={textRef}
+  className="absolute top-0 left-0 right-0 bottom-0 w-full h-full text-center bg-black/20 z-[-1]"
+  style={{
+    backdropFilter: 'none',
+    WebkitBackdropFilter: 'none',
+  }}
+>
+          <h1 className="text-[2.2vw] font-neuehaas45 uppercase tracking-wide text-[#fff] mb-12">
+            <div className="text-center">Nominate someone who deserves</div>
+            <div className="text-center -ml-[200px]">
+              a confident smile through our
             </div>
+            <div className="text-center -mr-[200px]">
+              non-profit More Than Smiles.
+            </div>
+          </h1>
+
+          <p className="font-chivomono max-w-[600px] mx-auto text-[0.95rem] font-light leading-snug text-[#e6e6e6] uppercase tracking-wide font-neuehaas45 text-left">
+            We’re committed to making world-class orthodontic care accessible to
+            all. In 2011, we launched More Than Smiles to provide treatment and
+            promote community education around dental and orthodontic health.
+            Learn how to nominate someone at our website.
+          </p>
+        </div>
+        <div className="z-10 absolute right-[3vw] top-[50%] -translate-y-1/2">
+          <a
+            href="https://morethansmiles.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg className="w-full cursor-pointer" viewBox="-50 -50 100 100">
+              <circle r="22.4" fill="none" stroke="#DFDFDF" stroke-width=".5" />
+              <text
+                className="txt fill-black text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
+                x="0"
+                y="2"
+                textAnchor="middle"
+              >
+                Nominate
+              </text>
+            </svg>
+          </a>
+        </div>
+      
+      </section>
+      <div className="horizontal-section" ref={wrapperRef}>
+        <div className="page-wrapper">
+          <div className="projects-collection-list">
+            {images.map((img, i) => (
+              <div key={i} className="project-item">
+                <a href="#" className="project-tile w-inline-block">
+                  <ProjectImage imageUrl={img} index={i} />
+                </a>
+              </div>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
+
     </>
 
     // <section className="w-full min-h-screen ">
