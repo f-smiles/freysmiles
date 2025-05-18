@@ -6320,3 +6320,95 @@ a {
   background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.5"/><line x1="0" y1="100" x2="100" y2="0" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.5"/><line x1="0" y1="50" x2="100" y2="50" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.5"/><line x1="50" y1="0" x2="50" y2="100" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.5"/><line x1="0" y1="25" x2="100" y2="25" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.3"/><line x1="0" y1="75" x2="100" y2="75" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.3"/><line x1="25" y1="0" x2="25" y2="100" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.3"/><line x1="75" y1="0" x2="75" y2="100" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.3"/></svg>');
   /* opacity: 0.8; */
 }
+
+.text-heading h1 {
+  font-family: sans-serif;
+  font-weight: 400;
+  font-size: 100px;
+  text-transform: uppercase;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.text-heading h1 > div {
+  position: relative;
+  margin: 0;
+}
+.split-parent {
+  overflow: hidden;
+  display: inline-block;
+}
+.split-child {
+  display: inline-block;
+}
+.line {
+  display: block;
+  overflow: hidden;
+}
+
+.line > * {
+  display: inline-block;
+  will-change: transform;
+}
+
+.list__item {
+  font-size:  14px;
+  cursor: pointer;
+  width: 100%;
+  display: grid;
+  color: #000;
+  grid-template-columns: 100px 1fr 1fr auto;
+  grid-column-gap: 2rem;
+  padding: 1rem 0;
+  align-items: start;
+  justify-items: start;
+}
+
+.demo-4 .list__item {
+	padding: 1rem 0;
+}
+
+
+.demo-4 .list__item::before {
+	font-size: 0.8rem;
+}
+
+.list--alt .list__item::before {
+  content: "EVT#" counter(item, decimal-leading-zero) "0";
+}
+
+.list__item-col {
+	flex: none;
+	padding: 3px 3px 0;
+	line-height: 0.8;
+}
+
+
+.demo-4 {
+	position: relative;
+	margin: 0;
+	color:  #000;
+	font-family: "ChivoMono", monospace;
+	font-weight: 300;
+	font-optical-sizing: auto;
+	text-transform: uppercase;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	min-height: 100vh;
+	background-size: 100px, cover;
+	background-position: 50% 50%;
+	--color-text: #000;
+	--color-bg: #000;
+	--color-link: #515151;
+	--color-link-hover: #000;
+	--color-list-item: #000;
+	--color-title: #2d2d2d;
+	--color-number: #615f60;
+	--color-bg-effect: rgb(229 222 204 / 10%);
+	--blendmode-effect: none;
+	--bg-blur: 5px;
+	--font-size-list-item: clamp(1rem, 2vw, 1rem);
+}
+
+

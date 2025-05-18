@@ -6,11 +6,11 @@ import { Disclosure, Transition } from "@headlessui/react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { useGSAP } from "@gsap/react";
-import { MotionPathPlugin } from "gsap-trial/MotionPathPlugin";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
-import { SplitText } from "gsap-trial/SplitText";
-import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+import { SplitText } from "gsap/SplitText";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import * as OGL from "ogl";
 import {
   ScrollControls,
@@ -59,8 +59,9 @@ const Slide = ({ index, currentPosition, distortionFactor }) => {
     "/images/fscards.png",
     "/images/sch.png",
     "/images/fsstickers.png",
-    "/images/futurefreysmiles.png",
+    "/images/futuresmiles.png",
     "/images/iteromockupnoborder.png",
+    
   ];
   
   const imageIndex = index % imagePaths.length;
@@ -328,7 +329,7 @@ const ThumbnailStrip = () => {
     "/images/fscards.png",
     "/images/sch.png",
     "/images/fsstickers.png",
-    "/images/futurefreysmiles.png",
+    "/images/futuresmiles.png",
     "/images/iteromockupnoborder.png",
   ];
 

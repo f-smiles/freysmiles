@@ -1,10 +1,10 @@
 "use client";
-import { ScrambleTextPlugin } from "gsap-trial/ScrambleTextPlugin";
+import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import "tw-elements";
 import gsap from "gsap";
-import { MorphSVGPlugin } from "gsap-trial/MorphSVGPlugin";
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { Text } from '@react-three/drei';
 import { useThree, useFrame } from '@react-three/fiber';

@@ -6,11 +6,11 @@ import { Disclosure, Transition } from "@headlessui/react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { useGSAP } from "@gsap/react";
-import { MotionPathPlugin } from "gsap-trial/MotionPathPlugin";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
-import { SplitText } from "gsap-trial/SplitText";
-import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+import { SplitText } from "gsap/SplitText";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import * as OGL from "ogl";
 import {
   ScrollControls,
@@ -196,7 +196,7 @@ const FluidSimulation = () => {
     ctx.textRendering = "geometricPrecision";
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
-    ctx.fillText("softhorizon", width / 2, height / 2);
+    ctx.fillText("braces", width / 2, height / 2);
 
     const textTexture = new THREE.CanvasTexture(canvas);
     textTexture.minFilter = THREE.LinearFilter;
@@ -223,7 +223,7 @@ const FluidSimulation = () => {
       ctx.font = `bold ${newFontSize}px Test Söhne`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("softhorizon", newWidth / 2, newHeight / 2);
+      ctx.fillText("braces", newWidth / 2, newHeight / 2);
 
       textTexture.needsUpdate = true;
     };

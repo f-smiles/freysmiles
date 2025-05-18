@@ -1,5 +1,6 @@
 "use client";
 import { Canvas, useFrame, extend } from "@react-three/fiber";
+import Copy from "@/utils/Copy.jsx";
 import {
   Sphere,
   OrbitControls,
@@ -21,8 +22,8 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
-import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap-trial/all";
-import { MorphSVGPlugin } from "gsap-trial/MorphSVGPlugin";
+import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap/all";
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText, MorphSVGPlugin);
 
@@ -965,8 +966,8 @@ const FinancingTreatment = () => {
     <>
              <div className="bg-[#F2F3F5] min-h-screen pt-[160px] relative ">
         <section className="relative flex items-center justify-center">
-          <div className=" w-[40vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
-            <p className="font-neueroman text-[20px] uppercase leading-snug text-black">
+          <div className=" w-[36vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
+            <Copy>            <p className="font-neueroman text-[18px] uppercase leading-snug text-black">
               Orthodontic treatment is a transformative investment in both your
               appearance and long-term dental health — ideally, a
               once-in-a-lifetime experience. While many orthodontists can
@@ -974,7 +975,8 @@ const FinancingTreatment = () => {
               outcomes varies widely. With today's advanced technology,
               treatment goes far beyond alignment — it can enhance facial
               aesthetics and deliver truly life-changing results.
-            </p>
+            </p></Copy>
+
           </div>
 
           <svg

@@ -343,7 +343,7 @@ MAIN
               initial="initial"
               animate="open"
               exit="closed"
-              custom={j} // This passes the index to your variant functions
+              custom={j} 
               whileHover="hover"
               className="relative flex flex-col cursor-pointer py-2 overflow-hidden"
             >

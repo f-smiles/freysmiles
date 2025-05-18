@@ -10,7 +10,7 @@ import React, {
   useMemo,
   useLayoutEffect,
 } from "react";
-import { SplitText } from "gsap-trial/all";
+import { SplitText } from "gsap/all";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

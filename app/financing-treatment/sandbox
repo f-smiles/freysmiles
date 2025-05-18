@@ -12,8 +12,8 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
-import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap-trial/all";
-import { MorphSVGPlugin } from "gsap-trial/MorphSVGPlugin";
+import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap/all";
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText, MorphSVGPlugin);
 

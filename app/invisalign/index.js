@@ -33,9 +33,9 @@ import {
 } from "framer-motion";
 import gsap from "gsap";
 
-import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SplitText } from "gsap-trial/all";
+import { SplitText } from "gsap/all";
 import * as THREE from "three";
 import { Canvas, useLoader, useFrame, useThree } from "@react-three/fiber";
 import { useMemo } from "react";

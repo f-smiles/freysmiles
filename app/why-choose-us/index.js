@@ -1,4 +1,6 @@
 "use client";
+import Copy from "@/utils/Copy.jsx";
+
 // gsap
 import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
 import {
@@ -22,7 +24,7 @@ import {
   useAnimate,
   useInView,
 } from "framer-motion";
-import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
 import React, {
   useRef,
@@ -33,9 +35,9 @@ import React, {
 } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SplitText } from "gsap-trial/all";
+import { SplitText } from "gsap/all";
 // framer motion
 import GalaxyShape from "../_components/shapes/galaxy";
 import Shape03 from "../_components/shapes/shape03";
@@ -54,12 +56,13 @@ if (typeof window !== "undefined") {
 }
 
 export default function WhyChooseUs() {
+
+    
   return (
     <>
       <>
 
         {/* <Hero /> */}
-
         <div className="relative w-full h-screen">
   <Canvas
     className="absolute inset-0 z-10"
@@ -74,7 +77,7 @@ export default function WhyChooseUs() {
 
 
   <div className="absolute inset-0 z-20 flex items-center justify-center">
-    <h1 className="text-5xl font-neuehaas45 text-black">HELLO WORLD</h1>
+
   </div>
 </div>
 
@@ -112,9 +115,9 @@ function RibbonAroundSphere() {
       t.wrapT = THREE.RepeatWrapping;
       t.repeat.set(1, 1);
       t.offset.setX(0.5);
-      t.flipY = false; // Keep this true for both textures
+      t.flipY = false; 
     });
-    backTexture.repeat.set(-1, 1); // Only flip horizontally for back texture
+    backTexture.repeat.set(-1, 1); 
   }, [frontTexture, backTexture]);
 
   useFrame(() => {
@@ -590,65 +593,232 @@ const Rays = () => {
     return () => ctx.revert();
   }, []);
 
+
+  const images = [
+    {         src:"/images/signonmetalrack.png", alt: "First Image" },
+    {src:"/images/signonmetalrack.png",  alt: "Second Image" },
+    { src:"/images/signonmetalrack.png",  alt: "Third Image" },
+  ];
+
+  useEffect(() => {
+    const triggers = [];
+  
+    gsap.utils.toArray(".img-container").forEach(container => {
+      const img = container.querySelector("img");
+  
+      const trigger = gsap.fromTo(
+        img,
+        { yPercent: -20, ease: "none" },
+        {
+          yPercent: 20,
+          ease: "none",
+          scrollTrigger: {
+            trigger: container,
+            scrub: true,
+          },
+        }
+      ).scrollTrigger;
+  
+      triggers.push(trigger);
+    });
+
+    return () => {
+      triggers.forEach(trigger => trigger.kill());
+    };
+  }, []);
+  
+  const sectionRef = useRef(null);
+  const headingRefs = useRef([]);
+
+
+  useGSAP(() => {
+    gsap.set(headingRefs.current, { opacity: 0 });
+  }, { scope: sectionRef });
+
+
+  useGSAP(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            headingRefs.current.forEach((el) => {
+              if (!el) return;
+
+      
+              gsap.set(el, { opacity: 0 });
+
+              const childSplit = new SplitText(el, {
+                type: "lines",
+                linesClass: "split-child",
+              });
+
+              new SplitText(el, {
+                type: "lines",
+                linesClass: "split-parent",
+              });
+
+
+              gsap.set(childSplit.lines, { 
+                yPercent: 100,
+                opacity: 1 
+              });
+
+  
+              gsap.to(childSplit.lines, {
+                yPercent: 0,
+                duration: 1.5,
+                ease: "power4.out",
+                stagger: 0.1,
+                onStart: () => {
+                  gsap.set(el, { opacity: 1 });
+                }
+              });
+
+            });
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, { scope: sectionRef });
   return (
     <>
       <div className="bg-[#F0EEE9]">
-        {/* <div className="bg-[#DCDCDC] text-[#d2ff8c]"> */}
-        <section className="px-6 py-12 md:px-12">
-          <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
-            <span className="uppercase text-[#d2ff8c] font-neuehaas45">
-              All. <sup className="text-xs  align-super">(16)</sup>
-            </span>
-            <span>
-              — Invisalign <sup className="text-xs align-super">(2k)</sup>
-            </span>
-            <span className="">
-              — Accelerated Treatment.{" "}
-              <sup className="text-xs align-super">(12)</sup>
-            </span>
-            <span>
-              — Low-Dose Digital 3D Radiographs{" "}
-              <sup className="text-xs align-super">(15)</sup>
-            </span>
-            <span>
-              Damon Braces. <sup className="text-xs align-super">(2k)</sup>
-            </span>
-            <span>
-              — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
-            </span>
-            <span>
-              — 3D Printing. <sup className="text-xs align-super">(8)</sup>
-            </span>
-            <span>
-              — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
-            </span>
-          </div>
-
-          <div className="mt-12 w-full flex gap-4">
-            {/* Left image */}
-            <div className="w-1/2">
+      <main
+      style={{
+        margin: 0,
+        padding: 0,
+        background: "#171717",
+        color: "white",
+        fontFamily: "sans-serif",
+        boxSizing: "border-box",
+      }}
+    >
+      {images.map((img, i) => (
+        <section
+          key={i}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "100vh",
+          }}
+        >
+          <div
+            className="img"
+            style={{
+              width: "min(80vw, 900px)",
+              padding: "10vw",
+            }}
+          >
+            <div
+              className="img-container"
+              style={{
+                width: "100%",
+                paddingTop: "80%",
+                position: "relative",
+                overflow: "hidden",
+              
+              }}
+            >
               <img
-                src="/images/signonmetalrack.png"
-                alt="metalrack"
-                className="w-full h-full object-contain"
-              />
-            </div>
-
-            <div className="w-1/2">
-              <img
-                src="/images/testdisplay.png"
-                alt="placeholder"
-                className="w-full h-full object-contain"
+                src={img.src}
+                alt={img.alt}
+                style={{
+                  width: "auto",
+                  height: "100%",
+                  position: "absolute",
+                  top: 0,
+                  left: "50%",
+                  transform: "translateX(-50%) scale(1.4)",
+                  transformOrigin: "center",
+                }}
               />
             </div>
           </div>
         </section>
+      ))}
+    </main>
+        {/* <div className="bg-[#DCDCDC] text-[#d2ff8c]"> */}
+        {/* <section ref={sectionRef} className="text-heading white">
+  <h1 ref={(el) => (headingRefs.current[0] = el)}>
+    Lorem Ipsum is dummy text Lorem Ipsum is dummy text
+  </h1>
+  <h1 ref={(el) => (headingRefs.current[1] = el)}>
+    Another heading just for fun
+  </h1>
+</section> */}
 
-        <p className="text-[18px] ml-10 mb-10 max-w-lg font-neuehaas45 leading-tight tracking-tight">
-          At Frey Smiles, we use cutting-edge CBCT 3D imaging to capture every
-          detail with unmatched precision—empowering our team to plan with
-          clarity, accuracy, and the level of expertise your smile deserves.
-        </p>
+<section
+      ref={sectionRef}
+      className="px-6 py-12 md:px-12"
+    >
+      <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
+        <span className="uppercase text-[#d2ff8c] font-neuehaas45">
+          All. <sup className="text-xs align-super">(16)</sup>
+        </span>
+        <span ref={(el) => headingRefs.current[0] = el}>
+          — Invisalign <sup className="text-xs align-super">(2k)</sup>
+        </span>
+        <span ref={(el) => headingRefs.current[1] = el}>
+          — Accelerated Treatment. <sup className="text-xs align-super">(12)</sup>
+        </span>
+        <span ref={(el) => headingRefs.current[2] = el}>
+          — Low-Dose Digital 3D Radiographs <sup className="text-xs align-super">(15)</sup>
+        </span>
+        <span ref={(el) => headingRefs.current[3] = el}>
+          Damon Braces. <sup className="text-xs align-super">(2k)</sup>
+        </span>
+        <span ref={(el) => headingRefs.current[4] = el}>
+          — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
+        </span>
+        <span ref={(el) => headingRefs.current[5] = el}>
+          — 3D Printing. <sup className="text-xs align-super">(8)</sup>
+        </span>
+        <span ref={(el) => headingRefs.current[6] = el}>
+          — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
+        </span>
+      </div>
+
+      <div className="mt-12 w-full flex gap-4">
+        <div className="w-1/2">
+          <div className="img-container relative overflow-hidden">
+            <img
+              src="/images/signonmetalrack.png"
+              alt="metalrack"
+              className="w-full h-full object-contain"
+              style={{
+                transform: "translateY(0%) scale(1.0)",
+                transformOrigin: "center",
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="w-1/2">
+          <div className="img-container relative overflow-hidden">
+            <img
+              src="/images/testdisplay.png"
+              alt="placeholder"
+              className="w-full h-full object-contain"
+              style={{
+                transform: "translateY(0%) scale(1.0)",
+                transformOrigin: "center",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+<Copy>        <p className="text-[20px] ml-10 mb-10 max-w-[600px] font-neuehaas45 leading-[1.2]">
+        Certain treatment plans rely on precise growth timing to ensure stable, long-lasting results. Our 3D imaging technology lets us track the exact position and trajectory of traditionally problematic teeth—while also helping rule out certain pathologies. It’s changing the face of dentistry and orthodontics. Expect more advanced insights than what you’ll hear from most competitors.
+        </p></Copy>
+
         <div className="relative flex justify-center items-center h-full">
           <video
             autoPlay
@@ -1823,12 +1993,12 @@ function MoreThanSmiles() {
      <Cube />
      </div> */}
       <section
-        style={{ backgroundImage: "url(/images/pinkgradient.png)" }}
+        // style={{ backgroundImage: "url(/images/pinkgradient.png)" }}
         className="relative min-h-screen overflow-hidden bg-no-repeat bg-cover bg-center"
       >
 <div
   // ref={textRef}
-  className="absolute top-0 left-0 right-0 bottom-0 w-full h-full text-center bg-black/20 z-[-1]"
+  className="absolute top-0 left-0 right-0 bottom-0 w-full h-1/2 text-center bg-black/20 z-[-1]"
   style={{
     backdropFilter: 'none',
     WebkitBackdropFilter: 'none',
@@ -1851,7 +2021,7 @@ function MoreThanSmiles() {
             Learn how to nominate someone at our website.
           </p>
         </div>
-        <div className="z-10 absolute right-[3vw] top-[50%] -translate-y-1/2">
+        <div className="z-10 absolute right-[3vw]">
           <a
             href="https://morethansmiles.org/"
             target="_blank"

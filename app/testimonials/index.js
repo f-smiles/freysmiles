@@ -15,7 +15,7 @@ import {
   useLoader,
   extend,
 } from "@react-three/fiber";
-import React, { useEffect, useState, useRef, Suspense, useMemo } from "react";
+import React, { useEffect, useState, useRef, Suspense, useMemo, forwardRef, useImperativeHandle } from "react";
 import {
   EffectComposer,
   Bloom,
@@ -24,7 +24,7 @@ import {
 } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import gsap from "gsap";
-import { SplitText } from "gsap-trial/all";
+import { SplitText } from "gsap/all";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import {
   OrbitControls,
@@ -36,11 +36,195 @@ import {
 import * as THREE from "three";
 import { useControls } from "leva";
 import { MeshStandardMaterial } from "three";
-import { ScrambleTextPlugin } from "gsap-trial/ScrambleTextPlugin";
+import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin);
 }
+
+
+
+const lettersAndSymbols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '+', '=', ';', ':', '<', '>', ','];
+
+const TextAnimator = forwardRef(({ children, className }, ref) => {
+  const textRef = useRef(null);
+  const charsRef = useRef([]);
+  const originalText = useRef('');
+
+  useEffect(() => {
+    if (!textRef.current) return;
+  
+    const text = textRef.current.textContent;
+    textRef.current.innerHTML = '';
+  
+    const chars = text.split('').map((char) => {
+      const span = document.createElement('span');
+      span.className = 'char';
+      span.textContent = char === ' ' ? '\u00A0' : char;
+      span.style.display = 'inline-block';
+      span.style.opacity = '1';
+      span.style.transform = 'translateY(0%)';
+      textRef.current.appendChild(span);
+      return span;
+    });
+  
+    charsRef.current = chars;
+    originalText.current = chars.map((span) => span.textContent); // 💾 Store clean original chars
+  }, [children]);
+  
+  useImperativeHandle(ref, () => ({
+    animate() {
+      charsRef.current.forEach((char, position) => {
+        gsap.fromTo(char,
+          { opacity: 0, y: '100%' },
+          {
+            y: '0%',
+            opacity: 1,
+            duration: 0.03,
+            repeat: 2,
+            repeatRefresh: true,
+            repeatDelay: 0.05,
+            delay: position * 0.06,
+            onRepeat: () => {
+              char.textContent = lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)];
+            },
+            onComplete: () => {
+              const original = originalText.current[position];
+              if (original !== undefined) {
+                char.textContent = original;
+              }
+            }
+          }
+        );
+      });
+    }
+  }));
+  
+
+  return (
+    <span
+      ref={textRef}
+      // className={`hover-effect hover-effect--bg-south ${className || ''}`}
+      // style={{ '--anim': 0 }}
+    >
+      {children}
+    </span>
+  );
+});
+
+const Testimonial = () => {
+  const patients = [
+    { name: "Lainie", duration: "20 months" },
+    { name: "Ron L.", duration: "INVISALIGN" },
+    { name: "Elizabeth", duration: "INVISALIGN, GROWTH APPLIANCE" },
+    { name: "Kinzie", duration: "BRACES, 24 months" },
+    { name: "Kasprenski" },
+    { name: "Leanne", duration: "12 months" },
+    { name: "Harold", duration: "Invisalign" },
+    { name: "Rosie & Grace" },
+    { name: "Keith", duration: "" },
+    { name: "Justin", duration: "Invisalign, 2 years" },
+    { name: "Kara" },
+    { name: "Sophia", duration: "2 years, Braces" },
+    { name: "Brynn" },
+    { name: "Emma" },
+    { name: "Brooke", duration: "2 years, Braces" },
+    { name: "Nilaya", duration: "Braces" },
+    { name: "Maria A." },
+    { name: "Natasha K.", duration: "" },
+    { name: "James C.", duration: "Invisalign, 2 years" },
+    { name: "Devika K." },
+    { name: "Ibis S.", duration: "Invisalign, 1 year" },
+    { name: "Abigail" },
+    { name: "Emma" },
+    { name: "Karoun G", duration: "Motion Appliance, Invisalign" },
+  ];
+  const listRefs = useRef([]);
+
+  useEffect(() => {
+    listRefs.current.forEach((el) => {
+      gsap.fromTo(
+        el,
+        { filter: "blur(8px)", opacity: 0 },
+        {
+          filter: "blur(0px)",
+          opacity: 1,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 90%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+    });
+  }, []);
+  
+
+  return (
+    <main className="demo-4">
+<section
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    padding: "0 2rem 2rem",
+    justifyContent: "center",
+  }}
+>
+  <h2
+    style={{
+      fontSize: "12px",
+      color: "black",
+    }}
+  >
+    Patient Cases
+  </h2>
+
+  <ul
+  style={{
+    margin: 0,
+    padding: 0,
+    width: "100%",
+    listStyle: "none",
+    display: "flex",
+    flexDirection: "column",
+    counterReset: "item 0",
+  }}
+>
+          {patients.map((item, index) => {
+            const nameRef = useRef();
+            const durationRef = useRef();
+
+            return (
+<li
+  key={index}
+  ref={(el) => (listRefs.current[index] = el)}
+  className="list__item"
+  
+  onMouseEnter={() => {
+    nameRef.current?.animate();
+    durationRef.current?.animate();
+  }}
+>
+
+                <span className="list__item-col" aria-hidden="true" />
+                <span className="list__item-col">
+                  <TextAnimator ref={nameRef}>{item.name}</TextAnimator>
+                </span>
+                <span className="list__item-col list__item-col--last">
+                  <TextAnimator ref={durationRef}>
+                    {item.duration || "—"}
+                  </TextAnimator>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    </main>
+  );
+};
 
 function Background() {
   const canvasRef = useRef(null);
@@ -1057,7 +1241,7 @@ const Testimonials = () => {
               Join the smile club
             </h2>
 
-            <div className="font-ibmregular text-sm leading-none tracking-tight uppercase font-bold relative">
+            <div className="font-chivomono text-[14px] leading-none  uppercase font-bold relative">
               <span className="invisible block absolute">
                 We are committed to setting the standard for exceptional
                 service. Our communication is always open—every question is
@@ -1097,8 +1281,8 @@ const Testimonials = () => {
           <div className="mt-1 w-full border-b border-[#D3D3D3]"></div>
         </div>
       </section>
-
-      <section
+<Testimonial />
+      {/* <section
         ref={patientSectionRef}
         className=" min-h-screen w-full px-6 relative overflow-hidden"
         onMouseMove={handleMouseMove}
@@ -1118,7 +1302,7 @@ const Testimonials = () => {
             </svg>
           </span>
 
-          {/* <div className="flex-1 border-b mx-2"></div> */}
+          <div className="flex-1 border-b mx-2"></div>
           <span className="w-3 h-3 inline-block transition-transform duration-300 ease-in-out hover:rotate-180">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -1189,7 +1373,7 @@ const Testimonials = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </section>
+      </section> */}
 
       <section
   ref={containerRef}
