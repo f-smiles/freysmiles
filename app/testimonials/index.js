@@ -539,168 +539,6 @@ const RotatingModel = () => {
   );
 };
 
-const ImageShaderMaterial = shaderMaterial(
-  {
-    uTexture: null,
-    uDataTexture: null,
-    resolution: new THREE.Vector4(),
-  },
-  // vertex shader
-  `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-  `,
-  // fragment shader
-  `
-  uniform sampler2D uTexture;
-  uniform sampler2D uDataTexture;
-  uniform vec4 resolution;
-  varying vec2 vUv;
-
-  void main() {
-
-    float gridSize = 20.0;
-    vec2 snappedUV = floor(vUv * gridSize) / gridSize;
-    
-    // get distortion values
-    vec2 offset = texture2D(uDataTexture, snappedUV).rg;
-    
-    // apply distortion strenthg here
-    vec2 distortedUV = vUv - 0.1 * offset; 
-    
-
-    vec4 color = texture2D(uTexture, distortedUV);
-    
-    gl_FragColor = color;
-  }
-  `
-);
-
-extend({ ImageShaderMaterial });
-
-const PixelImage = ({ imgSrc, containerRef }) => {
-  const materialRef = useRef();
-  const { size, viewport } = useThree();
-  const [textureReady, setTextureReady] = useState(false);
-  const textureRef = useRef();
-  const dataTextureRef = useRef();
-
-  const mouseRef = useRef({
-    x: 0,
-    y: 0,
-    prevX: 0,
-    prevY: 0,
-    vX: 0,
-    vY: 0,
-  });
-
-  const grid = 20;
-  const settings = {
-    mouseRadius: 0.2,
-    strength: 0.9,
-    relaxation: 0.9,
-  };
-
-  useEffect(() => {
-    new THREE.TextureLoader().load(imgSrc, (tex) => {
-      tex.encoding = THREE.sRGBEncoding;
-      textureRef.current = tex;
-      setTextureReady(true);
-    });
-
-    const data = new Float32Array(4 * grid * grid);
-    for (let i = 0; i < grid * grid; i++) {
-      const stride = i * 4;
-      data[stride] = 0; // R (X distortion)
-      data[stride + 1] = 0; // G (Y distortion)
-      data[stride + 2] = 0; // B (not unused)
-      data[stride + 3] = 1; // A
-    }
-
-    const dataTex = new THREE.DataTexture(
-      data,
-      grid,
-      grid,
-      THREE.RGBAFormat,
-      THREE.FloatType
-    );
-    dataTex.needsUpdate = true;
-    dataTextureRef.current = dataTex;
-  }, [imgSrc]);
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!containerRef?.current) return;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const mouse = mouseRef.current;
-
-      mouse.x = (e.clientX - rect.left) / rect.width;
-      mouse.y = 1 - (e.clientY - rect.top) / rect.height;
-
-      mouse.vX = (mouse.x - mouse.prevX) * 10;
-      mouse.vY = (mouse.y - mouse.prevY) * 10;
-
-      mouse.prevX = mouse.x;
-      mouse.prevY = mouse.y;
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [containerRef]);
-
-  useFrame(() => {
-    const texture = dataTextureRef.current;
-    if (!texture) return;
-
-    const data = texture.image.data;
-    const mouse = mouseRef.current;
-    const maxDist = grid * settings.mouseRadius;
-
-    for (let i = 0; i < data.length; i += 4) {
-      data[i] *= settings.relaxation; // R
-      data[i + 1] *= settings.relaxation; // G
-    }
-
-    const gridMouseX = mouse.x * grid;
-    const gridMouseY = mouse.y * grid;
-
-    for (let i = 0; i < grid; i++) {
-      for (let j = 0; j < grid; j++) {
-        const dx = gridMouseX - i;
-        const dy = gridMouseY - j;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance < maxDist) {
-          const index = 4 * (i + j * grid);
-          const power = (1 - distance / maxDist) * settings.strength;
-
-          data[index] += mouse.vX * power; // R channel (X distortion)
-          data[index + 1] += mouse.vY * power; // G channel (Y distortion)
-        }
-      }
-    }
-
-    texture.needsUpdate = true;
-  });
-
-  if (!textureReady) return null;
-
-  return (
-    <mesh>
-      <planeGeometry args={[viewport.width, viewport.height]} />
-      <imageShaderMaterial
-        ref={materialRef}
-        uTexture={textureRef.current}
-        uDataTexture={dataTextureRef.current}
-      />
-    </mesh>
-  );
-};
-
 const Testimonials = () => {
   const { scene } = useGLTF("/images/SVOX1F.glb");
 
@@ -1132,7 +970,7 @@ const Testimonials = () => {
     });
   }, []);
 
-  const canvasContainerRef = useRef();
+
 
   const sectionOneRef = useRef(null);
   const navBarRef = useRef(null);
@@ -1186,23 +1024,7 @@ const Testimonials = () => {
         ref={sectionOneRef}
         className="z-10 relative w-full min-h-[110vh] flex flex-col px-12"
       >
-        {/* <div
-          ref={canvasContainerRef}
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 0,
-            width: "50vw",
-            height: "100vh",
-          }}
-        >
-          <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 5] }}>
-            <PixelImage
-              containerRef={canvasContainerRef}
-              imgSrc="/images/shinycircle.png"
-            />
-          </Canvas>
-        </div> */}
+
 
         <div className="z-10 max-w-[1400px] w-full flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1"></div>

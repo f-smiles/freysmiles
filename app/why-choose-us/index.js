@@ -1,14 +1,22 @@
 "use client";
 import Copy from "@/utils/Copy.jsx";
 
+import FlutedGlassEffect from "/utils/glass";
 // gsap
-import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
+import {
+  Canvas,
+  useFrame,
+  useThree,
+  useLoader,
+  extend,
+} from "@react-three/fiber";
 import {
   OrbitControls,
   useGLTF,
   MeshTransmissionMaterial,
   Environment,
   Text,
+  shaderMaterial,
 } from "@react-three/drei";
 import * as THREE from "three";
 import { Observer } from "gsap/Observer";
@@ -32,6 +40,7 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
+  Suspense,
 } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -56,31 +65,28 @@ if (typeof window !== "undefined") {
 }
 
 export default function WhyChooseUs() {
-
-    
   return (
     <>
       <>
-
         {/* <Hero /> */}
         <div className="relative w-full h-screen">
-  <Canvas
-    className="absolute inset-0 z-10"
-    camera={{ position: [0, 6, 12], fov: 45 }}
-    style={{ pointerEvents: "none" }}
-  >
-    <color attach="background" args={["#ffffff"]} />
-    <ambientLight intensity={0.86} color={0xffffff} />
-    <directionalLight position={[0, -10, -10]} intensity={1} color={0xffffff} />
-    <RibbonAroundSphere />
-  </Canvas>
+          <Canvas
+            className="absolute inset-0 z-10"
+            camera={{ position: [0, 6, 12], fov: 45 }}
+            style={{ pointerEvents: "none" }}
+          >
+            <color attach="background" args={["#ffffff"]} />
+            <ambientLight intensity={0.86} color={0xffffff} />
+            <directionalLight
+              position={[0, -10, -10]}
+              intensity={1}
+              color={0xffffff}
+            />
+            <RibbonAroundSphere />
+          </Canvas>
 
-
-  <div className="absolute inset-0 z-20 flex items-center justify-center">
-
-  </div>
-</div>
-
+          <div className="absolute inset-0 z-20 flex items-center justify-center"></div>
+        </div>
 
         <CardStack />
         <StackCards />
@@ -100,7 +106,167 @@ export default function WhyChooseUs() {
   );
 }
 
+const ImageShaderMaterial = shaderMaterial(
+  {
+    uTexture: null,
+    uDataTexture: null,
+    resolution: new THREE.Vector4(),
+  },
+  // vertex shader
+  `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+  `,
+  // fragment shader
+  `
+  uniform sampler2D uTexture;
+  uniform sampler2D uDataTexture;
+  uniform vec4 resolution;
+  varying vec2 vUv;
 
+  void main() {
+
+    float gridSize = 20.0;
+    vec2 snappedUV = floor(vUv * gridSize) / gridSize;
+    
+    // get distortion values
+    vec2 offset = texture2D(uDataTexture, snappedUV).rg;
+    
+    // apply distortion strenthg here
+    vec2 distortedUV = vUv - 0.1 * offset; 
+    
+
+    vec4 color = texture2D(uTexture, distortedUV);
+    
+    gl_FragColor = color;
+  }
+  `
+);
+
+extend({ ImageShaderMaterial });
+
+const PixelImage = ({ imgSrc, containerRef }) => {
+  const materialRef = useRef();
+  const { size, viewport } = useThree();
+  const [textureReady, setTextureReady] = useState(false);
+  const textureRef = useRef();
+  const dataTextureRef = useRef();
+
+  const mouseRef = useRef({
+    x: 0,
+    y: 0,
+    prevX: 0,
+    prevY: 0,
+    vX: 0,
+    vY: 0,
+  });
+
+  const grid = 20;
+  const settings = {
+    mouseRadius: 0.2,
+    strength: 0.9,
+    relaxation: 0.9,
+  };
+
+  useEffect(() => {
+    new THREE.TextureLoader().load(imgSrc, (tex) => {
+      tex.encoding = THREE.sRGBEncoding;
+      textureRef.current = tex;
+      setTextureReady(true);
+    });
+
+    const data = new Float32Array(4 * grid * grid);
+    for (let i = 0; i < grid * grid; i++) {
+      const stride = i * 4;
+      data[stride] = 0; // R (X distortion)
+      data[stride + 1] = 0; // G (Y distortion)
+      data[stride + 2] = 0; // B (not unused)
+      data[stride + 3] = 1; // A
+    }
+
+    const dataTex = new THREE.DataTexture(
+      data,
+      grid,
+      grid,
+      THREE.RGBAFormat,
+      THREE.FloatType
+    );
+    dataTex.needsUpdate = true;
+    dataTextureRef.current = dataTex;
+  }, [imgSrc]);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!containerRef?.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      const mouse = mouseRef.current;
+
+      mouse.x = (e.clientX - rect.left) / rect.width;
+      mouse.y = 1 - (e.clientY - rect.top) / rect.height;
+
+      mouse.vX = (mouse.x - mouse.prevX) * 10;
+      mouse.vY = (mouse.y - mouse.prevY) * 10;
+
+      mouse.prevX = mouse.x;
+      mouse.prevY = mouse.y;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [containerRef]);
+
+  useFrame(() => {
+    const texture = dataTextureRef.current;
+    if (!texture) return;
+
+    const data = texture.image.data;
+    const mouse = mouseRef.current;
+    const maxDist = grid * settings.mouseRadius;
+
+    for (let i = 0; i < data.length; i += 4) {
+      data[i] *= settings.relaxation; // R
+      data[i + 1] *= settings.relaxation; // G
+    }
+
+    const gridMouseX = mouse.x * grid;
+    const gridMouseY = mouse.y * grid;
+
+    for (let i = 0; i < grid; i++) {
+      for (let j = 0; j < grid; j++) {
+        const dx = gridMouseX - i;
+        const dy = gridMouseY - j;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < maxDist) {
+          const index = 4 * (i + j * grid);
+          const power = (1 - distance / maxDist) * settings.strength;
+
+          data[index] += mouse.vX * power; // R channel (X distortion)
+          data[index + 1] += mouse.vY * power; // G channel (Y distortion)
+        }
+      }
+    }
+
+    texture.needsUpdate = true;
+  });
+
+  if (!textureReady) return null;
+
+  return (
+    <mesh>
+      <planeGeometry args={[viewport.width, viewport.height]} />
+      <imageShaderMaterial
+        ref={materialRef}
+        uTexture={textureRef.current}
+        uDataTexture={dataTextureRef.current}
+      />
+    </mesh>
+  );
+};
 
 function RibbonAroundSphere() {
   const ribbonRef = useRef();
@@ -115,9 +281,9 @@ function RibbonAroundSphere() {
       t.wrapT = THREE.RepeatWrapping;
       t.repeat.set(1, 1);
       t.offset.setX(0.5);
-      t.flipY = false; 
+      t.flipY = false;
     });
-    backTexture.repeat.set(-1, 1); 
+    backTexture.repeat.set(-1, 1);
   }, [frontTexture, backTexture]);
 
   useFrame(() => {
@@ -178,7 +344,6 @@ function RibbonAroundSphere() {
       new THREE.Vector3(0, -3, 0),
       new THREE.Vector3(3.5, -2, -2.5),
     ];
-    
 
     const curve = new THREE.CatmullRomCurve3(curvePoints, true);
     curve.tension = 0.7;
@@ -219,7 +384,6 @@ function RibbonAroundSphere() {
     for (let i = 0; i <= 1; i++) {
       for (let j = 0; j <= segments; j++) {
         uvs.push(1 - j / segments, i);
-
       }
     }
     geom.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
@@ -412,11 +576,7 @@ function Hero() {
 
   return (
     <div className="border border-red-500 relative min-h-screen w-full bg-[#FEF9F8] text-black overflow-hidden">
-  
-      <div
-        ref={overlayRef}
-        className="fixed inset-0 bg-blue-100 z-50"
-      ></div>
+      <div ref={overlayRef} className="fixed inset-0 bg-blue-100 z-50"></div>
 
       {/* <section
         ref={cardsectionRef}
@@ -593,19 +753,18 @@ const Rays = () => {
     return () => ctx.revert();
   }, []);
 
-
   const images = [
-    {         src:"/images/signonmetalrack.png", alt: "First Image" },
-    {src:"/images/signonmetalrack.png",  alt: "Second Image" },
-    { src:"/images/signonmetalrack.png",  alt: "Third Image" },
+    { src: "/images/signonmetalrack.png", alt: "First Image" },
+    { src: "/images/signonmetalrack.png", alt: "Second Image" },
+    { src: "/images/signonmetalrack.png", alt: "Third Image" },
   ];
 
   useEffect(() => {
     const triggers = [];
-  
-    gsap.utils.toArray(".img-container").forEach(container => {
+
+    gsap.utils.toArray(".img-container").forEach((container) => {
       const img = container.querySelector("img");
-  
+
       const trigger = gsap.fromTo(
         img,
         { yPercent: -20, ease: "none" },
@@ -618,206 +777,206 @@ const Rays = () => {
           },
         }
       ).scrollTrigger;
-  
+
       triggers.push(trigger);
     });
 
     return () => {
-      triggers.forEach(trigger => trigger.kill());
+      triggers.forEach((trigger) => trigger.kill());
     };
   }, []);
-  
+
   const sectionRef = useRef(null);
   const headingRefs = useRef([]);
 
+  useGSAP(
+    () => {
+      gsap.set(headingRefs.current, { opacity: 0 });
+    },
+    { scope: sectionRef }
+  );
 
-  useGSAP(() => {
-    gsap.set(headingRefs.current, { opacity: 0 });
-  }, { scope: sectionRef });
+  useGSAP(
+    () => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              headingRefs.current.forEach((el) => {
+                if (!el) return;
 
+                gsap.set(el, { opacity: 0 });
 
-  useGSAP(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            headingRefs.current.forEach((el) => {
-              if (!el) return;
+                const childSplit = new SplitText(el, {
+                  type: "lines",
+                  linesClass: "split-child",
+                });
 
-      
-              gsap.set(el, { opacity: 0 });
+                new SplitText(el, {
+                  type: "lines",
+                  linesClass: "split-parent",
+                });
 
-              const childSplit = new SplitText(el, {
-                type: "lines",
-                linesClass: "split-child",
+                gsap.set(childSplit.lines, {
+                  yPercent: 100,
+                  opacity: 1,
+                });
+
+                gsap.to(childSplit.lines, {
+                  yPercent: 0,
+                  duration: 1.5,
+                  ease: "power4.out",
+                  stagger: 0.1,
+                  onStart: () => {
+                    gsap.set(el, { opacity: 1 });
+                  },
+                });
               });
+              observer.disconnect();
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
 
-              new SplitText(el, {
-                type: "lines",
-                linesClass: "split-parent",
-              });
+      if (sectionRef.current) observer.observe(sectionRef.current);
+      return () => observer.disconnect();
+    },
+    { scope: sectionRef }
+  );
 
-
-              gsap.set(childSplit.lines, { 
-                yPercent: 100,
-                opacity: 1 
-              });
-
-  
-              gsap.to(childSplit.lines, {
-                yPercent: 0,
-                duration: 1.5,
-                ease: "power4.out",
-                stagger: 0.1,
-                onStart: () => {
-                  gsap.set(el, { opacity: 1 });
-                }
-              });
-
-            });
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, { scope: sectionRef });
   return (
     <>
       <div className="bg-[#F0EEE9]">
-      <main
-      style={{
-        margin: 0,
-        padding: 0,
-        background: "#171717",
-        color: "white",
-        fontFamily: "sans-serif",
-        boxSizing: "border-box",
-      }}
-    >
-      {images.map((img, i) => (
-        <section
-          key={i}
+        <main
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            minHeight: "100vh",
+            margin: 0,
+            padding: 0,
+            background: "#171717",
+            color: "white",
+            fontFamily: "sans-serif",
+            boxSizing: "border-box",
           }}
         >
-          <div
-            className="img"
-            style={{
-              width: "min(80vw, 900px)",
-              padding: "10vw",
-            }}
-          >
-            <div
-              className="img-container"
+          {images.map((img, i) => (
+            <section
+              key={i}
               style={{
-                width: "100%",
-                paddingTop: "80%",
-                position: "relative",
-                overflow: "hidden",
-              
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "100vh",
               }}
             >
-              <img
-                src={img.src}
-                alt={img.alt}
+              <div
+                className="img"
                 style={{
-                  width: "auto",
-                  height: "100%",
-                  position: "absolute",
-                  top: 0,
-                  left: "50%",
-                  transform: "translateX(-50%) scale(1.4)",
-                  transformOrigin: "center",
+                  width: "min(80vw, 900px)",
+                  padding: "10vw",
                 }}
-              />
+              >
+                <div
+                  className="img-container"
+                  style={{
+                    width: "100%",
+                    paddingTop: "80%",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    style={{
+                      width: "auto",
+                      height: "100%",
+                      position: "absolute",
+                      top: 0,
+                      left: "50%",
+                      transform: "translateX(-50%) scale(1.4)",
+                      transformOrigin: "center",
+                    }}
+                  />
+                </div>
+              </div>
+            </section>
+          ))}
+        </main>
+        {/* <div className="bg-[#DCDCDC] text-[#d2ff8c]"> */}
+
+
+        <section ref={sectionRef} className="px-6 py-12 md:px-12">
+          <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
+            <span className="uppercase text-[#d2ff8c] font-neuehaas45">
+              All. <sup className="text-xs align-super">(16)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[0] = el)}>
+              — Invisalign <sup className="text-xs align-super">(2k)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[1] = el)}>
+              — Accelerated Treatment.{" "}
+              <sup className="text-xs align-super">(12)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[2] = el)}>
+              — Low-Dose Digital 3D Radiographs{" "}
+              <sup className="text-xs align-super">(15)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[3] = el)}>
+              Damon Braces. <sup className="text-xs align-super">(2k)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[4] = el)}>
+              — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[5] = el)}>
+              — 3D Printing. <sup className="text-xs align-super">(8)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[6] = el)}>
+              — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
+            </span>
+          </div>
+
+          <div className="mt-12 w-full flex gap-4">
+            <div className="w-1/2">
+              <div className="img-container relative overflow-hidden">
+                <img
+                  src="/images/signonmetalrack.png"
+                  alt="metalrack"
+                  className="w-full h-full object-contain"
+                  style={{
+                    transform: "translateY(0%) scale(1.0)",
+                    transformOrigin: "center",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="w-1/2">
+              <div className="img-container relative overflow-hidden">
+                <img
+                  src="/images/testdisplay.png"
+                  alt="placeholder"
+                  className="w-full h-full object-contain"
+                  style={{
+                    transform: "translateY(0%) scale(1.0)",
+                    transformOrigin: "center",
+                  }}
+                />
+              </div>
             </div>
           </div>
         </section>
-      ))}
-    </main>
-        {/* <div className="bg-[#DCDCDC] text-[#d2ff8c]"> */}
-        {/* <section ref={sectionRef} className="text-heading white">
-  <h1 ref={(el) => (headingRefs.current[0] = el)}>
-    Lorem Ipsum is dummy text Lorem Ipsum is dummy text
-  </h1>
-  <h1 ref={(el) => (headingRefs.current[1] = el)}>
-    Another heading just for fun
-  </h1>
-</section> */}
 
-<section
-      ref={sectionRef}
-      className="px-6 py-12 md:px-12"
-    >
-      <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
-        <span className="uppercase text-[#d2ff8c] font-neuehaas45">
-          All. <sup className="text-xs align-super">(16)</sup>
-        </span>
-        <span ref={(el) => headingRefs.current[0] = el}>
-          — Invisalign <sup className="text-xs align-super">(2k)</sup>
-        </span>
-        <span ref={(el) => headingRefs.current[1] = el}>
-          — Accelerated Treatment. <sup className="text-xs align-super">(12)</sup>
-        </span>
-        <span ref={(el) => headingRefs.current[2] = el}>
-          — Low-Dose Digital 3D Radiographs <sup className="text-xs align-super">(15)</sup>
-        </span>
-        <span ref={(el) => headingRefs.current[3] = el}>
-          Damon Braces. <sup className="text-xs align-super">(2k)</sup>
-        </span>
-        <span ref={(el) => headingRefs.current[4] = el}>
-          — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
-        </span>
-        <span ref={(el) => headingRefs.current[5] = el}>
-          — 3D Printing. <sup className="text-xs align-super">(8)</sup>
-        </span>
-        <span ref={(el) => headingRefs.current[6] = el}>
-          — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
-        </span>
-      </div>
-
-      <div className="mt-12 w-full flex gap-4">
-        <div className="w-1/2">
-          <div className="img-container relative overflow-hidden">
-            <img
-              src="/images/signonmetalrack.png"
-              alt="metalrack"
-              className="w-full h-full object-contain"
-              style={{
-                transform: "translateY(0%) scale(1.0)",
-                transformOrigin: "center",
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="w-1/2">
-          <div className="img-container relative overflow-hidden">
-            <img
-              src="/images/testdisplay.png"
-              alt="placeholder"
-              className="w-full h-full object-contain"
-              style={{
-                transform: "translateY(0%) scale(1.0)",
-                transformOrigin: "center",
-              }}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-<Copy>        <p className="text-[20px] ml-10 mb-10 max-w-[600px] font-neuehaas45 leading-[1.2]">
-        Certain treatment plans rely on precise growth timing to ensure stable, long-lasting results. Our 3D imaging technology lets us track the exact position and trajectory of traditionally problematic teeth—while also helping rule out certain pathologies. It’s changing the face of dentistry and orthodontics. Expect more advanced insights than what you’ll hear from most competitors.
-        </p></Copy>
+        <Copy>
+          {" "}
+          <p className="text-[20px] ml-10 mb-10 max-w-[600px] font-neuehaas45 leading-[1.2]">
+            Certain treatment plans rely on precise growth timing to ensure
+            stable, long-lasting results. Our 3D imaging technology lets us
+            track the exact position and trajectory of traditionally problematic
+            teeth—while also helping rule out certain pathologies. It’s changing
+            the face of dentistry and orthodontics. Expect more advanced
+            insights than what you’ll hear from most competitors.
+          </p>
+        </Copy>
 
         <div className="relative flex justify-center items-center h-full">
           <video
@@ -853,34 +1012,7 @@ const Rays = () => {
         </div>
 
         <section className="w-full min-h-screen ">
-          {/* <div className="absolute left-[65%] -top-[5%] z-20">
-<svg
-width="360"
-height="738"
-viewBox="0 0 630 738"
-xmlns="http://www.w3.org/2000/svg"
-className="text-pink-400"
->
-{Array.from({ length: 7 }).map((_, colIndex) => {
-const x = colIndex * 100;
-const yOffset = colIndex % 2 === 0 ? 34.275 : -34.275;
-return (
-<g key={colIndex} transform={`translate(${x} ${yOffset})`}>
-  {Array.from({ length: 10 }).map((_, rowIndex) => (
-    <rect
-      key={rowIndex}
-      x="0"
-      y={rowIndex * 76}
-      width="20"
-      height="20"
-      fill="currentColor"
-    />
-  ))}
-</g>
-);
-})}
-</svg>
-</div> */}
+      
         </section>
 
         {/* <div className="mt-10 w-full flex justify-center flex-row gap-6">
@@ -1721,164 +1853,96 @@ const ProjectImage = ({
   );
 };
 
-
 function MoreThanSmiles() {
+
+
+  // const imagesContainerRef = useRef(null);
+
+  // const [images, setImages] = useState([
+  //   "../images/morethansmiles1.png",
+  //   "../images/morethansmiles2.png",
+  //   "../images/morethansmiles3.png",
+  //   "../images/morethansmiles4.png",
+  //   "../images/morethansmiles5.png",
+  //   "../images/morethansmiles6.png",
+  // ]);
+
   // useEffect(() => {
-  //   let tlMain = gsap
-  //     .timeline({
-  //       scrollTrigger: {
-  //         trigger: ".section-height",
-  //         start: "top top",
-  //         end: "98% bottom",
-  //         scrub: 1,
-  //       },
-  //     })
-  //     .to(".track", {
-  //       xPercent: -100,
-  //       ease: "none",
+  //   if (!imagesContainerRef.current) return;
+
+  //   const imageElements =
+  //     imagesContainerRef.current.querySelectorAll(".gallery-img");
+  //   const timeline = gsap.timeline({ ease: "none" });
+
+  //   let z = 100000000000;
+  //   let moveLeft = true;
+
+  //   // last image=highest z-index
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       entries.forEach((entry) => {
+  //         if (entry.isIntersecting) {
+  //           imageElements.forEach((image, index) => {
+  //             gsap.set(image, { zIndex: z - index });
+  //           });
+
+  //           timeline.fromTo(
+  //             imageElements,
+  //             {
+  //               x: (i) => (i % 2 === 0 ? -400 : 400),
+  //               y: "300%",
+  //             },
+  //             {
+  //               x: 0,
+  //               y: 0,
+  //               duration: 1.5,
+  //               stagger: -0.4,
+  //               rotation: () => 20 * Math.random() - 10,
+  //             }
+  //           );
+
+  //           timeline.play();
+  //           observer.disconnect();
+  //         }
+  //       });
+  //     },
+  //     { threshold: 0.2 } // Trigger when 20% of the container is visible
+  //   );
+
+  //   observer.observe(imagesContainerRef.current);
+
+  //   // Move clicked image to the back of the stack
+  //   imageElements.forEach((image) => {
+  //     image.addEventListener("click", () => {
+  //       const moveDirection = moveLeft ? "-125%" : "125%";
+  //       moveLeft = !moveLeft; // alternate direction each click
+
+  //       // lowest index in stack
+  //       let minZIndex = Infinity;
+  //       imageElements.forEach((img) => {
+  //         let zIndex = parseInt(img.style.zIndex, 10);
+  //         if (zIndex < minZIndex) {
+  //           minZIndex = zIndex;
+  //         }
+  //       });
+
+  //       // the clicked image becomes the lowest index
+  //       z = minZIndex - 1;
+
+  //       timeline
+  //         .to(image, { x: moveDirection, duration: 0.5 }) // move out
+  //         .to(image, { zIndex: z, duration: 0.01 }) // update z-index when it's away from stack
+  //         .to(image, { x: 0, duration: 0.5 }); // move back under the stack
   //     });
+  //   });
 
-  //   gsap
-  //     .timeline({
-  //       scrollTrigger: {
-  //         trigger: ".giving-panel_wrap",
-  //         containerAnimation: tlMain,
-  //         start: "left left",
-  //         end: "right right",
-  //         scrub: true,
-  //       },
-  //     })
-  //     .to(".giving-panel", { xPercent: 100, ease: "none" })
-  //     .to(".giving-panel_photo", { scale: 1 }, 0)
-  //     .fromTo(
-  //       ".giving-panel_contain.is-2",
-  //       { clipPath: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)" },
-  //       {
-  //         clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-  //         ease: "none",
-  //       },
-  //       0
+  //   return () => {
+  //     imageElements.forEach((image) =>
+  //       image.removeEventListener("click", () => {})
   //     );
-  // }, []);
-
-  const imagesContainerRef = useRef(null);
-
-  const [images, setImages] = useState([
-    "../images/morethansmiles1.png",
-    "../images/morethansmiles2.png",
-    "../images/morethansmiles3.png",
-    "../images/morethansmiles4.png",
-    "../images/morethansmiles5.png",
-    "../images/morethansmiles6.png",
-  ]);
-
-  useEffect(() => {
-    if (!imagesContainerRef.current) return;
-
-    const imageElements =
-      imagesContainerRef.current.querySelectorAll(".gallery-img");
-    const timeline = gsap.timeline({ ease: "none" });
-
-    let z = 100000000000;
-    let moveLeft = true;
-
-    // last image=highest z-index
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            imageElements.forEach((image, index) => {
-              gsap.set(image, { zIndex: z - index });
-            });
-
-            timeline.fromTo(
-              imageElements,
-              {
-                x: (i) => (i % 2 === 0 ? -400 : 400),
-                y: "300%",
-              },
-              {
-                x: 0,
-                y: 0,
-                duration: 1.5,
-                stagger: -0.4,
-                rotation: () => 20 * Math.random() - 10,
-              }
-            );
-
-            timeline.play();
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.2 } // Trigger when 20% of the container is visible
-    );
-
-    observer.observe(imagesContainerRef.current);
-
-    // Move clicked image to the back of the stack
-    imageElements.forEach((image) => {
-      image.addEventListener("click", () => {
-        const moveDirection = moveLeft ? "-125%" : "125%";
-        moveLeft = !moveLeft; // alternate direction each click
-
-        // lowest index in stack
-        let minZIndex = Infinity;
-        imageElements.forEach((img) => {
-          let zIndex = parseInt(img.style.zIndex, 10);
-          if (zIndex < minZIndex) {
-            minZIndex = zIndex;
-          }
-        });
-
-        // the clicked image becomes the lowest index
-        z = minZIndex - 1;
-
-        timeline
-          .to(image, { x: moveDirection, duration: 0.5 }) // move out
-          .to(image, { zIndex: z, duration: 0.01 }) // update z-index when it's away from stack
-          .to(image, { x: 0, duration: 0.5 }); // move back under the stack
-      });
-    });
-
-    return () => {
-      imageElements.forEach((image) =>
-        image.removeEventListener("click", () => {})
-      );
-    };
-  }, [images]);
-  // const btnRef = useRef();
-  // const hitRef = useRef();
-
-  // useEffect(() => {
-  //   const btn = btnRef.current;
-  //   const hit = hitRef.current;
-
-  //   hit.onpointermove = (e) => {
-  //     const domPt = new DOMPoint(e.x, e.y);
-  //     let svgPt = domPt.matrixTransform(btn.getScreenCTM().inverse());
-
-  //     gsap
-  //       .timeline({ defaults: { duration: 0.3, ease: "power3" } })
-  //       .to(".hit", { x: svgPt.x / 7, y: svgPt.y / 7 }, 0)
-  //       .to(".bg", { x: svgPt.x / 2.5, y: svgPt.y / 2.5 }, 0)
-  //       .to(".txt", { x: svgPt.x / 2, y: svgPt.y / 2 }, 0)
-  //       .to(".bg", { attr: { fill: "#000" } }, 0)
-  //       .to(".txt", { attr: { fill: "rgb(0,0,0)" } }, 0);
   //   };
-
-  //   hit.onpointerleave = (e) => {
-  //     gsap
-  //       .timeline({ defaults: { duration: 0.3, ease: "power2" } })
-  //       .to(".bg", { attr: { fill: "#E8674A" } }, 0)
-  //       .to(".txt", { attr: { fill: "rgb(255,255,255)" } }, 0)
-  //       .to(
-  //         ".hit, .bg, .txt",
-  //         { duration: 0.7, ease: "elastic.out(0.8)", x: 0, y: 0 },
-  //         0
-  //       );
-  //   };
-  // }, []);
+  // }, [images]);
+ 
 
   const cardRefs = useRef([]);
 
@@ -1911,37 +1975,10 @@ function MoreThanSmiles() {
     };
   }, []);
 
-  const wrapperRef = useRef(null);
+
   const itemsRef = useRef([]);
   const [scrollY, setScrollY] = useState(0);
 
-  useEffect(() => {
-    if (!wrapperRef.current) return;
-
-    let ctx = gsap.context(() => {
-      const section = wrapperRef.current;
-      const list = section.querySelector(".projects-collection-list");
-
-      const totalWidth = list.scrollWidth;
-      const viewportWidth = window.innerWidth;
-      const scrollDistance = totalWidth - viewportWidth;
-
-      gsap.to(list, {
-        x: -scrollDistance,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: `+=${totalWidth}`,
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-        },
-      });
-    }, wrapperRef);
-
-    return () => ctx.revert();
-  }, []);
 
   const textRef = useRef(null);
   const blockRef = useRef(null);
@@ -1972,214 +2009,161 @@ function MoreThanSmiles() {
       split.revert();
     };
   }, []);
+
+  const canvasContainerRef = useRef();
+
+  const sectionRef = useRef(null);
+  const imageRefs = useRef([]);
+  const images = [
+    "/images/morethansmiles1.png",
+    "/images/morethansmiles2.png",
+    "/images/morethansmiles3.png",
+    "/images/morethansmiles4.png",
+    "/images/morethansmiles5.png",
+    "/images/morethansmiles6.png",
+  ];
+  
+  useEffect(() => {
+    if (!sectionRef.current || imageRefs.current.length === 0) return;
+  
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "+=1500",
+        scrub: true,
+        pin: true,
+      },
+    });
+  
+    const customOrder = [0, 4, 1, 5, 2, 3];
+  
+    customOrder.forEach((index, i) => {
+      const img = imageRefs.current[index];
+      if (!img) return;
+  
+      tl.fromTo(
+        img,
+        { yPercent: 100 },
+        {
+          yPercent: -200,
+  
+          ease: "power2.out",
+          duration: 1,
+        },
+        i * 0.2 
+      );
+    });
+  
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
+  }, []);
+  
+  
+
+
+  
   return (
     <>
-      <section className="px-20 py-20 bg-[#FEF9F8] text-black flex flex-col justify-between">
-        <div className="flex justify-between items-end text-[14px]">
-          {/* 
-        <div className="space-y-2">
-          <p className="font-medium">Services</p>
-          <section className="morethansmiles">
-        <div ref={imagesContainerRef} className="imagestack">
-          {images.map((url, index) => (
-            <img key={index} src={url} className="gallery-img" alt="gallery" />
-          ))}
-        </div>
-      </section>
-        </div> */}
-        </div>
-      </section>
-      {/* <div className="z-10 w-full">
-     <Cube />
-     </div> */}
-      <section
-        // style={{ backgroundImage: "url(/images/pinkgradient.png)" }}
-        className="relative min-h-screen overflow-hidden bg-no-repeat bg-cover bg-center"
-      >
-<div
-  // ref={textRef}
-  className="absolute top-0 left-0 right-0 bottom-0 w-full h-1/2 text-center bg-black/20 z-[-1]"
-  style={{
-    backdropFilter: 'none',
-    WebkitBackdropFilter: 'none',
-  }}
+<section
+  ref={sectionRef}
+  className="w-full h-screen px-6 md:px-12 py-10 relative"
 >
-          <h1 className="text-[2.2vw] font-neuehaas45 uppercase tracking-wide text-[#fff] mb-12">
-            <div className="text-center">Nominate someone who deserves</div>
-            <div className="text-center -ml-[200px]">
-              a confident smile through our
-            </div>
-            <div className="text-center -mr-[200px]">
-              non-profit More Than Smiles.
-            </div>
-          </h1>
+<div className="flex justify-center items-end w-full absolute bottom-0 left-0 z-10 gap-x-[1.5vw] pointer-events-none">
+  {images.map((src, i) => (
+    <div key={i} className="w-[14vw] flex justify-center">
+      <img
+        ref={(el) => (imageRefs.current[i] = el)}
+        src={src}
+        className="w-full h-auto"
+      />
+    </div>
+  ))}
+</div>
 
-          <p className="font-chivomono max-w-[600px] mx-auto text-[0.95rem] font-light leading-snug text-[#e6e6e6] uppercase tracking-wide font-neuehaas45 text-left">
-            We’re committed to making world-class orthodontic care accessible to
-            all. In 2011, we launched More Than Smiles to provide treatment and
-            promote community education around dental and orthodontic health.
-            Learn how to nominate someone at our website.
-          </p>
-        </div>
-        <div className="z-10 absolute right-[3vw]">
-          <a
-            href="https://morethansmiles.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg className="w-full cursor-pointer" viewBox="-50 -50 100 100">
-              <circle r="22.4" fill="none" stroke="#DFDFDF" stroke-width=".5" />
-              <text
-                className="txt fill-black text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
-                x="0"
-                y="2"
-                textAnchor="middle"
+  <div className="flex flex-row items-center justify-between  h-full">
+  <p className="font-chivomono max-w-[600px] text-[0.95rem] leading-snug uppercase tracking-wide">
+      We’re committed to making world-class orthodontic care accessible to all.
+      In 2011, we launched More Than Smiles to provide treatment and promote
+      community education around dental and orthodontic health. Learn how to
+      nominate someone at our website.
+    </p>
+    <h1 className="text-[2.2vw] font-neuehaas45 uppercase tracking-wide mb-12">
+      <div>Nominate someone who deserves</div>
+      <div className="-ml-[100px]">a confident smile through our</div>
+      <div className="-mr-[100px]">non-profit More Than Smiles.</div>
+    </h1>
+    <div className="z-10 absolute right-[3vw]">
+              <a
+                href="https://morethansmiles.org/"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Nominate
-              </text>
-            </svg>
-          </a>
-        </div>
-      
-      </section>
-      <div className="horizontal-section" ref={wrapperRef}>
-        <div className="page-wrapper">
-          <div className="projects-collection-list">
-            {images.map((img, i) => (
-              <div key={i} className="project-item">
-                <a href="#" className="project-tile w-inline-block">
-                  <ProjectImage imageUrl={img} index={i} />
-                </a>
+                <svg
+                  className="w-full cursor-pointer"
+                  viewBox="-50 -50 100 100"
+                >
+                  <circle
+                    r="22.4"
+                    fill="none"
+                    stroke="#DFDFDF"
+                    stroke-width=".5"
+                  />
+                  <text
+                    className="txt fill-black text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
+                    x="0"
+                    y="2"
+                    textAnchor="middle"
+                  >
+                    Nominate
+                  </text>
+                </svg>
+              </a>
+            </div>
+  </div>
+
+</section>
+
+
+      <div
+        ref={canvasContainerRef}
+        style={{
+          position: "absolute",
+          // inset: 0,
+          // zIndex: 0,
+          width: "50vw",
+          height: "100vh",
+        }}
+      >
+        <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 5] }}>
+          <PixelImage
+            containerRef={canvasContainerRef}
+            imgSrc="/images/portraitglass.jpg"
+          />
+        </Canvas>
+      </div>
+      {/* <section className="px-20 py-20 bg-[#FEF9F8] text-black flex flex-col justify-between">
+        <div className="flex justify-between items-end text-[14px]">
+          <div className="space-y-2">
+            <section className="morethansmiles">
+              <div ref={imagesContainerRef} className="imagestack">
+                {images.map((url, index) => (
+                  <img
+                    key={index}
+                    src={url}
+                    className="gallery-img"
+                    alt="gallery"
+                  />
+                ))}
               </div>
-            ))}
+            </section>
           </div>
         </div>
-      </div>
+      </section> */}
 
     </>
-
-    // <section className="w-full min-h-screen ">
-    //   <div className="section-height">
-    //     <div className="sticky-element">
-    //       <div className="track">
-    //         <div className="track-flex">
-    //           <div className="giving-panel_wrap">
-    //             <div className="giving-panel">
-    //               <div className="giving-panel_contain">
-    //                 <p className="giving-panel_text">GIVING</p>
-    //                 <div className="giving-panel_img is-1">
-    //                   <div className="giving-panel_img-height">
-    //                     <img
-    //                       src="../images/morethansmiles2.png"
-    //                       loading="eager"
-    //                       alt=""
-    //                       className="giving-panel_photo"
-    //                     />
-    //                   </div>
-    //                 </div>
-    //                 <div className="giving-panel_img is-2">
-    //                   <div className="giving-panel_img-height">
-    //                     <img
-    //                       src="../images/morethansmiles3.png"
-    //                       loading="eager"
-    //                       alt=""
-    //                       className="giving-panel_photo"
-    //                     />
-    //                   </div>
-    //                 </div>
-    //                 <div className="giving-panel_img is-3">
-    //                   <div className="giving-panel_img-height">
-    //                     <img
-    //                       src="../images/hand.jpeg"
-    //                       loading="eager"
-    //                       alt=""
-    //                       className="giving-panel_photo"
-    //                     />
-    //                   </div>
-    //                 </div>
-    //               </div>
-
-    //               <div className="giving-panel_contain is-2">
-    //                 <p className="giving-panel_text">GIVING</p>
-    //                 <div className="giving-panel_img is-1">
-    //                   <div className="giving-panel_img-height">
-    //                     <img
-    //                       src="../images/morethansmiles5.png"
-    //                       loading="eager"
-    //                       alt=""
-    //                       className="giving-panel_photo"
-    //                     />
-    //                   </div>
-    //                 </div>
-    //                 <div className="giving-panel_img is-2">
-    //                   <div className="giving-panel_img-height">
-    //                     <img
-    //                       src="../images/wavyborderpatient.png"
-    //                       loading="eager"
-    //                       alt=""
-    //                       className="giving-panel_photo"
-    //                     />
-    //                   </div>
-    //                 </div>
-    //                 <div className="giving-panel_img is-3">
-    //                   <div className="giving-panel_img-height">
-    //                     <img
-    //                       src="../images/morethansmiles4.png"
-    //                       loading="eager"
-    //                       alt=""
-    //                       className="giving-panel_photo"
-    //                     />
-    //                   </div>
-    //                 </div>
-    //               </div>
-    //             </div>
-    //           </div>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>
-
-    //   {/* <div className="flex flex-col items-center justify-center text-[180px] leading-none">
-    //     <div className="flex items-center self-start ml-60">
-    //       <span className="underline-custom">MORE</span>
-    //       <img
-    //         className="w-32 h-auto ml-4"
-    //         src="../images/morethansmiles2.png"
-    //         alt="More Than Smiles"
-    //         style={{ transform: "rotate(10deg)" }}
-    //       />
-    //     </div>
-    //     <div className="flex items-center ml-20">
-    //       <img
-    //         className="w-32 h-auto mr-2"
-    //         src="../images/morethansmiles.png"
-    //         alt="More Than Smiles"
-    //         style={{ transform: "rotate(-10deg)" }}
-    //       />
-    //       <span className="underline-custom">THAN</span>
-    //     </div>
-    //     <div className="flex items-center self-start ml-60">
-    //       <span className="underline-custom">SMILES</span>
-    //       <img
-    //         className="w-32 h-auto ml-4"
-    //         src="../images/morethansmiles3.png"
-    //         alt="More Than Smiles"
-    //         style={{ transform: "rotate(10deg)" }}
-    //       />
-    //     </div>
-    //   </div> */}
-
-    //   {/* <div className="container flex flex-col-reverse mx-auto md:flex-row md:justify-between"> */}
-
-    //   {/* <div className="flex flex-col items-center justify-center w-full md:w-1/2">
-    //       <img
-    //         className="mt-16 rounded-lg"
-    //         src="/../../images/smilescholarship.jpg"
-    //         alt="Frey Smiles patient receiving FreySmile scholarship"
-    //       />
-    //     </div> */}
-    //   {/* </div> */}
-    // </section>
   );
 }
 

@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useMemo } from "react";
 import { useFrame, extend, useThree } from "@react-three/fiber";
-import FlutedGlassEffect from "./glass";
+import FlutedGlassEffect from "../../../utils/glass";
 
 
 
