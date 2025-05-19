@@ -12,8 +12,8 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
-import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap-trial/all";
-import { MorphSVGPlugin } from "gsap-trial/MorphSVGPlugin";
+import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap/all";
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText, MorphSVGPlugin);
 
@@ -360,12 +360,12 @@ const StepsSection = () => {
       ref={containerRef}
       className="relative flex w-full bg-[#D9CDE5] px-20 py-36 min-h-[200vh]"
     >
-  <div className="w-3/5 flex overflow-y-auto"> 
-        <div className="w-1/2 flex flex-col relative">
-          <div className="relative h-full flex flex-col justify-between">
+  <div className="flex w-3/5 overflow-y-auto"> 
+        <div className="relative flex flex-col w-1/2">
+          <div className="relative flex flex-col justify-between h-full">
             {steps.map((step, index) => (
               <div key={index} className="flex items-center space-x-6">
-                <span className="font-neue-montreal text-sm w-6">
+                <span className="w-6 text-sm font-neue-montreal">
                   {step.number}
                 </span>
               </div>
@@ -378,10 +378,10 @@ const StepsSection = () => {
           </div>
         </div>
 
-        <div className="w-1/2 flex flex-col space-y-40">
+        <div className="flex flex-col w-1/2 space-y-40">
           {steps.map((step, index) => (
             <div key={index} className="flex flex-col space-y-2">
-              <h2 className="font-neue-montreal text-2xl">{step.title}</h2>
+              <h2 className="text-2xl font-neue-montreal">{step.title}</h2>
               <p className="text-gray-600 text-md font-neue-montreal">
                 {step.description}
               </p>
@@ -390,7 +390,7 @@ const StepsSection = () => {
         </div>
       </div>
 
-      <div className="w-2/5 sticky top-0 h-screen flex flex-col justify-center items-center relative">
+      <div className="relative sticky top-0 flex flex-col items-center justify-center w-2/5 h-screen">
       <div className="flex flex-col items-center space-y-10">
       <div className="flex flex-col items-center space-y-6">
 

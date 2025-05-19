@@ -1,725 +1,399 @@
 "use client";
 import * as THREE from "three";
-import * as PIXI from 'pixi.js';
-import Layout from "./layout.js";
-import { SplitText } from "gsap-trial/all";
-import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import { MeshDistortMaterial, useTexture } from "@react-three/drei";
+import { useRef, useEffect, useState, Suspense } from "react";
+import { Disclosure, Transition } from "@headlessui/react";
+import { gsap } from "gsap";
+import { CustomEase } from "gsap/CustomEase";
+import { useGSAP } from "@gsap/react";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-import { gsap, TweenLite, TimelineMax, Sine } from 'gsap';
-
-const YourCare = () => {
-
-  // const canvasRef = useRef();
-
-  // useEffect(() => {
-  //   const camera = new THREE.PerspectiveCamera(
-  //     45,
-  //     window.innerWidth / window.innerHeight,
-  //     1,
-  //     100
-  //   );
-  //   camera.position.set(0, -0.5, 25);
-  //   const scene = new THREE.Scene();
-  //   const renderer = new THREE.WebGLRenderer({ alpha: true });
-  //   renderer.setClearColor(0x000000, 0);
-
-  //   renderer.setSize(window.innerWidth, window.innerHeight);
-  //   canvasRef.current.appendChild(renderer.domElement);
-
-  //   const vertexShader = `
-  //     varying vec2 vUv;
-  //     void main() {
-  //       vUv = uv;
-  //       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  //     }
-  //   `;
-
-  //   const fragmentShader = `
-  //     precision highp float;
-  //     varying vec2 vUv;
-  //     uniform vec3 u_c1;
-  //     uniform vec3 u_c2;
-  //     uniform float u_time;
-  //     void main() {
-  //       vec3 pX = vec3(vUv.x);
-  //       vec3 pY = vec3(vUv.y);
-  //       vec3 c1 = u_c1;
-  //       vec3 c2 = u_c2;
-  //       vec3 c3 = vec3(0.0, 1.0, 1.0); // aqua
-  //       vec3 cmix1 = mix(c1, c2, pX + pY/2. + cos(u_time));
-  //       vec3 cmix2 = mix(c2, c3, (pY - sin(u_time))*0.5);
-  //       vec3 color = mix(cmix1, cmix2, pX * cos(u_time+2.));
-  //       gl_FragColor = vec4(color, 1.0);
-  //     }
-  //   `;
-
-  //   const uniforms = {
-  //     u_c1: { type: "v3", value: new THREE.Vector3(0.9, 0.8, 0.3) },
-  //     u_c2: { type: "v3", value: new THREE.Vector3(1.0, 0.54, 0.4) },
-  //     u_time: { type: "f", value: 0 },
-  //   };
-  //   const shaderMaterial = new THREE.ShaderMaterial({
-  //     uniforms,
-  //     vertexShader,
-  //     fragmentShader,
-  //   });
-
-  //   // const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
-  //   // const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
-  //   // scene.add(gum);
-
-  //   // const bgGeometry = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
-  //   // const bgMesh = new THREE.Mesh(bgGeometry, shaderMaterial);
-  //   // scene.add(bgMesh);
-
-  //   const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
-  //   const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
-  //   scene.add(gum);
-  //   const clock = new THREE.Clock();
-  //   const animate = () => {
-  //     uniforms.u_time.value = clock.getElapsedTime();
-  //     renderer.render(scene, camera);
-  //     requestAnimationFrame(animate);
-  //   };
-  //   animate();
-
-  //   const handleResize = () => {
-  //     camera.aspect = window.innerWidth / window.innerHeight;
-  //     camera.updateProjectionMatrix();
-  //     renderer.setSize(window.innerWidth, window.innerHeight);
-  //   };
-  //   window.addEventListener("resize", handleResize);
-
-  //   return () => {
-  //     window.removeEventListener("resize", handleResize);
-  //     const canvasElement = renderer.domElement;
-  //     if (canvasRef.current?.contains(canvasElement)) {
-  //       canvasRef.current.removeChild(canvasElement);
-  //     }
-  //   };
-  // }, []);
-  // const [isBlotterLoaded, setIsBlotterLoaded] = useState(false);
-
-  // useEffect(() => {
-  //   const loadScript = (src, callback) => {
-  //     const script = document.createElement("script");
-  //     script.src = src;
-  //     script.onload = callback;
-  //     document.body.appendChild(script);
-  //   };
-
-  //   if (!window.Blotter) {
-  //     loadScript("/blotter.min.js", () => {
-  //       console.log("Blotter loaded");
-
-  //       loadScript("/liquidDistortMaterial.js", () => {
-  //         console.log("LiquidDistortMaterial loaded");
-  //         setIsBlotterLoaded(true);
-  //       });
-  //     });
-  //   } else {
-  //     setIsBlotterLoaded(true);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   if (isBlotterLoaded) {
-  //     let materials = [];
-
-  //     const lines = ["DISCOVER", "WHAT MAKES", "US UNIQUE"];
-  //     let container = document.getElementById("blotter-target");
-
-  //     if (container) {
-  //       lines.forEach((line, index) => {
-  //         let lineDiv = document.createElement("div");
-  //         lineDiv.id = `blotter-line-${index + 1}`;
-  //         container.appendChild(lineDiv);
-
-  //         const text = new window.Blotter.Text(line, {
-  //           // family: "",
-  //           // fill: "#f4ecd7",
-  //           size: 100,
-  //         });
-
-  //         let material = new window.Blotter.LiquidDistortMaterial();
-  //         material.uniforms.uSpeed.value = 0.1;
-  //         material.uniforms.uVolatility.value = 0.1;
-  //         material.uniforms.uSeed.value = 0.1;
-
-  //         let blotter = new window.Blotter(material, { texts: text });
-  //         let scope = blotter.forText(text);
-  //         scope.appendTo(lineDiv);
-
-  //         materials.push(material);
-  //       });
-  //       // const handleMouseMove = (e) => {
-  //       //   const formula = ((e.pageX * e.pageY) / 200000) / 1.5;
-  //       //   materials.forEach(material => {
-  //       //     material.uniforms.uVolatility.value = formula;
-  //       //     material.uniforms.uSeed.value = formula;
-  //       //   });
-  //       // };
-  //       const handleMouseMove = (e) => {
-  //         let formula = (e.pageX * e.pageY) / 200000 / 1.2;
-  //         formula = Math.min(formula, 0.65);
-  //         materials.forEach((material) => {
-  //           material.uniforms.uVolatility.value = formula;
-  //           material.uniforms.uSeed.value = formula;
-  //         });
-  //       };
-
-  //       document.body.addEventListener("mousemove", handleMouseMove);
-
-  //       return () => {
-  //         document.body.removeEventListener("mousemove", handleMouseMove);
-  //       };
-  //     }
-  //   }
-  // }, [isBlotterLoaded]);
-
-  // const scrollContainerRef = useRef(null);
-  // useEffect(() => {
-  //   gsap.to(".bglinear", {
-  //     scrollTrigger: {
-  //       trigger: "#p2",
-  //       scrub: true,
-  //       start: "10% bottom",
-  //       end: "80% 80%",
-  //     },
-  //     backgroundImage: "linear-gradient(270deg, #000 50%, #fff 0%)",
-  //     duration: 3,
-  //   });
-
-  //   gsap.to(".bglinear", {
-  //     scrollTrigger: {
-  //       trigger: "#p2",
-  //       scrub: true,
-  //       start: "10% 80%",
-  //       end: "80% 80%",
-  //     },
-  //     letterSpacing: "10px",
-  //     duration: 3,
-  //   });
-
-  //   return () => {
-  //     ScrollTrigger.getAll().forEach((t) => t.kill());
-  //   };
-  // }, []);
-
-  // const [isPinned, setIsPinned] = useState(false);
-  // const aboutTitleRef = useRef(null);
-
-  // useEffect(() => {
-  //   const onScroll = () => {
-  //     if (aboutTitleRef.current) {
-  //       const offsetTop = aboutTitleRef.current.offsetTop;
-  //       const isPinned = window.scrollY >= offsetTop;
-  //       setIsPinned(isPinned);
-  //     }
-  //   };
-
-  //   window.addEventListener("scroll", onScroll);
-  //   return () => window.removeEventListener("scroll", onScroll);
-  // }, []);
-
-  // const getTransitionStyle = () => {
-  //   return {
-  //     backgroundImage: `url(${images[currentImageIndex]})`,
-  //     transition: "background-image 1s ease-in-out",
-  //   };
-  // };
-
-  // const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-
-
-
-
-  // const [scrollPosition, setScrollPosition] = useState(0);
-  // const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-
-  // const lasth3Ref = useRef(null);
-  // const progressPath = useRef(null);
-
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     setScrollPosition(window.scrollY);
-  //   };
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, []);
-
-  // const handleMouseMove = (e) => {
-  //   setCursorPosition({ x: e.clientX, y: e.clientY });
-  // };
-
-
-  // const parallaxStyle = {
-  //   top: scrollPosition / 2.8,
-  //   opacity: 1 - scrollPosition / 600,
-  // };
-
-
-  // const textContainerRef = useRef(null);
-
-  // useEffect(() => {
-  //   gsap.registerPlugin(SplitText, ScrollTrigger);
-
-  //   const onEntry = (entries, observer) => {
-  //     entries.forEach((entry) => {
-  //       if (entry.isIntersecting) {
-  //         const textElements = textContainerRef.current.querySelectorAll("h1");
-
-  //         textElements.forEach((textElement) => {
-  //           const split = new SplitText(textElement, { type: "lines" });
-  //           gsap.from(split.lines, {
-  //             duration: 1.5,
-  //             y: "100%",
-  //             stagger: 0.15,
-  //             ease: "power4.out",
-  //           });
-  //         });
-
-  //         observer.disconnect();
-  //       }
-  //     });
-  //   };
-
-  //   const observer = new IntersectionObserver(onEntry, {
-  //     threshold: 1,
-  //   });
-
-  //   if (textContainerRef.current) {
-  //     observer.observe(textContainerRef.current);
-  //   }
-
-  //   return () => observer.disconnect();
-  // }, []);
-
-  // useEffect(() => {
-  //   gsap
-  //     .timeline({
-  //       scrollTrigger: {
-  //         trigger: ".bottom",
-  //         scrub: true,
-  //         pin: true,
-  //         start: "top top",
-  //         end: "+=3000",
-  //       },
-  //     })
-  //     .to(".stripe", { stagger: 0.3, height: "100vh" })
-  //     .to(".stripe", { stagger: 0.3, height: 0 })
-  //     .to(".thats-all", { opacity: 1, scale: 1 });
-  // }, []);
-
-  // useEffect(() => {
-  //   const tl = gsap.timeline({ duration: 3, ease: "back" });
-  //   const animatedElement = gsap.utils.toArray("p .highlight");
-  //   const lineOne = document.querySelector(".one");
-  //   const lineTwo = document.querySelector(".two");
-  //   const lineThree = document.querySelector(".three");
-  //   const lineFour = document.querySelector(".four");
-
-  //   gsap.set([lineOne, lineThree, lineFour], { xPercent: -101, autoAlpha: 0 });
-  //   gsap.set(lineTwo, { xPercent: 101, autoAlpha: 0 });
-  //   gsap.set(animatedElement, {
-  //     y: -100,
-  //     autoAlpha: 0,
-  //     scale: 1.5,
-  //     rotationX: 45,
-  //   });
-
-  //   tl.to(lineOne, { xPercent: 0, autoAlpha: 1 })
-  //     .to(lineTwo, { xPercent: 0, autoAlpha: 1 }, "-=.15")
-  //     .to(lineThree, { xPercent: 0, autoAlpha: 1 }, "-=.21")
-  //     .to(lineFour, { xPercent: 0, autoAlpha: 1 }, "-=.15")
-  //     .to(animatedElement, {
-  //       y: 0,
-  //       autoAlpha: 1,
-  //       scale: 1,
-  //       stagger: 0.4,
-  //       rotationX: 0,
-  //     });
-  // }, []);
-
-  // const steps = [
-  //   "Get in touch",
-  //   "Initial Consult",
-  //   "Be supported",
-  //   "Expert Care",
-  // ];
-  // const cardImages = [
-  //   "../images/nowbooking.png",
-  //   "../images/firstappointment.svg",
-  //   "../images/nocost.png",
-  //   "../images/freysmiles_insta.gif",
-  // ];
-
-  // const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  // const translateY = -(currentCardIndex * 20) + "rem";
-  // const [isSliderVisible, setIsSliderVisible] = useState(false);
-
-  // const updateSlider = (index) => {
-  //   setCurrentCardIndex(index);
-  // };
-
-  // const closeSlider = () => {
-  //   setIsSliderVisible(false);
-  // };
-
-  // const sectionRef = useRef(null);
-
-  // useEffect(() => {
-  //   gsap.registerPlugin(ScrollTrigger);
-
-  //   const section = sectionRef.current;
-  //   const horizontalScrollLength = section.scrollWidth - section.offsetWidth;
-
-  //   ScrollTrigger.create({
-  //     trigger: section,
-  //     start: "top top",
-  //     end: horizontalScrollLength,
-  //     pin: true,
-  //     scrub: 1,
-  //     onUpdate: (self) => {
-  //       gsap.to(section, {
-  //         x: -self.progress * horizontalScrollLength,
-  //         ease: "none",
-  //       });
-  //     },
-  //   });
-  // }, []);
-
-
-  // const firstCardRef = useRef(null);
-
-  // useEffect(() => {
-  //   gsap.registerPlugin(ScrollTrigger);
-
-  //   if (firstCardRef.current) {
-  //     const container = firstCardRef.current;
-  //     const image = container.querySelector(".bg");
-
-  //     let tl = gsap.timeline({
-  //       scrollTrigger: {
-  //         trigger: container,
-  //         toggleActions: "restart none none reset",
-  //       },
-  //     });
-
-  //     tl.set(container, { autoAlpha: 1 });
-  //     tl.from(container, 1.5, {
-  //       xPercent: -100,
-  //       ease: "power2.out",
-  //     });
-  //     tl.from(image, 1.5, {
-  //       xPercent: 100,
-  //       scale: 1.3,
-  //       delay: -1.5,
-  //       ease: "power2.out",
-  //     });
-  //   }
-  // }, []);
-  // useEffect(() => {
-  //   const tl = gsap.timeline({ repeat: -1, duration: 2, delay: 3, yoyo: true });
-
-  //   tl.to("#char2", { rotation: 360 });
-  //   tl.to("#char12", { rotation: 360 });
-
-  //   const splittedText = new SplitText(".split", { type: "chars" });
-  //   const chars = splittedText.chars;
-
-  //   gsap.from(chars, {
-  //     yPercent: 450,
-  //     stagger: { each: 0.05, from: "random" },
-  //     ease: "back.out",
-  //     duration: 1,
-  //   });
-
-  //   gsap.to(".bg-verticalText", {
-  //     scale: 1.1,
-  //     duration: 2,
-  //     repeat: -1,
-  //     yoyo: true,
-  //     ease: "power1.inOut",
-  //   });
-  // }, []);
-  // const horizontalScrollTrackRef = useRef(null);
-
-
-  // const [scrollProgress, setScrollProgress] = useState(0);
-
-  // useEffect(() => {
-
-  //   const horizontalMainTl = gsap.timeline({
-  //     scrollTrigger: {
-  //       trigger: horizontalScrollTrackRef.current,
-  //       scrub: true,
-
-  //     },
-  //   })
-  //   .to(horizontalScrollTrackRef.current, {
-  //     xPercent: -100,
-  //     ease: "none",
-  //     onUpdate: () => updateScrollProgress(horizontalMainTl),
-  //   });
-
-
-  //   function updateScrollProgress(timeline) {
-  //     setScrollProgress(Math.round(timeline.progress() * 100));
-  //   }
-
-
-  //   return () => {
-  //     horizontalMainTl.kill();
-  //   };
-  // }, []);
-
-  // const stageRef = useRef(null);
-
-
-  // const baseUrl = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/";
-  const [scroll, setScroll] = useState(0);
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+import { SplitText } from "gsap/SplitText";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
+import * as OGL from "ogl";
+import {
+  ScrollControls,
+  useScroll as useThreeScroll,
+  Scroll,
+  Text,
+  OrbitControls,
+  useGLTF,
+} from "@react-three/drei";
+import {
+  Canvas,
+  useFrame,
+  useThree,
+  extend,
+  useLoader,
+} from "@react-three/fiber";
+
+const settings = {
+  wheelSensitivity: 0.01,
+  touchSensitivity: 0.01,
+  momentumMultiplier: 2,
+  smoothing: 0.1,
+  slideLerp: 0.075,
+  distortionDecay: 0.95,
+  maxDistortion: 1.5,
+  distortionSensitivity: 0.15,
+  distortionSmoothing: 0.075,
+};
+
+const slideWidth = 3.0;
+const slideHeight = 1.5;
+const gap = 0.1;
+const slideCount = 10;
+const imagesCount = 5;
+const totalWidth = slideCount * (slideWidth + gap);
+const slideUnit = slideWidth + gap;
+
+
+const Slide = ({ index, currentPosition, distortionFactor }) => {
+  const meshRef = useRef();
+  const geometryRef = useRef();
+  const [originalVertices, setOriginalVertices] = useState([]);
+  
+  const imagePaths = [
+    "/images/blobnew.png",
+    "/images/fscards.png",
+    "/images/sch.png",
+    "/images/fsstickers.png",
+    "/images/futuresmiles.png",
+    "/images/iteromockupnoborder.png",
+    
+  ];
+  
+  const imageIndex = index % imagePaths.length;
+
+  const texture = useTexture(imagePaths[imageIndex]);
+  
+  useEffect(() => {
+    if (geometryRef.current) {
+      const vertices = [...geometryRef.current.attributes.position.array];
+      setOriginalVertices(vertices);
+    }
+  }, []);
+
+
+  useFrame(() => {
+    if (!meshRef.current || !geometryRef.current || originalVertices.length === 0) return;
+
+
+    let baseX = index * slideUnit - currentPosition;
+    baseX = ((baseX % totalWidth) + totalWidth) % totalWidth;
+    if (baseX > totalWidth / 2) baseX -= totalWidth;
+
+  
+    const targetX = meshRef.current.userData.targetX || baseX;
+    const currentX = meshRef.current.userData.currentX || baseX;
+    
+    const newTargetX = baseX;
+    const newCurrentX = currentX + (newTargetX - currentX) * settings.slideLerp;
+    
+    meshRef.current.position.x = newCurrentX;
+    meshRef.current.userData.targetX = newTargetX;
+    meshRef.current.userData.currentX = newCurrentX;
+
+
+    updateCurve(meshRef.current, newCurrentX, distortionFactor);
+  });
+
+  const updateCurve = (mesh, worldPositionX, distortionFactor) => {
+    const distortionCenter = new THREE.Vector2(0, 0);
+    const distortionRadius = 2.0;
+    const maxCurvature = settings.maxDistortion * distortionFactor;
+
+    const positionAttribute = geometryRef.current.attributes.position;
+
+    for (let i = 0; i < positionAttribute.count; i++) {
+      const x = originalVertices[i * 3];
+      const y = originalVertices[i * 3 + 1];
+
+      const vertexWorldPosX = worldPositionX + x;
+      const distFromCenter = Math.sqrt(
+        Math.pow(vertexWorldPosX - distortionCenter.x, 2) +
+        Math.pow(y - distortionCenter.y, 2)
+      );
+
+      const distortionStrength = Math.max(0, 1 - distFromCenter / distortionRadius);
+      const curveZ = Math.pow(Math.sin((distortionStrength * Math.PI) / 2), 1.5) * maxCurvature;
+
+      positionAttribute.setZ(i, curveZ);
+    }
+
+    positionAttribute.needsUpdate = true;
+    geometryRef.current.computeVertexNormals();
+  };
+
+
+  let scale = [1, 1, 1];
+  if (texture) {
+    const imgAspect = texture.image.width / texture.image.height;
+    const slideAspect = slideWidth / slideHeight;
+    if (imgAspect > slideAspect) {
+      scale = [1, slideAspect / imgAspect, 1];
+    } else {
+      scale = [imgAspect / slideAspect, 1, 1];
+    }
+  }
+
+  return (
+    <mesh
+      ref={meshRef}
+      position={[index * (slideWidth + gap) - totalWidth / 2, 0, 0]}
+      scale={scale}
+      userData={{ index }}
+    >
+      <planeGeometry args={[slideWidth, slideHeight, 32, 16]} ref={geometryRef} />
+      <meshBasicMaterial
+        side={THREE.DoubleSide}
+        map={texture}
+      />
+    </mesh>
+  );
+};
+
+const SlidesContainer = () => {
+  const [currentPosition, setCurrentPosition] = useState(0);
+  const [targetPosition, setTargetPosition] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [autoScrollSpeed, setAutoScrollSpeed] = useState(0);
+  const [currentDistortionFactor, setCurrentDistortionFactor] = useState(0);
+  const [targetDistortionFactor, setTargetDistortionFactor] = useState(0);
+  const [peakVelocity, setPeakVelocity] = useState(0);
+  const [velocityHistory, setVelocityHistory] = useState([0, 0, 0, 0, 0]);
+  const lastTimeRef = useRef(0);
+  const prevPosRef = useRef(0);
+  const touchStartXRef = useRef(0);
+  const touchLastXRef = useRef(0);
+
+
+  useFrame(({ clock }) => {
+    const time = clock.getElapsedTime();
+    const deltaTime = lastTimeRef.current ? (time - lastTimeRef.current) : 0.016;
+    lastTimeRef.current = time;
+
+    const prevPos = prevPosRef.current;
+    prevPosRef.current = currentPosition;
+
+    if (isScrolling) {
+      setTargetPosition(prev => prev + autoScrollSpeed);
+      const speedBasedDecay = 0.97 - Math.abs(autoScrollSpeed) * 0.5;
+      setAutoScrollSpeed(prev => prev * Math.max(0.92, speedBasedDecay));
+
+      if (Math.abs(autoScrollSpeed) < 0.001) {
+        setAutoScrollSpeed(0);
+      }
+    }
+
+    setCurrentPosition(prev => prev + (targetPosition - prev) * settings.smoothing);
+
+
+    const currentVelocity = Math.abs(currentPosition - prevPos) / deltaTime;
+    const newVelocityHistory = [...velocityHistory.slice(1), currentVelocity];
+    setVelocityHistory(newVelocityHistory);
+
+    const avgVelocity = newVelocityHistory.reduce((sum, val) => sum + val, 0) / newVelocityHistory.length;
+
+    if (avgVelocity > peakVelocity) {
+      setPeakVelocity(avgVelocity);
+    }
+
+    const velocityRatio = avgVelocity / (peakVelocity + 0.001);
+    const isDecelerating = velocityRatio < 0.7 && peakVelocity > 0.5;
+
+    setPeakVelocity(prev => prev * 0.99);
+
+
+    const movementDistortion = Math.min(1.0, currentVelocity * 0.1);
+    if (currentVelocity > 0.05) {
+      setTargetDistortionFactor(prev => Math.max(prev, movementDistortion));
+    }
+
+    if (isDecelerating || avgVelocity < 0.2) {
+      const decayRate = isDecelerating ? settings.distortionDecay : settings.distortionDecay * 0.9;
+      setTargetDistortionFactor(prev => prev * decayRate);
+    }
+
+    setCurrentDistortionFactor(prev => 
+      prev + (targetDistortionFactor - prev) * settings.distortionSmoothing
+    );
+  });
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY; 
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = scrollTop / docHeight; 
-
-      setScroll(scrollPercent); // Update state
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowLeft') {
+        setTargetPosition(prev => prev + slideUnit);
+        setTargetDistortionFactor(prev => Math.min(1.0, prev + 0.3));
+      } else if (e.key === 'ArrowRight') {
+        setTargetPosition(prev => prev - slideUnit);
+        setTargetDistortionFactor(prev => Math.min(1.0, prev + 0.3));
+      }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const handleWheel = (e) => {
+      e.preventDefault();
+      const wheelStrength = Math.abs(e.deltaY) * 0.001;
+      setTargetDistortionFactor(prev => Math.min(1.0, prev + wheelStrength));
+      setTargetPosition(prev => prev - e.deltaY * settings.wheelSensitivity);
+      setIsScrolling(true);
+      setAutoScrollSpeed(
+        Math.min(Math.abs(e.deltaY) * 0.0005, 0.05) * Math.sign(e.deltaY)
+      );
+
+      clearTimeout(window.scrollTimeout);
+      window.scrollTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150);
+    };
+
+    const handleTouchStart = (e) => {
+      touchStartXRef.current = e.touches[0].clientX;
+      touchLastXRef.current = touchStartXRef.current;
+      setIsScrolling(false);
+    };
+
+    const handleTouchMove = (e) => {
+      e.preventDefault();
+      const touchX = e.touches[0].clientX;
+      const deltaX = touchX - touchLastXRef.current;
+      touchLastXRef.current = touchX;
+
+      const touchStrength = Math.abs(deltaX) * 0.02;
+      setTargetDistortionFactor(prev => Math.min(1.0, prev + touchStrength));
+
+      setTargetPosition(prev => prev - deltaX * settings.touchSensitivity);
+      setIsScrolling(true);
+    };
+
+    const handleTouchEnd = () => {
+      const velocity = (touchLastXRef.current - touchStartXRef.current) * 0.005;
+      if (Math.abs(velocity) > 0.5) {
+        setAutoScrollSpeed(-velocity * settings.momentumMultiplier * 0.05);
+        setTargetDistortionFactor(Math.min(
+          1.0,
+          Math.abs(velocity) * 3 * settings.distortionSensitivity
+        ));
+        setIsScrolling(true);
+        setTimeout(() => {
+          setIsScrolling(false);
+        }, 800);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      clearTimeout(window.scrollTimeout);
+    };
   }, []);
+
   return (
     <>
-    <div     style={{
-      height: "100vw", 
-      background: `linear-gradient(180deg, rgba(212, 212, 212, ${1 - scroll}) 0%, #FBC705 100%)`, 
-      transition: "background 0.3s ease-out", 
-      padding: "min(18vw,0px) 0 min(8vw,40px)",
-    }}>
+      {Array.from({ length: slideCount }).map((_, i) => (
+        <Slide 
+          key={i} 
+          index={i} 
+          currentPosition={currentPosition} 
+          distortionFactor={currentDistortionFactor} 
+        />
+      ))}
+    </>
+  );
+};
 
-    </div>
-      {/* <Layout>
+const SliderScene = () => {
+  const { camera } = useThree();
+  
+  useEffect(() => {
+    camera.position.z = 5;
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+  }, [camera]);
 
-      <div class="nav_bar sticky">
-            <div class="nav_top-logo">
-              <div class="nav_logo-embed w-embed"></div>
-              <div class="nav_logo-text is-top">Est. 1980</div>
-            </div>
-            <div class="nav_trigger">
-              <div class="nav_icon">
-                <div class="nav_icon-line"></div>
-                <div class="nav_icon-line"></div>
-                <div class="nav_icon-line"></div>
-              </div>
-            </div>
-            <div className="nav_bottom-progress w-full absolute bottom-8 left-0 flex justify-center items-center">
-              <div class="nav_logo-text is-bottom">
-              <span className="nav_progress-number">{scrollProgress}</span>%
-              </div>
-            </div>
-          </div>
+  return null;
+};
+const ThumbnailStrip = () => {
+  const thumbnails = [
+    "/images/blobnew.png",
+    "/images/fscards.png",
+    "/images/sch.png",
+    "/images/fsstickers.png",
+    "/images/futuresmiles.png",
+    "/images/iteromockupnoborder.png",
+  ];
 
-        <div className="horizontal-scroll-section" ref={sectionRef}>
-
-
-          <div className="section-wrapper">
-
-          <div id="stage" />
-            <div className="bg-[#F1F1F1] relative pagesection">
-<img className="py-40 px-40 rounded-full" src="../images/skyclouds.jpeg"></img>
-            </div>
-            <div className="relative pagesection">
-              <div className="min-h-screen   relative">
-                <div ref={canvasRef} className="w-32 h-32"></div>
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "0",
-                    left: "0",
-                    width: "100%",
-                    height: "100%",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    backdropFilter: "blur(120px)",
-                  }}
-                >
-                  <div className=" h-screen" id="blotter-target"></div>
-                </div>
-
-                <div
-                  className="grid absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center"
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    width: "100%",
-                    display: "grid",
-                    gridTemplateColumns: "repeat(4,1fr)",
-                    gridTemplateRows: "1fr",
-                    justifyContent: "center",
-                  }}
-                >
-                  <div
-                    className="grid-lines"
-                    style={{
-                      width: "1px",
-                      background: "#000",
-                      height: "100%",
-                      opacity: 0.25,
-                    }}
-                  ></div>
-                  <div
-                    className="grid-lines"
-                    style={{
-                      width: "1px",
-                      background: "#000",
-                      height: "100%",
-                      opacity: 0.25,
-                    }}
-                  ></div>
-                  <div
-                    className="grid-lines"
-                    style={{
-                      width: "1px",
-                      background: "#000",
-                      height: "100%",
-                      opacity: 0.25,
-                    }}
-                  ></div>
-                  <div
-                    className="grid-lines"
-                    style={{
-                      width: "1px",
-                      background: "#000",
-                      height: "100%",
-                      opacity: 0.25,
-                    }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-[#F1EFEB] relative pagesection ">
-              <div className="description panel relative h-screen flex justify-center items-center">
-                <img
-                  className="bg-verticalText absolute"
-                  src="../images/chromeoval.svg"
-                  alt=""
-                  style={{ objectFit: "contain", width: "20%", height: "auto" }}
-                />
-
-                <h1
-                  className="font-oakes-regular split text-6xl text-[#ffff83]"
-                  id="splitText"
-                >
-                  Science backed approach
-                </h1>
-              </div>
-            </div>
-
-            <div className="cd-slider pagesection">
-              <div className="main_cards">
-                {cardImages.map((imageUrl, index) => (
-                  <div
-                    key={index}
-                    className={`card ${
-                      currentCardIndex === index ? "current_card" : ""
-                    }`}
-                  >
-                    <div
-                      style={{ backgroundImage: `url(${imageUrl})` }}
-                      className="bg"
-                    ></div>
-                  </div>
-                ))}
-              </div>
-              <nav className="steps">
-                {steps.map((step, index) => (
-                  <a
-                    key={index}
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      updateSlider(index);
-                    }}
-                  >
-                    {step}
-                  </a>
-                ))}
-              </nav>
-
-              <nav className="numbers">
-                <ul
-                  style={{
-                    transform: `translateY(${translateY})`,
-                    transition: "transform 0.6s ease",
-                  }}
-                >
-                  {steps.map((_, index) => (
-                    <li
-                      key={index}
-                      className={
-                        currentCardIndex === index ? "current_number" : ""
-                      }
-                    >
-                      0{index + 1}
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            </div>
-            <div className="pagesection">
-              <div id="pricing" className="bg-[#E1EEEC] flex">
-                <div className="mt-10 container">
-                  <div className="gsaptext-container mx-auto">
-                    <p className="font-poppins text-center text-6xl">Pricing</p>
-                    <p className="font-helvetica-neue one text-xl">
-                      <span className="highlight"> Taking </span>{" "}
-                      <span> the first step </span>
-                      <span className="highlight">towards treatment </span>{" "}
-                      <span>
-                        can sometimes feel overwhelming, especially when it{" "}
-                      </span>
-                    </p>
-                    <p className="two text-xl">
-                      <span>comes to discussing</span>{" "}
-                      <span className="highlight"> personalized </span>
-                      <span>
-                        treatment plans. That&apos;s why we kindly request that all{" "}
-                      </span>
-                    </p>
-                    <p className="three text-xl">
-                      <span>
-                        decision-makers be present during the initial visit.{" "}
-                      </span>
-                      <span className="highlight">Our goal</span>{" "}
-                      <span>is for every patient to walk </span>
-                    </p>
-                    <p className="four text-xl">
-                      <span>
-                        out of our office fully informed with answers to all
-                        their questions in their treatment path.
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-       
-            </div>
-
-            <div className="pagesection"></div>
-          </div>
-
-
-        
+  return (
+    <div className="flex p-4 overflow-x-auto">
+      {thumbnails.map((src, idx) => (
+        <div
+          key={idx}
+          className="min-w-[80px] h-[60px] flex-shrink-0 overflow-hidden rounded-md border border-neutral-200 hover:scale-105 transition-transform"
+        >
+          <img
+            src={src}
+            alt={`thumb-${idx}`}
+            className="object-cover w-full h-full"
+          />
         </div>
-      </Layout> */}
+      ))}
+    </div>
+  );
+};
+
+const YourCare = () => {
+  return (
+    <>
+      <div className="relative w-full h-screen overflow-hidden">
+      <Canvas
+      gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.NoToneMapping,
+        outputColorSpace: THREE.SRGBColorSpace, }}
+      // style={{ background: '#e3e3db' }}
+      camera={{ position: [0, 0, 5], fov: 35 }}
+      onCreated={({ gl }) => {
+        gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      }}
+    >
+      <SliderScene />
+      <SlidesContainer />
+    </Canvas>
+
+        <div className="absolute bottom-0 w-full h-[15%] z-10">
+          <ThumbnailStrip />
+        </div>
+      </div>
+
+      {/* <div className="relative z-10">
+  <FluidSimulation />
+  <TextEffect 
+    text="Braces" 
+    font="NeueHaasRoman" 
+    color="#ffffff" 
+    fontWeight="normal" 
+  />
+</div> */}
+
+      {/* <div style={{ width: "50vw", height: "100vh" }}>
+        <FlutedGlassEffect
+          imageUrl="/images/1.jpg"
+          mode="mouse"
+          motionFactor={-50}
+          rotationAngle={45}
+          segments={50}
+          overlayOpacity={50}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div> */}
     </>
   );
 };
