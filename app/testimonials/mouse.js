@@ -112,7 +112,7 @@ export default function MouseTrail({ images = [] }) {
       <img
         src={src}
         style={{
-          maxWidth: '100px',
+          maxWidth: '80px',
           height: 'auto',
           display: 'block',
         }}

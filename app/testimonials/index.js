@@ -15,7 +15,15 @@ import {
   useLoader,
   extend,
 } from "@react-three/fiber";
-import React, { useEffect, useState, useRef, Suspense, useMemo, forwardRef, useImperativeHandle } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  Suspense,
+  useMemo,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import {
   EffectComposer,
   Bloom,
@@ -42,43 +50,86 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin);
 }
 
-
-
-const lettersAndSymbols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '+', '=', ';', ':', '<', '>', ','];
+const lettersAndSymbols = [
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k",
+  "l",
+  "m",
+  "n",
+  "o",
+  "p",
+  "q",
+  "r",
+  "s",
+  "t",
+  "u",
+  "v",
+  "w",
+  "x",
+  "y",
+  "z",
+  "!",
+  "@",
+  "#",
+  "$",
+  "%",
+  "^",
+  "&",
+  "*",
+  "-",
+  "_",
+  "+",
+  "=",
+  ";",
+  ":",
+  "<",
+  ">",
+  ",",
+];
 
 const TextAnimator = forwardRef(({ children, className }, ref) => {
   const textRef = useRef(null);
   const charsRef = useRef([]);
-  const originalText = useRef('');
+  const originalText = useRef("");
 
   useEffect(() => {
     if (!textRef.current) return;
-  
+
     const text = textRef.current.textContent;
-    textRef.current.innerHTML = '';
-  
-    const chars = text.split('').map((char) => {
-      const span = document.createElement('span');
-      span.className = 'char';
-      span.textContent = char === ' ' ? '\u00A0' : char;
-      span.style.display = 'inline-block';
-      span.style.opacity = '1';
-      span.style.transform = 'translateY(0%)';
+    textRef.current.innerHTML = "";
+
+    const chars = text.split("").map((char) => {
+      const span = document.createElement("span");
+      span.className = "char";
+      span.textContent = char === " " ? "\u00A0" : char;
+      span.style.display = "inline-block";
+      span.style.opacity = "1";
+      span.style.transform = "translateY(0%)";
       textRef.current.appendChild(span);
       return span;
     });
-  
+
     charsRef.current = chars;
     originalText.current = chars.map((span) => span.textContent); // 💾 Store clean original chars
   }, [children]);
-  
+
   useImperativeHandle(ref, () => ({
     animate() {
       charsRef.current.forEach((char, position) => {
-        gsap.fromTo(char,
-          { opacity: 0, y: '100%' },
+        gsap.fromTo(
+          char,
+          { opacity: 0, y: "100%" },
           {
-            y: '0%',
+            y: "0%",
             opacity: 1,
             duration: 0.03,
             repeat: 2,
@@ -86,20 +137,22 @@ const TextAnimator = forwardRef(({ children, className }, ref) => {
             repeatDelay: 0.05,
             delay: position * 0.06,
             onRepeat: () => {
-              char.textContent = lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)];
+              char.textContent =
+                lettersAndSymbols[
+                  Math.floor(Math.random() * lettersAndSymbols.length)
+                ];
             },
             onComplete: () => {
               const original = originalText.current[position];
               if (original !== undefined) {
                 char.textContent = original;
               }
-            }
+            },
           }
         );
       });
-    }
+    },
   }));
-  
 
   return (
     <span
@@ -160,54 +213,51 @@ const Testimonial = () => {
       );
     });
   }, []);
-  
 
   return (
     <main className="demo-4">
-<section
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    padding: "0 2rem 2rem",
-    justifyContent: "center",
-  }}
->
-  <h2
-    style={{
-      fontSize: "12px",
-      color: "black",
-    }}
-  >
-    Patient Cases
-  </h2>
+      <section
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          padding: "0 2rem 2rem",
+          justifyContent: "center",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: "12px",
+            color: "black",
+          }}
+        >
+          Patient Cases
+        </h2>
 
-  <ul
-  style={{
-    margin: 0,
-    padding: 0,
-    width: "100%",
-    listStyle: "none",
-    display: "flex",
-    flexDirection: "column",
-    counterReset: "item 0",
-  }}
->
+        <ul
+          style={{
+            margin: 0,
+            padding: 0,
+            width: "100%",
+            listStyle: "none",
+            display: "flex",
+            flexDirection: "column",
+            counterReset: "item 0",
+          }}
+        >
           {patients.map((item, index) => {
             const nameRef = useRef();
             const durationRef = useRef();
 
             return (
-<li
-  key={index}
-  ref={(el) => (listRefs.current[index] = el)}
-  className="list__item"
-  
-  onMouseEnter={() => {
-    nameRef.current?.animate();
-    durationRef.current?.animate();
-  }}
->
-
+              <li
+                key={index}
+                ref={(el) => (listRefs.current[index] = el)}
+                className="list__item"
+                onMouseEnter={() => {
+                  nameRef.current?.animate();
+                  durationRef.current?.animate();
+                }}
+              >
                 <span className="list__item-col" aria-hidden="true" />
                 <span className="list__item-col">
                   <TextAnimator ref={nameRef}>{item.name}</TextAnimator>
@@ -610,21 +660,6 @@ const Testimonials = () => {
     });
   }, []);
 
-  // const pathRef = useRef();
-
-  // useEffect(() => {
-  //   const path = pathRef.current;
-  //   const length = path.getTotalLength();
-  //   path.style.strokeDasharray = length;
-  //   path.style.strokeDashoffset = length;
-
-  //   gsap.to(path, {
-  //     strokeDashoffset: 0,
-  //     duration: 3,
-  //     ease: "power2.out",
-  //   });
-  // }, []);
-
   const listRefs = useRef([]);
 
   useEffect(() => {
@@ -791,7 +826,7 @@ const Testimonials = () => {
   const handleMouseMove = (e) => {
     setMousePos({ x: e.clientX, y: e.clientY });
   };
-  
+
   useEffect(() => {
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
@@ -970,8 +1005,6 @@ const Testimonials = () => {
     });
   }, []);
 
-
-
   const sectionOneRef = useRef(null);
   const navBarRef = useRef(null);
 
@@ -1014,8 +1047,8 @@ const Testimonials = () => {
       );
     });
   }, []);
-  
 
+  const dragCardRef = useRef(null);
   return (
     <>
       <Background />
@@ -1024,8 +1057,6 @@ const Testimonials = () => {
         ref={sectionOneRef}
         className="z-10 relative w-full min-h-[110vh] flex flex-col px-12"
       >
-
-
         <div className="z-10 max-w-[1400px] w-full flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1"></div>
           <MouseTrail
@@ -1103,7 +1134,7 @@ const Testimonials = () => {
           <div className="mt-1 w-full border-b border-[#D3D3D3]"></div>
         </div>
       </section>
-<Testimonial />
+      <Testimonial />
       {/* <section
         ref={patientSectionRef}
         className=" min-h-screen w-full px-6 relative overflow-hidden"
@@ -1198,69 +1229,44 @@ const Testimonials = () => {
       </section> */}
 
       <section
-  ref={containerRef}
-  className="min-h-screen flex flex-wrap justify-center items-center gap-4 p-8 relative overflow-hidden"
->
-  {testimonials.map((t, i) => (
-    <motion.div
-      key={i}
-      drag
-      dragConstraints={{ 
-        top: -50,
-        left: -50,
-        right: 50,
-        bottom: 50 
-      }}
-      dragElastic={0.05} 
-      whileDrag={{ 
-        scale: 1.03,
-        transition: { duration: 0.1 } 
-      }}
-      dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
-      dragMomentum={false}
-      className="relative bg-[#F3F2F6]/70 text-black backdrop-blur-md
-         w-[320px] min-h-[450px] flex flex-col justify-start
-         border border-gray-300 cursor-grab active:cursor-grabbing
-         will-change-transform" 
-      style={{ zIndex: i }}
-    >
+        ref={dragCardRef}
+        className="min-h-screen flex flex-wrap justify-center items-center gap-4 p-8 relative overflow-hidden"
+      >
+        {testimonials.map((t, i) => (
+          <motion.div
+            key={i}
+            drag
+            dragConstraints={dragCardRef}
+            dragElastic={0.05}
+            whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
+            dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
+            dragMomentum={false}
+            className="relative bg-[#F3F2F6]/70 text-black backdrop-blur-md
+            w-[320px] min-h-[450px] flex flex-col justify-start
+            border border-gray-300 cursor-grab active:cursor-grabbing
+            will-change-transform"
+            style={{ zIndex: i }}
+          >
+            <div className="relative w-full h-[240px] p-2">
+              <div
+                className="w-full h-full bg-cover bg-center rounded-[8px] overflow-hidden relative"
+                style={{ backgroundImage: `url(${t.image})` }}
+              >
+                <div className="absolute inset-0 pointer-events-none z-10 tile-overlay" />
+              </div>
+            </div>
 
-      <div className="relative w-full h-[240px] p-2">
-        <div
-          className="w-full h-full bg-cover bg-center rounded-[8px] overflow-hidden relative"
-          style={{ backgroundImage: `url(${t.image})` }}
-        >
-
-
-{/* <div className="absolute inset-0 grid grid-cols-8 grid-rows-8 pointer-events-none z-10">
-                  {Array.from({ length: 64 }).map((_, j) => {
-                    const isGlass =
-                      (j % 2 === 0) ^ (Math.floor(j / 8) % 2 === 0);
-                    return (
-                      <div
-                        key={j}
-                        className={`w-full h-full ${
-                          isGlass ? "backdrop-blur-md bg-white/10" : ""
-                        }`}
-                      />
-                    );
-                  })}
-                </div> */}
-      <div className="absolute inset-0 pointer-events-none z-10 tile-overlay" />
-        </div>
-      </div>
-
-      <div className="p-4 flex flex-col gap-2">
-        <h3 className="font-neuehaas45 text-xl leading-tight uppercase">
-          {t.name}
-        </h3>
-        <p className="font-ibmregular text-[12px] leading-snug tracking-tight">
-          {t.text}
-        </p>
-      </div>
-    </motion.div>
-  ))}
-</section>
+            <div className="p-4 flex flex-col gap-2">
+              <h3 className="font-neuehaas45 text-xl leading-tight uppercase">
+                {t.name}
+              </h3>
+              <p className="font-chivomono text-[12px] leading-snug tracking-tight">
+                {t.text}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+      </section>
 
       {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
           <div className="w-[64px] h-auto">
@@ -1281,20 +1287,6 @@ const Testimonials = () => {
             </h1>
           </nav>
         </header> */}
-
-      {/* <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
-          <path
-            ref={pathRef}
-            strokeLinecap="round"
-            strokeLinejoin="miter"
-            fillOpacity="0"
-            strokeMiterlimit="4"
-            stroke="rgb(248,134,63)"
-            strokeOpacity="1"
-            strokeWidth="1.5"
-            d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
-          />
-        </svg> */}
 
       {/* <section className="bg-[#fb542d] py-10">
           <Canvas
@@ -1332,22 +1324,6 @@ const Testimonials = () => {
         </section> */}
 
       {/* <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
-          <svg
-            viewBox="0 0 302 31"
-            className="absolute left-0 -bottom-1 w-full h-[20px] z-0"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M1.3,29.2C3.9,28,6.4,26.7,9,25.5c10.3-4.9,21.2-9.4,31.6-11.4s21.2-1,31,2.8s19.1,9.5,29.3,11.9
-          s20.2-0.2,30.1-4.1c9.4-3.7,18.7-8.3,28.5-9.8s19.1,1.7,28.5,5.7s19.3,8.5,28.9,6.8c9.6-1.7,17.6-10.3,26-17
-          c4.2-3.3,8.3-6.1,13.1-7.6c4.8-1.6,9.8-1.7,14.7-0.9c10.4,1.8,20.3,7.4,30,13.1"
-              stroke="#000"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
 
           <div id="right-column" className="relative w-1/2">
             <section className="relative" style={{ marginBottom: "0vh" }}>
@@ -1376,14 +1352,6 @@ const Testimonials = () => {
                 </div>
               </div>
             </section>
-            <div className="flex items-center justify-center pl-10  h-auto">
-              <img
-                className="h-[350px] max-w-[250px] object-contain rounded-[20px]"
-                src="../images/testimonial1.png"
-                alt="Testimonial"
-              />
-            </div>
-
 
             <div class="gradient-container-2">
               <div class="gradient-col-2"></div>

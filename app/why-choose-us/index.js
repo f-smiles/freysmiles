@@ -91,7 +91,7 @@ export default function WhyChooseUs() {
         <CardStack />
         <StackCards />
         <Rays />
-        <RepeatText />
+        {/* <RepeatText /> */}
         <MoreThanSmiles />
         {/* <About /> */}
         <VennDiagram />
@@ -2092,8 +2092,8 @@ function MoreThanSmiles() {
     </p>
     <h1 className="text-[2.2vw] font-neuehaas45 uppercase tracking-wide mb-12">
       <div>Nominate someone who deserves</div>
-      <div className="-ml-[100px]">a confident smile through our</div>
-      <div className="-mr-[100px]">non-profit More Than Smiles.</div>
+      <div className="">a confident smile through our</div>
+      <div className="">non-profit More Than Smiles.</div>
     </h1>
     <div className="z-10 absolute right-[3vw]">
               <a

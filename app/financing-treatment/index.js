@@ -652,6 +652,21 @@ const FinancingTreatment = () => {
   }, []);
 
 
+  const lineRef = useRef();
+
+  useEffect(() => {
+    const path = lineRef.current;
+    const length = path.getTotalLength();
+    path.style.strokeDasharray = length;
+    path.style.strokeDashoffset = length;
+
+    gsap.to(path, {
+      strokeDashoffset: 0,
+      duration: 3,
+      ease: "power2.out",
+    });
+  }, []);
+
   return (
     <>
              <div className="bg-[#F2F3F5] min-h-screen pt-[160px] relative ">
@@ -1029,6 +1044,19 @@ const FinancingTreatment = () => {
           </text>
         </svg>
         <section className="relative w-full h-screen font-neuehaas45">
+                <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
+          <path
+            ref={lineRef}
+            strokeLinecap="round"
+            strokeLinejoin="miter"
+            fillOpacity="0"
+            strokeMiterlimit="4"
+            stroke="rgb(248,134,63)"
+            strokeOpacity="1"
+            strokeWidth="1.5"
+            d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
+          />
+        </svg>
           <section className="bg-[#FF621D]"></section>
           <div className="items-start flex flex-col px-6">
             <div className="cube-outline">
