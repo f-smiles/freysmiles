@@ -16,8 +16,7 @@ export default function NextThemeProvider({ children }: { children: React.ReactN
   return (
     <ThemeProvider
       attribute="class"
-      enableSystem={true}
-      defaultTheme="system"
+      enableSystem={false}
     >
       {children}
     </ThemeProvider>
