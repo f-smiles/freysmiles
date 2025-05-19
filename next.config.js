@@ -24,10 +24,20 @@ const nextConfig = {
       },
     ],
   },
+
   webpack: (config) => {
+    
+    config.module.rules.push({
+      test: /\.(glsl|vs|fs|vert|frag)$/,
+      use: 'raw-loader',
+      type: 'javascript/auto'
+    });
+
+
     config.externals = [...config.externals, "bcrypt"];
+
     return config;
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

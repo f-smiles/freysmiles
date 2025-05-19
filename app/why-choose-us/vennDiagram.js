@@ -8,15 +8,16 @@ export default function VennDiagram() {
   const { Engine, Render, Runner, Bodies, Composite, World, Mouse, MouseConstraint } = Matter
 
   const freysmilesTexturePaths = [
-    { path: "/../../images/circle_text/freysmiles_text_1.svg" },
-    { path: "/../../images/circle_text/freysmiles_text_2.svg" },
-    { path: "/../../images/circle_text/freysmiles_text_3.svg" },
-    { path: "/../../images/circle_text/freysmiles_text_4.svg" },
-    { path: "/../../images/circle_text/freysmiles_text_5.svg" },
+    { path: "/../../images/circle_text/staggertext1.svg" },
+    { path: "/../../images/circle_text/staggertext2.svg" },
+    { path: "/../../images/circle_text/staggertext4.svg" },
+    { path: "/../../images/circle_text/staggertext5.svg" },
+    { path: "/../../images/circle_text/staggertext6.svg" },
+
   ]
 
   const othersTexturePaths = [
-    { path: "/../../images/circle_text/others_text_1.svg" },
+    { path: "/../../images/circle_text/staggertext7.svg" },
   ]
 
   const createLeftSphereCanvas = () => {
@@ -28,6 +29,7 @@ export default function VennDiagram() {
 
     // create a renderer
     let render = Render.create({
+      
       element: leftSphereCanvas.current,
       engine: engine,
       options: {
@@ -38,6 +40,10 @@ export default function VennDiagram() {
         wireframes: false,
       },
     })
+    render.context.imageSmoothingEnabled = false
+render.context.webkitImageSmoothingEnabled = false
+render.context.mozImageSmoothingEnabled = false
+
 
     let sW = leftSphereCanvas.current.offsetWidth
     let halfsW = sW / 2
@@ -60,10 +66,11 @@ export default function VennDiagram() {
             strokeStyle: '#222222',
             sprite: {
               texture: freysmilesTexturePaths[i % freysmilesTexturePaths.length].path,
-              xScale: 0.3,
-              yScale: 0.3,
+              xScale: 0.2,
+              yScale: 0.2,
             }
-          },
+          }
+          
         })
       )
     }
@@ -80,10 +87,30 @@ export default function VennDiagram() {
           },
         },
       })
+      
     mouseConstraint.mouse.element.removeEventListener("mousewheel", mouseConstraint.mouse.mousewheel)
     mouseConstraint.mouse.element.removeEventListener("DOMMouseScroll", mouseConstraint.mouse.mousewheel)
     Composite.add(engine.world, mouseConstraint)
+    Matter.Events.on(mouseConstraint, 'mousemove', (event) => {
+  const foundBodies = Matter.Query.point(stack, event.mouse.position);
+  shakeScene(engine, foundBodies);
+});
 
+    function shakeScene(engine, bodies) {
+      const timeScale = (1000 / 60) / engine.timing.lastDelta;
+    
+      for (let i = 0; i < bodies.length; i++) {
+        const body = bodies[i];
+        if (!body.isStatic) {
+          const forceMagnitude = (0.03 * body.mass) * timeScale;
+          Matter.Body.applyForce(body, body.position, {
+            x: (forceMagnitude + Matter.Common.random() * forceMagnitude) * Matter.Common.choose([1, -1]),
+            y: -forceMagnitude + Matter.Common.random() * -forceMagnitude,
+          });
+        }
+      }
+    }
+    
     // keep the mouse in sync with rendering
     render.mouse = mouse
 
@@ -141,10 +168,12 @@ export default function VennDiagram() {
       let sH = leftSphereCanvas.current.offsetHeight
       render.bounds.max.x = sW
       render.bounds.max.y = sH
-      render.options.width = sW
-      render.options.height = sH
-      render.canvas.width = sW
-      render.canvas.height = sH
+      render.options.pixelRatio = 2
+      render.canvas.width = sW * 2
+      render.canvas.height = sH * 2
+      render.canvas.style.width = `${sW}px`
+      render.canvas.style.height = `${sH}px`
+      
 
       let newStack = []
       for (let i = 0; i < 5; i++) {
@@ -194,7 +223,10 @@ export default function VennDiagram() {
         wireframes: false,
       },
     })
-
+    render.context.imageSmoothingEnabled = false;
+    render.context.webkitImageSmoothingEnabled = false;
+    render.context.mozImageSmoothingEnabled = false;
+    
     let sW = rightSphereCanvas.current.offsetWidth
     let halfsW = sW / 2
     let circleW = sW / 10
@@ -216,8 +248,8 @@ export default function VennDiagram() {
             strokeStyle: 'white',
             sprite: {
               texture: othersTexturePaths[i % othersTexturePaths.length].path,
-              xScale: 0.3,
-              yScale: 0.3,
+              xScale: 0.15,
+              yScale: 0.15,
             }
           },
         })
@@ -297,10 +329,12 @@ export default function VennDiagram() {
       let circleW = sW / 10
       render.bounds.max.x = sW
       render.bounds.max.y = sH
-      render.options.width = sW
-      render.options.height = sH
-      render.canvas.width = sW
-      render.canvas.height = sH
+      render.options.pixelRatio = 2;
+      render.canvas.width = sW * 2;
+      render.canvas.height = sH * 2;
+      render.canvas.style.width = `${sW}px`;
+      render.canvas.style.height = `${sH}px`;
+      
 
       let newStack = []
       for (let i = 0; i < 1; i++) {
@@ -340,15 +374,28 @@ export default function VennDiagram() {
   }, [])
 
   return (
-    <div className="sphere">
-      <div className="translate-x-10 sphere-item">
-        <div ref={leftSphereCanvas} id="sphere-real"></div>
-        <div className="sphere-item__text">FreySmiles Orthodontics</div>
-      </div>
-      <div className="-translate-x-10 sphere-item">
-        <div ref={rightSphereCanvas} id="sphere-real"></div>
-        <div className="sphere-item__text">Others</div>
-      </div>
-    </div>
+    <div className="relative">
+    <div className="absolute inset-0 z-0 pointer-events-none grid-overlay" />
+<div className="z-10 flex items-end justify-center gap-12">
+
+  <div className="flex flex-col items-center">
+  <div className="mt-4 text-center font-neuehaas45 text-[20px]">Our Office</div>
+    <div
+      ref={leftSphereCanvas}
+      className="w-[700px] h-[700px] rounded-full border border-black overflow-hidden"
+    />
+
+  </div>
+  
+  <div className="flex flex-col items-center">
+  <div className="mt-4 text-center font-neuehaas45 text-[20px]">Their Office</div>
+    <div
+      ref={rightSphereCanvas}
+      className="w-[700px] h-[700px] rounded-full border border-black overflow-hidden"
+    />
+
+  </div>
+</div>
+</div>
   )
 }

@@ -1,14 +1,17 @@
 "use client";
+import { Item } from "../utils/Item";
+import { Water } from "three/examples/jsm/objects/Water";
+import { Sky } from "three/examples/jsm/objects/Sky";
 import { Curtains, Plane } from "curtainsjs";
-import { Vector2, Vector4 } from "three";
+import { Vector2, Vector4, TextureLoader } from "three";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
 import { Navigation } from "swiper/modules";
 import Link from "next/link";
 import Matter from "matter-js";
 import * as THREE from "three";
-import { GUI } from "dat.gui";
 import React, {
+  useMemo,
   forwardRef,
   useRef,
   useEffect,
@@ -16,28 +19,31 @@ import React, {
   useState,
   useCallback,
 } from "react";
-// framer motion
+
 import {
   motion,
+  useAnimation,
   stagger,
   useAnimate,
   useInView,
   useScroll,
   useTransform,
+  useMotionValueEvent
 } from "framer-motion";
-// headless ui
+
 import { Disclosure, Transition } from "@headlessui/react";
-// gsap
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { useGSAP } from "@gsap/react";
-import { MotionPathPlugin } from "gsap-trial/MotionPathPlugin";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { DrawSVGPlugin } from "gsap-trial/DrawSVGPlugin";
-import { SplitText } from "gsap-trial/SplitText";
-import { ScrollSmoother } from "gsap-trial/ScrollSmoother";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+import { SplitText } from "gsap/SplitText";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 import * as OGL from "ogl";
+import { ScrollControls, useScroll as useThreeScroll,Scroll, Text,OrbitControls,useGLTF  } from "@react-three/drei";
+import { Canvas, useFrame, useThree , extend} from "@react-three/fiber";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
@@ -51,20 +57,213 @@ if (typeof window !== "undefined") {
 }
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+const Marquee = () => {
+  const items = [{ word: "TESTIMONIALS" }, { word: "TESTIMONIALS" }];
+
+  return (
+    <div className="relative flex py-5 overflow-hidden">
+      <div className="flex min-w-max animate-marquee hover:[animation-play-state:paused]">
+        {[...items, ...items].map((item, index) => (
+          <div
+            key={index}
+            className="px-4 text-[10em] font-agrandir-bold whitespace-nowrap"
+          >
+            {item.word}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
+extend({ Water, Sky });
+
+function DoorModel() {
+  const { scene, animations } = useGLTF("/models/openingclosingdoor3d.glb");
+  const mixer = useRef(null);
+  const action = useRef(null);
+  const doorRef = useRef();
+  useEffect(() => {
+    if (animations.length > 0) {
+      mixer.current = new THREE.AnimationMixer(scene);
+      const openingAnimation = animations.find((anim) => anim.name === "Action");
+  
+      if (!openingAnimation) {
+        return;
+      }
+  
+      action.current = mixer.current.clipAction(openingAnimation);
+      action.current.clampWhenFinished = true;
+      action.current.setLoop(THREE.LoopOnce);
+      action.current.play();
+  
+      const stopFrame = openingAnimation.duration * 0.9;
+      const checkAnimation = () => {
+        if (action.current.time >= stopFrame) {
+          action.current.paused = true;
+        } else {
+          requestAnimationFrame(checkAnimation);
+        }
+      };
+  
+      requestAnimationFrame(checkAnimation);
+    }
+  }, [scene, animations]);
+  
+
+  
+  useEffect(() => {
+    const textureLoader = new THREE.TextureLoader();
+    const matcapTexture = textureLoader.load("../images/matcap-green-yellow-pink.png");
+
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material.map = null;
+        child.material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
+        child.material.needsUpdate = true;
+      }
+    });
+  }, [scene]);
+
+  useFrame((_, delta) => {
+    mixer.current?.update(delta);
+  });
+
+  return <primitive ref={doorRef} object={scene} position={[0, -1, 0]}  rotation={[0, Math.PI, 0]} scale={7.25} />;
+}
+
+
+const OceanScene = () => {
+  const { scene, gl, camera } = useThree();
+  const waterRef = useRef();
+  const meshRef = useRef();
+  useEffect(() => {
+    camera.position.set(-10, 5, 30); //-x moves the right part of door back positive moves it forward
+    camera.lookAt(0, -5, 0); 
+  }, [camera]);
+  
+  useEffect(() => {
+
+    const waterNormals = new THREE.TextureLoader().load(
+      "https://threejs.org/examples/textures/waternormals.jpg"
+    );
+    waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+
+    const waterGeometry = new THREE.PlaneGeometry(10000, 10000);
+
+    const water = new Water(waterGeometry, {
+      textureWidth: 512,
+      textureHeight: 512,
+      waterNormals: waterNormals,
+      sunDirection: new THREE.Vector3(),
+      sunColor: 0xffffff,
+      waterColor: 0x001e0f,
+      distortionScale: 3.7, 
+      fog: scene.fog !== undefined,
+    });
+
+    water.rotation.x = -Math.PI / 2;
+    scene.add(water);
+    waterRef.current = water;
+
+
+    const sky = new Sky();
+    sky.scale.setScalar(10000);
+    scene.add(sky);
+
+    const skyUniforms = sky.material.uniforms;
+    skyUniforms["turbidity"].value = 10;
+    skyUniforms["rayleigh"].value = 2;
+    skyUniforms["mieCoefficient"].value = 0.005;
+    skyUniforms["mieDirectionalG"].value = 0.8;
+
+    const pmremGenerator = new THREE.PMREMGenerator(gl);
+    const sun = new THREE.Vector3();
+
+    const updateSun = () => {
+      const theta = Math.PI * (0.49 - 0.5); 
+      const phi = 2 * Math.PI * (0.205 - 0.5);
+
+      sun.x = Math.cos(phi);
+      sun.y = Math.sin(phi) * Math.sin(theta);
+      sun.z = Math.sin(phi) * Math.cos(theta);
+
+      sky.material.uniforms["sunPosition"].value.copy(sun);
+      water.material.uniforms["sunDirection"].value.copy(sun).normalize();
+      scene.environment = pmremGenerator.fromScene(sky).texture;
+    };
+
+    updateSun();
+
+    return () => {
+      scene.remove(water);
+      scene.remove(sky);
+    };
+  }, [scene, gl]);
+
+  useFrame(({ clock }) => {
+    const time = clock.getElapsedTime();
+
+    if (meshRef.current) {
+      meshRef.current.position.y = Math.sin(time) * 20 + 5;
+      meshRef.current.rotation.x = time * 0.5;
+      meshRef.current.rotation.z = time * 0.51;
+    }
+
+    if (waterRef.current) {
+      waterRef.current.material.uniforms["time"].value += 1.0 / 60.0;
+    }
+  });
+
+  return (
+    <>
+      <OrbitControls
+        maxPolarAngle={Math.PI * 0.495}
+        target={[0, 10, 0]}
+        minDistance={30.0}
+        maxDistance={30.0}
+      />
+           <DoorModel />
+      <mesh ref={meshRef} position={[0, 10, 0]}>
+        
+        {/* <boxGeometry args={[30, 30, 30]} /> */}
+        <meshStandardMaterial roughness={0} color="white" />
+      </mesh>
+    </>
+  );
+};
 
 export default function LandingComponent() {
   return (
     <>
-      <Hero />
+    {/* <div style={{ height: "200vh", margin: 0 }}>
+      <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh" }}>
+      <Canvas>
+      <ScrollControls pages={3} damping={0.1}>
+        <OceanScene />
+      </ScrollControls>
+    </Canvas>
+      </div>
+    </div> */}
+      <div style={{ overflowX: 'hidden' }}> 
+      <div class="MainContainer">
+        <div class="ParallaxContainer">
+          <Hero />
+        </div>
+        <div class="StatsContainer">
+          <Stats />
+        </div>
+      </div>
       {/* <MarqueeSection /> */}
-      <Stats />
+
       <ImageGrid />
       <NewSection />
       <Testimonials />
       <LogoGrid />
       <Locations />
-      <ContactUs />
       <GiftCards />
+     </div>
     </>
   );
 }
@@ -444,29 +643,52 @@ const Hero = () => {
     const gl = renderer.gl;
     containerRef.current.appendChild(gl.canvas);
 
-    gl.canvas.style.borderRadius = "30px";
-    gl.canvas.style.clipPath = "inset(0% round 30px)";
+    gl.canvas.style.borderRadius = "20px";
+    gl.canvas.style.clipPath = "inset(0% round 20px)";
+    // gl.canvas.style.clipPath = "none";
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-    renderer.setSize(window.innerWidth, 600);
     let aspect = 1;
     const mouse = new OGL.Vec2(-1);
     const velocity = new OGL.Vec2();
 
     function resize() {
-      const width = 200;
-      const height = 250;
+      if (!containerRef.current) return;
 
-      renderer.setSize(width, height);
-      program.uniforms.res.value = new OGL.Vec4(width, height, 1, 1);
-      aspect = width / height;
+      const containerWidth = containerRef.current.clientWidth;
+      const containerHeight = containerRef.current.clientHeight;
+
+      renderer.setSize(containerWidth, containerHeight);
+
+
+      let a1, a2;
+      var imageAspect = imgSize[1] / imgSize[0]; 
+      var containerAspect = containerHeight / containerWidth;
+
+      if (containerAspect < imageAspect) {
+        a1 = 1;
+        a2 = containerAspect / imageAspect;
+      } else {
+        a1 = imageAspect / containerAspect;
+        a2 = 1;
+      }
+
+
+      program.uniforms.res.value = new OGL.Vec4(
+        containerWidth,
+        containerHeight,
+        a1,
+        a2
+      );
+
+      aspect = containerWidth / containerHeight;
     }
 
     const flowmap = new OGL.Flowmap(gl);
-
     const geometry = new OGL.Geometry(gl, {
       position: {
         size: 2,
-        data: new Float32Array([-1, -1, 3, -1, -1, 3]),
+        data: new Float32Array([-1, -1, 3, -1, -1, 3]), // Covers full screen
       },
       uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
     });
@@ -480,7 +702,7 @@ const Hero = () => {
     img.onload = () => (texture.image = img);
     img.crossOrigin = "Anonymous";
     // img.src = "../images/bubble.jpg";
-    img.src = "../images/greencheckered.png";
+    img.src = "../images/test.png";
 
     let a1, a2;
     var imageAspect = imgSize[1] / imgSize[0];
@@ -530,15 +752,17 @@ const Hero = () => {
 
       mouse.set(x / rect.width, 1 - y / rect.height);
 
-      const sensitivity = (Math.min(rect.width, rect.height) / 300) * 3;
+      const minDimension = Math.min(window.innerWidth, window.innerHeight);
+      const baseFactor = 300;
+      const scaleFactor = minDimension / baseFactor;
 
       if (!lastTime) {
         lastTime = performance.now();
         lastMouse.set(x, y);
       }
 
-      const deltaX = (x - lastMouse.x) * sensitivity;
-      const deltaY = (y - lastMouse.y) * sensitivity;
+      const deltaX = (x - lastMouse.x) * scaleFactor * 0.3;
+      const deltaY = (y - lastMouse.y) * scaleFactor * 0.3;
       lastMouse.set(x, y);
 
       const time = performance.now();
@@ -550,6 +774,34 @@ const Hero = () => {
       velocity.needsUpdate = true;
     }
 
+    // function updateMouse(e) {
+    //   e.preventDefault();
+
+    //   const rect = gl.canvas.getBoundingClientRect();
+    //   const x = e.clientX - rect.left;
+    //   const y = e.clientY - rect.top;
+
+    //   mouse.set(x / rect.width, 1 - y / rect.height);
+
+    //   const sensitivity = (Math.min(rect.width, rect.height) / 300) * 3;
+
+    //   if (!lastTime) {
+    //     lastTime = performance.now();
+    //     lastMouse.set(x, y);
+    //   }
+
+    //   const deltaX = (x - lastMouse.x) * sensitivity;
+    //   const deltaY = (y - lastMouse.y) * sensitivity;
+    //   lastMouse.set(x, y);
+
+    //   const time = performance.now();
+    //   const delta = Math.max(5, time - lastTime);
+    //   lastTime = time;
+
+    //   velocity.x = deltaX / delta;
+    //   velocity.y = deltaY / delta;
+    //   velocity.needsUpdate = true;
+    // }
     function update(t) {
       requestAnimationFrame(update);
 
@@ -574,99 +826,228 @@ const Hero = () => {
       window.removeEventListener("mousemove", updateMouse);
       window.removeEventListener("touchstart", updateMouse);
       window.removeEventListener("touchmove", updateMouse);
-      containerRef.current.removeChild(gl.canvas);
+      if (containerRef.current && gl?.canvas) {
+        containerRef.current.removeChild(gl.canvas);
+      }
     };
   }, []);
 
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, (latest) => -latest * 0.5);
+
+  const sectionCircleRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionCircleRef,
+    offset: ["start end", "end start"],
+  });
+
+  const strokeRef = useRef(null);
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    if (strokeRef.current && mainRef.current) {
+      const path = strokeRef.current;
+      const pathLength = path.getTotalLength();
+
+      gsap.set(path, {
+        strokeDasharray: pathLength,
+        strokeDashoffset: pathLength,
+      });
+
+      gsap.to(path, {
+        strokeDashoffset: 0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: mainRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1,
+        },
+      });
+    }
+  }, []);
+
   return (
-    <div className="flex h-screen w-full">
-      {/* Left Section */}
-      <div className="flex-[3] flex flex-col justify-center p-8 border-r border-black">
-        {/* <div className="mt-[300px] w-full">
-          <div className="stagger-line overflow-hidden">
-            <h1 className="text-[10vw] font-semibold font-neue-montreal leading-none w-full text-left">
-              <span className="stagger-letter">F</span>
-              <span className="stagger-letter">r</span>
-              <span className="stagger-letter">e</span>
-              <span className="stagger-letter">y</span>
-              <span className="stagger-letter">&nbsp;</span>
-              <span className="stagger-letter">S</span>
-              <span className="stagger-letter">m</span>
-              <span className="stagger-letter">i</span>
-              <span className="stagger-letter">l</span>
-              <span className="stagger-letter">e</span>
-              <span className="stagger-letter">s</span>
-            </h1>
-          </div>
-        </div>
-     */}
+    <div className="relative">
+      <motion.section
+        style={{ y }}
+        className="fixed top-0 left-0 z-0 flex items-center justify-center w-full h-screen bg-white"
+      >
         <div
           style={{
             position: "relative",
             width: "100%",
-            height: "600px",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "4vw",
           }}
         >
           <div
             ref={containerRef}
             className="pointer-events-none"
             style={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
-              borderRadius: "30px",
+              width: "80%",
+              height: "80%",
               overflow: "hidden",
+              position: "relative",
             }}
           />
         </div>
-      </div>
 
-      {/* Right Section */}
-      <div className="flex-[1] flex flex-col items-center justify-start  p-4">
-        <div className="mb-6">
-          <div className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 "></div>
-          <div className="">
-            <video
-              // src="../videos/whitewavessvg.mp4"
-              src="../images/holographic.mp4"
-              className="object-cover w-3/4 max-h-[80vh] rounded-md"
-              autoPlay
-              loop
-              muted
-              playsInline
-            ></video>
+
+        <svg
+          viewBox="0 0 96 1332"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute top-0 h-full transform -translate-x-1/2 left-1/2"
+        >
+          <path
+            d="M1.00003 1332L1.00006 726.469C1.00007 691.615 18.8257 659.182 48.25 640.5V640.5C77.6744 621.818 95.5 589.385 95.5 554.531L95.5 0"
+            stroke="white"
+            strokeOpacity="0.2"
+            strokeWidth="1"
+          ></path>
+
+          <svg
+            viewBox="0 0 96 1332"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="absolute top-0 h-full transform -translate-x-1/2 left-1/2"
+          >
+            <defs>
+              <filter
+                id="glow-effect"
+                x="-50%"
+                y="-50%"
+                width="200%"
+                height="200%"
+              >
+                <feGaussianBlur stdDeviation="8" result="coloredBlur" />
+                <feFlood
+                  floodColor="white"
+                  floodOpacity="0.8"
+                  result="glowColor"
+                />
+                <feComposite
+                  in="glowColor"
+                  in2="coloredBlur"
+                  operator="in"
+                  result="softGlow"
+                />
+                <feMerge>
+                  <feMergeNode in="softGlow" />
+                  <feMergeNode in="softGlow" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            <motion.path
+              d="M1.00003 1332L1.00006 726.469C1.00007 691.615 18.8257 659.182 48.25 640.5V640.5C77.6744 621.818 95.5 589.385 95.5 554.531L95.5 0"
+              stroke="white"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeOpacity="0.4"
+              filter="url(#glow-effect)"
+              strokeDasharray="620, 1332"
+              strokeDashoffset="1952"
+              animate={{
+                strokeDashoffset: [1952, 0],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 4.5,
+                ease: "linear",
+              }}
+            />
+          </svg>
+        </svg>
+
+        <div className="absolute max-w-lg text-sm text-gray-300 font-neue-montreal top-60 right-56">
+          <h1 className="text-6xl leading-none md:text-6xl font-neue-montreal">
+            Because every <br /> smile is unique
+          </h1>
+
+          <div className="flex items-center gap-2 mt-6">
+            <button className="font-helvetica-neue px-6 py-3 bg-[url('/images/buttongradipng')] bg-cover bg-center hover:bg-blue-600 text-[12px] rounded-full transition">
+              START YOUR JOURNEY
+            </button>
+
+            <div className="flex items-center justify-center w-6 h-6 overflow-hidden rounded-full">
+              <video
+                id="holovideo"
+                loop
+                muted
+                autoPlay
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-cover scale-125 shadow-[0_0_50px_#ebe6ff80]"
+              >
+                <source
+                  src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
+                  type="video/mp4"
+                />
+                Your browser does not support the video tag.
+              </video>
+            </div>
           </div>
-          {/* <img
-        src="../images/ribbedimage.png"
-    
-        className="object-cover rounded-md"
-      /> */}
         </div>
-        {/* <div className="stagger-line overflow-hidden mt-[6vh]">
-          <p className="font-helvetica-neue-light text-xl lg:text-xl font-light leading-relaxed">
-            <span className="stagger-word">
-              A confident smile begins with effective care tailored to each
-              patient. At our practice, we’re dedicated to providing treatments
-              that are not only scientifically sound but also crafted to bring
-              out your best smile.
-            </span>
-            <br />
-          </p>
-        </div> */}
-        <div className="font-neue-montreal flex gap-4 mt-6">
-          <div>
-            <p className="font-neue-montreal text-sm tracking-widest">
-              • EST {time}
+
+        <div className="absolute max-w-xs text-sm text-gray-300 font-neue-montreal bottom-10 right-10">
+          Frey Smiles is working at the intersection of technology and nature to
+          transform your smile.
+        </div>
+      </motion.section>
+      <section
+        ref={sectionCircleRef}
+        className="relative h-[160vh] w-full bg-[#F2F2F2] z-10 mt-[100vh]"
+      >
+        <section className="relative flex flex-col items-center justify-center h-full px-8 text-center">
+          <main ref={mainRef}>
+            <svg
+              style={{ transform: "translateX(120px)" }}
+              className="stroke_wide "
+              preserveAspectRatio="xMidYMid slice"
+              fill-rule="evenodd"
+              stroke-miterlimit="1.5"
+              clip-rule="evenodd"
+              viewBox="0 1000 8500 14948.91"
+            >
+              <defs>
+                <linearGradient
+                  id="strokeGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop offset="0%" stopColor="#3339F1" />
+                  <stop offset="50%" stopColor="#000AFF" />
+                </linearGradient>
+              </defs>
+              <path
+                ref={strokeRef}
+                class="stroke_wide"
+                d="M4462.32,625c0,0 14.613,622.459 -463.862,807.768c-481.301,186.404 -1447.09,-126.375 -1575.51,541.543c-124.818,649.224 959.032,311.455 1893.1,826.688c1089.01,600.699 -524.942,1127.57 -1302.17,1453.96c-951.997,399.786 -995.709,1421.16 -230.78,1308.47c1157.75,-170.555 2955.04,-369.639 2625.82,434.977c-258.167,630.956 -1834.68,308.013 -1915.59,964.376c-123.736,1003.78 785.635,859.091 1309.31,778.296c976.475,-150.654 1261.08,579.399 1203.78,1013.11c-62.259,471.302 -669.89,1009.61 -1534.75,1125.17c-1019.84,136.266 -2356.12,174.662 -2200.88,942.9c130.32,644.912 1957.69,378.097 2999.78,691.136c860.372,258.452 772.286,1223.59 346.923,1696.49c-769.812,855.852 -852.502,1355.35 -852.502,1355.35"
+              />
+            </svg>
+          </main>
+          <div className="max-w-3xl text-[#1D64EF]">
+          <div className="blurred-circle">
+
+    </div>
+            <p className="uppercase text-[12px] font-semibold font-helvetica-neue-light tracking-widest">
+              Vision
             </p>
+            <h2 className="font-neue-montreal text-[40px] md:text-[40px] font-medium leading-none mt-4">
+              At FreySmiles, we blend artistry and precision to craft smiles as
+              unique as the individuals who wear them. Guided by expertise and
+              innovation—we shape confidence one smile at a time.
+            </h2>
           </div>
-          {/* <button className="px-6 py-2 border border-black text-black font-medium rounded-full">
-            Shop →
-          </button>
-          <button className="px-6 py-2 border border-black text-black font-medium rounded-full">
-            Learn More →
-          </button> */}
-        </div>
-      </div>
+        </section>
+      </section>
     </div>
   );
 };
@@ -681,7 +1062,7 @@ const MarqueeSection = () => {
     >
       <div className="line"></div>
       <div className="marquee-container">
-        <div className="marqueed uppercase">
+        <div className="uppercase marqueed">
           <span>Because every smile is unique ✿</span>
           <span>Because every smile is unique ✿</span>
           <span>Because every smile is unique ✿</span>
@@ -906,16 +1287,15 @@ const Stats = () => {
   }, []);
 
   const lines = [
-    "A confident smile begins with effective care tailored to each patient.",
-    "At our practice, we’re dedicated to providing treatments that are not only ",
-    "scientifically sound but also crafted to bring out your best smile.",
+    "We take a different approach, ",
+    "and we think you'll appreciate the difference.",
   ];
 
   return (
-    <section className=" rounded-tl-[40px] rounded-tr-[40px] ">
-      <section className="min-h-screen grid grid-cols-12 px-12">
-        <div className="col-span-4  flex">
-          <div className="lg:w-1/3 w-full flex flex-col justify-start items-start lg:pl-8 ">
+    <section className="bg-[#F2F2F2] w-full min-h-screen flex items-center justify-center">
+      <section className="grid grid-cols-12 px-12">
+        <div className="flex col-span-4">
+          <div className="flex flex-col items-start justify-start w-full lg:w-1/3 lg:pl-8 ">
             <svg
               className="pointer-events-none"
               width="1000"
@@ -958,7 +1338,7 @@ const Stats = () => {
           </div>
         </div>
 
-        <div className="col-span-8 flex flex-col">
+        <div className="flex flex-col col-span-8">
           <div className="mt-[6vh] ml-auto max-w-2xl">
             <motion.div
               className="pointer-events-none h-[1px] bg-black mt-2"
@@ -974,7 +1354,7 @@ const Stats = () => {
               {lines.map((line, index) => (
                 <motion.div
                   key={index}
-                  className="text-[14px] lg:text-[20px] overflow-hidden leading-relaxed"
+                  className="text-[18px] lg:text-[24px] overflow-hidden leading-relaxed"
                   initial={{
                     clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
                     y: 20,
@@ -1000,9 +1380,9 @@ const Stats = () => {
           </div>
           <div className="my-12"></div>
           {/* Stats Section */}
-          <div className="flex flex-wrap sm:flex-nowrap justify-end mt-8 space-x-4 sm:space-x-6 md:space-x-12">
+          <div className="flex flex-wrap justify-end mt-8 space-x-4 sm:flex-nowrap sm:space-x-6 md:space-x-12">
             <div className="text-center">
-              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">
+              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 ">
                 Years of Experience
               </p>
               <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light flex items-center gap-1 sm:gap-2">
@@ -1019,14 +1399,14 @@ const Stats = () => {
               </h2>
             </div>
             <div className="text-center">
-              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">
+              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 ">
                 Satisfied Patients
               </p>
               <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light flex items-center gap-1 sm:gap-2">
                 <span
                   data-target="25"
                   ref={(el) => (statRefs.current[1] = el)}
-                  className="pointer-events-none flex"
+                  className="flex pointer-events-none"
                 >
                   0
                 </span>
@@ -1034,7 +1414,7 @@ const Stats = () => {
               </h2>
             </div>
             <div className="text-center">
-              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10 tracking-wider">
+              <p className="font-neue-montreal text-[12px] sm:text-[15px] mb-4 sm:mb-10">
                 Locations
               </p>
               <h2 className="font-neue-montreal text-[5rem] sm:text-[6rem] md:text-[7rem] font-light">
@@ -1086,10 +1466,10 @@ const Stats = () => {
 
       {/* <div
           style={{ marginTop: "8rem" }}
-          className="big-numbers-wrapper flex justify-around items-center"
+          className="flex items-center justify-around big-numbers-wrapper"
         >
           <div
-            className="big-numbers-card group transition-all duration-500 ease-in-out"
+            className="transition-all duration-500 ease-in-out big-numbers-card group"
             onMouseEnter={() => handleMouseEnter(1)}
             onMouseLeave={handleMouseLeave}
           >
@@ -1114,7 +1494,7 @@ const Stats = () => {
           </div>
 
           <div
-            className="big-numbers-card group transition-all duration-500 ease-in-out"
+            className="transition-all duration-500 ease-in-out big-numbers-card group"
             onMouseEnter={() => handleMouseEnter(2)}
             onMouseLeave={handleMouseLeave}
           >
@@ -1135,7 +1515,7 @@ const Stats = () => {
           </div>
 
           <div
-            className="big-numbers-card group transition-all duration-500 ease-in-out"
+            className="transition-all duration-500 ease-in-out big-numbers-card group"
             onMouseEnter={() => handleMouseEnter(3)}
             onMouseLeave={handleMouseLeave}
           >
@@ -1156,11 +1536,11 @@ const Stats = () => {
           </div>
         </div> */}
 
-      {/* <section className="py-20 px-6">
-          <div className="max-w-7xl mx-auto">
+      {/* <section className="px-6 py-20">
+          <div className="mx-auto max-w-7xl">
             <div className="mb-12">
               <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
-              <span className="text-6xl font-cursive italic text-gray-700 block mt-2 font-autumnchant">
+              <span className="block mt-2 text-6xl italic text-gray-700 font-cursive font-autumnchant">
                 best
               </span>
 
@@ -1172,7 +1552,7 @@ const Stats = () => {
       {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
 
         <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">
-          <div className="hero-header flex flex-col items-center text-center relative gap-4">
+          <div className="relative flex flex-col items-center gap-4 text-center hero-header">
             <div
               className="heading opacity-0 transform translate-y-[10vh]"
               style={{
@@ -1185,8 +1565,8 @@ const Stats = () => {
           </div>
         </div>
 
-        <section className="hero relative flex justify-center items-center h-screen">
-          <div className="hero-grid absolute inset-0 flex justify-center items-center z-0">
+        <section className="relative flex items-center justify-center h-screen hero">
+          <div className="absolute inset-0 z-0 flex items-center justify-center hero-grid">
             <img
               src="../images/Hero-Background-Grid.svg"
               alt="Hero Grid"
@@ -1195,7 +1575,7 @@ const Stats = () => {
             />
           </div>
 
-          <div className="z-20 hero-interaction-wrapper relative flex justify-center items-center z-20 space-x-2">
+          <div className="relative z-20 flex items-center justify-center space-x-2 hero-interaction-wrapper">
             <div className="hero-card bg-transparent z-30 rotate-[-4deg]">
               <img
                 src="../images/freysmilepatient.jpg"
@@ -1299,190 +1679,65 @@ const NewSection = () => {
     };
   }, []);
 
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    let engine;
-    let render;
-
-    const initSimulation = () => {
-      const Engine = Matter.Engine;
-      const Render = Matter.Render;
-      const World = Matter.World;
-      const Bodies = Matter.Bodies;
-      const Mouse = Matter.Mouse;
-      const MouseConstraint = Matter.MouseConstraint;
-
-      engine = Engine.create();
-      const world = engine.world;
-
-      const containerElement = canvasRef.current;
-      const containerWidth = containerElement.clientWidth;
-      const containerHeight = containerElement.clientHeight;
-
-      render = Render.create({
-        element: containerElement,
-        engine: engine,
-        options: {
-          width: containerWidth,
-          height: containerHeight,
-          pixelRatio: 2,
-          background: "transparent",
-          wireframes: false,
-        },
-      });
-
-      // wall boundaries
-      const ground = Bodies.rectangle(
-        containerWidth / 2,
-        containerHeight + 50,
-        containerWidth,
-        100,
-        {
-          isStatic: true,
-          render: {
-            fillStyle: "#000",
-          },
-        }
-      );
-      const wallLeft = Bodies.rectangle(
-        -50,
-        containerHeight / 2,
-        100,
-        containerHeight,
-        {
-          isStatic: true,
-          render: {
-            fillStyle: "#000",
-          },
-        }
-      );
-      const wallRight = Bodies.rectangle(
-        containerWidth + 50,
-        containerHeight / 2,
-        100,
-        containerHeight,
-        {
-          isStatic: true,
-          render: {
-            fillStyle: "#000",
-          },
-        }
-      );
-      const roof = Bodies.rectangle(
-        containerWidth / 2,
-        -50,
-        containerWidth,
-        100,
-        {
-          isStatic: true,
-          render: {
-            fillStyle: "#000",
-          },
-        }
-      );
-
-      const tags = [
-        {
-          y: 100,
-          w: 164,
-          h: 56,
-          texture: "../images/ico_star2.svg",
-        },
-        {
-          x: 200,
-          y: 100,
-          w: 164,
-          h: 56,
-          texture: "../images/240by56(01).svg",
-        },
-        {
-          x: 300,
-          y: 200,
-          w: 240,
-          h: 56,
-          texture: "../images/240by56(02).svg",
-        },
-        {
-          x: 400,
-          y: 300,
-          w: 200,
-          h: 56,
-          texture: "../images/240by56(03).svg",
-        },
-        {
-          x: 400,
-          y: 300,
-          w: 200,
-          h: 56,
-          texture: "../images/240by56(04).svg",
-        },
-      ];
-
-      const radius = 20;
-      const dynamicBodies = tags.map((tag) =>
-        Bodies.rectangle(tag.x, tag.y, tag.w, tag.h, {
-          chamfer: { radius },
-          render: {
-            sprite: {
-              texture: tag.texture,
-              xScale: 1,
-              yScale: 1,
-            },
-          },
-        })
-      );
-
-      // Add objects to world
-      World.add(world, [ground, wallLeft, wallRight, roof, ...dynamicBodies]);
-
-      // mouse dragging
-      const mouse = Mouse.create(render.canvas);
-      const mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: {
-          stiffness: 0.2,
-          render: { visible: false },
-        },
-      });
-
-      World.add(world, mouseConstraint);
-      render.mouse = mouse;
-
-      Engine.run(engine);
-      Render.run(render);
-    };
-
-    initSimulation();
-
-    return () => {
-      if (engine) {
-        Matter.World.clear(engine.world);
-        Matter.Engine.clear(engine);
-      }
-      if (render) {
-        render.canvas.remove();
-        render.textures = {};
-      }
-    };
-  }, []);
-
   const [hover, setHover] = useState(false);
 
   return (
     <>
-      <section className="flex items-center justify-center min-h-screen bg-black px-8 md:px-16">
-        <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+      <section className="flex items-center justify-center min-h-screen px-8 bg-black md:px-16">
+        <div className="grid w-full grid-cols-1 gap-8 max-w-7xl md:grid-cols-2">
           {/*left */}
           <div className="bg-[#CFF174] text-black p-8 md:p-16 rounded-md flex flex-col justify-center">
-            <h1 className="font-helvetica-neue-light text-5xl md:text-6xl mb-4">
+            <h1 className="mb-4 text-5xl font-helvetica-neue-light md:text-6xl">
               A world of opportunity.
             </h1>
-            <div
-              ref={canvasRef}
-              style={{ height: "400px", width: "500px" }}
-            ></div>
-            <div className="tracking-widest flex justify-center border border-black py-6 px-8">
+       
+
+
+                 <div className="relative flex items-center justify-center mx-auto max-w-[80vw]">
+            <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
+            <div className="relative w-[110%] bg-[#CFF174] px-48 py-2 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
+                  <div className="py-2 font-neue-montreal text-center text-[18px] text-black">
+                  <a
+                ref={linkRef}
+                href="/book-now"
+                data-tha
+                style={{
+                  display: "inline-block",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <span
+                  data-tha-span-1
+                  style={{
+                    fontSize: "1.25rem",
+                    fontFamily: "HelveticaNeue-Light",
+                    display: "inline-block",
+                    position: "relative",
+                  }}
+                >
+                  BOOK NOW
+                </span>
+                <span
+                  data-tha-span-2
+                  style={{
+                    fontSize: "1.25rem",
+                    fontFamily: "HelveticaNeue-Light",
+                    display: "inline-block",
+                    position: "absolute",
+                    top: "100%",
+                    left: "0",
+                  }}
+                >
+                  BOOK NOW
+                </span>
+              </a>
+
+                  </div>
+                </div>
+</div>
+{/*             
+            <div className="flex justify-center px-8 py-6 tracking-widest border border-black">
               <a
                 ref={linkRef}
                 href="/book-now"
@@ -1518,7 +1773,7 @@ const NewSection = () => {
                   BOOK NOW
                 </span>
               </a>
-            </div>
+            </div> */}
           </div>
 
           {/*right*/}
@@ -1536,7 +1791,7 @@ const NewSection = () => {
                 </clipPath>
               </defs>
 
-              {/* use href for image to put inside the clip path */}
+
               <image
                 href="../images/nowbook.png"
                 width="200"
@@ -1545,7 +1800,7 @@ const NewSection = () => {
                 preserveAspectRatio="xMidYMid slice"
               />
 
-              {/* shape outline*/}
+        
               <path
                 d="M50 50.5H50.5V50V49.5C23.2199 49.5 1.04241 27.6526 0.509799 0.5H199.491C198.957 27.6526 176.781 49.5 149.5 49.5V50V50.5H150C177.338 50.5 199.5 72.6619 199.5 100C199.5 125.033 180.918 145.726 156.795 149.038L156.791 150.028C180.949 153.556 199.5 174.363 199.5 199.5H0.5C0.5 174.363 19.0509 153.556 43.2094 150.028L43.2051 149.038C19.0823 145.726 0.5 125.033 0.5 100C0.5 72.6619 22.6619 50.5 50 50.5Z"
                 fill="none"
@@ -1662,27 +1917,6 @@ const NewSection = () => {
                 `}</style>
               </div>
 
-              {/* <button
-                type="submit"
-                className="font-neue-montreal rounded-full bg-[#CFF174] text-black font-medium px-6 py-3 hover:bg-lime-500"
-              >
-                Start a conversation
-              </button> */}
-
-              {/* <p className="mt-6 text-sm text-gray-500">
-            © 2025 TVP, L.L.C.
-            <br />
-            <a
-              href="#privacy-policy"
-              className="underline hover:no-underline"
-            >
-              Privacy Policy
-            </a>{" "}
-            |{" "}
-            <a href="#terms" className="underline hover:no-underline">
-              Terms & Services
-            </a>
-          </p> */}
             </div>
           </div>
         </div>
@@ -1690,10 +1924,10 @@ const NewSection = () => {
       {/* <section
       className="bg-[#C4CED2] min-h-screen flex items-center justify-center text-white"
     >
-          <div className=" flex flex-col items-center justify-center ">
-        <section className="py-20 px-8 flex flex-col lg:flex-row max-w-7xl mx-auto space-y-12 lg:space-y-0 lg:space-x-8">
+          <div className="flex flex-col items-center justify-center ">
+        <section className="flex flex-col px-8 py-20 mx-auto space-y-12 lg:flex-row max-w-7xl lg:space-y-0 lg:space-x-8">
           <div
-            className="flex-1 flex flex-col justify-center items-start space-y-8 relative"
+            className="relative flex flex-col items-start justify-center flex-1 space-y-8"
             ref={textContainerRef}
           >
             <h1 className="">
@@ -1715,7 +1949,7 @@ const NewSection = () => {
          
           </div>
 
-          <div className="flex-1 flex items-center justify-center relative">
+          <div className="relative flex items-center justify-center flex-1">
             <div
                ref={wrapperRef}
               className="w-[360px] h-[660px]  rounded-full"
@@ -1729,8 +1963,8 @@ const NewSection = () => {
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center space-y-6 lg:pl-8 z-20">
-            <button className="font-helvetica-neue-light border border-black text-black text-2xl py-6 px-12 rounded-lg">
+          <div className="z-20 flex flex-col items-center justify-center space-y-6 lg:pl-8">
+            <button className="px-12 py-6 text-2xl text-black border border-black rounded-lg font-helvetica-neue-light">
               Need more info? <br /> Take our quiz
             </button>
           </div>
@@ -2365,9 +2599,68 @@ const ImageGrid = () => {
   //   return () => observer.disconnect();
   // }, []);
 
+  const createItems = () => {
+    const elements = document.querySelectorAll(".gtext");
+
+    return [...elements].map((el) => new Item(el, 6));
+  };
+
+  const textExpertiseRef = useRef(null);
+  const textWrapRef = useRef(null);
+
+  useEffect(() => {
+    if (!textExpertiseRef.current) return;
+
+    let items = createItems();
+
+    items.forEach((item, index) => {
+      gsap
+        .timeline({
+          defaults: { ease: "power1" },
+          scrollTrigger: {
+            trigger: item.DOM.el,
+            start: "top 90%",
+            end: "top 20%",
+            scrub: true,
+          },
+        })
+        .fromTo(
+          item.DOM.inner,
+          { xPercent: (pos) => (pos % 2 === 0 ? 30 : -30), opacity: 0.6 },
+          { xPercent: 0, opacity: 1 },
+          index * 0.1
+        )
+        .fromTo(
+          item.DOM.innerWrap,
+          { xPercent: (pos) => 2 * (pos + 1) * 10 },
+          { xPercent: 0 },
+          index * 0.1
+        );
+    });
+  }, []);
+
   return (
     <div>
-      <div className="grid grid-cols-2 h-screen gap-4 p-4">
+      <div className="bg-[#E7E8EA] px-10 py-10">
+        <div className="content content--full">
+          <h1
+            ref={textExpertiseRef}
+            className="gtext size-xl font-neue-montreal spaced"
+            data-text="Expertise"
+            data-effect="2"
+          >
+            Expertise
+          </h1>
+        </div>
+
+        {/* <div className="flex items-start justify-between pb-6 border-b">
+        <h1 className="text-[160px] md:text-[200px] leading-none text-gray-900">
+EXPERTISE
+        </h1>
+        <span className="text-lg text-gray-500 font-neue-montreal">( 03 )</span>
+      </div> */}
+      </div>
+      <div className="bg-[#E7E8EA] grid grid-cols-2 h-screen gap-4 p-4">
         {/* Column 1 */}
         <div className="grid grid-cols-2 gap-4">
           <div className="relative group rounded-[60px] bg-[#B2E7EB]">
@@ -2377,9 +2670,9 @@ const ImageGrid = () => {
               className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-200 group-hover:-translate-y-20 pointer-events-none"
               loading="lazy"
             />
-            <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+            <div className="absolute inset-0 flex flex-col justify-end p-4 text-white transition-opacity duration-500 opacity-0 pointer-events-none group-hover:opacity-100">
               <h2 className="text-2xl font-neue-montreal">Clear Aligners</h2>
-              <p className="font-neue-montreal text-lg">Invisalign</p>
+              <p className="text-lg font-neue-montreal">Invisalign</p>
             </div>
           </div>
 
@@ -2390,9 +2683,9 @@ const ImageGrid = () => {
               className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-200 group-hover:-translate-y-10 pointer-events-none"
               loading="lazy"
             />
-            <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+            <div className="absolute inset-0 flex flex-col justify-end p-4 text-white transition-opacity duration-500 opacity-0 pointer-events-none group-hover:opacity-100">
               <h2 className="text-2xl font-neue-montreal">Braces</h2>
-              <p className="font-neue-montreal text-lg">Damon Ultima</p>
+              <p className="text-lg font-neue-montreal">Damon Ultima</p>
             </div>
           </div>
         </div>
@@ -2403,7 +2696,7 @@ const ImageGrid = () => {
           <div className="h-1/3 bg-[#EFFD47] rounded-[60px] relative flex items-center justify-center">
             <div className="flex flex-col">
               <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
-              <span className="text-6xl font-cursive italic text-gray-700 mt-2 font-autumnchant">
+              <span className="mt-2 text-6xl italic text-gray-700 font-cursive font-autumnchant">
                 best
               </span>
             </div>
@@ -2417,11 +2710,11 @@ const ImageGrid = () => {
               className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-500 group-hover:-translate-y-10 pointer-events-none"
               loading="lazy"
             />
-            <div className="absolute inset-0 text-white p-4 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+            <div className="absolute inset-0 flex flex-col justify-end p-4 text-white transition-opacity duration-500 opacity-0 pointer-events-none group-hover:opacity-100">
               <h2 className="text-2xl font-neue-montreal">
                 Advanced Technology
               </h2>
-              <p className="font-neue-montreal text-lg">
+              <p className="text-lg font-neue-montreal">
                 3D i-Cat Imaging, Digital Scans
               </p>
             </div>
@@ -2574,8 +2867,8 @@ const LogoGrid = () => {
       for (let i = 0; i < 12; i++) {
         const ball = Bodies.circle(halfsW, halfsW, circleW, {
           restitution: 0.3, // reduce bounces
-          friction: 0.1, // 
-          
+          friction: 0.1, //
+
           density: 0.02, // helps with
           collisionFilter: {
             category: 0x0003,
@@ -2585,7 +2878,7 @@ const LogoGrid = () => {
             fillStyle: "#1e90ff",
           },
         });
-        
+
         ballsWithText.push({ ball, text: texts[i] });
         Composite.add(engine.world, ball);
       }
@@ -2664,35 +2957,56 @@ const LogoGrid = () => {
 
       Render.run(render);
       let boxWidth = sW * 0.9;
-      let boxHeight = sW * .8;
+      let boxHeight = sW * 0.8;
       let boxX = sW / 2;
       let boxY = sW / 2;
       let wallThickness = 50;
-      
+
       let walls = [
-        // 🔥 Adjusted Top Wall - Moves higher
-        Bodies.rectangle(boxX, boxY - boxHeight / 2 - wallThickness / 2, boxWidth, wallThickness, { 
-          isStatic: true, render: { fillStyle: "transparent" }  
+ 
+        Bodies.rectangle(
+          boxX,
+          boxY - boxHeight / 2 - wallThickness / 2,
+          boxWidth,
+          wallThickness,
+          {
+            isStatic: true,
+            render: { fillStyle: "transparent" },
+          }
+        ),
+
+
+        Bodies.rectangle(boxX, boxY + boxHeight / 2, boxWidth, wallThickness, {
+          isStatic: true,
+          render: { fillStyle: "transparent" },
         }),
-      
-        // 🔥 Adjusted Bottom Wall - Moves lower so balls align with bottom
-        Bodies.rectangle(boxX, boxY + boxHeight / 2, boxWidth, wallThickness, { 
-          isStatic: true, render: { fillStyle: "transparent" }  
-        }),
-      
+
         // Left Wall
-        Bodies.rectangle(boxX - boxWidth / 2 - wallThickness / 2, boxY, wallThickness, boxHeight, { 
-          isStatic: true, render: { fillStyle: "transparent" }  
-        }),
-      
+        Bodies.rectangle(
+          boxX - boxWidth / 2 - wallThickness / 2,
+          boxY,
+          wallThickness,
+          boxHeight,
+          {
+            isStatic: true,
+            render: { fillStyle: "transparent" },
+          }
+        ),
+
         // Right Wall
-        Bodies.rectangle(boxX + boxWidth / 2 + wallThickness / 2, boxY, wallThickness, boxHeight, { 
-          isStatic: true, render: { fillStyle: "transparent" }  
-        })
+        Bodies.rectangle(
+          boxX + boxWidth / 2 + wallThickness / 2,
+          boxY,
+          wallThickness,
+          boxHeight,
+          {
+            isStatic: true,
+            render: { fillStyle: "transparent" },
+          }
+        ),
       ];
-      
+
       Composite.add(engine.world, walls);
-      
 
       // let r = sW / 2;
       // let parts = [];
@@ -2768,9 +3082,7 @@ const LogoGrid = () => {
         />
 
         <div className="lg:w-1/2 bg-[#303BB0] py-24 px-20 rounded-[18px]">
-          <p className="font-neue-montreal text-[24px]">
-            Awards & Recognition
-          </p>
+          <p className="font-neue-montreal text-[24px]">Awards & Recognition</p>
           <div className="flex items-center mt-10">
             <div className="w-48 h-px bg-black"></div>
             <p className=" font-neue-montreal text-[15px] pl-4">
@@ -2782,323 +3094,333 @@ const LogoGrid = () => {
     </div>
   );
 };
+const BulgePlane = ({ textureUrl, text, scrollVelocity, index, position }) => {
+  const meshRef = useRef();
+  const texture = useMemo(() => new THREE.TextureLoader().load(textureUrl), [textureUrl]);
 
-function Testimonials() {
+  const uniforms = useMemo(() => ({
+    uTexture: { value: texture },
+    uScrollVelocity: { value: 0.0 },
+  }), [texture]);
+
+  const vertexShader = `
+    varying vec2 vUv;
+    uniform float uScrollVelocity;
+
+    void main() {
+      vUv = uv;
+      vec3 transformed = position;
+      float wave = sin(transformed.x * 1.2) * 0.5; 
+
+      transformed.y += wave * uScrollVelocity * 0.2; 
+
+      float t = (vUv.y - 0.5) * 2.0;
+      float distortion = t * t * 0.9 * uScrollVelocity;
+      transformed.x += distortion;
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+    }
+  `;
+
+  const fragmentShader = `
+    varying vec2 vUv;
+    uniform sampler2D uTexture;
+    void main() {
+      gl_FragColor = texture2D(uTexture, vUv);
+    }
+  `;
+
+
+  const dampedVelocity = useRef(0);
+  useFrame((_, delta) => {
+    if (meshRef.current) {
+
+      dampedVelocity.current += (scrollVelocity - dampedVelocity.current) * delta * 5; // Adjust damping factor
+      meshRef.current.material.uniforms.uScrollVelocity.value = dampedVelocity.current;
+    }
+  });
+
+  return (
+    <group position={position}>
+      <Text
+        position={[0, 0, 0.01]}
+        fontSize={0.14}
+        color="black"
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={3.6}
+        textAlign="left"
+      >
+        {text}
+      </Text>
+      <mesh ref={meshRef}>
+        <planeGeometry args={[4.2, 5, 64, 64]} />
+        <shaderMaterial
+          vertexShader={vertexShader}
+          fragmentShader={fragmentShader}
+          uniforms={uniforms}
+        />
+      </mesh>
+    </group>
+  );
+};
+
+const Carousel = ({ items }) => {
+  const { viewport } = useThree();
+  const scroll = useThreeScroll();
+  
+  const [velocity, setVelocity] = useState(0);
+
+  const lastOffset = useRef(0);
+  const velocityRef = useRef(0);
+
+  useFrame((_, delta) => {
+
+    const currentOffset = scroll.offset;
+
+
+    const offsetDelta = currentOffset - lastOffset.current;
+    lastOffset.current = currentOffset;
+    const newVelocity = offsetDelta * 200;
+
+    velocityRef.current += (newVelocity - velocityRef.current) * delta * 10;
+
+
+    setVelocity(velocityRef.current);
+  });
+
+  return (
+    <>
+      {items.map((item, index) => (
+        <BulgePlane
+          key={index}
+          textureUrl={item.textureUrl}
+          text={item.text}
+          scrollVelocity={velocity}
+          index={index}
+          position={[(index + 0.5) * viewport.width * 0.32 - viewport.width * 0.5, 0, 0]}
+        />
+      ))}
+    </>
+  );
+};
+
+
+const WebGLCarousel = () => {
+  const items = [  { textureUrl: '../images/beigegradient.png', text: "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!" },
+    { textureUrl: '../images/buttongradient.png', text: "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!" },
+    { textureUrl: '../images/background_min.png', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
+    { textureUrl: '../images/radialgradient.png', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
+    { textureUrl: '../images/beigegradient.png', text: "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!" },
+    { textureUrl: '../images/buttongradient.png', text: "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!" },
+    { textureUrl: '../images/gradient2.jpeg', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
+    { textureUrl: '../images/radialgradient.png', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
+  ];
+
+  return (
+<div  className="scroll-container">
+<Canvas style={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
+    <ScrollControls horizontal pages={Math.max(items.length * 0.85, 1)}>
+      <Scroll>
+        <Carousel items={items} />
+      </Scroll>
+    </ScrollControls>
+  </Canvas>
+</div>
+
+  );
+};
+
+const Testimonials = ({ textureUrl, position }) => {
+
+  const carouselItems = [
+    {
+      type: "image",
+      src: "../images/beigegradient.png",
+      name: "Lisa Moyer",
+      description: "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!",
+    },
+    {
+      type: "image",
+      src: "../images/buttongradient.png",
+      name: "Karen O'Neill",
+      description:
+      "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
+    },
+    {
+      type: "image",
+      src: "../images/gradient2.jpeg",
+      name: "Karen Oneill",
+      description:
+      "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
+    },
+    {
+      type: "image",
+      src: "../images/radialgradient.png",
+      name: "Tanya Burnhauser",
+      description:
+      "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!",
+  },
+  ];
+  
+
   const carouselRef = useRef(null);
+  
+  const controls = useAnimation();
 
-  const scroll = (direction) => {
-    if (carouselRef.current) {
-      const { current: carousel } = carouselRef;
-      const scrollAmount = carousel.offsetWidth;
-      if (direction === "left") {
-        carousel.scrollLeft -= scrollAmount;
-      } else {
-        carousel.scrollLeft += scrollAmount;
-      }
+  const handleDragEnd = (_, info) => {
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
+
+    if (offset > 100 || velocity > 500) {
+      prevSlide();
+    } else if (offset < -100 || velocity < -500) {
+      nextSlide();
+    } else {
+      controls.start({ x: `-${currentIndex * 50}vw` });
     }
   };
 
-  const headingRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const prevSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? carouselItems.length - 1 : prevIndex - 1
+    );
+  };
+
+  const nextSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === carouselItems.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const [maxDrag, setMaxDrag] = useState(0);
 
   useEffect(() => {
-    const split = new SplitText(headingRef.current, {
-      type: "words, chars",
-      charsClass: "char",
-      wordsClass: "word",
-      specialChars: ["Te", "mo", "al"],
-    });
-
-    document.querySelectorAll(".word").forEach((word) => {
-      word.style.overflow = "hidden";
-      word.style.display = "inline-block";
-    });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: headingRef.current,
-        start: "top 75%",
-        toggleActions: "play none none reverse",
-      },
-    });
-
-    tl.from(".char", {
-      y: "100%",
-      stagger: 0.1,
-      duration: 0.8,
-      ease: "power2.out",
-    });
-
-    return () => {
-      split.revert();
-    };
-  }, []);
-
-  const items = [
-    {
-      name: "Lisa Moyer",
-      year: "2023",
-      description:
-        "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!",
-    },
-    {
-      name: "Karen Oneill",
-      year: "2022",
-      description:
-        "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
-    },
-    {
-      name: "Tanya Burnhauser",
-      year: "2021",
-      description:
-        "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!",
-    },
+    if (carouselRef.current) {
+      const containerWidth = carouselRef.current.scrollWidth;
+      const viewportWidth = carouselRef.current.offsetWidth;
+      setMaxDrag(-(containerWidth - viewportWidth)); 
+    }
+  }, [carouselItems]); 
+  const images = [
+    "../images/radialgradient.png",
+    "../images/radialgradient.png",
+    "../images/radialgradient.png",
+    "../images/radialgradient.png",
   ];
-
-  const [selectedDescription, setSelectedDescription] = useState(
-    items[0].description
-  );
-
-  const menuRefs = useRef([]);
-
-  useEffect(() => {
-    menuRefs.current.forEach((menuLink) => {
-      if (!menuLink) return;
-
-      const text1 = menuLink.querySelector("[hoverstagger='text']:first-child");
-      const text2 = menuLink.querySelector("[hoverstagger='text']:last-child");
-
-      if (!text1 || !text2) return;
-
-      const wrapCharacters = (element) => {
-        const words = element.innerText.split(" ");
-        element.innerHTML = words
-          .map(
-            (word) =>
-              `<span class="word">${word
-                .split("")
-                .map(
-                  (char, i) =>
-                    `<span class="char ${
-                      i % 2 === 0 ? "odd" : "even"
-                    }">${char}</span>`
-                )
-                .join("")}</span>`
-          )
-          .join('<span class="space"> </span>');
-      };
-
-      wrapCharacters(text1);
-      wrapCharacters(text2);
-
-      gsap.set(text1.querySelectorAll(".char"), { visibility: "visible" });
-      gsap.set(text2.querySelectorAll(".char"), { visibility: "visible" });
-
-      gsap.set(text1.querySelectorAll(".odd"), { yPercent: 100 });
-      gsap.set(text2.querySelectorAll(".odd"), { yPercent: 0 });
-      gsap.set(text1.querySelectorAll(".even"), { yPercent: 0 });
-      gsap.set(text2.querySelectorAll(".even"), { yPercent: -100 });
-
-      gsap.to(text1.querySelectorAll(".odd"), {
-        yPercent: 0,
-        duration: 0.6,
-        ease: "power2.out",
-      });
-      gsap.to(
-        text2.querySelectorAll(".odd"),
-        { yPercent: -100, duration: 0.6, ease: "power2.out" },
-        0
-      );
-      gsap.to(
-        text1.querySelectorAll(".even"),
-        { yPercent: 100, duration: 0.6, ease: "power2.out" },
-        0
-      );
-      gsap.to(
-        text2.querySelectorAll(".even"),
-        { yPercent: 0, duration: 0.6, ease: "power2.out" },
-        0
-      );
-
-      const tl = gsap.timeline({
-        paused: true,
-        defaults: { duration: 0.5, ease: "power2.out" },
-      });
-
-      tl.to(text1.querySelectorAll(".odd"), { yPercent: 0 });
-      tl.to(text2.querySelectorAll(".odd"), { yPercent: -100 }, 0);
-      tl.to(text1.querySelectorAll(".even"), { yPercent: 100 }, 0);
-      tl.to(text2.querySelectorAll(".even"), { yPercent: 0 }, 0);
-
-      menuLink.addEventListener("mouseenter", () => {
-        gsap.set(text1.querySelectorAll(".odd"), { yPercent: 100 });
-        gsap.set(text2.querySelectorAll(".odd"), { yPercent: 0 });
-        gsap.set(text1.querySelectorAll(".even"), { yPercent: 0 });
-        gsap.set(text2.querySelectorAll(".even"), { yPercent: -100 });
-
-        tl.restart();
-      });
-    });
-  }, []);
-
+  const { scrollXProgress } = useScroll();
   return (
-    <div className="w-full h-screen flex">
-      <div className="bg-[#CABDFE] w-1/3 flex flex-col justify-start  menu_link-wrap">
-        <img
-          className="w-1/2 h-auto mx-auto"
-          src="../images/freysmilesbg.png"
-        />
-        {[
-          { name: "Lisa Moyer", title: "2023" },
-          { name: "Karen Oneill", title: "2022" },
-          { name: "Tanya Burnhauser", title: "2021" },
-        ].map((item, index) => (
-          <a
-            key={index}
-            hoverstagger="link"
-            href="#"
-            className="menu_link w-inline-block"
-            ref={(el) => (menuRefs.current[index] = el)}
-          >
-            <div className="items-center menu_padding mb-10 ">
-              <div className=" border-t border-black flex justify-between pt-4">
-                <div className="menu_text-wrap">
-                  <div hoverstagger="text" className="menu_link-text">
-                    {item.name}
-                  </div>
-                  <div hoverstagger="text" className="menu_link-text is-2">
-                    {item.name}
-                  </div>
-                </div>
-                <div hoverstagger="text" className="font-neue-montreal">
-                  [ {item.title} ]
-                </div>
-              </div>
-            </div>
-          </a>
-        ))}
-      </div>
-      <div className="bg-[#ECE4FF] w-2/3 flex flex-col h-screen">
-        <div className="h-1/3 flex items-center justify-center">
-          <div class="left-mid-block">
-            <div class="movin-text-holder">
-              <h1 class="moving-text">Testimonials </h1>
-              <h1 class="moving-text">Testimonials</h1>
-              <h1 class="moving-text">Testimonials </h1>
-              <h1 class="moving-text">Testimonials </h1>
-              <h1 class="moving-text">Testimonials</h1>
-              <h1 class="moving-text">Testimonials </h1>
-            </div>
-          </div>
-        </div>
+    <div className="relative sticky flex flex-col w-full h-screen overflow-hidden bg-black">
 
-        <div className="h-2/3 flex items-center justify-center border-t border-black">
-          <div
-            style={{
-              fontFamily: "NeueMontrealBook",
-              fontSize: "20px",
-              color: "#333",
-              padding: "20px",
-              maxWidth: "700px",
-            }}
-            className="flex flex-col"
-          >
-            <div className="text-center">{selectedDescription}</div>
+    <div className="w-full bg-[#666] h-[1px]"></div>
+
+    <div className="relative flex flex-1 w-full overflow-hidden">
+      {/* Left Column */}
+      <div className="w-[25%] h-full flex flex-col justify-center items-center p-10 border-r border-[#666]">
+
+        <div className="font-neue-montreal text-white text-[40px] leading-tight">Select Reviews</div>
+
+        {/* Counter */}
+        <div className="flex inline-flex items-center gap-6 mt-20 text-sm text-white font-neue-montreal">
+          <div >{`${String(currentIndex + 1).padStart(2, "0")} / ${carouselItems.length}`}</div>
+          <div className="flex gap-4">
+            <button onClick={prevSlide} className="flex items-center justify-center ">
+              <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
+                stroke="white" fill="none" strokeWidth="10" transform="rotate(-90)">
+                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
+                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+              </svg>
+            </button>
+            <button onClick={nextSlide} className="flex items-center justify-center ">
+              <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
+                stroke="white" fill="none" strokeWidth="10" transform="rotate(90)">
+                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
+                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+              </svg>
+            </button>
           </div>
         </div>
       </div>
-
-      {/* <div  className="bg-[#FF6400] w-2/5">
-        
-        <h1 ref={headingRef}
-          style={{
-            fontSize: "3rem",
-            lineHeight: "100%",
-          }}
-          className="font-helvetica-neue-light mt-32 mb-10 flex justify-center"
-        >
-          Testimonials
-        </h1>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: "50px",
-            padding: "20px",
-            maxWidth: "800px",
-            margin: "auto",
-          }}
-        >
-          {items.map((item, index) => (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                width: "100%",
-              }}
-              key={index}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: "1px",
-                  backgroundColor: "#000",
-                  marginBottom: "10px",
-                }}
-              ></div>
-              <div
-                style={{
-                  justifyContent: "space-between",
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                  padding: "10px 0",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "NeueMontrealBook",
-                    fontSize: "20px",
-
-                    color: "#333",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setSelectedDescription(item.description)}
-                >
-                  {item.name}
-                </span>
-                <span
-                  style={{
-                    fontSize: "14px",
-                    fontFamily: "NeueMontrealBook",
-
-                    color: "#999",
-                    marginTop: "5px",
-                  }}
-                >
-                  {item.year}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="bg-[#FF6400] w-3/5 flex items-center justify-center">
-        <div
-          style={{
-            fontFamily: "NeueMontrealBook",
-            fontSize: "20px",
-            color: "#333",
-            padding: "20px",
-            maxWidth: "700px",
-          }}
-          className="flex flex-col"
-        >
-          <div className="text-center">{selectedDescription}</div>
-        </div>
-      </div> */}
+      
+      {/* Right Column */}
+      <div className="w-[75%] relative flex overflow-hidden">
+      <div className="top-0 w-full h-screen">
+      <div className="App" style={{ width: '100vw', height: '100vh' }}>
+      <WebGLCarousel />
     </div>
+
+    </div>
+        {/* <div className="flex w-full overflow-x-auto snap-mandatory snap-x"
+          style={{
+            scrollSnapType: "x mandatory",
+            scrollBehavior: "smooth",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}>
+        <motion.div
+  ref={carouselRef}
+  className="flex w-full h-full cursor-grab active:cursor-grabbing gap-[2vw] pl-[2vw]" 
+  style={{ willChange: "transform" }}
+  drag="x"
+  dragConstraints={{ left: maxDrag, right: 0 }}
+  dragElastic={0.1}
+  dragMomentum={false}
+  onDragEnd={(event, info) => {
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
+    const threshold = 60;
+    const velocityThreshold = 400;
+
+    if (offset > threshold || velocity > velocityThreshold) {
+      prevSlide();
+    } else if (offset < -threshold || velocity < -velocityThreshold) {
+      nextSlide();
+    }
+  }}
+>
+  {carouselItems.map((item, index) => (
+    <motion.div
+      key={index}
+      className="flex flex-col items-center justify-center flex-none cursor-grab active:cursor-grabbing"
+      whileTap={{ scale: 0.98 }}
+    >
+ {item.type === "image" ? (
+    <div className="relative w-[30vw] h-[70vh] flex items-center justify-center">
+      <img
+        src={item.src}
+        alt={item.name}
+        className="object-cover w-full h-full pointer-events-none"
+        draggable={false}
+        loading="lazy"
+      />
+      <div className="absolute inset-0 flex items-center justify-center font-neue-montreal text-[#17191A] text-[15px] p-4">
+        {item.description}
+      </div>
+    </div>
+  ) : (
+    <video
+      src={item.src}
+      autoPlay
+      loop
+      muted
+      className="w-auto h-full max-w-[40vw] max-h-[85vh] object-cover pointer-events-none"
+      draggable={false}
+      preload="auto"
+    />
+  )}
+      <p className="text-sm text-center font-neue-montreal">{item.name}</p>
+    </motion.div>
+  ))}
+</motion.div>
+
+        </div> */}
+      </div>
+    </div>
+
+    <div className="w-full bg-[#666] h-[1px]"></div>
+  </div>
   );
 }
 
@@ -3585,7 +3907,7 @@ function Locations() {
                                 as="div"
                                 className="grid grid-cols-12"
                               >
-                                <ul className="col-span-7 col-start-6 text-left mt-4 mb-2">
+                                <ul className="col-span-7 col-start-6 mt-4 mb-2 text-left">
                                   <h6 className="font-medium uppercase">
                                     Office Hours:
                                   </h6>
@@ -3613,98 +3935,11 @@ function Locations() {
   );
 }
 
-function ContactUs() {
-  const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const parentdiv = document.querySelector(".parentdiv");
-      if (!parentdiv) return;
-
-      const rect = parentdiv.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      if (rect.top <= windowHeight * 0.5) {
-        setIsExpanded(true);
-      } else {
-        setIsExpanded(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  return (
-    <>
-      <div className="parentdiv relative w-full h-[100vh] ">
-        <div
-          className="absolute top-0 left-0 w-full h-full  bg-[#F4F4F4] transition-all duration-700 ease-in-out"
-          style={{
-            borderRadius: isExpanded ? "0" : "50vw 50vw 0px 0px",
-            transform: isExpanded ? "translate(0%, 0%)" : "translate(0%, -5%)",
-          }}
-        ></div>
-        <div className="relative my-[10vh] mx-auto p-0 rounded-[2.5rem] overflow-hidden w-[90vw] h-[80vh]">
-          <div className="flex items-start justify-start ml-10 font-neue-montreal text-[4em]">
-            Connect with us
-          </div>
-          <div className="font-helvetica-neue absolute left-[25%] bottom-[5%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[15deg]">
-            Email
-          </div>
-
-          <div className="font-helvetica-neue  absolute left-[40%] bottom-[5%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[-15deg]">
-            Facebook
-          </div>
-
-          <div className="font-helvetica-neue  absolute left-[45%] bottom-[25%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[5deg]">
-            Instagram
-          </div>
-
-          <div className="font-helvetica-neue absolute right-[20%] bottom-[5%] px-12 py-2 border border-black rounded-full text-[2.5em] rotate-[5deg]">
-            Call Us
-          </div>
-
-          <div className="absolute right-[20%] top-[60%] w-[200px] rotate-[25deg]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 2000 2000"
-              fill="none"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <g transform="scale(.4)">
-                <path
-                  d="M917.582 2000L956.044 1208.79L692.308 1956.04L538.462 1895.6L879.121 1175.82L351.648 1769.23L230.769 1648.35L824.176 1120.88L104.396 1461.54L43.956 1307.69L791.209 1043.96L0 1082.42V917.582L791.209 961.538L43.956 692.308L104.396 543.956L824.176 884.615L230.769 351.648L351.648 236.264L879.121 824.176L538.462 109.89L692.308 43.956L956.044 796.703L917.582 0H1082.42L1038.46 791.209L1307.69 43.956L1456.04 109.89L1115.38 824.176L1648.35 236.264L1763.74 351.648L1175.82 884.615L1890.11 543.956L1956.04 692.308L1203.3 961.538L2000 917.582V1082.42L1203.3 1043.96L1956.04 1307.69L1890.11 1461.54L1175.82 1120.88L1763.74 1648.35L1648.35 1769.23L1115.38 1175.82L1456.04 1895.6L1307.69 1956.04L1038.46 1208.79L1082.42 2000H917.582Z"
-                  fill="#202020"
-                />
-              </g>
-            </svg>
-          </div>
-          <div className="absolute left-[20%] top-[40%] w-[300px] rotate-[20deg]">
-            <img src="../images/shapes/greenandpinkshape.png" alt="pinkgreen" />
-          </div>
-          <div className="absolute left-[70%] top-[20%] w-[300px] rotate-[20deg]">
-            <img src="../images/shapes/silverstar.svg" alt="star" />
-          </div>
-
-          <div className="absolute left-[35%] top-[65%] w-[200px] rotate-[-10deg]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 995.94 574.21"
-              fill="currentColor"
-            >
-              <path d="M 100 449 Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z Z M 0 0 l 112.42 112.42 H 0 v 112.42 c 0 124.17 100.66 224.83 224.83 224.83 h 224.83 V 224.84 H 224.83 l 224.83 -112.42 V 0 H 0" />
-            </svg>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
 function GiftCards() {
   return (
     <>
-      <section className="min-h-screen relative group hover:cursor-pointer">
+      <section className="relative min-h-screen group hover:cursor-pointer">
         <div className="absolute inset-0 w-full h-full flex justify-start items-start bg-[#FFF560] bg-opacity-80 text-white [clip-path:circle(50%_at_0%_0%)] lg:[clip-path:circle(30%_at_0%_0%)] lg:group-hover:[clip-path:circle(35%_at_0%_0%)] group-hover:bg-opacity-100 motion-safe:transition-[clip-path] motion-safe:duration-[2s] ease-out" />
         <Link
           href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`}
@@ -3714,7 +3949,7 @@ function GiftCards() {
           Send a Gift Card
         </Link>
         <img
-          src="../images/giftcardbg.png"
+          src="../images/mockupgiftcardtest.png"
           alt="gift cards mockup"
           className="absolute inset-0 object-cover object-center w-full h-full -z-10"
         />
