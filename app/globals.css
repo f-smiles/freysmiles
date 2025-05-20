@@ -22,6 +22,10 @@
   font-family: "ChivoMono";
   src: url("/fonts/ChivoMono-ExtraLight.ttf") format("truetype");
 }
+@font-face {
+  font-family: "KHTekaTrial-Light";
+  src: url("/fonts/KHTekaMonoTRIAL-Light.otf") format("opentype");
+}
 
 @font-face {
   font-family: "BebasNeue-Regular";

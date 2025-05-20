@@ -17,6 +17,7 @@ import {
   Environment,
   Text,
   shaderMaterial,
+  useTexture
 } from "@react-three/drei";
 import * as THREE from "three";
 import { Observer } from "gsap/Observer";
@@ -41,6 +42,7 @@ import React, {
   useLayoutEffect,
   useMemo,
   Suspense,
+  forwardRef
 } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -53,7 +55,7 @@ import Shape03 from "../_components/shapes/shape03";
 import Shape05 from "../_components/shapes/shape05";
 import Shape06 from "../_components/shapes/shape06";
 import VennDiagram from "./vennDiagram";
-
+import { GUI } from 'dat.gui';
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
     ScrollSmoother,
@@ -64,13 +66,384 @@ if (typeof window !== "undefined") {
   );
 }
 
+const VideoAnimation = () => {
+  const videoRef = useRef(null);
+  const videoWrapperRef = useRef(null);
+  const inset = useRef({ x: 0, y: 0, r: 50 });
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    let videoWidth = video.offsetWidth;
+    let videoHeight = video.offsetHeight;
+
+    const handleResize = () => {
+      videoWidth = video.offsetWidth;
+      videoHeight = video.offsetHeight;
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    const snap = gsap.utils.snap(2);
+
+    const videoPinTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: videoWrapperRef.current,
+        start: "center center",
+        end: "+=1000",
+        pin: true,
+        scrub: true
+      }
+    });
+
+    videoPinTl.fromTo(
+      inset.current,
+      { x: 0, y: 0, r: 50 },
+      {
+        x: 25,
+        y: 18,
+        r: 80,
+        onUpdate() {
+          video.style.clipPath = `inset(${Math.round(
+            (inset.current.x * videoWidth) / 200
+          )}px ${Math.round((inset.current.y * videoHeight) / 200)}px round ${snap(
+            inset.current.r
+          )}px)`;
+        }
+      }
+    );
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      ScrollTrigger.getAll().forEach(instance => instance.kill());
+    };
+  }, []);
+
+  return (
+    <div>
+      <div style={{ margin: '5vh 0' }}>
+        <div style={{ maxWidth: '98%', margin: '0 auto' }}>
+          <div ref={videoWrapperRef} style={{ height: '100vh' }}>
+            <video 
+              ref={videoRef}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+              src="/videos/cbctscan.mp4" 
+              muted 
+              autoPlay 
+              loop
+            />
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  );
+};
+
+const globalClock = new THREE.Clock(true);
+function FigureMesh({ imageRef }) {
+
+const vertexShader = 
+`varying vec2 v_uv;
+
+void main() {
+    v_uv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}`;
+
+const fragmentShader = `
+uniform vec2 u_mouse;
+uniform vec2 u_res;
+uniform sampler2D u_image;
+uniform sampler2D u_imagehover;
+uniform float u_time;
+varying vec2 v_uv;
+
+float circle(in vec2 _st, in float _radius, in float blurriness){
+    vec2 dist = _st;
+    return 1.-smoothstep(_radius-(_radius*blurriness), _radius+(_radius*blurriness), dot(dist,dist)*4.0);
+}
+
+vec3 mod289(vec3 x) {
+  return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec4 mod289(vec4 x) {
+  return x - floor(x * (1.0 / 289.0)) * 289.0;
+}
+
+vec4 permute(vec4 x) {
+     return mod289(((x*34.0)+1.0)*x);
+}
+
+vec4 taylorInvSqrt(vec4 r) {
+  return 1.79284291400159 - 0.85373472095314 * r;
+}
+
+float snoise3(vec3 v) {
+  const vec2  C = vec2(1.0/6.0, 1.0/3.0);
+  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+
+
+  vec3 i  = floor(v + dot(v, C.yyy));
+  vec3 x0 =   v - i + dot(i, C.xxx);
+
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+
+  vec3 x1 = x0 - i1 + C.xxx;
+  vec3 x2 = x0 - i2 + C.yyy;
+  vec3 x3 = x0 - D.yyy;
+
+  i = mod289(i);
+  vec4 p = permute(permute(permute(
+             i.z + vec4(0.0, i1.z, i2.z, 1.0))
+           + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+           + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+
+  float n_ = 0.142857142857;
+  vec3  ns = n_ * D.wyz - D.xzx;
+
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+
+  vec4 x_ = floor(j * ns.z);
+  vec4 y_ = floor(j - 7.0 * x_);
+
+  vec4 x = x_ *ns.x + ns.yyyy;
+  vec4 y = y_ *ns.x + ns.yyyy;
+  vec4 h = 1.0 - abs(x) - abs(y);
+
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+
+  vec4 s0 = floor(b0)*2.0 + 1.0;
+  vec4 s1 = floor(b1)*2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+
+  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+
+  vec3 p0 = vec3(a0.xy,h.x);
+  vec3 p1 = vec3(a0.zw,h.y);
+  vec3 p2 = vec3(a1.xy,h.z);
+  vec3 p3 = vec3(a1.zw,h.w);
+
+
+  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+  p0 *= norm.x;
+  p1 *= norm.y;
+  p2 *= norm.z;
+  p3 *= norm.w;
+
+
+  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+  m = m * m;
+  return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+}
+
+void main() {
+  float aspect = u_res.x / u_res.y;
+  vec2 st = v_uv - vec2(0.5);
+  st.x *= aspect;
+
+  // get mouse position in same coordinate space
+  vec2 mouse = u_mouse * vec2(aspect, 1.0);
+  
+  //circle's position relative to mouse
+  vec2 circlePos = st - mouse;
+  
+  float c = circle(circlePos, 0.3, 2.0) * 2.5;
+  float offx = v_uv.x + sin(v_uv.y + u_time * 0.1);
+  float offy = v_uv.y - u_time * 0.1 - cos(u_time * 0.001) * 0.01;
+  float n = snoise3(vec3(offx, offy, u_time * 0.1) * 8.0) - 1.0;
+  float finalMask = smoothstep(0.4, 0.5, n + pow(c, 2.0));
+  vec4 image = texture2D(u_image, v_uv);
+  vec4 hover = texture2D(u_imagehover, v_uv);
+  vec4 finalImage = mix(image, hover, finalMask);
+  gl_FragColor = finalImage;
+}`; 
+; 
+  const meshRef = useRef()
+  const mouse = useRef(new THREE.Vector2())
+  const { size, viewport } = useThree()
+
+  const uniforms = useMemo(() => ({
+    u_image: { value: null },
+    u_imagehover: { value: null },
+    u_mouse: { value: mouse.current },
+    u_time: { value: 0 },
+    u_res: { value: new THREE.Vector2(size.width, size.height) },
+  }), [size])
+
+  useEffect(() => {
+    if (!imageRef.current) return
+    const img = imageRef.current
+    const loader = new THREE.TextureLoader()
+    loader.load(img.src, (tex) => {
+      uniforms.u_image.value = tex
+    })
+    loader.load(img.dataset.hover, (tex) => {
+      uniforms.u_imagehover.value = tex
+    })
+
+    img.style.opacity = 0
+  }, [imageRef, uniforms])
+
+  useEffect(() => {
+    const onMouseMove = (e) => {
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = -(e.clientY / window.innerHeight) * 2 + 1;
+  
+      gsap.to(mouse.current, {
+        x,
+        y,
+        duration: 0.5,
+      })
+    }
+  
+    window.addEventListener('mousemove', onMouseMove)
+    return () => window.removeEventListener('mousemove', onMouseMove)
+  }, [])
+  
+
+  useEffect(() => {
+    if (!imageRef.current || !meshRef.current) return
+
+    const rect = imageRef.current.getBoundingClientRect()
+    const offset = new THREE.Vector2(
+      rect.left - window.innerWidth / 2 + rect.width / 2,
+      -rect.top + window.innerHeight / 2 - rect.height / 2
+    )
+
+    meshRef.current.position.set(offset.x, offset.y, 0)
+    meshRef.current.scale.set(rect.width, rect.height, 1)
+  }, [imageRef])
+
+  useFrame(() => {
+    uniforms.u_time.value += 0.01;
+  
+    if (!imageRef.current || !meshRef.current) return;
+  
+    const rect = imageRef.current.getBoundingClientRect();
+  
+    const x = rect.left - window.innerWidth / 2 + rect.width / 2;
+    const y = -rect.top + window.innerHeight / 2 - rect.height / 2;
+  
+    meshRef.current.position.set(x, y, 0);
+    meshRef.current.scale.set(rect.width, rect.height, 1);
+  });
+  
+  
+
+  return (
+<mesh ref={meshRef}>
+  <planeGeometry args={[1, 1, 1, 1]} />
+  <shaderMaterial
+    vertexShader={vertexShader}
+    fragmentShader={fragmentShader}
+    uniforms={uniforms}
+    defines={{ PR: window.devicePixelRatio.toFixed(1) }}
+    transparent
+  />
+</mesh>
+
+  )
+}
+
+function HoverScene({ imageRef }) {
+  const [ready, setReady] = useState(false)
+
+  return (
+<Canvas
+  frameloop="always"
+  gl={{ alpha: true }}
+  camera={{ fov: 75, near: 1, far: 1000, position: [0, 0, 800] }}
+  style={{
+    position: 'fixed',  
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    zIndex: 0,          
+    pointerEvents: 'none' 
+  }}
+>
+  <ambientLight intensity={2} />
+  <FigureMesh imageRef={imageRef} />
+</Canvas>
+
+  )
+}
+
+
 export default function WhyChooseUs() {
+  const imageRef = useRef()
+
+
   return (
     <>
       <>
+
+      <section
+  style={{
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100vh',
+    overflow: 'hidden',
+  }}
+>
+  <article style={{ width: '100vmin', flex: '0 0 auto' }}>
+    <figure style={{ margin: 0, padding: 0, width: '100%' }}>
+      <img
+        ref={imageRef}
+        src="/images/testdisplay.png"
+        data-hover="/images/1.jpg"
+        alt=""
+        style={{
+          pointerEvents: 'none', 
+          maxWidth: '100%',
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: 'center',
+          display: 'block',
+        }}
+      />
+    </figure>
+  </article>
+
+
+  <div
+    id="stage"
+    style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: 2,
+      pointerEvents: 'none',
+    }}
+  >
+    <HoverScene imageRef={imageRef} />
+  </div>
+</section>
+{/* <Rays /> */}
+
+
+
         {/* <Hero /> */}
         <div className="relative w-full h-screen">
-          <Canvas
+          {/* <Canvas
             className="absolute inset-0 z-10"
             camera={{ position: [0, 6, 12], fov: 45 }}
             style={{ pointerEvents: "none" }}
@@ -83,17 +456,18 @@ export default function WhyChooseUs() {
               color={0xffffff}
             />
             <RibbonAroundSphere />
-          </Canvas>
+          </Canvas> */}
 
           <div className="absolute inset-0 z-20 flex items-center justify-center"></div>
         </div>
 
         <CardStack />
         <StackCards />
-        <Rays />
+        <TechSection />
+
         {/* <RepeatText /> */}
         <MoreThanSmiles />
-        {/* <About /> */}
+        <About />
         <VennDiagram />
         <Intro />
         {/* <div className="h-[100vh] w-auto">
@@ -268,6 +642,158 @@ const PixelImage = ({ imgSrc, containerRef }) => {
   );
 };
 
+const ParticleAnimation = () => {
+  const canvasRef = useRef(null);
+  const screenSettingsRef = useRef({});
+  const backPathRef = useRef(null);
+  const mainNodesRef = useRef([]);
+  const nodesRef = useRef([]);
+
+  const screenDetails = () => {
+    const s = Math.min(window.innerWidth, window.innerHeight);
+    const size = Math.min(s, 600);
+    const w = size, h = size;
+    return { w, h, cx: Math.floor(w / 2), cy: Math.floor(h / 2), s: 10 };
+  };
+
+  const rad = (degree) => degree * Math.PI / 180;
+
+  const MainNode = (startAngle, x, y, radius) => {
+    const timeout_pushNew = 4;
+    return {
+      x, y,
+      cx: 0, cy: 0,
+      a: startAngle,
+      r: radius,
+      s: 1,
+      pushNewTimeOut: timeout_pushNew,
+      move: function() {
+        this.a += this.s;
+        this.cx = this.x + this.r * Math.cos(rad(this.a));
+        this.cy = this.y + this.r * Math.sin(rad(this.a));
+
+        this.pushNewTimeOut -= 1;
+        if (this.pushNewTimeOut < 0) this.pushNewTimeOut = timeout_pushNew;
+      }
+    };
+  };
+
+  const Node = (x, y, cx, cy) => {
+    const time_maxZ = 50;
+    return {
+      x, y, z: 0,
+      s: Math.random() * .5 + .2,
+      ax: (x - cx) / cx,
+      ay: (y - cy) / cy,
+      move: function() {
+        this.z += this.s;
+        this.x += this.ax * this.z / 10;
+        this.y += this.ay * this.z / 10;
+      },
+      size: function() { return 2 + 8 * this.z / time_maxZ; },
+      alpha: function() { return 1 - this.z / time_maxZ; },
+      isDead: function() { return this.z > time_maxZ; }
+    };
+  };
+
+  const init = () => {
+    screenSettingsRef.current = screenDetails();
+    
+    const radius = screenSettingsRef.current.h * .22;
+    mainNodesRef.current = [
+      MainNode(220, screenSettingsRef.current.cx - 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .18),
+      MainNode(225, screenSettingsRef.current.cx - 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .20),
+      MainNode(230, screenSettingsRef.current.cx - 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .22),
+      MainNode(225, screenSettingsRef.current.cx - 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .24),
+      MainNode(220, screenSettingsRef.current.cx - 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .26),
+      MainNode(60, screenSettingsRef.current.cx + 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .18),
+      MainNode(65, screenSettingsRef.current.cx + 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .20),
+      MainNode(70, screenSettingsRef.current.cx + 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .22),
+      MainNode(65, screenSettingsRef.current.cx + 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .24),
+      MainNode(60, screenSettingsRef.current.cx + 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .26)
+    ];
+
+    backPathRef.current = new Path2D();
+    for (let i = 0; i < screenSettingsRef.current.w; i += screenSettingsRef.current.s) {
+      for (let j = 0; j < screenSettingsRef.current.h; j += screenSettingsRef.current.s) {
+        backPathRef.current.moveTo(i, j);
+        backPathRef.current.lineTo(i + 1, j + 1);
+      }
+    }
+  };
+
+  const draw = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const screenSettings = screenSettingsRef.current;
+    const mainNodes = mainNodesRef.current;
+    const nodes = nodesRef.current;
+    const backPath = backPathRef.current;
+
+    canvas.width = screenSettings.w;
+    canvas.height = screenSettings.h;
+
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.clearRect(0, 0, screenSettings.w, screenSettings.h);
+    ctx.strokeStyle = "#5577A2";
+    ctx.fillStyle = "#263E5C";
+
+
+    for (let i = 0; i < mainNodes.length; i++) {
+      mainNodes[i].move();
+      if (mainNodes[i].pushNewTimeOut === 0) {
+        const x = screenSettings.s * Math.floor(mainNodes[i].cx / screenSettings.s);
+        const y = screenSettings.s * Math.floor(mainNodes[i].cy / screenSettings.s);
+        nodes.push(Node(x, y, screenSettings.cx, screenSettings.cy));
+      }
+    }
+
+    for (let i = 0; i < nodes.length; i++) {
+      nodes[i].move();
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255, 255, 255, ${nodes[i].alpha()})`;
+      ctx.rect(nodes[i].x, nodes[i].y, nodes[i].size(), nodes[i].size());
+      ctx.fill();
+    }
+
+    const newNodes = [];
+    for (let i = 0; i < nodes.length; i++) {
+      if (!nodes[i].isDead()) {
+        newNodes.push(nodes[i]);
+      }
+    }
+    nodesRef.current = newNodes;
+
+    ctx.stroke(backPath);
+
+    requestAnimationFrame(draw);
+  };
+
+  useEffect(() => {
+    init();
+    const animationId = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+
+  return (
+    <canvas 
+      ref={canvasRef} 
+      style={{ 
+        display: 'block',
+        margin: '0 auto',
+        backgroundColor: '#000'
+      }}
+    />
+  );
+};
+
 function RibbonAroundSphere() {
   const ribbonRef = useRef();
   const segments = 1000;
@@ -404,6 +930,7 @@ function RibbonAroundSphere() {
   );
 }
 
+
 const Intro = ({ texts = [], onFinished }) => {
   const wrapperRef = useRef(null);
   const circleTextRefs = useRef([]);
@@ -523,16 +1050,16 @@ function Hero() {
   const cardsectionRef = useRef(null);
 
   useEffect(() => {
-    // Lock scroll
+
     document.body.style.overflow = "hidden";
 
-    // Animate overlay
+
     gsap.to(overlayRef.current, {
       y: "-100%",
       duration: 1.5,
       ease: "power2.inOut",
       onComplete: () => {
-        // Unlock scroll
+
         document.body.style.overflow = "auto";
       },
     });
@@ -575,8 +1102,8 @@ function Hero() {
   // }, []);
 
   return (
-    <div className="border border-red-500 relative min-h-screen w-full bg-[#FEF9F8] text-black overflow-hidden">
-      <div ref={overlayRef} className="fixed inset-0 z-50 bg-blue-100"></div>
+    <div className="border border-red-500 relative min-h-screen w-full bg-[#FAFAFA] text-black overflow-hidden">
+      <div ref={overlayRef} className="fixed inset-0 bg-blue-100 z-50"></div>
 
       {/* <section
         ref={cardsectionRef}
@@ -648,7 +1175,7 @@ const CardStack = () => {
 
   return (
     <>
-      <div className="bg-[#FEF9F8] ">
+      <div className="bg-[#FAFAFA] ">
         <div className="l-wrapper ">
           <div className="list1" id="list1" ref={list1Ref}>
             <ul className="card-list list">
@@ -706,52 +1233,8 @@ const CardStack = () => {
   );
 };
 
-const Rays = () => {
-  const numRays = 10;
-  const rays = Array.from({ length: numRays });
+const TechSection = () => {
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const minHeight = 0.5;
-      const maxHeight = 110;
-      const spacing = 36;
-
-      Array.from({ length: numRays }).forEach((_, i) => {
-        const baseHeight = maxHeight;
-        const shrinkRatio = 0.85;
-        const finalHeight = baseHeight * Math.pow(shrinkRatio, i);
-
-        const offset = 24;
-        const initialTop = offset + i * minHeight;
-        const finalTop = Array.from({ length: i }).reduce((sum, _, j) => {
-          const prevHeight = baseHeight * Math.pow(shrinkRatio, j);
-          const spread = spacing * 1.25;
-          return sum + prevHeight + spread;
-        }, 0);
-
-        gsap.fromTo(
-          `.ray-${i}`,
-          {
-            height: minHeight,
-            top: initialTop,
-          },
-          {
-            height: finalHeight,
-            top: finalTop,
-            scrollTrigger: {
-              trigger: ".sun-section",
-              start: "top+=70% bottom",
-              end: "+=160%",
-              scrub: true,
-            },
-            ease: "none",
-          }
-        );
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
 
   const images = [
     { src: "/images/signonmetalrack.png", alt: "First Image" },
@@ -845,19 +1328,24 @@ const Rays = () => {
     { scope: sectionRef }
   );
 
+
+  
   return (
     <>
-      <div className="bg-[#F0EEE9]">
-        <main
-          style={{
-            margin: 0,
-            padding: 0,
-            background: "#171717",
-            color: "white",
-            fontFamily: "sans-serif",
-            boxSizing: "border-box",
-          }}
-        >
+    
+      <div className="bg-[#FAFAFA]">
+        <main>
+        <Copy>
+          {" "}
+          <p className="text-[16px] ml-10 mb-10 max-w-[600px] font-neuehaas45 leading-[1.2]">
+            Certain treatment plans rely on precise growth timing to ensure
+            stable, long-lasting results. Our 3D imaging technology lets us
+            track the exact position and trajectory of traditionally problematic
+            teeth—while also helping rule out certain pathologies. It’s changing
+            the face of dentistry and orthodontics. Expect more advanced
+            insights than what you’ll hear from most competitors.
+          </p>
+        </Copy>
           {images.map((img, i) => (
             <section
               key={i}
@@ -934,8 +1422,8 @@ const Rays = () => {
               — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
             </span>
           </div>
-
-          <div className="flex w-full gap-4 mt-12">
+          <VideoAnimation />
+          <div className="mt-12 w-full flex gap-4">
             <div className="w-1/2">
               <div className="relative overflow-hidden img-container">
                 <img
@@ -964,236 +1452,51 @@ const Rays = () => {
               </div>
             </div>
           </div>
-        </section>
-
-        <Copy>
-          {" "}
-          <p className="text-[20px] ml-10 mb-10 max-w-[600px] font-neuehaas45 leading-[1.2]">
-            Certain treatment plans rely on precise growth timing to ensure
-            stable, long-lasting results. Our 3D imaging technology lets us
-            track the exact position and trajectory of traditionally problematic
-            teeth—while also helping rule out certain pathologies. It’s changing
-            the face of dentistry and orthodontics. Expect more advanced
-            insights than what you’ll hear from most competitors.
-          </p>
-        </Copy>
-
-        <div className="relative flex items-center justify-center h-full">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            className="w-2/3 h-auto"
-          >
-            <source src="/videos/cbctscan.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-
-        <div className="flex justify-end">
-          <p className="text-[18px] mt-10 mr-10 max-w-lg font-neuehaas45 leading-tight tracking-tight">
-            Our office was the first in the region to pioneer fully digital
-            orthodontics—leading the way with 3D iTero scanning and in-house 3D
-            printing for appliance design and fabrication.
-          </p>
-        </div>
-
-        <div className="flex justify-start ml-20">
-          <video
-            src="../images/retaintracing.mp4"
-            className="object-contain w-1/3"
-            autoPlay
-            loop
-            muted
-            playsInline
-          />
-        </div>
-
-        <section className="w-full min-h-screen ">
-      
-        </section>
-
-        {/* <div className="flex flex-row justify-center w-full gap-6 mt-10">
-          <div className="w-[540px] ">
-            <svg
-              width="100%"
-              height="100%"
-              viewBox="0 0 792 792"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <mask id="mask-inverse-2">
-                  <rect width="792" height="792" fill="white" />
-
-                  <path
-                    d="M268.094 181.48V-220.57H455.044V181.67L268.094 181.48Z"
-                    fill="black"
-                  />
-                  <path
-                    d="M457.805 339.69H824.685V613.44L457.825 613.52C457.825 613.52 457.825 613.52 457.815 613.52V770.55H1010.1V-220.24H824.685V182.58L457.805 182.65V339.68V339.69Z"
-                    fill="black"
-                  />
-                  <path
-                    d="M433.78 295.93C333.76 295.93 252.68 377.01 252.68 477.03C252.68 577.05 333.76 658.13 433.78 658.13"
-                    fill="black"
-                  />
-                  <path
-                    d="M432.105 658.129H457.805L457.805 295.949H432.105L432.105 658.129Z"
-                    fill="black"
-                  />
-                  <path
-                    d="M0.8125 0V792H791.193V0H0.8125ZM765.773 766.62H26.2225V25.38H765.773V766.62Z"
-                    fill="black"
-                  />
-                  <path
-                    d="M12.3712 -1360.27H-273.219V2200.43H12.3712V-1360.27Z"
-                    fill="black"
-                  />
-                  <path
-                    d="M1068.04 -1360.27H775.172V2228.28H1068.04V-1360.27Z"
-                    fill="black"
-                  />
-                </mask>
-              </defs>
-              <rect width="792" height="792" fill="#E3C3DA" />
-
-              <image
-                href="../images/freysmiles_insta.gif"
-                width="792"
-                height="792"
-                preserveAspectRatio="xMidYMid slice"
-                mask="url(#mask-inverse-2)"
-              />
-            </svg>
-          </div>
-          <div className="w-[540px]">
-            <svg
-              width="100%"
-              height="100%"
-              viewBox="0 0 792 792"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <mask id="shape-mask">
-                  <rect width="100%" height="100%" fill="white" />
-                  <path
-                    d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"
-                    fill="black"
-                  />
-                </mask>
-              </defs>
-
-              <rect width="100%" height="100%" fill="#AA4032" />
-
-              <foreignObject width="100%" height="100%" mask="url(#shape-mask)">
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  width="792"
-                  height="792"
-                  style={{ display: "block" }}
-                >
-                  <source src="../images/retaintracing.mp4" type="video/mp4" />
-                </video>
-              </foreignObject>
-            </svg>
-          </div>
-        </div> */}
-        {/* <div className="flex items-center justify-center" style={{ width:'500px', position: 'relative'}}>
-
-  <svg
-  className="masksvgshape"
-        width="100%"
-        height="100%"
-  
-          viewBox="0 0 792 792"
-   >
-    <defs>
-
-      <clipPath id="svg-path" clipPathUnits="userSpaceOnUse">
-        <path d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"/>
-      </clipPath>
-    </defs>
-  </svg>
-
-
-  <video
-    src="../images/retaintracing.mp4"
-    autoPlay
-    muted
-    loop
-    playsInline
-    style={{
-      // width: '100%',
-      // height: 'auto',
-  
-      clipPath: 'url(#svg-path)',
-      WebkitClipPath: 'url(#svg-path)',
-    }}
-  />
-</div> */}
-
-        {/* <div className="w-2/3 ml-auto">
-  <div className="grid min-h-screen grid-cols-1 gap-6 p-32 md:grid-cols-2">
-
-    <div className="rounded-3xl overflow-hidden bg-[#FAFF00] flex flex-col">
-      <div className="aspect-[3/4] w-full">
-        <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
-          <SimplePlane />
-        </Curtains>
-      </div>
-      <div className="flex items-end justify-between p-4 text-black bg-white">
-        <div>
-          <p className="text-sm font-medium">Lorem Ipsum</p>
-          <p className="text-xs text-gray-500">Dolor sit amet consectetur</p>
-        </div>
-        <p className="text-xs text-gray-500">10MG</p>
-      </div>
-    </div>
-
-    <div className="rounded-3xl overflow-hidden bg-[#8B5E3C] flex flex-col">
-      <div className="aspect-[3/4] w-full">
-        <img
-          src="https://source.unsplash.com/600x800/?cbd,box"
-          alt="Placeholder"
-          className="object-cover w-full h-full"
-        />
-      </div>
-      <div className="flex items-end justify-between p-4 text-black bg-white">
-        <div>
-          <p className="text-sm font-medium">Lorem Ipsum</p>
-          <p className="text-xs text-gray-500">Adipiscing elit sed do</p>
-        </div>
-        <p className="text-xs text-gray-500">10MG</p>
-      </div>
+          <div className="mt-12 w-full flex gap-4">
+  <div className="w-1/2">
+    <div className="img-container relative overflow-hidden">
+      <img
+        src="/images/iphonemockup.jpg"
+        className="w-full h-full object-contain"
+        style={{
+          transform: "translateY(0%) scale(1.0)",
+          transformOrigin: "center",
+        }}
+      />
     </div>
   </div>
-</div> */}
 
-        <section className="bg-[#F1F1F1] sun-section">
-          <div className="sun-wrapper">
-            <div className="leading-none sun-content">
-              <div className="frame-line line-1">Benefits</div>
+  <div className="w-1/2">
+  <ParticleAnimation />
+  </div>
+</div>
 
-              <div className="frame-connector connector-1" />
-              <div className="frame-line line-2">of working</div>
-              <div className="frame-connector connector-2" />
-              <div className="frame-line line-3">with us</div>
-            </div>
-
-            <div className="sun-mask">
-              <div className="rays">
-                {rays.map((_, i) => (
-                  <div className={`ray ray-${i}`} key={i} />
-                ))}
-              </div>
-            </div>
-          </div>
         </section>
+
+        <section className="min-h-screen bg-[#f4eef4] flex flex-col items-center justify-center px-6 py-16 text-center">
+  <h2 className="max-w-5xl font-neuehaas45  mb-16">
+    Our office was the first in the region to pioneer fully digital orthodontics—leading the way with 3D iTero scanning and in-house 3D printing for appliance design and fabrication.
+  </h2>
+
+  <div className="relative w-[360px] h-[540px] rounded-[32px] overflow-hidden bg-black/10 shadow-md">
+    <video
+      autoPlay
+      loop
+      muted
+      playsInline
+      className="w-full h-full object-cover opacity-50"
+    >
+      <source src="/images/retaintracing.mp4" type="video/mp4" />
+    </video>
+
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-3.5 h-3.5 border-[3px] border-black rounded-full" />
+    </div>
+  </div>
+</section>
+
+    
+
       </div>
     </>
   );
@@ -1227,7 +1530,7 @@ const RepeatText = ({ text = "MTS", totalLayers = 7 }) => {
 
   return (
     <section
-      className="relative w-full bg-[#FEF9F8] overflow-hidden"
+      className="relative w-full bg-[#FAFAFA] overflow-hidden"
       data-animation="stack-words"
       ref={containerRef}
     >
@@ -1371,7 +1674,7 @@ function StackCards() {
 
   return (
     <section ref={containerRef}>
-      <section className="bg-[#FEF9F8]">
+      <section className="bg-[#FAFAFA]">
         <div className="blockcontainer">
           <p>
             <span></span>
@@ -1404,25 +1707,31 @@ function StackCards() {
           <br />
           <br />
           <span>TL;DR: You’re in very good hands.</span>
+          <div   style={{
+    color: "rgb(45, 45, 45)",
+    willChange: "transform",
+    transform: "translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(-28.3716deg) skew(0deg, 0deg)",
+    transformStyle: "preserve-3d"
+  }}><svg xmlns="http://www.w3.org/2000/svg" width="10%" height="10%" viewBox="0 0 103.785 103.785"><g transform="translate(51.892 -28.764) rotate(45)"><g transform="matrix(-0.875, 0.485, -0.485, -0.875, 114.066, 73.387)" fill="none" stroke="currentColor" stroke-width="1"><ellipse cx="41.954" cy="41.954" rx="41.954" ry="41.954" stroke="none"></ellipse><ellipse cx="41.954" cy="41.954" rx="41.454" ry="41.454" fill="none"></ellipse></g><path d="M22.953,11.638A10.5,10.5,0,0,0,15.677.932C7.59-1.911,2.457,2.355,0,5.61" transform="matrix(-0.875, 0.485, -0.485, -0.875, 57.727, 61.933)" fill="none" stroke="currentColor" stroke-width="1"></path><ellipse cx="1.694" cy="1.694" rx="1.694" ry="1.694" transform="matrix(-0.875, 0.485, -0.485, -0.875, 53.153, 47.112)" fill="currentColor"></ellipse><ellipse cx="1.694" cy="1.694" rx="1.694" ry="1.694" transform="matrix(-0.875, 0.485, -0.485, -0.875, 31.697, 55.017)" fill="currentColor"></ellipse></g></svg></div>
         </div>
 
         {/* <div className="mb-10 text-[30px] max-w-[900px] leading-[1.3]">
    
           </div> */}
-        <div className="font-neuehaas45 min-h-screen text-[16px] leading-[1.1] px-10">
+        <div className="font-neuehaas45 min-h-screen text-[16px] leading-[1.2] px-10">
           {/* Block 1 */}
           <div className="w-full border-t border-black">
             <div
               className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
               style={{ "--br": "0px" }}
             >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FAFAFA] before:transition-none before:rounded-[var(--br)]" />
 
               <div className="relative z-10 text-sm text-[#ff007f] ">
                 ABO Treatment Standards
               </div>
 
-              <div className="relative z-10 max-w-4xl leading-tight text-black">
+              <div className="relative z-10 leading-relaxed max-w-4xl text-black">
                 <div>
                   We strive to attain finished results consistent with the
                   American Board of Orthodontics (ABO) qualitative standards.
@@ -1433,7 +1742,7 @@ function StackCards() {
               </div>
 
               <div className="relative z-10 text-sm text-[#ff007f]">
-                LEARN MORE
+                Learn More
               </div>
             </div>
           </div>
@@ -1444,13 +1753,13 @@ function StackCards() {
               className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
               style={{ "--br": "0px" }}
             >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FAFAFA] before:transition-none before:rounded-[var(--br)]" />
 
               <div className="relative z-10 text-sm text-[#ff007f] ">
                 Board Certification Process
               </div>
 
-              <div className="relative z-10 max-w-4xl leading-tight text-black">
+              <div className="relative z-10  leading-relaxed max-w-4xl text-black">
                 <div>
                   Currently, Dr. Gregg is a certified orthodontist and is
                   preparing cases for recertification. Dr. Daniel is in the
@@ -1459,7 +1768,7 @@ function StackCards() {
               </div>
 
               <div className="relative z-10 text-sm text-[#ff007f] ">
-                LEARN MORE
+                Learn More
               </div>
             </div>
           </div>
@@ -1470,13 +1779,13 @@ function StackCards() {
               className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
               style={{ "--br": "0px" }}
             >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FAFAFA] before:transition-none before:rounded-[var(--br)]" />
 
               <div className="relative z-10 text-sm text-[#ff007f] ">
                 Diagnostic Record Accuracy
               </div>
 
-              <div className="relative z-10 max-w-4xl leading-tight text-black">
+              <div className="relative z-10 leading-relaxed max-w-4xl text-black">
                 <div>
                   To complement our use of cutting-edge diagnostic technology,
                   we uphold the highest standards for our records, ensuring
@@ -1485,7 +1794,7 @@ function StackCards() {
               </div>
 
               <div className="relative z-10 text-sm text-[#ff007f] ">
-                LEARN MORE
+                Learn More
               </div>
             </div>
           </div>
@@ -1496,13 +1805,13 @@ function StackCards() {
               className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
               style={{ "--br": "0px" }}
             >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FEF9F8] before:transition-none before:rounded-[var(--br)]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FAFAFA] before:transition-none before:rounded-[var(--br)]" />
 
               <div className="relative z-10 text-sm text-[#ff007f] ">
                 Trusted Expertise
               </div>
 
-              <div className="relative z-10 max-w-4xl leading-tight">
+              <div className="relative z-10 leading-relaxed max-w-4xl">
                 <div>
                   Our office holds the distinction of being the
                   longest-standing, active board-certified orthodontic office in
@@ -1512,7 +1821,7 @@ function StackCards() {
               </div>
 
               <div className="relative z-10 text-sm text-[#ff007f] ">
-                LEARN MORE
+                Learn More
               </div>
             </div>
           </div>
@@ -1607,7 +1916,7 @@ const About = () => {
 
   return (
     <section
-      className="bg-[#FEF9F8] timeline-section timeline-section--timeline"
+      className="bg-[#FAFAFA] timeline-section timeline-section--timeline"
       ref={timelineRef}
     >
       <div className="timeline_sticky">
@@ -2309,3 +2618,233 @@ function GridLayout() {
     </section>
   );
 }
+
+function Rays() {
+  const numRays = 10;
+  const rays = Array.from({ length: numRays });
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const minHeight = 0.5;
+      const maxHeight = 110;
+      const spacing = 36;
+
+      Array.from({ length: numRays }).forEach((_, i) => {
+        const baseHeight = maxHeight;
+        const shrinkRatio = 0.85;
+        const finalHeight = baseHeight * Math.pow(shrinkRatio, i);
+
+        const offset = 24;
+        const initialTop = offset + i * minHeight;
+        const finalTop = Array.from({ length: i }).reduce((sum, _, j) => {
+          const prevHeight = baseHeight * Math.pow(shrinkRatio, j);
+          const spread = spacing * 1.25;
+          return sum + prevHeight + spread;
+        }, 0);
+
+        gsap.fromTo(
+          `.ray-${i}`,
+          {
+            height: minHeight,
+            top: initialTop,
+          },
+          {
+            height: finalHeight,
+            top: finalTop,
+            scrollTrigger: {
+              trigger: ".sun-section",
+              start: "top+=70% bottom",
+              end: "+=160%",
+              scrub: true,
+            },
+            ease: "none",
+          }
+        );
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+  return (
+        <section className="bg-[#F1F1F1] sun-section">
+          <div className="sun-wrapper">
+            <div className="sun-content leading-none">
+              <div className="frame-line line-1">Benefits</div>
+
+              <div className="frame-connector connector-1" />
+              <div className="frame-line line-2">of working</div>
+              <div className="frame-connector connector-2" />
+              <div className="frame-line line-3">with us</div>
+            </div>
+
+            <div className="sun-mask">
+              <div className="rays">
+                {rays.map((_, i) => (
+                  <div className={`ray ray-${i}`} key={i} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+  )
+}
+
+
+       {/* <div className="mt-10 w-full flex justify-center flex-row gap-6">
+          <div className="w-[540px] ">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 792 792"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <mask id="mask-inverse-2">
+                  <rect width="792" height="792" fill="white" />
+
+                  <path
+                    d="M268.094 181.48V-220.57H455.044V181.67L268.094 181.48Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M457.805 339.69H824.685V613.44L457.825 613.52C457.825 613.52 457.825 613.52 457.815 613.52V770.55H1010.1V-220.24H824.685V182.58L457.805 182.65V339.68V339.69Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M433.78 295.93C333.76 295.93 252.68 377.01 252.68 477.03C252.68 577.05 333.76 658.13 433.78 658.13"
+                    fill="black"
+                  />
+                  <path
+                    d="M432.105 658.129H457.805L457.805 295.949H432.105L432.105 658.129Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M0.8125 0V792H791.193V0H0.8125ZM765.773 766.62H26.2225V25.38H765.773V766.62Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M12.3712 -1360.27H-273.219V2200.43H12.3712V-1360.27Z"
+                    fill="black"
+                  />
+                  <path
+                    d="M1068.04 -1360.27H775.172V2228.28H1068.04V-1360.27Z"
+                    fill="black"
+                  />
+                </mask>
+              </defs>
+              <rect width="792" height="792" fill="#E3C3DA" />
+
+              <image
+                href="../images/freysmiles_insta.gif"
+                width="792"
+                height="792"
+                preserveAspectRatio="xMidYMid slice"
+                mask="url(#mask-inverse-2)"
+              />
+            </svg>
+          </div>
+          <div className="w-[540px]">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 792 792"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <mask id="shape-mask">
+                  <rect width="100%" height="100%" fill="white" />
+                  <path
+                    d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"
+                    fill="black"
+                  />
+                </mask>
+              </defs>
+
+              <rect width="100%" height="100%" fill="#AA4032" />
+
+              <foreignObject width="100%" height="100%" mask="url(#shape-mask)">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  width="792"
+                  height="792"
+                  style={{ display: "block" }}
+                >
+                  <source src="../images/retaintracing.mp4" type="video/mp4" />
+                </video>
+              </foreignObject>
+            </svg>
+          </div>
+        </div> */}
+        {/* <div className="flex justify-center items-center" style={{ width:'500px', position: 'relative'}}>
+
+  <svg
+  className="masksvgshape"
+        width="100%"
+        height="100%"
+  
+          viewBox="0 0 792 792"
+   >
+    <defs>
+
+      <clipPath id="svg-path" clipPathUnits="userSpaceOnUse">
+        <path d="M219.628 401.77C219.628 303.71 299.398 224.2 397.838 224.09C397.838 224.09 397.908 224.09 397.938 224.09C397.967 224.09 398.007 224.09 398.037 224.09C496.477 224.2 576.247 303.71 576.247 401.77C576.247 499.83 496.477 579.34 398.037 579.45C398.037 579.45 397.967 579.45 397.938 579.45C397.908 579.45 397.868 579.45 397.838 579.45C299.398 579.34 219.628 499.83 219.628 401.77ZM520.588 164.38H767.898V1063.42H1015.84V-268.16H767.898V-47.4501H520.588V164.39V164.38ZM-218.062 -268.16V1063.43H29.8775V842.89H276.487V631.05H29.8775V-268.16H-218.062Z"/>
+      </clipPath>
+    </defs>
+  </svg>
+
+
+  <video
+    src="../images/retaintracing.mp4"
+    autoPlay
+    muted
+    loop
+    playsInline
+    style={{
+      // width: '100%',
+      // height: 'auto',
+  
+      clipPath: 'url(#svg-path)',
+      WebkitClipPath: 'url(#svg-path)',
+    }}
+  />
+</div> */}
+
+        {/* <div className="w-2/3 ml-auto">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-32 min-h-screen">
+
+    <div className="rounded-3xl overflow-hidden bg-[#FAFF00] flex flex-col">
+      <div className="aspect-[3/4] w-full">
+        <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
+          <SimplePlane />
+        </Curtains>
+      </div>
+      <div className="p-4 bg-white flex justify-between items-end text-black">
+        <div>
+          <p className="text-sm font-medium">Lorem Ipsum</p>
+          <p className="text-xs text-gray-500">Dolor sit amet consectetur</p>
+        </div>
+        <p className="text-xs text-gray-500">10MG</p>
+      </div>
+    </div>
+
+    <div className="rounded-3xl overflow-hidden bg-[#8B5E3C] flex flex-col">
+      <div className="aspect-[3/4] w-full">
+        <img
+          src="https://source.unsplash.com/600x800/?cbd,box"
+          alt="Placeholder"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="p-4 bg-white flex justify-between items-end text-black">
+        <div>
+          <p className="text-sm font-medium">Lorem Ipsum</p>
+          <p className="text-xs text-gray-500">Adipiscing elit sed do</p>
+        </div>
+        <p className="text-xs text-gray-500">10MG</p>
+      </div>
+    </div>
+  </div>
+</div> */}

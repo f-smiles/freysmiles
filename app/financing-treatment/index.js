@@ -666,6 +666,41 @@ const FinancingTreatment = () => {
       ease: "power2.out",
     });
   }, []);
+ const textRef = useRef(null);
+  const trackRef = useRef(null);
+  const shapeRef = useRef(null);
+  const tl = useRef(null);
+
+  useEffect(() => {
+    // Initialize GSAP timeline
+    tl.current = gsap.timeline({ paused: true });
+
+    tl.current
+      .to(shapeRef.current, {
+        duration: 1,
+        scale: 30,
+        rotate: 240,
+        ease: "expo.in"
+      })
+      .to(textRef.current, {
+        duration: 1,
+        x: 0,
+        ease: "power2.in"
+      }, 0);
+
+    const handleScroll = () => {
+      const progress = window.pageYOffset / (document.body.offsetHeight - window.innerHeight);
+      tl.current.progress(progress);
+      document.body.style.setProperty("--scroll", progress);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      tl.current.kill();
+    };
+  }, []);
 
   return (
     <>
@@ -1017,7 +1052,7 @@ const FinancingTreatment = () => {
             <path
               className="hsc-img-path"
               d="M108 88.7c-10.8 0-19.7 8.8-19.7 19.7v47.4c0 1.9-1.5 3.4-3.4 3.4h-8.6c-1.9 0-3.4-1.5-3.4-3.4v-47.4c0-10.8-8.8-19.7-19.7-19.7H6.4c-1.9 0-3.4-1.5-3.4-3.4v-8c0-1.9 1.5-3.4 3.4-3.4h46.9c10.8 0 19.7-8.8 19.6-19.7V6.4c0-1.9 1.5-3.4 3.4-3.4H85c1.9 0 3.4 1.5 3.4 3.4v47.8c0 10.8 8.8 19.7 19.7 19.7h46.6c1.9 0 3.4 1.5 3.4 3.4v8c0 1.9-1.5 3.4-3.4 3.4H108z"
-              fill="#E9FE1D"
+              fill="#EAFE08"
             />
           </g>
 

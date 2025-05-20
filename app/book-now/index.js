@@ -1,4 +1,6 @@
 "use client";
+import { Renderer, Program, Mesh, Plane, Uniform } from 'wtc-gl';
+import { Vec2, Mat2 } from 'wtc-math';
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -11,6 +13,10 @@ import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin);
+
+
+
+
 
 const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = "100" }) => {
   const containerRef = useRef(null);
@@ -460,14 +466,26 @@ export default function BookNow() {
 
   return (
 <>
-<div>
+{/* <div style={{
+  width: '100vw',
+  height: '100vh',
+  background: 'linear-gradient(to bottom, #f5af19, #f12711)',
+  overflow: 'hidden',
+  margin: 0,
+  padding: 0,
+}}>
+  <WaveCanvas />
+</div> */}
+
+
+{/* <div>
     <TextEffect 
         text="BOOK" 
         font="NeueHaasRoman" 
-        // color="#ffffff" 
+   
         fontWeight="normal" 
       />
-    </div>
+    </div> */}
 <section
 ref ={sectionRef}
   className="relative w-full min-h-screen bg-center bg-cover"

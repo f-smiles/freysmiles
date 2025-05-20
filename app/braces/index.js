@@ -20,7 +20,11 @@ import {
   OrbitControls,
   useGLTF,
 } from "@react-three/drei";
-import { Canvas, useFrame, useThree, extend, useLoader } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, extend, useLoader, useTexture } from "@react-three/fiber";
+
+
+
+
 
 
 
@@ -639,6 +643,21 @@ const Braces = () => {
       text: "Something to keep in mind with braces is to take caution when eating hard foods, i.e., tough meats,hard breads, granola, and the like.  But you’ll need to protect yourorthodontic appliances when you eat for as long as you’re wearing braces.",
     },
   ];
+  const images = [
+    'https://picsum.photos/id/1005/800/600',
+    'https://picsum.photos/id/1011/800/600',
+    'https://picsum.photos/id/1025/800/600',
+  ];
+  const scrollYRef = useRef(0);
+
+useEffect(() => {
+  const handleScroll = () => {
+    scrollYRef.current = window.scrollY;
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
 
   return (
     <>

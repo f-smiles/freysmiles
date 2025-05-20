@@ -1,4 +1,5 @@
 "use client";
+import Copy from "@/utils/Copy.jsx";
 import normalizeWheel from "normalize-wheel";
 import {
   Renderer,
@@ -44,32 +45,71 @@ import { TextureLoader } from "three";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
-const Section = ({ children, onHoverStart, onHoverEnd }) => (
-  <motion.div
-    onHoverStart={onHoverStart}
-    onHoverEnd={onHoverEnd}
-    style={{
-      height: "50%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      cursor: "pointer",
-      backgroundColor: "transparent",
-      color: "black",
-      fontSize: "2em",
-      fontFamily: "HelveticaNeue-Light",
-      userSelect: "none",
-      position: "relative",
-      zIndex: 2,
-      textAlign: "center",
-      width: "100%",
-      boxSizing: "border-box",
-      border: "1px solid black",
-    }}
-  >
-    {children}
-  </motion.div>
-);
+
+const RepeatText = ({ text = "FSF", totalLayers = 7 }) => {
+  const containerRef = useRef();
+
+  useEffect(() => {
+    const containers = gsap.utils.toArray(".stack-word-layer");
+
+    containers.forEach((el, i) => {
+      const inner = el.querySelector(".stack-word-inner");
+
+      gsap.fromTo(
+        inner,
+        { yPercent: 0 },
+        {
+          yPercent: 140,
+          ease: "none",
+          scrollTrigger: {
+            trigger: el,
+            start: `top center`,
+            end: "bottom top+=30%",
+            scrub: true,
+          },
+        }
+      );
+    });
+  }, []);
+
+  return (
+    <section
+      className="relative w-full bg-[#FAFAFA] overflow-hidden"
+      data-animation="stack-words"
+      ref={containerRef}
+    >
+      {new Array(totalLayers).fill(0).map((_, i) => {
+        const isLast = i === totalLayers - 1;
+
+        return (
+          <div
+            key={i}
+            className="overflow-hidden stack-word-layer"
+            style={{
+              height: isLast ? "20vw" : `${5 + i * 1.25}vw`,
+              marginTop: i === 0 ? 0 : "-.5vw",
+            }}
+          >
+            <div
+              className="stack-word-inner will-change-transform flex justify-center overflow-visible"
+              style={{ height: "100%" }}
+            >
+              <span
+                className="text-[48vw] font-bold text-black leading-none block"
+                style={{
+                  transform: `translateY(calc(-65% + ${i * 1.5}px))`
+
+                }}
+              >
+                {text}
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </section>
+  );
+};
 
 const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
   const ref = useRef();
@@ -404,7 +444,7 @@ const WavePlane = forwardRef(({ uniformsRef }, ref) => {
   const texture = useTexture("/images/mockup_c.png");
   const gl = useThree((state) => state.gl);
   useMemo(() => {
-    texture.encoding = THREE.sRGBEncoding;
+    texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = Math.min(16, gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
   }, [texture, gl]);
@@ -805,89 +845,30 @@ const Invisalign = () => {
   return (
     <>
       <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
-        <Suspense fallback={null}>
-          <BulgeGallery
-            slides={[
-              { image: "/images/invisalignphonemockup.png" },
-              { image: "/images/totebag2.jpg" },
-            ]}
-          />
-        </Suspense>
-        <Canvas
-          gl={{ alpha: true }}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            pointerEvents: "initial",
-            background: "transparent",
-            zIndex: 0,
-          }}
-        >
-          <Suspense fallback={null}>
-            <DistortedImage
-              imageSrc="/images/invisalign_mockup_3.jpg"
-              xOffset={-3.5}
-              yOffset={0}
-            />
-            <DistortedImage
-              imageSrc="/images/invisalign_mockup_3.jpg"
-              xOffset={3.5}
-              yOffset={-2.5}
-            />
+  
+      <Canvas
+    className="pointer-events-none"
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100vh",
+      zIndex: 0,
+    }}
+  >
+    <Suspense fallback={null}>
+      <DistortedImage imageSrc="/images/invisalign_mockup_3.jpg" xOffset={-3.5} yOffset={0} />
+      <DistortedImage imageSrc="/images/invisalign_mockup_3.jpg" xOffset={3.5} yOffset={-2.5} />
+      <EffectComposer>
+        <Fluid backgroundColor="#F9F8F7" />
+      </EffectComposer>
+    </Suspense>
+  </Canvas>
+     
+<div className="relative z-10 mt-[100vh]">
 
-            <EffectComposer>
-              <Fluid backgroundColor="#F9F8F7" />
-            </EffectComposer>
-          </Suspense>
-        </Canvas>
-
-        {/* <section className="pointer-events-none canvas-section relative h-[100vh] z-10">
-          <Canvas camera={{ position: [0, 0, 4] }}>
-            <ambientLight intensity={0.5} />
-            <WavePlane ref={meshRef} uniformsRef={uniformsRef} />
-            <OrbitControls enableZoom={false} />
-          </Canvas>
-        </section> */}
-
-        <div className="pointer-events-none flex flex-row items-center">
-          <div
-            ref={textRef}
-            className="text-3xl md:text-[3vw] leading-[1.1] content__title"
-          >
-            <span>We obsess over details so</span>
-            <span>the result feels effortless. </span>
-            <span></span>
-          </div>
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto">
-          {/* <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-            <div className="w-[800px] h-[800px]">
-            <Canvas>
-              <ambientLight intensity={0.5} />
-              <pointLight color="#ffe9c4" intensity={2} position={[0, 0, -2]} />
-
-              <SmileyFace position={[0, 0, 0]} />
-              <Environment preset="sunset" />
-
-              <OrbitControls enableZoom={false} />
-            </Canvas>
-          </div>
-          </div> */}
-
-          {/* <div className=" flex items-center justify-center">
-  <img
-    src="https://cdn.prod.website-files.com/6749e677c74b3f0e424aab25/67c2314d8792ff4df3b1512b_Icon%20Estratti%20Secchi%20Pura.webp"
-    className="w-[300px] h-auto object-contain z-0"
-    alt="Background Icon"
-  />
-</div> */}
-        </div>
-
-        <div className="ml-10 text-[32px] sm:text-[32px] leading-tight text-black font-light font-neuehaasdisplaythin">
+<Copy>        <div className="relative ml-10 text-[32px] sm:text-[32px] leading-tight text-black font-light font-neuehaasdisplaythin">
           <span className="font-normal">Our doctors </span>{" "}
           <span className="font-light">have treated</span>{" "}
           <span className="font-saolitalic">thousands</span>{" "}
@@ -897,24 +878,28 @@ const Invisalign = () => {
           <span className="font-light ">appliance</span>{" "}
           <span className="font-normal">system.</span>{" "}
         </div>
+</Copy>
+<section className="relative w-full flex flex-col min-h-screen px-16 py-20">
 
-        <section className="relative w-full flex flex-col h-screen px-16 py-20 pb-10">
           <h4 className="text-sm mb-6">Synopsis</h4>
-          <p className="font-neuehaas35 text-[24px] leading-[1.2] max-w-[650px] mb-20">
+<Copy>    <p className="font-neuehaas35 text-[24px] leading-[1.2] max-w-[650px] mb-20">
             Trusted by millions around the world, Invisalign is a clear,
             comfortable, and confident choice for straightening smiles. We've
             proudly ranked among the top 1% of certified Invisalign providers
             nationwide — every year since 2000.
-          </p>
+          </p></Copy>
+      
+          <div className="relative">   <RepeatText /></div>
+   
 
-          <div className=" font-neuehaas35 w-full border-t border-gray-300 text-sm leading-relaxed">
+        <div className="relative font-neuehaas45 w-full border-t border-gray-300 text-sm leading-relaxed">
             <div className="flex border-b border-gray-300">
               <div className="w-1/3 p-5">
                 <p className="font-neuehaas35 text-black">Accolades</p>
               </div>
               <div className="w-1/3 flex items-center justify-center p-5"></div>
               <div className="w-1/3 p-5 w-full">
-                <div className="w-full  text-sm leading-relaxed font-neuehaas35">
+                <div className="w-full  text-[14px] leading-relaxed font-neuehaas45">
                   <div className="flex border-b border-gray-300 py-3">
                     <div className="w-1/2 text-gray-500">
                       6x Winner Best Orthodontist
@@ -996,7 +981,16 @@ const Invisalign = () => {
                 </svg>
               </div>
             </div>
-
+            <div className="pointer-events-none flex flex-row items-center">
+          <div
+            ref={textRef}
+          >
+              <h2 className="max-w-5xl font-neuehaas45  mb-16">
+              We obsess over details so the result feels effortless.
+  </h2>
+        
+          </div>
+        </div>
             {/* <div
             className="mt-10 relative"
             style={{ height: "600px", overflow: "hidden" }}
@@ -1043,7 +1037,7 @@ const Invisalign = () => {
             ))}
           </div> */}
           </div>
-        </section>
+          </section>  
         <div className="min-h-screen relative">
           <div className="font-neuehaas45 perspective-1500 text-[#0414EA]">
             <div className="flip-wrapper">
@@ -1098,7 +1092,41 @@ const Invisalign = () => {
           cause lasting damage. Trust doctors, not delivery boxes, when it comes
           to your smile.
         </div>
+        </div>
       </div>
+      <div className="relative z-10 max-w-7xl mx-auto">
+          {/* <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+            <div className="w-[800px] h-[800px]">
+            <Canvas>
+              <ambientLight intensity={0.5} />
+              <pointLight color="#ffe9c4" intensity={2} position={[0, 0, -2]} />
+
+              <SmileyFace position={[0, 0, 0]} />
+              <Environment preset="sunset" />
+
+              <OrbitControls enableZoom={false} />
+            </Canvas>
+          </div>
+          </div> */}
+             {/* <Suspense fallback={null}>
+          <BulgeGallery
+            slides={[
+              { image: "/images/invisalignphonemockup.png" },
+              { image: "/images/totebag2.jpg" },
+            ]}
+          />
+        </Suspense> */}
+        {/* <section className="pointer-events-none canvas-section relative h-[100vh] z-10">
+          <Canvas camera={{ position: [0, 0, 4] }}>
+            <ambientLight intensity={0.5} />
+            <WavePlane ref={meshRef} uniformsRef={uniformsRef} />
+            <OrbitControls enableZoom={false} />
+          </Canvas>
+        </section> */}
+
+
+        </div>
+
     </>
   );
 };
