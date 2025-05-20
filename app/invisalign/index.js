@@ -44,7 +44,7 @@ import { TextureLoader } from "three";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
-const Section = ({ children, onHoverStart, onHoverEnd }) => (
+const SectionOne = ({ children, onHoverStart, onHoverEnd }) => (
   <motion.div
     onHoverStart={onHoverStart}
     onHoverEnd={onHoverEnd}
@@ -508,7 +508,7 @@ newPosition.z += wave + ripple + bulge;
 //   )
 // }
 
-const Section = ({ children, onHoverStart, onHoverEnd }) => (
+const SectionTwo = ({ children, onHoverStart, onHoverEnd }) => (
   <motion.div
     onHoverStart={onHoverStart}
     onHoverEnd={onHoverEnd}
