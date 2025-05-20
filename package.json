@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.5.3",
-    "@gsap/react": "^2.1.0",
+    "@gsap/react": "^2.1.2",
     "@headlessui/react": "^1.7.18",
     "@headlessui/tailwindcss": "^0.2.0",
     "@heroicons/react": "^2.1.3",
