@@ -1,8 +1,7 @@
 'use client'
 import { useTheme } from "next-themes"
-import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
-import { CloudIcon, MoonIcon, StarIcon, SunIcon } from "lucide-react"
+import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function ThemeButtons() {
@@ -182,7 +181,7 @@ const Clouds = () => {
 }
 
 // const ThemeButtonsOld = () => {
-//   const { theme, setTheme } = useTheme()
+// const { theme, setTheme } = useTheme()
 
 //   return (
 //     <div className="fixed bottom-[24px] right-[24px]">
