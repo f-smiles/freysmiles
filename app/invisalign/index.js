@@ -404,7 +404,7 @@ const WavePlane = forwardRef(({ uniformsRef }, ref) => {
   const texture = useTexture("/images/mockup_c.png");
   const gl = useThree((state) => state.gl);
   useMemo(() => {
-    texture.encoding = THREE.sRGBEncoding;
+    texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = Math.min(16, gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
   }, [texture, gl]);
