@@ -1,145 +1,554 @@
 "use client";
+import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import "tw-elements";
 import gsap from "gsap";
-import { MorphSVGPlugin } from "gsap-trial/MorphSVGPlugin";
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
+import ScrollTrigger from "gsap/ScrollTrigger";
+import { Text } from '@react-three/drei';
+import { useThree, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
+gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin);
 
-gsap.registerPlugin(MorphSVGPlugin);
+const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = "100" }) => {
+  const containerRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const rendererRef = useRef(null);
+  const planeMeshRef = useRef(null);
+  const mousePositionRef = useRef({ x: 0.5, y: 0.5 });
+  const targetMousePositionRef = useRef({ x: 0.5, y: 0.5 });
+  const prevPositionRef = useRef({ x: 0.5, y: 0.5 });
+  const easeFactorRef = useRef(0.02);
+  const animationRef = useRef(null);
+  const textureRef = useRef(null);
 
-const LeftColumn = () => {
-  return (
-    <div className="flex justify-center items-center px-4">
+  const vertexShader = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+
+  const fragmentShader = `
+    varying vec2 vUv;
+    uniform sampler2D u_texture;
+    uniform vec2 u_mouse;
+    uniform vec2 u_prevMouse;
+
+    void main() {
+      vec2 gridUV = floor(vUv * vec2(40.0, 40.0)) / vec2(40.0, 40.0);
+      vec2 centerOfPixel = gridUV + vec2(1.0/40.0, 1.0/40.0);
+
+      vec2 mouseDirection = u_mouse - u_prevMouse;
+
+      vec2 pixelToMouseDirection = centerOfPixel - u_mouse;
+      float pixelDistanceToMouse = length(pixelToMouseDirection);
+      float strength = smoothstep(0.3, 0.0, pixelDistanceToMouse);
+
+      vec2 uvOffset = strength * -mouseDirection * 0.4;
+      vec2 uv = vUv - uvOffset;
+
+      vec4 color = texture2D(u_texture, uv);
+      gl_FragColor = color;
+    }
+  `;
+
+  const createTextTexture = (text, font, size, color, fontWeight = "100") => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const canvasWidth = window.innerWidth * 2;
+    const canvasHeight = window.innerHeight * 2;
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const fontSize = size || Math.floor(canvasWidth * 2);
+
+    ctx.fillStyle = "#1a1a1a";
+    ctx.font = `${fontWeight} ${fontSize}px "${font || "NeueHaasRoman"}"`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
+    const textMetrics = ctx.measureText(text);
+    const textWidth = textMetrics.width;
+
+    const scaleFactor = Math.min(1, (canvasWidth * 1) / textWidth);
+    const aspectCorrection = canvasWidth / canvasHeight;
+
+    ctx.setTransform(
+      scaleFactor,
+      0,
+      0,
+      scaleFactor / aspectCorrection,
+      canvasWidth / 2,
+      canvasHeight / 2
+    );
+
+    ctx.strokeStyle = "#1a1a1a";
+    ctx.lineWidth = fontSize * 0.005;
+    for (let i = 0; i < 3; i++) {
+      ctx.strokeText(text, 0, 0);
+    }
+    ctx.fillText(text, 0, 0);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    textureRef.current = texture;
+    return texture;
+  };
+
+  const initializeScene = (texture) => {
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const camera = new THREE.OrthographicCamera(
+      -1,
+      1,
+      1 / aspectRatio,
+      -1 / aspectRatio,
+      0.1,
+      1000
+    );
+    camera.position.z = 1;
+    cameraRef.current = camera;
+
+    const shaderUniforms = {
+      u_mouse: { type: "v2", value: new THREE.Vector2() },
+      u_prevMouse: { type: "v2", value: new THREE.Vector2() },
+      u_texture: { type: "t", value: texture },
+    };
+
+    const planeMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(2, 2),
+      new THREE.ShaderMaterial({
+        uniforms: shaderUniforms,
+        vertexShader,
+        fragmentShader,
+      })
+    );
+    planeMeshRef.current = planeMesh;
+
+    scene.add(planeMesh);
+    planeMesh.scale.set(0.5, 0.5, 1); // scale to 50% 
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setClearColor(0xffffff, 1);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    rendererRef.current = renderer;
+
+    containerRef.current.appendChild(renderer.domElement);
+  };
+
+  const reloadTexture = () => {
+    const newTexture = createTextTexture(text, font, null, color, fontWeight);
+    planeMeshRef.current.material.uniforms.u_texture.value = newTexture;
+    if (textureRef.current) {
+      textureRef.current.dispose();
+    }
+    textureRef.current = newTexture;
+  };
+
+  const animateScene = () => {
+    if (!planeMeshRef.current || !rendererRef.current || !sceneRef.current || !cameraRef.current) {
+      return;
+    }
+
+    const { x: mouseX, y: mouseY } = mousePositionRef.current;
+    const { x: targetX, y: targetY } = targetMousePositionRef.current;
+    const { x: prevX, y: prevY } = prevPositionRef.current;
+    const easeFactor = easeFactorRef.current;
+
+    mousePositionRef.current.x += (targetX - mouseX) * easeFactor;
+    mousePositionRef.current.y += (targetY - mouseY) * easeFactor;
+
+    planeMeshRef.current.material.uniforms.u_mouse.value.set(
+      mousePositionRef.current.x,
+      1.0 - mousePositionRef.current.y
+    );
+
+    planeMeshRef.current.material.uniforms.u_prevMouse.value.set(
+      prevX,
+      1.0 - prevY
+    );
+
+    rendererRef.current.render(sceneRef.current, cameraRef.current);
+    animationRef.current = requestAnimationFrame(animateScene);
+  };
+
+  const handleMouseMove = (event) => {
+    if (!containerRef.current) return;
+    
+    easeFactorRef.current = 0.035;
+    const rect = containerRef.current.getBoundingClientRect();
+    prevPositionRef.current = { 
+      x: targetMousePositionRef.current.x, 
+      y: targetMousePositionRef.current.y 
+    };
+
+    targetMousePositionRef.current.x = (event.clientX - rect.left) / rect.width;
+    targetMousePositionRef.current.y = (event.clientY - rect.top) / rect.height;
+  };
+
+  const handleMouseEnter = (event) => {
+    if (!containerRef.current) return;
+    
+    easeFactorRef.current = 0.01;
+    const rect = containerRef.current.getBoundingClientRect();
+
+    mousePositionRef.current.x = targetMousePositionRef.current.x =
+      (event.clientX - rect.left) / rect.width;
+    mousePositionRef.current.y = targetMousePositionRef.current.y =
+      (event.clientY - rect.top) / rect.height;
+  };
+
+  const handleMouseLeave = () => {
+    easeFactorRef.current = 0.01;
+    targetMousePositionRef.current = { 
+      x: prevPositionRef.current.x, 
+      y: prevPositionRef.current.y 
+    };
+  };
+
+  const onWindowResize = () => {
+    if (!cameraRef.current || !rendererRef.current) return;
+    
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    cameraRef.current.left = -1;
+    cameraRef.current.right = 1;
+    cameraRef.current.top = 1 / aspectRatio;
+    cameraRef.current.bottom = -1 / aspectRatio;
+    cameraRef.current.updateProjectionMatrix();
+
+    rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+    reloadTexture();
+  };
+  useEffect(() => {
+    let mounted = true;
+    const currentContainer = containerRef.current;
+  
+    const init = async () => {
+      try {
+
+        const fontSize = Math.floor(window.innerWidth * 2);
+        await document.fonts.load(`${fontWeight} ${fontSize}px "${font}"`);
+        await document.fonts.ready;
+  
+        if (!mounted) return;
+  
+
+        const texture = createTextTexture(text, font, null, color, fontWeight);
+        initializeScene(texture);
+        animationRef.current = requestAnimationFrame(animateScene);
+  
+
+        if (currentContainer) {
+          currentContainer.addEventListener('mousemove', handleMouseMove);
+          currentContainer.addEventListener('mouseenter', handleMouseEnter);
+          currentContainer.addEventListener('mouseleave', handleMouseLeave);
+        }
+        window.addEventListener('resize', onWindowResize);
+  
+      } catch (error) {
+        console.error("Font loading error:", error);
+
+        if (!mounted) return;
+        
+        const texture = createTextTexture(text, font, null, fontWeight);
+        initializeScene(texture);
+        animationRef.current = requestAnimationFrame(animateScene);
+  
+        if (currentContainer) {
+          currentContainer.addEventListener('mousemove', handleMouseMove);
+          currentContainer.addEventListener('mouseenter', handleMouseEnter);
+          currentContainer.addEventListener('mouseleave', handleMouseLeave);
+        }
+        window.addEventListener('resize', onWindowResize);
+      }
+    };
+  
+    init();
+  
+    return () => {
+      mounted = false;
+      cancelAnimationFrame(animationRef.current);
       
-      <div className="w-full lg:text-left">
-        <div className="w-full flex justify-between items-center">
-          <h1 className="font-helvetica-neue-light text-[7rem] mb-6">
-            <span>Say </span>
-            <span className="text-[7rem]">hello</span>
-          </h1>
-        </div>
 
-        <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 mb-10">
-          <p className="uppercase font-neue-montreal text-[1.5em]">
-            We look forward to hearing from you
-          </p>
+      if (currentContainer) {
+        currentContainer.removeEventListener('mousemove', handleMouseMove);
+        currentContainer.removeEventListener('mouseenter', handleMouseEnter);
+        currentContainer.removeEventListener('mouseleave', handleMouseLeave);
+      }
+      window.removeEventListener('resize', onWindowResize);
+      
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+        rendererRef.current.domElement?.remove();
+      }
+      if (planeMeshRef.current) {
+        planeMeshRef.current.material?.dispose();
+        planeMeshRef.current.geometry?.dispose();
+      }
+      if (textureRef.current) {
+        textureRef.current.dispose();
+      }
+      if (sceneRef.current) {
+        sceneRef.current.traverse(child => {
+          child.material?.dispose();
+          child.geometry?.dispose();
+        });
+      }
+    };
+  }, [text, font, fontWeight]);
 
-          <a
-            href="#general"
-            className="font-neue-montreal inline-block px-10 py-3 border border-black rounded-full hover:bg-black hover:text-white transition whitespace-nowrap flex items-center"
-          >
-            General
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="size-4 ml-2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m4.5 4.5 15 15m0 0V8.25m0 11.25H8.25"
-              />
-            </svg>
-          </a>
-        </div>
-
-        <div className="text-end lg:text-right space-y-4">
-          <a
-            className="font-neue-montreal text-lg text-center hover:text-blue-500"
-            href="mailto:info@freysmiles.com"
-          >
-            info@freysmiles.com
-          </a>
-          <div className="flex text-end lg:justify-end gap-10">
-            <div>
-              <a
-                href="facetime://6104374748"
-                className="font-neue-montreal text-lg text-center hover:text-blue-500"
-              >
-                (610) 437-4748
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <div ref={containerRef} style={{ width: '100%', height: '100vh', cursor: 'none' }} />;
 };
+const ScrambleText = ({ 
+  text, 
+  className, 
+  scrambleOnLoad = true,
+  charsType = "default" // 'default' | 'numbers' | 'letters'
+}) => {
+  const scrambleRef = useRef(null);
+  const originalText = useRef(text);
 
-const RightColumn = () => {
+  
+  const charSets = {
+    default: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+    numbers: "0123456789",
+    letters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  };
+
+  const scrambleAnimation = () => {
+    return gsap.to(scrambleRef.current, {
+      duration: 0.8,
+      scrambleText: {
+        text: originalText.current,
+        characters: charSets[charsType],
+        speed: 1,
+        revealDelay: 0.1,
+        delimiter: "",
+        tweenLength: false,
+      },
+      ease: "power1.out",
+    });
+  };
+
+  
+  useEffect(() => {
+    const element = scrambleRef.current;
+    if (!element) return;
+
+    if (scrambleOnLoad) {
+      gsap.set(element, {
+        scrambleText: {
+          text: originalText.current,
+          chars: charSets[charsType], 
+          revealDelay: 0.5,
+        }
+      });
+      scrambleAnimation();
+    }
+
+    const handleMouseEnter = () => scrambleAnimation();
+    element.addEventListener('mouseenter', handleMouseEnter);
+
+    return () => {
+      element.removeEventListener('mouseenter', handleMouseEnter);
+    };
+  }, [scrambleOnLoad, charsType]);
+
   return (
-    <div className="relative top-0 my-auto overflow-y-auto lg:col-span-2">
-      <iframe
-        src="https://app.acuityscheduling.com/schedule.php?owner=34613267"
-        title="Schedule Appointment"
-        className="w-full min-h-[960px] max-h-[100vh] h-full"
-      ></iframe>
-    </div>
+    <span 
+      ref={scrambleRef} 
+      className={`scramble-text ${className || ''}`}
+    >
+      {text}
+    </span>
   );
 };
-
 export default function BookNow() {
+  const fadeUpMaskedVariants = {
+    hidden: { y: "100%", opacity: 0 },
+    visible: {
+      y: "0%",
+      opacity: 1,
+      transition: {
+        duration: 1,
+        ease: "easeOut",
+        transition: { duration: 1, ease: "easeOut", delay: 2 },
+      },
+    },
+  };
+
   const starRef = useRef(null);
   const containerRef = useRef(null);
   const contentRef = useRef(null);
-  
+
+  // useEffect(() => {
+  //   const width = window.innerWidth;
+  //   const height = window.innerHeight;
+  //   const maxSize = Math.max(width, height);
+
+  //   const starRect = starRef.current.getBoundingClientRect();
+  //   const starWidth = starRect.width;
+  //   const targetScale = (maxSize * 4) / starWidth;
+
+  //   gsap.set(contentRef.current, { opacity: 0 });
+
+  //   const tl = gsap.timeline({
+  //     defaults: { duration: 2.8, ease: "power2.inOut" },
+  //   });
+
+  //   tl.set(starRef.current, {
+  //     scale: 0.1,
+  //     transformOrigin: "50% 50%",
+  //   })
+  //   .to(starRef.current, {
+  //     scale: targetScale,
+  //     duration: 2.5,
+  //   })
+  //   .to(contentRef.current, {
+  //     opacity: 1,
+  //     duration: 1.8,
+  //   }, "-=2.6")
+  //   .set(containerRef.current, { zIndex: -1 });
+  // }, []);
+
+  const cardsectionRef = useRef(null);
+  const [linesComplete, setLinesComplete] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isEmailHovered, setIsEmailHovered] = useState(false);
+  const videoRef = useRef(null);
+
   useEffect(() => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const maxSize = Math.max(width, height);
-  
-    const starRect = starRef.current.getBoundingClientRect();
-    const starWidth = starRect.width;
-    const targetScale = (maxSize * 4) / starWidth;
-  
-    gsap.set(contentRef.current, { opacity: 0 });
-  
-    const tl = gsap.timeline({
-      defaults: { duration: 1.2, ease: "power2.inOut" },
-    });
-  
-    tl.set(starRef.current, {
-      scale: 0.1,
-      transformOrigin: "50% 50%",
-    })
-    .to(starRef.current, {
-      scale: targetScale,
-      duration: 1.5,
-    })
-    .to(contentRef.current, {
-      opacity: 1,
-      duration: 0.8,
-    }, "-=0.6")
-    .set(containerRef.current, { zIndex: -1 });
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.5;
+    }
   }, []);
 
+  const sectionRef = useRef(null)
+  const panelRef = useRef(null)
+
+  // useEffect(() => {
+  //   const ctx = gsap.context(() => {
+  //     gsap.to(panelRef.current, {
+  //       rotate: 7,
+  //       ease: "none",
+  //       scrollTrigger: {
+  //         trigger: sectionRef.current,
+  //         start: "top top",
+  //         end: "+=1000",
+  //         scrub: true,
+  //         pin: true,
+  //       },
+  //     })
+  //   }, sectionRef)
+
+  //   return () => ctx.revert()
+  // }, [])
+
   return (
-    <section className="">
-  <div ref={containerRef} className="fixed inset-0 flex justify-center items-center bg-[#FE2F01] z-50">
-      <svg width="100vw" height="100vh" viewBox="0 0 1 1" xmlns="http://www.w3.org/2000/svg">
-        <path
-          ref={starRef}
-          d="M 0.5 0.0391 C 0.4727 0.2148 0.4492 0.3203 0.3828 0.3828 
-                C 0.3203 0.4492 0.2148 0.4727 0.0391 0.5 
-                C 0.2148 0.5273 0.3203 0.5508 0.3828 0.6172 
-                C 0.4492 0.6797 0.4727 0.7852 0.5 0.9609 
-                C 0.5273 0.7852 0.5508 0.6797 0.6172 0.6172 
-                C 0.6797 0.5508 0.7852 0.5273 0.9609 0.5 
-                C 0.7852 0.4727 0.6797 0.4492 0.6172 0.3828 
-                C 0.5508 0.3203 0.5273 0.2148 0.5 0.0391 Z"
-          fill="#F3DACF"
-        />
-      </svg>
+<>
+<div>
+    <TextEffect 
+        text="BOOK" 
+        font="NeueHaasRoman" 
+        // color="#ffffff" 
+        fontWeight="normal" 
+      />
     </div>
-        <div ref={contentRef} className="grid h-full grid-cols-1 gap-8 py-24 lg:py-36 lg:grid-cols-3">
-          <LeftColumn />
-          <RightColumn />
+<section
+ref ={sectionRef}
+  className="relative w-full min-h-screen bg-center bg-cover"
+  style={{ backgroundImage: 'url(/images/portraitglass.jpg)' }}
+>
+
+  <div className="relative z-10 flex min-h-screen pt-10 pl-10">
+
+    <div
+      ref={panelRef}
+       className="flex justify-between w-full p-10 border shadow-md backdrop-blur-md bg-white/80 border-white/20 lg:p-20">
+      <div className="w-1/2">
+        <p className="mt-20 mb-4 text-xs uppercase font-neueroman">/ Contact Us</p>
+      
+        <div className="flex flex-col gap-6 mt-10 text-sm uppercase">
+        <div>
+          <p className="text-[12px] mb-1 font-neueroman uppercase"> <ScrambleText text="GENERAL" className="mr-10" /></p>
+          <p className="text-sm leading-snug font-ibmregular">
+          <ScrambleText  text="info@freysmiles.com" />
+            <br />
+            <ScrambleText className="font-ibmregular"
+      text="(610)437-4748" 
+      charsType="numbers"
+    />
+          </p>
         </div>
-  
-    </section>
+
+        <div>
+        <p className="text-[12px] mb-1 font-neueroman uppercase"> <ScrambleText text="ADDRESS" className="mr-10" /></p>
+          <p className="text-sm leading-tight font-ibmregular">
+          <ScrambleText className="font-ibmregular"
+      text="Frey Smiles" 
+      charsType="numbers"
+    />
+            <br />
+            <ScrambleText className="font-ibmregular"
+      text="1250 S Cedar Crest Blvd" 
+      charsType="numbers"
+    />
+            <br />
+            <ScrambleText className="font-ibmregular"
+      text="Allentown PA" 
+      charsType="numbers"
+    />
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <span className="text-3xl">↓</span>
+      </div>
+      
+
+      </div>
+
+
+
+    <div className="flex items-center justify-center w-1/2">
+  <iframe
+    src="https://app.acuityscheduling.com/schedule.php?owner=34613267"
+    title="Schedule Appointment"
+    className="w-full max-w-[820px] min-h-[90vh] "
+  />
+</div>
+    </div>
+
+
+
+  </div>
+</section>
+
+
+{/* <div ref={containerRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black">
+<svg ref={starRef} width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_116_153)"> <path d="M100 0C103.395 53.7596 146.24 96.6052 200 100C146.24 103.395 103.395 146.24 100 200C96.6052 146.24 53.7596 103.395 0 100C53.7596 96.6052 96.6052 53.7596 100 0Z" fill="url(#paint0_linear_116_153)"/> </g> <defs> <linearGradient id="paint0_linear_116_153" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse"> <stop stop-color="#DF99F7"/> <stop offset="1" stop-color="#FFDBB0"/> </linearGradient> <clipPath id="clip0_116_153"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>
+</div> */}
+
+
+
+ 
+</>
+
+
   );
 }

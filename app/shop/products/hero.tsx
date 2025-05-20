@@ -1,142 +1,121 @@
-import React from 'react';
+'use client'
 
-const Hero: React.FC = () => {
-  const letters = [
-    {
-      char: "S",
-      rotate: "rotate-12",
-      translateY: "translate-y-0",
-      color: "text-black",
-    },
-    {
-      char: "H",
-      rotate: "rotate-12",
-      translateY: "translate-y-20",
-      color: "text-black",
-    },
-    {
-      char: "O",
-      rotate: "rotate-6",
-      translateY: "translate-y-2",
-      color: "text-black",
-    },
-    {
-      char: "P",
-      rotate: "rotate-2",
-      translateY: "translate-y-20",
-      translateX: "translate-x-2",
-      color: "text-black",
-    },
-  ];
+import { useRef, useEffect, useMemo } from "react";
+import { useFrame, extend, useThree } from "@react-three/fiber";
+import FlutedGlassEffect from "../../../utils/glass";
 
-  const lettersNow = [
-    {
-      char: "N",
-      rotate: "rotate-12",
-      translateY: "translate-y-1",
-      color: "text-black",
-    },
-    {
-      char: "O",
-      rotate: "rotate-12",
-      translateY: "translate-y-5",
-      color: "text-black",
-    },
-    {
-      char: "W",
-      rotate: "rotate-6",
-      translateY: "translate-y-1",
-      color: "text-black",
-    },
+
+
+
+const Marquee = () => {
+  const items = [
+    { word: "Click here to shop gift cards" },
+    { word: "Click here to shop gift cards" },
+        { word: "Click here to shop gift cards" },
+    { word: "Click here to shop gift cards" },
   ];
 
   return (
-    <div className="bg-[#FCFAF5]">
-       <div className="flex justify-center py-16 px-4">
-  <div className="bg-black max-w-7xl w-full rounded-2xl relative flex">
-
-    <section className="w-1/2 flex flex-col justify-center items-center">
-      <div
-        className="relative w-full flex justify-center items-center"
-        style={{ height: "45%" }}
-      >
-        <div className="absolute flex flex-wrap justify-center font-helvetica-neue-light">
-          {letters.map((style, index) => (
-            <span
-              key={index}
-              className={`text-white inline-block ${style.rotate} ${style.translateY} ${style.translateX} ${style.color} mx-1`}
-              style={{ fontSize: "6rem" }}
-            >
-              {style.char}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div
-        className="relative w-full flex justify-center items-center"
-        style={{ height: "35%" }}
-      >
-        <div className="absolute flex justify-center font-neue-light">
-          {lettersNow.map((style, index) => (
-            <span
-              key={`now-${index}`}
-              className={`text-white inline-block ${style.rotate} ${style.translateY} ${style.color}`}
-              style={{ fontSize: "6rem" }}
-            >
-              {style.char}
-            </span>
-          ))}
-        </div>
-      </div>
-      
-    </section>
-
-
-    <section className="w-1/2 flex items-center justify-center">
-      <img src="../images/shop.png" alt="Shop" className="rounded-xl" />
-    </section>
-  </div>
-</div>
-
-
-
-<div >
-      <div className="shop-marquee">
-        <div className="shop-marquee-track">
-          {[...Array(20)].map((_, index: number) => (
-            <React.Fragment key={index}>
-              <img
-              className=" w-6"
-                src="../images//bullet-point.svg"
-                loading="lazy"
-                
-              />
-              <p className="font-neue-montreal shop-marquee-text">Click Here to Shop Gift Cards </p>
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-      </div>
-
-      <div >
-      <div  className="mt-10 products_title_container">
-
-        <div className="filter_wrapper">
-          <h5 className="small_heading light">Filter by category</h5>
-          <div className="filter_links_container">
-            <a href="#clean" className="inner-link filter">Clean</a>
-            <a href="#treat" className="inner-link filter">Treat</a>
-            <a href="#whiten" className="inner-link filter">Whiten</a>
+    <div className="relative overflow-hidden w-screen bg-[#F0EF59]">
+      <div className="flex animate-marquee min-w-full hover:[animation-play-state:paused]">
+        {[...items, ...items].map((item, index) => (
+          <div
+            key={index}
+            className="px-4 py-4 text-[12px] whitespace-nowrap"
+          >
+            {item.word}
           </div>
-        </div>
-
+        ))}
       </div>
-    </div>
     </div>
   );
+};
 
 
-}
+const Hero: React.FC = () => {
+
+  const slices = [
+    { id: 1, containerHeight: 50, translateY: -420 },
+    { id: 2, containerHeight: 50, translateY: -370 },
+    { id: 3, containerHeight: 50, translateY: -320 },
+    { id: 4, containerHeight: 320, translateY: -0 },
+  ];
+
+  
+
+  return (
+    
+<div className="bg-[#FCFAF5]">
+  
+   <section className="flex justify-center overflow-hidden uppercase font-neueroman">
+    <Marquee />
+  </section>
+
+
+  <div className="flex justify-center px-4">
+    <section className="grid w-full min-h-screen grid-cols-1 md:grid-cols-2">
+    <div className="relative w-full h-[50vh] md:h-full">
+  <FlutedGlassEffect
+    imageUrl="/images/GIFTCARD1.png"
+    mode="mouse" 
+    motionFactor={-50}
+    rotationAngle={45}
+    segments={60}
+    overlayOpacity={50}
+    style={{ width: "100%", height: "100%" }}
+  />
+
+        {/* <div className="shop-sectionslice">
+          <div className="relative z-10 flex flex-col items-center justify-center text-center">
+            {slices.map((slice, index) => (
+              <div
+                key={slice.id}
+                style={{
+                  height: `${slice.containerHeight}px`,
+                  overflow: "hidden",
+                }}
+              >
+                <h1
+                  style={{
+                    fontFamily: "NeueHaasRoman",
+                    fontSize: "100px",
+                    color: "#0249FD",
+                  }}
+                >
+                  SHOP
+                </h1>
+              </div>
+            ))}
+          </div>
+        </div> */}
+      </div>
+
+
+      <div className="flex flex-col items-center justify-center px-12 h-[50vh] md:h-auto">
+      {/* <div className="w-[64px]">
+  <img src="https://cdn.prod.website-files.com/6749e677c74b3f0e424aab25/67c23233f1a330defe27c954_Icon%20Quality%20Pura.webp" />
+</div> */}
+        <div className="text-[12px] text-center font-neueroman uppercase mb-10 text-[#0249FD]">
+          Shop smarter, smile brighter.
+        </div>
+        <h1 className="text-[12px] font-neueroman uppercase leading-tight max-w-[500px]">
+        We’ve carefully curated a selection of premium products designed to elevate your 
+      experience during treatment. From gentle yet effective whitening solutions to 
+      comfort-enhancing essentials, each product is handpicked to support your journey 
+      to a healthier, more confident smile. 
+        </h1>
+     
+      </div>
+    </section>
+  </div>
+
+ 
+</div>
+
+  );
+};
 
 export default Hero;
+
+
+;

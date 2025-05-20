@@ -1,6 +1,24 @@
 import { withUt } from "uploadthing/tw"
 
 /** @type {import('tailwindcss').Config} */
+export default {
+	theme: {
+	  extend: {
+		animation: {
+		  marquee: "marquee var(--duration, 30s) linear infinite",
+		},
+		keyframes: {
+		  marquee: {
+			from: { transform: "translateX(0)" },
+			to: { transform: "translateX(-100%)" }, 
+		  },
+		},
+	  },
+	},
+  };
+  
+
+/** @type {import('tailwindcss').Config} */
 module.exports = withUt({
   darkMode: ["class"],
   content: [
@@ -15,27 +33,29 @@ module.exports = withUt({
   		'agrandir-grandheavy': 'Agrandir Grand Heavy',
   		aileron: 'Aileron-Black',
   		altero: 'Altero',
-  		'altero-outline': 'Altero Outline',
+  		'altero-outline': 'AlteroOutline',
+		'amribail':'Amribail',
   		anton: 'Anton-Regular',
   		autumnchant: 'Autumn Chant',
+		bebas: 'BebasNeue-Regular',
+		calyx: 'Calyx Regular',
   		cera: 'CeraProRegular',
   		'cera-bold': 'CeraProBold',
   		'Chaney-Ultra': 'Chaney-Ultra',
+		'chivomono': 'ChivoMono',
   		didot: 'Didot',
   		didotmodern: 'NNDidotModernTrial-LightItalic',
   		didotmodernlight: 'NNDidotModernTrial-Light',
-  		drayton: 'Drayton',
+
   		'editorial-new': 'Editorial New',
-  		'editorial-new-italic': 'Editorial New Italic',
-  		generalitalic: 'GeneralSans-Italic',
-  		generalregular: 'GeneralSans-Regular',
-  		geomanist: 'Geomanist-Regular',
+  		'editorial-new-italic': 'PPEditorialNew-ThinItalic',
   		grandslang: 'GrandSlang-Roman',
   		'helvetica-neue': 'HelveticaNeue-Medium',
   		'helvetica-neue-light': 'HelveticaNeue-Light',
   		'helvetica-now-thin': 'Helvetica Now Thin',
-  		horizon: 'HorizonSolid',
-  		horizonOutline: 'HorizonOutline',
+		'helvetica-now-display': 'HelveticaNowDisplay-Light',
+		ibmplex: 'IBMPlexMono-Light',
+		ibmregular: 'IBMPlexMono-Regular',
   		'iCiel-Gotham-Ultra': 'iCiel-Gotham-Ultra',
   		larken: 'Larken',
   		'larken-italic': 'Larken Italic',
@@ -44,18 +64,21 @@ module.exports = withUt({
   		LatoLight: 'Lato-Light',
   		monument: 'MonumentExtended-Regular',
   		nautica: 'Nautica',
+		neuehaasdisplay15light:  'NeueHaasGroteskDisplayPro15UltraLight',
+		neuehaas35:'NeueHaasDisplay35',
+		neuehaas45: 'NeueHaasGroteskDisplayPro45Light',
+		neuehaasdisplayextralight: 'NeueHaasGroteskDisplayExtraLight',
+		neuehaasdisplaythin: "NeueHaasDisplayThin25",
+		neueroman: "NeueHaasRoman",
   		'neue-montreal': 'NeueMontrealBook',
   		'neue-montreal-medium': 'NeueMontrealMedium',
+		  'neue-montreal-light': 'NeueMontrealLight',
   		nimbus: 'NimbusSanL-Reg',
-  		novela: 'Novela-Regular',
   		'novela-regular': 'NovelaRegular',
-  		'oakes-medium': 'Oakes-Grotesk-Medium',
-  		'oakes-regular': 'Oakes-Regular',
-  		poppins: 'Poppins',
   		saol: 'SaolDisplay-Regular',
   		saolitalic: 'SaolDisplay-LightItalic',
+		sinistre:"Sinistre-Regular",
   		syne: 'syne-extra',
-  		'TerminaTest-Bold': 'TerminaTest-Bold'
   	},
   	extend: {
   		fontSize: {

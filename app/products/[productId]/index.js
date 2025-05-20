@@ -164,9 +164,9 @@ export default function ProductComponent({ product }) {
       <div className="grid w-full grid-cols-1 px-10 space-y-10 md:space-y-0 md:px-0 md:grid-cols-2 md:gap-12 lg:px-6">
         <section id="product" className="md:order-last">
           <div id="product-details" className="space-y-2">
-            <h4 className="font-cera-bold text-2xl tracking-tight capitalize">{product.name}</h4>
+            <h4 className="font-cera-bold text-xl tracking-tight capitalize">{product.name}</h4>
             <h3 className="mb-4 tracking-tight font-cera text-[#2E3192]">${product.price}</h3>
-            <p className="text-sm font-helvetica-neue pt-8 border-t border-gray-300">{product.description}</p>
+            <p className="text-sm  pt-8 border-t border-gray-300">{product.description}</p>
           </div>
 
           {/* controls */}
