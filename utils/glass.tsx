@@ -103,8 +103,9 @@ const FlutedGlassEffect: React.FC<FlutedGlassEffectProps> = ({
 
   const init = () => {
     const container = containerRef.current;
-    
 
+    if (!container) return;
+    
     const position = window.getComputedStyle(container).position;
     if (!['relative', 'absolute', 'fixed', 'sticky'].includes(position)) {
       container.style.position = 'relative';
