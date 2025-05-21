@@ -97,154 +97,154 @@ const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
   );
 };
 
-const BulgeGallery = ({ slides }) => {
-  const canvasWrapperRef = useRef();
+// const BulgeGallery = ({ slides }) => {
+//   const canvasWrapperRef = useRef();
 
-  const vertexShader = `
-varying vec2 vUv;
-uniform float uScrollIntensity;
+//   const vertexShader = `
+// varying vec2 vUv;
+// uniform float uScrollIntensity;
 
-void main() {
-  vUv = uv;
-  vec3 pos = position;
-
-
-  float wave = sin(uv.y * 3.1416); // 0 at top & bottom, 1 in center
-  float zOffset = wave * uScrollIntensity * 1.0; 
-  pos.z += zOffset;
-
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-}
+// void main() {
+//   vUv = uv;
+//   vec3 pos = position;
 
 
-  `;
+//   float wave = sin(uv.y * 3.1416); // 0 at top & bottom, 1 in center
+//   float zOffset = wave * uScrollIntensity * 1.0; 
+//   pos.z += zOffset;
 
-  const fragmentShader = `
-    varying vec2 vUv;
-    uniform sampler2D uTexture;
+//   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+// }
 
-    void main() {
-      gl_FragColor = texture2D(uTexture, vUv);
-    }
-  `;
 
-  useEffect(() => {
-    if (!canvasWrapperRef.current || !slides.length) return;
+//   `;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 10;
+//   const fragmentShader = `
+//     varying vec2 vUv;
+//     uniform sampler2D uTexture;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    canvasWrapperRef.current.appendChild(renderer.domElement);
+//     void main() {
+//       gl_FragColor = texture2D(uTexture, vUv);
+//     }
+//   `;
 
-    const calculatePlaneDimensions = () => {
-      const fov = (camera.fov * Math.PI) / 180;
-      const viewHeight = 2 * Math.tan(fov / 2) * camera.position.z;
-      const height = viewHeight * 0.7;
-      const width = height * (8 / 11);
-      return { width, height };
-    };
+//   useEffect(() => {
+//     if (!canvasWrapperRef.current || !slides.length) return;
 
-    const dimensions = calculatePlaneDimensions();
-    const loader = new THREE.TextureLoader();
-    const planes = [];
-    const textures = [];
+//     const scene = new THREE.Scene();
+//     const camera = new THREE.PerspectiveCamera(
+//       45,
+//       window.innerWidth / window.innerHeight,
+//       0.1,
+//       1000
+//     );
+//     camera.position.z = 10;
 
-    slides.forEach((slide, index) => {
-      const texture = loader.load(slide.image);
-      texture.minFilter = THREE.LinearFilter;
-      textures.push(texture);
+//     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+//     renderer.setSize(window.innerWidth, window.innerHeight);
+//     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+//     canvasWrapperRef.current.appendChild(renderer.domElement);
 
-      const material = new THREE.ShaderMaterial({
-        vertexShader,
-        fragmentShader,
-        uniforms: {
-          uScrollIntensity: { value: 0 },
-          uTexture: { value: texture },
-        },
-        side: THREE.DoubleSide,
-        transparent: true,
-      });
+//     const calculatePlaneDimensions = () => {
+//       const fov = (camera.fov * Math.PI) / 180;
+//       const viewHeight = 2 * Math.tan(fov / 2) * camera.position.z;
+//       const height = viewHeight * 0.7;
+//       const width = height * (8 / 11);
+//       return { width, height };
+//     };
 
-      const geometry = new THREE.PlaneGeometry(
-        dimensions.width,
-        dimensions.height,
-        32,
-        32
-      );
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.y = -index * (dimensions.height + 1); // space out
-      scene.add(mesh);
-      planes.push(mesh);
-    });
+//     const dimensions = calculatePlaneDimensions();
+//     const loader = new THREE.TextureLoader();
+//     const planes = [];
+//     const textures = [];
 
-    let scrollY = 0;
-    let lastScroll = 0;
-    let scrollIntensity = 0;
-    let animationId;
+//     slides.forEach((slide, index) => {
+//       const texture = loader.load(slide.image);
+//       texture.minFilter = THREE.LinearFilter;
+//       textures.push(texture);
 
-    const handleScroll = () => {
-      scrollY = (window.scrollY / window.innerHeight) * (dimensions.height + 1);
-    };
+//       const material = new THREE.ShaderMaterial({
+//         vertexShader,
+//         fragmentShader,
+//         uniforms: {
+//           uScrollIntensity: { value: 0 },
+//           uTexture: { value: texture },
+//         },
+//         side: THREE.DoubleSide,
+//         transparent: true,
+//       });
 
-    const animate = () => {
-      animationId = requestAnimationFrame(animate);
+//       const geometry = new THREE.PlaneGeometry(
+//         dimensions.width,
+//         dimensions.height,
+//         32,
+//         32
+//       );
+//       const mesh = new THREE.Mesh(geometry, material);
+//       mesh.position.y = -index * (dimensions.height + 1); // space out
+//       scene.add(mesh);
+//       planes.push(mesh);
+//     });
 
-      const delta = scrollY - lastScroll;
-      lastScroll = THREE.MathUtils.lerp(lastScroll, scrollY, 0.1);
-      scrollIntensity = THREE.MathUtils.lerp(
-        scrollIntensity,
-        Math.abs(delta) * 0.25,
-        0.2
-      );
+//     let scrollY = 0;
+//     let lastScroll = 0;
+//     let scrollIntensity = 0;
+//     let animationId;
 
-      camera.position.y = -lastScroll;
+//     const handleScroll = () => {
+//       scrollY = (window.scrollY / window.innerHeight) * (dimensions.height + 1);
+//     };
 
-      planes.forEach((plane) => {
-        plane.material.uniforms.uScrollIntensity.value = scrollIntensity;
-      });
+//     const animate = () => {
+//       animationId = requestAnimationFrame(animate);
 
-      renderer.render(scene, camera);
-    };
+//       const delta = scrollY - lastScroll;
+//       lastScroll = THREE.MathUtils.lerp(lastScroll, scrollY, 0.1);
+//       scrollIntensity = THREE.MathUtils.lerp(
+//         scrollIntensity,
+//         Math.abs(delta) * 0.25,
+//         0.2
+//       );
 
-    handleScroll();
-    animate();
-    window.addEventListener("scroll", handleScroll);
+//       camera.position.y = -lastScroll;
 
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener("scroll", handleScroll);
-      renderer.dispose();
-      planes.forEach((p) => {
-        p.geometry.dispose();
-        p.material.dispose();
-      });
-      textures.forEach((t) => t.dispose());
-      canvasWrapperRef.current?.removeChild(renderer.domElement);
-    };
-  }, [slides]);
+//       planes.forEach((plane) => {
+//         plane.material.uniforms.uScrollIntensity.value = scrollIntensity;
+//       });
 
-  return (
-    <div className="relative w-full">
-      {slides.map((_, i) => (
-        <div key={i} className="h-screen w-full" />
-      ))}
+//       renderer.render(scene, camera);
+//     };
 
-      <div
-        ref={canvasWrapperRef}
-        className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none"
-      />
-    </div>
-  );
-};
+//     handleScroll();
+//     animate();
+//     window.addEventListener("scroll", handleScroll);
+
+//     return () => {
+//       cancelAnimationFrame(animationId);
+//       window.removeEventListener("scroll", handleScroll);
+//       renderer.dispose();
+//       planes.forEach((p) => {
+//         p.geometry.dispose();
+//         p.material.dispose();
+//       });
+//       textures.forEach((t) => t.dispose());
+//       canvasWrapperRef.current?.removeChild(renderer.domElement);
+//     };
+//   }, [slides]);
+
+//   return (
+//     <div className="relative w-full">
+//       {slides.map((_, i) => (
+//         <div key={i} className="h-screen w-full" />
+//       ))}
+
+//       <div
+//         ref={canvasWrapperRef}
+//         className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none"
+//       />
+//     </div>
+//   );
+// };
 
 // const SmileyFace = ({ position = [0, 0, 0] }) => {
 //   const groupRef = useRef();
