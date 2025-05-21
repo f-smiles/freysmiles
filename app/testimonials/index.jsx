@@ -253,8 +253,8 @@ const Testimonial = () => {
                 ref={(el) => (listRefs.current[index] = el)}
                 className="list__item"
                 onMouseEnter={() => {
-                  nameRef.current?.animate();
-                  durationRef.current?.animate();
+                  nameRef.current[index]?.animate?.();
+                  durationRef.current[index]?.animate?.();
                 }}
               >
                 <span className="list__item-col" aria-hidden="true" />
