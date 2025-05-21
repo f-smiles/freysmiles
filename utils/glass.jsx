@@ -1,17 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 
-type FlutedGlassEffectProps = {
-  imageUrl: string;
-  mode?: "static" | "mouse" | "scroll";
-  motionFactor?: number;
-  rotationAngle?: number;
-  segments?: number;
-  overlayOpacity?: number;
-  style?: React.CSSProperties;
-  className?: string;
-};
-
 const vertexShader = `
 varying vec2 vUv;
 void main() {
@@ -80,7 +69,7 @@ vec4 color = texture2D(uTexture, clampedUV);
 }
 `;
 
-const FlutedGlassEffect: React.FC<FlutedGlassEffectProps> = ({
+const FlutedGlassEffect = ({
   imageUrl,
   mode = "static",
   motionFactor = -50,
@@ -89,7 +78,8 @@ const FlutedGlassEffect: React.FC<FlutedGlassEffectProps> = ({
   overlayOpacity = 0,
   style = {},
   className = ""
-}) => {const containerRef = useRef(null);
+}) => {
+  const containerRef = useRef(null);
   const [imageAspect, setImageAspect] = useState(1);
   const mouse = useRef(new THREE.Vector2(0.5, 0.5));
   const scene = useRef(new THREE.Scene());
@@ -103,8 +93,6 @@ const FlutedGlassEffect: React.FC<FlutedGlassEffectProps> = ({
 
   const init = () => {
     const container = containerRef.current;
-
-    if (!container) return;
     
     const position = window.getComputedStyle(container).position;
     if (!['relative', 'absolute', 'fixed', 'sticky'].includes(position)) {
