@@ -164,6 +164,7 @@ const TextAnimator = forwardRef(({ children, className }, ref) => {
     </span>
   );
 });
+TextAnimator.displayName = "TextAnimator";
 
 const Testimonial = () => {
   const patients = [
