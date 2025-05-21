@@ -400,87 +400,87 @@ const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
 //   );
 // };
 
-const WavePlane = forwardRef(({ uniformsRef }, ref) => {
-  const texture = useTexture("/images/mockup_c.png");
-  const gl = useThree((state) => state.gl);
-  useMemo(() => {
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = Math.min(16, gl.capabilities.getMaxAnisotropy());
-    texture.needsUpdate = true;
-  }, [texture, gl]);
+// const WavePlane = forwardRef(({ uniformsRef }, ref) => {
+//   const texture = useTexture("/images/mockup_c.png");
+//   const gl = useThree((state) => state.gl);
+//   useMemo(() => {
+//     texture.colorSpace = THREE.SRGBColorSpace;
+//     texture.anisotropy = Math.min(16, gl.capabilities.getMaxAnisotropy());
+//     texture.needsUpdate = true;
+//   }, [texture, gl]);
 
-  const image = useRef();
-  const meshRef = ref || useRef();
-  // const { amplitude, waveLength } = useControls({
-  //   amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
-  //   waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
-  // });
+//   const image = useRef();
+//   const meshRef = ref || useRef();
+//   // const { amplitude, waveLength } = useControls({
+//   //   amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
+//   //   waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
+//   // });
 
-  const amplitude = 0.2;
-  const waveLength = 5;
+//   const amplitude = 0.2;
+//   const waveLength = 5;
 
-  const uniforms = useRef({
-    uTime: { value: 0 },
-    uAmplitude: { value: amplitude },
-    uWaveLength: { value: waveLength },
-    uTexture: { value: texture },
-  });
+//   const uniforms = useRef({
+//     uTime: { value: 0 },
+//     uAmplitude: { value: amplitude },
+//     uWaveLength: { value: waveLength },
+//     uTexture: { value: texture },
+//   });
 
-  useFrame(() => {
-    uniforms.current.uTime.value += 0.04;
-    // uniforms.current.uAmplitude.value = amplitude;
-    uniforms.current.uWaveLength.value = waveLength;
-  });
+//   useFrame(() => {
+//     uniforms.current.uTime.value += 0.04;
+//     // uniforms.current.uAmplitude.value = amplitude;
+//     uniforms.current.uWaveLength.value = waveLength;
+//   });
 
-  const vertexShader = `
-uniform float uTime;
-uniform float uAmplitude;
-uniform float uWaveLength;
-varying vec2 vUv;
-void main() {
-    vUv = uv;
-    vec3 newPosition = position;
+//   const vertexShader = `
+// uniform float uTime;
+// uniform float uAmplitude;
+// uniform float uWaveLength;
+// varying vec2 vUv;
+// void main() {
+//     vUv = uv;
+//     vec3 newPosition = position;
 
-float wave   = uAmplitude * sin(position.y * uWaveLength + uTime);
-float ripple = uAmplitude * 0.01 * sin((position.y + position.x) * 10.0 + uTime * 2.0);
-float bulge  = uAmplitude * 0.05 * sin(position.y * 5.0 + uTime) *
-                                      cos(position.x * 5.0 + uTime * 1.5);
-newPosition.z += wave + ripple + bulge;
+// float wave   = uAmplitude * sin(position.y * uWaveLength + uTime);
+// float ripple = uAmplitude * 0.01 * sin((position.y + position.x) * 10.0 + uTime * 2.0);
+// float bulge  = uAmplitude * 0.05 * sin(position.y * 5.0 + uTime) *
+//                                       cos(position.x * 5.0 + uTime * 1.5);
+// newPosition.z += wave + ripple + bulge;
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-}
-  `;
+//     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+// }
+//   `;
 
-  const fragmentShader = `
-  uniform sampler2D uTexture; 
-  varying vec2 vUv; 
-    void main() {
-  gl_FragColor = texture2D(uTexture, vUv);
-    }
-  `;
-  useEffect(() => {
-    if (uniformsRef) {
-      uniformsRef.current = uniforms.current;
-    }
-  }, [uniformsRef]);
+//   const fragmentShader = `
+//   uniform sampler2D uTexture; 
+//   varying vec2 vUv; 
+//     void main() {
+//   gl_FragColor = texture2D(uTexture, vUv);
+//     }
+//   `;
+//   useEffect(() => {
+//     if (uniformsRef) {
+//       uniformsRef.current = uniforms.current;
+//     }
+//   }, [uniformsRef]);
 
-  return (
-    <mesh
-      ref={meshRef}
-      position={[0, 0, 1]}
-      scale={[2, 2, 1]}
-      rotation={[-Math.PI * 0.4, 0.3, Math.PI / 2]}
-    >
-      <planeGeometry args={[1.5, 2, 100, 200]} />
-      <shaderMaterial
-        wireframe={false}
-        fragmentShader={fragmentShader}
-        vertexShader={vertexShader}
-        uniforms={uniforms.current}
-      />
-    </mesh>
-  );
-});
+//   return (
+//     <mesh
+//       ref={meshRef}
+//       position={[0, 0, 1]}
+//       scale={[2, 2, 1]}
+//       rotation={[-Math.PI * 0.4, 0.3, Math.PI / 2]}
+//     >
+//       <planeGeometry args={[1.5, 2, 100, 200]} />
+//       <shaderMaterial
+//         wireframe={false}
+//         fragmentShader={fragmentShader}
+//         vertexShader={vertexShader}
+//         uniforms={uniforms.current}
+//       />
+//     </mesh>
+//   );
+// });
 // function Invisalign() {
 //   const sectionRef = useRef()
 //   const { scrollYProgress } = useScroll({
