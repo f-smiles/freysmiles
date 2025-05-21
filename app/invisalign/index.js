@@ -805,14 +805,14 @@ const Invisalign = () => {
   return (
     <>
       <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
-        <Suspense fallback={null}>
+        {/* <Suspense fallback={null}>
           <BulgeGallery
             slides={[
               { image: "/images/invisalignphonemockup.png" },
               { image: "/images/totebag2.jpg" },
             ]}
           />
-        </Suspense>
+        </Suspense> */}
         <Canvas
           gl={{ alpha: true }}
           style={{
