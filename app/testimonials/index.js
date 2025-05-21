@@ -588,7 +588,7 @@ const RotatingModel = () => {
   );
 };
 
-const Testimonials = () => {
+export default function Testimonials() {
   // const { scene } = useGLTF("/images/SVOX1F.glb");
 
   // if (!scene) return null;
@@ -1362,6 +1362,4 @@ const Testimonials = () => {
         </div> */}
     </>
   );
-};
-
-export default Testimonials;
+}
