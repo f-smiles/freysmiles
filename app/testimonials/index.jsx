@@ -1,5 +1,5 @@
 "use client";
-import MouseTrail from "./mouse.js";
+import MouseTrail from "./mouse";
 import { Renderer, Program, Color, Mesh, Triangle, Vec2 } from "ogl";
 import {
   motion,
