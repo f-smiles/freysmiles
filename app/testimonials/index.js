@@ -193,6 +193,8 @@ const Testimonial = () => {
     { name: "Karoun G", duration: "Motion Appliance, Invisalign" },
   ];
   const listRefs = useRef([]);
+  const nameRef = useRef();
+  const durationRef = useRef();
 
   useEffect(() => {
     listRefs.current.forEach((el) => {
@@ -245,9 +247,6 @@ const Testimonial = () => {
           }}
         >
           {patients.map((item, index) => {
-            const nameRef = useRef();
-            const durationRef = useRef();
-
             return (
               <li
                 key={index}
