@@ -976,7 +976,7 @@ const Invisalign = () => {
             <div className="font-neuehaas35 text-md whitespace-nowrap relative">
               What's Invisalign
               <div
-                ref={squigglyTextRef}
+                // ref={squigglyTextRef}
                 className="absolute left-0 bottom-[-5px] w-full"
               >
                 <svg className="w-full" height="9" viewBox="0 0 101 9">
