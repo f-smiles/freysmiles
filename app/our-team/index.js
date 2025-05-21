@@ -1048,7 +1048,7 @@ export default function OurTeam() {
         </a>
         <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
           <p className="leading-[1.1] font-neueroman text-[13px]">
-            We've invested in in-office trainings with leading clinical consultants 
+            We&apos;ve invested in in-office trainings with leading clinical consultants 
             that have helped us develop systems and protocols streamlining our processes.
           </p>
         </div>

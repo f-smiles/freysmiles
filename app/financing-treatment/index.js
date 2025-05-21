@@ -677,7 +677,7 @@ const FinancingTreatment = () => {
               appearance and long-term dental health — ideally, a
               once-in-a-lifetime experience. While many orthodontists can
               straighten teeth with braces or Invisalign, the quality of
-              outcomes varies widely. With today's advanced technology,
+              outcomes varies widely. With today&apos;s advanced technology,
               treatment goes far beyond alignment — it can enhance facial
               aesthetics and deliver truly life-changing results.
             </p></Copy>
@@ -1255,7 +1255,7 @@ const FinancingTreatment = () => {
                     shorter and fun visits where
                     </tspan>
                     <tspan x="-360" dy="1.2em">
-                    where you'll have access to 
+                    where you&apos;ll have access to 
                     </tspan>
                     <tspan x="-360" dy="1.2em">
                      to all four of our locations 

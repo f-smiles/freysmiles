@@ -902,7 +902,7 @@ const Invisalign = () => {
           <h4 className="text-sm mb-6">Synopsis</h4>
           <p className="font-neuehaas35 text-[24px] leading-[1.2] max-w-[650px] mb-20">
             Trusted by millions around the world, Invisalign is a clear,
-            comfortable, and confident choice for straightening smiles. We've
+            comfortable, and confident choice for straightening smiles. We&apos;ve
             proudly ranked among the top 1% of certified Invisalign providers
             nationwide — every year since 2000.
           </p>
@@ -926,7 +926,7 @@ const Invisalign = () => {
                       5x Winner Best Orthodontist
                     </div>
                     <div className="flex-1 text-black">
-                      Readers' Choice The Morning Call
+                      Readers&apos; Choice The Morning Call
                     </div>
                   </div>
                   <div className="flex border-b border-gray-300 py-3">
@@ -974,7 +974,7 @@ const Invisalign = () => {
 
           <div className="flex items-center gap-24">
             <div className="font-neuehaas35 text-md whitespace-nowrap relative">
-              What's Invisalign
+              What&apos;s Invisalign
               <div
                 // ref={squigglyTextRef}
                 className="absolute left-0 bottom-[-5px] w-full"
