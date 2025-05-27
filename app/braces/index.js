@@ -1,4 +1,5 @@
 "use client";
+import NormalizeWheel from 'normalize-wheel'
 import * as THREE from "three";
 import { MeshDistortMaterial } from "@react-three/drei";
 import { useRef, useEffect, useState, Suspense} from "react";
@@ -21,268 +22,24 @@ import {
   useGLTF,
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree, extend, useLoader, useTexture } from "@react-three/fiber";
+import { Renderer, Camera, Transform, Plane, Texture, Mesh, Program } from 'ogl'
 
 
 
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(
+    DrawSVGPlugin,
+    ScrollTrigger,
+    SplitText,
+    useGSAP,
+    CustomEase,
+    MotionPathPlugin
+  );
+}
+
+gsap.registerPlugin(ScrollTrigger);
 
 
-
-
-const FluidSimulation = () => {
-  const mountRef = useRef(null);
-
-  useEffect(() => {
-
-    const simulationVertexShader = `
-      varying vec2 vUv;
-      void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `;
-
-    const simulationFragmentShader = `
-      uniform sampler2D textureA;
-      uniform vec2 mouse;
-      uniform vec2 resolution;
-      uniform float time;
-      uniform int frame;
-      varying vec2 vUv;
-
-      const float delta = 1.4;  
-
-      void main() {
-          vec2 uv = vUv;
-          if (frame == 0) {
-              gl_FragColor = vec4(0.0);
-              return;
-          }
-          
-          vec4 data = texture2D(textureA, uv);
-          float pressure = data.x;
-          float pVel = data.y;
-          
-          vec2 texelSize = 1.0 / resolution;
-          float p_right = texture2D(textureA, uv + vec2(texelSize.x, 0.0)).x;
-          float p_left = texture2D(textureA, uv + vec2(-texelSize.x, 0.0)).x;
-          float p_up = texture2D(textureA, uv + vec2(0.0, texelSize.y)).x;
-          float p_down = texture2D(textureA, uv + vec2(0.0, -texelSize.y)).x;
-          
-          if (uv.x <= texelSize.x) p_left = p_right;
-          if (uv.x >= 1.0 - texelSize.x) p_right = p_left;
-          if (uv.y <= texelSize.y) p_down = p_up;
-          if (uv.y >= 1.0 - texelSize.y) p_up = p_down;
-          
-
-          pVel += delta * (-2.0 * pressure + p_right + p_left) / 4.0;
-          pVel += delta * (-2.0 * pressure + p_up + p_down) / 4.0;
-          
-          pressure += delta * pVel;
-          
-          pVel -= 0.005 * delta * pressure;
-          
-          pVel *= 1.0 - 0.002 * delta;
-          pressure *= 0.999;
-          
-          vec2 mouseUV = mouse / resolution;
-          if(mouse.x > 0.0) {
-              float dist = distance(uv, mouseUV);
-              if(dist <= 0.02) { 
-                  pressure += 2.0 * (1.0 - dist / 0.02);  // Increase intensity
-              }
-          }
-          
-          gl_FragColor = vec4(pressure, pVel, 
-              (p_right - p_left) / 2.0, 
-              (p_up - p_down) / 2.0);
-      }
-    `;
-
-    const renderVertexShader = `
-      varying vec2 vUv;
-      void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `;
-
-    const renderFragmentShader = `
-      uniform sampler2D textureA;
-      uniform sampler2D textureB;
-      varying vec2 vUv;
-
-      void main() {
-          vec4 data = texture2D(textureA, vUv);
-          
-          vec2 distortion = 0.3 * data.zw;
-          vec4 color = texture2D(textureB, vUv + distortion);
-          
-          vec3 normal = normalize(vec3(-data.z * 2.0, 0.5, -data.w * 2.0));
-          vec3 lightDir = normalize(vec3(-3.0, 10.0, 3.0));
-          float specular = pow(max(0.0, dot(normal, lightDir)), 60.0) * 1.5;
-          
-          gl_FragColor = color + vec4(specular);
-      }
-    `;
-
-
-    const scene = new THREE.Scene();
-    const simScene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      preserveDrawingBuffer: true,
-    });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    mountRef.current.appendChild(renderer.domElement);
-
-    const mouse = new THREE.Vector2();
-    let frame = 0;
-
-    const width = window.innerWidth * window.devicePixelRatio;
-    const height = window.innerHeight * window.devicePixelRatio;
-    const options = {
-      format: THREE.RGBAFormat,
-      type: THREE.FloatType,
-      minFilter: THREE.LinearFilter,
-      magFilter: THREE.LinearFilter,
-      stencilBuffer: false,
-      depthBuffer: false,
-    };
-    let rtA = new THREE.WebGLRenderTarget(width, height, options);
-    let rtB = new THREE.WebGLRenderTarget(width, height, options);
-
-    const simMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        textureA: { value: null },
-        mouse: { value: mouse },
-        resolution: { value: new THREE.Vector2(width, height) },
-        time: { value: 0 },
-        frame: { value: 0 },
-      },
-      vertexShader: simulationVertexShader,
-      fragmentShader: simulationFragmentShader,
-    });
-
-    const renderMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        textureA: { value: null },
-        textureB: { value: null },
-      },
-      vertexShader: renderVertexShader,
-      fragmentShader: renderFragmentShader,
-      transparent: true,
-    });
-
-    const plane = new THREE.PlaneGeometry(2, 2);
-    const simQuad = new THREE.Mesh(plane, simMaterial);
-    const renderQuad = new THREE.Mesh(plane, renderMaterial);
-
-    simScene.add(simQuad);
-    scene.add(renderQuad);
-
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d", { alpha: true });
-
-    ctx.fillStyle = "#fb7427";
-    ctx.fillRect(0, 0, width, height);
-
-    const fontSize = Math.round(250 * window.devicePixelRatio);
-    ctx.fillStyle = "#fef4b8";
-    ctx.font = `bold ${fontSize}px Test Söhne`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.textRendering = "geometricPrecision";
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-    ctx.fillText("braces", width / 2, height / 2);
-
-    const textTexture = new THREE.CanvasTexture(canvas);
-    textTexture.minFilter = THREE.LinearFilter;
-    textTexture.magFilter = THREE.LinearFilter;
-    textTexture.format = THREE.RGBAFormat;
-
-
-    const handleResize = () => {
-      const newWidth = window.innerWidth * window.devicePixelRatio;
-      const newHeight = window.innerHeight * window.devicePixelRatio;
-
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      rtA.setSize(newWidth, newHeight);
-      rtB.setSize(newWidth, newHeight);
-      simMaterial.uniforms.resolution.value.set(newWidth, newHeight);
-
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      ctx.fillStyle = "#fb7427";
-      ctx.fillRect(0, 0, newWidth, newHeight);
-
-      const newFontSize = Math.round(250 * window.devicePixelRatio);
-      ctx.fillStyle = "#fef4b8";
-      ctx.font = `bold ${newFontSize}px Test Söhne`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("braces", newWidth / 2, newHeight / 2);
-
-      textTexture.needsUpdate = true;
-    };
-
-    const handleMouseMove = (e) => {
-      mouse.x = e.clientX * window.devicePixelRatio;
-      mouse.y = (window.innerHeight - e.clientY) * window.devicePixelRatio;
-    };
-
-    const handleMouseLeave = () => {
-      mouse.set(0, 0);
-    };
-
-    window.addEventListener('resize', handleResize);
-    renderer.domElement.addEventListener('mousemove', handleMouseMove);
-    renderer.domElement.addEventListener('mouseleave', handleMouseLeave);
-
-    const animate = () => {
-      simMaterial.uniforms.frame.value = frame++;
-      simMaterial.uniforms.time.value = performance.now() / 1000;
-
-      simMaterial.uniforms.textureA.value = rtA.texture;
-      renderer.setRenderTarget(rtB);
-      renderer.render(simScene, camera);
-
-      renderMaterial.uniforms.textureA.value = rtB.texture;
-      renderMaterial.uniforms.textureB.value = textTexture;
-      renderer.setRenderTarget(null);
-      renderer.render(scene, camera);
-
-      const temp = rtA;
-      rtA = rtB;
-      rtB = temp;
-
-      requestAnimationFrame(animate);
-    };
-
-    animate();
-
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (renderer.domElement) {
-        renderer.domElement.removeEventListener('mousemove', handleMouseMove);
-        renderer.domElement.removeEventListener('mouseleave', handleMouseLeave);
-      }
-      if (mountRef.current && renderer.domElement) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
-      renderer.dispose();
-    };
-  }, []);
-
-  return <div ref={mountRef} style={{ width: '100%', height: '100vh' }} />;
-};
 const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#ffffff", fontWeight = "100" }) => {
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
@@ -584,94 +341,34 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#fff
   return <div ref={containerRef} style={{ width: '100%', height: '100vh', cursor: 'none' }} />;
 };
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(
-    DrawSVGPlugin,
-    ScrollTrigger,
-    SplitText,
-    useGSAP,
-    CustomEase,
-    MotionPathPlugin
-  );
-}
-
-gsap.registerPlugin(ScrollTrigger);
-
 const Braces = () => {
-  const slide = [
-    {
-      title: "Brush and Floss",
-      imageUrl: "../images/purplefloss.jpeg",
-      text: "Brushing and flossing during orthodontic treatment is more important than ever. Orthodontic appliances such as clear aligners, brackets, and wires interfere with normal self-cleansing mechanisms of the mouth. Research shows that only 10% of patients brush and floss consistently during active treatment. We're here to ensure you don't just get lost in the statistics.",
-    },
-    {
-      title: "General Soreness",
-      imageUrl: "../images/soreness.jpg",
-      text: "When you get your braces on, you may feel general soreness in your mouth and teeth may be tender to biting pressures for 3 –5 days. Take Tylenol or whatever you normally take for headache or discomfort. The lips, cheeks and tongue may also become irritated for one to two weeks as they toughen and become accustomed to the braces. We will supply wax to put on the braces in irritated areas to lessen discomfort.",
-    },
-    {
-      title: "Loose teeth",
-      imageUrl: "../images/lime_worm.svg",
-      text: "This is to be expected throughout treatment. The teeth must loosen first so they can move. The teeth will settle into the bone and soft tissue in their desired position after treatment is completed if retainers are worn correctly.",
-    },
-    {
-      title: "Loose wire/band",
-      imageUrl: "../images/lime_worm.svg",
-      text: "When crowding and/or significant dental rotations is the case initially, a new wire placed at the office may eventually slide longer than the last bracket. In this case, depending on the orientation of the last tooth, it may poke into your cheek or gums. If irritation to the lips or You  can place orthodontic wax on the wire to reduce prevent stabbing. If the wire doesn't settle in on its own, it will benefit from being clipped within two weeks. Call our office to schedule an appointment.",
-    },
-    {
-      title: "Rubberbands",
-      imageUrl: "../images/lime_worm.svg",
-      text: "To successfully complete orthodontic treatment, the patient must work together with the orthodontist. If the doctor has prescribed rubber bands it will be necessary for you to follow the prescription for an ideal result. Failure to follow protocol will lead to a less than ideal treatment result. Excessive broken brackets will delay treatment and lead to an incomplete result. Compromised results due to lack of compliance is not grounds for financial reconciliation. ",
-    },
-    {
-      title: "Athletics",
-      imageUrl:
-        "https://i.postimg.cc/g09w3j9Q/e21673ee1426e49ea1cd7bc5b895cbec.jpg",
-      text: "Braces and mouthguards typically don't mix. Molded mouthguards will prevent planned tooth movement. If you require a mouthguard for contact sports, we stock ortho-friendly mouthguards which may work. ",
-    },
-    {
-      title: "How long will I be in braces?",
-      imageUrl:
-        "https://i.postimg.cc/T35Lymsn/597b0f5fc5aa015c0ca280ebd1e4293b.jpg",
-      text: "Every year hundreds of parents trust our experience to provide beautiful, healthy smiles for their children. Deepending on case complexity and compliance, your time in braces may vary, but at FreySmiles Orthodontics case completion may only be typically only 12-22 months away.",
-    },
-    {
-      title: "Eating with braces",
-      imageUrl:
-        "https://i.postimg.cc/NMB5Pnjx/62f64bc801260984785ff729f001a120.gif",
-      text: "Something to keep in mind with braces is to take caution when eating hard foods, i.e., tough meats,hard breads, granola, and the like.  But you’ll need to protect yourorthodontic appliances when you eat for as long as you’re wearing braces.",
-    },
-  ];
-  const images = [
-    'https://picsum.photos/id/1005/800/600',
-    'https://picsum.photos/id/1011/800/600',
-    'https://picsum.photos/id/1025/800/600',
-  ];
-  const scrollYRef = useRef(0);
-
-useEffect(() => {
-  const handleScroll = () => {
-    scrollYRef.current = window.scrollY;
-  };
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, []);
-
 
   return (
     <>
+<div
+  className="relative min-h-screen overflow-hidden"
+  style={{
+    background: `linear-gradient(90deg, #8f8fa0 0%, #bdbdc6 50%, #e2e2e6 100%)`,
+  }}
+>
+
+  <main className="relative z-20">
+    {/* Your content here */}
+  </main>
+</div>
 
 
-<div className="relative z-10">
-  <FluidSimulation />
+    {/* <div className="relative">
   <TextEffect 
     text="Braces" 
     font="NeueHaasRoman" 
     color="#ffffff" 
     fontWeight="normal" 
   />
-</div>
+  <WebGLGalleryApp />
+</div> */}
+
+
 
       {/* <div style={{ width: "50vw", height: "100vh" }}>
         <FlutedGlassEffect
@@ -689,3 +386,293 @@ useEffect(() => {
 };
 
 export default Braces;
+
+const fragment = `precision highp float;
+
+uniform vec2 uImageSizes;
+uniform vec2 uPlaneSizes;
+uniform sampler2D tMap;
+
+varying vec2 vUv;
+
+void main() {
+  vec2 ratio = vec2(
+    min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
+    min((uPlaneSizes.y / uPlaneSizes.x) / (uImageSizes.y / uImageSizes.x), 1.0)
+  );
+
+  vec2 uv = vec2(
+    vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
+    vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
+  );
+
+  gl_FragColor.rgb = texture2D(tMap, uv).rgb;
+  gl_FragColor.a = 1.0;
+}`
+
+const vertex =`
+#define PI 3.1415926535897932384626433832795
+
+precision highp float;
+precision highp int;
+
+attribute vec3 position;
+attribute vec2 uv;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
+uniform float uStrength;
+uniform vec2 uViewportSizes;
+
+varying vec2 vUv;
+
+void main() {
+  vec4 newPosition = modelViewMatrix * vec4(position, 1.0);
+  newPosition.z += sin(newPosition.y / uViewportSizes.y * PI + PI / 2.0) * -uStrength;
+  vUv = uv;
+  gl_Position = projectionMatrix * newPosition;
+}
+`
+function WebGLGalleryApp() {
+  const canvasRef = useRef(null)
+  const galleryRef = useRef(null)
+  const mediasRef = useRef([])
+  const scrollRef = useRef({ ease: 0.05, current: 0, target: 0, last: 0 })
+  const rendererRef = useRef()
+  const sceneRef = useRef()
+  const cameraRef = useRef()
+  const geometryRef = useRef()
+  const viewportRef = useRef()
+  const screenRef = useRef()
+  const galleryHeightRef = useRef()
+
+  useEffect(() => {
+    const renderer = new Renderer({ canvas: canvasRef.current, alpha: true })
+    const gl = renderer.gl
+    const camera = new Camera(gl)
+    camera.position.z = 5
+    const scene = new Transform()
+    const geometry = new Plane(gl, { heightSegments: 10 })
+  
+    rendererRef.current = renderer
+    sceneRef.current = scene
+    cameraRef.current = camera
+    geometryRef.current = geometry
+  
+    const resize = () => {
+      screenRef.current = {
+        width: window.innerWidth,
+        height: window.innerHeight
+      }
+  
+      renderer.setSize(screenRef.current.width, screenRef.current.height)
+  
+      camera.perspective({
+        aspect: gl.canvas.width / gl.canvas.height
+      })
+  
+      const fov = camera.fov * (Math.PI / 180)
+      const height = 2 * Math.tan(fov / 2) * camera.position.z
+      const width = height * camera.aspect
+  
+      viewportRef.current = { width, height }
+  
+      const galleryBounds = galleryRef.current.getBoundingClientRect()
+      galleryHeightRef.current = galleryBounds.height
+  
+      if (mediasRef.current.length) {
+        mediasRef.current.forEach(media =>
+          media.onResize({
+            screen: screenRef.current,
+            viewport: viewportRef.current
+          })
+        )
+      }
+    }
+  
+    resize()
+  
+    const figures = galleryRef.current.querySelectorAll('figure')
+    const medias = Array.from(figures).map(element =>
+      createMedia({
+        element,
+        geometry,
+        gl,
+        scene,
+        screen: screenRef.current,
+        viewport: viewportRef.current,
+        vertex,
+        fragment
+      })
+    )
+    mediasRef.current = medias
+  
+    const update = () => {
+      scrollRef.current.current = lerp(scrollRef.current.current, scrollRef.current.target, scrollRef.current.ease)
+  
+      const direction = scrollRef.current.current > scrollRef.current.last ? 'down' : 'up'
+  
+      mediasRef.current.forEach(media => media.update(scrollRef.current, direction))
+  
+      renderer.render({ scene, camera })
+  
+      scrollRef.current.last = scrollRef.current.current
+  
+      requestAnimationFrame(update)
+    }
+  
+    update()
+  
+    window.addEventListener('resize', resize)
+    window.addEventListener('wheel', e => {
+      const normalized = NormalizeWheel(e)
+      scrollRef.current.target += normalized.pixelY * 0.5
+      
+      // Limit scrolling to gallery bounds
+      const galleryHeight = galleryRef.current.getBoundingClientRect().height
+      const maxScroll = galleryHeight - window.innerHeight
+      scrollRef.current.target = Math.max(0, Math.min(maxScroll, scrollRef.current.target))
+    })
+  
+    return () => {
+      window.removeEventListener('resize', resize)
+    }
+  }, [])
+
+  return (
+    <>
+      <canvas ref={canvasRef} className="h-screen w-full webgl-canvas" />
+      <div className="gallery1" ref={galleryRef}>
+        <main>
+          <section className="gallery-section">
+            <header className="gallery-header">
+              <h1 className="gallery-title">Planete Elevene</h1>
+            </header>
+
+            <div className="gallery1">
+              {images.map((src, i) => (
+                <figure key={i} className="gallery__item">
+                  <img className="gallery__image" src={src} alt={`Gallery ${i + 1}`} />
+                </figure>
+              ))}
+            </div>
+          </section>
+        </main>
+      </div>
+    </>
+  )
+}
+
+function createMedia({ element, geometry, gl, scene, screen, viewport, vertex, fragment }) {
+  const img = element.querySelector('img')
+  const bounds = element.getBoundingClientRect()
+  const texture = new Texture(gl, { generateMipmaps: false })
+  const image = new Image()
+  image.crossOrigin = 'anonymous' 
+  image.src = img.src
+
+  const state = {
+    plane: null,
+    program: null,
+  }
+
+  const createMesh = () => {
+    const program = new Program(gl, {
+      vertex,
+      fragment,
+      uniforms: {
+        tMap: { value: texture },
+        uPlaneSizes: { value: [0, 0] },
+        uImageSizes: { value: [0, 0] },
+        uViewportSizes: { value: [viewport.width, viewport.height] },
+        uStrength: { value: 0 }
+      },
+      transparent: true
+    })
+
+    const plane = new Mesh(gl, { geometry, program })
+    plane.setParent(scene)
+
+    state.plane = plane
+    state.program = program
+  }
+
+  const updateScale = () => {
+    state.plane.scale.x = viewport.width * bounds.width / screen.width
+    state.plane.scale.y = viewport.height * bounds.height / screen.height
+  }
+
+  const updateX = (x = 0) => {
+    state.plane.position.x =
+      -(viewport.width / 2) +
+      state.plane.scale.x / 2 +
+      ((bounds.left - x) / screen.width) * viewport.width
+  }
+
+  const updateY = (y = 0) => {
+    state.plane.position.y =
+      (viewport.height / 2) -
+      (state.plane.scale.y / 2) -
+      ((bounds.top - y) / screen.height) * viewport.height
+  }
+
+  const onResize = (sizes) => {
+    if (sizes) {
+      if (sizes.screen) screen = sizes.screen
+      if (sizes.viewport) {
+        viewport = sizes.viewport
+        state.program.uniforms.uViewportSizes.value = [viewport.width, viewport.height]
+      }
+    }
+    updateBounds()
+  }
+
+  const updateBounds = () => {
+    updateScale()
+    updateX()
+    updateY()
+    state.program.uniforms.uPlaneSizes.value = [state.plane.scale.x, state.plane.scale.y]
+  }
+
+  const update = (scroll, direction) => {
+    updateScale();
+    updateX();
+    updateY(scroll.current);
+  
+    // Calculate base strength
+    const baseStrength = ((scroll.current - scroll.last) / screen.width) * 10;
+    
+    // Reverse the strength based on direction
+    state.program.uniforms.uStrength.value = 
+      direction === 'down' ? -Math.abs(baseStrength) : Math.abs(baseStrength);
+  }
+
+  image.onload = () => {
+    texture.image = image
+    state.program.uniforms.uImageSizes.value = [image.naturalWidth, image.naturalHeight]
+  }
+
+  createMesh()
+  updateBounds()
+
+  return {
+    update,
+    onResize,
+    get plane() {
+      return state.plane
+    },
+  }
+}
+
+const lerp = (a, b, t) => a + (b - a) * t
+
+const images = [
+  "/images/background_min.png",
+  "/images/bracesrubberbands.png",
+  "/images/image3.jpg",
+  "/images/image4.jpg",
+  "/images/image5.jpg",
+  "/images/image6.jpg",
+
+];

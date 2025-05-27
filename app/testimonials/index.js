@@ -119,7 +119,7 @@ const TextAnimator = forwardRef(({ children, className }, ref) => {
     });
 
     charsRef.current = chars;
-    originalText.current = chars.map((span) => span.textContent); // 💾 Store clean original chars
+    originalText.current = chars.map((span) => span.textContent); 
   }, [children]);
 
   useImperativeHandle(ref, () => ({
@@ -192,7 +192,10 @@ const Testimonial = () => {
     { name: "Emma" },
     { name: "Karoun G", duration: "Motion Appliance, Invisalign" },
   ];
+  const nameRef = useRef([]);
+  const durationRefs = useRef([]);
   const listRefs = useRef([]);
+  
 
   useEffect(() => {
     listRefs.current.forEach((el) => {
@@ -214,6 +217,7 @@ const Testimonial = () => {
     });
   }, []);
 
+  
   return (
     <main className="demo-4">
       <section
@@ -244,32 +248,30 @@ const Testimonial = () => {
             counterReset: "item 0",
           }}
         >
-          {patients.map((item, index) => {
-            const nameRef = useRef();
-            const durationRef = useRef();
+{patients.map((item, index) => (
+  <li
+    key={index}
+    ref={(el) => (listRefs.current[index] = el)}
+    className="list__item"
+    onMouseEnter={() => {
+      nameRef.current[index]?.animate?.();
+      durationRefs.current[index]?.animate?.();
+    }}
+  >
+    <span className="list__item-col" aria-hidden="true" />
+    <span className="list__item-col">
+      <TextAnimator ref={(el) => (nameRef.current[index] = el)}>
+        {item.name}
+      </TextAnimator>
+    </span>
+    <span className="list__item-col list__item-col--last">
+      <TextAnimator ref={(el) => (durationRefs.current[index] = el)}>
+        {item.duration || "—"}
+      </TextAnimator>
+    </span>
+  </li>
+))}
 
-            return (
-              <li
-                key={index}
-                ref={(el) => (listRefs.current[index] = el)}
-                className="list__item"
-                onMouseEnter={() => {
-                  nameRef.current?.animate();
-                  durationRef.current?.animate();
-                }}
-              >
-                <span className="list__item-col" aria-hidden="true" />
-                <span className="list__item-col">
-                  <TextAnimator ref={nameRef}>{item.name}</TextAnimator>
-                </span>
-                <span className="list__item-col list__item-col--last">
-                  <TextAnimator ref={durationRef}>
-                    {item.duration || "—"}
-                  </TextAnimator>
-                </span>
-              </li>
-            );
-          })}
         </ul>
       </section>
     </main>
@@ -590,11 +592,11 @@ const RotatingModel = () => {
 };
 
 const Testimonials = () => {
-  const { scene } = useGLTF("/images/SVOX1F.glb");
+  // const { scene } = useGLTF("/images/SVOX1F.glb");
 
-  if (!scene) return null;
+  // if (!scene) return null;
 
-  const { nodes } = useGLTF("/images/SVOX1F.glb");
+  // const { nodes } = useGLTF("/images/SVOX1F.glb");
   const textRef = useRef(null);
   const bgTextColor = "#CECED3";
   const fgTextColor = "#161818";
@@ -1052,7 +1054,7 @@ const Testimonials = () => {
   return (
     <>
       <Background />
-
+<Contents />
       <section
         ref={sectionOneRef}
         className="z-10 relative w-full min-h-[110vh] flex flex-col px-12"
@@ -1094,7 +1096,7 @@ const Testimonials = () => {
               Join the smile club
             </h2>
 
-            <div className="font-chivomono text-[14px] leading-none  uppercase font-bold relative">
+            <div className="font-khteka text-[14px] leading-none  uppercase relative">
               <span className="absolute invisible block">
                 We are committed to setting the standard for exceptional
                 service. Our communication is always open—every question is
@@ -1366,3 +1368,221 @@ const Testimonials = () => {
 };
 
 export default Testimonials;
+
+class MousePointer {
+  constructor() {
+    this.x = window.innerWidth * 0.5;
+    this.y = window.innerHeight * 0.5;
+    this.normal = { x: 0, y: 0 };
+    this.isDown = false;
+    
+    this._setupListeners();
+  }
+
+  _setupListeners() {
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const target = document.querySelector('.l-canvas') || window;
+
+    if (isTouch) {
+      target.addEventListener('touchstart', (e) => this._handleStart(e));
+      target.addEventListener('touchend', () => this._handleEnd());
+      target.addEventListener('touchmove', (e) => this._handleMove(e), { passive: false });
+    } else {
+      window.addEventListener('mousedown', (e) => this._handleStart(e));
+      window.addEventListener('mouseup', () => this._handleEnd());
+      window.addEventListener('mousemove', (e) => this._handleMove(e));
+    }
+  }
+
+  _handleStart(e) {
+    this.isDown = true;
+    this._updatePosition(e);
+  }
+
+  _handleEnd() {
+    this.isDown = false;
+  }
+
+  _handleMove(e) {
+    this._updatePosition(e);
+  }
+
+  _updatePosition(e) {
+    const pos = this._getEventPosition(e);
+    this.x = pos.x;
+    this.y = pos.y;
+    
+
+    this.normal.x = this.x / window.innerWidth;
+    this.normal.y = this.y / window.innerHeight;
+  }
+
+  _getEventPosition(e) {
+    if (e.touches) {
+      return {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      };
+    }
+    return {
+      x: e.clientX,
+      y: e.clientY
+    };
+  }
+}
+
+
+const mousePointer = new MousePointer();
+
+
+const map = (num, toMin, toMax, fromMin, fromMax) => {
+  if (num <= fromMin) return toMin;
+  if (num >= fromMax) return toMax;
+  const p = (toMax - toMin) / (fromMax - fromMin);
+  return (num - fromMin) * p + toMin;
+};
+
+const useWindowSize = () => {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+};
+
+const Contents = () => {
+  const line = 10;
+  const [blocks, setBlocks] = useState([]);
+  const photoRef = useRef(null);
+  const blocksRef = useRef(null);
+  const animationRef = useRef();
+  const counterRef = useRef(0);
+  const windowSize = useWindowSize();
+
+  const useGPU = (el) => {
+    gsap.set(el, {
+      willChange: 'transform, opacity'
+    });
+  };
+
+  useEffect(() => {
+    if (!photoRef.current || !blocksRef.current) return;
+
+    const img = photoRef.current.querySelector('img');
+    const block = blocksRef.current;
+    const num = line * line;
+    const newBlocks = [];
+
+    for (let i = 0; i < num; i++) {
+      const b = document.createElement('div');
+      block.append(b);
+      b.append(img.cloneNode(false));
+
+      gsap.set(b, {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        overflow: 'hidden',
+      });
+
+      const imgEl = b.querySelector('img');
+      useGPU(imgEl);
+      useGPU(b);
+
+      newBlocks.push({
+        con: b,
+        img: imgEl,
+      });
+    }
+
+    setBlocks(newBlocks);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      gsap.killTweensOf('*');
+    };
+  }, []);
+
+  const update = () => {
+    counterRef.current++;
+
+    const minDimension = Math.min(windowSize.width, windowSize.height);
+    gsap.set(photoRef.current, {
+      width: minDimension * 0.75,
+    });
+
+    const mx = mousePointer.normal.x;
+    const my = mousePointer.normal.y;
+
+    if (counterRef.current % 2 === 0) {
+      const imgSize = blocksRef.current?.offsetWidth || 0;
+      const size = imgSize / line;
+      const scale = 25;
+
+      blocks.forEach((val, i) => {
+        const ix = ~~(i / line);
+        const iy = ~~(i % line);
+
+        const blockX = (ix + 0.5) / line;
+        const blockY = (iy + 0.5) / line;
+
+        const dx = blockX - mx;
+        const dy = blockY - my;
+        const d = Math.sqrt(dx * dx + dy * dy);
+
+        const isVisible = d < 0.3;
+
+        gsap.set(val.con, {
+          width: size + 2,
+          height: size + 2,
+          left: ix * size,
+          top: iy * size,
+          opacity: isVisible ? 1 : 0,
+        });
+
+        const size2 = scale * size;
+        gsap.set(val.img, {
+          scale: scale,
+          x: blockX * -size2,
+          y: blockY * -size2,
+        });
+      });
+    }
+
+    animationRef.current = requestAnimationFrame(update);
+  };
+
+  useEffect(() => {
+    animationRef.current = requestAnimationFrame(update);
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [blocks, windowSize]);
+
+  return (
+    <div className="js-photo" ref={photoRef}>
+      <img src="/images/1.jpg" alt="" />
+      <div className="js-photo-blocks" ref={blocksRef} />
+    </div>
+  );
+};
+
+
+

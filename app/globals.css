@@ -6269,3 +6269,52 @@ a {
 }
 
 
+.js-photo {
+  position: relative;
+  margin: 0 auto;
+  width: 75vmin;
+  overflow: hidden;
+}
+
+.js-photo-blocks > div > img {
+  width: 100%;
+  transform-origin: 0% 0%;
+}
+
+.gallery1 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center items horizontally */
+  gap: 2rem;               /* Optional: add space between items */
+  padding: 2vh 2vw;        /* Top/bottom and left/right padding */
+  box-sizing: border-box;
+}
+
+.gallery__item {
+  width: 40vw;             /* Allows two images per row with spacing */
+  aspect-ratio: 4 / 5;
+  position: relative;
+}
+
+
+.gallery__image {
+  opacity: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.webgl-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10;
+}
+
