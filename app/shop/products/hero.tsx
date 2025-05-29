@@ -60,78 +60,103 @@ const Hero: React.FC = () => {
   }, []);
   return (
     
-<section
-  className="relative h-screen flex flex-col md:flex-row px-8 md:px-24 py-20 "
->
+<section className="w-full min-h-screen bg-[#1d1d1d] text-white py-40">
+  <div className="max-w-7xl justify-center items-center mx-auto flex flex-wrap md:flex-nowrap gap-16">
+  
+  <div className="w-full md:w-1/2">
+  <div className="bg-white text-black overflow-hidden">
+    <div className="relative">
+      <img
+        src="/images/cardtest.png"
+        alt="Featured"
+        className="w-full h-auto object-cover"
+      />
+      <span className="absolute top-4 left-4 font-neuehaas45 bg-gray-100 text-black px-3 py-1 text-xs rounded-full">
+        NEW
+      </span>
+    </div>
+
+    <div className="p-6">
+      <p className="text-[18px] leading-[1.2] font-neuehaas45 text-gray-700 mb-4">
+      Frey Smiles gift cards can be used toward any part of treatment—and they never expire.
+      </p>
+      <p className="text-[14px] leading-[1.5] font-neuehaas45 text-gray-700 mb-4">
+      Send one digitally or choose a physical card.
+      </p>
+      <button className="font-neuehaas45 mt-4 inline-block bg-black text-white px-6 py-2 text-sm uppercase tracking-wide hover:bg-neutral-800 transition">
+        Send A Card
+      </button>
+    </div>
+  </div>
+</div>
+
+    <div className="w-full md:w-1/2 flex flex-col justify-between">
+    <div className="text-center mb-8">
+    <div className="text-center">
+  <h2 className="text-[48px] font-neuehaas45 uppercase">THE</h2>
+  <h2 className="text-[46px] font-sinistre mt-2">ESSENTIALS</h2>
+  <h2 className="text-[48px] font-neuehaas45 uppercase mt-[6px]">EDIT</h2>
+</div>
 
 
-  {/* <svg
-    className="absolute inset-0 w-full h-full z-0"
-    viewBox="-960 -540 1920 1080"
-    preserveAspectRatio="none"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="miter"
-      fillOpacity="0"
-      strokeMiterlimit="4"
-      stroke="rgb(248,134,63)"
-      strokeOpacity="1"
-      strokeWidth="1.5"
-      d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
-    />
-  </svg> */}
 
 
-  <div className="relative z-10 flex flex-col justify-between max-w-xl md:w-1/2 h-full">
-    <div className="flex items-center h-1/2">
-      <div>
-        <h1 className="text-[14px] font-neuehaas45 leading-tight max-w-[500px]">
-          We’ve carefully curated a selection of premium products designed to elevate your
-          experience during treatment. From gentle yet effective whitening solutions to
-          comfort-enhancing essentials, each product is handpicked to support your journey
-          to a healthier, more confident smile.
-        </h1>
+
+  <div className="max-w-[400px] mx-auto mt-8">
+    <p className="text-[14px] leading-[1.3] text-gray-300 font-neuehaas45">
+      We’ve curated a handful of products to elevate your routine—from effective whitening solutions to a practical additions. Nothing extra.
+    </p>
+  </div>
+</div>
+
+  <div className="flex flex-row justify-center gap-6">
+
+    <div className="w-1/2 min-w-0 flex flex-col bg-white text-black overflow-hidden">
+      <img
+        src="/images/shoptest1.png"
+        alt="Card 1"
+        className="w-full h-auto object-cover max-w-full"
+      />
+      <div className="p-4">
+        <h4 className="font-neuehaas45 text-[14px] mb-2">
+          Ember Light Therapy
+        </h4>
+        <div className="flex justify-between text-[12px] text-gray-600 font-neuehaas45">
+          <a href="#" className="underline">Learn more</a>
+        </div>
       </div>
     </div>
 
 
-    <div className="flex flex-col justify-center h-1/2">
-      <h1 className="text-[48px] font-neuehaas45 mb-4">
-        Ember Light <span className="text-gray-400">Therapy</span>
-      </h1>
-      <p className="text-sm font-neuehaas45 text-gray-600 mb-6">
-        utilizes proprietary UV-Free, TripleWave™ LED technology to reveal a brighter, healthier smile.
-      </p>
-
-      <div className="text-[13px] font-neuehaas45 flex flex-wrap gap-3 mb-6">
-        <span className="bg-gray-100 px-4 py-2 rounded-lg">Faster tooth alignment</span>
-        <span className="bg-gray-100 px-4 py-2 rounded-lg">targets oral bacteria</span>
-        <span className="bg-gray-100 px-4 py-2 rounded-lg">Reduced discomfort</span>
-      </div>
-
-
-      <div className="flex items-center gap-4">
-        <span className="text-lg">Explore Financing</span>
-        <button className="bg-black text-white px-6 py-3 rounded-full text-sm hover:bg-gray-800 transition">
-          →
-        </button>
+    <div className="w-1/2 min-w-0 flex flex-col bg-white text-black overflow-hidden">
+      <img
+               src="/images/cutout.jpg"
+        alt="Card 2"
+        className="w-full h-auto object-cover max-w-full"
+      />
+      <div className="p-4">
+        <h4 className="font-neuehaas45 text-[14px] mb-2">How Whitening Works</h4>
+        <div className="font-neuehaas45 flex justify-between text-[12px] text-gray-600">
+          <span>Date</span>
+          <a href="#" className="underline">Read more</a>
+        </div>
       </div>
     </div>
   </div>
 
-  <div className="relative z-0 md:w-1/2 mt-12 md:mt-0 flex justify-center items-center">
-  <div className="absolute inset-0 bg-[url('/images/radialgreen.png')] bg-cover bg-center z-0" />
-
-
-  <img
-    src="/images/ember_transparent.png"
-    alt="Ember"
-    className="relative z-10 max-w-xs md:max-w-md"
-  />
+  <div className="flex flex-col items-center mt-10">
+    <div className="w-10 h-10 flex items-center justify-center rounded-full border border-white" />
+    <span className="font-neuehaas45 text-xs mt-2 underline">SCROLL</span>
+  </div>
 </div>
 
+  </div>
 </section>
+
+
+
+
+
 
 
   );

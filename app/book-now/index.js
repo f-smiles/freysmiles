@@ -1,24 +1,148 @@
 "use client";
-import { Renderer, Program, Mesh, Plane, Uniform } from 'wtc-gl';
-import { Vec2, Mat2 } from 'wtc-math';
+
+import { Renderer, Program, Mesh, Plane, Uniform } from "wtc-gl";
+import { Vec2, Mat2 } from "wtc-math";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import "tw-elements";
 import gsap from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import { Text } from '@react-three/drei';
-import { useThree, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
+import { Text, OrbitControls } from "@react-three/drei";
+import { useThree, useFrame, extend, Canvas } from "@react-three/fiber";
+import * as THREE from "three";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin);
 
+extend({ OrbitControls, EffectComposer });
 
+const ParticleSystem = () => {
+  const particlesCount = 16000;
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const particlesRef = useRef();
 
+  const positions = useMemo(() => new Float32Array(particlesCount * 3), []);
+  const velocities = useMemo(() => new Float32Array(particlesCount * 3), []);
 
+  const createSphere = (count, radius) => {
+    for (let i = 0; i < count; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = radius * Math.cbrt(Math.random());
 
-const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = "100" }) => {
+      const x = r * Math.sin(phi) * Math.cos(theta);
+      const y = r * Math.sin(phi) * Math.sin(theta);
+      const z = r * Math.cos(phi);
+
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
+
+      velocities[i * 3] = (Math.random() - 0.5) * 0.5;
+      velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.5;
+      velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+    }
+  };
+
+  useEffect(() => {
+    createSphere(particlesCount, 400);
+    if (particlesRef.current) {
+      particlesRef.current.geometry.attributes.position.needsUpdate = true;
+    }
+  }, []);
+
+  const { size, gl } = useThree();
+  const boundsRef = useRef();
+
+  useEffect(() => {
+    const canvasEl = gl.domElement;
+    const handleMove = (e) => {
+      const rect = canvasEl.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      mouseRef.current.x = x;
+      mouseRef.current.y = y;
+    };
+    window.addEventListener("pointermove", handleMove);
+    return () => window.removeEventListener("pointermove", handleMove);
+  }, [gl]);
+
+  useFrame(() => {
+    if (!particlesRef.current) return;
+    const pos = particlesRef.current.geometry.attributes.position.array;
+
+    for (let i = 0; i < pos.length; i += 3) {
+      pos[i] += velocities[i];
+      pos[i + 1] += velocities[i + 1];
+      pos[i + 2] += velocities[i + 2];
+
+      const dist = Math.sqrt(pos[i] ** 2 + pos[i + 1] ** 2 + pos[i + 2] ** 2);
+      const radius = 400;
+      if (dist > radius) {
+        const factor = radius / dist;
+        pos[i] *= factor;
+        pos[i + 1] *= factor;
+        pos[i + 2] *= factor;
+      }
+
+      const dx = mouseRef.current.x - pos[i];
+      const dy = -mouseRef.current.y - pos[i + 1];
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const repulsion = Math.max(0, 300 - distance) * 0.1;
+
+      if (distance > 0) {
+        pos[i] -= (dx / distance) * repulsion;
+        pos[i + 1] -= (dy / distance) * repulsion;
+      }
+    }
+
+    particlesRef.current.geometry.attributes.position.needsUpdate = true;
+  });
+
+  return (
+    <points ref={particlesRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          array={positions}
+          count={particlesCount}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial color={0xff00ff} size={2} sizeAttenuation />
+    </points>
+  );
+};
+
+const Scene = () => {
+  return (
+    <>
+      <ParticleSystem />
+      {/* <OrbitControls 
+        enableDamping 
+        dampingFactor={0.25} 
+        screenSpacePanning={false} 
+        maxPolarAngle={Math.PI / 2} 
+      /> */}
+      <EffectComposer>
+        <Bloom
+          luminanceThreshold={0}
+          luminanceSmoothing={0.9}
+          intensity={1.5}
+          height={300}
+        />
+      </EffectComposer>
+    </>
+  );
+};
+
+const TextEffect = ({
+  text = "braces",
+  font = "NeueHaasDisplay35",
+  fontWeight = "100",
+}) => {
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
@@ -145,7 +269,7 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = 
     planeMeshRef.current = planeMesh;
 
     scene.add(planeMesh);
-    planeMesh.scale.set(0.5, 0.5, 1); // scale to 50% 
+    planeMesh.scale.set(0.5, 0.5, 1); // scale to 50%
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(0xffffff, 1);
@@ -166,7 +290,12 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = 
   };
 
   const animateScene = () => {
-    if (!planeMeshRef.current || !rendererRef.current || !sceneRef.current || !cameraRef.current) {
+    if (
+      !planeMeshRef.current ||
+      !rendererRef.current ||
+      !sceneRef.current ||
+      !cameraRef.current
+    ) {
       return;
     }
 
@@ -194,12 +323,12 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = 
 
   const handleMouseMove = (event) => {
     if (!containerRef.current) return;
-    
+
     easeFactorRef.current = 0.035;
     const rect = containerRef.current.getBoundingClientRect();
-    prevPositionRef.current = { 
-      x: targetMousePositionRef.current.x, 
-      y: targetMousePositionRef.current.y 
+    prevPositionRef.current = {
+      x: targetMousePositionRef.current.x,
+      y: targetMousePositionRef.current.y,
     };
 
     targetMousePositionRef.current.x = (event.clientX - rect.left) / rect.width;
@@ -208,7 +337,7 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = 
 
   const handleMouseEnter = (event) => {
     if (!containerRef.current) return;
-    
+
     easeFactorRef.current = 0.01;
     const rect = containerRef.current.getBoundingClientRect();
 
@@ -220,15 +349,15 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = 
 
   const handleMouseLeave = () => {
     easeFactorRef.current = 0.01;
-    targetMousePositionRef.current = { 
-      x: prevPositionRef.current.x, 
-      y: prevPositionRef.current.y 
+    targetMousePositionRef.current = {
+      x: prevPositionRef.current.x,
+      y: prevPositionRef.current.y,
     };
   };
 
   const onWindowResize = () => {
     if (!cameraRef.current || !rendererRef.current) return;
-    
+
     const aspectRatio = window.innerWidth / window.innerHeight;
     cameraRef.current.left = -1;
     cameraRef.current.right = 1;
@@ -242,61 +371,56 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = 
   useEffect(() => {
     let mounted = true;
     const currentContainer = containerRef.current;
-  
+
     const init = async () => {
       try {
-
         const fontSize = Math.floor(window.innerWidth * 2);
         await document.fonts.load(`${fontWeight} ${fontSize}px "${font}"`);
         await document.fonts.ready;
-  
+
         if (!mounted) return;
-  
 
         const texture = createTextTexture(text, font, null, color, fontWeight);
         initializeScene(texture);
         animationRef.current = requestAnimationFrame(animateScene);
-  
 
         if (currentContainer) {
-          currentContainer.addEventListener('mousemove', handleMouseMove);
-          currentContainer.addEventListener('mouseenter', handleMouseEnter);
-          currentContainer.addEventListener('mouseleave', handleMouseLeave);
+          currentContainer.addEventListener("mousemove", handleMouseMove);
+          currentContainer.addEventListener("mouseenter", handleMouseEnter);
+          currentContainer.addEventListener("mouseleave", handleMouseLeave);
         }
-        window.addEventListener('resize', onWindowResize);
-  
+        window.addEventListener("resize", onWindowResize);
       } catch (error) {
         console.error("Font loading error:", error);
 
         if (!mounted) return;
-        
+
         const texture = createTextTexture(text, font, null, fontWeight);
         initializeScene(texture);
         animationRef.current = requestAnimationFrame(animateScene);
-  
+
         if (currentContainer) {
-          currentContainer.addEventListener('mousemove', handleMouseMove);
-          currentContainer.addEventListener('mouseenter', handleMouseEnter);
-          currentContainer.addEventListener('mouseleave', handleMouseLeave);
+          currentContainer.addEventListener("mousemove", handleMouseMove);
+          currentContainer.addEventListener("mouseenter", handleMouseEnter);
+          currentContainer.addEventListener("mouseleave", handleMouseLeave);
         }
-        window.addEventListener('resize', onWindowResize);
+        window.addEventListener("resize", onWindowResize);
       }
     };
-  
+
     init();
-  
+
     return () => {
       mounted = false;
       cancelAnimationFrame(animationRef.current);
-      
 
       if (currentContainer) {
-        currentContainer.removeEventListener('mousemove', handleMouseMove);
-        currentContainer.removeEventListener('mouseenter', handleMouseEnter);
-        currentContainer.removeEventListener('mouseleave', handleMouseLeave);
+        currentContainer.removeEventListener("mousemove", handleMouseMove);
+        currentContainer.removeEventListener("mouseenter", handleMouseEnter);
+        currentContainer.removeEventListener("mouseleave", handleMouseLeave);
       }
-      window.removeEventListener('resize', onWindowResize);
-      
+      window.removeEventListener("resize", onWindowResize);
+
       if (rendererRef.current) {
         rendererRef.current.dispose();
         rendererRef.current.domElement?.remove();
@@ -309,7 +433,7 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = 
         textureRef.current.dispose();
       }
       if (sceneRef.current) {
-        sceneRef.current.traverse(child => {
+        sceneRef.current.traverse((child) => {
           child.material?.dispose();
           child.geometry?.dispose();
         });
@@ -317,22 +441,26 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", fontWeight = 
     };
   }, [text, font, fontWeight]);
 
-  return <div ref={containerRef} style={{ width: '100%', height: '100vh', cursor: 'none' }} />;
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100vh", cursor: "none" }}
+    />
+  );
 };
-const ScrambleText = ({ 
-  text, 
-  className, 
+const ScrambleText = ({
+  text,
+  className,
   scrambleOnLoad = true,
-  charsType = "default" // 'default' | 'numbers' | 'letters'
+  charsType = "default", // 'default' | 'numbers' | 'letters'
 }) => {
   const scrambleRef = useRef(null);
   const originalText = useRef(text);
 
-  
   const charSets = {
     default: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     numbers: "0123456789",
-    letters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    letters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
   };
 
   const scrambleAnimation = () => {
@@ -350,7 +478,6 @@ const ScrambleText = ({
     });
   };
 
-  
   useEffect(() => {
     const element = scrambleRef.current;
     if (!element) return;
@@ -359,26 +486,23 @@ const ScrambleText = ({
       gsap.set(element, {
         scrambleText: {
           text: originalText.current,
-          chars: charSets[charsType], 
+          chars: charSets[charsType],
           revealDelay: 0.5,
-        }
+        },
       });
       scrambleAnimation();
     }
 
     const handleMouseEnter = () => scrambleAnimation();
-    element.addEventListener('mouseenter', handleMouseEnter);
+    element.addEventListener("mouseenter", handleMouseEnter);
 
     return () => {
-      element.removeEventListener('mouseenter', handleMouseEnter);
+      element.removeEventListener("mouseenter", handleMouseEnter);
     };
   }, [scrambleOnLoad, charsType]);
 
   return (
-    <span 
-      ref={scrambleRef} 
-      className={`scramble-text ${className || ''}`}
-    >
+    <span ref={scrambleRef} className={`scramble-text ${className || ""}`}>
       {text}
     </span>
   );
@@ -443,8 +567,8 @@ export default function BookNow() {
     }
   }, []);
 
-  const sectionRef = useRef(null)
-  const panelRef = useRef(null)
+  const sectionRef = useRef(null);
+  const panelRef = useRef(null);
 
   // useEffect(() => {
   //   const ctx = gsap.context(() => {
@@ -465,20 +589,8 @@ export default function BookNow() {
   // }, [])
 
   return (
-<>
-{/* <div style={{
-  width: '100vw',
-  height: '100vh',
-  background: 'linear-gradient(to bottom, #f5af19, #f12711)',
-  overflow: 'hidden',
-  margin: 0,
-  padding: 0,
-}}>
-  <WaveCanvas />
-</div> */}
-
-
-{/* <div>
+    <>
+      {/* <div>
     <TextEffect 
         text="BOOK" 
         font="NeueHaasRoman" 
@@ -486,87 +598,173 @@ export default function BookNow() {
         fontWeight="normal" 
       />
     </div> */}
-<section
-ref ={sectionRef}
-  className="relative w-full min-h-screen bg-center bg-cover"
-  style={{ backgroundImage: 'url(/images/portraitglass.jpg)' }}
->
+      <section
+        ref={sectionRef}
+        className="relative w-full min-h-screen bg-center bg-cover"
+        // style={{ backgroundImage: "url(/images/portraitglass.jpg)" }}
+      >
 
-  <div className="relative z-10 flex min-h-screen pt-10 pl-10">
+        <div className="relative z-10 flex min-h-screen pt-10 pl-10">
+          
+          <div
+            ref={panelRef}
+            className="flex justify-between w-full p-10 border shadow-md backdrop-blur-md bg-white/80 border-white/20 lg:p-20"
+          >
+            <div className="w-1/2 relative h-screen">
+              <Canvas
+                camera={{ position: [0, 0, 1000], fov: 75 }}
+                gl={{ alpha: true }}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 0,
+                }}
+              >
+                <Scene />
+              </Canvas>
 
-    <div
-      ref={panelRef}
-       className="flex justify-between w-full p-10 border shadow-md backdrop-blur-md bg-white/80 border-white/20 lg:p-20">
-      <div className="w-1/2">
-        <p className="mt-20 mb-4 text-xs uppercase font-neueroman">/ Contact Us</p>
-      
-        <div className="flex flex-col gap-6 mt-10 text-sm uppercase">
-        <div>
-          <p className="text-[12px] mb-1 font-neueroman uppercase"> <ScrambleText text="GENERAL" className="mr-10" /></p>
-          <p className="text-sm leading-snug font-ibmregular">
-          <ScrambleText  text="info@freysmiles.com" />
-            <br />
-            <ScrambleText className="font-ibmregular"
-      text="(610)437-4748" 
-      charsType="numbers"
-    />
-          </p>
+              <div className="relative z-10 flex flex-col justify-center h-full items-center">
+                <div className="flex flex-col gap-6 text-sm uppercase">
+                  <p className="text-xs uppercase font-neueroman">
+                    / Contact Us
+                  </p>
+                  <div>
+                    <p className="text-[12px] mb-1 font-neueroman uppercase">
+                      <ScrambleText text="GENERAL" className="mr-10" />
+                    </p>
+                    <p className="text-[12px] leading-snug font-khteka">
+                      <ScrambleText text="info@freysmiles.com" />
+                      <br />
+                      <ScrambleText text="(610)437-4748" charsType="numbers" />
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-[12px] mb-1 font-neueroman uppercase">
+                      <ScrambleText text="ADDRESS" className="mr-10" />
+                    </p>
+                    <p className="text-[12px] leading-tight font-khteka">
+                      <ScrambleText text="Frey Smiles" charsType="numbers" />
+                      <br />
+                      <ScrambleText
+                        text="1250 S Cedar Crest Blvd"
+                        charsType="numbers"
+                      />
+                      <br />
+                      <ScrambleText text="Allentown PA" charsType="numbers" />
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center w-1/2">
+              <iframe
+                src="https://app.acuityscheduling.com/schedule.php?owner=35912720"
+                title="Schedule Appointment"
+                className="w-full max-w-[820px] min-h-[90vh] "
+              />
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div>
-        <p className="text-[12px] mb-1 font-neueroman uppercase"> <ScrambleText text="ADDRESS" className="mr-10" /></p>
-          <p className="text-sm leading-tight font-ibmregular">
-          <ScrambleText className="font-ibmregular"
-      text="Frey Smiles" 
-      charsType="numbers"
-    />
-            <br />
-            <ScrambleText className="font-ibmregular"
-      text="1250 S Cedar Crest Blvd" 
-      charsType="numbers"
-    />
-            <br />
-            <ScrambleText className="font-ibmregular"
-      text="Allentown PA" 
-      charsType="numbers"
-    />
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-10">
-        <span className="text-3xl">↓</span>
-      </div>
-      
-
-      </div>
-
-
-
-    <div className="flex items-center justify-center w-1/2">
-  <iframe
-    src="https://app.acuityscheduling.com/schedule.php?owner=34613267"
-    title="Schedule Appointment"
-    className="w-full max-w-[820px] min-h-[90vh] "
-  />
-</div>
-    </div>
-
-
-
-  </div>
-</section>
-
-
-{/* <div ref={containerRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black">
+      {/* <div ref={containerRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black">
 <svg ref={starRef} width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_116_153)"> <path d="M100 0C103.395 53.7596 146.24 96.6052 200 100C146.24 103.395 103.395 146.24 100 200C96.6052 146.24 53.7596 103.395 0 100C53.7596 96.6052 96.6052 53.7596 100 0Z" fill="url(#paint0_linear_116_153)"/> </g> <defs> <linearGradient id="paint0_linear_116_153" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse"> <stop stop-color="#DF99F7"/> <stop offset="1" stop-color="#FFDBB0"/> </linearGradient> <clipPath id="clip0_116_153"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>
 </div> */}
-
-
-
- 
-</>
-
-
+    </>
   );
 }
+const SpiralShader = () => {
+  const containerRef = useRef();
+  const uniformsRef = useRef({});
+  const requestIdRef = useRef();
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.Camera();
+    camera.position.z = 1;
+
+    const geometry = new THREE.PlaneGeometry(2, 2);
+
+    const uniforms = {
+      time: { value: 1.0 },
+      resolution: { value: new THREE.Vector2() }
+    };
+    uniformsRef.current = uniforms;
+
+    const vertexShader = `
+      void main() {
+        gl_Position = vec4(position, 1.0);
+      }
+    `;
+
+    const fragmentShader = `
+      #define TWO_PI 6.2831853072
+      #define PI 3.14159265359
+
+      precision highp float;
+      uniform vec2 resolution;
+      uniform float time;
+
+      void main(void) {
+        vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
+        float t = time * 0.05;
+        float lineWidth = 0.002;
+
+        vec3 color = vec3(0.0);
+        for(int j = 0; j < 3; j++) {
+          for(int i = 0; i < 5; i++) {
+            color[j] += lineWidth * float(i * i) / abs(fract(t - 0.01 * float(j) + float(i) * 0.01) * 5.0 - length(uv) + mod(uv.x + uv.y, 0.2));
+          }
+        }
+
+        gl_FragColor = vec4(color[0], color[1], color[2], 1.0);
+      }
+    `;
+
+    const material = new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader,
+      fragmentShader
+    });
+
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    const onWindowResize = () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      uniforms.resolution.value.x = renderer.domElement.width;
+      uniforms.resolution.value.y = renderer.domElement.height;
+    };
+
+    window.addEventListener('resize', onWindowResize);
+    onWindowResize();
+
+    const animate = () => {
+      uniforms.time.value += 0.05;
+      renderer.render(scene, camera);
+      requestIdRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(requestIdRef.current);
+      window.removeEventListener('resize', onWindowResize);
+      renderer.dispose();
+      container.removeChild(renderer.domElement);
+    };
+  }, []);
+
+  return <div ref={containerRef} className="w-full h-screen" />;
+};
