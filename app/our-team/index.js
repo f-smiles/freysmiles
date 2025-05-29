@@ -157,8 +157,7 @@ const Intro = ({ texts = [], onFinished }) => {
           transformOrigin: "50% 50%",
         },
         "start"
-      )
-
+      );
 
     return () => {
       introTL.kill();
@@ -166,70 +165,81 @@ const Intro = ({ texts = [], onFinished }) => {
   }, [onFinished]);
 
   return (
-<main
-  ref={wrapperRef}
-  
->
-  <svg className="w-full h-full circles" viewBox="0 0 1400 1400">
-    <defs>
+    <main ref={wrapperRef}>
+      <svg className="w-full h-full circles" viewBox="0 0 1400 1400">
+        <defs>
+          <path
+            id="circle-0"
+            d="M150,700.5A550.5,550.5 0 1 11251,700.5A550.5,550.5 0 1 1150,700.5"
+          />
+          <path
+            id="circle-1"
+            d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
+          />
+          <path
+            id="circle-2"
+            d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
+          />
+          <path
+            id="circle-3"
+            d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
+          />
+        </defs>
 
-      <path
-        id="circle-0"
-        d="M150,700.5A550.5,550.5 0 1 11251,700.5A550.5,550.5 0 1 1150,700.5"
-      />
-      <path
-        id="circle-1"
-        d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
-      />
-      <path
-        id="circle-2"
-        d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
-      />
-      <path
-        id="circle-3"
-        d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
-      />
+        <path
+          d="M100,700.5A600,600 0 1 11301,700.5A600,600 0 1 1100,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
 
-    </defs>
-    
-    <path d="M100,700.5A600,600 0 1 11301,700.5A600,600 0 1 1100,700.5" fill="none" stroke="black" strokeWidth="1" />
-  <path d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5" fill="none" stroke="black" strokeWidth="1" />
-  <path d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5" fill="none" stroke="black" strokeWidth="1" />
-  <path d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5" fill="none" stroke="black" strokeWidth="1" />
-
-
-
-    
-    <text
-     dy="-20"
-      ref={(el) => (circleTextRefs.current[1] = el)}
-      className="circles__text circles__text--1"
-    >
-      <textPath xlinkHref="#circle-1" textLength="2830">
-        Low dose 3d digital radiographs&nbsp;
-      </textPath>
-    </text>
-    <text
-         dy="-20"
-      ref={(el) => (circleTextRefs.current[2] = el)}
-      className="circles__text circles__text--2"
-    >
-      <textPath xlinkHref="#circle-2" textLength="2001">
-        Accelerated Treatment&nbsp;
-      </textPath>
-    </text>
-    <text
-         dy="-20"
-      ref={(el) => (circleTextRefs.current[3] = el)}
-      className="circles__text circles__text--3"
-    >
-      <textPath xlinkHref="#circle-3" textLength="1341">
-        Invisalign&nbsp; Invisalign&nbsp; Invisalign&nbsp;
-      </textPath>
-    </text>
-
-  </svg>
-</main>
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[1] = el)}
+          className="circles__text circles__text--1"
+        >
+          <textPath xlinkHref="#circle-1" textLength="2830">
+            Low dose 3d digital radiographs&nbsp;
+          </textPath>
+        </text>
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[2] = el)}
+          className="circles__text circles__text--2"
+        >
+          <textPath xlinkHref="#circle-2" textLength="2001">
+            Accelerated Treatment&nbsp;
+          </textPath>
+        </text>
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[3] = el)}
+          className="circles__text circles__text--3"
+        >
+          <textPath xlinkHref="#circle-3" textLength="1341">
+            Invisalign&nbsp; Invisalign&nbsp; Invisalign&nbsp;
+          </textPath>
+        </text>
+      </svg>
+    </main>
   );
 };
 const images = [
@@ -592,7 +602,6 @@ export default function OurTeam() {
     });
   }, []);
 
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -657,13 +666,12 @@ export default function OurTeam() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedMember = teamMembers[selectedIndex];
 
-
   const lines = [
     "Our experience spans over 50 years—a testament to the ",
     "precision, accuracy, and relevance of our vision, demonstrating",
-    "our ability to adapt to the ever-changing nature of our industry."
+    "our ability to adapt to the ever-changing nature of our industry.",
   ];
-  
+
   const fadeUpMasked = (delay = 0) => ({
     hidden: { y: "100%", opacity: 0 },
     visible: {
@@ -676,24 +684,29 @@ export default function OurTeam() {
       },
     },
   });
-  
+
   const wrapperRef = useRef(null);
   const scrollRef = useRef(null);
   const lastSectionRef = useRef(null);
-  const newSectionRef = useRef(null)
-  const col1Ref = useRef(null)
-  const col2Ref = useRef(null)
-  const col3Ref = useRef(null)
+  const newSectionRef = useRef(null);
+  const col1Ref = useRef(null);
+  const col2Ref = useRef(null);
+  const col3Ref = useRef(null);
 
   useLayoutEffect(() => {
-    if (!wrapperRef.current || !lastSectionRef.current || !newSectionRef.current) return;
-  
-    ScrollTrigger.getAll().forEach(t => t.kill());
-  
+    if (
+      !wrapperRef.current ||
+      !lastSectionRef.current ||
+      !newSectionRef.current
+    )
+      return;
+
+    ScrollTrigger.getAll().forEach((t) => t.kill());
+
     const horizontalScrollDistance = window.innerWidth;
     const columnStartDelay = 0.5;
     const staggerAmount = 0.05;
-  
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: lastSectionRef.current,
@@ -703,29 +716,31 @@ export default function OurTeam() {
         pin: wrapperRef.current,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-      }
+      },
     });
-  
+
     tl.to(wrapperRef.current, { x: "-100%", ease: "none" }, 0);
 
     gsap.utils.toArray([col1Ref, col2Ref, col3Ref]).forEach((colRef, index) => {
-      tl.to(colRef.current, {
-        yPercent: index % 2 === 0 ? -100 : 100,
-        ease: "none",
-      }, columnStartDelay + (index * staggerAmount)); 
+      tl.to(
+        colRef.current,
+        {
+          yPercent: index % 2 === 0 ? -100 : 100,
+          ease: "none",
+        },
+        columnStartDelay + index * staggerAmount
+      );
     });
-  
+
     setTimeout(() => {
       ScrollTrigger.refresh();
     }, 100);
-  
-    return () => ScrollTrigger.getAll().forEach(t => t.kill());
+
+    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
   }, []);
-  
-  
+
   return (
     <div className="">
-      
       {/* <div
         className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
           isRevealing ? "translate-y-0" : "-translate-y-full"
@@ -747,27 +762,26 @@ export default function OurTeam() {
       </div> */}
 
       <div className="relative bg-black overflow-x-clip">
-
         <div ref={wrapperRef} className="flex w-full">
           <div className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-black w-3/5 bg-[#FCF9F8] rounded-[24px]">
-          <div className="max-w-[400px] ml-10 my-10 flex flex-col overflow-hidden">
-          <div className="inline-block overflow-hidden">
-          <div className="text-[12px] leading-[1.1] font-neueroman text-black">
-      {lines.map((line, index) => (
-        <div key={index} className="overflow-hidden">
-          <motion.span
-            variants={fadeUpMasked(index * 0.2)}  
-            initial="hidden"
-            animate="visible"
-            className="inline-block"
-          >
-            {line}
-          </motion.span>
-        </div>
-      ))}
-    </div>
-    </div>
-                {/* {lines.map((line, index) => (
+            <div className="max-w-[400px] ml-10 my-10 flex flex-col overflow-hidden">
+              <div className="inline-block overflow-hidden">
+                <div className="text-[12px] leading-[1.1] font-neueroman text-black">
+                  {lines.map((line, index) => (
+                    <div key={index} className="overflow-hidden">
+                      <motion.span
+                        variants={fadeUpMasked(index * 0.2)}
+                        initial="hidden"
+                        animate="visible"
+                        className="inline-block"
+                      >
+                        {line}
+                      </motion.span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* {lines.map((line, index) => (
                   <motion.div
                     key={index}
                     className="font-neueroman uppercase  text-[12px] overflow-hidden text-black"
@@ -792,7 +806,7 @@ export default function OurTeam() {
                     {line}
                   </motion.div>
                 ))} */}
-              </div>
+            </div>
             <section>
               <div className="flex justify-center gap-6 overflow-hidden ">
                 <div className="w-[275px] mr-10">
@@ -867,10 +881,9 @@ export default function OurTeam() {
             </section>
           </div>
 
-<div ref={scrollRef} className="relative w-2/5">
+          <div ref={scrollRef} className="relative w-2/5">
             <div className="rounded-[24px] border-b border-b border-black bg-[#FCF9F8]  py-[10em] sm:py-[10em] h-screen lg:px-8 ">
-          
-            <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
+              <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
                 <div className="lg:col-span-6">
                   <div
                     id="controls"
@@ -980,88 +993,109 @@ export default function OurTeam() {
               </div>
             </div>
             <div className="relative h-full">
-            <section
-  ref={lastSectionRef}
-  className="relative flex-col bg-cover h-screen flex justify-center items-center rounded-[24px] bg-[#FCF9F8] overflow-hidden"
->
-  <Intro />
-</section>
+              <section
+                ref={lastSectionRef}
+                className="relative flex-col bg-cover h-screen flex justify-center items-center rounded-[24px] bg-[#FCF9F8] overflow-hidden"
+              >
+                <Intro />
+              </section>
 
+              <div
+                ref={newSectionRef}
+                className="absolute top-0 w-full h-full left-full"
+              >
+                <div
+                  onMouseEnter={() => setIsFocused(true)}
+                  onMouseLeave={() => setIsFocused(false)}
+                  className="w-screen h-screen grid grid-cols-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed"
+                >
+                  {/* Col 1 */}
+                  <div className="overflow-hidden">
+                    <div
+                      ref={col1Ref}
+                      className="flex flex-col will-change-transform"
+                    >
+                      <div className="bg-[#FAFAF8] rounded-[24px] p-8 border-r border-b border-black border-l h-[33.33vh] "></div>
+                      <div className="border-l bg-[#FAFAF8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+                        <p className="font-neueroman text-[13px] leading-[1.1]">
+                          Fun fact — our team is made up of former FreySmiles
+                          patients, something we think is important, because we
+                          have all experienced treatment and can help guide you
+                          through it.
+                        </p>
+                      </div>
+                      <div className="border-l  bg-[#FCF9F8] rounded-[24px] p-8 border-b border-black border-r h-[33.33vh]"></div>
+                      <div className="border-l bg-[#FCF9F8] rounded-[24px] p-8 border-b border-black border-r h-[66.66vh]"></div>
+                    </div>
+                  </div>
 
-            <div 
-  ref={newSectionRef}
-  className="absolute top-0 w-full h-full left-full"
->
-  <div
-    onMouseEnter={() => setIsFocused(true)}
-    onMouseLeave={() => setIsFocused(false)}
-    className="w-screen h-screen grid grid-cols-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed"
-  >
-    {/* Col 1 */}
-    <div className="overflow-hidden">
-      <div ref={col1Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#FAFAF8] rounded-[24px] p-8 border-r border-b border-black border-l h-[33.33vh] "></div>
-        <div className="border-l bg-[#FAFAF8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
-          <p className="font-neueroman text-[13px] leading-[1.1]">
-            Fun fact — our team is made up of former FreySmiles patients, something we think is important, 
-            because we have all experienced treatment and can help guide you through it.
-          </p>
-        </div>
-        <div className="border-l  bg-[#FCF9F8] rounded-[24px] p-8 border-b border-black border-r h-[33.33vh]"></div>
-        <div className="border-l bg-[#FCF9F8] rounded-[24px] p-8 border-b border-black border-r h-[66.66vh]"></div>
+                  {/* Col 2 */}
+                  <div className="overflow-hidden">
+                    <div
+                      ref={col2Ref}
+                      className="flex flex-col will-change-transform"
+                    >
+                      <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+                        <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
+                          <p className="font-neueroman text-[13px] leading-[1.1]">
+                            Our members have received the designation of
+                            Specialized Orthodontic Assistant. This is a
+                            voluntary certification program started by the
+                            American Association of Orthodontists to recognize
+                            those in the profession for their knowledge and
+                            experience.
+                          </p>
+                        </a>
+                      </div>
+                      <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black h-[33.33vh]"></div>
+                      <a
+                        href="https://g.co/kgs/Sds93Ha"
+                        className="flex justify-center items-center bg-[#FCF9F8] rounded-[20px] p-8 border-b border-r border-black h-[33.33vh]"
+                      >
+                        <p className="leading-[1.1] font-neueroman text-[13px]">
+                          This office is on 🔥! The orthodontists as well as
+                          every single staff member.
+                        </p>
+                      </a>
+                    </div>
+                  </div>
 
-      </div>
-    </div>
-
-    {/* Col 2 */}
-    <div className="overflow-hidden">
-      <div ref={col2Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
-          <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
-            <p className="font-neueroman text-[13px] leading-[1.1]">
-              Our members have received the designation of Specialized Orthodontic Assistant. 
-              This is a voluntary certification program started by the American Association of Orthodontists 
-              to recognize those in the profession for their knowledge and experience.
-            </p>
-          </a>
-        </div>
-        <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black h-[33.33vh]"></div>
-        <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#FCF9F8] rounded-[20px] p-8 border-b border-r border-black h-[33.33vh]">
-          <p className="leading-[1.1] font-neueroman text-[13px]">
-            This office is on 🔥! The orthodontists as well as every single staff member.
-          </p>
-        </a>
-      </div>
-    </div>
-
-    {/* Col 3 */}
-    <div className="overflow-hidden">
-      <div ref={col3Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
-          <p className="font-neueroman text-[13px]">Trained in CPR and first aid</p>
-        </div>
-        <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center  bg-[#F8F6F0] rounded-[20px] p-8 border-r border-b border-black h-[33.33vh]">
-          <p className="leading-[1.1] font-neueroman text-[13px]">
-            Had a wonderful experience at FreySmiles. Everyone is extremely professional, 
-            polite, timely. Would highly recommend! — TK
-          </p>
-        </a>
-        <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
-          <p className="leading-[1.1] font-neueroman text-[13px]">
-            We&apos;ve invested in in-office trainings with leading clinical consultants 
-            that have helped us develop systems and protocols streamlining our processes.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-     </div>
+                  {/* Col 3 */}
+                  <div className="overflow-hidden">
+                    <div
+                      ref={col3Ref}
+                      className="flex flex-col will-change-transform"
+                    >
+                      <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+                        <p className="font-neueroman text-[13px]">
+                          Trained in CPR and first aid
+                        </p>
+                      </div>
+                      <a
+                        href="https://g.co/kgs/YkknjNg"
+                        className="flex justify-center items-center  bg-[#F8F6F0] rounded-[20px] p-8 border-r border-b border-black h-[33.33vh]"
+                      >
+                        <p className="leading-[1.1] font-neueroman text-[13px]">
+                          Had a wonderful experience at FreySmiles. Everyone is
+                          extremely professional, polite, timely. Would highly
+                          recommend! — TK
+                        </p>
+                      </a>
+                      <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
+                        <p className="leading-[1.1] font-neueroman text-[13px]">
+                          We&apos;ve invested in in-office trainings with
+                          leading clinical consultants that have helped us
+                          develop systems and protocols streamlining our
+                          processes.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-      
         </div>
-
-
 
         <div style={greenCursorStyle}>
           {isFocused && (
@@ -1077,7 +1111,6 @@ export default function OurTeam() {
             </span>
           )}
         </div>
-
 
         {/* <section className="overflow-x-auto overflow-y-hidden lg:overflow-hidden">
           <div
@@ -1159,11 +1192,7 @@ export default function OurTeam() {
             </div>
           </div>
         </section> */}
-
       </div>
-    
-
-
 
       {/* <div className="bg-[#F7F7F7]">
           
