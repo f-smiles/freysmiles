@@ -842,10 +842,10 @@ const Invisalign = () => {
 
   return (
     <>
-    
+
       <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
 
-        {/* <Canvas
+        <Canvas
           className="pointer-events-none"
           style={{
             position: "fixed",
@@ -871,7 +871,7 @@ const Invisalign = () => {
               <Fluid backgroundColor="#FFF" />
             </EffectComposer>
           </Suspense>
-        </Canvas> */}
+        </Canvas>
 
         <div className="relative z-10 mt-[100vh]">
         <Copy>

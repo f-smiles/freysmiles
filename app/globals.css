@@ -5029,7 +5029,7 @@ a {
 }
 
 .list1 {
-  /* margin-top: 200px; */
+  margin-top: -200px;
   position: relative;
   height: 100vh;
 }
@@ -6284,14 +6284,14 @@ a {
 .gallery1 {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* Center items horizontally */
-  gap: 2rem;               /* Optional: add space between items */
-  padding: 2vh 2vw;        /* Top/bottom and left/right padding */
+  justify-content: center; 
+  gap: 2rem;    
+  padding: 2vh 2vw;      
   box-sizing: border-box;
 }
 
 .gallery__item {
-  width: 40vw;             /* Allows two images per row with spacing */
+  width: 40vw;            
   aspect-ratio: 4 / 5;
   position: relative;
 }
@@ -6318,3 +6318,110 @@ a {
   z-index: 10;
 }
 
+.services-list.for-images {
+  position: absolute;
+  top: 30vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 45vw;
+  height: 30vw;
+  z-index: 1;
+
+}
+
+.for-images .services-list-items {
+  width: 45vw;
+  height: 25vw;
+}
+
+
+.space {
+  height: 75vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+
+.section-sticky {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.section-sticky h2 {
+  width: 90%;
+}
+
+.services-container {
+  position: relative;
+  width: 100%;
+}
+
+.for-images .services-list-items img,
+.for-images .services-list-items video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.services-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.for-images {
+  height: 100vh;
+}
+
+.for-images .services-list-items {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  width: 45vw;
+  height: 35vw;
+  overflow: hidden;
+}
+
+.for-images .services-list-items .services-list-item {
+  grid-row: 1 / -1;
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+}
+
+
+.for-content {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-grande);
+  width: 100%;
+}
+
+.for-content h3 {
+  width: 25%;
+  text-align: left;
+  z-index: 2;
+  font-family: "NeueHaasGroteskDisplayPro45Light";
+}
+
+.for-content .paragraph-right {
+  width: 25%;
+  text-align: left;
+  z-index: 2;
+}
+
+.paragraph-right {
+font-family: "KHTekaTrial-Light";
+font-size: 14px;
+text-transform: uppercase;
+line-height: 1.2;
+}

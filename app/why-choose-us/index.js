@@ -382,15 +382,330 @@ function HoverScene({ imageRef }) {
 }
 
 
+
+
+
+
+function AutoTextReveal({ children, delay = 0 }) {
+  const containerRef = useRef();
+  const linesRef = useRef([]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const tag = el.firstElementChild?.tagName?.toLowerCase();
+    const isParagraph = tag === 'p' || tag === 'div';
+
+    let split;
+    if (isParagraph) {
+      split = new SplitText(el, { type: 'lines' });
+      const wrapped = split.lines.map(line => {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('oh');
+        wrapper.style.overflow = 'hidden';
+        line.parentNode.insertBefore(wrapper, line);
+        wrapper.appendChild(line);
+        return line;
+      });
+      linesRef.current = wrapped;
+
+      gsap.set(wrapped, { y: '150%' });
+      gsap.to(wrapped, {
+        y: '0%',
+        duration: 1.2,
+        ease: 'expo.out',
+        stagger: 0.1,
+        delay, 
+      });
+    } else {
+      gsap.set(el, { y: 50, opacity: 0 });
+      gsap.to(el, {
+        y: 0,
+        opacity: 1,
+        duration: 1.2,
+        ease: 'expo.out',
+        delay,
+      });
+    }
+
+    return () => {
+      if (split) split.revert();
+    };
+  }, [delay]);
+
+  return <div ref={containerRef}>{children}</div>;
+}
+const ServicesSection = () => {
+  const imageContainerRef = useRef(null);
+
+  useEffect(() => {
+    const photos = gsap.utils.toArray('.services-list-item.for-image:not(:first-child)');
+    const textItems = gsap.utils.toArray('.services-list-item.for-content');
+    const imageContainer = imageContainerRef.current;
+  
+    gsap.set(photos, { yPercent: 100 });
+    gsap.set(textItems, { yPercent: 100});
+  
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.services-container',
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: true,
+        pin: imageContainer,
+      },
+    });
+
+    tl.fromTo(
+      imageContainer,
+      { scale: 2 },
+      { scale: 1, duration: 1 }
+    );
+  
+   
+    tl.to(
+      photos,
+      {
+        yPercent: 0,
+        stagger: 0.3,
+        duration: 1,
+        ease: 'power3.out',
+      },
+      "<+0.5" 
+    );
+  
+    tl.to(
+      textItems,
+      {
+        yPercent: 0,
+
+        stagger: 0.3,
+        duration: 1,
+        ease: 'power3.out',
+      },
+      "<1" 
+    );
+  
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
+  
+  
+  const sectionRef = useRef(null);
+  const headingRefs = useRef([]);
+
+  useGSAP(
+    () => {
+      gsap.set(headingRefs.current, { opacity: 0 });
+    },
+    { scope: sectionRef }
+  );
+
+  useGSAP(
+    () => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              headingRefs.current.forEach((el) => {
+                if (!el) return;
+
+                gsap.set(el, { opacity: 0 });
+
+                const childSplit = new SplitText(el, {
+                  type: "lines",
+                  linesClass: "split-child",
+                });
+
+                new SplitText(el, {
+                  type: "lines",
+                  linesClass: "split-parent",
+                });
+
+                gsap.set(childSplit.lines, {
+                  yPercent: 100,
+                  opacity: 1,
+                });
+
+                gsap.to(childSplit.lines, {
+                  yPercent: 0,
+                  duration: 1.5,
+                  ease: "power4.out",
+                  stagger: 0.1,
+                  onStart: () => {
+                    gsap.set(el, { opacity: 1 });
+                  },
+                });
+              });
+              observer.disconnect();
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+
+      if (sectionRef.current) observer.observe(sectionRef.current);
+      return () => observer.disconnect();
+    },
+    { scope: sectionRef }
+  );
+
+
+  return (
+    <>
+      <div className="space">
+      <section ref={sectionRef} className="px-6 py-12 md:px-12">
+          <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
+            <span className="uppercase text-[#d2ff8c] font-neuehaas45">
+              All. <sup className="text-xs align-super">(16)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[0] = el)}>
+              — Invisalign <sup className="text-xs align-super">(2k)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[1] = el)}>
+              — Accelerated Treatment.{" "}
+              <sup className="text-xs align-super">(12)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[2] = el)}>
+              — Low-Dose Digital 3D Radiographs{" "}
+              <sup className="text-xs align-super">(15)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[3] = el)}>
+              Damon Braces. <sup className="text-xs align-super">(2k)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[4] = el)}>
+              — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[5] = el)}>
+              — 3D Printing. <sup className="text-xs align-super">(8)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[6] = el)}>
+              — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
+            </span>
+          </div>
+
+
+        </section>
+      </div>
+      
+      <div className="section-sticky">
+
+        <div className="services-container">
+          <div className="services-list ">
+            <div className="services-list-items">
+            <div className="services-list-item for-content">
+  <h3>Cone Beam CT Scan</h3>
+  <p className="paragraph-right">
+  Certain treatment plans rely on precise growth timing to ensure stable, long-lasting results.
+Our 3D imaging technology lets us track the exact position and trajectory of traditionally
+problematic teeth—while also helping rule out certain pathologies. It’s changing the face of
+dentistry and orthodontics. Expect more advanced insights than what you’ll hear from most
+competitors.
+  </p>
+</div>
+
+              <div className="services-list-item for-content">
+                <h3>Comprehensive Root Canal Therapy Services</h3>
+                <p className="paragraph-right">
+    A bright, healthy-looking smile can make a world of difference in your everyday life.
+  </p>
+
+              </div>
+              <div className="services-list-item for-content">
+                <h3>Customized Orthodontic Solutions: Invisalign and Braces</h3>
+                <p className="paragraph-right">
+    A bright, healthy-looking smile can make a world of difference in your everyday life.
+  </p>
+      
+              </div>
+              <div className="services-list-item for-content">
+                <h3>Expert Wisdom Tooth Extraction Services</h3>
+                <p className="paragraph-right">
+    A bright, healthy-looking smile can make a world of difference in your everyday life.
+  </p>
+          
+              </div>
+              <div className="services-list-item for-content">
+                <h3>Teeth Whitening and Bleaching Treatments</h3>
+                <p className="paragraph-right">
+    A bright, healthy-looking smile can make a world of difference in your everyday life.
+  </p>
+          
+              </div>
+
+            </div>
+          </div>
+          <div className="services-list for-images" ref={imageContainerRef}>
+
+            <div className="services-list-items">
+            <picture className="services-list-item for-image">
+  <video
+    src="/videos/cbctscan.mp4"
+    muted
+    autoPlay
+    loop
+    playsInline
+  />
+</picture>
+              <picture className="services-list-item for-image">
+                <img src="/images/testdisplay.png" alt="" />
+              </picture>
+              <picture className="services-list-item for-image">
+                <img src="/images/iphonemockup.jpg" alt="" />
+              </picture>
+
+
+              <picture className="services-list-item for-image">
+                <img src="/images/boyflossing.jpeg" alt="" />
+              </picture>
+              <picture className="services-list-item for-image">
+                <img src="https://cdn.prod.website-files.com/670d6a504d44b05dc0cec021/672bec96a61218341740c719_theet-whitening-intro-1x1-p-1080.webp" alt="" />
+              </picture>
+       
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+    </>
+  );
+};
+
+
 export default function WhyChooseUs() {
   const imageRef = useRef()
 
 
   return (
     <>
-      <>
 
-      <section
+<Hero />
+<ServicesSection />
+<CardStack />
+<StackCards />
+        <div className="relative w-full h-screen">
+
+          <Canvas
+            className="absolute inset-0 z-10"
+            camera={{ position: [0, 6, 12], fov: 45 }}
+            style={{ pointerEvents: "none" }}
+          >
+            <color attach="background" args={["#ffffff"]} />
+            <ambientLight intensity={0.86} color={0xffffff} />
+            <directionalLight
+              position={[0, -10, -10]}
+              intensity={1}
+              color={0xffffff}
+            />
+            <RibbonAroundSphere />
+          </Canvas>
+
+          {/* <div className="absolute inset-0 z-20 flex items-center justify-center"></div> */}
+        </div>
+        <section
   style={{
     position: 'relative',
     display: 'flex',
@@ -437,45 +752,21 @@ export default function WhyChooseUs() {
     <HoverScene imageRef={imageRef} />
   </div>
 </section>
-{/* <Rays /> */}
+  
 
-
-
-        {/* <Hero /> */}
-        <div className="relative w-full h-screen">
-          {/* <Canvas
-            className="absolute inset-0 z-10"
-            camera={{ position: [0, 6, 12], fov: 45 }}
-            style={{ pointerEvents: "none" }}
-          >
-            <color attach="background" args={["#ffffff"]} />
-            <ambientLight intensity={0.86} color={0xffffff} />
-            <directionalLight
-              position={[0, -10, -10]}
-              intensity={1}
-              color={0xffffff}
-            />
-            <RibbonAroundSphere />
-          </Canvas> */}
-
-          <div className="absolute inset-0 z-20 flex items-center justify-center"></div>
-        </div>
-
-        <CardStack />
-        <StackCards />
         <TechSection />
 
         {/* <RepeatText /> */}
         <MoreThanSmiles />
         <About />
         <VennDiagram />
-        <Intro />
+        <Marquee />
         {/* <div className="h-[100vh] w-auto">
           <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
             <SimplePlane />
           </Curtains>
         </div> */}
-      </>
+{/* <Rays /> */}
     </>
   );
 }
@@ -642,157 +933,6 @@ const PixelImage = ({ imgSrc, containerRef }) => {
   );
 };
 
-const ParticleAnimation = () => {
-  const canvasRef = useRef(null);
-  const screenSettingsRef = useRef({});
-  const backPathRef = useRef(null);
-  const mainNodesRef = useRef([]);
-  const nodesRef = useRef([]);
-
-  const screenDetails = () => {
-    const s = Math.min(window.innerWidth, window.innerHeight);
-    const size = Math.min(s, 600);
-    const w = size, h = size;
-    return { w, h, cx: Math.floor(w / 2), cy: Math.floor(h / 2), s: 10 };
-  };
-
-  const rad = (degree) => degree * Math.PI / 180;
-
-  const MainNode = (startAngle, x, y, radius) => {
-    const timeout_pushNew = 4;
-    return {
-      x, y,
-      cx: 0, cy: 0,
-      a: startAngle,
-      r: radius,
-      s: 1,
-      pushNewTimeOut: timeout_pushNew,
-      move: function() {
-        this.a += this.s;
-        this.cx = this.x + this.r * Math.cos(rad(this.a));
-        this.cy = this.y + this.r * Math.sin(rad(this.a));
-
-        this.pushNewTimeOut -= 1;
-        if (this.pushNewTimeOut < 0) this.pushNewTimeOut = timeout_pushNew;
-      }
-    };
-  };
-
-  const Node = (x, y, cx, cy) => {
-    const time_maxZ = 50;
-    return {
-      x, y, z: 0,
-      s: Math.random() * .5 + .2,
-      ax: (x - cx) / cx,
-      ay: (y - cy) / cy,
-      move: function() {
-        this.z += this.s;
-        this.x += this.ax * this.z / 10;
-        this.y += this.ay * this.z / 10;
-      },
-      size: function() { return 2 + 8 * this.z / time_maxZ; },
-      alpha: function() { return 1 - this.z / time_maxZ; },
-      isDead: function() { return this.z > time_maxZ; }
-    };
-  };
-
-  const init = () => {
-    screenSettingsRef.current = screenDetails();
-    
-    const radius = screenSettingsRef.current.h * .22;
-    mainNodesRef.current = [
-      MainNode(220, screenSettingsRef.current.cx - 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .18),
-      MainNode(225, screenSettingsRef.current.cx - 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .20),
-      MainNode(230, screenSettingsRef.current.cx - 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .22),
-      MainNode(225, screenSettingsRef.current.cx - 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .24),
-      MainNode(220, screenSettingsRef.current.cx - 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .26),
-      MainNode(60, screenSettingsRef.current.cx + 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .18),
-      MainNode(65, screenSettingsRef.current.cx + 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .20),
-      MainNode(70, screenSettingsRef.current.cx + 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .22),
-      MainNode(65, screenSettingsRef.current.cx + 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .24),
-      MainNode(60, screenSettingsRef.current.cx + 50, screenSettingsRef.current.cy, screenSettingsRef.current.h * .26)
-    ];
-
-    backPathRef.current = new Path2D();
-    for (let i = 0; i < screenSettingsRef.current.w; i += screenSettingsRef.current.s) {
-      for (let j = 0; j < screenSettingsRef.current.h; j += screenSettingsRef.current.s) {
-        backPathRef.current.moveTo(i, j);
-        backPathRef.current.lineTo(i + 1, j + 1);
-      }
-    }
-  };
-
-  const draw = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const screenSettings = screenSettingsRef.current;
-    const mainNodes = mainNodesRef.current;
-    const nodes = nodesRef.current;
-    const backPath = backPathRef.current;
-
-    canvas.width = screenSettings.w;
-    canvas.height = screenSettings.h;
-
-    ctx.globalCompositeOperation = 'destination-over';
-    ctx.clearRect(0, 0, screenSettings.w, screenSettings.h);
-    ctx.strokeStyle = "#5577A2";
-    ctx.fillStyle = "#263E5C";
-
-
-    for (let i = 0; i < mainNodes.length; i++) {
-      mainNodes[i].move();
-      if (mainNodes[i].pushNewTimeOut === 0) {
-        const x = screenSettings.s * Math.floor(mainNodes[i].cx / screenSettings.s);
-        const y = screenSettings.s * Math.floor(mainNodes[i].cy / screenSettings.s);
-        nodes.push(Node(x, y, screenSettings.cx, screenSettings.cy));
-      }
-    }
-
-    for (let i = 0; i < nodes.length; i++) {
-      nodes[i].move();
-      ctx.beginPath();
-      ctx.fillStyle = `rgba(255, 255, 255, ${nodes[i].alpha()})`;
-      ctx.rect(nodes[i].x, nodes[i].y, nodes[i].size(), nodes[i].size());
-      ctx.fill();
-    }
-
-    const newNodes = [];
-    for (let i = 0; i < nodes.length; i++) {
-      if (!nodes[i].isDead()) {
-        newNodes.push(nodes[i]);
-      }
-    }
-    nodesRef.current = newNodes;
-
-    ctx.stroke(backPath);
-
-    requestAnimationFrame(draw);
-  };
-
-  useEffect(() => {
-    init();
-    const animationId = requestAnimationFrame(draw);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
-  }, []);
-
-  return (
-    <canvas 
-      ref={canvasRef} 
-      style={{ 
-        display: 'block',
-        margin: '0 auto',
-        backgroundColor: '#000'
-      }}
-    />
-  );
-};
 
 function RibbonAroundSphere() {
   const ribbonRef = useRef();
@@ -931,139 +1071,11 @@ function RibbonAroundSphere() {
 }
 
 
-const Intro = ({ texts = [], onFinished }) => {
-  const wrapperRef = useRef(null);
-  const circleTextRefs = useRef([]);
 
-  useEffect(() => {
-    const circleEls = circleTextRefs.current;
-    gsap.set(circleEls, { transformOrigin: "50% 50%" });
-
-    const introTL = gsap
-      .timeline()
-      .addLabel("start", 0)
-      .to(
-        circleEls,
-        {
-          duration: 30,
-          ease: "linear",
-          rotation: (i) => (i % 2 ? 360 : -360),
-          repeat: -1,
-          transformOrigin: "50% 50%",
-        },
-        "start"
-      );
-
-    return () => {
-      introTL.kill();
-    };
-  }, [onFinished]);
-
-  return (
-    <main ref={wrapperRef} className="relative w-full h-screen overflow-hidden">
-      <svg className="w-full h-full circles" viewBox="0 0 1400 1400">
-        <defs>
-          <path
-            id="circle-0"
-            d="M150,700.5A550.5,550.5 0 1 11251,700.5A550.5,550.5 0 1 1150,700.5"
-          />
-          <path
-            id="circle-1"
-            d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
-          />
-          <path
-            id="circle-2"
-            d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
-          />
-          <path
-            id="circle-3"
-            d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
-          />
-        </defs>
-
-        <path
-          d="M100,700.5A600,600 0 1 11301,700.5A600,600 0 1 1100,700.5"
-          fill="none"
-          stroke="black"
-          strokeWidth="1"
-        />
-        <path
-          d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
-          fill="none"
-          stroke="black"
-          strokeWidth="1"
-        />
-        <path
-          d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
-          fill="none"
-          stroke="black"
-          strokeWidth="1"
-        />
-        <path
-          d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
-          fill="none"
-          stroke="black"
-          strokeWidth="1"
-        />
-
-        <text
-          dy="-20"
-          ref={(el) => (circleTextRefs.current[1] = el)}
-          className="circles__text circles__text--1"
-        >
-          <textPath
-            xlinkHref="#circle-1"
-            textLength="2800"
-            lengthAdjust="spacing"
-          >
-            Low-dose&nbsp; 3D&nbsp; digital&nbsp; radiographs&nbsp;
-            Low-dose&nbsp; 3D&nbsp; digital&nbsp; radiographs&nbsp;
-          </textPath>
-        </text>
-        <text
-          dy="-20"
-          ref={(el) => (circleTextRefs.current[2] = el)}
-          className="circles__text circles__text--2"
-        >
-          <textPath xlinkHref="#circle-2" textLength="2000">
-            Accelerated&nbsp;&nbsp;&nbsp; Treatment&nbsp;&nbsp;&nbsp;Accelerated
-            &nbsp;&nbsp;&nbsp;Treatment&nbsp;&nbsp;&nbsp;
-          </textPath>
-        </text>
-        <text
-          dy="-20"
-          ref={(el) => (circleTextRefs.current[3] = el)}
-          className="circles__text circles__text--3"
-        >
-          <textPath xlinkHref="#circle-3" textLength="1341">
-            Invisalign &nbsp;&nbsp;&nbsp;Invisalign&nbsp;&nbsp;&nbsp;
-            Invisalign&nbsp;&nbsp;&nbsp; Invisalign&nbsp;&nbsp;&nbsp;
-          </textPath>
-        </text>
-      </svg>
-    </main>
-  );
-};
 function Hero() {
-  const overlayRef = useRef(null);
+
   const pathRef = useRef(null);
   const cardsectionRef = useRef(null);
-
-  useEffect(() => {
-
-    document.body.style.overflow = "hidden";
-
-
-    gsap.to(overlayRef.current, {
-      y: "-100%",
-      duration: 1.5,
-      ease: "power2.inOut",
-      onComplete: () => {
-
-        document.body.style.overflow = "auto";
-      },
-    });
-  }, []);
 
   // useEffect(() => {
   //   const path = pathRef.current;
@@ -1102,8 +1114,62 @@ function Hero() {
   // }, []);
 
   return (
-    <div className="border border-red-500 relative min-h-screen w-full bg-[#FAFAFA] text-black overflow-hidden">
-      <div ref={overlayRef} className="fixed inset-0 bg-blue-100 z-50"></div>
+    <div className=" relative min-h-screen w-full bg-[#FAFAFA] text-black">
+<div
+  style={{ width: "100vw", height: "100vh"}}
+>
+  <section
+    style={{
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "flex-start",
+      padding: "0 4rem",      
+      textAlign: "left",   
+    }}
+  >
+<div>
+  <AutoTextReveal>
+    <div
+      style={{
+        fontSize: "3.4rem",
+        lineHeight: 1,
+        fontFamily: "NeueHaasGroteskDisplayPro45Light",
+      }}
+    >
+      Orthodontics isn't just a <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>treatment</span>,
+    </div>
+  </AutoTextReveal>
+
+  <AutoTextReveal>
+    <div
+      style={{
+        fontSize: "3.4rem",
+        lineHeight: 1,
+        fontFamily: "NeueHaasGroteskDisplayPro45Light",
+      }}
+    >
+      it's a lasting <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>investment</span> in your
+    </div>
+  </AutoTextReveal>
+
+  <AutoTextReveal>
+    <div
+      style={{
+        fontSize: "3.4rem",
+        lineHeight: 1,
+        fontFamily: "NeueHaasGroteskDisplayPro45Light",
+      }}
+    >
+      <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>confidence</span>. Choose with care.
+    </div>
+  </AutoTextReveal>
+</div>
+
+
+  </section>
+</div>
 
       {/* <section
         ref={cardsectionRef}
@@ -1467,7 +1533,7 @@ const TechSection = () => {
   </div>
 
   <div className="w-1/2">
-  <ParticleAnimation />
+  {/* <ParticleAnimation /> */}
   </div>
 </div>
 
@@ -1671,10 +1737,139 @@ function StackCards() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+  const svgRef = useRef(null);
+  const hitAreaRef = useRef(null);
+  const [mPos, setMPos] = useState({ x: 50, y: 50 });
+  const dotsRef = useRef([]);
 
+  useEffect(() => {
+    const stage = svgRef.current;
+    const dots = [];
+    
+    // Create eyes
+    for (let x = 1; x <= 5; x++) {
+      for (let y = 1; y <= 5; y++) {
+        const eye = makeEye(x * 10, y * 10, stage);
+        dots.push(eye);
+      }
+    }
+    
+    dotsRef.current = dots;
+
+    return () => {
+      // Clean up GSAP animations
+      gsap.globalTimeline.getChildren().forEach(t => t.kill());
+    };
+  }, []);
+
+  useEffect(() => {
+    // Update all eyes when mouse position changes
+    dotsRef.current.forEach(t => redraw(t));
+  }, [mPos]);
+
+  const makeEye = (x, y, stage) => {
+    const ns = "http://www.w3.org/2000/svg";
+    const g = document.createElementNS(ns, "g");
+    const c1 = document.createElementNS(ns, "circle");
+    const c2 = document.createElementNS(ns, "circle");
+    
+    gsap.set([c1, c2], {
+      x: x,
+      y: y,
+      attr: {
+        r: (i) => [4.2, 2][i],
+        fill: (i) => ['#FF98FB','#1C7412'][i]
+      }
+    });
+    
+    g.appendChild(c1);
+    g.appendChild(c2);
+    stage.appendChild(g);
+    
+    return { g, c1, c2, x, y };
+  };
+
+  const redraw = (eye) => {
+    const { x, y, c2 } = eye;
+    const c2x = (x * 29 + mPos.x) / 30;
+    const c2y = (y * 29 + mPos.y) / 30;
+    gsap.to(c2, { x: c2x, y: c2y });
+  };
+
+
+  const handlePointerMove = (e) => {
+    const svg = svgRef.current;
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    
+    // Convert screen coordinates to SVG coordinates
+    const svgPt = pt.matrixTransform(svg.getScreenCTM().inverse());
+    setMPos({ x: svgPt.x, y: svgPt.y });
+  };
+
+  const handlePointerLeave = () => {
+    setMPos({ x: 50, y: 50 });
+  };
   return (
     <section ref={containerRef}>
       <section className="bg-[#FAFAFA]">
+      <div
+          ref={textRef}
+          className="mx-auto font-neuehaas45 mb-60 text-[1.6vw] max-w-[900px] leading-[1.3]"
+        >
+          Our doctors aren’t just orthodontists — they’ve gone the extra miles
+          (and years) to become true specialists. Dr. Gregg Frey holds lifetime board
+          certification, and Dr. Daniel Frey is wrapping his up this year — a level
+          fewer than 25% of orthodontists reach. When it comes to Invisalign- we
+          don’t just do it — we lead it. As the region’s top Diamond Plus
+          providers, we’ve treated thousands of cases and helped shape how clear
+          aligners are used today.
+          <br />
+          <br />
+          <span>TL;DR: You’re in very good hands.</span>
+          <div   style={{
+    color: "rgb(45, 45, 45)",
+    willChange: "transform",
+    transform: "translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(-28.3716deg) skew(0deg, 0deg)",
+    transformStyle: "preserve-3d"
+  }}>
+    
+    <svg xmlns="http://www.w3.org/2000/svg" width="10%" height="10%" viewBox="0 0 103.785 103.785"><g transform="translate(51.892 -28.764) rotate(45)"><g transform="matrix(-0.875, 0.485, -0.485, -0.875, 114.066, 73.387)" fill="none" stroke="currentColor" stroke-width="1"><ellipse cx="41.954" cy="41.954" rx="41.954" ry="41.954" stroke="none"></ellipse><ellipse cx="41.954" cy="41.954" rx="41.454" ry="41.454" fill="none"></ellipse></g><path d="M22.953,11.638A10.5,10.5,0,0,0,15.677.932C7.59-1.911,2.457,2.355,0,5.61" transform="matrix(-0.875, 0.485, -0.485, -0.875, 57.727, 61.933)" fill="none" stroke="currentColor" stroke-width="1"></path><ellipse cx="1.694" cy="1.694" rx="1.694" ry="1.694" transform="matrix(-0.875, 0.485, -0.485, -0.875, 53.153, 47.112)" fill="currentColor"></ellipse><ellipse cx="1.694" cy="1.694" rx="1.694" ry="1.694" transform="matrix(-0.875, 0.485, -0.485, -0.875, 31.697, 55.017)" fill="currentColor"></ellipse></g></svg></div>
+        </div>
+        <div style={{
+      width: '50%',
+      height: '50%',
+      margin: 0,
+      padding: 0,
+      overflow: 'hidden',
+      background: '#1C7412',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'relative'
+    }}>
+<svg
+  ref={svgRef}
+  viewBox="0 0 100 100"
+  preserveAspectRatio="xMidYMid meet"
+  style={{ width: 800, height: 800 }}
+/>
+
+      <div
+        ref={hitAreaRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+   
+        }}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={handlePointerLeave}
+      />
+    </div>
         <div className="blockcontainer">
           <p>
             <span></span>
@@ -1693,31 +1888,7 @@ function StackCards() {
         <div className="w-48 h-48 translate-x-1/3 -z-10">
           <Shape06 />
         </div>
-        <div
-          ref={textRef}
-          className="mx-auto font-neuehaas45 mb-60 text-[1.6vw] max-w-[900px] leading-[1.3]"
-        >
-          Our doctors aren’t just orthodontists — they’ve gone the extra miles
-          (and years) to become true specialists. Dr. Gregg holds lifetime board
-          certification, and Dr. Daniel is wrapping his up this year — a level
-          fewer than 25% of orthodontists reach. When it comes to Invisalign- we
-          don’t just do it — we lead it. As the region’s top Diamond Plus
-          providers, we’ve treated thousands of cases and helped shape how clear
-          aligners are used today.
-          <br />
-          <br />
-          <span>TL;DR: You’re in very good hands.</span>
-          <div   style={{
-    color: "rgb(45, 45, 45)",
-    willChange: "transform",
-    transform: "translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(-28.3716deg) skew(0deg, 0deg)",
-    transformStyle: "preserve-3d"
-  }}><svg xmlns="http://www.w3.org/2000/svg" width="10%" height="10%" viewBox="0 0 103.785 103.785"><g transform="translate(51.892 -28.764) rotate(45)"><g transform="matrix(-0.875, 0.485, -0.485, -0.875, 114.066, 73.387)" fill="none" stroke="currentColor" stroke-width="1"><ellipse cx="41.954" cy="41.954" rx="41.954" ry="41.954" stroke="none"></ellipse><ellipse cx="41.954" cy="41.954" rx="41.454" ry="41.454" fill="none"></ellipse></g><path d="M22.953,11.638A10.5,10.5,0,0,0,15.677.932C7.59-1.911,2.457,2.355,0,5.61" transform="matrix(-0.875, 0.485, -0.485, -0.875, 57.727, 61.933)" fill="none" stroke="currentColor" stroke-width="1"></path><ellipse cx="1.694" cy="1.694" rx="1.694" ry="1.694" transform="matrix(-0.875, 0.485, -0.485, -0.875, 53.153, 47.112)" fill="currentColor"></ellipse><ellipse cx="1.694" cy="1.694" rx="1.694" ry="1.694" transform="matrix(-0.875, 0.485, -0.485, -0.875, 31.697, 55.017)" fill="currentColor"></ellipse></g></svg></div>
-        </div>
-
-        {/* <div className="mb-10 text-[30px] max-w-[900px] leading-[1.3]">
-   
-          </div> */}
+     
         <div className="font-neuehaas45 min-h-screen text-[16px] leading-[1.2] px-10">
           {/* Block 1 */}
           <div className="w-full border-t border-black">
@@ -2619,6 +2790,119 @@ function GridLayout() {
   );
 }
 
+const Marquee = ({ texts = [], onFinished }) => {
+  const wrapperRef = useRef(null);
+  const circleTextRefs = useRef([]);
+
+  useEffect(() => {
+    const circleEls = circleTextRefs.current;
+    gsap.set(circleEls, { transformOrigin: "50% 50%" });
+
+    const introTL = gsap
+      .timeline()
+      .addLabel("start", 0)
+      .to(
+        circleEls,
+        {
+          duration: 30,
+          ease: "linear",
+          rotation: (i) => (i % 2 ? 360 : -360),
+          repeat: -1,
+          transformOrigin: "50% 50%",
+        },
+        "start"
+      );
+
+    return () => {
+      introTL.kill();
+    };
+  }, [onFinished]);
+
+  return (
+    <main ref={wrapperRef} className="relative w-full h-screen overflow-hidden">
+      <svg className="w-full h-full circles" viewBox="0 0 1400 1400">
+        <defs>
+          <path
+            id="circle-0"
+            d="M150,700.5A550.5,550.5 0 1 11251,700.5A550.5,550.5 0 1 1150,700.5"
+          />
+          <path
+            id="circle-1"
+            d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
+          />
+          <path
+            id="circle-2"
+            d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
+          />
+          <path
+            id="circle-3"
+            d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
+          />
+        </defs>
+
+        <path
+          d="M100,700.5A600,600 0 1 11301,700.5A600,600 0 1 1100,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[1] = el)}
+          className="circles__text circles__text--1"
+        >
+          <textPath
+            xlinkHref="#circle-1"
+            textLength="2800"
+            lengthAdjust="spacing"
+          >
+            Low-dose&nbsp; 3D&nbsp; digital&nbsp; radiographs&nbsp;
+            Low-dose&nbsp; 3D&nbsp; digital&nbsp; radiographs&nbsp;
+          </textPath>
+        </text>
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[2] = el)}
+          className="circles__text circles__text--2"
+        >
+          <textPath xlinkHref="#circle-2" textLength="2000">
+            Accelerated&nbsp;&nbsp;&nbsp; Treatment&nbsp;&nbsp;&nbsp;Accelerated
+            &nbsp;&nbsp;&nbsp;Treatment&nbsp;&nbsp;&nbsp;
+          </textPath>
+        </text>
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[3] = el)}
+          className="circles__text circles__text--3"
+        >
+          <textPath xlinkHref="#circle-3" textLength="1341">
+            Invisalign &nbsp;&nbsp;&nbsp;Invisalign&nbsp;&nbsp;&nbsp;
+            Invisalign&nbsp;&nbsp;&nbsp; Invisalign&nbsp;&nbsp;&nbsp;
+          </textPath>
+        </text>
+      </svg>
+    </main>
+  );
+};
 function Rays() {
   const numRays = 10;
   const rays = Array.from({ length: numRays });
@@ -2690,7 +2974,8 @@ function Rays() {
 }
 
 
-       {/* <div className="mt-10 w-full flex justify-center flex-row gap-6">
+
+{/* <div className="mt-10 w-full flex justify-center flex-row gap-6">
           <div className="w-[540px] ">
             <svg
               width="100%"
