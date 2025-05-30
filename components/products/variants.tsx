@@ -4,10 +4,10 @@ import Link from "next/link"
 import Image from "next/image"
 import { VariantsWithProductImagesTags } from "@/lib/infer-type"
 import { formatPrice } from "@/lib/format-price"
-import { useLayoutEffect, useRef, useEffect} from "react"
+import { useLayoutEffect, useRef, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -16,6 +16,7 @@ type ProductVariantsProps = {
 }
 
 export default function Variants({ variants }: ProductVariantsProps) {
+  const searchParams = useSearchParams()
   const row1 = variants.filter((v) => v.productID === 1);
   const row2 = variants.filter((v) => v.productID === 2);
   const row3 = variants.filter((v) => v.productID === 3 || v.productID === 4);
@@ -23,33 +24,54 @@ export default function Variants({ variants }: ProductVariantsProps) {
   
   const groupedVariants = [
     {
+      id: "devices",
       prefix: "Optimizing Treatment,",
       label: "Devices",
       variants: row4,
     },
     {
+      id: "floss",
       prefix: "Our #1 Floss Pick,",
       label: "Floss",
       variants: row2,
     },
     {
+      id: "whitening",
       prefix: "For a Brighter Smile,",
       label: "Whitening Gel",
       variants: row3,
     },
     {
+      id: "cases",
       prefix: "Backups",
       label: "Cases",
       variants: row1,
     },
   ];
+  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   
   const asideRef = useRef<HTMLDivElement>(null)
-  const sectionRef = useRef<HTMLDivElement>(null)
+  const sectionContainerRef = useRef<HTMLDivElement>(null)
   const filterContainerRef = useRef<HTMLDivElement>(null)
   
+
+  useEffect(() => {
+    const filter = searchParams?.get('filter');
+    if (filter) {
+      const sectionIndex = groupedVariants.findIndex(group => group.id === filter.toLowerCase());
+      if (sectionIndex !== -1 && sectionRefs.current[sectionIndex]) {
+        setTimeout(() => {
+          sectionRefs.current[sectionIndex]?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }, 100); 
+      }
+    }
+  }, [searchParams]);
+
   useLayoutEffect(() => {
-    if (!asideRef.current || !sectionRef.current || !filterContainerRef.current) return
+    if (!asideRef.current || !sectionContainerRef.current || !filterContainerRef.current) return
 
     const ctx = gsap.context(() => {
       const initialOffset = filterContainerRef.current?.offsetTop || 0
@@ -57,7 +79,7 @@ export default function Variants({ variants }: ProductVariantsProps) {
       ScrollTrigger.create({
         trigger: asideRef.current,
         start: `top ${32 + initialOffset}px`, 
-        end: () => `+=${sectionRef.current?.offsetHeight}`,
+        end: () => `+=${sectionContainerRef.current?.offsetHeight}`,
         onEnter: () => {
           gsap.to(filterContainerRef.current, {
             y: 0,
@@ -75,7 +97,6 @@ export default function Variants({ variants }: ProductVariantsProps) {
         pin: asideRef.current,
         pinSpacing: false,
       })
-
 
       gsap.set(filterContainerRef.current, { y: initialOffset })
     })
@@ -111,24 +132,50 @@ export default function Variants({ variants }: ProductVariantsProps) {
     }
   }, [])
 
-  return (
-    <div className=" grid grid-cols-12 gap-8 relative">
-  <aside ref={asideRef} className="col-span-3 -ml-2">
+  const handleFilterClick = (filterId: string) => {
+    const sectionIndex = groupedVariants.findIndex(group => group.id === filterId);
+    if (sectionIndex !== -1 && sectionRefs.current[sectionIndex]) {
+      sectionRefs.current[sectionIndex]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+      
+      window.history.replaceState({}, '', `?filter=${filterId}`);
+    }
+  };
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
-  <div 
-      ref={filterContainerRef}
-      className="pt-12 space-y-8 will-change-transform pl-2" 
-    >
+  return (
+    <div className="grid grid-cols-12 gap-8 relative">
+      <aside ref={asideRef} className="col-span-3 -ml-2">
+        <div 
+          ref={filterContainerRef}
+          className="pt-12 space-y-8 will-change-transform pl-2" 
+        >
           <div className="space-y-4">
             <h3 className="text-[12px] font-neueroman uppercase text-gray-500">Filters</h3>
       
             <div className="space-y-2">
               <h4 className="text-[10px] font-neuehaas45 uppercase text-gray-400">Range</h4>
-              {['DEVICES', 'FLOSS', 'WHITENING', 'INVISALIGN CASES', 'GIFT CARD'].map((range) => (
-                <button key={range} className="block text-left text-[11px] font-neuehaas45 text-black hover:underline">
-                  {range}
+              {groupedVariants.map((group) => (
+                <button 
+                  key={group.id}
+                  onClick={() => handleFilterClick(group.id)}
+                  className="block text-left text-[11px] font-neuehaas45 text-black hover:underline"
+                >
+                  {group.label.toUpperCase()}
                 </button>
               ))}
+              <button 
+                onClick={() => handleFilterClick('gift-card')}
+                className="block text-left text-[11px] font-neuehaas45 text-black hover:underline"
+              >
+                GIFT CARD
+              </button>
             </div>
       
             <div className="border-t pt-4 space-y-2">
@@ -139,15 +186,19 @@ export default function Variants({ variants }: ProductVariantsProps) {
         </div>
       </aside>
     
-      <section ref={sectionRef} className="col-span-9 space-y-8">
+      <section ref={sectionContainerRef} className="col-span-9 space-y-8">
         {groupedVariants.map((group, index) => (
-          <div key={index} className="space-y-4">
+        <div 
+        key={group.id}
+        ref={(el) => {
+          sectionRefs.current[index] = el;
+        }}
+        id={group.id}
+        className="space-y-4"
+      >
             <div className="text-[20px] leading-tight text-zinc-500 font-saolitalic tracking-tight">
               {group.prefix}
               <br />
-              {/* <span className="font-neuehaas45 text-[20px] text-zinc-900 ">
-                {group.label}
-              </span> */}
             </div>
     
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

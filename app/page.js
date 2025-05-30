@@ -28,7 +28,7 @@ import {
   useInView,
   useScroll,
   useTransform,
-  useMotionValueEvent
+  useMotionValueEvent,
 } from "framer-motion";
 
 import { Disclosure, Transition } from "@headlessui/react";
@@ -42,8 +42,15 @@ import { SplitText } from "gsap/SplitText";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import ChevronRightIcon from "./_components/ui/ChevronRightIcon";
 import * as OGL from "ogl";
-import { ScrollControls, useScroll as useThreeScroll,Scroll, Text,OrbitControls,useGLTF  } from "@react-three/drei";
-import { Canvas, useFrame, useThree , extend} from "@react-three/fiber";
+import {
+  ScrollControls,
+  useScroll as useThreeScroll,
+  Scroll,
+  Text,
+  OrbitControls,
+  useGLTF,
+} from "@react-three/drei";
+import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
@@ -76,7 +83,6 @@ const Marquee = () => {
   );
 };
 
-
 extend({ Water, Sky });
 
 function DoorModel() {
@@ -87,17 +93,19 @@ function DoorModel() {
   useEffect(() => {
     if (animations.length > 0) {
       mixer.current = new THREE.AnimationMixer(scene);
-      const openingAnimation = animations.find((anim) => anim.name === "Action");
-  
+      const openingAnimation = animations.find(
+        (anim) => anim.name === "Action"
+      );
+
       if (!openingAnimation) {
         return;
       }
-  
+
       action.current = mixer.current.clipAction(openingAnimation);
       action.current.clampWhenFinished = true;
       action.current.setLoop(THREE.LoopOnce);
       action.current.play();
-  
+
       const stopFrame = openingAnimation.duration * 0.9;
       const checkAnimation = () => {
         if (action.current.time >= stopFrame) {
@@ -106,21 +114,23 @@ function DoorModel() {
           requestAnimationFrame(checkAnimation);
         }
       };
-  
+
       requestAnimationFrame(checkAnimation);
     }
   }, [scene, animations]);
-  
 
-  
   useEffect(() => {
     const textureLoader = new THREE.TextureLoader();
-    const matcapTexture = textureLoader.load("../images/matcap-green-yellow-pink.png");
+    const matcapTexture = textureLoader.load(
+      "../images/matcap-green-yellow-pink.png"
+    );
 
     scene.traverse((child) => {
       if (child.isMesh) {
         child.material.map = null;
-        child.material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
+        child.material = new THREE.MeshMatcapMaterial({
+          matcap: matcapTexture,
+        });
         child.material.needsUpdate = true;
       }
     });
@@ -130,9 +140,16 @@ function DoorModel() {
     mixer.current?.update(delta);
   });
 
-  return <primitive ref={doorRef} object={scene} position={[0, -1, 0]}  rotation={[0, Math.PI, 0]} scale={7.25} />;
+  return (
+    <primitive
+      ref={doorRef}
+      object={scene}
+      position={[0, -1, 0]}
+      rotation={[0, Math.PI, 0]}
+      scale={7.25}
+    />
+  );
 }
-
 
 const OceanScene = () => {
   const { scene, gl, camera } = useThree();
@@ -140,11 +157,10 @@ const OceanScene = () => {
   const meshRef = useRef();
   useEffect(() => {
     camera.position.set(-10, 5, 30); //-x moves the right part of door back positive moves it forward
-    camera.lookAt(0, -5, 0); 
+    camera.lookAt(0, -5, 0);
   }, [camera]);
-  
-  useEffect(() => {
 
+  useEffect(() => {
     const waterNormals = new THREE.TextureLoader().load(
       "https://threejs.org/examples/textures/waternormals.jpg"
     );
@@ -159,14 +175,13 @@ const OceanScene = () => {
       sunDirection: new THREE.Vector3(),
       sunColor: 0xffffff,
       waterColor: 0x001e0f,
-      distortionScale: 3.7, 
+      distortionScale: 3.7,
       fog: scene.fog !== undefined,
     });
 
     water.rotation.x = -Math.PI / 2;
     scene.add(water);
     waterRef.current = water;
-
 
     const sky = new Sky();
     sky.scale.setScalar(10000);
@@ -182,7 +197,7 @@ const OceanScene = () => {
     const sun = new THREE.Vector3();
 
     const updateSun = () => {
-      const theta = Math.PI * (0.49 - 0.5); 
+      const theta = Math.PI * (0.49 - 0.5);
       const phi = 2 * Math.PI * (0.205 - 0.5);
 
       sun.x = Math.cos(phi);
@@ -224,9 +239,8 @@ const OceanScene = () => {
         minDistance={30.0}
         maxDistance={30.0}
       />
-           <DoorModel />
+      <DoorModel />
       <mesh ref={meshRef} position={[0, 10, 0]}>
-        
         {/* <boxGeometry args={[30, 30, 30]} /> */}
         <meshStandardMaterial roughness={0} color="white" />
       </mesh>
@@ -237,7 +251,7 @@ const OceanScene = () => {
 export default function LandingComponent() {
   return (
     <>
-    {/* <div style={{ height: "200vh", margin: 0 }}>
+      {/* <div style={{ height: "200vh", margin: 0 }}>
       <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh" }}>
       <Canvas>
       <ScrollControls pages={3} damping={0.1}>
@@ -246,336 +260,27 @@ export default function LandingComponent() {
     </Canvas>
       </div>
     </div> */}
-      <div style={{ overflowX: 'hidden' }}> 
-      <div class="MainContainer">
-        <div class="ParallaxContainer">
-          <Hero />
+      <div style={{ overflowX: "hidden" }}>
+        <div class="MainContainer">
+          <div class="ParallaxContainer">
+            <Hero />
+          </div>
+          <div class="StatsContainer">
+            <Stats />
+          </div>
         </div>
-        <div class="StatsContainer">
-          <Stats />
-        </div>
+        <ImageGrid />
+        <NewSection />
+        <Testimonials />
+        <LogoGrid />
+        <Locations />
+        <GiftCards />
       </div>
-      {/* <MarqueeSection /> */}
-
-      <ImageGrid />
-      <NewSection />
-      <Testimonials />
-      <LogoGrid />
-      <Locations />
-      <GiftCards />
-     </div>
     </>
   );
 }
 
 const Hero = () => {
-  // const containerRef = useRef(null);
-  // const div1Ref = useRef(null);
-  // const div2Ref = useRef(null);
-  // const div3Ref = useRef(null);
-  // const div4Ref = useRef(null);
-  // const listItemsRef = useRef(null);
-
-  // useEffect(() => {
-  //   gsap.set(div1Ref.current, { x: -100, y: -100 });
-  //   gsap.set(div2Ref.current, { x: 100, y: -100 });
-  //   gsap.set(div3Ref.current, { x: -100, y: 100 });
-  //   gsap.set(div4Ref.current, { x: 100, y: 100 });
-  //   gsap.to(div1Ref.current, {
-  //     x: 0,
-  //     y: 0,
-  //     scrollTrigger: {
-  //       trigger: containerRef.current,
-  //       start: "top bottom",
-  //       end: "center center",
-  //       scrub: true,
-  //     },
-  //   });
-
-  //   gsap.to(div2Ref.current, {
-  //     x: 0,
-  //     y: 0,
-  //     scrollTrigger: {
-  //       trigger: containerRef.current,
-  //       start: "top bottom",
-  //       end: "center center",
-  //       scrub: true,
-  //     },
-  //   });
-
-  //   gsap.to(div3Ref.current, {
-  //     x: 0,
-  //     y: 0,
-  //     scrollTrigger: {
-  //       trigger: containerRef.current,
-  //       start: "top bottom",
-  //       end: "center center",
-  //       scrub: true,
-  //     },
-  //   });
-  //   gsap.to(div4Ref.current, {
-  //     x: 0,
-  //     y: 0,
-  //     scrollTrigger: {
-  //       trigger: containerRef.current,
-  //       start: "top bottom",
-  //       end: "center center",
-  //       scrub: true,
-  //     },
-  //   });
-  // }, []);
-
-  // const heroContentRef = useRef(null);
-  // const bookButtonRef = useRef(null);
-
-  // function animateHeroContent() {
-  //   if (!heroContentRef.current) return;
-  //   const lines = heroContentRef.current.querySelectorAll(".hero-content-line");
-  //   lines.forEach((line, index) => {
-  //     gsap.fromTo(
-  //       line,
-  //       { y: 20, opacity: 0 },
-  //       {
-  //         y: 0,
-  //         opacity: 1,
-  //         duration: 1.5,
-  //         ease: "power3.out",
-  //         delay: index * 0.2,
-  //       }
-  //     );
-  //   });
-  // }
-
-  // function animateBookButton() {
-  //   if (!bookButtonRef.current) return;
-
-  //   gsap.fromTo(
-  //     bookButtonRef.current,
-  //     { opacity: 0, y: 40 },
-  //     { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" }
-  //   );
-  // }
-
-  // useLayoutEffect(() => {
-  //   animateHeroContent();
-  //   animateBookButton();
-  // }, []);
-
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       entries.forEach((entry) => {
-  //         if (entry.isIntersecting) {
-  //           animateElement(entry.target);
-  //         }
-  //       });
-  //     },
-  //     { threshold: 0.5 }
-  //   );
-
-  //   if (heroContentRef.current) {
-  //     observer.observe(heroContentRef.current);
-  //   }
-
-  //   if (bookButtonRef.current) {
-  //     observer.observe(bookButtonRef.current);
-  //   }
-
-  //   return () => observer.disconnect();
-  // }, []);
-
-  // function animateElement(element) {
-  //   if (element === heroContentRef.current) {
-  //     const lines =
-  //       heroContentRef.current.querySelectorAll(".hero-content-line");
-  //     lines.forEach((line, index) => {
-  //       gsap.fromTo(
-  //         line,
-  //         { y: 64, opacity: 0 },
-  //         {
-  //           y: 0,
-  //           opacity: 1,
-  //           duration: 1,
-  //           ease: "power3.out",
-  //           delay: index * 0.2,
-  //         }
-  //       );
-  //     });
-  //   } else if (element === bookButtonRef.current) {
-  //     const button = bookButtonRef.current.querySelector(".book-button");
-  //     const arrowIcon = bookButtonRef.current.querySelector(".arrow-icon");
-
-  //     gsap.fromTo(
-  //       button,
-  //       { opacity: 0, y: 20 },
-  //       { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
-  //     );
-
-  //     gsap.fromTo(
-  //       arrowIcon,
-  //       { scale: 0 },
-  //       { scale: 1, duration: 1, ease: "power3.out" }
-  //     );
-  //   }
-  // }
-
-  // const [isScaled, setIsScaled] = useState(false);
-  // const [showBookNow, setShowBookNow] = useState(false);
-
-  // const handleClick = () => {
-  //   setIsScaled(true);
-
-  //   setTimeout(() => {
-  //     setShowBookNow(true);
-  //   }, 3500);
-  // };
-
-  // const itemRefs = useRef([]);
-  // itemRefs.current = [];
-  // const setMultipleRefs = (element) => {
-  //   if (typeof listItemsRef === "function") {
-  //     listItemsRef(element);
-  //   } else if (listItemsRef) {
-  //     listItemsRef.current = element;
-  //   }
-
-  //   if (typeof addToRefs === "function") {
-  //     addToRefs(element);
-  //   } else if (addToRefs) {
-  //     addToRefs.current = element;
-  //   }
-  // };
-
-  // const addToRefs = (el) => {
-  //   if (el && !itemRefs.current.includes(el)) {
-  //     itemRefs.current.push(el);
-  //   }
-  // };
-
-  // const titleRef = useRef(null);
-
-  // useEffect(() => {
-  //   if (!titleRef.current) return;
-
-  //   const titleSpans = titleRef.current.querySelectorAll("h1 > span");
-  //   const titleSpansAfters = titleRef.current.querySelectorAll("h1 .after");
-
-  //   const animSpanFrom = {
-  //     "will-change": "opacity, transform",
-  //     opacity: 0,
-  //   };
-  //   const animSpanTo = {
-  //     duration: 0.62,
-  //     opacity: 1,
-  //     rotationX: 0,
-  //     yPercent: 0,
-  //     ease: "power1.inOut",
-  //     stagger: {
-  //       each: 0.1,
-  //     },
-  //   };
-
-  //   gsap
-  //     .timeline()
-  //     .fromTo(
-  //       titleSpans[0],
-  //       { ...animSpanFrom, rotationX: 90, yPercent: -50 },
-  //       animSpanTo
-  //     )
-  //     .fromTo(
-  //       titleSpans[1],
-  //       { ...animSpanFrom, rotationX: -90, yPercent: 50 },
-  //       animSpanTo,
-  //       "<"
-  //     )
-  //     .fromTo(
-  //       titleSpansAfters,
-  //       { width: "100%" },
-  //       { duration: 0.72, ease: "expo.inOut", width: "0%" },
-  //       "end"
-  //     );
-  // }, []);
-
-  // const marqueeRef = useRef(null);
-
-  // useEffect(() => {
-  //   if (!marqueeRef.current) return;
-
-  //   const marqueeSpans = marqueeRef.current.querySelectorAll(
-  //     ".marquee__inner > span"
-  //   );
-
-  //   marqueeSpans.forEach((span, index) => {
-  //     gsap.fromTo(
-  //       span,
-  //       {
-  //         "will-change": "opacity, transform",
-  //         opacity: 0,
-  //         x: -50,
-  //       },
-  //       {
-  //         duration: 0.62,
-  //         opacity: 1,
-  //         x: 0,
-  //         ease: "power1.inOut",
-  //         stagger: 0.1,
-  //         delay: index * 0.1,
-  //       }
-  //     );
-  //   });
-  // }, []);
-
-  // const paragraphRef = useRef(null);
-
-  // useEffect(() => {
-  //   const splitParent = new SplitText(paragraphRef.current, {
-  //     type: "lines",
-  //     linesClass: "lineParent",
-  //   });
-  //   const splitChild = new SplitText(paragraphRef.current, {
-  //     type: "lines",
-  //     linesClass: "lineChild",
-  //   });
-
-  //   const tl = gsap.timeline();
-
-  //   tl.from(".lineChild", {
-  //     yPercent: 100,
-  //     autoAlpha: 0,
-  //     delay: 0.5,
-  //     duration: 0.65,
-  //     stagger: 0.25,
-  //     ease: "back",
-  //   });
-
-  //   return () => {
-  //     splitParent.revert();
-  //     splitChild.revert();
-  //   };
-  // }, []);
-
-  const [time, setTime] = useState("");
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-
-      const options = {
-        timeZone: "America/New_York",
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      };
-      const easternTime = new Intl.DateTimeFormat("en-US", options).format(now);
-      setTime(`${easternTime}`);
-    };
-
-    updateTime();
-    const intervalId = setInterval(updateTime, 60000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
   useEffect(() => {
     const lines = document.querySelectorAll(".stagger-line");
 
@@ -660,9 +365,8 @@ const Hero = () => {
 
       renderer.setSize(containerWidth, containerHeight);
 
-
       let a1, a2;
-      var imageAspect = imgSize[1] / imgSize[0]; 
+      var imageAspect = imgSize[1] / imgSize[0];
       var containerAspect = containerHeight / containerWidth;
 
       if (containerAspect < imageAspect) {
@@ -672,7 +376,6 @@ const Hero = () => {
         a1 = imageAspect / containerAspect;
         a2 = 1;
       }
-
 
       program.uniforms.res.value = new OGL.Vec4(
         containerWidth,
@@ -896,7 +599,6 @@ const Hero = () => {
           />
         </div>
 
-
         <svg
           viewBox="0 0 96 1332"
           fill="none"
@@ -1034,9 +736,7 @@ const Hero = () => {
             </svg>
           </main>
           <div className="max-w-3xl text-[#1D64EF]">
-          <div className="blurred-circle">
-
-    </div>
+            <div className="blurred-circle"></div>
             <p className="uppercase text-[12px] font-semibold font-helvetica-neue-light tracking-widest">
               Vision
             </p>
@@ -1052,27 +752,6 @@ const Hero = () => {
   );
 };
 
-const MarqueeSection = () => {
-  return (
-    <section
-      className="bg-black rounded-tl-[40px] rounded-tr-[40px] font-neue-montreal text-white flex"
-      style={{
-        height: "60vh",
-      }}
-    >
-      <div className="line"></div>
-      <div className="marquee-container">
-        <div className="uppercase marqueed">
-          <span>Because every smile is unique ✿</span>
-          <span>Because every smile is unique ✿</span>
-          <span>Because every smile is unique ✿</span>
-        </div>
-      </div>
-      <div className="line"></div>
-    </section>
-  );
-};
-
 const Stats = () => {
   const colors = [
     ["#8ACBBA", "#E64627", "#AE74DC", "#2A286F"],
@@ -1084,25 +763,6 @@ const Stats = () => {
     // ["#7FCCB7", "#A1CCBF", "#B1CCBE", "#C2CDC0"],
     // ["#6DB29D", "#86AFA4", "#99B4A8", "#A7B2A7"],
   ];
-  // const textVariants = {
-  //   hidden: { opacity: 0 },
-  //   visible: {
-  //     opacity: 1,
-  //     transition: { duration: 0.6, ease: "easeInOut" },
-  //   },
-  // };
-
-  // const spanVariants = {
-  //   hidden: { opacity: 0, width: "0rem", originX: 0.5 },
-  //   visible: {
-  //     opacity: 1,
-  //     width: "6.5rem",
-  //     transition: {
-  //       duration: 1.2,
-  //       ease: [0.22, 1, 0.36, 1],
-  //     },
-  //   },
-  // };
 
   // const projects = [
   //   {
@@ -1430,221 +1090,11 @@ const Stats = () => {
           </div>
         </div>
       </section>
-      {/* <motion.div
-          className="w-layout-blockcontainer textimagecontainer"
-          initial="hidden"
-          animate="visible"
-          variants={textVariants}
-        >
-          <div className="text-images-wrapper">
-            <div className="text-images">
-              <h2 className="heading-2">
-                #1 Diamond and{" "}
-                <motion.div
-                  className="spanimage one"
-                  variants={spanVariants}
-                  style={{ display: "inline-block", overflow: "hidden" }}
-                ></motion.div>
-                Invisalign Providers in Lehigh Valley. We've treated the most
-                Invisalign cases{" "}
-                <motion.div
-                  className="spanimage two"
-                  variants={spanVariants}
-                  style={{ display: "inline-block", overflow: "hidden" }}
-                ></motion.div>
-                delivering straighter smiles in 12-16 months{" "}
-                <motion.div
-                  className="spanimage three"
-                  variants={spanVariants}
-                  style={{ display: "inline-block", overflow: "hidden" }}
-                ></motion.div>
-                without wires
-              </h2>
-            </div>
-          </div>
-        </motion.div> */}
-
-      {/* <div
-          style={{ marginTop: "8rem" }}
-          className="flex items-center justify-around big-numbers-wrapper"
-        >
-          <div
-            className="transition-all duration-500 ease-in-out big-numbers-card group"
-            onMouseEnter={() => handleMouseEnter(1)}
-            onMouseLeave={handleMouseLeave}
-          >
-            <div
-              className={`big-numbers text-5xl font-bold ${
-                hoveredCard && hoveredCard !== 1
-                  ? "text-gray-400"
-                  : "text-gray-900"
-              }`}
-            >
-              60+
-            </div>
-            <p
-              className={`text-size-medium font-neue-montreal ${
-                hoveredCard && hoveredCard !== 1
-                  ? "text-gray-400"
-                  : "text-gray-900"
-              }`}
-            >
-              Years of experience
-            </p>
-          </div>
-
-          <div
-            className="transition-all duration-500 ease-in-out big-numbers-card group"
-            onMouseEnter={() => handleMouseEnter(2)}
-            onMouseLeave={handleMouseLeave}
-          >
-            <div
-              className={`big-numbers text-5xl font-bold ${
-                hoveredCard === 2 ? "text-gray-900" : "text-gray-400"
-              }`}
-            >
-              25k+
-            </div>
-            <p
-              className={`text-size-medium font-neue-montreal ${
-                hoveredCard === 2 ? "text-gray-900" : "text-gray-400"
-              }`}
-            >
-              Satisfied patients
-            </p>
-          </div>
-
-          <div
-            className="transition-all duration-500 ease-in-out big-numbers-card group"
-            onMouseEnter={() => handleMouseEnter(3)}
-            onMouseLeave={handleMouseLeave}
-          >
-            <div
-              className={`big-numbers text-5xl font-bold ${
-                hoveredCard === 3 ? "text-gray-900" : "text-gray-400"
-              }`}
-            >
-              4+
-            </div>
-            <p
-              className={`text-size-medium font-neue-montreal ${
-                hoveredCard === 3 ? "text-gray-900" : "text-gray-400"
-              }`}
-            >
-              Locations
-            </p>
-          </div>
-        </div> */}
-
-      {/* <section className="px-6 py-20">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-12">
-              <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
-              <span className="block mt-2 text-6xl italic text-gray-700 font-cursive font-autumnchant">
-                best
-              </span>
-
-        
-            </div>
-          </div>
-        </section> */}
-
-      {/* <div className="hero-wrapper flex flex-col justify-between items-center w-full pt-[15vh] pb-16 relative">
-
-        <div className="w-layout-blockcontainer container mx-auto w-container max-w-[940px] sm:max-w-full lg:max-w-3xl">
-          <div className="relative flex flex-col items-center gap-4 text-center hero-header">
-            <div
-              className="heading opacity-0 transform translate-y-[10vh]"
-              style={{
-                transform: "translate3d(0, 10vh, 0) scale3d(1, 1, 1)",
-                transition: "all 0.5s",
-              }}
-            >
-            
-            </div>
-          </div>
-        </div>
-
-        <section className="relative flex items-center justify-center h-screen hero">
-          <div className="absolute inset-0 z-0 flex items-center justify-center hero-grid">
-            <img
-              src="../images/Hero-Background-Grid.svg"
-              alt="Hero Grid"
-              loading="lazy"
-              className="w-[320vw] max-w-[1000px]" 
-            />
-          </div>
-
-          <div className="relative z-20 flex items-center justify-center space-x-2 hero-interaction-wrapper">
-            <div className="hero-card bg-transparent z-30 rotate-[-4deg]">
-              <img
-                src="../images/freysmilepatient.jpg"
-                alt="Hero Image 1"
-                className="object-cover w-[45vh] h-[55vh]"
-                loading="lazy"
-              />
-            </div>
-            <div className="hero-card bg-transparent z-20 rotate-[-2deg]">
-              <img
-                src="../images/blueorange.png"
-                alt="Hero Image 2"
-                className="object-cover w-[45vh] h-[55vh]"
-                loading="lazy"
-              />
-            </div>
-            <div className="hero-card bg-transparent z-10 rotate-[2deg]">
-              <img
-                src="../images/gradientbg.jpeg"
-                alt="Hero Image 3"
-                className="object-cover w-[45vh] h-[55vh]"
-                loading="lazy"
-              />
-            </div>
-          </div>
-        </section>
-      </div> */}
     </section>
   );
 };
 const NewSection = () => {
-  //  const textContainerRef = useRef(null);
-  // const splitTextInstances = useRef([]);
-  // useEffect(() => {
-  //   CustomEase.create("ease_pop", "M0,0 C0,0.24 0.08,1 1,1");
-
-  //   const lines = textContainerRef.current.querySelectorAll("span.block");
-
-  //   lines.forEach((line) => {
-  //     const splitLine = new SplitText(line, { type: "words" });
-  //     splitTextInstances.current.push(splitLine);
-
-  //     gsap.fromTo(
-  //       splitLine.words,
-  //       { y: 50, opacity: 0 },
-  //       {
-  //         y: 0,
-  //         opacity: 1,
-  //         duration: 2,
-  //         ease: "power3.inOut",
-  //         stagger: 0.1,
-  //         scrollTrigger: {
-  //           trigger: line,
-  //           start: "top 85%",
-  //           end: "top 40%",
-  //           toggleActions: "play none none reset",
-  //           once: true,
-  //           markers: false,
-  //         },
-  //       }
-  //     );
-  //   });
-
-  //   return () => {
-  //     splitTextInstances.current.forEach((splitInstance) =>
-  //       splitInstance.revert()
-  //     );
-  //   };
-  // }, []);
+  const splitTextInstances = useRef([]);
 
   const linkRef = useRef(null);
 
@@ -1690,90 +1140,49 @@ const NewSection = () => {
             <h1 className="mb-4 text-5xl font-helvetica-neue-light md:text-6xl">
               A world of opportunity.
             </h1>
-       
 
-
-                 <div className="relative flex items-center justify-center mx-auto max-w-[80vw]">
-            <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
-            <div className="relative w-[110%] bg-[#CFF174] px-48 py-2 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
-                  <div className="py-2 font-neue-montreal text-center text-[18px] text-black">
+            <div className="relative flex items-center justify-center mx-auto max-w-[80vw]">
+              <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
+              <div className="relative w-[110%] bg-[#CFF174] px-48 py-2 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
+                <div className="py-2 font-neue-montreal text-center text-[18px] text-black">
                   <a
-                ref={linkRef}
-                href="/book-now"
-                data-tha
-                style={{
-                  display: "inline-block",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <span
-                  data-tha-span-1
-                  style={{
-                    fontSize: "1.25rem",
-                    fontFamily: "HelveticaNeue-Light",
-                    display: "inline-block",
-                    position: "relative",
-                  }}
-                >
-                  BOOK NOW
-                </span>
-                <span
-                  data-tha-span-2
-                  style={{
-                    fontSize: "1.25rem",
-                    fontFamily: "HelveticaNeue-Light",
-                    display: "inline-block",
-                    position: "absolute",
-                    top: "100%",
-                    left: "0",
-                  }}
-                >
-                  BOOK NOW
-                </span>
-              </a>
-
-                  </div>
+                    ref={linkRef}
+                    href="/book-now"
+                    data-tha
+                    style={{
+                      display: "inline-block",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <span
+                      data-tha-span-1
+                      style={{
+                        fontSize: "1.25rem",
+                        fontFamily: "HelveticaNeue-Light",
+                        display: "inline-block",
+                        position: "relative",
+                      }}
+                    >
+                      BOOK NOW
+                    </span>
+                    <span
+                      data-tha-span-2
+                      style={{
+                        fontSize: "1.25rem",
+                        fontFamily: "HelveticaNeue-Light",
+                        display: "inline-block",
+                        position: "absolute",
+                        top: "100%",
+                        left: "0",
+                      }}
+                    >
+                      BOOK NOW
+                    </span>
+                  </a>
                 </div>
-</div>
-{/*             
-            <div className="flex justify-center px-8 py-6 tracking-widest border border-black">
-              <a
-                ref={linkRef}
-                href="/book-now"
-                data-tha
-                style={{
-                  display: "inline-block",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <span
-                  data-tha-span-1
-                  style={{
-                    fontSize: "1.25rem",
-                    fontFamily: "HelveticaNeue-Light",
-                    display: "inline-block",
-                    position: "relative",
-                  }}
-                >
-                  BOOK NOW
-                </span>
-                <span
-                  data-tha-span-2
-                  style={{
-                    fontSize: "1.25rem",
-                    fontFamily: "HelveticaNeue-Light",
-                    display: "inline-block",
-                    position: "absolute",
-                    top: "100%",
-                    left: "0",
-                  }}
-                >
-                  BOOK NOW
-                </span>
-              </a>
-            </div> */}
+              </div>
+            </div>
           </div>
 
           {/*right*/}
@@ -1791,7 +1200,6 @@ const NewSection = () => {
                 </clipPath>
               </defs>
 
-
               <image
                 href="../images/nowbook.png"
                 width="200"
@@ -1800,7 +1208,6 @@ const NewSection = () => {
                 preserveAspectRatio="xMidYMid slice"
               />
 
-        
               <path
                 d="M50 50.5H50.5V50V49.5C23.2199 49.5 1.04241 27.6526 0.509799 0.5H199.491C198.957 27.6526 176.781 49.5 149.5 49.5V50V50.5H150C177.338 50.5 199.5 72.6619 199.5 100C199.5 125.033 180.918 145.726 156.795 149.038L156.791 150.028C180.949 153.556 199.5 174.363 199.5 199.5H0.5C0.5 174.363 19.0509 153.556 43.2094 150.028L43.2051 149.038C19.0823 145.726 0.5 125.033 0.5 100C0.5 72.6619 22.6619 50.5 50 50.5Z"
                 fill="none"
@@ -1808,456 +1215,47 @@ const NewSection = () => {
                 vectorEffect="non-scaling-stroke"
               />
             </svg>
-
-            <div>
-              <p className="mb-4"></p>
-              <div className="container">
-                <button
-                  className={`circle circle1 ${hover ? "hover" : ""}`}
-                  onMouseEnter={() => setHover(true)}
-                  onMouseLeave={() => setHover(false)}
-                >
-                  Button 1
-                </button>
-                <button
-                  className={`circle circle2 ${hover ? "hover" : ""}`}
-                  onMouseEnter={() => setHover(true)}
-                  onMouseLeave={() => setHover(false)}
-                >
-                  Button 2
-                </button>
-
-                <svg>
-                  <filter id="fusion">
-                    <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
-                    <feColorMatrix
-                      values="
-              1 0 0 0 0
-              0 1 0 0 0
-              0 0 1 0 0
-              0 0 0 20 -10
-            "
-                    />
-                  </filter>
-                </svg>
-
-                <style jsx>{`
-                  .container {
-                    position: relative;
-                    width: 800px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 20px;
-                    filter: url(#fusion);
-                    transition: gap 0.3s ease;
-                  }
-
-                  .circle {
-                    position: relative;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    border: none;
-                    color: black;
-                    font-size: 16px;
-                    cursor: pointer;
-                  }
-
-                  .circle.circle1 {
-                    min-width: 150px;
-                    height: 50px;
-                    border-radius: 25px;
-                    background: linear-gradient(90deg, #f00, #0ff);
-                    transition: transform 0.3s ease;
-                  }
-
-                  .circle.circle1::before {
-                    --offset: -20px;
-                    content: "";
-                    position: absolute;
-                    top: var(--offset);
-                    left: var(--offset);
-                    right: var(--offset);
-                    bottom: var(--offset);
-                    border-radius: 50px;
-                    z-index: -1;
-                    filter: blur(2px);
-                  }
-
-                  .circle.circle2 {
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    background: linear-gradient(90deg, #ffeb3b, #da00ff);
-                    transition: transform 0.3s ease;
-                  }
-
-                  .circle2.hover {
-                    transform: translateX(-20px);
-                  }
-
-                  .circle.circle2::before {
-                    --offset: -30px;
-                    content: "";
-                    position: absolute;
-                    top: var(--offset);
-                    left: var(--offset);
-                    right: var(--offset);
-                    bottom: var(--offset);
-                    border-radius: 50%;
-                    z-index: -1;
-                    filter: blur(30px);
-                  }
-
-                  svg {
-                    width: 0;
-                    height: 0;
-                  }
-                `}</style>
-              </div>
-
-            </div>
           </div>
         </div>
       </section>
-      {/* <section
-      className="bg-[#C4CED2] min-h-screen flex items-center justify-center text-white"
-    >
-          <div className="flex flex-col items-center justify-center ">
-        <section className="flex flex-col px-8 py-20 mx-auto space-y-12 lg:flex-row max-w-7xl lg:space-y-0 lg:space-x-8">
-          <div
-            className="relative flex flex-col items-start justify-center flex-1 space-y-8"
-            ref={textContainerRef}
-          >
-            <h1 className="">
-              <span className="text-[2.5rem] font-helvetica-neue-light block">
-                Your first <span>consultation</span>
-              </span>
-              <span className="text-[2.5rem] font-helvetica-neue-light block">
-                is{" "}
-                <span className="text-[2.5rem] font-autumnchant text-black px-4 py-2 inline-block ">
-                  always
-                </span>{" "}
-                on us
-              </span>
-            </h1>
-            <span className="block text-[1.5rem] font-helvetica-neue-light">
-              Find out which treatment plan suits you best.
-            </span>
-            
-         
-          </div>
-
-          <div className="relative flex items-center justify-center flex-1">
-            <div
-               ref={wrapperRef}
-              className="w-[360px] h-[660px]  rounded-full"
-            >
-              <img
-                ref={imgRef}
-                src="../images/mainsectionimage.jpg"
-                alt="Consultation"
-                className="object-cover w-full h-full rounded-full"
-              />
-            </div>
-          </div>
-
-          <div className="z-20 flex flex-col items-center justify-center space-y-6 lg:pl-8">
-            <button className="px-12 py-6 text-2xl text-black border border-black rounded-lg font-helvetica-neue-light">
-              Need more info? <br /> Take our quiz
-            </button>
-          </div>
-        </section>
-      </div>
-   
-    </section> */}
     </>
   );
 };
 
-// function Mask() {
-//   const useMousePosition = () => {
-//     const [mousePosition, setMousePosition] = useState({ x: null, y: null });
-//     const updateMousePosition = e => {
-//       setMousePosition({ x: e.clientX, y: e.clientY });
-//     };
-
-//     useEffect(() => {
-//       window.addEventListener("mousemove", updateMousePosition);
-//       return () => window.removeEventListener("mousemove", updateMousePosition);
-//     }, []);
-
-//     return mousePosition;
-//   };
-
-//   const [isHovered, setIsHovered] = useState(false);
-
-//   const { x, y } = useMousePosition();
-
-//   const size = isHovered ? 400 : 40;
-
-//   return (
-//     <main className="uniqueMain">
-//       <motion.div
-//         className="uniqueMask"
-//         animate={{
-//           WebkitMaskPosition: `${x - (size/2)}px ${y - (size/2)}px`,
-//           WebkitMaskSize: `${size}px`,
-//         }}
-//         transition={{ type: "tween", ease: "backOut", duration: 0.5}}
-//       >
-//         <p onMouseEnter={() => {setIsHovered(true)}} onMouseLeave={() => {setIsHovered(false)}}>
-//           INVISALIGN DAMON BRACES ADVANCED ORTHONDOTIC CARE
-//         </p>
-//       </motion.div>
-
-//       <div className="uniqueBody">
-//         <p> We are your  <span>go-to provider </span> for advanced and discerning orthodontic care.</p>
-//       </div>
-//     </main>
-//   )
-// }
-// SwiperCore.use([Keyboard, Mousewheel]);
-
-function GSAPAnimateScrollSections() {
-  // const listRef = useRef(null);
-
-  // useEffect(() => {
-  //   gsap.registerPlugin(ScrollTrigger);
-
-  //   const items = listRef.current.querySelectorAll(".list__item");
-
-  //   items.forEach((item) => {
-  //     const itemTitle = item.querySelector(".list__item__title");
-  //     const itemTitleOutline = item.querySelector(".list__item__titleOutline");
-  //     const itemImg = item.querySelector("img");
-
-  //     gsap
-  //       .timeline({
-  //         scrollTrigger: {
-  //           trigger: item,
-  //           start: "0% 75%",
-  //           end: "25% 50%",
-  //           scrub: 3,
-  //         },
-  //       })
-  //       .fromTo(
-  //         [itemTitle, itemTitleOutline],
-  //         { scale: 2, y: "100%" },
-  //         { scale: 1, y: "0%", ease: "power2.inOut" }
-  //       );
-
-  //     gsap
-  //       .timeline({
-  //         scrollTrigger: {
-  //           trigger: item,
-  //           start: "50% 100%",
-  //           end: "100% 50%",
-  //           scrub: 3,
-  //           onEnter: () =>
-  //             gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
-  //           onLeave: () =>
-  //             gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
-  //           onEnterBack: () =>
-  //             gsap.to(itemTitleOutline, { opacity: 1, duration: 0.1 }),
-  //           onLeaveBack: () =>
-  //             gsap.to(itemTitleOutline, { opacity: 0, duration: 0.1 }),
-  //         },
-  //       })
-  //       .fromTo(
-  //         itemImg,
-  //         { x: "60vw", y: "60vh", rotate: -30 },
-  //         {
-  //           x: "-60vw",
-  //           y: "-60vh",
-  //           rotate: 30,
-  //           ease: "none",
-  //         }
-  //       );
-  //   });
-  // }, []);
-
-  // const imageItems = [
-  //   {
-  //     imgSrc: "/images/patient25k.png",
-  //     text: "25k+ Patients",
-  //   },
-  //   {
-  //     imgSrc: "/images/lehighvalley.jpg",
-  //     text: "4 Bespoke Locations",
-  //   },
-  //   {
-  //     imgSrc: "/images/experiencedoctor.png",
-  //     text: "50+ Years Experience",
-  //   },
-  // ];
-  useEffect(() => {
-    const viewHeight = window.innerHeight;
-
-    document.querySelectorAll(".text-container").forEach((element) => {
-      const top = element.getBoundingClientRect().top;
-      const start = viewHeight - top;
-
-      const firstText = element.querySelector(".parallax-text:first-child");
-      const secondText = element.querySelector(".parallax-text:last-child");
-
-      gsap.to(firstText, {
-        scrollTrigger: {
-          trigger: element,
-          scrub: true,
-          start: start + "px bottom",
-          end: "bottom top",
-        },
-        x: "-54vw",
-        ease: "none",
-      });
-
-      gsap.to(secondText, {
-        scrollTrigger: {
-          trigger: element,
-          scrub: true,
-          start: start + "px bottom",
-          end: "bottom top",
-        },
-        x: "32vw",
-        ease: "none",
-      });
-    });
-  }, []);
-  const textItems = [
-    { title1: "50+ Years of ", title2: " Experience" },
-    { title1: "4 Bespoke Locations", title2: "4 Bespoke Locations" },
-    { title1: "25k Patients", title2: "25k Patients" },
-  ];
-  const imageStyles = [
-    { width: "32vw", height: "48vw" },
-    { width: "70vw", height: "auto" },
-    { width: "32vw", height: "48vw" },
-  ];
-
-  useEffect(() => {
-    gsap.defaults({ ease: "none" });
-
-    const main = gsap.timeline();
-
-    const sphereAnimation = gsap.timeline({
+const MobileLayout = () => {
+  useGSAP(() => {
+    let tl = gsap.timeline({
       scrollTrigger: {
-        trigger: ".home-main",
-        start: "top 0",
+        trigger: "#stats-section",
+        start: "top 50%",
         end: "bottom 100%",
         scrub: 1,
       },
+      defaults: { ease: "power1.in" },
     });
 
-    sphereAnimation
-      .to(".home-hero", {
-        opacity: "0",
-        duration: 2.4,
-      })
-
-      .to(
-        "#middle-circle",
-        {
-          scale: 1,
-          boxShadow: "rgb(255, 255, 255) 0px 3px 47px inset",
-          transform: "translate(-50%, -50%) translate3d(0px, 0px, 0px)",
-          duration: 2,
-          transformOrigin: "50% 50%",
-        },
-        0
-      )
-      .to(
-        "#first-circle",
-        {
-          transform: "translate(-50%, -50%) translate(-130%, 0px)",
-          opacity: "1",
-          filter: "blur(0px)",
-          duration: 4,
-          transformOrigin: "50% 50%",
-        },
-        3
-      )
-      .to(
-        "#last-circle",
-        {
-          transform: "translate(-50%, -50%) translate(130%, 0px)",
-          opacity: "1",
-          filter: "blur(0px)",
-          duration: 4,
-          transformOrigin: "50% 50%",
-        },
-        3
-      )
-      .to(
-        "#figure2",
-        {
-          scale: 1,
-          filter: "blur(0)",
-          opacity: "1",
-          duration: 4,
-        },
-        0
-      )
-      .to(".home-main__content-sphere-desc", {
+    tl.to(
+      ".middle-circle",
+      {
         scale: 1,
-        transform: "translate(0px, 0px)",
-        opacity: "1",
+        opacity: 1,
+        filter: "blur(0px)",
         duration: 4,
-      });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-      gsap.killTweensOf(
-        ".home-hero, .home-main__content-atom, #middle-circle, #first-circle, #last-circle, #figure2, .home-main__content-sphere-desc"
-      );
-    };
-  }, []);
-
-  const MobileLayout = () => {
-    useGSAP(() => {
-      let tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: "#stats-section",
-          start: "top 50%",
-          end: "bottom 100%",
-          scrub: 1,
-        },
-        defaults: { ease: "power1.in" },
-      });
-
-      tl.to(
-        ".middle-circle",
+      },
+      0
+    )
+      .to(
+        ".middle-circle-text",
         {
           scale: 1,
           opacity: 1,
           filter: "blur(0px)",
-          duration: 4,
+          duration: 6,
         },
         0
       )
-        .to(
-          ".middle-circle-text",
-          {
-            scale: 1,
-            opacity: 1,
-            filter: "blur(0px)",
-            duration: 6,
-          },
-          0
-        )
-        .to(
-          ".left-circle",
-          {
-            opacity: 1,
-            filter: "blur(0px)",
-            transform: "translate(0%, 0%)",
-            duration: 6,
-          },
-          3
-        );
-      tl.to(
-        ".right-circle",
+      .to(
+        ".left-circle",
         {
           opacity: 1,
           filter: "blur(0px)",
@@ -2265,339 +1263,182 @@ function GSAPAnimateScrollSections() {
           duration: 6,
         },
         3
-      ).to("#stats-heading", {
+      );
+    tl.to(
+      ".right-circle",
+      {
         opacity: 1,
+        filter: "blur(0px)",
         transform: "translate(0%, 0%)",
-        duration: 4,
-      });
+        duration: 6,
+      },
+      3
+    ).to("#stats-heading", {
+      opacity: 1,
+      transform: "translate(0%, 0%)",
+      duration: 4,
     });
-
-    return (
-      <section
-        id="stats-section"
-        className="relative block w-full h-[50vh] md:h-screen place-content-center place-items-center xl:hidden"
-      >
-        <div className="container flex items-center justify-center gap-2 px-8 py-4 mx-auto">
-          <figure className="translate-x-1/2 opacity-0 blur-sm left-circle">
-            <span className="block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square">
-              <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
-                60+ yrs
-              </p>
-            </span>
-            <p className="leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
-              experience
-            </p>
-          </figure>
-          <figure className="scale-0 opacity-0 blur-sm middle-circle">
-            <span className="block w-40 h-40 md:w-60 md:h-60 mb-4 rounded-full place-content-center place-items-center aspect-square shadow-[inset_0_0_20px_rgba(255,255,255,1)] md:shadow-[inset_0_0_30px_rgba(255,255,255,1)] middle-circle-text opacity-0 blur-sm">
-              <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
-                25,000
-              </p>
-            </span>
-            <p className="leading-4 tracking-wide text-center capitalize opacity-0 middle-circle-text blur-sm font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
-              patients
-            </p>
-          </figure>
-          <figure className="-translate-x-1/2 opacity-0 blur-sm right-circle">
-            <span className="block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square">
-              <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
-                4
-              </p>
-            </span>
-            <p className="leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
-              locations
-            </p>
-          </figure>
-        </div>
-        <div
-          id="stats-heading"
-          className="container w-full mx-auto translate-y-1/2 opacity-0 place-content-center"
-        >
-          <h2 className="w-full tracking-tighter text-center uppercase text-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] leading-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] font-agrandir-grandheavy text-zinc-100">
-            About
-          </h2>
-        </div>
-      </section>
-    );
-  };
+  });
 
   return (
-    <>
-      {/* <section className="relative hidden home-main xl:block">
-        <div className="home-main__content">
-          <div className="home-main__content-sphere">
-            <ul className="container mx-auto">
-              <li
-                className="font-helvetica-neue "
-                id="first-circle"
-                style={{ opacity: 0, filter: "blur(10px)" }}
-              >
-                <figure>
-                  <h3>60+</h3>
-                  <p className="mt-10 uppercase font-poppins ">
-                    years of experience
-                  </p>
-                </figure>
-              </li>
-              <li
-                className="font-bold font-neue-montreal"
-                id="middle-circle"
-                style={{ boxShadow: "inset 0 0 300px #fff" }}
-              >
-                <figure
-                  id="figure2"
-                  style={{ opacity: 0, filter: "blur(10px)" }}
-                >
-                  <h3 className="font-bold font-Lato">25k</h3>
-                  <p className="mt-10 tracking-wide uppercase font-Lato">
-                    patients
-                  </p>
-                </figure>
-              </li>
-              <li
-                className=""
-                id="last-circle"
-                style={{ opacity: 0, filter: "blur(10px)" }}
-              >
-                <figure>
-                  <h3 className="font-bold font-neue-montreal">4</h3>
-                  <p className="mt-10 tracking-wide font-helvetica-now-thin">
-                    unique locations
-                  </p>
-                </figure>
-              </li>
-            </ul>
-            <div
-              className="home-main__content-sphere-desc"
-              style={{ transform: "translate(0, 137px)", opacity: 0 }}
-            ></div>
-          </div>
-        </div>
-      </section> */}
-
-      <MobileLayout />
-    </>
-    // <section
-    //   ref={listRef}
-    //   className="flex flex-col items-center justify-center"
-    // >
-    //   {imageItems &&
-    //     imageItems.map((item, index) => (
-    //       <div
-    //         key={index}
-    //         className="relative flex items-end w-full h-screen pb-10 list__item"
-    //       >
-    //         <img
-    //           src={item.imgSrc}
-    //           alt={`Description ${index + 1}`}
-    //           className="absolute z-20 object-cover"
-    //           style={{
-    //             top: "50%",
-    //             left: "50%",
-    //             width: "33%",
-    //             height: "auto",
-    //             aspectRatio: "10 / 14",
-    //             transform: "translate(-50%, -50%)",
-    //           }}
-    //         />
-    //         <div
-    //           className="absolute z-10 font-bold transform -translate-x-1/2 -translate-y-1/2 list__item__title top-1/2 left-1/2 text-8xl"
-    //           style={{
-    //             top: "50%",
-    //             left: "50%",
-    //             transform: "translate(-50%, -50%)",
-    //             fontSize: "12vw",
-    //             fontFamily: '"Playfair Display"',
-    //             lineHeight: "80%",
-    //             color: "#221608",
-    //           }}
-    //         >
-    //           {item.text}
-    //         </div>
-    //         <div
-    //           className="absolute z-30 font-bold transform -translate-x-1/2 -translate-y-1/2 list__item__titleOutline top-1/2 left-1/2 text-8xl"
-    //           style={{
-    //             top: "50%",
-    //             left: "50%",
-    //             transform: "translate(-50%, -50%)",
-    //             fontSize: "12vw",
-    //             fontFamily: '"Playfair Display"',
-    //             lineHeight: "80%",
-    //             color: "transparent",
-    //             WebkitTextStroke: "2px #221608",
-    //           }}
-    //         >
-    //           {item.text}
-    //         </div>
-    //       </div>
-    //     ))}
-    // </section>
+    <section
+      id="stats-section"
+      className="relative block w-full h-[50vh] md:h-screen place-content-center place-items-center xl:hidden"
+    >
+      <div className="container flex items-center justify-center gap-2 px-8 py-4 mx-auto">
+        <figure className="translate-x-1/2 opacity-0 blur-sm left-circle">
+          <span className="block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square">
+            <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
+              60+ yrs
+            </p>
+          </span>
+          <p className="leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
+            experience
+          </p>
+        </figure>
+        <figure className="scale-0 opacity-0 blur-sm middle-circle">
+          <span className="block w-40 h-40 md:w-60 md:h-60 mb-4 rounded-full place-content-center place-items-center aspect-square shadow-[inset_0_0_20px_rgba(255,255,255,1)] md:shadow-[inset_0_0_30px_rgba(255,255,255,1)] middle-circle-text opacity-0 blur-sm">
+            <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
+              25,000
+            </p>
+          </span>
+          <p className="leading-4 tracking-wide text-center capitalize opacity-0 middle-circle-text blur-sm font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
+            patients
+          </p>
+        </figure>
+        <figure className="-translate-x-1/2 opacity-0 blur-sm right-circle">
+          <span className="block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square">
+            <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
+              4
+            </p>
+          </span>
+          <p className="leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
+            locations
+          </p>
+        </figure>
+      </div>
+      <div
+        id="stats-heading"
+        className="container w-full mx-auto translate-y-1/2 opacity-0 place-content-center"
+      >
+        <h2 className="w-full tracking-tighter text-center uppercase text-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] leading-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] font-agrandir-grandheavy text-zinc-100">
+          About
+        </h2>
+      </div>
+    </section>
   );
-}
+};
 
 const ImageGrid = () => {
-  // const bodyRef = useRef(null);
-  // const headerRef = useRef(null);
-  // const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  // const [isHovering, setIsHovering] = useState(false);
+  const bodyRef = useRef(null);
+  const headerRef = useRef(null);
 
-  // useEffect(() => {
-  //   const moveCursor = (e) => {
-  //     setCursorPos({ x: e.clientX, y: e.clientY });
-  //   };
+  useEffect(() => {
+    if (headerRef.current) {
+      const tl = gsap.timeline();
+      gsap.set(bodyRef.current, { autoAlpha: 1 });
 
-  //   if (isHovering) {
-  //     window.addEventListener("mousemove", moveCursor);
-  //   }
+      const pageHeading = headerRef.current.querySelector("h1");
+      const pageBody = headerRef.current.querySelector("p");
+      const separator = headerRef.current.querySelector("hr");
+      const imageCards = gsap.utils.toArray(".image-card");
 
-  //   return () => {
-  //     window.removeEventListener("mousemove", moveCursor);
-  //   };
-  // }, [isHovering]);
+      gsap.set(imageCards, { autoAlpha: 0 });
 
-  // useEffect(() => {
-  //   if (headerRef.current) {
-  //     const tl = gsap.timeline();
-  //     gsap.set(bodyRef.current, { autoAlpha: 1 });
+      const childLines = new SplitText(pageHeading, {
+        type: "lines",
+        linesClass: "heading-line",
+      });
+      const parentLines = new SplitText(pageHeading, {
+        type: "lines",
+        linesClass: "heading-line-wrapper",
+      });
 
-  //     const pageHeading = headerRef.current.querySelector("h1");
-  //     const pageBody = headerRef.current.querySelector("p");
-  //     const separator = headerRef.current.querySelector("hr");
-  //     const imageCards = gsap.utils.toArray(".image-card");
+      tl.from(childLines.lines, {
+        duration: 1,
+        y: 200,
+        stagger: 0.25,
+        delay: 1,
+        ease: "power4.out",
+      })
+        .from(
+          pageBody,
+          {
+            duration: 0.5,
+            opacity: 0,
+            x: -20,
+          },
+          "-=0.5"
+        )
+        .from(
+          separator,
+          {
+            duration: 2,
+            scale: 0,
+            ease: "expo.inOut",
+          },
+          "-=1.1"
+        )
+        .to(
+          imageCards,
+          {
+            duration: 0.75,
+            autoAlpha: 1,
+            y: -50,
+            stagger: 0.5,
+            ease: "power4.out",
+          },
+          "-=0.75"
+        );
 
-  //     gsap.set(imageCards, { autoAlpha: 0 });
+      const scroll = new LocomotiveScroll({
+        el: bodyRef.current,
+        smooth: true,
+      });
 
-  //     const childLines = new SplitText(pageHeading, {
-  //       type: "lines",
-  //       linesClass: "heading-line",
-  //     });
-  //     const parentLines = new SplitText(pageHeading, {
-  //       type: "lines",
-  //       linesClass: "heading-line-wrapper",
-  //     });
+      setTimeout(() => {
+        scroll.update();
+      }, 1000);
+    }
+  }, []);
 
-  //     tl.from(childLines.lines, {
-  //       duration: 1,
-  //       y: 200,
-  //       stagger: 0.25,
-  //       delay: 1,
-  //       ease: "power4.out",
-  //     })
-  //       .from(
-  //         pageBody,
-  //         {
-  //           duration: 0.5,
-  //           opacity: 0,
-  //           x: -20,
-  //         },
-  //         "-=0.5"
-  //       )
-  //       .from(
-  //         separator,
-  //         {
-  //           duration: 2,
-  //           scale: 0,
-  //           ease: "expo.inOut",
-  //         },
-  //         "-=1.1"
-  //       )
-  //       .to(
-  //         imageCards,
-  //         {
-  //           duration: 0.75,
-  //           autoAlpha: 1,
-  //           y: -50,
-  //           stagger: 0.5,
-  //           ease: "power4.out",
-  //         },
-  //         "-=0.75"
-  //       );
+  const images = [
+    {
+      title: "Top 1% of providers",
+      src: "../images/mountain.png",
+      className: "image-portrait",
 
-  // const scroll = new LocomotiveScroll({
-  //   el: bodyRef.current,
-  //   smooth: true,
-  // });
+      url: "/invisalign",
+    },
+    {
+      title: "Faster treatment times with fewer appointments",
+      src: "../images/mountain.png",
+      className: "image-landscape",
 
-  //     setTimeout(() => {
-  //       scroll.update();
-  //     }, 1000);
-  //   }
-  // }, []);
+      url: "/braces",
+    },
+    {
+      title: "Pioneering the most comfortable appliances since 2005",
+      src: "../images/mountain.png",
+      className: "image-landscape",
 
-  // const images = [
-  //   {
-  //     title: "Top 1% of providers",
-  //     src: "../images/invis.png",
-  //     className: "image-portrait",
+      url: "/why-choose-us",
+    },
+  ];
 
-  //     url: "/invisalign",
-  //   },
-  //   {
-  //     title: "Faster treatment times with fewer appointments",
-  //     src: "../images/damon1.png",
-  //     className: "image-landscape",
 
-  //     url: "/braces",
-  //   },
-  //   {
-  //     title: "Pioneering the most comfortable appliances since 2005",
-  //     src: "../images/mountain.png",
-  //     className: "image-landscape",
+  const sectionRef = useRef(null);
+  const [isInView, setIsInView] = useState(true);
 
-  //     url: "/why-choose-us",
-  //   },
-  // ];
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.3 }
+    );
 
-  // const sections = [
-  //   {
-  //     id: 1,
-  //     image: "https://picsum.photos/600/400?random=1",
-  //     title: "Small Section",
-  //     description: "This is a smaller section",
-  //     bgColor: "bg-orange-600",
-  //     colSpan: 1,
-  //     rowSpan: 1, // Small section in the first column
-  //   },
-  //   {
-  //     id: 2,
-  //     image: "https://picsum.photos/600/400?random=2",
-  //     title: "Large Section",
-  //     description: "Expressing creativity by breaking the mold",
-  //     bgColor: "bg-gray-200",
-  //     colSpan: 1,
-  //     rowSpan: 2, // Large section in the first column
-  //   },
-  //   {
-  //     id: 3,
-  //     image: "https://picsum.photos/600/400?random=3",
-  //     title: "Section 3",
-  //     description: "A brief description for section 3",
-  //     bgColor: "bg-white",
-  //     colSpan: 1,
-  //     rowSpan: 1, // First section in the second column
-  //   },
-  //   {
-  //     id: 4,
-  //     image: "https://picsum.photos/600/400?random=4",
-  //     title: "Section 4",
-  //     description: "Another brief description",
-  //     bgColor: "bg-blue-600",
-  //     colSpan: 1,
-  //     rowSpan: 1, // Second section in the second column
-  //   },
-  // ];
-  // const sectionRef = useRef(null);
-  // const [isInView, setIsInView] = useState(true);
-
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     ([entry]) => setIsInView(entry.isIntersecting),
-  //     { threshold: 0.3 }
-  //   );
-
-  //   if (sectionRef.current) observer.observe(sectionRef.current);
-  //   return () => observer.disconnect();
-  // }, []);
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const createItems = () => {
     const elements = document.querySelectorAll(".gtext");
@@ -2653,119 +1494,38 @@ const ImageGrid = () => {
           </h1>
         </div>
 
-        {/* <div className="flex items-start justify-between pb-6 border-b">
-        <h1 className="text-[160px] md:text-[200px] leading-none text-gray-900">
-EXPERTISE
-        </h1>
-        <span className="text-lg text-gray-500 font-neue-montreal">( 03 )</span>
-      </div> */}
-      </div>
-      <div className="bg-[#E7E8EA] grid grid-cols-2 h-screen gap-4 p-4">
-        {/* Column 1 */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="relative group rounded-[60px] bg-[#B2E7EB]">
-            <img
-              src="../images/hand.jpeg"
-              alt="Left Sub-Column Image"
-              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-200 group-hover:-translate-y-20 pointer-events-none"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 flex flex-col justify-end p-4 text-white transition-opacity duration-500 opacity-0 pointer-events-none group-hover:opacity-100">
-              <h2 className="text-2xl font-neue-montreal">Clear Aligners</h2>
-              <p className="text-lg font-neue-montreal">Invisalign</p>
+        <section className="bg-[#FBFBFB]">
+          <div>
+            <div
+              className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
+              ref={bodyRef}
+            >
+              <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
+                {images.map((image, index) => (
+                  <a
+                    key={index}
+                    href={image.url}
+                    className={`group image-card relative flex items-center justify-center mb-20 ${
+                      image.className === "image-portrait"
+                        ? "mx-4 w-[27vw] h-[37vw]"
+                        : "mx-4 w-[40vw] h-[27vw]"
+                    }`}
+                  >
+                    <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
+                      {image.title}
+                    </div>
+                    <img
+                      src={image.src}
+                      className="block object-cover w-full h-full"
+                    />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
-
-          <div className="relative group  rounded-[60px] bg-[#FFE0DB]">
-            <img
-              src="../images/mainsectionimage.jpg"
-              alt="Right Sub-Column Image"
-              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-200 group-hover:-translate-y-10 pointer-events-none"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 flex flex-col justify-end p-4 text-white transition-opacity duration-500 opacity-0 pointer-events-none group-hover:opacity-100">
-              <h2 className="text-2xl font-neue-montreal">Braces</h2>
-              <p className="text-lg font-neue-montreal">Damon Ultima</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Column 2 */}
-        <div className="flex flex-col gap-4">
-          {/* Top */}
-          <div className="h-1/3 bg-[#EFFD47] rounded-[60px] relative flex items-center justify-center">
-            <div className="flex flex-col">
-              <h2 className="text-[4rem] font-neue-montreal">What we do</h2>
-              <span className="mt-2 text-6xl italic text-gray-700 font-cursive font-autumnchant">
-                best
-              </span>
-            </div>
-          </div>
-
-          {/* Bottom */}
-          <div className="flex-grow relative group rounded-[60px] bg-[#F2BD4A]">
-            <img
-              src="../images/handbackground.png"
-              alt="Bottom Image Column 2"
-              className="absolute inset-0 w-full h-full object-cover rounded-[60px] transition-transform duration-500 group-hover:scale-75 delay-500 group-hover:-translate-y-10 pointer-events-none"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 flex flex-col justify-end p-4 text-white transition-opacity duration-500 opacity-0 pointer-events-none group-hover:opacity-100">
-              <h2 className="text-2xl font-neue-montreal">
-                Advanced Technology
-              </h2>
-              <p className="text-lg font-neue-montreal">
-                3D i-Cat Imaging, Digital Scans
-              </p>
-            </div>
-          </div>
-        </div>
+        </section>
       </div>
     </div>
-
-    // <section className="bg-[#FBFBFB]">
-    //   <div>
-    //     <div
-    //       className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
-    //       ref={bodyRef}
-    //     >
-    //       <div
-    //         className={`custom-cursor2 ${isHovering ? "rotate" : ""}`}
-    //         style={{
-    //           left: `${cursorPos.x}px`,
-    //           top: `${cursorPos.y}px`,
-    //           opacity: isHovering ? 1 : 0,
-    //         }}
-    //       >
-    //         <p>CHECK </p>
-    //         <p>IT OUT</p>
-    //       </div>
-    //       <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
-    //         {images.map((image, index) => (
-    //           <a
-    //             key={index}
-    //             href={image.url}
-    //             className={`group image-card relative flex items-center justify-center mb-20 ${
-    //               image.className === "image-portrait"
-    //                 ? "mx-4 w-[27vw] h-[37vw]"
-    //                 : "mx-4 w-[40vw] h-[27vw]"
-    //             }`}
-    //             onMouseEnter={() => setIsHovering(true)}
-    //             onMouseLeave={() => setIsHovering(false)}
-    //           >
-    //             <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
-    //               {image.title}
-    //             </div>
-    //             <img
-    //               src={image.src}
-    //               className="block object-cover w-full h-full"
-    //             />
-    //           </a>
-    //         ))}
-    //       </div>
-    //     </div>
-    //   </div>
-    // </section>
   );
 };
 
@@ -2869,7 +1629,7 @@ const LogoGrid = () => {
           restitution: 0.3, // reduce bounces
           friction: 0.1, //
 
-          density: 0.02, // helps with
+          density: 0.02,
           collisionFilter: {
             category: 0x0003,
             mask: 0x0003 | 0x0001,
@@ -2963,7 +1723,6 @@ const LogoGrid = () => {
       let wallThickness = 50;
 
       let walls = [
- 
         Bodies.rectangle(
           boxX,
           boxY - boxHeight / 2 - wallThickness / 2,
@@ -2974,7 +1733,6 @@ const LogoGrid = () => {
             render: { fillStyle: "transparent" },
           }
         ),
-
 
         Bodies.rectangle(boxX, boxY + boxHeight / 2, boxWidth, wallThickness, {
           isStatic: true,
@@ -3094,192 +1852,44 @@ const LogoGrid = () => {
     </div>
   );
 };
-const BulgePlane = ({ textureUrl, text, scrollVelocity, index, position }) => {
-  const meshRef = useRef();
-  const texture = useMemo(() => new THREE.TextureLoader().load(textureUrl), [textureUrl]);
-
-  const uniforms = useMemo(() => ({
-    uTexture: { value: texture },
-    uScrollVelocity: { value: 0.0 },
-  }), [texture]);
-
-  const vertexShader = `
-    varying vec2 vUv;
-    uniform float uScrollVelocity;
-
-    void main() {
-      vUv = uv;
-      vec3 transformed = position;
-      float wave = sin(transformed.x * 1.2) * 0.5; 
-
-      transformed.y += wave * uScrollVelocity * 0.2; 
-
-      float t = (vUv.y - 0.5) * 2.0;
-      float distortion = t * t * 0.9 * uScrollVelocity;
-      transformed.x += distortion;
-
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
-    }
-  `;
-
-  const fragmentShader = `
-    varying vec2 vUv;
-    uniform sampler2D uTexture;
-    void main() {
-      gl_FragColor = texture2D(uTexture, vUv);
-    }
-  `;
-
-
-  const dampedVelocity = useRef(0);
-  useFrame((_, delta) => {
-    if (meshRef.current) {
-
-      dampedVelocity.current += (scrollVelocity - dampedVelocity.current) * delta * 5; // Adjust damping factor
-      meshRef.current.material.uniforms.uScrollVelocity.value = dampedVelocity.current;
-    }
-  });
-
-  return (
-    <group position={position}>
-      <Text
-        position={[0, 0, 0.01]}
-        fontSize={0.14}
-        color="black"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={3.6}
-        textAlign="left"
-      >
-        {text}
-      </Text>
-      <mesh ref={meshRef}>
-        <planeGeometry args={[4.2, 5, 64, 64]} />
-        <shaderMaterial
-          vertexShader={vertexShader}
-          fragmentShader={fragmentShader}
-          uniforms={uniforms}
-        />
-      </mesh>
-    </group>
-  );
-};
-
-const Carousel = ({ items }) => {
-  const { viewport } = useThree();
-  const scroll = useThreeScroll();
-  
-  const [velocity, setVelocity] = useState(0);
-
-  const lastOffset = useRef(0);
-  const velocityRef = useRef(0);
-
-  useFrame((_, delta) => {
-
-    const currentOffset = scroll.offset;
-
-
-    const offsetDelta = currentOffset - lastOffset.current;
-    lastOffset.current = currentOffset;
-    const newVelocity = offsetDelta * 200;
-
-    velocityRef.current += (newVelocity - velocityRef.current) * delta * 10;
-
-
-    setVelocity(velocityRef.current);
-  });
-
-  return (
-    <>
-      {items.map((item, index) => (
-        <BulgePlane
-          key={index}
-          textureUrl={item.textureUrl}
-          text={item.text}
-          scrollVelocity={velocity}
-          index={index}
-          position={[(index + 0.5) * viewport.width * 0.32 - viewport.width * 0.5, 0, 0]}
-        />
-      ))}
-    </>
-  );
-};
-
-
-const WebGLCarousel = () => {
-  const items = [  { textureUrl: '../images/beigegradient.png', text: "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!" },
-    { textureUrl: '../images/buttongradient.png', text: "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!" },
-    { textureUrl: '../images/background_min.png', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
-    { textureUrl: '../images/radialgradient.png', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
-    { textureUrl: '../images/beigegradient.png', text: "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!" },
-    { textureUrl: '../images/buttongradient.png', text: "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!" },
-    { textureUrl: '../images/gradient2.jpeg', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
-    { textureUrl: '../images/radialgradient.png', text: "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!" },
-  ];
-
-  return (
-<div  className="scroll-container">
-<Canvas style={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
-    <ScrollControls horizontal pages={Math.max(items.length * 0.85, 1)}>
-      <Scroll>
-        <Carousel items={items} />
-      </Scroll>
-    </ScrollControls>
-  </Canvas>
-</div>
-
-  );
-};
 
 const Testimonials = ({ textureUrl, position }) => {
-
   const carouselItems = [
     {
       type: "image",
       src: "../images/beigegradient.png",
       name: "Lisa Moyer",
-      description: "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!",
+      description:
+        "You will receive top-notch orthodontic care at Frey Smiles. Dr. Frey and his entire staff make every visit a pleasure. It is apparent at each appointment that Dr. Frey truly cares about his patients. He has treated both of our kids and my husband, and they all have beautiful smiles! I highly recommend!",
     },
     {
       type: "image",
       src: "../images/buttongradient.png",
       name: "Karen O'Neill",
       description:
-      "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
+        "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
     },
     {
       type: "image",
       src: "../images/gradient2.jpeg",
       name: "Karen Oneill",
       description:
-      "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
+        "I had an open bite and misaligned teeth most of my life. Dr. Frey fixed it and in record time. 1 1/2 years with Invisalign. Highly recommended! Friendly staff and easy to make appointments!",
     },
     {
       type: "image",
       src: "../images/radialgradient.png",
       name: "Tanya Burnhauser",
       description:
-      "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!",
-  },
+        "Dr. Frey was my orthodontist when I was 11 years old. I'm now 42. I still talk about how amazing he was and the great work he did with my teeth. Thank you so much for giving the most beautiful smile!",
+    },
   ];
-  
 
   const carouselRef = useRef(null);
-  
+
   const controls = useAnimation();
 
-  const handleDragEnd = (_, info) => {
-    const offset = info.offset.x;
-    const velocity = info.velocity.x;
 
-    if (offset > 100 || velocity > 500) {
-      prevSlide();
-    } else if (offset < -100 || velocity < -500) {
-      nextSlide();
-    } else {
-      controls.start({ x: `-${currentIndex * 50}vw` });
-    }
-  };
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -3301,58 +1911,71 @@ const Testimonials = ({ textureUrl, position }) => {
     if (carouselRef.current) {
       const containerWidth = carouselRef.current.scrollWidth;
       const viewportWidth = carouselRef.current.offsetWidth;
-      setMaxDrag(-(containerWidth - viewportWidth)); 
+      setMaxDrag(-(containerWidth - viewportWidth));
     }
-  }, [carouselItems]); 
-  const images = [
-    "../images/radialgradient.png",
-    "../images/radialgradient.png",
-    "../images/radialgradient.png",
-    "../images/radialgradient.png",
-  ];
-  const { scrollXProgress } = useScroll();
+  }, [carouselItems]);
+
   return (
     <div className="relative sticky flex flex-col w-full h-screen overflow-hidden bg-black">
+      <div className="w-full bg-[#666] h-[1px]"></div>
 
-    <div className="w-full bg-[#666] h-[1px]"></div>
+      <div className="relative flex flex-1 w-full overflow-hidden">
+        {/* Left Column */}
+        <div className="w-[25%] h-full flex flex-col justify-center items-center p-10 border-r border-[#666]">
+          <div className="font-neue-montreal text-white text-[40px] leading-tight">
+            Select Reviews
+          </div>
 
-    <div className="relative flex flex-1 w-full overflow-hidden">
-      {/* Left Column */}
-      <div className="w-[25%] h-full flex flex-col justify-center items-center p-10 border-r border-[#666]">
-
-        <div className="font-neue-montreal text-white text-[40px] leading-tight">Select Reviews</div>
-
-        {/* Counter */}
-        <div className="flex inline-flex items-center gap-6 mt-20 text-sm text-white font-neue-montreal">
-          <div >{`${String(currentIndex + 1).padStart(2, "0")} / ${carouselItems.length}`}</div>
-          <div className="flex gap-4">
-            <button onClick={prevSlide} className="flex items-center justify-center ">
-              <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
-                stroke="white" fill="none" strokeWidth="10" transform="rotate(-90)">
-                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
-                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
-              </svg>
-            </button>
-            <button onClick={nextSlide} className="flex items-center justify-center ">
-              <svg width="20" height="20" viewBox="0 0 100 267" xmlns="http://www.w3.org/2000/svg"
-                stroke="white" fill="none" strokeWidth="10" transform="rotate(90)">
-                <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
-                <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
-              </svg>
-            </button>
+          {/* Counter */}
+          <div className="flex inline-flex items-center gap-6 mt-20 text-sm text-white font-neue-montreal">
+            <div>{`${String(currentIndex + 1).padStart(2, "0")} / ${
+              carouselItems.length
+            }`}</div>
+            <div className="flex gap-4">
+              <button
+                onClick={prevSlide}
+                className="flex items-center justify-center "
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 100 267"
+                  xmlns="http://www.w3.org/2000/svg"
+                  stroke="white"
+                  fill="none"
+                  strokeWidth="10"
+                  transform="rotate(-90)"
+                >
+                  <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
+                  <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+                </svg>
+              </button>
+              <button
+                onClick={nextSlide}
+                className="flex items-center justify-center "
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 100 267"
+                  xmlns="http://www.w3.org/2000/svg"
+                  stroke="white"
+                  fill="none"
+                  strokeWidth="10"
+                  transform="rotate(90)"
+                >
+                  <path d="M49.894 2.766v262.979" strokeLinecap="square"></path>
+                  <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      
-      {/* Right Column */}
-      <div className="w-[75%] relative flex overflow-hidden">
-      <div className="top-0 w-full h-screen">
-      <div className="App" style={{ width: '100vw', height: '100vh' }}>
-      <WebGLCarousel />
-    </div>
 
-    </div>
-        {/* <div className="flex w-full overflow-x-auto snap-mandatory snap-x"
+        {/* Right Column */}
+        <div className="w-[75%] relative flex overflow-hidden">
+  
+          <div className="flex w-full overflow-x-auto snap-mandatory snap-x"
           style={{
             scrollSnapType: "x mandatory",
             scrollBehavior: "smooth",
@@ -3415,14 +2038,13 @@ const Testimonials = ({ textureUrl, position }) => {
   ))}
 </motion.div>
 
-        </div> */}
+        </div>
+        </div>
       </div>
-    </div>
 
-    <div className="w-full bg-[#666] h-[1px]"></div>
-  </div>
+    </div>
   );
-}
+};
 
 function Locations() {
   const ref = useRef(null);
@@ -3934,7 +2556,6 @@ function Locations() {
     </>
   );
 }
-
 
 function GiftCards() {
   return (

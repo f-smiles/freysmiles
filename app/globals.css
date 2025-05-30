@@ -1689,37 +1689,6 @@ header h1 {
   }
 }
 
-.custom-cursor2 {
-  position: fixed;
-  pointer-events: none;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: rgb(223, 193, 90);
-  font-weight: bold;
-  color: white;
-  flex-direction: column;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-}
-
-.rotate {
-  animation: rotate 3.5s linear infinite;
-}
-
-@keyframes rotate {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
 
 /* .svg {
   animation: spin 3s ease infinite;
@@ -3628,17 +3597,6 @@ img:nth-child(6) {
   display: flex;
 }
 
-.hero-wrapper {
-  flex-flow: column;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 100vh;
-  padding-top: 15vh;
-  padding-bottom: 4rem;
-  display: flex;
-  position: relative;
-}
 
 .hero-header {
   z-index: 3;
@@ -3659,26 +3617,8 @@ img:nth-child(6) {
   margin-bottom: 0;
 }
 
-.hero-interaction-wrapper {
-  z-index: 2;
-  pointer-events: none;
-  cursor: none;
-  justify-content: center;
-  align-items: flex-end;
-  width: 100%;
-  height: 100%;
-  padding-bottom: 4vh;
-  display: flex;
-  position: absolute;
-  inset: 0%;
-}
 
-.hero-component {
-  flex-flow: column;
-  align-items: center;
-  width: 100%;
-  display: flex;
-}
+
 
 .hero-content {
   justify-content: space-between;
@@ -3766,22 +3706,7 @@ img:nth-child(6) {
   --heading--h2: 3.5rem;
 }
 
-.hero-card {
-  background-color: var(--color--font);
-  border-radius: 1vh;
-  width: 45vh;
-  height: 55vh;
-  position: absolute;
-  overflow: hidden;
-}
 
-.hero-card {
-  width: 45vh;
-  height: 55vh;
-  position: absolute;
-  overflow: hidden;
-  border-radius: 1vh;
-}
 
 .lineParent {
   overflow: hidden;
@@ -3812,12 +3737,7 @@ img:nth-child(6) {
   }
 }
 
-.w-layout-blockcontainer {
-  max-width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-}
+
 
 .textimagecontainer {
   width: 100%;

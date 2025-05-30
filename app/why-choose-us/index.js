@@ -1746,7 +1746,6 @@ function StackCards() {
     const stage = svgRef.current;
     const dots = [];
     
-    // Create eyes
     for (let x = 1; x <= 5; x++) {
       for (let y = 1; y <= 5; y++) {
         const eye = makeEye(x * 10, y * 10, stage);
@@ -1757,7 +1756,6 @@ function StackCards() {
     dotsRef.current = dots;
 
     return () => {
-      // Clean up GSAP animations
       gsap.globalTimeline.getChildren().forEach(t => t.kill());
     };
   }, []);

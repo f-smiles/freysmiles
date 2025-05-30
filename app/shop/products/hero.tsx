@@ -58,6 +58,36 @@ const Hero: React.FC = () => {
       ease: "power2.out",
     });
   }, []);
+
+
+  // useEffect(() => {
+  //   const triggers: ScrollTrigger[] = [];
+
+  //   gsap.utils.toArray<HTMLElement>(".img-container").forEach((container) => {
+  //     const img = container.querySelector("img") as HTMLImageElement | null;
+
+  //     if (img) {
+  //       const trigger = gsap.fromTo(
+  //         img,
+  //         { yPercent: -20, ease: "none" },
+  //         {
+  //           yPercent: 20,
+  //           ease: "none",
+  //           scrollTrigger: {
+  //             trigger: container,
+  //             scrub: true,
+  //           },
+  //         }
+  //       ).scrollTrigger as ScrollTrigger;
+
+  //       triggers.push(trigger);
+  //     }
+  //   });
+
+  //   return () => {
+  //     triggers.forEach((trigger) => trigger.kill());
+  //   };
+  // }, []);
   return (
     
 <section className="w-full min-h-screen bg-[#1d1d1d] text-white py-40">
@@ -103,8 +133,8 @@ const Hero: React.FC = () => {
 
 
   <div className="max-w-[400px] mx-auto mt-8">
-    <p className="text-[14px] leading-[1.3] text-gray-300 font-neuehaas45">
-      We’ve curated a handful of products to elevate your routine—from effective whitening solutions to a practical additions. Nothing extra.
+    <p className="text-[11px] leading-[1.3] text-gray-300 font-khteka">
+      We’ve curated a handful of products to elevate your routine—from effective whitening solutions to a few practical additions. Nothing extra.
     </p>
   </div>
 </div>

@@ -629,7 +629,7 @@ export default function BookNow() {
               <div className="relative z-10 flex flex-col justify-center h-full items-center">
                 <div className="flex flex-col gap-6 text-sm uppercase">
                   <p className="text-xs uppercase font-neueroman">
-                    / Contact Us
+                    // Contact Us
                   </p>
                   <div>
                     <p className="text-[12px] mb-1 font-neueroman uppercase">

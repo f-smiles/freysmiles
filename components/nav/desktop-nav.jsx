@@ -263,7 +263,7 @@ const bgRef = useRef(null);
 
   <Link href="/book-now">
     <motion.div
-      className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 text-[white] rounded-full px-6 py-5 font-helvetica-neue-light tracking-wider text-[11px]"
+      className="bg-black text-[white] rounded-full px-6 py-5 font-helvetica-neue-light tracking-wider text-[11px]"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
@@ -273,18 +273,21 @@ const bgRef = useRef(null);
 
   <Link href="/">
   <motion.div
-    className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center text-[11px] font-helvetica-neue-light"
+    className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center overflow-hidden"
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
   >
-MAIN
-
+    <img
+      src="/images/fstest.png"
+      alt="icon"
+      className="w-8 h-8 object-contain"
+    />
   </motion.div>
-  </Link>
+</Link>
 
   <Link href="/shop/products">
     <motion.div
-      className="flex items-center justify-center w-10 h-16 transition-all bg-black rounded-full shadow-lg cursor-pointer backdrop-blur-lg shadow-white/10"
+      className="flex items-center justify-center w-10 h-16 transition-all bg-black rounded-full shadow-lg cursor-pointer"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >

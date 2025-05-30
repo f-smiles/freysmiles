@@ -373,6 +373,14 @@ const YourCare = () => {
         </div>
       </div>
 
+
+    </>
+  );
+};
+
+export default YourCare;
+
+
       {/* <div className="relative z-10">
   <FluidSimulation />
   <TextEffect 
@@ -394,8 +402,3 @@ const YourCare = () => {
           style={{ width: "100%", height: "100%" }}
         />
       </div> */}
-    </>
-  );
-};
-
-export default YourCare;
