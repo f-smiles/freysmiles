@@ -64,24 +64,6 @@ if (typeof window !== "undefined") {
 }
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
-const Marquee = () => {
-  const items = [{ word: "TESTIMONIALS" }, { word: "TESTIMONIALS" }];
-
-  return (
-    <div className="relative flex py-5 overflow-hidden">
-      <div className="flex min-w-max animate-marquee hover:[animation-play-state:paused]">
-        {[...items, ...items].map((item, index) => (
-          <div
-            key={index}
-            className="px-4 text-[10em] font-agrandir-bold whitespace-nowrap"
-          >
-            {item.word}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 extend({ Water, Sky });
 
@@ -90,6 +72,7 @@ function DoorModel() {
   const mixer = useRef(null);
   const action = useRef(null);
   const doorRef = useRef();
+  
   useEffect(() => {
     if (animations.length > 0) {
       mixer.current = new THREE.AnimationMixer(scene);
@@ -251,16 +234,33 @@ const OceanScene = () => {
 export default function LandingComponent() {
   return (
     <>
-      {/* <div style={{ height: "200vh", margin: 0 }}>
-      <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh" }}>
-      <Canvas>
+<div style={{ height: "200vh", margin: 0 }}>
+  <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: 0 }}>
+    <Canvas>
       <ScrollControls pages={3} damping={0.1}>
         <OceanScene />
       </ScrollControls>
     </Canvas>
-      </div>
-    </div> */}
-      <div style={{ overflowX: "hidden" }}>
+  </div>
+
+  <div style={{
+  position: "fixed",
+  top: "50%",
+  right: "10%",
+  transform: "translateY(-50%)",
+  zIndex: 10,
+  color: "white",
+  maxWidth: "400px",
+  textAlign: "left",
+  textTransform:"uppercase"
+}}>
+  <p style={{ fontSize: "12px", lineHeight: "1.4", marginBottom: "20px", fontFamily:"KHTekaTrial-Light" }}>
+  Behind every smile lies a story in progress. At Frey Smiles, we guide you through every step of your orthodontic journey — with advanced treatment, personalized care, and results that go beyond the ordinary.
+  </p>
+<div className="font-khteka">Scroll To Discover</div>
+</div>
+</div>
+      {/* <div style={{ overflowX: "hidden" }}>
         <div class="MainContainer">
           <div class="ParallaxContainer">
             <Hero />
@@ -275,36 +275,12 @@ export default function LandingComponent() {
         <LogoGrid />
         <Locations />
         <GiftCards />
-      </div>
+      </div> */}
     </>
   );
 }
 
 const Hero = () => {
-  useEffect(() => {
-    const lines = document.querySelectorAll(".stagger-line");
-
-    lines.forEach((line) => {
-      gsap.fromTo(
-        line.querySelectorAll(".stagger-letter"),
-        {
-          y: "100%",
-          opacity: 0,
-        },
-        {
-          y: "-10%",
-          opacity: 1,
-          stagger: 0.05,
-          duration: 1,
-          ease: "power4.out",
-          scrollTrigger: {
-            trigger: line,
-            start: "top 80%",
-          },
-        }
-      );
-    });
-  }, []);
 
   const containerRef = useRef(null);
 
@@ -1330,7 +1306,7 @@ const MobileLayout = () => {
 };
 
 const ImageGrid = () => {
-  const bodyRef = useRef(null);
+
   const headerRef = useRef(null);
 
   useEffect(() => {
@@ -1402,31 +1378,6 @@ const ImageGrid = () => {
     }
   }, []);
 
-  const images = [
-    {
-      title: "Top 1% of providers",
-      src: "../images/mountain.png",
-      className: "image-portrait",
-
-      url: "/invisalign",
-    },
-    {
-      title: "Faster treatment times with fewer appointments",
-      src: "../images/mountain.png",
-      className: "image-landscape",
-
-      url: "/braces",
-    },
-    {
-      title: "Pioneering the most comfortable appliances since 2005",
-      src: "../images/mountain.png",
-      className: "image-landscape",
-
-      url: "/why-choose-us",
-    },
-  ];
-
-
   const sectionRef = useRef(null);
   const [isInView, setIsInView] = useState(true);
 
@@ -1493,37 +1444,6 @@ const ImageGrid = () => {
             Expertise
           </h1>
         </div>
-
-        <section className="bg-[#FBFBFB]">
-          <div>
-            <div
-              className="container flex flex-col py-24 mx-auto overflow-hidden text-white lg:flex-row lg:items-start"
-              ref={bodyRef}
-            >
-              <div className="flex flex-wrap items-center justify-center min-h-screen p-0">
-                {images.map((image, index) => (
-                  <a
-                    key={index}
-                    href={image.url}
-                    className={`group image-card relative flex items-center justify-center mb-20 ${
-                      image.className === "image-portrait"
-                        ? "mx-4 w-[27vw] h-[37vw]"
-                        : "mx-4 w-[40vw] h-[27vw]"
-                    }`}
-                  >
-                    <div className="image-header text-[35px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out pointer-events-none">
-                      {image.title}
-                    </div>
-                    <img
-                      src={image.src}
-                      className="block object-cover w-full h-full"
-                    />
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   );
@@ -1916,7 +1836,7 @@ const Testimonials = ({ textureUrl, position }) => {
   }, [carouselItems]);
 
   return (
-    <div className="relative sticky flex flex-col w-full h-screen overflow-hidden bg-black">
+    <div className="relative sticky flex flex-col w-full h-screen overflow-hidden">
       <div className="w-full bg-[#666] h-[1px]"></div>
 
       <div className="relative flex flex-1 w-full overflow-hidden">
