@@ -135,7 +135,6 @@ const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
   );
 };
 
-
 const SmileyFace = ({ position = [0, 0, 0] }) => {
   const groupRef = useRef();
 
@@ -393,8 +392,8 @@ const MorphingSphere = () => {
     offset: 0.0,
     sphereDetail: 96,
     gap: 0.3,
-    distortion: 0.4,  
-    twist: 1.2,    
+    distortion: 0.4,
+    twist: 1.2,
     useHighlights: true,
     highlightIntensity: 0.7,
     occlusion: 0.3,
@@ -403,11 +402,10 @@ const MorphingSphere = () => {
     colorShift: 0.3,
     pulseSpeed: 0.5,
     lineColorA: new THREE.Color(0x88ccff),
-    lineColorB: new THREE.Color(0x44aaff)
+    lineColorB: new THREE.Color(0x44aaff),
   });
 
-
- const helperFunctions = `
+  const helperFunctions = `
     float hash(float n) { 
       return fract(sin(n) * 43758.5453123); 
     }
@@ -729,184 +727,265 @@ const MorphingSphere = () => {
     }
   `;
 
-const createGeometry = () => {
-  if (leftSphereRef.current) {
-    groupRef.current.remove(leftSphereRef.current);
-    groupRef.current.remove(rightSphereRef.current);
-  }
-
-  const sphereDetail = parseInt(settingsRef.current.sphereDetail);
-  const radius = 1;
-  const leftGeometry = new THREE.SphereGeometry(
-    radius,
-    sphereDetail,
-    sphereDetail,
-    0,
-    Math.PI,
-    0,
-    Math.PI
-  );
-
-  const rightGeometry = new THREE.SphereGeometry(
-    radius,
-    sphereDetail,
-    sphereDetail,
-    Math.PI,
-    Math.PI,
-    0,
-    Math.PI
-  );
-
-
-  const material = new THREE.ShaderMaterial({
-    vertexShader,
-    fragmentShader,
-    uniforms: {
-      uLineCount: { value: settingsRef.current.lineCount },
-      uLineWidth: { value: settingsRef.current.lineWidth },
-      uLineSharpness: { value: settingsRef.current.lineSharpness },
-      uRimEffect: { value: settingsRef.current.rimEffect },
-      uRimIntensity: { value: settingsRef.current.rimIntensity },
-      uRimWidth: { value: settingsRef.current.rimWidth },
-      uOffset: { value: settingsRef.current.offset },
-      uUseHighlights: { value: settingsRef.current.useHighlights },
-      uHighlightIntensity: { value: settingsRef.current.highlightIntensity },
-      uOcclusion: { value: settingsRef.current.occlusion },
-      uScrollProgress: { value: 0.0 },
-      uDistortion: { value: 0.5 },  
-      uTwist: { value: 1.5 }, 
-      uTime: { value: 0.0 },
-      uGlowIntensity: { value: 0.7 }, 
-      uGlowColor: { value: new THREE.Color(
-        0.2 + 0.4 * 0.3, 
-        0.5 + 0.4 * 0.2, 
-        0.8 + 0.4 * 0.1
-      )},
-      uColorShift: { value: 0.4 }, 
-      uPulseSpeed: { value: settingsRef.current.pulseSpeed },
-      uLineColorA: { value: settingsRef.current.lineColorA },
-      uLineColorB: { value: settingsRef.current.lineColorB }
-    },
-    transparent: true,
-    side: THREE.DoubleSide,
-    depthWrite: false
-  });
-
-  const leftMaterial = material.clone();
-  const rightMaterial = material.clone();
-
-  leftSphereRef.current = new THREE.Mesh(leftGeometry, leftMaterial);
-  rightSphereRef.current = new THREE.Mesh(rightGeometry, rightMaterial);
-
-
-  const gap = 0.3 / 2; 
-  leftSphereRef.current.position.x = -gap;
-  rightSphereRef.current.position.x = gap;
-
- 
-  groupRef.current.add(leftSphereRef.current);
-  groupRef.current.add(rightSphereRef.current);
-
-  
-  materialsRef.current = [leftMaterial, rightMaterial];
-
-
-  groupRef.current.rotation.x = 0.1;
-  groupRef.current.rotation.y = Math.PI * 0.2;
-};
-
-const setupScrollAnimations = () => {
-
-  scrollProgressRef.current = 0;
-  updateForScrollProgress(0);
-
-  ScrollTrigger.create({
-    trigger: "body",
-    start: "top top",
-    end: "bottom bottom",
-    onUpdate: (self) => {
-      scrollProgressRef.current = self.progress;
-      updateForScrollProgress(self.progress);
-    },
-    onRefresh: () => {
-
-      updateForScrollProgress(scrollProgressRef.current);
+  const createGeometry = () => {
+    if (leftSphereRef.current) {
+      groupRef.current.remove(leftSphereRef.current);
+      groupRef.current.remove(rightSphereRef.current);
     }
-  });
-};
 
-const updateForScrollProgress = (progress) => {
-
-  materialsRef.current.forEach((mat) => {
-    mat.uniforms.uScrollProgress.value = progress;
-  });
-
-
-   if (scrollProgressRef.current < 0.25) {
-        const localProgress = scrollProgressRef.current * 4.0;
-        settingsRef.current.gap = gsap.utils.interpolate(0.3, 0.5, localProgress);
-        settingsRef.current.distortion = gsap.utils.interpolate(0.5, 0.3, localProgress); // More initial distortion
-        settingsRef.current.twist = gsap.utils.interpolate(1.5, 2.0, localProgress);      // Stronger initial twist
-        settingsRef.current.colorShift = gsap.utils.interpolate(0.4, 0.6, localProgress); // More color variation
-        settingsRef.current.glowIntensity = gsap.utils.interpolate(0.7, 0.5, localProgress); // Stronger initial glow
-
-        groupRef.current.rotation.x = gsap.utils.interpolate(0.1, 0.3, localProgress);
-        groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI * 0.2, Math.PI * 0.5, localProgress);
-      } 
-      else if (scrollProgressRef.current < 0.5) {
-        const localProgress = (scrollProgressRef.current - 0.25) * 4.0;
-        settingsRef.current.gap = gsap.utils.interpolate(0.5, 0.4, localProgress);
-        settingsRef.current.distortion = gsap.utils.interpolate(0.3, 0.6, localProgress);
-        settingsRef.current.twist = gsap.utils.interpolate(2.0, 1.0, localProgress);
-        settingsRef.current.colorShift = gsap.utils.interpolate(0.6, 0.8, localProgress);
-        settingsRef.current.glowIntensity = gsap.utils.interpolate(0.5, 0.8, localProgress);
-
-        groupRef.current.rotation.x = gsap.utils.interpolate(0.3, Math.PI * 0.25, localProgress);
-        groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI * 0.5, Math.PI * 0.75, localProgress);
-      }
-      else if (scrollProgressRef.current < 0.75) {
-        const localProgress = (scrollProgressRef.current - 0.5) * 4.0;
-        settingsRef.current.gap = gsap.utils.interpolate(0.4, 0.2, localProgress);
-        settingsRef.current.distortion = gsap.utils.interpolate(0.6, 0.2, localProgress);
-        settingsRef.current.twist = gsap.utils.interpolate(1.0, 0.5, localProgress);
-        settingsRef.current.colorShift = gsap.utils.interpolate(0.8, 0.9, localProgress);
-        settingsRef.current.glowIntensity = gsap.utils.interpolate(0.8, 0.6, localProgress);
-
-        groupRef.current.rotation.x = Math.PI * 0.25;
-        groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI * 0.75, Math.PI, localProgress);
-      }
-      else {
-        const localProgress = (scrollProgressRef.current - 0.75) * 4.0;
-        settingsRef.current.gap = gsap.utils.interpolate(0.2, 0.1, localProgress);
-        settingsRef.current.distortion = gsap.utils.interpolate(0.2, 0.0, localProgress);
-        settingsRef.current.twist = gsap.utils.interpolate(0.5, 0.0, localProgress);
-        settingsRef.current.colorShift = gsap.utils.interpolate(0.9, 0.0, localProgress);
-        settingsRef.current.glowIntensity = gsap.utils.interpolate(0.6, 0.2, localProgress);
-
-        groupRef.current.rotation.x = gsap.utils.interpolate(Math.PI * 0.25, 0, localProgress);
-        groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI, Math.PI * 2, localProgress);
-      }
-
-
-  materialsRef.current.forEach((mat) => {
-    mat.uniforms.uDistortion.value = settingsRef.current.distortion;
-    mat.uniforms.uTwist.value = settingsRef.current.twist;
-    mat.uniforms.uColorShift.value = settingsRef.current.colorShift;
-    mat.uniforms.uGlowIntensity.value = settingsRef.current.glowIntensity;
-    mat.uniforms.uGlowColor.value = new THREE.Color(
-      0.2 + settingsRef.current.colorShift * 0.3, 
-      0.5 + settingsRef.current.colorShift * 0.2, 
-      0.8 + settingsRef.current.colorShift * 0.1
+    const sphereDetail = parseInt(settingsRef.current.sphereDetail);
+    const radius = 1;
+    const leftGeometry = new THREE.SphereGeometry(
+      radius,
+      sphereDetail,
+      sphereDetail,
+      0,
+      Math.PI,
+      0,
+      Math.PI
     );
-  });
 
+    const rightGeometry = new THREE.SphereGeometry(
+      radius,
+      sphereDetail,
+      sphereDetail,
+      Math.PI,
+      Math.PI,
+      0,
+      Math.PI
+    );
 
-  if (leftSphereRef.current && rightSphereRef.current) {
-    const gap = settingsRef.current.gap / 2;
+    const material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms: {
+        uLineCount: { value: settingsRef.current.lineCount },
+        uLineWidth: { value: settingsRef.current.lineWidth },
+        uLineSharpness: { value: settingsRef.current.lineSharpness },
+        uRimEffect: { value: settingsRef.current.rimEffect },
+        uRimIntensity: { value: settingsRef.current.rimIntensity },
+        uRimWidth: { value: settingsRef.current.rimWidth },
+        uOffset: { value: settingsRef.current.offset },
+        uUseHighlights: { value: settingsRef.current.useHighlights },
+        uHighlightIntensity: { value: settingsRef.current.highlightIntensity },
+        uOcclusion: { value: settingsRef.current.occlusion },
+        uScrollProgress: { value: 0.0 },
+        uDistortion: { value: 0.5 },
+        uTwist: { value: 1.5 },
+        uTime: { value: 0.0 },
+        uGlowIntensity: { value: 0.7 },
+        uGlowColor: {
+          value: new THREE.Color(
+            0.2 + 0.4 * 0.3,
+            0.5 + 0.4 * 0.2,
+            0.8 + 0.4 * 0.1
+          ),
+        },
+        uColorShift: { value: 0.4 },
+        uPulseSpeed: { value: settingsRef.current.pulseSpeed },
+        uLineColorA: { value: settingsRef.current.lineColorA },
+        uLineColorB: { value: settingsRef.current.lineColorB },
+      },
+      transparent: true,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+
+    const leftMaterial = material.clone();
+    const rightMaterial = material.clone();
+
+    leftSphereRef.current = new THREE.Mesh(leftGeometry, leftMaterial);
+    rightSphereRef.current = new THREE.Mesh(rightGeometry, rightMaterial);
+
+    const gap = 0.3 / 2;
     leftSphereRef.current.position.x = -gap;
     rightSphereRef.current.position.x = gap;
-  }
-};
+
+    groupRef.current.add(leftSphereRef.current);
+    groupRef.current.add(rightSphereRef.current);
+
+    materialsRef.current = [leftMaterial, rightMaterial];
+
+    groupRef.current.rotation.x = 0.1;
+    groupRef.current.rotation.y = Math.PI * 0.2;
+  };
+
+  const setupScrollAnimations = () => {
+    scrollProgressRef.current = 0;
+    updateForScrollProgress(0);
+
+    ScrollTrigger.create({
+      trigger: "body",
+      start: "top top",
+      end: "bottom bottom",
+      onUpdate: (self) => {
+        scrollProgressRef.current = self.progress;
+        updateForScrollProgress(self.progress);
+      },
+      onRefresh: () => {
+        updateForScrollProgress(scrollProgressRef.current);
+      },
+    });
+  };
+
+  const updateForScrollProgress = (progress) => {
+    materialsRef.current.forEach((mat) => {
+      mat.uniforms.uScrollProgress.value = progress;
+    });
+    3;
+
+    if (scrollProgressRef.current < 0.25) {
+      const localProgress = scrollProgressRef.current * 4.0;
+      settingsRef.current.gap = gsap.utils.interpolate(0.3, 0.5, localProgress);
+      settingsRef.current.distortion = gsap.utils.interpolate(
+        0.5,
+        0.3,
+        localProgress
+      ); // More initial distortion
+      settingsRef.current.twist = gsap.utils.interpolate(
+        1.5,
+        2.0,
+        localProgress
+      ); // Stronger initial twist
+      settingsRef.current.colorShift = gsap.utils.interpolate(
+        0.4,
+        0.6,
+        localProgress
+      ); // More color variation
+      settingsRef.current.glowIntensity = gsap.utils.interpolate(
+        0.7,
+        0.5,
+        localProgress
+      ); // Stronger initial glow
+
+      groupRef.current.rotation.x = gsap.utils.interpolate(
+        0.1,
+        0.3,
+        localProgress
+      );
+      groupRef.current.rotation.y = gsap.utils.interpolate(
+        Math.PI * 0.2,
+        Math.PI * 0.5,
+        localProgress
+      );
+    } else if (scrollProgressRef.current < 0.5) {
+      const localProgress = (scrollProgressRef.current - 0.25) * 4.0;
+      settingsRef.current.gap = gsap.utils.interpolate(0.5, 0.4, localProgress);
+      settingsRef.current.distortion = gsap.utils.interpolate(
+        0.3,
+        0.6,
+        localProgress
+      );
+      settingsRef.current.twist = gsap.utils.interpolate(
+        2.0,
+        1.0,
+        localProgress
+      );
+      settingsRef.current.colorShift = gsap.utils.interpolate(
+        0.6,
+        0.8,
+        localProgress
+      );
+      settingsRef.current.glowIntensity = gsap.utils.interpolate(
+        0.5,
+        0.8,
+        localProgress
+      );
+
+      groupRef.current.rotation.x = gsap.utils.interpolate(
+        0.3,
+        Math.PI * 0.25,
+        localProgress
+      );
+      groupRef.current.rotation.y = gsap.utils.interpolate(
+        Math.PI * 0.5,
+        Math.PI * 0.75,
+        localProgress
+      );
+    } else if (scrollProgressRef.current < 0.75) {
+      const localProgress = (scrollProgressRef.current - 0.5) * 4.0;
+      settingsRef.current.gap = gsap.utils.interpolate(0.4, 0.2, localProgress);
+      settingsRef.current.distortion = gsap.utils.interpolate(
+        0.6,
+        0.2,
+        localProgress
+      );
+      settingsRef.current.twist = gsap.utils.interpolate(
+        1.0,
+        0.5,
+        localProgress
+      );
+      settingsRef.current.colorShift = gsap.utils.interpolate(
+        0.8,
+        0.9,
+        localProgress
+      );
+      settingsRef.current.glowIntensity = gsap.utils.interpolate(
+        0.8,
+        0.6,
+        localProgress
+      );
+
+      groupRef.current.rotation.x = Math.PI * 0.25;
+      groupRef.current.rotation.y = gsap.utils.interpolate(
+        Math.PI * 0.75,
+        Math.PI,
+        localProgress
+      );
+    } else {
+      const localProgress = (scrollProgressRef.current - 0.75) * 4.0;
+      settingsRef.current.gap = gsap.utils.interpolate(0.2, 0.1, localProgress);
+      settingsRef.current.distortion = gsap.utils.interpolate(
+        0.2,
+        0.0,
+        localProgress
+      );
+      settingsRef.current.twist = gsap.utils.interpolate(
+        0.5,
+        0.0,
+        localProgress
+      );
+      settingsRef.current.colorShift = gsap.utils.interpolate(
+        0.9,
+        0.0,
+        localProgress
+      );
+      settingsRef.current.glowIntensity = gsap.utils.interpolate(
+        0.6,
+        0.2,
+        localProgress
+      );
+
+      groupRef.current.rotation.x = gsap.utils.interpolate(
+        Math.PI * 0.25,
+        0,
+        localProgress
+      );
+      groupRef.current.rotation.y = gsap.utils.interpolate(
+        Math.PI,
+        Math.PI * 2,
+        localProgress
+      );
+    }
+
+    materialsRef.current.forEach((mat) => {
+      mat.uniforms.uDistortion.value = settingsRef.current.distortion;
+      mat.uniforms.uTwist.value = settingsRef.current.twist;
+      mat.uniforms.uColorShift.value = settingsRef.current.colorShift;
+      mat.uniforms.uGlowIntensity.value = settingsRef.current.glowIntensity;
+      mat.uniforms.uGlowColor.value = new THREE.Color(
+        0.2 + settingsRef.current.colorShift * 0.3,
+        0.5 + settingsRef.current.colorShift * 0.2,
+        0.8 + settingsRef.current.colorShift * 0.1
+      );
+    });
+
+    if (leftSphereRef.current && rightSphereRef.current) {
+      const gap = settingsRef.current.gap / 2;
+      leftSphereRef.current.position.x = -gap;
+      rightSphereRef.current.position.x = gap;
+    }
+  };
 
   const animate = () => {
     requestAnimationFrame(animate);
@@ -915,7 +994,6 @@ const updateForScrollProgress = (progress) => {
     materialsRef.current.forEach((material) => {
       material.uniforms.uTime.value = elapsedTime;
     });
-
 
     groupRef.current.rotation.z = Math.sin(elapsedTime * 0.15) * 0.1;
     rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -926,7 +1004,7 @@ const updateForScrollProgress = (progress) => {
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
-      alpha: true
+      alpha: true,
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -949,7 +1027,6 @@ const updateForScrollProgress = (progress) => {
     scene.add(group);
     groupRef.current = group;
 
- 
     group.rotation.y = Math.PI * 0.2;
     group.rotation.x = Math.PI * 0.1;
 
@@ -963,10 +1040,10 @@ const updateForScrollProgress = (progress) => {
       renderer.setSize(window.innerWidth, window.innerHeight);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       if (renderer) renderer.dispose();
       if (scene) {
         scene.traverse((object) => {
@@ -980,14 +1057,13 @@ const updateForScrollProgress = (progress) => {
           }
         });
       }
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 
   return (
     <>
       <canvas ref={canvasRef} className="webgl" />
-
     </>
   );
 };
@@ -1026,11 +1102,6 @@ const Invisalign = () => {
     };
   }, []);
 
-
-
-
-
-
   const controls = useAnimation();
 
   const handleHover = (index) => {
@@ -1041,7 +1112,6 @@ const Invisalign = () => {
   };
 
   const [isVisible, setIsVisible] = useState(false);
-
 
   const meshRef = useRef();
   useEffect(() => {
@@ -1125,11 +1195,10 @@ const Invisalign = () => {
     { normal: "Proven", italic: "Results" },
   ];
 
-
-  const imageRef = useRef(null)
+  const imageRef = useRef(null);
 
   useEffect(() => {
-    if (!imageRef.current) return
+    if (!imageRef.current) return;
 
     gsap.fromTo(
       imageRef.current,
@@ -1138,20 +1207,24 @@ const Invisalign = () => {
         scale: 0.7,
         scrollTrigger: {
           trigger: imageRef.current,
-          start: 'top bottom',
-          end: 'top top',
+          start: "top bottom",
+          end: "top top",
           scrub: true,
         },
-        transformOrigin: 'center center',
-        ease: 'none',
+        transformOrigin: "center center",
+        ease: "none",
       }
-    )
-  }, [])
-  
+    );
+  }, []);
+
   return (
     <>
-<MorphingSphere />
+      <div className="relative h-full w-full">
+        <MorphingSphere />
+      </div>
       {/* <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
+
+
         <Canvas
           className="pointer-events-none"
           style={{
@@ -1183,165 +1256,276 @@ const Invisalign = () => {
       </div> */}
       <div className="min-h-screen">
         <div className="relative z-10 mt-[30vh] ">
-        <Copy>
+          <Copy>
+            <div className="relative ml-10 text-[32px] sm:text-[32px] leading-tight text-black font-light font-neuehaasdisplaythin">
+              <span className="font-normal">Our doctors </span>{" "}
+              <span className="font-light">have treated</span>{" "}
+              <span className="font-saolitalic">thousands</span>{" "}
+              <span className="font-medium">of patients</span> <br />
+              <span className="font-normal">with this </span>{" "}
+              <span className="font-light font-saolitalic">leading edge</span>{" "}
+              <span className="font-light ">appliance</span>{" "}
+              <span className="font-normal">system.</span>{" "}
+            </div>
+          </Copy>
 
-<div className="relative ml-10 text-[32px] sm:text-[32px] leading-tight text-black font-light font-neuehaasdisplaythin">
-  <span className="font-normal">Our doctors </span>{" "}
-  <span className="font-light">have treated</span>{" "}
-  <span className="font-saolitalic">thousands</span>{" "}
-  <span className="font-medium">of patients</span> <br />
-  <span className="font-normal">with this </span>{" "}
-  <span className="font-light font-saolitalic">leading edge</span>{" "}
-  <span className="font-light ">appliance</span>{" "}
-  <span className="font-normal">system.</span>{" "}
-</div>
-</Copy>
-
-
-            <div className="mt-[10vh] w-full border-t border-gray-300 max-w-7xl mx-auto text-[11px]">
-  <div className="font-khteka flex border-b border-gray-300">
-    <div className="w-1/3 p-5">
-      <p className="uppercase font-khteka text-[13px]">Accolades</p>
-    </div>
-    <div className=" uppercase flex-1 flex flex-col justify-center">
-      <div className="flex border-b border-gray-300 py-4 items-center px-5">
-        <div className="flex-1 uppercase">6x Winner Best Orthodontist</div>
-        <div className="w-[350px] text-left text-black pr-6"> Best of the Valley</div>
-        <div className="w-[80px] text-right  cursor-pointer">DATE</div>
-      </div>
-      <div className="flex border-b border-gray-300 py-4 items-center px-5">
-        <div className="flex-1 "> 5x Winner Best Orthodontist</div>
-        <div className="w-[350px] text-left text-black pr-6">Readers' Choice The Morning Call</div>
-        <div className="w-[80px] text-right cursor-pointer">DATE</div>
-      </div>
-      <div className="flex py-4 items-center px-5 ">
-        <div className="flex-1 "> Nationally Recognized Top Orthodontist</div>
-        <div className="w-[350px] text-left text-black pr-6">Top Dentists</div>
-        <div className="w-[80px] text-right  cursor-pointer">DATE</div>
-      </div>
-
-    </div>
-  </div>
-  <div className="font-khteka flex">
-    <div className="w-1/3 p-5">
-      <p className="font-khteka uppercase text-[13px]">Expertise</p>
-    </div>
-    <div className="uppercase flex-1 flex flex-col justify-center">
-      <div className="flex border-b border-gray-300 py-4 items-center px-5">
-        <div className="flex-1  uppercase">INVISALIGN</div>
-        <div className="w-[350px] text-left text-black pr-6"> 25+ Years of Experience</div>
-        <div className="w-[80px] text-right underline cursor-pointer"></div>
-      </div>
-      <div className="flex border-b border-gray-300 py-4 items-center px-5">
-        <div className="flex-1 ">Invisalign Teen</div>
-        <div className="w-[350px] text-left text-black pr-6">5000+ Cases Treated</div>
-        <div className="w-[80px] text-right underline cursor-pointer"></div>
-      </div>
-      <div className="flex py-4 items-center px-5">
-        <div className="flex-1 ">Diamond Plus</div>
-        <div className="w-[350px] text-left text-black pr-6"> Top 1% of All Providers</div>
-        <div className="w-[80px] text-right underline cursor-pointer"></div>
-      </div>
-
-    </div>
-  </div>
-</div>
-<div className="flex justify-center items-center px-4 sm:px-8 lg:px-12 py-10">
-  
-      <img
-        ref={imageRef}
-        src="/images/manholdinglaptop.png"
-        className="max-w-[90%] sm:max-w-[90%] lg:max-w-[90%] h-auto"
-        alt="Man holding laptop"
-      />
-    </div>
-<div className="flex flex-col items-center justify-center">
-<h4 className=" text-sm mb-6 font-neuehaas35">Synopsis</h4>
+          <div className="mt-[10vh] w-full border-t border-gray-300 max-w-7xl mx-auto text-[11px]">
+            <div className="font-khteka flex border-b border-gray-300">
+              <div className="w-1/3 p-5">
+                <p className="uppercase font-khteka text-[13px]">Accolades</p>
+              </div>
+              <div className=" uppercase flex-1 flex flex-col justify-center">
+                <div className="flex border-b border-gray-300 py-4 items-center px-5">
+                  <div className="flex-1 uppercase">
+                    6x Winner Best Orthodontist
+                  </div>
+                  <div className="w-[350px] text-left text-black pr-6">
+                    {" "}
+                    Best of the Valley
+                  </div>
+                  <div className="w-[80px] text-right  cursor-pointer">
+                    DATE
+                  </div>
+                </div>
+                <div className="flex border-b border-gray-300 py-4 items-center px-5">
+                  <div className="flex-1 "> 5x Winner Best Orthodontist</div>
+                  <div className="w-[350px] text-left text-black pr-6">
+                    Readers' Choice The Morning Call
+                  </div>
+                  <div className="w-[80px] text-right cursor-pointer">DATE</div>
+                </div>
+                <div className="flex py-4 items-center px-5 ">
+                  <div className="flex-1 ">
+                    {" "}
+                    Nationally Recognized Top Orthodontist
+                  </div>
+                  <div className="w-[350px] text-left text-black pr-6">
+                    Top Dentists
+                  </div>
+                  <div className="w-[80px] text-right  cursor-pointer">
+                    DATE
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="font-khteka flex">
+              <div className="w-1/3 p-5">
+                <p className="font-khteka uppercase text-[13px]">Expertise</p>
+              </div>
+              <div className="uppercase flex-1 flex flex-col justify-center">
+                <div className="flex border-b border-gray-300 py-4 items-center px-5">
+                  <div className="flex-1  uppercase">INVISALIGN</div>
+                  <div className="w-[350px] text-left text-black pr-6">
+                    {" "}
+                    25+ Years of Experience
+                  </div>
+                  <div className="w-[80px] text-right underline cursor-pointer"></div>
+                </div>
+                <div className="flex border-b border-gray-300 py-4 items-center px-5">
+                  <div className="flex-1 ">Invisalign Teen</div>
+                  <div className="w-[350px] text-left text-black pr-6">
+                    5000+ Cases Treated
+                  </div>
+                  <div className="w-[80px] text-right underline cursor-pointer"></div>
+                </div>
+                <div className="flex py-4 items-center px-5">
+                  <div className="flex-1 ">Diamond Plus</div>
+                  <div className="w-[350px] text-left text-black pr-6">
+                    {" "}
+                    Top 1% of All Providers
+                  </div>
+                  <div className="w-[80px] text-right underline cursor-pointer"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-center items-center px-4 sm:px-8 lg:px-12 py-10">
+            <img
+              ref={imageRef}
+              src="/images/manholdinglaptop.png"
+              className="max-w-[90%] sm:max-w-[90%] lg:max-w-[90%] h-auto"
+              alt="Man holding laptop"
+            />
+          </div>
+          <div className="flex flex-col items-center justify-center">
+            <h4 className=" text-sm mb-6 font-neuehaas35">Synopsis</h4>
             <Copy>
-   
               <p className="font-neuehaas45 text-[18px] leading-[1.2] max-w-[650px] mb-20">
                 Trusted by millions around the world, Invisalign is a clear,
                 comfortable, and confident choice for straightening smiles.
                 We've proudly ranked among the top 1% of certified Invisalign
                 providers nationwide — every year since 2000.
               </p>
-              
             </Copy>
-</div>
+          </div>
+          <div className="relative py-12">
 
-            <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
-              <div className="flex justify-center items-center text-center text-[30px] pb-20">
+  <div className="relative z-10 flex items-center justify-start pl-10">
+    <div className="text-[#999] text-sm font-neuehaas45 mr-4">01</div>
+    <div className="flex-1 h-px bg-gray-300" />
+  </div>
+
+
+  <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
+    <h2 className="md:w-1/2 text-[18px] font-neuehaas45 text-black text-center md:text-left">
+      Teeth Remain Completely Visible
+    </h2>
+    <p className="md:w-1/2 text-[14px] max-w-[400px] font-neuehaas45 leading-relaxed text-center md:text-left">
+      Unlike braces, Invisalign doesn’t obscure your smile with wires or brackets.
+      That means early progress is easier to see and appreciate.
+    </p>
+  </div>
+</div>
+<div className="relative py-12">
+
+  <div className="relative z-10 flex items-center justify-start pl-10">
+    <div className="text-[#999] text-sm font-neuehaas45 mr-4">02</div>
+    <div className="flex-1 h-px bg-gray-300" />
+  </div>
+
+
+  <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
+    <h2 className="md:w-1/2 text-[18px] font-neuehaas45 text-black text-center md:text-left">
+      Designed for Comfort
+    </h2>
+    <p className="md:w-1/2 text-[14px] max-w-[400px] font-neuehaas45 leading-relaxed text-center md:text-left">
+      Invisalign aligners are crafted using one of the most advanced and researched fabrication processes in the world. Each aligner is engineered to fit complex tooth arrangements with precision and is continuously updated to maintain accuracy throughout the course of treatment.
+    </p>
+  </div>
+</div>
+<div className="relative py-12">
+
+  <div className="relative z-10 flex items-center justify-start pl-10">
+    <div className="text-[#999] text-sm font-neuehaas45 mr-4">03</div>
+    <div className="flex-1 h-px bg-gray-300" />
+  </div>
+
+  <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
+    <h2 className="md:w-1/2 text-[18px] font-neuehaas45 text-black text-center md:text-left">
+      Tailored to You
+    </h2>
+    <p className="md:w-1/2 text-[14px] max-w-[400px] font-neuehaas45 leading-relaxed text-center md:text-left">
+      While our team has extensive expertise in placing braces, traditional brackets are ultimately prefabricated based on average tooth morphology. With Invisalign, your treatment begins in our office using advanced 3D scanning technology to capture the precise contours of your teeth. From this data, our doctors develop a fully customized plan, guiding a sequence of aligners engineered to move your teeth into alignment with exacting precision.
+    </p>
+  </div>
+</div>
+<div className="relative py-12">
+  <div className="relative z-10 flex items-center justify-start pl-10">
+    <div className="text-[#999] text-sm font-neuehaas45 mr-4">04</div>
+    <div className="flex-1 h-px bg-gray-300" />
+  </div>
+
+  <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
+    <h2 className="md:w-1/2 text-[18px] font-neuehaas45 text-black text-center md:text-left">
+      Ease of Cleaning
+    </h2>
+    <p className="md:w-1/2 text-[14px] max-w-[400px] font-neuehaas45 leading-relaxed text-center md:text-left">
+      Traditional braces complicate even the most basic oral hygiene. With Invisalign, your aligners come off completely—allowing unrestricted access for brushing and flossing around every surface of every tooth.
+    </p>
+  </div>
+</div>
+<div className="relative py-12">
+  <div className="relative z-10 flex items-center justify-start pl-10">
+    <div className="text-[#999] text-sm font-neuehaas45 mr-4">05</div>
+    <div className="flex-1 h-px bg-gray-300" />
+  </div>
+
+  <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
+    <h2 className="md:w-1/2 text-[18px] font-neuehaas45 text-black text-center md:text-left">
+      Removable & Flexible
+    </h2>
+    <p className="md:w-1/2 text-[14px] max-w-[400px] font-neuehaas45 leading-relaxed text-center md:text-left">
+      No wires or brackets. No dietary limitations. No interruptions. Just a treatment that fits your life.
+    </p>
+  </div>
+</div>
+<div className="relative py-12">
+  <div className="relative z-10 flex items-center justify-start pl-10">
+    <div className="text-[#999] text-sm font-neuehaas45 mr-4">06</div>
+    <div className="flex-1 h-px bg-gray-300" />
+  </div>
+
+  <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
+    <h2 className="md:w-1/2 text-[18px] font-neuehaas45 text-black text-center md:text-left">
+      Treatment Duration
+    </h2>
+    <p className="md:w-1/2 text-[14px] max-w-[400px] font-neuehaas45 leading-relaxed text-center md:text-left">
+      Because Invisalign is precisely engineered to your exact tooth morphology, movement in all three dimensions can begin as early as the first week. This level of control allows for greater efficiency—and in many cases, a shorter overall treatment time compared to braces.
+    </p>
+  </div>
+</div>
+          <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
+            <div className="flex justify-center items-center text-center text-[30px] pb-20">
               Introducing two treatment approaches, built around your needs
-              </div>
-              <div className="flex items-center justify-center">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-8xl w-full">
-                  <div className="flex flex-col items-center gap-[10px]">
-                    <div className="flex flex-col items-center justify-center relative w-full overflow-hidden px-0 py-[70px] min-h-fit rounded-[8px] border border-solid border-[rgba(240,240,240)] bg-[rgba(240,240,240,0.19)] opacity-100">
-                      <div className="relative w-[86%] aspect-[1.6] overflow-hidden rounded-[8px] border border-solid border-[rgb(240,240,240)]">
-                        <img
-                          src="/images/boxtest.jpg"
-                          alt="Frysta"
-                          className="absolute inset-0 w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
-                    <div className="font-neuehaas45 flex items-center justify-between w-[100%]">
-                      <div>
-                        <h3 className="text-[16px]  text-gray-800">
-                          Flex Plan
-                        </h3>
-                        <p className="font-neuehaas45 text-sm text-gray-500 max-w-5xl">
-                         Designed for adult patients seeking a streamlined treatment
-                          with fewer in-office visits. Includes 6-8 total
-                          appointments spaced for optimal efficiency — without
-                          compromising results. These cases span 8–14 months and must meet certain clinical qualifications. Treatment includes two sets of aligners. Every qualifying patient can expect results that are satisfactory to both them and the treating doctor.
-                        </p>
-                      </div>
-                      <span className="text-xs font-semibold bg-green-100 text-green-600 px-2 py-1 rounded-full">
-                        New
-                      </span>
+            </div>
+            <div className="flex items-center justify-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-8xl w-full">
+                <div className="flex flex-col items-center gap-[10px]">
+                  <div className="flex flex-col items-center justify-center relative w-full overflow-hidden px-0 py-[70px] min-h-fit rounded-[8px] border border-solid border-[rgba(240,240,240)] bg-[rgba(240,240,240,0.19)] opacity-100">
+                    <div className="relative w-[86%] aspect-[1.6] overflow-hidden rounded-[8px] border border-solid border-[rgb(240,240,240)]">
+                      <img
+                        src="/images/boxtest.jpg"
+                        alt="Frysta"
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
                     </div>
                   </div>
-
-                  <div className="flex flex-col items-center gap-[10px]">
-                    <div className="flex flex-col items-center justify-center relative w-full overflow-hidden px-0 py-[70px] min-h-fit rounded-[8px] border border-solid border-[rgba(240,240,240)] bg-[rgba(240,240,240,0.19)] opacity-100">
-                      <div className="relative w-[86%] aspect-[1.6] overflow-hidden rounded-[8px] border border-solid border-[rgb(240,240,240)]">
-                        <img
-                          src="/images/invisalign_mockup_3.jpg"
-                          alt="Folium"
-                          className="absolute inset-0 w-full h-full object-cover"
-                        />
-                      </div>
+                  <div className="font-neuehaas45 flex items-center justify-between w-[100%]">
+                    <div>
+                      <h3 className="text-[16px]  text-gray-800">Flex Plan</h3>
+                      <p className="font-neuehaas45 text-sm text-gray-500 max-w-5xl">
+                        Designed for adult patients seeking a streamlined
+                        treatment with fewer in-office visits—resulting in a
+                        lower overall investment. Includes 6–8 total
+                        appointments spaced for optimal efficiency, without
+                        compromising results. These cases span 8–14 months and
+                        must meet certain clinical qualifications. Treatment
+                        includes two sets of aligners. Every qualifying patient
+                        can expect results that are satisfactory to both them
+                        and the treating doctor.
+                      </p>
                     </div>
-                    <div className="font-neuehaas45 flex items-center justify-between w-[100%]">
-                      <div>
-                        <h3 className="text-[16px]  text-gray-800">
-                          Unlimited Smiles
-                        </h3>
-                        <p className="font-neuehaas45 text-sm text-gray-500">
-                        Offers more hands-on support throughout your smile journey, with extended appointment access and tailored adjustments at every step.
-                        </p>
-                      </div>
+                    <span className="text-xs font-semibold bg-green-100 text-green-600 px-2 py-1 rounded-full">
+                      New
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center gap-[10px]">
+                  <div className="flex flex-col items-center justify-center relative w-full overflow-hidden px-0 py-[70px] min-h-fit rounded-[8px] border border-solid border-[rgba(240,240,240)] bg-[rgba(240,240,240,0.19)] opacity-100">
+                    <div className="relative w-[86%] aspect-[1.6] overflow-hidden rounded-[8px] border border-solid border-[rgb(240,240,240)]">
+                      <img
+                        src="/images/invisalign_mockup_3.jpg"
+                        alt="Folium"
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <div className="font-neuehaas45 flex items-center justify-between w-[100%]">
+                    <div>
+                      <h3 className="text-[16px]  text-gray-800">
+                        Unlimited Smiles
+                      </h3>
+                      <p className="font-neuehaas45 text-sm text-gray-500">
+                        Offers more hands-on support throughout your smile
+                        journey, with extended appointment access and tailored
+                        adjustments at every step.
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-
-   
           <section className="relative w-full flex flex-col min-h-screen ">
-
-{/* 
+            {/* 
             <div className="relative">
           
               <RepeatText />
             </div> */}
-
-     
-
           </section>
-          <div className="min-h-screen relative">
+          {/* <div className="min-h-screen relative">
             <div className="font-neuehaas45 perspective-1500 text-[#0414EA]">
               <div className="flip-wrapper">
                 <div className="flip-container">
@@ -1386,24 +1570,21 @@ const Invisalign = () => {
                 </div>
               </div>
             </div>
-          </div>
-          <div className="max-w-[650px] relative min-h-screen">
-            The power of Invisalign isn’t just in the clear aligners—it’s in the
-            custom treatment designed by our doctors. At FreySmiles, every plan
-            starts with a full facial evaluation, digital x-rays, and
-            expert-crafted prescriptions to move your teeth safely and
-            beautifully. As top providers in clear aligner therapy, Dr. Gregg
-            and Dr. Daniel combine advanced technology with years of orthodontic
-            experience to deliver personalized, safe results. While mail-order
-            aligner companies offer convenience, they skip critical steps—no
-            in-person exams, no x-rays, and no expert supervision. Aligners
-            without expert oversight can lead to more than disappointment—they
-            can cause lasting damage. Trust doctors, not delivery boxes, when it
-            comes to your smile.
+          </div> */}
+          <div className="font-neuehaas45 max-w-[650px] relative min-h-screen">
+            The power of Invisalign lies not just in the clear aligners, but in
+            the precision of digitally guided treatment planning. Each case is
+            custom-designed by our doctors using comprehensive, board-eligible
+            diagnostic records. It represents a departure from conventional
+            orthodontics—never before have we been able to prescribe such
+            targeted and controlled tooth movements.
+            
+            
+            While mail-order aligner companies may promise convenience, they often overlook critical aspects of dental malocclusion—such as bite alignment, arch coordination, and skeletal discrepancies. Additionally, these systems lack high-quality diagnostic records, bypass 3D imaging, and rely on generic assumptions with remote planning by providers you’ll never meet. You won’t have the opportunity to choose who oversees your treatment or assess their qualifications. These systems often produce oversimplified plans that can result in more complex issues down the line.
           </div>
         </div>
-        </div>
-      
+      </div>
+
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
             <div className="w-[800px] h-[800px]">
@@ -1438,11 +1619,7 @@ const Invisalign = () => {
   );
 };
 
-
 export default Invisalign;
-
-
-
 
 // const BulgeGallery = ({ slides }) => {
 //   const canvasWrapperRef = useRef();
@@ -1455,14 +1632,12 @@ export default Invisalign;
 //   vUv = uv;
 //   vec3 pos = position;
 
-
 //   float wave = sin(uv.y * 3.1416); // 0 at top & bottom, 1 in center
-//   float zOffset = wave * uScrollIntensity * 1.0; 
+//   float zOffset = wave * uScrollIntensity * 1.0;
 //   pos.z += zOffset;
 
 //   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
 // }
-
 
 //   `;
 
