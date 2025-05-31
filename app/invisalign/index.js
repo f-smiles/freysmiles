@@ -135,154 +135,6 @@ const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
   );
 };
 
-const BulgeGallery = ({ slides }) => {
-  const canvasWrapperRef = useRef();
-
-  const vertexShader = `
-varying vec2 vUv;
-uniform float uScrollIntensity;
-
-void main() {
-  vUv = uv;
-  vec3 pos = position;
-
-
-  float wave = sin(uv.y * 3.1416); // 0 at top & bottom, 1 in center
-  float zOffset = wave * uScrollIntensity * 1.0; 
-  pos.z += zOffset;
-
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-}
-
-
-  `;
-
-  const fragmentShader = `
-    varying vec2 vUv;
-    uniform sampler2D uTexture;
-
-    void main() {
-      gl_FragColor = texture2D(uTexture, vUv);
-    }
-  `;
-
-  useEffect(() => {
-    if (!canvasWrapperRef.current || !slides.length) return;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 10;
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    canvasWrapperRef.current.appendChild(renderer.domElement);
-
-    const calculatePlaneDimensions = () => {
-      const fov = (camera.fov * Math.PI) / 180;
-      const viewHeight = 2 * Math.tan(fov / 2) * camera.position.z;
-      const height = viewHeight * 0.7;
-      const width = height * (8 / 11);
-      return { width, height };
-    };
-
-    const dimensions = calculatePlaneDimensions();
-    const loader = new THREE.TextureLoader();
-    const planes = [];
-    const textures = [];
-
-    slides.forEach((slide, index) => {
-      const texture = loader.load(slide.image);
-      texture.minFilter = THREE.LinearFilter;
-      textures.push(texture);
-
-      const material = new THREE.ShaderMaterial({
-        vertexShader,
-        fragmentShader,
-        uniforms: {
-          uScrollIntensity: { value: 0 },
-          uTexture: { value: texture },
-        },
-        side: THREE.DoubleSide,
-        transparent: true,
-      });
-
-      const geometry = new THREE.PlaneGeometry(
-        dimensions.width,
-        dimensions.height,
-        32,
-        32
-      );
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.y = -index * (dimensions.height + 1); // space out
-      scene.add(mesh);
-      planes.push(mesh);
-    });
-
-    let scrollY = 0;
-    let lastScroll = 0;
-    let scrollIntensity = 0;
-    let animationId;
-
-    const handleScroll = () => {
-      scrollY = (window.scrollY / window.innerHeight) * (dimensions.height + 1);
-    };
-
-    const animate = () => {
-      animationId = requestAnimationFrame(animate);
-
-      const delta = scrollY - lastScroll;
-      lastScroll = THREE.MathUtils.lerp(lastScroll, scrollY, 0.1);
-      scrollIntensity = THREE.MathUtils.lerp(
-        scrollIntensity,
-        Math.abs(delta) * 0.25,
-        0.2
-      );
-
-      camera.position.y = -lastScroll;
-
-      planes.forEach((plane) => {
-        plane.material.uniforms.uScrollIntensity.value = scrollIntensity;
-      });
-
-      renderer.render(scene, camera);
-    };
-
-    handleScroll();
-    animate();
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener("scroll", handleScroll);
-      renderer.dispose();
-      planes.forEach((p) => {
-        p.geometry.dispose();
-        p.material.dispose();
-      });
-      textures.forEach((t) => t.dispose());
-      canvasWrapperRef.current?.removeChild(renderer.domElement);
-    };
-  }, [slides]);
-
-  return (
-    <div className="relative w-full">
-      {slides.map((_, i) => (
-        <div key={i} className="h-screen w-full" />
-      ))}
-
-      <div
-        ref={canvasWrapperRef}
-        className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none"
-      />
-    </div>
-  );
-};
 
 const SmileyFace = ({ position = [0, 0, 0] }) => {
   const groupRef = useRef();
@@ -519,101 +371,626 @@ newPosition.z += wave + ripple + bulge;
     </mesh>
   );
 });
-// function Invisalign() {
-//   const sectionRef = useRef()
-//   const { scrollYProgress } = useScroll({
-//     target: sectionRef,
-//     offset: ["end end", "center center"],
-//   })
-//   const springScroll = useSpring(scrollYProgress, {
-//     stiffness: 100,
-//     damping: 30,
-//     restDelta: 0.001
-//   })
-//   const scale = useTransform(springScroll, [0, 1], [1.2, 0.9])
-//   const transformText = useTransform(springScroll, [0, 1], ["0%", "150%"])
-//   const transformCase = useTransform(springScroll, [0, 1], ["150%", "0%"])
-//   const transformRetainer = useTransform(springScroll, [0, 1], ["-150%", "-100%"])
+const MorphingSphere = () => {
+  const canvasRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const rendererRef = useRef(null);
+  const groupRef = useRef(null);
+  const leftSphereRef = useRef(null);
+  const rightSphereRef = useRef(null);
+  const materialsRef = useRef([]);
+  const clockRef = useRef(new THREE.Clock());
+  const scrollProgressRef = useRef(0);
 
-//   return (
-//     <section ref={sectionRef} className="container flex flex-col-reverse py-24 mx-auto overflow-hidden lg:flex-row lg:items-start">
+  const settingsRef = useRef({
+    lineCount: 35,
+    lineWidth: 0.02,
+    lineSharpness: 25.0,
+    rimEffect: 0.8,
+    rimIntensity: 3.0,
+    rimWidth: 0.6,
+    offset: 0.0,
+    sphereDetail: 96,
+    gap: 0.3,
+    distortion: 0.4,  
+    twist: 1.2,    
+    useHighlights: true,
+    highlightIntensity: 0.7,
+    occlusion: 0.3,
+    glowIntensity: 0.6,
+    glowColor: new THREE.Color(0x3388ff),
+    colorShift: 0.3,
+    pulseSpeed: 0.5,
+    lineColorA: new THREE.Color(0x88ccff),
+    lineColorB: new THREE.Color(0x44aaff)
+  });
 
-//       <div className="lg:w-1/2">
-//         <motion.img style={{ translateY: transformCase }} className="object-cover w-full h-auto mx-auto object-start" src="/../../../images/invisalign_case_transparent.png" alt="invisalign case" />
-//         <motion.img style={{ translateY: transformRetainer, scale }} className="object-cover w-3/4 h-auto object-start ml-36 lg:ml-24 xl:ml-36" src="/../../../images/invisalign_bottom.png" alt="invisalign bottom" />
-//       </div>
-//     </section>
-//   )
-// }
 
-const Section = ({ children, onHoverStart, onHoverEnd }) => (
-  <motion.div
-    onHoverStart={onHoverStart}
-    onHoverEnd={onHoverEnd}
-    style={{
-      height: "15%",
-      display: "flex",
-      alignItems: "center",
-      cursor: "pointer",
-      backgroundColor: "transparent",
-      color: "black",
-      fontSize: "1.2em",
-      fontFamily: "HelveticaNeue-Light",
-      userSelect: "none",
-      position: "relative",
-      zIndex: 2,
-      width: "100%",
-      boxSizing: "border-box",
-      paddingLeft: "2rem",
-    }}
-  >
-    <div
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "1px",
-        backgroundColor: "#fff0",
-        backgroundImage: "linear-gradient(to right, #000, #fff0)",
-        opacity: 0.4,
-        transformOrigin: "0% 50%",
-        transform: "translate(0px, 0px)",
-        pointerEvents: "none",
-      }}
-    />
-    {children}
-  </motion.div>
-);
+ const helperFunctions = `
+    float hash(float n) { 
+      return fract(sin(n) * 43758.5453123); 
+    }
+    
+    float hash(vec3 p) {
+      p = fract(p * 0.3183099 + .1);
+      p *= 17.0;
+      return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+    }
+    
+    float smootherstep(float edge0, float edge1, float x, float smoothness) {
+      x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+      return pow(x, smoothness) * (smoothness + 1.0) - pow(x, smoothness + 1.0) * smoothness;
+    }
+    
+    float contour(float val, float width, float sharpness) {
+      float contourVal = abs(fract(val) - 0.5);
+      return pow(smoothstep(0.0, width, contourVal), sharpness);
+    }
+    
+    float fresnel(vec3 normal, vec3 viewDir, float power) {
+      return pow(1.0 - abs(dot(normal, viewDir)), power);
+    }
+    
+    // More complex noise functions for organic shapes
+    float noise(vec3 p) {
+      vec3 i = floor(p);
+      vec3 f = fract(p);
+      f = f*f*(3.0-2.0*f);
+      
+      float n = i.x + i.y*157.0 + 113.0*i.z;
+      return mix(
+        mix(mix(hash(n+0.0), hash(n+1.0), f.x),
+            mix(hash(n+157.0), hash(n+158.0), f.x), f.y),
+        mix(mix(hash(n+113.0), hash(n+114.0), f.x),
+            mix(hash(n+270.0), hash(n+271.0), f.x), f.y), f.z);
+    }
+    
+    float fbm(vec3 p, int octaves) {
+      float value = 0.0;
+      float amplitude = 0.5;
+      float frequency = 1.0;
+      
+      for (int i = 0; i < octaves; i++) {
+        value += amplitude * noise(p * frequency);
+        amplitude *= 0.5;
+        frequency *= 2.0;
+        if (amplitude < 0.01) break;
+      }
+      
+      return value;
+    }
+    
+    // New: Worley noise for cellular patterns
+    float worleyNoise(vec3 p) {
+      float d = 1.0;
+      for (int xo = -1; xo <= 1; xo++) {
+        for (int yo = -1; yo <= 1; yo++) {
+          for (int zo = -1; zo <= 1; zo++) {
+            vec3 tp = floor(p) + vec3(xo, yo, zo);
+            tp += hash(tp.x + hash(tp.y + hash(tp.z)));
+            d = min(d, length(p - tp));
+          }
+        }
+      }
+      return d;
+    }
+    
+    vec3 mixColor(vec3 colorA, vec3 colorB, float t) {
+      return mix(colorA, colorB, t);
+    }
+  `;
 
-const Marquee = () => {
-  const items = [
-    { image: "../images/invisalignset.png" },
-    { image: "../images/alignercase.png" },
-    { image: "../images/alignergraphic.png" },
-    { image: "../images/teethiterographic.png" },
-  ];
+  const vertexShader = `
+    ${helperFunctions}
+    
+    varying vec3 vNormal;
+    varying vec3 vViewDir;
+    varying vec3 vPosition;
+    varying vec3 vOrigPosition;
+    varying vec3 vWorldPosition;
+    varying float vFresnel;
+    varying float vElevation;
+    varying float vDistortion;
+    
+    uniform float uRimEffect;
+    uniform float uRimIntensity;
+    uniform float uScrollProgress;
+    uniform float uDistortion;
+    uniform float uTwist;
+    uniform float uTime;
+    uniform float uPulseSpeed;
+    uniform float uTentacleAmount;
+    uniform float uSpikeAmount;
+    
+    vec3 twist(vec3 p, float strength) {
+      float c = cos(strength * p.y);
+      float s = sin(strength * p.y);
+      mat2 m = mat2(c, -s, s, c);
+      return vec3(m * p.xz, p.y).xzy;
+    }
+    
+    float pulseEffect(float time, float speed) {
+      return 0.5 * sin(time * speed) + 0.5;
+    }
+    
+    // New: Create tentacle-like protrusions
+    vec3 addTentacles(vec3 p, float amount) {
+      if (amount < 0.001) return p;
+      
+      float tentacleNoise = worleyNoise(p * 3.0 + vec3(0.0, uTime * 0.1, 0.0));
+      float tentacleMask = smoothstep(0.3, 0.7, tentacleNoise);
+      vec3 tentacleDir = normalize(p + vec3(sin(p.y * 10.0), cos(p.z * 10.0), sin(p.x * 10.0)));
+      return p + tentacleDir * tentacleMask * amount * 0.3;
+    }
+    
+    // New: Create spike-like features
+    vec3 addSpikes(vec3 p, float amount) {
+      if (amount < 0.001) return p;
+      
+      float spikeNoise = noise(p * 10.0 + vec3(0.0, uTime * 0.05, 0.0));
+      float spikeMask = step(0.7, spikeNoise);
+      vec3 spikeDir = normalize(p);
+      return p + spikeDir * spikeMask * amount * 0.2;
+    }
+    
+    void main() {
+      vOrigPosition = position;
+      vec3 pos = position;
+      
+      // Apply initial organic deformation
+      float organicNoise = fbm(pos * 2.0, 3) * 2.0 - 1.0;
+      pos += normal * organicNoise * 0.2;
+      
+      // Add tentacles and spikes
+      pos = addTentacles(pos, uTentacleAmount);
+      pos = addSpikes(pos, uSpikeAmount);
+      
+      // Apply twist and distortion
+      float pulse = pulseEffect(uTime, uPulseSpeed);
+      float twistAmount = uTwist * (1.0 + pulse * 0.1);
+      pos = twist(pos, twistAmount);
+      
+      float distortionAmount = uDistortion;
+      float noiseValue = 0.0;
+      
+      if (distortionAmount > 0.0) {
+        noiseValue = fbm(pos * 3.0 + vec3(0.0, uTime * 0.1, uScrollProgress * 10.0), 3) * 2.0 - 1.0;
+        pos += normal * noiseValue * distortionAmount;
+        vDistortion = noiseValue * distortionAmount;
+      } else {
+        vDistortion = 0.0;
+      }
+      
+      // Calculate normals with all deformations
+      vec3 transformedNormal = normalize(normal);
+      float delta = 0.01;
+      vec3 tangent = normalize(cross(normal, vec3(0.0, 1.0, 0.0)));
+      vec3 bitangent = normalize(cross(normal, tangent));
+      
+      vec3 posP1 = position + tangent * delta;
+      vec3 posP2 = position + bitangent * delta;
+      
+      // Apply same deformations to neighbor points for normal calculation
+      float organicNoiseP1 = fbm(posP1 * 2.0, 3) * 2.0 - 1.0;
+      posP1 += normal * organicNoiseP1 * 0.2;
+      posP1 = addTentacles(posP1, uTentacleAmount);
+      posP1 = addSpikes(posP1, uSpikeAmount);
+      posP1 = twist(posP1, twistAmount);
+      
+      float organicNoiseP2 = fbm(posP2 * 2.0, 3) * 2.0 - 1.0;
+      posP2 += normal * organicNoiseP2 * 0.2;
+      posP2 = addTentacles(posP2, uTentacleAmount);
+      posP2 = addSpikes(posP2, uSpikeAmount);
+      posP2 = twist(posP2, twistAmount);
+      
+      if (distortionAmount > 0.0) {
+        float n1 = fbm(posP1 * 3.0 + vec3(0.0, uTime * 0.1, uScrollProgress * 10.0), 2) * 2.0 - 1.0;
+        float n2 = fbm(posP2 * 3.0 + vec3(0.0, uTime * 0.1, uScrollProgress * 10.0), 2) * 2.0 - 1.0;
+        posP1 += normal * n1 * distortionAmount;
+        posP2 += normal * n2 * distortionAmount;
+      }
+      
+      vec3 newTangent = normalize(posP1 - pos);
+      vec3 newBitangent = normalize(posP2 - pos);
+      transformedNormal = normalize(cross(newTangent, newBitangent));
+      
+      vNormal = normalMatrix * transformedNormal;
+      vPosition = pos;
+      vWorldPosition = (modelMatrix * vec4(pos, 1.0)).xyz;
+      vec3 worldCameraPos = cameraPosition;
+      vec3 worldViewDir = normalize(worldCameraPos - vWorldPosition);
+      vViewDir = worldViewDir;
+      vFresnel = fresnel(normalize((modelMatrix * vec4(transformedNormal, 0.0)).xyz), worldViewDir, uRimIntensity * (1.0 + pulse * 0.2));
+      vElevation = length(pos);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+  `;
 
-  return (
-    <div className="relative flex max-w-[100vw] overflow-hidden py-5">
-      <div className="flex w-max animate-marquee [--duration:30s] hover:[animation-play-state:paused]">
-        {[...items, ...items].map((item, index) => (
-          <div
-            key={index}
-            className="h-24 w-24 flex items-center justify-center px-1"
-          >
-            <img
-              src={item.image}
-              alt="Marquee Image"
-              className="h-20 w-auto object-contain block"
-            />
-          </div>
-        ))}
-      </div>
-    </div>
+  const fragmentShader = `
+    ${helperFunctions}
+    
+    varying vec3 vNormal;
+    varying vec3 vViewDir;
+    varying vec3 vPosition;
+    varying vec3 vOrigPosition;
+    varying vec3 vWorldPosition;
+    varying float vFresnel;
+    varying float vElevation;
+    varying float vDistortion;
+    
+    uniform float uLineCount;
+    uniform float uLineWidth;
+    uniform float uLineSharpness;
+    uniform float uRimEffect;
+    uniform float uRimWidth;
+    uniform float uOffset;
+    uniform bool uUseHighlights;
+    uniform float uHighlightIntensity;
+    uniform float uOcclusion;
+    uniform float uScrollProgress;
+    uniform float uDistortion;
+    uniform float uTime;
+    uniform float uGlowIntensity;
+    uniform vec3 uGlowColor;
+    uniform float uColorShift;
+    uniform vec3 uLineColorA;
+    uniform vec3 uLineColorB;
+    
+    void main() {
+      vec3 dir = normalize(vPosition);
+      float elevation = vElevation;
+      
+      // Add organic variation based on distortion and position
+      elevation += (vDistortion * 0.5 + dot(normalize(vNormal), dir) * 0.1 + 
+                  sin(vPosition.x * 5.0 + uTime * 0.2) * 0.05 +
+                  cos(vPosition.y * 7.0 + uTime * 0.15) * 0.05 +
+                  sin(vPosition.z * 3.0 + uTime * 0.1) * 0.05);
+      
+      float timeOffset = sin(uTime * 0.3) * 0.1;
+      float rimFactor = vFresnel * uRimEffect;
+      
+      // Dynamic gradient that changes with time
+      float gradient = 1.0 + pow(rimFactor, 2.0) * (5.0 + sin(uTime * 0.5) * 2.0);
+      
+      float contourValue;
+      
+      // Enhanced contour patterns with more organic feel
+      if (uScrollProgress < 0.33) {
+        // Starting with more complex organic pattern
+        float noisePattern = fbm(vPosition * 2.0 + vec3(0.0, uTime * 0.1, 0.0), 2);
+        contourValue = (elevation + uOffset + noisePattern * 0.3 + timeOffset) * 
+                      uLineCount * mix(1.0, gradient, uRimWidth);
+      } else if (uScrollProgress < 0.66) {
+        float localProgress = (uScrollProgress - 0.33) * 3.0;
+        float pulseEffect = 0.3 + 0.2 * sin(uTime * 0.7);
+        vec3 localPos = vPosition * (1.0 + sin(localProgress * 6.28) * pulseEffect);
+        contourValue = length(localPos.xz) * uLineCount * (2.0 + sin(uTime * 0.3) * 0.5);
+      } else {
+        float localProgress = (uScrollProgress - 0.66) * 3.0;
+        float noise1 = fbm(vPosition * 5.0 + vec3(uTime * 0.2, 0.0, uScrollProgress), 3);
+        float noise2 = fbm(vPosition * 2.0 - vec3(0.0, uTime * 0.3, uScrollProgress * 3.0), 2);
+        contourValue = (elevation * (noise1 * 0.7 + 0.3) + noise2 * 2.0) * uLineCount;
+      }
+      
+      // Sharper lines with organic variation
+      float lineVal = 1.0 - contour(contourValue, uLineWidth * (0.9 + sin(uTime * 0.4) * 0.1), 
+                                   uLineSharpness * (1.0 + cos(uTime * 0.2) * 0.2));
+      
+      // Rim enhancement with organic variation
+      lineVal = mix(lineVal, step(uLineWidth * (1.5 + sin(uTime * 0.5) * 0.5), 
+                                 abs(fract(contourValue) - 0.5)), 
+                   rimFactor * (0.7 + sin(uTime * 0.6) * 0.1));
+      
+      // Dynamic color mixing with more variation
+      float colorMix = 0.5 + 0.5 * sin(vElevation * 7.0 + uTime * 0.5 + vDistortion * 3.0);
+      colorMix = mix(colorMix, rimFactor, uColorShift * (1.0 + sin(uTime * 0.4) * 0.2));
+      
+      vec3 lineColor = mixColor(uLineColorA, uLineColorB, colorMix);
+      
+      // Base color with organic highlights
+      vec3 color = lineColor * lineVal;
+      
+      // Enhanced lighting effects
+      if (uUseHighlights) {
+        // Dynamic lighting direction
+        vec3 lightDir = normalize(vec3(
+          sin(uScrollProgress * 6.28 + uTime * 0.3), 
+          0.8 + 0.2 * cos(uTime * 0.4),
+          cos(uScrollProgress * 6.28 + uTime * 0.25)
+        ));
+        
+        // Specular highlight with organic variation
+        vec3 halfVector = normalize(lightDir + vViewDir);
+        float specular = pow(max(0.0, dot(vNormal, halfVector)), 
+                     16.0 + sin(uTime * 0.5) * 4.0);
+        
+        color += vec3(specular) * lineVal * uHighlightIntensity * (1.0 + sin(uTime * 0.7) * 0.2);
+        
+        // Organic ambient occlusion
+        float ao = 1.0 - uOcclusion * (1.0 - dot(vNormal, vec3(0.0, 1.0, 0.0))) * 
+                  (0.9 + 0.1 * sin(vPosition.y * 10.0 + uTime * 0.2));
+        color *= ao;
+      }
+      
+      // Organic noise to break up perfection
+      color *= (0.95 + hash(vPosition * 500.0) * 0.1);
+      
+      // Enhanced glow with pulse effect
+      float glowPulse = 0.8 + 0.2 * sin(uTime * 0.8);
+      vec3 glowColor = uGlowColor * pow(rimFactor, 1.5) * uGlowIntensity * glowPulse;
+      color += glowColor;
+      
+      // Alpha with organic variation
+      float alpha = lineVal * (0.7 + 0.1 * sin(uTime * 0.9)) + 
+                   rimFactor * (0.3 + 0.1 * cos(uTime * 0.6));
+      
+      gl_FragColor = vec4(color, alpha);
+    }
+  `;
+
+const createGeometry = () => {
+  if (leftSphereRef.current) {
+    groupRef.current.remove(leftSphereRef.current);
+    groupRef.current.remove(rightSphereRef.current);
+  }
+
+  const sphereDetail = parseInt(settingsRef.current.sphereDetail);
+  const radius = 1;
+  const leftGeometry = new THREE.SphereGeometry(
+    radius,
+    sphereDetail,
+    sphereDetail,
+    0,
+    Math.PI,
+    0,
+    Math.PI
   );
+
+  const rightGeometry = new THREE.SphereGeometry(
+    radius,
+    sphereDetail,
+    sphereDetail,
+    Math.PI,
+    Math.PI,
+    0,
+    Math.PI
+  );
+
+
+  const material = new THREE.ShaderMaterial({
+    vertexShader,
+    fragmentShader,
+    uniforms: {
+      uLineCount: { value: settingsRef.current.lineCount },
+      uLineWidth: { value: settingsRef.current.lineWidth },
+      uLineSharpness: { value: settingsRef.current.lineSharpness },
+      uRimEffect: { value: settingsRef.current.rimEffect },
+      uRimIntensity: { value: settingsRef.current.rimIntensity },
+      uRimWidth: { value: settingsRef.current.rimWidth },
+      uOffset: { value: settingsRef.current.offset },
+      uUseHighlights: { value: settingsRef.current.useHighlights },
+      uHighlightIntensity: { value: settingsRef.current.highlightIntensity },
+      uOcclusion: { value: settingsRef.current.occlusion },
+      uScrollProgress: { value: 0.0 },
+      uDistortion: { value: 0.5 },  
+      uTwist: { value: 1.5 }, 
+      uTime: { value: 0.0 },
+      uGlowIntensity: { value: 0.7 }, 
+      uGlowColor: { value: new THREE.Color(
+        0.2 + 0.4 * 0.3, 
+        0.5 + 0.4 * 0.2, 
+        0.8 + 0.4 * 0.1
+      )},
+      uColorShift: { value: 0.4 }, 
+      uPulseSpeed: { value: settingsRef.current.pulseSpeed },
+      uLineColorA: { value: settingsRef.current.lineColorA },
+      uLineColorB: { value: settingsRef.current.lineColorB }
+    },
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+
+  const leftMaterial = material.clone();
+  const rightMaterial = material.clone();
+
+  leftSphereRef.current = new THREE.Mesh(leftGeometry, leftMaterial);
+  rightSphereRef.current = new THREE.Mesh(rightGeometry, rightMaterial);
+
+
+  const gap = 0.3 / 2; 
+  leftSphereRef.current.position.x = -gap;
+  rightSphereRef.current.position.x = gap;
+
+ 
+  groupRef.current.add(leftSphereRef.current);
+  groupRef.current.add(rightSphereRef.current);
+
+  
+  materialsRef.current = [leftMaterial, rightMaterial];
+
+
+  groupRef.current.rotation.x = 0.1;
+  groupRef.current.rotation.y = Math.PI * 0.2;
 };
 
+const setupScrollAnimations = () => {
+
+  scrollProgressRef.current = 0;
+  updateForScrollProgress(0);
+
+  ScrollTrigger.create({
+    trigger: "body",
+    start: "top top",
+    end: "bottom bottom",
+    onUpdate: (self) => {
+      scrollProgressRef.current = self.progress;
+      updateForScrollProgress(self.progress);
+    },
+    onRefresh: () => {
+
+      updateForScrollProgress(scrollProgressRef.current);
+    }
+  });
+};
+
+const updateForScrollProgress = (progress) => {
+
+  materialsRef.current.forEach((mat) => {
+    mat.uniforms.uScrollProgress.value = progress;
+  });
+
+
+   if (scrollProgressRef.current < 0.25) {
+        const localProgress = scrollProgressRef.current * 4.0;
+        settingsRef.current.gap = gsap.utils.interpolate(0.3, 0.5, localProgress);
+        settingsRef.current.distortion = gsap.utils.interpolate(0.5, 0.3, localProgress); // More initial distortion
+        settingsRef.current.twist = gsap.utils.interpolate(1.5, 2.0, localProgress);      // Stronger initial twist
+        settingsRef.current.colorShift = gsap.utils.interpolate(0.4, 0.6, localProgress); // More color variation
+        settingsRef.current.glowIntensity = gsap.utils.interpolate(0.7, 0.5, localProgress); // Stronger initial glow
+
+        groupRef.current.rotation.x = gsap.utils.interpolate(0.1, 0.3, localProgress);
+        groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI * 0.2, Math.PI * 0.5, localProgress);
+      } 
+      else if (scrollProgressRef.current < 0.5) {
+        const localProgress = (scrollProgressRef.current - 0.25) * 4.0;
+        settingsRef.current.gap = gsap.utils.interpolate(0.5, 0.4, localProgress);
+        settingsRef.current.distortion = gsap.utils.interpolate(0.3, 0.6, localProgress);
+        settingsRef.current.twist = gsap.utils.interpolate(2.0, 1.0, localProgress);
+        settingsRef.current.colorShift = gsap.utils.interpolate(0.6, 0.8, localProgress);
+        settingsRef.current.glowIntensity = gsap.utils.interpolate(0.5, 0.8, localProgress);
+
+        groupRef.current.rotation.x = gsap.utils.interpolate(0.3, Math.PI * 0.25, localProgress);
+        groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI * 0.5, Math.PI * 0.75, localProgress);
+      }
+      else if (scrollProgressRef.current < 0.75) {
+        const localProgress = (scrollProgressRef.current - 0.5) * 4.0;
+        settingsRef.current.gap = gsap.utils.interpolate(0.4, 0.2, localProgress);
+        settingsRef.current.distortion = gsap.utils.interpolate(0.6, 0.2, localProgress);
+        settingsRef.current.twist = gsap.utils.interpolate(1.0, 0.5, localProgress);
+        settingsRef.current.colorShift = gsap.utils.interpolate(0.8, 0.9, localProgress);
+        settingsRef.current.glowIntensity = gsap.utils.interpolate(0.8, 0.6, localProgress);
+
+        groupRef.current.rotation.x = Math.PI * 0.25;
+        groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI * 0.75, Math.PI, localProgress);
+      }
+      else {
+        const localProgress = (scrollProgressRef.current - 0.75) * 4.0;
+        settingsRef.current.gap = gsap.utils.interpolate(0.2, 0.1, localProgress);
+        settingsRef.current.distortion = gsap.utils.interpolate(0.2, 0.0, localProgress);
+        settingsRef.current.twist = gsap.utils.interpolate(0.5, 0.0, localProgress);
+        settingsRef.current.colorShift = gsap.utils.interpolate(0.9, 0.0, localProgress);
+        settingsRef.current.glowIntensity = gsap.utils.interpolate(0.6, 0.2, localProgress);
+
+        groupRef.current.rotation.x = gsap.utils.interpolate(Math.PI * 0.25, 0, localProgress);
+        groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI, Math.PI * 2, localProgress);
+      }
+
+
+  materialsRef.current.forEach((mat) => {
+    mat.uniforms.uDistortion.value = settingsRef.current.distortion;
+    mat.uniforms.uTwist.value = settingsRef.current.twist;
+    mat.uniforms.uColorShift.value = settingsRef.current.colorShift;
+    mat.uniforms.uGlowIntensity.value = settingsRef.current.glowIntensity;
+    mat.uniforms.uGlowColor.value = new THREE.Color(
+      0.2 + settingsRef.current.colorShift * 0.3, 
+      0.5 + settingsRef.current.colorShift * 0.2, 
+      0.8 + settingsRef.current.colorShift * 0.1
+    );
+  });
+
+
+  if (leftSphereRef.current && rightSphereRef.current) {
+    const gap = settingsRef.current.gap / 2;
+    leftSphereRef.current.position.x = -gap;
+    rightSphereRef.current.position.x = gap;
+  }
+};
+
+  const animate = () => {
+    requestAnimationFrame(animate);
+
+    const elapsedTime = clockRef.current.getElapsedTime();
+    materialsRef.current.forEach((material) => {
+      material.uniforms.uTime.value = elapsedTime;
+    });
+
+
+    groupRef.current.rotation.z = Math.sin(elapsedTime * 0.15) * 0.1;
+    rendererRef.current.render(sceneRef.current, cameraRef.current);
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0);
+    rendererRef.current = renderer;
+
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(0, 0, 3.5);
+    cameraRef.current = camera;
+
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+
+    const group = new THREE.Group();
+    scene.add(group);
+    groupRef.current = group;
+
+ 
+    group.rotation.y = Math.PI * 0.2;
+    group.rotation.x = Math.PI * 0.1;
+
+    createGeometry();
+    setupScrollAnimations();
+    animate();
+
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (renderer) renderer.dispose();
+      if (scene) {
+        scene.traverse((object) => {
+          if (object.isMesh) {
+            if (object.geometry) object.geometry.dispose();
+            if (object.material) {
+              if (object.material.isShaderMaterial) {
+                object.material.dispose();
+              }
+            }
+          }
+        });
+      }
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
+
+  return (
+    <>
+      <canvas ref={canvasRef} className="webgl" />
+
+    </>
+  );
+};
 const Invisalign = () => {
   const headingRef = useRef(null);
 
@@ -649,81 +1026,10 @@ const Invisalign = () => {
     };
   }, []);
 
-  const alignerRef = useRef(null);
 
-  useEffect(() => {
-    gsap.to(alignerRef.current, {
-      y: -100,
-      ease: "power1.out",
-      scrollTrigger: {
-        trigger: alignerRef.current,
-        start: "top bottom",
-        end: "top top",
-        scrub: true,
-      },
-    });
-  }, []);
 
-  const cardRefs = useRef([]);
 
-  useEffect(() => {
-    cardRefs.current.forEach((card, index) => {
-      const cardBg = card.querySelector(".feature-card-bg");
-      const i = index + 1;
 
-      const fade = gsap.timeline({
-        scrollTrigger: {
-          trigger: card,
-          start: "bottom bottom-=25%",
-          end: "bottom top",
-          scrub: true,
-          markers: false,
-        },
-      });
-
-      const scale = gsap.timeline({
-        scrollTrigger: {
-          trigger: card,
-          start: "bottom bottom-=25%",
-          end: "bottom top",
-          scrub: true,
-          markers: false,
-        },
-      });
-
-      if (index + 1 !== cardRefs.current.length) {
-        fade.fromTo(cardBg, { opacity: 0 }, { opacity: `0.${index + 1}` });
-
-        scale.to(card, { scale: 0.8 + i / 10 });
-      }
-    });
-  }, []);
-
-  const textRef = useRef(null);
-  useEffect(() => {
-    gsap.registerPlugin(SplitText);
-    const split = new SplitText(textRef.current, { type: "chars" });
-    const chars = split.chars;
-
-    gsap.fromTo(
-      chars,
-      {
-        willChange: "transform",
-        transformOrigin: "50% 0%",
-        scaleY: 0,
-        opacity: 0,
-      },
-      {
-        ease: "back.out(1.7)",
-        scaleY: 1,
-        opacity: 1,
-        stagger: 0.03,
-        duration: 1.2,
-      }
-    );
-
-    return () => split.revert();
-  }, []);
 
   const controls = useAnimation();
 
@@ -735,28 +1041,7 @@ const Invisalign = () => {
   };
 
   const [isVisible, setIsVisible] = useState(false);
-  // const squigglyTextRef = useRef(null);
 
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     ([entry]) => {
-  //       if (entry.isIntersecting) {
-  //         setIsVisible(true);
-  //       }
-  //     },
-  //     { threshold: 0.5 }
-  //   );
-
-  //   if (squigglyTextRef.current) {
-  //     observer.observe(squigglyTextRef.current);
-  //   }
-
-  //   return () => {
-  //     if (squigglyTextRef.current) {
-  //       observer.unobserve(squigglyTextRef.current);
-  //     }
-  //   };
-  // }, []);
 
   const meshRef = useRef();
   useEffect(() => {
@@ -840,11 +1125,33 @@ const Invisalign = () => {
     { normal: "Proven", italic: "Results" },
   ];
 
+
+  const imageRef = useRef(null)
+
+  useEffect(() => {
+    if (!imageRef.current) return
+
+    gsap.fromTo(
+      imageRef.current,
+      { scale: 1 },
+      {
+        scale: 0.7,
+        scrollTrigger: {
+          trigger: imageRef.current,
+          start: 'top bottom',
+          end: 'top top',
+          scrub: true,
+        },
+        transformOrigin: 'center center',
+        ease: 'none',
+      }
+    )
+  }, [])
+  
   return (
     <>
-
-      <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
-
+<MorphingSphere />
+      {/* <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
         <Canvas
           className="pointer-events-none"
           style={{
@@ -872,8 +1179,10 @@ const Invisalign = () => {
             </EffectComposer>
           </Suspense>
         </Canvas>
-
-        <div className="relative z-10 mt-[100vh]">
+     
+      </div> */}
+      <div className="min-h-screen">
+        <div className="relative z-10 mt-[30vh] ">
         <Copy>
 
 <div className="relative ml-10 text-[32px] sm:text-[32px] leading-tight text-black font-light font-neuehaasdisplaythin">
@@ -888,16 +1197,77 @@ const Invisalign = () => {
 </div>
 </Copy>
 
-<h4 className="pt-20 text-sm mb-6">Synopsis</h4>
+
+            <div className="mt-[10vh] w-full border-t border-gray-300 max-w-7xl mx-auto text-[11px]">
+  <div className="font-khteka flex border-b border-gray-300">
+    <div className="w-1/3 p-5">
+      <p className="uppercase font-khteka text-[13px]">Accolades</p>
+    </div>
+    <div className=" uppercase flex-1 flex flex-col justify-center">
+      <div className="flex border-b border-gray-300 py-4 items-center px-5">
+        <div className="flex-1 uppercase">6x Winner Best Orthodontist</div>
+        <div className="w-[350px] text-left text-black pr-6"> Best of the Valley</div>
+        <div className="w-[80px] text-right  cursor-pointer">DATE</div>
+      </div>
+      <div className="flex border-b border-gray-300 py-4 items-center px-5">
+        <div className="flex-1 "> 5x Winner Best Orthodontist</div>
+        <div className="w-[350px] text-left text-black pr-6">Readers' Choice The Morning Call</div>
+        <div className="w-[80px] text-right cursor-pointer">DATE</div>
+      </div>
+      <div className="flex py-4 items-center px-5 ">
+        <div className="flex-1 "> Nationally Recognized Top Orthodontist</div>
+        <div className="w-[350px] text-left text-black pr-6">Top Dentists</div>
+        <div className="w-[80px] text-right  cursor-pointer">DATE</div>
+      </div>
+
+    </div>
+  </div>
+  <div className="font-khteka flex">
+    <div className="w-1/3 p-5">
+      <p className="font-khteka uppercase text-[13px]">Expertise</p>
+    </div>
+    <div className="uppercase flex-1 flex flex-col justify-center">
+      <div className="flex border-b border-gray-300 py-4 items-center px-5">
+        <div className="flex-1  uppercase">INVISALIGN</div>
+        <div className="w-[350px] text-left text-black pr-6"> 25+ Years of Experience</div>
+        <div className="w-[80px] text-right underline cursor-pointer"></div>
+      </div>
+      <div className="flex border-b border-gray-300 py-4 items-center px-5">
+        <div className="flex-1 ">Invisalign Teen</div>
+        <div className="w-[350px] text-left text-black pr-6">5000+ Cases Treated</div>
+        <div className="w-[80px] text-right underline cursor-pointer"></div>
+      </div>
+      <div className="flex py-4 items-center px-5">
+        <div className="flex-1 ">Diamond Plus</div>
+        <div className="w-[350px] text-left text-black pr-6"> Top 1% of All Providers</div>
+        <div className="w-[80px] text-right underline cursor-pointer"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div className="flex justify-center items-center px-4 sm:px-8 lg:px-12 py-10">
+  
+      <img
+        ref={imageRef}
+        src="/images/manholdinglaptop.png"
+        className="max-w-[90%] sm:max-w-[90%] lg:max-w-[90%] h-auto"
+        alt="Man holding laptop"
+      />
+    </div>
+<div className="flex flex-col items-center justify-center">
+<h4 className=" text-sm mb-6 font-neuehaas35">Synopsis</h4>
             <Copy>
    
-              <p className="font-neuehaas35 text-[24px] leading-[1.2] max-w-[650px] mb-20">
+              <p className="font-neuehaas45 text-[18px] leading-[1.2] max-w-[650px] mb-20">
                 Trusted by millions around the world, Invisalign is a clear,
                 comfortable, and confident choice for straightening smiles.
                 We've proudly ranked among the top 1% of certified Invisalign
                 providers nationwide — every year since 2000.
               </p>
+              
             </Copy>
+</div>
 
             <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
               <div className="flex justify-center items-center text-center text-[30px] pb-20">
@@ -962,178 +1332,36 @@ const Invisalign = () => {
    
           <section className="relative w-full flex flex-col min-h-screen ">
 
-
+{/* 
             <div className="relative">
-              {" "}
+          
               <RepeatText />
-            </div>
+            </div> */}
 
-            <div className="relative font-neuehaas45 w-full border-t border-gray-300 text-sm leading-relaxed">
-              <div className="flex border-b border-gray-300">
-                <div className="w-1/3 p-5">
-                  <p className="font-neuehaas35 text-black">Accolades</p>
-                </div>
-                <div className="w-1/3 flex items-center justify-center p-5"></div>
-                <div className="w-1/3 p-5 w-full">
-                  <div className="w-full  text-[14px] leading-relaxed font-neuehaas45">
-                    <div className="flex border-b border-gray-300 py-3">
-                      <div className="w-1/2 text-gray-500">
-                        6x Winner Best Orthodontist
-                      </div>
-                      <div className="flex-1 text-black">
-                        Best of the Valley
-                      </div>
-                    </div>
-                    <div className="flex border-b border-gray-300 py-3">
-                      <div className="w-1/2 text-gray-500">
-                        5x Winner Best Orthodontist
-                      </div>
-                      <div className="flex-1 text-black">
-                        Readers' Choice The Morning Call
-                      </div>
-                    </div>
-                    <div className="flex border-b border-gray-300 py-3">
-                      <div className="w-1/2 text-gray-500">
-                        {" "}
-                        Nationally Recognized Top Orthodontist
-                      </div>
-                      <div className="flex-1 text-black">Top Dentists</div>
-                    </div>
-                    <div className="flex py-3">
-                      <div className="w-1/2 text-gray-500">Top 1%</div>
-                      <div className="flex-1 text-black">
-                        Diamond Plus Invisalign Provider
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+     
 
-              <div className="flex border-b border-gray-300">
-                <div className="w-1/3 p-5">
-                  <p className="font-neuehaas35 text-black">Expertise</p>
-                </div>
-                <div className="w-1/3 p-5"></div>
-                <div className="w-1/3 p-5 w-full">
-                  <div className="flex border-b border-gray-300 py-3">
-                    <div className="w-1/2 text-gray-500">Invisalign</div>
-                    <div className="flex-1 text-black">
-                      25+ Years of Experience
-                    </div>
-                  </div>
-                  <div className="flex border-b border-gray-300 py-3">
-                    <div className="w-1/2 text-gray-500">Invisalign Teen</div>
-                    <div className="flex-1 text-black">5000+ Cases Treated</div>
-                  </div>
-                  <div className="flex py-3">
-                    <div className="w-1/2 text-gray-500">Diamond Plus</div>
-                    <div className="flex-1 text-black">
-                      Top 1% of All Providers
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-24">
-              <div className="font-neuehaas35 text-md whitespace-nowrap relative">
-                What's Invisalign
-                <div
-                  // ref={squigglyTextRef}
-                  className="absolute left-0 bottom-[-5px] w-full"
-                >
-                  <svg className="w-full" height="9" viewBox="0 0 101 9">
-                    <path
-                      d="M1 6.86925C5.5 5.89529 20.803 1.24204 22.5 1.30925C24.6212 1.39327 20.5 3.73409 19.5 4.26879C18.8637 4.60904 14.9682 6.39753 15.7268 6.96472C16.4853 7.5319 34.2503 1.07424 35.8216 1.00703C37.3928 0.939816 37.2619 1.37115 37 1.59522C37 1.59522 24.5598 6.65262 24.84 6.96472C25.1202 7.27681 39.3546 4.85181 45.5 3.73407C51.6454 2.61634 61.4661 1.31205 62.525 2.12081C63.3849 2.77753 57.6549 3.25627 55.6997 4.04288C48.4368 6.96472 69.5845 5.83575 70 6.14029"
-                      stroke="#1D64EF"
-                      fill="none"
-                      strokeWidth="1.5"
-                      pathLength="1"
-                      style={{
-                        strokeDasharray: "1",
-                        strokeDashoffset: isVisible ? "0" : "1",
-                        transition:
-                          "stroke-dashoffset 0.6s cubic-bezier(0.7, 0, 0.3, 1)",
-                      }}
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div className="pointer-events-none flex flex-row items-center">
-                <div ref={textRef}>
-                  <h2 className="max-w-5xl font-neuehaas45  mb-16">
-                    We obsess over details so the result feels effortless.
-                  </h2>
-                </div>
-              </div>
-              {/* <div
-            className="mt-10 relative"
-            style={{ height: "600px", overflow: "hidden" }}
-          >
-            <motion.div
-              initial={{ y: "0%" }}
-              animate={controls}
-              style={{
-                position: "absolute",
-                width: "100%",
-                height: "15%",
-                background: "rgb(245,227,24,.8)",
-                zIndex: 1,
-              }}
-            />
-
-            {[
-              {
-                text: "Fewer appointments, faster treatment",
-
-              },
-              {
-                text: "Personalized care for every patient",
-
-              },
-              {
-                text: "Advanced technology at your service",
-         
-              },
-              {
-                text: "Comfortable and stress-free visits",
-            
-              },
-            ].map((item, index) => (
-              <Section key={index} onHoverStart={() => handleHover(index)}>
-                <div className="relative flex items-center w-full">
-                  <div
-                    className="w-4 h-4 rounded-full absolute left-[40px]"
-                 
-                  ></div>
-                  <span className="pl-40">{item.text}</span>
-                </div>
-              </Section>
-            ))}
-          </div> */}
-            </div>
           </section>
           <div className="min-h-screen relative">
             <div className="font-neuehaas45 perspective-1500 text-[#0414EA]">
               <div className="flip-wrapper">
                 <div className="flip-container">
-                  <div className="face front">Nearly Invisible</div>
+                  <div className="face front">Teeth remain completely visible</div>
                   <div className="face back">
-                    Treatment so discreet, only your smile tells the story.
+                    Initial results are more readily apparent than with braces. Wires and brackets obscure positioning you can not only view results faster. 
                   </div>
                 </div>
 
                 <div className="flip-container">
                   <div className="face front">Designed for Comfort</div>
                   <div className="face back">
-                    Engineered for comfort with smooth, precision-fit aligners.
+                   Invisalign manufacturing is the most researched and advanced fabrication process in the world. Your aligners will accurately fit any complex tooth arrangement and will continue to through the course of treatment. 
                   </div>
                 </div>
 
                 <div className="flip-container">
                   <div className="face front">Tailored to You</div>
                   <div className="face back">
-                    Your journey starts with advanced 3D imaging. From there,
+                    Although our doctors and our team are experts at placing braces, the braces are ultimately prefabricated based on average tooth morphology. Invisalign is made specifically to your tooth shape with our advanced 3d scanners. Your journey starts with advanced 3D imaging. From there,
                     doctor-personalized plans guide a series of custom
                     aligners—engineered to move your teeth perfectly into place.
                   </div>
@@ -1141,13 +1369,19 @@ const Invisalign = () => {
 
                 <div className="flip-container">
                   <div className="face front">Removable & Flexible</div>
-                  <div className="face back">No wires. No food rules.</div>
+                  <div className="face back">No wires. No food limitations. </div>
                 </div>
 
                 <div className="flip-container">
-                  <div className="face front">Proven Results</div>
+                  <div className="face front">Ease of cleaning</div>
                   <div className="face back">
-                    See real progress in months—not years.
+                    Not only can you completely clean your aligners, you can completely clean your teeth and floss between every tooth.
+                  </div>
+                </div>
+                <div className="flip-container">
+                  <div className="face front">Treatment duration</div>
+                  <div className="face back">
+                    Because Invisalign is made for your exact tooth shape and position, movement of all three dimensions can begin in the first week of treatment which can lead to shorter treatment time.dfg
                   </div>
                 </div>
               </div>
@@ -1168,7 +1402,8 @@ const Invisalign = () => {
             comes to your smile.
           </div>
         </div>
-      </div>
+        </div>
+      
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
             <div className="w-[800px] h-[800px]">
@@ -1202,18 +1437,158 @@ const Invisalign = () => {
     </>
   );
 };
+
+
 export default Invisalign;
-{
-  /* <div className="image-content mt-16">
-            <img
-              ref={alignerRef}
-              src="../images/invisalignset.png"
-              alt="aligner"
-              className="w-[400px] h-[400px] object-contain"
-              style={{
-                willChange: "transform",
-              }}
-            />
-            <img src="../images/alignercase.png" />
-          </div> */
-}
+
+
+
+
+// const BulgeGallery = ({ slides }) => {
+//   const canvasWrapperRef = useRef();
+
+//   const vertexShader = `
+// varying vec2 vUv;
+// uniform float uScrollIntensity;
+
+// void main() {
+//   vUv = uv;
+//   vec3 pos = position;
+
+
+//   float wave = sin(uv.y * 3.1416); // 0 at top & bottom, 1 in center
+//   float zOffset = wave * uScrollIntensity * 1.0; 
+//   pos.z += zOffset;
+
+//   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+// }
+
+
+//   `;
+
+//   const fragmentShader = `
+//     varying vec2 vUv;
+//     uniform sampler2D uTexture;
+
+//     void main() {
+//       gl_FragColor = texture2D(uTexture, vUv);
+//     }
+//   `;
+
+//   useEffect(() => {
+//     if (!canvasWrapperRef.current || !slides.length) return;
+
+//     const scene = new THREE.Scene();
+//     const camera = new THREE.PerspectiveCamera(
+//       45,
+//       window.innerWidth / window.innerHeight,
+//       0.1,
+//       1000
+//     );
+//     camera.position.z = 10;
+
+//     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+//     renderer.setSize(window.innerWidth, window.innerHeight);
+//     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+//     canvasWrapperRef.current.appendChild(renderer.domElement);
+
+//     const calculatePlaneDimensions = () => {
+//       const fov = (camera.fov * Math.PI) / 180;
+//       const viewHeight = 2 * Math.tan(fov / 2) * camera.position.z;
+//       const height = viewHeight * 0.7;
+//       const width = height * (8 / 11);
+//       return { width, height };
+//     };
+
+//     const dimensions = calculatePlaneDimensions();
+//     const loader = new THREE.TextureLoader();
+//     const planes = [];
+//     const textures = [];
+
+//     slides.forEach((slide, index) => {
+//       const texture = loader.load(slide.image);
+//       texture.minFilter = THREE.LinearFilter;
+//       textures.push(texture);
+
+//       const material = new THREE.ShaderMaterial({
+//         vertexShader,
+//         fragmentShader,
+//         uniforms: {
+//           uScrollIntensity: { value: 0 },
+//           uTexture: { value: texture },
+//         },
+//         side: THREE.DoubleSide,
+//         transparent: true,
+//       });
+
+//       const geometry = new THREE.PlaneGeometry(
+//         dimensions.width,
+//         dimensions.height,
+//         32,
+//         32
+//       );
+//       const mesh = new THREE.Mesh(geometry, material);
+//       mesh.position.y = -index * (dimensions.height + 1); // space out
+//       scene.add(mesh);
+//       planes.push(mesh);
+//     });
+
+//     let scrollY = 0;
+//     let lastScroll = 0;
+//     let scrollIntensity = 0;
+//     let animationId;
+
+//     const handleScroll = () => {
+//       scrollY = (window.scrollY / window.innerHeight) * (dimensions.height + 1);
+//     };
+
+//     const animate = () => {
+//       animationId = requestAnimationFrame(animate);
+
+//       const delta = scrollY - lastScroll;
+//       lastScroll = THREE.MathUtils.lerp(lastScroll, scrollY, 0.1);
+//       scrollIntensity = THREE.MathUtils.lerp(
+//         scrollIntensity,
+//         Math.abs(delta) * 0.25,
+//         0.2
+//       );
+
+//       camera.position.y = -lastScroll;
+
+//       planes.forEach((plane) => {
+//         plane.material.uniforms.uScrollIntensity.value = scrollIntensity;
+//       });
+
+//       renderer.render(scene, camera);
+//     };
+
+//     handleScroll();
+//     animate();
+//     window.addEventListener("scroll", handleScroll);
+
+//     return () => {
+//       cancelAnimationFrame(animationId);
+//       window.removeEventListener("scroll", handleScroll);
+//       renderer.dispose();
+//       planes.forEach((p) => {
+//         p.geometry.dispose();
+//         p.material.dispose();
+//       });
+//       textures.forEach((t) => t.dispose());
+//       canvasWrapperRef.current?.removeChild(renderer.domElement);
+//     };
+//   }, [slides]);
+
+//   return (
+//     <div className="relative w-full">
+//       {slides.map((_, i) => (
+//         <div key={i} className="h-screen w-full" />
+//       ))}
+
+//       <div
+//         ref={canvasWrapperRef}
+//         className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none"
+//       />
+//     </div>
+//   );
+// };

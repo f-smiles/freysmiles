@@ -3618,8 +3618,6 @@ img:nth-child(6) {
 }
 
 
-
-
 .hero-content {
   justify-content: space-between;
   width: 100%;
@@ -6344,4 +6342,49 @@ font-family: "KHTekaTrial-Light";
 font-size: 14px;
 text-transform: uppercase;
 line-height: 1.2;
+}
+
+canvas.webgl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+
+}
+
+.section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.section-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.section h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.section .description {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.webgl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  outline: none;
 }

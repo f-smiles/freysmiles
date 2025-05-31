@@ -68,6 +68,7 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 extend({ Water, Sky });
 
 function DoorModel() {
+  
   const { scene, animations } = useGLTF("/models/openingclosingdoor3d.glb");
   const mixer = useRef(null);
   const action = useRef(null);
@@ -110,6 +111,7 @@ function DoorModel() {
 
     scene.traverse((child) => {
       if (child.isMesh) {
+        
         child.material.map = null;
         child.material = new THREE.MeshMatcapMaterial({
           matcap: matcapTexture,
