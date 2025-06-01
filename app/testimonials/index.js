@@ -1054,7 +1054,7 @@ const Testimonials = () => {
   return (
     <>
       <Background />
-<Contents />
+{/* <Contents /> */}
       <section
         ref={sectionOneRef}
         className="z-10 relative w-full min-h-[110vh] flex flex-col px-12"
@@ -1117,7 +1117,7 @@ const Testimonials = () => {
         </div>
 
         <div ref={navBarRef} className="absolute bottom-0 left-0 w-full pb-2">
-          <div className="flex items-center justify-center text-[14px] uppercase font-ibmregular gap-4">
+          <div className="flex items-center justify-center text-[14px] uppercase font-khteka gap-4">
             <span
               className={isPatientSectionInView ? "opacity-100" : "opacity-30"}
             >
@@ -1262,7 +1262,7 @@ const Testimonials = () => {
               <h3 className="text-xl leading-tight uppercase font-neuehaas45">
                 {t.name}
               </h3>
-              <p className="font-chivomono text-[12px] leading-snug tracking-tight">
+              <p className="font-khteka uppercase text-[11px] leading-snug tracking-tight">
                 {t.text}
               </p>
             </div>

@@ -171,7 +171,7 @@ const bgRef = useRef(null);
         <motion.div
           key={`${i}-${link.title}`}
           data-flip-button="button"
-          className="bg-[#F2F2F2]/70 text-black rounded-[8px] px-6 py-3 flex items-center relative border border-gray-300 transition-colors duration-200 hover:border-gray-500"
+          className="text-black  px-6 py-3 flex items-center relative border border-gray-300 transition-colors duration-200 hover:border-gray-500"
           onClick={() => {
             setSelectedLink(link.title);
             setIsActive(!isActive);

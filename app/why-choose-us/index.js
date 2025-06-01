@@ -1,4 +1,5 @@
 "use client";
+import { Item } from "../../utils/Item";
 import Copy from "@/utils/Copy.jsx";
 
 import FlutedGlassEffect from "/utils/glass";
@@ -66,6 +67,83 @@ if (typeof window !== "undefined") {
   );
 }
 
+
+const ImageGrid = () => {
+
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    if (headerRef.current) {
+      const tl = gsap.timeline();
+      gsap.set(bodyRef.current, { autoAlpha: 1 });
+      const scroll = new LocomotiveScroll({
+        el: bodyRef.current,
+        smooth: true,
+      });
+
+      setTimeout(() => {
+        scroll.update();
+      }, 1000);
+    }
+  }, []);
+
+
+  const createItems = () => {
+    const elements = document.querySelectorAll(".gtext");
+
+    return [...elements].map((el) => new Item(el, 6));
+  };
+
+  const textExpertiseRef = useRef(null);
+
+  useEffect(() => {
+    if (!textExpertiseRef.current) return;
+
+    let items = createItems();
+
+    items.forEach((item, index) => {
+      gsap
+        .timeline({
+          defaults: { ease: "power1" },
+          scrollTrigger: {
+            trigger: item.DOM.el,
+            start: "top 90%",
+            end: "top 20%",
+            scrub: true,
+          },
+        })
+        .fromTo(
+          item.DOM.inner,
+          { xPercent: (pos) => (pos % 2 === 0 ? 30 : -30), opacity: 0.6 },
+          { xPercent: 0, opacity: 1 },
+          index * 0.1
+        )
+        .fromTo(
+          item.DOM.innerWrap,
+          { xPercent: (pos) => 2 * (pos + 1) * 10 },
+          { xPercent: 0 },
+          index * 0.1
+        );
+    });
+  }, []);
+
+  return (
+    <div>
+      <div className="bg-[#E7E8EA] px-10 py-10">
+        <div className="content content--full">
+          <h1
+            ref={textExpertiseRef}
+            className="gtext size-xl font-neuehaas45 spaced"
+            data-text="Expertise"
+            data-effect="2"
+          >
+            Expertise
+          </h1>
+        </div>
+      </div>
+    </div>
+  );
+};
 const VideoAnimation = () => {
   const videoRef = useRef(null);
   const videoWrapperRef = useRef(null);
@@ -437,62 +515,8 @@ function AutoTextReveal({ children, delay = 0 }) {
   return <div ref={containerRef}>{children}</div>;
 }
 const ServicesSection = () => {
-  const imageContainerRef = useRef(null);
 
-  useEffect(() => {
-    const photos = gsap.utils.toArray('.services-list-item.for-image:not(:first-child)');
-    const textItems = gsap.utils.toArray('.services-list-item.for-content');
-    const imageContainer = imageContainerRef.current;
-  
-    gsap.set(photos, { yPercent: 100 });
-    gsap.set(textItems, { yPercent: 100});
-  
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: '.services-container',
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: true,
-        pin: imageContainer,
-      },
-    });
 
-    tl.fromTo(
-      imageContainer,
-      { scale: 2 },
-      { scale: 1, duration: 1 }
-    );
-  
-   
-    tl.to(
-      photos,
-      {
-        yPercent: 0,
-        stagger: 0.3,
-        duration: 1,
-        ease: 'power3.out',
-      },
-      "<+0.5" 
-    );
-  
-    tl.to(
-      textItems,
-      {
-        yPercent: 0,
-
-        stagger: 0.3,
-        duration: 1,
-        ease: 'power3.out',
-      },
-      "<1" 
-    );
-  
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, []);
-  
-  
   const sectionRef = useRef(null);
   const headingRefs = useRef([]);
 
@@ -590,84 +614,7 @@ const ServicesSection = () => {
         </section>
       </div>
       
-      <div className="section-sticky">
 
-        <div className="services-container">
-          <div className="services-list ">
-            <div className="services-list-items">
-            <div className="services-list-item for-content">
-  <h3>Cone Beam CT Scan</h3>
-  <p className="paragraph-right">
-  Certain treatment plans rely on precise growth timing to ensure stable, long-lasting results.
-Our 3D imaging technology lets us track the exact position and trajectory of traditionally
-problematic teeth—while also helping rule out certain pathologies. It’s changing the face of
-dentistry and orthodontics. Expect more advanced insights than what you’ll hear from most
-competitors.
-  </p>
-</div>
-
-              <div className="services-list-item for-content">
-                <h3>Comprehensive Root Canal Therapy Services</h3>
-                <p className="paragraph-right">
-    A bright, healthy-looking smile can make a world of difference in your everyday life.
-  </p>
-
-              </div>
-              <div className="services-list-item for-content">
-                <h3>Customized Orthodontic Solutions: Invisalign and Braces</h3>
-                <p className="paragraph-right">
-    A bright, healthy-looking smile can make a world of difference in your everyday life.
-  </p>
-      
-              </div>
-              <div className="services-list-item for-content">
-                <h3>Expert Wisdom Tooth Extraction Services</h3>
-                <p className="paragraph-right">
-    A bright, healthy-looking smile can make a world of difference in your everyday life.
-  </p>
-          
-              </div>
-              <div className="services-list-item for-content">
-                <h3>Teeth Whitening and Bleaching Treatments</h3>
-                <p className="paragraph-right">
-    A bright, healthy-looking smile can make a world of difference in your everyday life.
-  </p>
-          
-              </div>
-
-            </div>
-          </div>
-          <div className="services-list for-images" ref={imageContainerRef}>
-
-            <div className="services-list-items">
-            <picture className="services-list-item for-image">
-  <video
-    src="/videos/cbctscan.mp4"
-    muted
-    autoPlay
-    loop
-    playsInline
-  />
-</picture>
-              <picture className="services-list-item for-image">
-                <img src="/images/testdisplay.png" alt="" />
-              </picture>
-              <picture className="services-list-item for-image">
-                <img src="/images/iphonemockup.jpg" alt="" />
-              </picture>
-
-
-              <picture className="services-list-item for-image">
-                <img src="/images/boyflossing.jpeg" alt="" />
-              </picture>
-              <picture className="services-list-item for-image">
-                <img src="https://cdn.prod.website-files.com/670d6a504d44b05dc0cec021/672bec96a61218341740c719_theet-whitening-intro-1x1-p-1080.webp" alt="" />
-              </picture>
-       
-            </div>
-          </div>
-        </div>
-      </div>
       
 
     </>
@@ -682,7 +629,9 @@ export default function WhyChooseUs() {
   return (
     <>
 
+
 <Hero />
+<ImageGrid />
 <ServicesSection />
 <CardStack />
 <StackCards />
@@ -2331,6 +2280,19 @@ const ProjectImage = ({
   );
 };
 
+const KineticText = ({ text = "More Than Smiles" }) => {
+  return (
+    <figure className="kinetic">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="kinetic-line">
+          <span style={{ animationDelay: `${i * 0.2}s` }}>{text}</span>
+        </div>
+      ))}
+    </figure>
+  );
+};
+
+
 function MoreThanSmiles() {
 
 
@@ -2541,37 +2503,142 @@ function MoreThanSmiles() {
   
   
 
+  const cardsRef = useRef([]);
 
-  
+  useEffect(() => {
+    const cards = cardsRef.current;
+
+    cards.forEach((card, index) => {
+      gsap.set(card, {
+        y: window.innerHeight,
+        rotate: rotations[index] || 0,
+      });
+    });
+
+    ScrollTrigger.create({
+      trigger: '.sticky-cards',
+      start: 'top top',
+      end: `+=${window.innerHeight * 8}`,
+      pin: true,
+      pinSpacing: true,
+      scrub: 1,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        const totalCards = cards.length;
+        const progressPerCard = 1 / totalCards;
+
+        cards.forEach((card, index) => {
+          const cardStart = index * progressPerCard;
+          let cardProgress = (progress - cardStart) / progressPerCard;
+          cardProgress = Math.min(Math.max(cardProgress, 0), 1);
+
+          let yPos = window.innerHeight * (1 - cardProgress);
+          let xPos = 0;
+
+          if (cardProgress === 1 && index < totalCards - 1) {
+            const remainingProgress =
+              (progress - (cardStart + progressPerCard)) /
+              (1 - (cardStart + progressPerCard));
+            if (remainingProgress > 0) {
+              const distanceMultiplier = 1 - index * 0.15;
+              xPos =
+                -window.innerWidth * 0.3 * distanceMultiplier * remainingProgress;
+              yPos =
+                -window.innerHeight * 0.3 * distanceMultiplier * remainingProgress;
+            }
+          }
+
+          gsap.to(card, {
+            y: yPos,
+            x: xPos,
+            duration: 0,
+            ease: 'none',
+          });
+        });
+      },
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, []);
+
+  const colors = ['#f6b12d', '#eb4f2f', '#b26e5e', '#c588bb', '#699ef6', '#858B3F'];
+  const sectionStyle = {
+    position: 'relative',
+    width: '100vw',
+    height: '100vh',
+    overflow: 'hidden',
+  };
+
+  const centerTextStyle = {
+    position: 'relative',
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between', 
+    alignItems: 'center',
+    gap: '2vw',
+    padding: '0 3vw',
+  };
+
+  const stickyStyle = {
+    ...sectionStyle,
+    backgroundColor: '#e3e3e3',
+  };
+
+  const cardStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    willChange: 'transform',
+    width: '330px',
+    height: '460px',
+    padding: '1.5em',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    borderRadius: '20px',
+    color: '#000',
+  };
+  const cardImgStyle = {
+    width: '100%',
+    height: '66%',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  };
+  const imgStyle = {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block',
+  };
+
+  const cardContentStyle = {
+    flex: '0 0 12px',
+    display: 'flex',
+    alignItems: 'center',
+  };
+  const rotations = [-12, 10, -5, 5, -5, -2];
+
   return (
     <>
-<section
-  ref={sectionRef}
-  className="relative w-full h-screen px-6 py-10 md:px-12"
->
-<div className="flex justify-center items-end w-full absolute bottom-0 left-0 z-10 gap-x-[1.5vw] pointer-events-none">
-  {images.map((src, i) => (
-    <div key={i} className="w-[14vw] flex justify-center">
-      <img
-        ref={(el) => (imageRefs.current[i] = el)}
-        src={src}
-        className="w-full h-auto"
-      />
-    </div>
-  ))}
-</div>
 
-  <div className="flex flex-row items-center justify-between h-full">
-  <p className="font-chivomono max-w-[600px] text-[0.95rem] leading-snug uppercase tracking-wide">
+<section className="sticky-cards" style={stickyStyle}>
+<KineticText text="More Than Smiles" />
+  <div style={{ ...centerTextStyle, fontSize: '2rem', paddingBottom: '2em' }}>
+  <div className="flex flex-col items-center justify-center h-full">
+  <p className="font-khteka max-w-[600px] text-[14px] leading-snug uppercase">
       We’re committed to making world-class orthodontic care accessible to all.
       In 2011, we launched More Than Smiles to provide treatment and promote
-      community education around dental and orthodontic health. Learn how to
-      nominate someone at our website.
+      community education around dental and orthodontic health.
     </p>
-    <h1 className="text-[2.2vw] font-neuehaas45 uppercase tracking-wide mb-12">
-      <div>Nominate someone who deserves</div>
-      <div className="">a confident smile through our</div>
-      <div className="">non-profit More Than Smiles.</div>
+    <h1 className="font-khteka max-w-[600px] text-[14px] leading-snug uppercase">
+  Nominate someone who deserves a confident smile through our non-profit More Than Smiles.
     </h1>
     <div className="z-10 absolute right-[3vw]">
               <a
@@ -2602,6 +2669,36 @@ function MoreThanSmiles() {
             </div>
   </div>
 
+  </div>
+  {images.map((src, i) => (
+  <div
+    key={i}
+    ref={(el) => (cardsRef.current[i] = el)}
+    style={{
+      ...cardStyle,
+      backgroundColor: colors[i % colors.length], 
+    }}
+  >
+      <div style={cardImgStyle}>
+        <img src={src} alt={`card-${i}`} style={imgStyle} />
+      </div>
+      <div style={cardContentStyle}>
+  <p className="font-khteka">Card {i + 1}</p>
+  <div
+    style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '26px',
+      height: '26px',
+      marginLeft: '0.5em',
+    }}
+  >
+<img src="/images/fspetallogo.png" />
+  </div>
+</div>
+    </div>
+  ))}
 </section>
 
 

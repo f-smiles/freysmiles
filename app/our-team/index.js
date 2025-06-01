@@ -16,7 +16,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader, useThree} from "@react-three/fiber";
 import * as THREE from "three";
 import {
   TextureLoader,
@@ -28,6 +28,8 @@ import {
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
+
+
 
 const vertexShader = `
 uniform vec2 uOffset;
@@ -136,102 +138,7 @@ const ShaderPlane = ({ imageUrl, mouse }) => {
     </mesh>
   );
 };
-const Intro = ({ texts = [], onFinished }) => {
-  const wrapperRef = useRef(null);
-  const circleTextRefs = useRef([]);
 
-  useEffect(() => {
-    const circleEls = circleTextRefs.current;
-    gsap.set(circleEls, { transformOrigin: "50% 50%" });
-
-    const introTL = gsap
-      .timeline()
-      .addLabel("start", 0)
-      .to(
-        circleEls,
-        {
-          duration: 30,
-          ease: "linear",
-          rotation: (i) => (i % 2 ? 360 : -360),
-          repeat: -1,
-          transformOrigin: "50% 50%",
-        },
-        "start"
-      )
-
-
-    return () => {
-      introTL.kill();
-    };
-  }, [onFinished]);
-
-  return (
-<main
-  ref={wrapperRef}
-  
->
-  <svg className="w-full h-full circles" viewBox="0 0 1400 1400">
-    <defs>
-
-      <path
-        id="circle-0"
-        d="M150,700.5A550.5,550.5 0 1 11251,700.5A550.5,550.5 0 1 1150,700.5"
-      />
-      <path
-        id="circle-1"
-        d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
-      />
-      <path
-        id="circle-2"
-        d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
-      />
-      <path
-        id="circle-3"
-        d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
-      />
-
-    </defs>
-    
-    <path d="M100,700.5A600,600 0 1 11301,700.5A600,600 0 1 1100,700.5" fill="none" stroke="black" strokeWidth="1" />
-  <path d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5" fill="none" stroke="black" strokeWidth="1" />
-  <path d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5" fill="none" stroke="black" strokeWidth="1" />
-  <path d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5" fill="none" stroke="black" strokeWidth="1" />
-
-
-
-    
-    <text
-     dy="-20"
-      ref={(el) => (circleTextRefs.current[1] = el)}
-      className="circles__text circles__text--1"
-    >
-      <textPath xlinkHref="#circle-1" textLength="2830">
-        Low dose 3d digital radiographs&nbsp;
-      </textPath>
-    </text>
-    <text
-         dy="-20"
-      ref={(el) => (circleTextRefs.current[2] = el)}
-      className="circles__text circles__text--2"
-    >
-      <textPath xlinkHref="#circle-2" textLength="2001">
-        Accelerated Treatment&nbsp;
-      </textPath>
-    </text>
-    <text
-         dy="-20"
-      ref={(el) => (circleTextRefs.current[3] = el)}
-      className="circles__text circles__text--3"
-    >
-      <textPath xlinkHref="#circle-3" textLength="1341">
-        Invisalign&nbsp; Invisalign&nbsp; Invisalign&nbsp;
-      </textPath>
-    </text>
-
-  </svg>
-</main>
-  );
-};
 const images = [
   "../images/team_members/Adriana-Photoroom.jpg",
   "../images/team_members/Nicollewaving.png",
@@ -721,11 +628,196 @@ export default function OurTeam() {
   
     return () => ScrollTrigger.getAll().forEach(t => t.kill());
   }, []);
+  useEffect(() => {
+    const canvas = document.getElementById('shader-bg');
+    if (!canvas) return;
   
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
   
+    const scene = new THREE.Scene();
+    const camera = new THREE.Camera();
+  
+    const uniforms = {
+      u_time: { value: 0 },
+      u_resolution: {
+        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+      },
+      u_mouse: { value: new THREE.Vector2() },
+    };
+  
+    const vertexShader = `
+      varying vec2 v_uv;
+      void main() {
+        v_uv = uv;
+        gl_Position = vec4(position, 1.0);
+      }
+    `;
+  
+    const fragmentShader = `
+precision mediump float;
+
+uniform float u_time;
+uniform vec2 u_mouse;
+uniform vec2 u_resolution;
+varying vec2 v_uv;
+
+#define PI 3.14159265359
+
+// Noise functions
+float hash(vec2 p) {
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+}
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+float fbm(vec2 p) {
+    float sum = 0.0;
+    float amp = 0.5;
+    float freq = 1.0;
+    
+    for(int i = 0; i < 6; i++) {
+        sum += amp * noise(p * freq);
+        amp *= 0.5;
+        freq *= 2.0;
+    }
+    
+    return sum;
+}
+
+// Vibrant color generation
+vec3 vibrantColor(float t) {
+    vec3 a = vec3(0.8, 0.1, 0.5);  // Magenta
+    vec3 b = vec3(1.0, 0.2, 0.0);  // Orange-red
+    vec3 c = vec3(0.1, 0.5, 1.0);  // Bright blue
+    vec3 d = vec3(0.0, 0.8, 0.4);  // Turquoise
+    
+    return a + b * cos(2.0 * PI * (c * t + d));
+}
+
+void main() {
+    // Adjust for aspect ratio
+    vec2 uv = v_uv;
+    float aspect = u_resolution.x / u_resolution.y;
+    uv.x *= aspect;
+    
+    // Mouse influence (normalized to UV space)
+    vec2 mousePos = u_mouse;
+    mousePos.x *= aspect;
+    float mouseDist = length(uv - mousePos);
+    float mouseInfluence = 1.0 - smoothstep(0.0, 0.8, mouseDist);
+    
+    // Time variables for animation
+    float time = u_time * 0.3;
+    
+    // Base organic patterns with multiple layers
+    float noise1 = fbm(uv * 3.0 + time * vec2(0.5, 0.2));
+    float noise2 = fbm(uv * 2.0 - time * vec2(0.3, 0.4) + noise1 * 0.5);
+    float noise3 = fbm(uv * 1.5 + time * vec2(0.1, -0.3) + noise2 * 0.4);
+    
+    // Add mouse displacement
+    float displacement = mouseInfluence * 0.2;
+    noise2 += displacement * sin(time * 2.0);
+    noise3 *= 1.0 + mouseInfluence * 0.5;
+    
+    // Create dynamic organic waves
+    float organicShape = noise1 * 0.3 + noise2 * 0.4 + noise3 * 0.3;
+    
+    // Add pulsation based on time
+    float pulse = 0.5 + 0.5 * sin(time * 2.0);
+    organicShape = organicShape * (0.8 + 0.2 * pulse);
+    
+    // Enhance edges with another noise layer
+    float edgeNoise = fbm(uv * 5.0 + time * vec2(-0.2, 0.3));
+    float edge = smoothstep(0.4, 0.6, organicShape);
+    edge = mix(edge, edgeNoise, 0.3);
+    
+    // Generate vibrant colors
+    vec3 color1 = vibrantColor(organicShape * 2.0 + time * 0.1);
+    vec3 color2 = vibrantColor(organicShape * 1.5 - time * 0.15 + 0.4);
+    vec3 color3 = vibrantColor(edge * 3.0 + time * 0.2 + 0.8);
+    
+    // Background color - deep purple
+    vec3 bgColor = vec3(0.1, 0.0, 0.2);
+    
+    // Combine all colors for final vibrant look
+    vec3 finalColor = mix(bgColor, color1, organicShape);
+    finalColor = mix(finalColor, color2, edge * 0.7);
+    finalColor = mix(finalColor, color3, edgeNoise * edge * 0.5);
+    
+    // Add glow effect enhanced by mouse
+    float glow = smoothstep(0.3, 0.7, organicShape);
+    glow = glow * (1.0 + mouseInfluence * 2.0);
+    finalColor += glow * color2 * 0.3;
+    
+    // Apply brightness boost based on mouse
+    finalColor *= 1.0 + mouseInfluence * 0.5;
+    
+    // Final output
+    gl_FragColor = vec4(finalColor, 1.0);
+    
+    #include <colorspace_fragment>
+}
+    `;
+  
+    const material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms,
+    });
+  
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+  
+    const clock = new THREE.Clock();
+  
+    const animate = () => {
+      requestAnimationFrame(animate);
+      uniforms.u_time.value = clock.getElapsedTime();
+      renderer.render(scene, camera);
+    };
+    animate();
+  
+    const handleResize = () => {
+      const { innerWidth: w, innerHeight: h } = window;
+      renderer.setSize(w, h);
+      uniforms.u_resolution.value.set(w, h);
+    };
+  
+    const handleMouseMove = (e) => {
+      uniforms.u_mouse.value.set(e.clientX, window.innerHeight - e.clientY);
+    };
+  
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', handleMouseMove);
+  
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      renderer.dispose();
+    };
+  }, []);
   return (
-    <div className="">
-      
+<div className="relative w-full h-screen">
+<canvas
+    id="shader-bg"
+    className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"
+  />
       {/* <div
         className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
           isRevealing ? "translate-y-0" : "-translate-y-full"
@@ -746,7 +838,7 @@ export default function OurTeam() {
         </div>
       </div> */}
 
-      <div className="relative bg-black overflow-x-clip">
+      <div className="relative overflow-x-clip">
 
         <div ref={wrapperRef} className="flex w-full">
           <div className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-black w-3/5 bg-[#FCF9F8] rounded-[24px]">
@@ -984,7 +1076,7 @@ export default function OurTeam() {
   ref={lastSectionRef}
   className="relative flex-col bg-cover h-screen flex justify-center items-center rounded-[24px] bg-[#FCF9F8] overflow-hidden"
 >
-  <Intro />
+
 </section>
 
 

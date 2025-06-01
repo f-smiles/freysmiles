@@ -38,7 +38,51 @@ if (typeof window !== "undefined") {
 }
 
 gsap.registerPlugin(ScrollTrigger);
+const Braces = () => {
 
+  return (
+    <>
+
+<div
+  className="relative min-h-screen overflow-hidden"
+  style={{
+    background: `linear-gradient(to bottom, #e7e2f1 0%, #E3DEEA 100%)`,
+  }}
+  
+>
+
+  <main className="relative z-20">
+  <FluidSimulation />
+  
+  </main>
+</div>
+
+
+
+
+
+
+      {/* <div style={{ width: "50vw", height: "100vh" }}>
+        <FlutedGlassEffect
+          imageUrl="/images/1.jpg"
+          mode="mouse"
+          motionFactor={-50}
+          rotationAngle={45}
+          segments={50}
+          overlayOpacity={50}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div> */}
+        {/* <TextEffect 
+    text="Braces" 
+    font="NeueHaasRoman" 
+    color="#ffffff" 
+    fontWeight="normal" 
+  /> */}
+  {/* <WebGLGalleryApp /> */}
+    </>
+  );
+};
 
 const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#ffffff", fontWeight = "100" }) => {
   const containerRef = useRef(null);
@@ -341,51 +385,7 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#fff
   return <div ref={containerRef} style={{ width: '100%', height: '100vh', cursor: 'none' }} />;
 };
 
-const Braces = () => {
 
-  return (
-    <>
-<div
-  className="relative min-h-screen overflow-hidden"
-  style={{
-    background: `linear-gradient(to bottom, #e7e2f1 0%, #E3DEEA 100%)`,
-  }}
-  
->
-
-  <main className="relative z-20">
-  <FluidSimulation />
-  
-  </main>
-</div>
-
-
-    <div className="relative">
-  <TextEffect 
-    text="Braces" 
-    font="NeueHaasRoman" 
-    color="#ffffff" 
-    fontWeight="normal" 
-  />
-  <WebGLGalleryApp />
-</div>
-
-
-
-      {/* <div style={{ width: "50vw", height: "100vh" }}>
-        <FlutedGlassEffect
-          imageUrl="/images/1.jpg"
-          mode="mouse"
-          motionFactor={-50}
-          rotationAngle={45}
-          segments={50}
-          overlayOpacity={50}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </div> */}
-    </>
-  );
-};
 
 export default Braces;
 
@@ -1291,7 +1291,7 @@ function WebGLGalleryApp() {
       const normalized = NormalizeWheel(e)
       scrollRef.current.target += normalized.pixelY * 0.5
       
-      // Limit scrolling to gallery bounds
+  
       const galleryHeight = galleryRef.current.getBoundingClientRect().height
       const maxScroll = galleryHeight - window.innerHeight
       scrollRef.current.target = Math.max(0, Math.min(maxScroll, scrollRef.current.target))
@@ -1308,9 +1308,6 @@ function WebGLGalleryApp() {
       <div className="gallery1" ref={galleryRef}>
         <main>
           <section className="gallery-section">
-            <header className="gallery-header">
-              <h1 className="gallery-title">Planete Elevene</h1>
-            </header>
 
             <div className="gallery1">
               {images.map((src, i) => (
@@ -1432,9 +1429,9 @@ const lerp = (a, b, t) => a + (b - a) * t
 const images = [
   "/images/background_min.png",
   "/images/bracesrubberbands.png",
-  "/images/image3.jpg",
-  "/images/image4.jpg",
-  "/images/image5.jpg",
+  "/images/adobetest.png",
+  "/images/glassflower.jpeg",
+  "/images/glassflower.jpeg",
   "/images/image6.jpg",
 
 ];

@@ -3,6 +3,11 @@ import UserButton from "@/components/auth/user-button";
 
 export const links = [
   {
+    title: "TREATMENTS",
+    sublinks: ["Invisalign", "Braces", "Early & Adult Orthodontics"],
+    hrefs: ["/invisalign", "/braces", "/early-adult-orthodontics"],
+  },
+  {
     title: "ABOUT",
     sublinks: ["Team", "Manifesto", "Testimonials", "Locations"],
     hrefs: ["/our-team", "/why-choose-us", "/testimonials", "/#locations"],
@@ -37,9 +42,5 @@ export const links = [
         </Link>
       ),
   },
-  {
-    title: "TREATMENTS",
-    sublinks: ["Invisalign", "Braces", "Early & Adult Orthodontics"],
-    hrefs: ["/invisalign", "/braces", "/early-adult-orthodontics"],
-  },
+ 
 ];

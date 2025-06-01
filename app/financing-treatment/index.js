@@ -27,8 +27,6 @@ import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText, MorphSVGPlugin);
 
-
-
 const FinancingTreatment = () => {
   // const canvasRef = useRef();
 
@@ -651,7 +649,6 @@ const FinancingTreatment = () => {
     });
   }, []);
 
-
   const lineRef = useRef();
 
   useEffect(() => {
@@ -666,7 +663,7 @@ const FinancingTreatment = () => {
       ease: "power2.out",
     });
   }, []);
- const textRef = useRef(null);
+  const textRef = useRef(null);
   const trackRef = useRef(null);
   const shapeRef = useRef(null);
   const tl = useRef(null);
@@ -680,16 +677,21 @@ const FinancingTreatment = () => {
         duration: 1,
         scale: 30,
         rotate: 240,
-        ease: "expo.in"
+        ease: "expo.in",
       })
-      .to(textRef.current, {
-        duration: 1,
-        x: 0,
-        ease: "power2.in"
-      }, 0);
+      .to(
+        textRef.current,
+        {
+          duration: 1,
+          x: 0,
+          ease: "power2.in",
+        },
+        0
+      );
 
     const handleScroll = () => {
-      const progress = window.pageYOffset / (document.body.offsetHeight - window.innerHeight);
+      const progress =
+        window.pageYOffset / (document.body.offsetHeight - window.innerHeight);
       tl.current.progress(progress);
       document.body.style.setProperty("--scroll", progress);
     };
@@ -701,22 +703,215 @@ const FinancingTreatment = () => {
       tl.current.kill();
     };
   }, []);
+  useEffect(() => {
+    const canvas = document.getElementById('shader-bg');
+    if (!canvas) return;
+  
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+  
+    const scene = new THREE.Scene();
+    const camera = new THREE.Camera();
+  
+    const uniforms = {
+      u_time: { value: 0 },
+      u_resolution: {
+        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+      },
+      u_mouse: { value: new THREE.Vector2() },
+    };
+  
+    const vertexShader = `
+      varying vec2 v_uv;
+      void main() {
+        v_uv = uv;
+        gl_Position = vec4(position, 1.0);
+      }
+    `;
+  
+    const fragmentShader = `
+precision mediump float;
 
+uniform vec2 u_resolution;
+
+float random(vec2 st) {
+  return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453);
+}
+
+float ease(float t) {
+  return smoothstep(0.0, 1.0, t);
+}
+
+void main() {
+  vec2 st = gl_FragCoord.xy / u_resolution;
+  float y = ease(st.y);
+
+  // Color stops (sampled to match your gradient better)
+  vec3 top = vec3(0.96, 0.96, 0.94);     // Warm beige-gray
+  vec3 mid = vec3(0.94, 0.96, 0.96);     // Neutral pale gray-blue
+  vec3 bottom = vec3(0.91, 0.94, 0.97);  // Very pale sky blue (subtle)
+
+  // Rebalanced interpolation to favor top/mid
+  vec3 color = mix(top, mid, smoothstep(0.0, 0.45, y));
+  color = mix(color, bottom, smoothstep(0.5, 0.85, y)); // capped earlier
+
+  // Optional ultra-subtle grain
+  float grain = (random(st * u_resolution.xy) - 0.5) * 0.003;
+  color += grain;
+
+  gl_FragColor = vec4(color, 1.0);
+}
+    `;
+  
+    const material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms,
+    });
+  
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+  
+    const clock = new THREE.Clock();
+  
+    const animate = () => {
+      requestAnimationFrame(animate);
+      uniforms.u_time.value = clock.getElapsedTime();
+      renderer.render(scene, camera);
+    };
+    animate();
+  
+    const handleResize = () => {
+      const { innerWidth: w, innerHeight: h } = window;
+      renderer.setSize(w, h);
+      uniforms.u_resolution.value.set(w, h);
+    };
+  
+    const handleMouseMove = (e) => {
+      uniforms.u_mouse.value.set(e.clientX, window.innerHeight - e.clientY);
+    };
+  
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', handleMouseMove);
+  
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      renderer.dispose();
+    };
+  }, []);
   return (
     <>
-             <div className="bg-[#F2F3F5] min-h-screen pt-[160px] relative ">
+      {/* <div className="min-h-screen p-8 flex flex-col md:flex-row mx-auto items-center w-full gap-8 ">
+        <div className="w-full md:w-1/2 flex justify-center items-center">
+          <div className="flex justify-center items-center my-auto w-full md:w-1/2 text-sm leading-relaxed space-y-4">
+            <p className="font-neuehaas45">
+              In non ligula at elit congue accumsan. Vestibulum ante ipsum
+              primis in faucibus orci luctus et ultrices posuere cubilia curae;
+              Integer id massa tincidunt, dapibus metus a, accumsan lorem.
+            </p>
+          </div>
+        </div>
+
+        <div className="w-full md:w-1/2 justify-center items-center">
+          <img
+            src="/images/klarna.png"
+            alt="Large pink lowercase k"
+            className="w-2/3 h-auto object-contain"
+          />
+        </div>
+      </div> */}
+          <div className="relative">
+    <canvas
+    id="shader-bg"
+    className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"
+  />
+<div className="h-screen flex justify-center items-center">
+<div className="h-[90vh] backdrop-blur-xl bg-[#111]/10 shadow-sm max-w-7xl p-10">
+<div className="grid grid-cols-3 gap-4 h-full">
+<div className="flex flex-col items-center justify-center h-full">
+
+  <div className="relative bg-[#F1F1F1]/40 p-4 rounded-xl border-[2px] border-white p-10">
+    <div className="absolute top-4 right-4 w-6 h-6 bg-blue-700 text-white text-sm flex items-center justify-center rounded-ful">
+      
+    </div>
+    <div className="space-y-2">
+    <div>
+    <h3 className="text-lg font-semibold text-black font-neuehaas45 mb-2">No Hidden Fees</h3>
+    <ul className="list-disc list-inside text-sm text-gray-700 font-neuehaas45 space-y-1">
+      <li>All-inclusive pricing — from start to finish.</li>
+      <li>No up-charges for ceramic or “special” braces.</li>
+      <li>No surprise fees or unexpected add-ons.</li>
+    </ul>
+  </div>
+
+  <div>
+    <h3 className="text-lg font-semibold text-black font-neuehaas45 mb-2">Flexible Monthly Plans</h3>
+    <ul className="list-disc list-inside text-sm text-gray-700 font-neuehaas45 space-y-1">
+      <li>Payment plans typically span 12–24 months.</li>
+      <li>Custom-built around your case and timeline.</li>
+    </ul>
+  </div>
+ 
+    </div>
+  </div>
+
+
+  <div className="w-full max-w-md mx-auto mt-4">
+
+  <svg width="400" height="200" viewBox="0 0 200 100">
+    <path d="M 20 100 A 80 80 0 0 1 180 100" stroke="grey" stroke-width="6" fill="none" />
+    <path d="M 20 100 A 80 80 0 0 1 180 100" stroke="white" stroke-width="6" fill="none" stroke-dasharray="100 250" stroke-linecap="round" />
+    <text x="100" y="70" font-size="12" text-anchor="middle" fill="black" className="font-neuehaas45">250/month</text>
+    <text x="70" y="60" font-size="5" text-anchor="end" fill="black" class="font-khteka">
+    Starting
+  </text>
+  </svg>
+
+
+  <div className="relative mt-4">
+
+    <div className="h-[1px] bg-black/20 rounded-full"></div>
+
+    {/* Highlighted bar */}
+    <div className="absolute top-1/2 left-[55%] -translate-y-1/2 w-[20%] h-[6px] bg-white rounded-full"></div>
+
+
+    <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
+    <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
+
+    <div className="absolute top-full left-[65%] mt-2 flex flex-col items-center">
+      <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-black"></div>
+      <span className="mt-1 font-khteka text-[10px]">Our price</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<div className="bg-[#111]/10 p-2 rounded-md ">Phone</div>
+<div className="bg-[#111]/10 p-2 rounded-md ">Column 3</div>
+  </div>
+</div>
+</div>
+
+</div>
+      <div className="bg-[#F2F3F5] min-h-screen pt-[160px] relative ">
         <section className="relative flex items-center justify-center">
           <div className=" w-[36vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
-            <Copy>            <p className="font-neueroman text-[18px] uppercase leading-snug text-black">
-              Orthodontic treatment is a transformative investment in both your
-              appearance and long-term dental health — ideally, a
-              once-in-a-lifetime experience. While many orthodontists can
-              straighten teeth with braces or Invisalign, the quality of
-              outcomes varies widely. With today's advanced technology,
-              treatment goes far beyond alignment — it can enhance facial
-              aesthetics and deliver truly life-changing results.
-            </p></Copy>
-
+            <Copy>
+              {" "}
+              <p className="font-neueroman text-[18px] uppercase leading-snug text-black">
+                Orthodontic treatment is a transformative investment in both
+                your appearance and long-term dental health — ideally, a
+                once-in-a-lifetime experience. While many orthodontists can
+                straighten teeth with braces or Invisalign, the quality of
+                outcomes varies widely. With today's advanced technology,
+                treatment goes far beyond alignment — it can enhance facial
+                aesthetics and deliver truly life-changing results.
+              </p>
+            </Copy>
           </div>
 
           <svg
@@ -845,7 +1040,9 @@ const FinancingTreatment = () => {
             </h2>
 
             <p className="text-base font-neuehaas45 max-w-md">
-              We’ve partnered with Klarna to offer flexible, hassle-free payment options. Split your costs over time with zero fuss, zero stress — no forms, no fine print. Just flexibility that fits your flow.
+              We’ve partnered with Klarna to offer flexible, hassle-free payment
+              options. Split your costs over time with zero fuss, zero stress —
+              no forms, no fine print. Just flexibility that fits your flow.
             </p>
           </div>
 
@@ -993,8 +1190,8 @@ const FinancingTreatment = () => {
                     </div>
                   </div>
                   <div className="loading-bar">
-  <span style={{ width: `${progress}%` }}></span>
-</div>
+                    <span style={{ width: `${progress}%` }}></span>
+                  </div>
                   <svg
                     className="checkmark checkmark-success"
                     xmlns="http://www.w3.org/2000/svg"
@@ -1079,19 +1276,19 @@ const FinancingTreatment = () => {
           </text>
         </svg>
         <section className="relative w-full h-screen font-neuehaas45">
-                <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
-          <path
-            ref={lineRef}
-            strokeLinecap="round"
-            strokeLinejoin="miter"
-            fillOpacity="0"
-            strokeMiterlimit="4"
-            stroke="rgb(248,134,63)"
-            strokeOpacity="1"
-            strokeWidth="1.5"
-            d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
-          />
-        </svg>
+          <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
+            <path
+              ref={lineRef}
+              strokeLinecap="round"
+              strokeLinejoin="miter"
+              fillOpacity="0"
+              strokeMiterlimit="4"
+              stroke="rgb(248,134,63)"
+              strokeOpacity="1"
+              strokeWidth="1.5"
+              d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
+            />
+          </svg>
           <section className="bg-[#FF621D]"></section>
           <div className="items-start flex flex-col px-6">
             <div className="cube-outline">
@@ -1165,13 +1362,13 @@ const FinancingTreatment = () => {
                     strokeWidth="1"
                     d="M-110,-1890 C-110,-1890 -110,-1780 -110,-1780 C-110,-1780 -630,-1780 -630,-1780 C-685.22900390625,-1780 -730,-1735.22900390625 -730,-1680 C-730,-1680 -730,-1310 -730,-1310 C-730,-1254.77099609375 -685.22900390625,-1210 -630,-1210 C-630,-1210 -10,-1210 -10,-1210 C45.229000091552734,-1210 90,-1165.22900390625 90,-1110 C90,-1110 90,-1050 90,-1050 C90,-1050 630,-1050 630,-1050 C685.22802734375,-1050 730,-1005.22900390625 730,-950 C730,-950 730,240 730,240 C730,295.22900390625 685.22802734375,340 630,340 C630,340 -270,340 -270,340 C-270,340 -270,1000 -270,1000 C-270,1000 390,1000 390,1000 C445.22900390625,1000 490,1044.77099609375 490,1100 C490,1100 490,1630 490,1630 C490,1685.22900390625 445.22900390625,1730 390,1730 C390,1730 -110,1730 -110,1730 C-110,1730 -110,1890 -110,1890"
                   />
-<image
-  href="/images/outlineshape.png"
-  x="-100"
-  y="-1940"
-  width="800"
-  height="800"
-/>
+                  <image
+                    href="/images/outlineshape.png"
+                    x="-100"
+                    y="-1940"
+                    width="800"
+                    height="800"
+                  />
                   <text
                     x="50"
                     y="-1720"
@@ -1182,21 +1379,22 @@ const FinancingTreatment = () => {
                     <tspan x="20" dy="1.4em">
                       Initial consultations
                     </tspan>
-                    <tspan  x="20" dy="4.5em">
-                    Whether in person or virtual,
-  </tspan>
-  <tspan x="20" dy="1.2em">your first consultation is free.</tspan>
+                    <tspan x="20" dy="4.5em">
+                      Whether in person or virtual,
+                    </tspan>
+                    <tspan x="20" dy="1.2em">
+                      your first consultation is free.
+                    </tspan>
                   </text>
 
-
                   <image
-  href="/images/chatbubble.svg"
-  x="-500"
-  y="-940"
-  width="800"
-  height="800"
-/>
-<text
+                    href="/images/chatbubble.svg"
+                    x="-500"
+                    y="-940"
+                    width="800"
+                    height="800"
+                  />
+                  <text
                     x="-300"
                     y="-620"
                     fill="white"
@@ -1210,24 +1408,23 @@ const FinancingTreatment = () => {
                       This initial visit includes an
                     </tspan>
                     <tspan x="-400" dy="1.4em">
-                    in-depth orthodontic evaluation
+                      in-depth orthodontic evaluation
                     </tspan>
                     <tspan x="-250" dy="5.4em">
-                    digital radiographs and
-                    
+                      digital radiographs and
                     </tspan>
                     <tspan x="-250" dy="1.2em">
-                    professional imaging.
+                      professional imaging.
                     </tspan>
                   </text>
 
                   <image
-  href="/images/outlineshape2.png"
-  x="-100"
-  y="240"
-  width="800"
-  height="800"
-/>
+                    href="/images/outlineshape2.png"
+                    x="-100"
+                    y="240"
+                    width="800"
+                    height="800"
+                  />
                   <text
                     x="-100"
                     y="520"
@@ -1255,12 +1452,12 @@ const FinancingTreatment = () => {
                     </tspan>
                   </text>
                   <image
-  href="/images/outlineshape3.png"
-  x="-400"
-  y="940"
-  width="800"
-  height="800"
-/>
+                    href="/images/outlineshape3.png"
+                    x="-400"
+                    y="940"
+                    width="800"
+                    height="800"
+                  />
                   <text
                     x="-300"
                     y="1050"
@@ -1273,33 +1470,32 @@ const FinancingTreatment = () => {
                     </tspan>
                     <tspan x="-360" dy="1.4em">
                       {" "}
-                    If treatment isn’t yet needed, 
+                      If treatment isn’t yet needed,
                     </tspan>
                     <tspan x="-360" dy="1.2em">
-                    no cost observation check-ups will be
+                      no cost observation check-ups will be
                     </tspan>
                     <tspan x="-360" dy="1.4em">
-                    
-                    coordinated every 6-12 months until
+                      coordinated every 6-12 months until
                     </tspan>
                     <tspan x="-360" dy="1.5em">
                       {" "}
-                    treatment is needed. These are
+                      treatment is needed. These are
                     </tspan>
                     <tspan x="-360" dy="3.6em">
-                    shorter and fun visits where
+                      shorter and fun visits where
                     </tspan>
                     <tspan x="-360" dy="1.2em">
-                    where you'll have access to 
+                      where you'll have access to
                     </tspan>
                     <tspan x="-360" dy="1.2em">
-                     to all four of our locations 
+                      to all four of our locations
                     </tspan>
                     <tspan x="-360" dy="1.3em">
-                    to play video games and
+                      to play video games and
                     </tspan>
                     <tspan x="-340" dy="1.3em">
-                    get to know our team.
+                      get to know our team.
                     </tspan>
                   </text>
                 </g>
@@ -1322,8 +1518,6 @@ const FinancingTreatment = () => {
             </g>
           </svg>
         </div>
-
-
       </section>
 
       {/* <div style={{ width: '100vw', height: '100vh', background: '#09090b' }}>
@@ -1333,7 +1527,6 @@ const FinancingTreatment = () => {
         speed={45}
       />
     </div> */}
-
 
       {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
         <Canvas

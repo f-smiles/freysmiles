@@ -1,5 +1,5 @@
 "use client";
-import { Item } from "../utils/Item";
+
 import { Water } from "three/examples/jsm/objects/Water";
 import { Sky } from "three/examples/jsm/objects/Sky";
 import { Curtains, Plane } from "curtainsjs";
@@ -236,7 +236,7 @@ const OceanScene = () => {
 export default function LandingComponent() {
   return (
     <>
-<div style={{ height: "200vh", margin: 0 }}>
+{/* <div style={{ height: "200vh", margin: 0 }}>
   <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: 0 }}>
     <Canvas>
       <ScrollControls pages={3} damping={0.1}>
@@ -261,8 +261,8 @@ export default function LandingComponent() {
   </p>
 <div className="font-khteka">Scroll To Discover</div>
 </div>
-</div>
-      {/* <div style={{ overflowX: "hidden" }}>
+</div> */}
+      <div style={{ overflowX: "hidden" }}>
         <div class="MainContainer">
           <div class="ParallaxContainer">
             <Hero />
@@ -271,13 +271,13 @@ export default function LandingComponent() {
             <Stats />
           </div>
         </div>
-        <ImageGrid />
+    
         <NewSection />
         <Testimonials />
         <LogoGrid />
         <Locations />
         <GiftCards />
-      </div> */}
+      </div>
     </>
   );
 }
@@ -714,15 +714,15 @@ const Hero = () => {
             </svg>
           </main>
           <div className="max-w-3xl text-[#1D64EF]">
-            <div className="blurred-circle"></div>
-            <p className="uppercase text-[12px] font-semibold font-helvetica-neue-light tracking-widest">
+     
+            {/* <p className="uppercase text-[12px] font-semibold font-helvetica-neue-light tracking-widest">
               Vision
             </p>
             <h2 className="font-neue-montreal text-[40px] md:text-[40px] font-medium leading-none mt-4">
-              At FreySmiles, we blend artistry and precision to craft smiles as
+              At Frey Smiles, we blend artistry and precision to craft smiles as
               unique as the individuals who wear them. Guided by expertise and
               innovation—we shape confidence one smile at a time.
-            </h2>
+            </h2> */}
           </div>
         </section>
       </section>
@@ -820,32 +820,6 @@ const Stats = () => {
     });
   }, []);
 
-  useEffect(() => {
-    const lines = document.querySelectorAll(".stagger-line");
-
-    lines.forEach((line) => {
-      gsap.fromTo(
-        line.querySelectorAll(".stagger-word"),
-        {
-          yPercent: 100,
-          opacity: 0,
-        },
-        {
-          yPercent: 0,
-          opacity: 1,
-          stagger: 0.1,
-          duration: 1,
-          ease: "power4.out",
-          scrollTrigger: {
-            trigger: line,
-            start: "top 80%",
-            toggleActions: "play none none none",
-          },
-        }
-      );
-    });
-  }, []);
-
   const rows = 3;
   const cols = 6;
   const dx = 100;
@@ -924,10 +898,7 @@ const Stats = () => {
     }
   }, []);
 
-  const lines = [
-    "We take a different approach, ",
-    "and we think you'll appreciate the difference.",
-  ];
+
 
   return (
     <section className="bg-[#F2F2F2] w-full min-h-screen flex items-center justify-center">
@@ -977,46 +948,7 @@ const Stats = () => {
         </div>
 
         <div className="flex flex-col col-span-8">
-          <div className="mt-[6vh] ml-auto max-w-2xl">
-            <motion.div
-              className="pointer-events-none h-[1px] bg-black mt-2"
-              initial={{ width: 0 }}
-              animate={{ width: lineWidth }}
-              transition={{ duration: 2, ease: "easeInOut" }}
-              onAnimationComplete={() => setLineFinished(true)}
-            />
 
-            <div className="my-12"></div>
-
-            <div ref={paragraphRef} className="text-right font-neue-montreal">
-              {lines.map((line, index) => (
-                <motion.div
-                  key={index}
-                  className="text-[18px] lg:text-[24px] overflow-hidden leading-relaxed"
-                  initial={{
-                    clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)",
-                    y: 20,
-                  }}
-                  animate={
-                    lineFinished
-                      ? {
-                          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-                          y: 0,
-                        }
-                      : {}
-                  }
-                  transition={{
-                    duration: 0.8,
-                    delay: index * 0.2,
-                    ease: "easeOut",
-                  }}
-                >
-                  {line}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-          <div className="my-12"></div>
           {/* Stats Section */}
           <div className="flex flex-wrap justify-end mt-8 space-x-4 sm:flex-nowrap sm:space-x-6 md:space-x-12">
             <div className="text-center">
@@ -1111,17 +1043,14 @@ const NewSection = () => {
 
   return (
     <>
-      <section className="flex items-center justify-center min-h-screen px-8 bg-black md:px-16">
+      <section className="flex items-center justify-center min-h-screen px-8  md:px-16">
         <div className="grid w-full grid-cols-1 gap-8 max-w-7xl md:grid-cols-2">
-          {/*left */}
-          <div className="bg-[#CFF174] text-black p-8 md:p-16 rounded-md flex flex-col justify-center">
-            <h1 className="mb-4 text-5xl font-helvetica-neue-light md:text-6xl">
-              A world of opportunity.
-            </h1>
+
+          <div className=" text-black flex flex-col justify-center">
 
             <div className="relative flex items-center justify-center mx-auto max-w-[80vw]">
               <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
-              <div className="relative w-[110%] bg-[#CFF174] px-48 py-2 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
+              <div className="relative w-[110%] bg-[#FFF] px-48 py-2 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
                 <div className="py-2 font-neue-montreal text-center text-[18px] text-black">
                   <a
                     ref={linkRef}
@@ -1164,7 +1093,7 @@ const NewSection = () => {
           </div>
 
           {/*right*/}
-          <div className="bg-black text-white border border-[#CFF174] p-8 md:p-16 rounded-md flex flex-col justify-between">
+          <div className="p-8 md:p-16 rounded-md flex flex-col justify-between">
             <svg
               width="100%"
               height="100%"
@@ -1189,7 +1118,7 @@ const NewSection = () => {
               <path
                 d="M50 50.5H50.5V50V49.5C23.2199 49.5 1.04241 27.6526 0.509799 0.5H199.491C198.957 27.6526 176.781 49.5 149.5 49.5V50V50.5H150C177.338 50.5 199.5 72.6619 199.5 100C199.5 125.033 180.918 145.726 156.795 149.038L156.791 150.028C180.949 153.556 199.5 174.363 199.5 199.5H0.5C0.5 174.363 19.0509 153.556 43.2094 150.028L43.2051 149.038C19.0823 145.726 0.5 125.033 0.5 100C0.5 72.6619 22.6619 50.5 50 50.5Z"
                 fill="none"
-                stroke="black"
+                stroke="none"
                 vectorEffect="non-scaling-stroke"
               />
             </svg>
@@ -1197,257 +1126,6 @@ const NewSection = () => {
         </div>
       </section>
     </>
-  );
-};
-
-const MobileLayout = () => {
-  useGSAP(() => {
-    let tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: "#stats-section",
-        start: "top 50%",
-        end: "bottom 100%",
-        scrub: 1,
-      },
-      defaults: { ease: "power1.in" },
-    });
-
-    tl.to(
-      ".middle-circle",
-      {
-        scale: 1,
-        opacity: 1,
-        filter: "blur(0px)",
-        duration: 4,
-      },
-      0
-    )
-      .to(
-        ".middle-circle-text",
-        {
-          scale: 1,
-          opacity: 1,
-          filter: "blur(0px)",
-          duration: 6,
-        },
-        0
-      )
-      .to(
-        ".left-circle",
-        {
-          opacity: 1,
-          filter: "blur(0px)",
-          transform: "translate(0%, 0%)",
-          duration: 6,
-        },
-        3
-      );
-    tl.to(
-      ".right-circle",
-      {
-        opacity: 1,
-        filter: "blur(0px)",
-        transform: "translate(0%, 0%)",
-        duration: 6,
-      },
-      3
-    ).to("#stats-heading", {
-      opacity: 1,
-      transform: "translate(0%, 0%)",
-      duration: 4,
-    });
-  });
-
-  return (
-    <section
-      id="stats-section"
-      className="relative block w-full h-[50vh] md:h-screen place-content-center place-items-center xl:hidden"
-    >
-      <div className="container flex items-center justify-center gap-2 px-8 py-4 mx-auto">
-        <figure className="translate-x-1/2 opacity-0 blur-sm left-circle">
-          <span className="block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square">
-            <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
-              60+ yrs
-            </p>
-          </span>
-          <p className="leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
-            experience
-          </p>
-        </figure>
-        <figure className="scale-0 opacity-0 blur-sm middle-circle">
-          <span className="block w-40 h-40 md:w-60 md:h-60 mb-4 rounded-full place-content-center place-items-center aspect-square shadow-[inset_0_0_20px_rgba(255,255,255,1)] md:shadow-[inset_0_0_30px_rgba(255,255,255,1)] middle-circle-text opacity-0 blur-sm">
-            <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
-              25,000
-            </p>
-          </span>
-          <p className="leading-4 tracking-wide text-center capitalize opacity-0 middle-circle-text blur-sm font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
-            patients
-          </p>
-        </figure>
-        <figure className="-translate-x-1/2 opacity-0 blur-sm right-circle">
-          <span className="block w-32 h-32 mb-4 border rounded-full md:w-48 md:h-48 place-content-center place-items-center border-zinc-100 aspect-square">
-            <p className="text-center leading-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)] font-agrandir-grandheavy text-[#ff6432] uppercase tracking-wider  text-[clamp(1rem,_0.5742rem_+_2.2707vw,_2.0275rem)]">
-              4
-            </p>
-          </span>
-          <p className="leading-4 tracking-wide text-center capitalize font-editorial-new text-[#171616] text-[clamp(1rem,_0.8029rem_+_1.0511vw,_1.475625rem)]">
-            locations
-          </p>
-        </figure>
-      </div>
-      <div
-        id="stats-heading"
-        className="container w-full mx-auto translate-y-1/2 opacity-0 place-content-center"
-      >
-        <h2 className="w-full tracking-tighter text-center uppercase text-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] leading-[clamp(3.75rem,_2.6316rem_+_5.5921vw,_8rem)] font-agrandir-grandheavy text-zinc-100">
-          About
-        </h2>
-      </div>
-    </section>
-  );
-};
-
-const ImageGrid = () => {
-
-  const headerRef = useRef(null);
-
-  useEffect(() => {
-    if (headerRef.current) {
-      const tl = gsap.timeline();
-      gsap.set(bodyRef.current, { autoAlpha: 1 });
-
-      const pageHeading = headerRef.current.querySelector("h1");
-      const pageBody = headerRef.current.querySelector("p");
-      const separator = headerRef.current.querySelector("hr");
-      const imageCards = gsap.utils.toArray(".image-card");
-
-      gsap.set(imageCards, { autoAlpha: 0 });
-
-      const childLines = new SplitText(pageHeading, {
-        type: "lines",
-        linesClass: "heading-line",
-      });
-      const parentLines = new SplitText(pageHeading, {
-        type: "lines",
-        linesClass: "heading-line-wrapper",
-      });
-
-      tl.from(childLines.lines, {
-        duration: 1,
-        y: 200,
-        stagger: 0.25,
-        delay: 1,
-        ease: "power4.out",
-      })
-        .from(
-          pageBody,
-          {
-            duration: 0.5,
-            opacity: 0,
-            x: -20,
-          },
-          "-=0.5"
-        )
-        .from(
-          separator,
-          {
-            duration: 2,
-            scale: 0,
-            ease: "expo.inOut",
-          },
-          "-=1.1"
-        )
-        .to(
-          imageCards,
-          {
-            duration: 0.75,
-            autoAlpha: 1,
-            y: -50,
-            stagger: 0.5,
-            ease: "power4.out",
-          },
-          "-=0.75"
-        );
-
-      const scroll = new LocomotiveScroll({
-        el: bodyRef.current,
-        smooth: true,
-      });
-
-      setTimeout(() => {
-        scroll.update();
-      }, 1000);
-    }
-  }, []);
-
-  const sectionRef = useRef(null);
-  const [isInView, setIsInView] = useState(true);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsInView(entry.isIntersecting),
-      { threshold: 0.3 }
-    );
-
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const createItems = () => {
-    const elements = document.querySelectorAll(".gtext");
-
-    return [...elements].map((el) => new Item(el, 6));
-  };
-
-  const textExpertiseRef = useRef(null);
-  const textWrapRef = useRef(null);
-
-  useEffect(() => {
-    if (!textExpertiseRef.current) return;
-
-    let items = createItems();
-
-    items.forEach((item, index) => {
-      gsap
-        .timeline({
-          defaults: { ease: "power1" },
-          scrollTrigger: {
-            trigger: item.DOM.el,
-            start: "top 90%",
-            end: "top 20%",
-            scrub: true,
-          },
-        })
-        .fromTo(
-          item.DOM.inner,
-          { xPercent: (pos) => (pos % 2 === 0 ? 30 : -30), opacity: 0.6 },
-          { xPercent: 0, opacity: 1 },
-          index * 0.1
-        )
-        .fromTo(
-          item.DOM.innerWrap,
-          { xPercent: (pos) => 2 * (pos + 1) * 10 },
-          { xPercent: 0 },
-          index * 0.1
-        );
-    });
-  }, []);
-
-  return (
-    <div>
-      <div className="bg-[#E7E8EA] px-10 py-10">
-        <div className="content content--full">
-          <h1
-            ref={textExpertiseRef}
-            className="gtext size-xl font-neue-montreal spaced"
-            data-text="Expertise"
-            data-effect="2"
-          >
-            Expertise
-          </h1>
-        </div>
-      </div>
-    </div>
   );
 };
 
@@ -1761,7 +1439,7 @@ const LogoGrid = () => {
           className="z-10 w-full h-full lg:w-1/2 horizontal-item"
         />
 
-        <div className="lg:w-1/2 bg-[#303BB0] py-24 px-20 rounded-[18px]">
+        <div className="lg:w-1/2 ">
           <p className="font-neue-montreal text-[24px]">Awards & Recognition</p>
           <div className="flex items-center mt-10">
             <div className="w-48 h-px bg-black"></div>
