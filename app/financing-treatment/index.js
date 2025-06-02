@@ -24,8 +24,9 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap/all";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
+import { TextPlugin } from 'gsap/TextPlugin';
 
-gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText, MorphSVGPlugin);
+gsap.registerPlugin(TextPlugin, MotionPathPlugin, ScrollTrigger, SplitText, MorphSVGPlugin);
 
 const FinancingTreatment = () => {
   // const canvasRef = useRef();
@@ -669,7 +670,7 @@ const FinancingTreatment = () => {
   const tl = useRef(null);
 
   useEffect(() => {
-    // Initialize GSAP timeline
+
     tl.current = gsap.timeline({ paused: true });
 
     tl.current
@@ -801,6 +802,37 @@ const FinancingTreatment = () => {
       renderer.dispose();
     };
   }, []);
+  const arcRef = useRef(null);
+
+  useEffect(() => {
+    const arc = arcRef.current;
+
+    arc.style.strokeDasharray = "100 250";
+    arc.style.strokeDashoffset = "100"; 
+
+
+    arc.getBoundingClientRect();
+
+    arc.style.transition = "stroke-dashoffset 1.2s ease-out";
+    arc.style.strokeDashoffset = "0";
+  }, []);
+
+  const text2Ref = useRef(null);
+  const text3Ref = useRef(null);
+  useEffect(() => {
+    gsap.to(text2Ref.current, {
+      duration: 1.5,
+      text: 'Your treatment, Your pace',
+      ease: 'none',
+    });
+  
+    gsap.to(text3Ref.current, {
+      duration: 1.2,
+      text: 'Got questions? Text us anytime and a team member will personally walk you through your options.',
+      ease: 'none',
+    });
+  }, []);
+  
   return (
     <>
       {/* <div className="min-h-screen p-8 flex flex-col md:flex-row mx-auto items-center w-full gap-8 ">
@@ -823,6 +855,7 @@ const FinancingTreatment = () => {
         </div>
       </div> */}
       <div className="relative">
+
         <canvas
           id="shader-bg"
           className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"
@@ -832,13 +865,13 @@ const FinancingTreatment = () => {
             <div className="absolute w-[400px] h-[400px] bg-purple-500 opacity-20 blur-[140px] rounded-full top-1/3 left-[-140px] pointer-events-none mix-blend-screen"></div>
             <div className="absolute w-[400px] h-[400px] bg-orange-500 opacity-20 blur-[140px] rounded-full top-[40%] left-[-100px] pointer-events-none mix-blend-screen"></div>
             <div className="absolute w-[400px] h-[400px] bg-sky-300 opacity-30 blur-[140px] rounded-full top-1/4 right-[-120px] pointer-events-none"></div>
-            `
+            
             <div className="grid grid-cols-3 gap-4 h-full">
               <div className="flex flex-col items-center justify-center h-full">
                 <div className="relative backdrop-blur-xl bg-white/70  shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10">
                   <div className="absolute top-4 right-4 w-4 h-5 text-white text-xs flex items-center justify-center "></div>
                   <div className="space-y-2">
-                    <span className="inline-block bg-black/10 text-[10px] uppercase px-2 py-1 rounded-full text-gray-600 font-khteka tracking-wider">
+                    <span className="inline-block bg-black/10 text-[10px] uppercase px-3 py-2 rounded-full text-gray-600 font-khteka tracking-wider">
                       Transparent Pricing
                     </span>
                     <div>
@@ -875,14 +908,15 @@ const FinancingTreatment = () => {
                       stroke-width="6"
                       fill="none"
                     />
-                    <path
-                      d="M 20 100 A 80 80 0 0 1 180 100"
-                      stroke="white"
-                      stroke-width="6"
-                      fill="none"
-                      stroke-dasharray="100 250"
-                      stroke-linecap="round"
-                    />
+             <path
+        ref={arcRef}
+        d="M 20 100 A 80 80 0 0 1 180 100"
+        stroke="white"
+        strokeWidth="6"
+        fill="none"
+        strokeDasharray="100 250"
+        strokeLinecap="round"
+      />
                     <text
                       x="100"
                       y="70"
@@ -935,19 +969,35 @@ const FinancingTreatment = () => {
   </div>
 
   <div className="flex items-center justify-between mb-2">
-    <h3 className="text-[14px] uppercase font-khteka text-gray-700 tracking-widest">
-      💳 How Financing Works
-    </h3>
-    <span className="bg-[#ffe5f2] text-[#7f187f] text-[10px] uppercase px-2 py-1 rounded-full font-khteka tracking-wider">
-      Klarna Partner
-    </span>
+
+  <p className="text-[13px] text-gray-700 font-neuehaas45">
+    Flexible monthly payments — as low as 0% APR. Exact rate based on your credit profile.
+  </p>
+
+</div>
+
+  <div className="flex items-start gap-3 mb-6">
+
+  <div className="w-4 h-4 rounded-full border border-gray-400 flex items-center justify-center mt-[2px]">
+    <div className="w-2 h-2 bg-gray-900 rounded-full"></div>
   </div>
+
+
+  <div className="flex-1">
+    <div className="flex items-center justify-between">
+      <span className="font-neuehaas45 font-semibold text-sm text-black">Financing.</span>
+      <span className="bg-[#ffe5f2] text-[#7f187f] text-[10px] uppercase px-2 py-0.5 rounded-full font-khteka tracking-wider">
+        Klarna
+      </span>
+    </div>
+    <p className="text-[13px] text-gray-500 mt-0.5 font-neuehaas45">Pay over 6 – 36 months.</p>
+  </div>
+</div>
 
 
   <ul className="text-sm text-gray-700 font-neuehaas45 space-y-2 mb-4">
     <li>Instant monthly quote</li>
     <li>No impact on credit to explore</li>
-    <li>Break into 4 or monthly options</li>
   </ul>
 
 
@@ -965,9 +1015,7 @@ const FinancingTreatment = () => {
 
 
   <div className="mt-3 text-center">
-    <span className="inline-block bg-pink-100 text-pink-800 text-[10px] px-3 py-1 rounded-full font-khteka">
-      No interest if paid in full within 6 months
-    </span>
+
   </div>
 </div>
               <div className="relative backdrop-blur-xl bg-white/70  shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10">
@@ -979,29 +1027,35 @@ const FinancingTreatment = () => {
                     ></div>
                   ))}
                 </div>
-                <h3 className="text-[14px] uppercase font-khteka text-gray-700 tracking-widest mb-4">
-                  📱 Your Treatment, Your Pace
-                </h3>
 
-                <p className="text-sm text-gray-700 font-neuehaas45 mb-6">
-                  Got questions? Text us anytime and a team member will
-                  personally walk you through your options.
-                </p>
+                <div className="text-[14px] uppercase font-khteka text-gray-700 tracking-widest mb-4" ref={text2Ref} id="text-2" />
+       
+    
+                <div
+  className="text-sm text-gray-700 font-neuehaas45 mb-6 min-h-[40px]"
+  ref={text3Ref}
+  id="text-3"
+/>
+
+
 
                 <button className="w-full bg-black text-white py-2 rounded-md text-sm font-khteka uppercase hover:bg-gray-900 transition-all">
                   Text Our Team
                 </button>
+
+            
               </div>
             </div>
-            `
+            
           </div>
         </div>
       </div>
+      
       <div className="bg-[#F2F3F5] min-h-screen pt-[160px] relative ">
-        <section className="relative flex items-center justify-center">
+
+      <section className="relative flex items-center justify-center">
           <div className=" w-[36vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
             <Copy>
-              {" "}
               <p className="font-neueroman text-[18px] uppercase leading-snug text-black">
                 Orthodontic treatment is a transformative investment in both
                 your appearance and long-term dental health — ideally, a
@@ -1060,7 +1114,6 @@ const FinancingTreatment = () => {
             </text>
           </svg>
         </section>
-
         <div className="overflow-hidden" style={{ height: "400vh" }}>
           <svg
             ref={curveSvgRef}
