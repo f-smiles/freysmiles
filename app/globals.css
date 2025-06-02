@@ -6301,3 +6301,9 @@ canvas.webgl {
   20% { transform: none; color: black; font-weight: bolder; }
   100% { transform: translateY(3em) scaleY(1) skewY(-20deg); color: cyan; }
 }
+
+@layer utilities {
+  .clip-bookmark {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
+  }
+}

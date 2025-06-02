@@ -704,16 +704,16 @@ const FinancingTreatment = () => {
     };
   }, []);
   useEffect(() => {
-    const canvas = document.getElementById('shader-bg');
+    const canvas = document.getElementById("shader-bg");
     if (!canvas) return;
-  
+
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-  
+
     const scene = new THREE.Scene();
     const camera = new THREE.Camera();
-  
+
     const uniforms = {
       u_time: { value: 0 },
       u_resolution: {
@@ -721,7 +721,7 @@ const FinancingTreatment = () => {
       },
       u_mouse: { value: new THREE.Vector2() },
     };
-  
+
     const vertexShader = `
       varying vec2 v_uv;
       void main() {
@@ -729,76 +729,75 @@ const FinancingTreatment = () => {
         gl_Position = vec4(position, 1.0);
       }
     `;
-  
+
     const fragmentShader = `
-precision mediump float;
-
-uniform vec2 u_resolution;
-
-float random(vec2 st) {
-  return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453);
-}
-
-float ease(float t) {
-  return smoothstep(0.0, 1.0, t);
-}
-
-void main() {
-  vec2 st = gl_FragCoord.xy / u_resolution;
-  float y = ease(st.y);
-
-  // Color stops (sampled to match your gradient better)
-  vec3 top = vec3(0.96, 0.96, 0.94);     // Warm beige-gray
-  vec3 mid = vec3(0.94, 0.96, 0.96);     // Neutral pale gray-blue
-  vec3 bottom = vec3(0.91, 0.94, 0.97);  // Very pale sky blue (subtle)
-
-  // Rebalanced interpolation to favor top/mid
-  vec3 color = mix(top, mid, smoothstep(0.0, 0.45, y));
-  color = mix(color, bottom, smoothstep(0.5, 0.85, y)); // capped earlier
-
-  // Optional ultra-subtle grain
-  float grain = (random(st * u_resolution.xy) - 0.5) * 0.003;
-  color += grain;
-
-  gl_FragColor = vec4(color, 1.0);
-}
+    precision mediump float;
+    
+    uniform vec2 u_resolution;
+    
+    float random(vec2 st) {
+      return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453);
+    }
+    
+    float ease(float t) {
+      return smoothstep(0.0, 1.0, t);
+    }
+    
+    void main() {
+      vec2 st = gl_FragCoord.xy / u_resolution;
+      float y = ease(st.y);
+    
+      // Base vertical gradient: warm white to pale sky blue
+      vec3 top = vec3(0.96, 0.96, 0.94);     // Warm beige-gray
+      vec3 mid = vec3(0.94, 0.96, 0.96);     // Neutral pale gray-blue
+      vec3 bottom = vec3(0.91, 0.94, 0.97);  // Pale sky blue
+    
+      vec3 color = mix(top, mid, smoothstep(0.0, 0.45, y));
+      color = mix(color, bottom, smoothstep(0.5, 0.85, y));
+    
+      // Subtle grain texture
+      float grain = (random(st * u_resolution.xy) - 0.5) * 0.003;
+      color += grain;
+    
+      gl_FragColor = vec4(color, 1.0);
+    }
     `;
-  
+
     const material = new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader,
       uniforms,
     });
-  
+
     const geometry = new THREE.PlaneGeometry(2, 2);
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
-  
+
     const clock = new THREE.Clock();
-  
+
     const animate = () => {
       requestAnimationFrame(animate);
       uniforms.u_time.value = clock.getElapsedTime();
       renderer.render(scene, camera);
     };
     animate();
-  
+
     const handleResize = () => {
       const { innerWidth: w, innerHeight: h } = window;
       renderer.setSize(w, h);
       uniforms.u_resolution.value.set(w, h);
     };
-  
+
     const handleMouseMove = (e) => {
       uniforms.u_mouse.value.set(e.clientX, window.innerHeight - e.clientY);
     };
-  
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('mousemove', handleMouseMove);
-  
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("mousemove", handleMouseMove);
+
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
       renderer.dispose();
     };
   }, []);
@@ -823,80 +822,181 @@ void main() {
           />
         </div>
       </div> */}
-          <div className="relative">
-    <canvas
-    id="shader-bg"
-    className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"
-  />
-<div className="h-screen flex justify-center items-center">
-<div className="h-[90vh] backdrop-blur-xl bg-[#111]/10 shadow-sm max-w-7xl p-10">
-<div className="grid grid-cols-3 gap-4 h-full">
-<div className="flex flex-col items-center justify-center h-full">
+      <div className="relative">
+        <canvas
+          id="shader-bg"
+          className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"
+        />
+        <div className="h-screen flex justify-center items-center">
+          <div className="h-[90vh] backdrop-blur-xl bg-[#111]/10 shadow-sm max-w-7xl p-10">
+            <div className="absolute w-[400px] h-[400px] bg-purple-500 opacity-20 blur-[140px] rounded-full top-1/3 left-[-140px] pointer-events-none mix-blend-screen"></div>
+            <div className="absolute w-[400px] h-[400px] bg-orange-500 opacity-20 blur-[140px] rounded-full top-[40%] left-[-100px] pointer-events-none mix-blend-screen"></div>
+            <div className="absolute w-[400px] h-[400px] bg-sky-300 opacity-30 blur-[140px] rounded-full top-1/4 right-[-120px] pointer-events-none"></div>
+            `
+            <div className="grid grid-cols-3 gap-4 h-full">
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="relative backdrop-blur-xl bg-white/70  shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10">
+                  <div className="absolute top-4 right-4 w-4 h-5 text-white text-xs flex items-center justify-center "></div>
+                  <div className="space-y-2">
+                    <span className="inline-block bg-black/10 text-[10px] uppercase px-2 py-1 rounded-full text-gray-600 font-khteka tracking-wider">
+                      Transparent Pricing
+                    </span>
+                    <div>
+                      <h3 className="font-neuehaas45 text-black text-[16px] mb-2">
+                        No Hidden Fees
+                      </h3>
+                      <ul className="list-disc pl-[1.25em] text-sm text-gray-700 font-neuehaas45 space-y-1">
+                        <li>All-inclusive pricing — from start to finish.</li>
+                        <li>No up-charges for ceramic or “special” braces.</li>
+                        <li>No surprise fees or unexpected add-ons.</li>
+                      </ul>
+                    </div>
 
-  <div className="relative bg-[#F1F1F1]/40 p-4 rounded-xl border-[2px] border-white p-10">
-    <div className="absolute top-4 right-4 w-6 h-6 bg-blue-700 text-white text-sm flex items-center justify-center rounded-ful">
-      
+                    <div>
+                      <h3 className="font-neuehaas45 text-black text-[16px] mb-2">
+                        Flexible Monthly Plans
+                      </h3>
+                      <ul className="list-disc pl-[1.25em] text-sm text-gray-700 font-neuehaas45 space-y-1">
+                        <li>Payment plans typically span 12–24 months.</li>
+                        <li>
+                          A manageable down payment, with monthly plans
+                          available
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="w-full max-w-md mx-auto mt-4">
+                  <svg width="400" height="200" viewBox="0 0 200 100">
+                    <path
+                      d="M 20 100 A 80 80 0 0 1 180 100"
+                      stroke="grey"
+                      stroke-width="6"
+                      fill="none"
+                    />
+                    <path
+                      d="M 20 100 A 80 80 0 0 1 180 100"
+                      stroke="white"
+                      stroke-width="6"
+                      fill="none"
+                      stroke-dasharray="100 250"
+                      stroke-linecap="round"
+                    />
+                    <text
+                      x="100"
+                      y="70"
+                      font-size="12"
+                      text-anchor="middle"
+                      fill="black"
+                      className="font-neuehaas45"
+                    >
+                      250/month
+                    </text>
+                    <text
+                      x="70"
+                      y="60"
+                      font-size="5"
+                      text-anchor="end"
+                      fill="black"
+                      class="font-khteka uppercase"
+                    >
+                      Starting
+                    </text>
+                  </svg>
+
+                  <div className="relative mt-4">
+                    <div className="h-[1px] bg-black/20 rounded-full"></div>
+
+                 
+                    <div className="absolute top-1/2 left-[55%] -translate-y-1/2 w-[20%] h-[6px] bg-white rounded-full"></div>
+
+                    <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
+                    <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
+
+                    <div className="absolute top-full left-[65%] mt-2 flex flex-col items-center">
+                      <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-black"></div>
+                      <span className="mt-1 font-khteka text-[10px] uppercase">
+                        Our price
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="relative backdrop-blur-xl bg-white/70 shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10 flex flex-col justify-between">
+
+  <div className="flex items-center gap-2 mb-4">
+    <div className="w-10 h-5 bg-gray-300 rounded-full relative">
+      <div className="w-4 h-4 bg-white rounded-full absolute left-0 top-0.5 shadow-md transition-all"></div>
     </div>
-    <div className="space-y-2">
-    <div>
-    <h3 className="text-lg font-semibold text-black font-neuehaas45 mb-2">No Hidden Fees</h3>
-    <ul className="list-disc list-inside text-sm text-gray-700 font-neuehaas45 space-y-1">
-      <li>All-inclusive pricing — from start to finish.</li>
-      <li>No up-charges for ceramic or “special” braces.</li>
-      <li>No surprise fees or unexpected add-ons.</li>
-    </ul>
+    <span className="text-xs text-gray-600 font-neuehaas45">
+      AutoPay Enabled
+    </span>
   </div>
 
-  <div>
-    <h3 className="text-lg font-semibold text-black font-neuehaas45 mb-2">Flexible Monthly Plans</h3>
-    <ul className="list-disc list-inside text-sm text-gray-700 font-neuehaas45 space-y-1">
-      <li>Payment plans typically span 12–24 months.</li>
-      <li>Custom-built around your case and timeline.</li>
-    </ul>
-  </div>
- 
-    </div>
+  <div className="flex items-center justify-between mb-2">
+    <h3 className="text-[14px] uppercase font-khteka text-gray-700 tracking-widest">
+      💳 How Financing Works
+    </h3>
+    <span className="bg-[#ffe5f2] text-[#7f187f] text-[10px] uppercase px-2 py-1 rounded-full font-khteka tracking-wider">
+      Klarna Partner
+    </span>
   </div>
 
 
-  <div className="w-full max-w-md mx-auto mt-4">
-
-  <svg width="400" height="200" viewBox="0 0 200 100">
-    <path d="M 20 100 A 80 80 0 0 1 180 100" stroke="grey" stroke-width="6" fill="none" />
-    <path d="M 20 100 A 80 80 0 0 1 180 100" stroke="white" stroke-width="6" fill="none" stroke-dasharray="100 250" stroke-linecap="round" />
-    <text x="100" y="70" font-size="12" text-anchor="middle" fill="black" className="font-neuehaas45">250/month</text>
-    <text x="70" y="60" font-size="5" text-anchor="end" fill="black" class="font-khteka">
-    Starting
-  </text>
-  </svg>
+  <ul className="text-sm text-gray-700 font-neuehaas45 space-y-2 mb-4">
+    <li>Instant monthly quote</li>
+    <li>No impact on credit to explore</li>
+    <li>Break into 4 or monthly options</li>
+  </ul>
 
 
-  <div className="relative mt-4">
+  <div className="w-full bg-gray-200 rounded-full h-[6px] relative mb-1">
+    <div className="bg-[#ffb3d6] h-full rounded-full w-[65%]"></div>
+  </div>
+  <span className="text-[10px] text-[#7f187f] font-khteka uppercase tracking-wider">
+    Prequalifying with Klarna...
+  </span>
 
-    <div className="h-[1px] bg-black/20 rounded-full"></div>
 
-    {/* Highlighted bar */}
-    <div className="absolute top-1/2 left-[55%] -translate-y-1/2 w-[20%] h-[6px] bg-white rounded-full"></div>
+  <button className="mt-4 w-full bg-[#ffe5f2] border border-[#ffb3d6] text-[#7f187f] py-2 rounded-md text-xs font-khteka uppercase hover:bg-[#ffd6e9] transition-all">
+    Continue with Klarna
+  </button>
 
 
-    <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
-    <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
-
-    <div className="absolute top-full left-[65%] mt-2 flex flex-col items-center">
-      <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-black"></div>
-      <span className="mt-1 font-khteka text-[10px]">Our price</span>
-    </div>
+  <div className="mt-3 text-center">
+    <span className="inline-block bg-pink-100 text-pink-800 text-[10px] px-3 py-1 rounded-full font-khteka">
+      No interest if paid in full within 6 months
+    </span>
   </div>
 </div>
-</div>
+              <div className="relative backdrop-blur-xl bg-white/70  shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10">
+                <div className="flex justify-between mt-4 px-6">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-2 h-2 rounded-full bg-black/10"
+                    ></div>
+                  ))}
+                </div>
+                <h3 className="text-[14px] uppercase font-khteka text-gray-700 tracking-widest mb-4">
+                  📱 Your Treatment, Your Pace
+                </h3>
 
-<div className="bg-[#111]/10 p-2 rounded-md ">Phone</div>
-<div className="bg-[#111]/10 p-2 rounded-md ">Column 3</div>
-  </div>
-</div>
-</div>
+                <p className="text-sm text-gray-700 font-neuehaas45 mb-6">
+                  Got questions? Text us anytime and a team member will
+                  personally walk you through your options.
+                </p>
 
-</div>
+                <button className="w-full bg-black text-white py-2 rounded-md text-sm font-khteka uppercase hover:bg-gray-900 transition-all">
+                  Text Our Team
+                </button>
+              </div>
+            </div>
+            `
+          </div>
+        </div>
+      </div>
       <div className="bg-[#F2F3F5] min-h-screen pt-[160px] relative ">
         <section className="relative flex items-center justify-center">
           <div className=" w-[36vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
