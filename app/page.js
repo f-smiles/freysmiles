@@ -67,82 +67,84 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 extend({ Water, Sky });
 
+
 function DoorModel() {
-  
-  const { scene, animations } = useGLTF("/models/openingclosingdoor3d.glb");
-  const mixer = useRef(null);
-  const action = useRef(null);
-  const doorRef = useRef();
-  
-  useEffect(() => {
-    if (animations.length > 0) {
-      mixer.current = new THREE.AnimationMixer(scene);
-      const openingAnimation = animations.find(
-        (anim) => anim.name === "Action"
-      );
-
-      if (!openingAnimation) {
-        return;
-      }
-
-      action.current = mixer.current.clipAction(openingAnimation);
-      action.current.clampWhenFinished = true;
-      action.current.setLoop(THREE.LoopOnce);
-      action.current.play();
-
-      const stopFrame = openingAnimation.duration * 0.9;
-      const checkAnimation = () => {
-        if (action.current.time >= stopFrame) {
-          action.current.paused = true;
-        } else {
-          requestAnimationFrame(checkAnimation);
-        }
-      };
-
-      requestAnimationFrame(checkAnimation);
-    }
-  }, [scene, animations]);
+  const { scene, animations } = useGLTF('/models/openingclosingdoor3d.glb');
+  const mixer = useRef();
+  const actionRef = useRef();
+  const scroll = useThreeScroll();
 
   useEffect(() => {
     const textureLoader = new THREE.TextureLoader();
-    const matcapTexture = textureLoader.load(
-      "../images/matcap-green-yellow-pink.png"
-    );
-
+    const matcap = textureLoader.load('/images/matcap-green-yellow-pink.png');
     scene.traverse((child) => {
       if (child.isMesh) {
-        
-        child.material.map = null;
-        child.material = new THREE.MeshMatcapMaterial({
-          matcap: matcapTexture,
-        });
+        child.material = new THREE.MeshMatcapMaterial({ matcap });
         child.material.needsUpdate = true;
       }
     });
   }, [scene]);
 
-  useFrame((_, delta) => {
-    mixer.current?.update(delta);
-  });
+  useEffect(() => {
+    if (!animations.length) return;
+  
+    mixer.current = new THREE.AnimationMixer(scene);
+  
+    const relevantClips = animations.filter(
+      (a) => a.name === 'Action' || a.name === 'Curve.006Action'
+    );
+  
+    relevantClips.forEach((clip) => {
+      const action = mixer.current.clipAction(clip);
+      action.reset();
+      action.paused = true;
+      action.play();
+      action.time = 0;
+    });
+  
+    actionRef.current = relevantClips.map((clip) => mixer.current.clipAction(clip));
+    mixer.current.update(0);
+  }, [animations, scene]);
+  
 
+  useFrame((_, delta) => {
+    if (!mixer.current || !actionRef.current) return;
+  
+    const offset = scroll.offset;
+  
+    actionRef.current.forEach((action) => {
+      const clip = action.getClip();
+      const openStart = 0;
+      const openEnd = clip.duration * 0.68;
+  
+      const clampedTime = offset === 0 
+        ? openStart 
+        : THREE.MathUtils.lerp(openStart, openEnd, offset);
+  
+      action.time = THREE.MathUtils.damp(action.time, clampedTime, 100, delta);
+    });
+  
+    mixer.current.update(delta);
+  });
+  
   return (
     <primitive
-      ref={doorRef}
       object={scene}
-      position={[0, -1, 0]}
+      position={[0, -1.5, -5]}
       rotation={[0, Math.PI, 0]}
-      scale={7.25}
+      scale={6.25}
     />
   );
 }
+
 
 const OceanScene = () => {
   const { scene, gl, camera } = useThree();
   const waterRef = useRef();
   const meshRef = useRef();
   useEffect(() => {
-    camera.position.set(-10, 5, 30); //-x moves the right part of door back positive moves it forward
-    camera.lookAt(0, -5, 0);
+    camera.position.set(-5, 5, 22.5); //-x moves the right part of door back positive moves it forward
+    camera.lookAt(0, 5, 0);
   }, [camera]);
 
   useEffect(() => {
@@ -218,14 +220,15 @@ const OceanScene = () => {
 
   return (
     <>
-      <OrbitControls
+      {/* <OrbitControls
         maxPolarAngle={Math.PI * 0.495}
         target={[0, 10, 0]}
         minDistance={30.0}
         maxDistance={30.0}
-      />
-      <DoorModel />
+      /> */}
+          <DoorModel />
       <mesh ref={meshRef} position={[0, 10, 0]}>
+
         {/* <boxGeometry args={[30, 30, 30]} /> */}
         <meshStandardMaterial roughness={0} color="white" />
       </mesh>
@@ -236,7 +239,7 @@ const OceanScene = () => {
 export default function LandingComponent() {
   return (
     <>
-{/* <div style={{ height: "200vh", margin: 0 }}>
+<div style={{ height: "200vh", margin: 0 }}>
   <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: 0 }}>
     <Canvas>
       <ScrollControls pages={3} damping={0.1}>
@@ -261,8 +264,8 @@ export default function LandingComponent() {
   </p>
 <div className="font-khteka">Scroll To Discover</div>
 </div>
-</div> */}
-      <div style={{ overflowX: "hidden" }}>
+</div>
+      {/* <div style={{ overflowX: "hidden" }}>
         <div class="MainContainer">
           <div class="ParallaxContainer">
             <Hero />
@@ -277,7 +280,7 @@ export default function LandingComponent() {
         <LogoGrid />
         <Locations />
         <GiftCards />
-      </div>
+      </div> */}
     </>
   );
 }

@@ -223,7 +223,7 @@ const VideoAnimation = () => {
 };
 
 const globalClock = new THREE.Clock(true);
-function FigureMesh({ imageRef }) {
+function GooeyMesh({ imageRef }) {
 
 const vertexShader = 
 `varying vec2 v_uv;
@@ -435,7 +435,7 @@ void main() {
 }
 
 function HoverScene({ imageRef }) {
-  const [ready, setReady] = useState(false)
+
 
   return (
 <Canvas
@@ -453,13 +453,11 @@ function HoverScene({ imageRef }) {
   }}
 >
   <ambientLight intensity={2} />
-  <FigureMesh imageRef={imageRef} />
+  <GooeyMesh imageRef={imageRef} />
 </Canvas>
 
   )
 }
-
-
 
 
 

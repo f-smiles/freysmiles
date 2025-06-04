@@ -24,9 +24,156 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap/all";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
-import { TextPlugin } from 'gsap/TextPlugin';
+import { TextPlugin } from "gsap/TextPlugin";
 
-gsap.registerPlugin(TextPlugin, MotionPathPlugin, ScrollTrigger, SplitText, MorphSVGPlugin);
+gsap.registerPlugin(
+  TextPlugin,
+  MotionPathPlugin,
+  ScrollTrigger,
+  SplitText,
+  MorphSVGPlugin
+);
+
+const ScrollAnimation = () => {
+  const stickySectionRef = useRef(null);
+  const cardRefs = useRef([]);
+
+  const cardsData = [
+    {
+      title: "Complimentary Consultation",
+      description: "Initial consultations are always free of charge",
+    },
+    {
+      title: "Payment Plans are Available",
+      description: "We offer payment plans through Klarna and Ortho Banc",
+    },
+    {
+      title: "No Hidden Fees",
+      description:
+        "Comprehensive treatment plans include a set of retainers and supervision",
+    },
+    {
+      title: "One Year Post-Treatment Follow-Up",
+      description: "",
+    },
+  ];
+
+  const addToRefs = (el, index) => {
+    if (el && !cardRefs.current.includes(el)) {
+      cardRefs.current[index] = el;
+    }
+  };
+
+  useEffect(() => {
+    const stickySection = stickySectionRef.current;
+    const cards = cardRefs.current;
+    const stickyHeight = window.innerHeight * 5;
+
+    const transforms = [
+      [
+        [10, 50, -10, 10],
+        [20, -10, -45, 20],
+      ],
+      [
+        [0, 47.5, -10, 15],
+        [-25, 15, -45, 30],
+      ],
+      [
+        [0, 52.5, -10, 5],
+        [15, -5, -40, 60],
+      ],
+      [
+        [0, 50, 30, -80],
+        [20, -10, 60, 5],
+      ],
+      [
+        [0, 55, -15, 30],
+        [25, -15, 60, 95],
+      ],
+    ];
+
+    ScrollTrigger.create({
+      trigger: stickySection,
+      start: "top top",
+      end: `+=${stickyHeight}px`,
+
+      pin: true,
+      pinSpacing: true,
+      onUpdate: (self) => {
+        const progress = self.progress;
+
+        cards.forEach((card, index) => {
+          if (!card) return;
+
+          const delay = index * 0.1125;
+          const cardProgress = Math.max(0, Math.min((progress - delay) * 2, 1));
+
+          if (cardProgress > 0) {
+            const cardStartX = 25;
+            const cardEndX = -650;
+            const yPos = transforms[index][0];
+            const rotations = transforms[index][1];
+
+            const cardX = gsap.utils.interpolate(
+              cardStartX,
+              cardEndX,
+              cardProgress
+            );
+
+            const yProgress = cardProgress * 3;
+            const yIndex = Math.min(Math.floor(yProgress), yPos.length - 2);
+            const yInterpolation = yProgress - yIndex;
+            const cardY = gsap.utils.interpolate(
+              yPos[yIndex],
+              yPos[yIndex + 1],
+              yInterpolation
+            );
+
+            const cardRotation = gsap.utils.interpolate(
+              rotations[yIndex],
+              rotations[yIndex + 1],
+              yInterpolation
+            );
+
+            gsap.set(card, {
+              xPercent: cardX,
+              yPercent: cardY,
+              rotation: cardRotation,
+              opacity: 1,
+            });
+          } else {
+            gsap.set(card, { opacity: 0 });
+          }
+        });
+      },
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
+  return (
+    <section className="movingcard-sticky-section" ref={stickySectionRef}>
+      {cardsData.map((card, index) => (
+        <div
+          className="movingcard-card"
+          key={index}
+          ref={(el) => addToRefs(el, index)}
+        >
+          <div className="movingcard-content">
+            <div className="movingcard-title">
+              <h2 className="movingcard-title-text font-neuehaas45">{card.title}</h2>
+            </div>
+            <div className="movingcard-description">
+              <p className="movingcard-description-text font-neuehaas45">{card.description}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+};
 
 const FinancingTreatment = () => {
   // const canvasRef = useRef();
@@ -208,6 +355,7 @@ const FinancingTreatment = () => {
   const drawPathRef = useRef(null);
 
   useEffect(() => {
+    requestAnimationFrame(() => {
     const stepContent = [
       {
         title: "Complimentary consultation",
@@ -374,6 +522,7 @@ const FinancingTreatment = () => {
         }
       });
     };
+      });
   }, []);
 
   const cubeRef = useRef();
@@ -670,7 +819,6 @@ const FinancingTreatment = () => {
   const tl = useRef(null);
 
   useEffect(() => {
-
     tl.current = gsap.timeline({ paused: true });
 
     tl.current
@@ -732,36 +880,33 @@ const FinancingTreatment = () => {
     `;
 
     const fragmentShader = `
-    precision mediump float;
-    
-    uniform vec2 u_resolution;
-    
-    float random(vec2 st) {
-      return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453);
-    }
-    
-    float ease(float t) {
-      return smoothstep(0.0, 1.0, t);
-    }
-    
-    void main() {
-      vec2 st = gl_FragCoord.xy / u_resolution;
-      float y = ease(st.y);
-    
-      // Base vertical gradient: warm white to pale sky blue
-      vec3 top = vec3(0.96, 0.96, 0.94);     // Warm beige-gray
-      vec3 mid = vec3(0.94, 0.96, 0.96);     // Neutral pale gray-blue
-      vec3 bottom = vec3(0.91, 0.94, 0.97);  // Pale sky blue
-    
-      vec3 color = mix(top, mid, smoothstep(0.0, 0.45, y));
-      color = mix(color, bottom, smoothstep(0.5, 0.85, y));
-    
-      // Subtle grain texture
-      float grain = (random(st * u_resolution.xy) - 0.5) * 0.003;
-      color += grain;
-    
-      gl_FragColor = vec4(color, 1.0);
-    }
+precision mediump float;
+
+uniform vec2 u_resolution;
+
+void main() {
+  vec2 st = gl_FragCoord.xy / u_resolution;
+  float x = st.x, y = st.y;
+
+  vec3 peachDust = vec3(0.89, 0.75, 0.65);
+  vec3 mauveDust = vec3(0.82, 0.78, 0.88);
+  vec3 duskBase  = vec3(0.92, 0.90, 0.92);
+
+  // Distance from bottom-left
+  float dist = length(st - vec2(0.0, 0.0));
+
+  // Increase peach reach by bumping 0.7 → 0.9
+  float peachWeight = smoothstep(2.1, 0.0, dist);
+
+  vec3 blendColor = mix(mauveDust, peachDust, peachWeight);
+  vec3 color = mix(blendColor, duskBase, 0.22);
+
+  gl_FragColor = vec4(color, 1.0);
+}
+
+
+
+
     `;
 
     const material = new THREE.ShaderMaterial({
@@ -808,8 +953,7 @@ const FinancingTreatment = () => {
     const arc = arcRef.current;
 
     arc.style.strokeDasharray = "100 250";
-    arc.style.strokeDashoffset = "100"; 
-
+    arc.style.strokeDashoffset = "100";
 
     arc.getBoundingClientRect();
 
@@ -822,387 +966,213 @@ const FinancingTreatment = () => {
   useEffect(() => {
     gsap.to(text2Ref.current, {
       duration: 1.5,
-      text: 'Your treatment, Your pace',
-      ease: 'none',
+      text: "Your treatment, Your pace",
+      ease: "none",
     });
-  
+
     gsap.to(text3Ref.current, {
       duration: 1.2,
-      text: 'Got questions? Text us anytime and a team member will personally walk you through your options.',
-      ease: 'none',
+      text: "Got questions? Text us anytime and a team member will personally walk you through your options.",
+      ease: "none",
     });
   }, []);
-  
+
+  const cardRef = useRef();
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.to(cardRef.current, {
+      scale: 0.85,
+      ease: "none",
+      scrollTrigger: {
+        trigger: cardRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
+  }, []);
+
   return (
     <>
-      {/* <div className="min-h-screen p-8 flex flex-col md:flex-row mx-auto items-center w-full gap-8 ">
-        <div className="w-full md:w-1/2 flex justify-center items-center">
-          <div className="flex justify-center items-center my-auto w-full md:w-1/2 text-sm leading-relaxed space-y-4">
-            <p className="font-neuehaas45">
-              In non ligula at elit congue accumsan. Vestibulum ante ipsum
-              primis in faucibus orci luctus et ultrices posuere cubilia curae;
-              Integer id massa tincidunt, dapibus metus a, accumsan lorem.
-            </p>
-          </div>
-        </div>
-
-        <div className="w-full md:w-1/2 justify-center items-center">
-          <img
-            src="/images/klarna.png"
-            alt="Large pink lowercase k"
-            className="w-2/3 h-auto object-contain"
-          />
-        </div>
-      </div> */}
-      <div className="relative">
-
+      <div>
+        <ScrollAnimation />
         <canvas
           id="shader-bg"
-          className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"
+          className="fixed top-0 left-0 w-full min-h-screen z-[-1] pointer-events-none"
         />
-        <div className="h-screen flex justify-center items-center">
-          <div className="h-[90vh] backdrop-blur-xl bg-[#111]/10 shadow-sm max-w-7xl p-10">
-            <div className="absolute w-[400px] h-[400px] bg-purple-500 opacity-20 blur-[140px] rounded-full top-1/3 left-[-140px] pointer-events-none mix-blend-screen"></div>
-            <div className="absolute w-[400px] h-[400px] bg-orange-500 opacity-20 blur-[140px] rounded-full top-[40%] left-[-100px] pointer-events-none mix-blend-screen"></div>
-            <div className="absolute w-[400px] h-[400px] bg-sky-300 opacity-30 blur-[140px] rounded-full top-1/4 right-[-120px] pointer-events-none"></div>
-            
-            <div className="grid grid-cols-3 gap-4 h-full">
-              <div className="flex flex-col items-center justify-center h-full">
-                <div className="relative backdrop-blur-xl bg-white/70  shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10">
-                  <div className="absolute top-4 right-4 w-4 h-5 text-white text-xs flex items-center justify-center "></div>
-                  <div className="space-y-2">
-                    <span className="inline-block bg-black/10 text-[10px] uppercase px-3 py-2 rounded-full text-gray-600 font-khteka tracking-wider">
-                      Transparent Pricing
-                    </span>
-                    <div>
-                      <h3 className="font-neuehaas45 text-black text-[16px] mb-2">
-                        No Hidden Fees
-                      </h3>
-                      <ul className="list-disc pl-[1.25em] text-sm text-gray-700 font-neuehaas45 space-y-1">
-                        <li>All-inclusive pricing — from start to finish.</li>
-                        <li>No up-charges for ceramic or “special” braces.</li>
-                        <li>No surprise fees or unexpected add-ons.</li>
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="font-neuehaas45 text-black text-[16px] mb-2">
-                        Flexible Monthly Plans
-                      </h3>
-                      <ul className="list-disc pl-[1.25em] text-sm text-gray-700 font-neuehaas45 space-y-1">
-                        <li>Payment plans typically span 12–24 months.</li>
-                        <li>
-                          A manageable down payment, with monthly plans
-                          available
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="w-full max-w-md mx-auto mt-4">
-                  <svg width="400" height="200" viewBox="0 0 200 100">
-                    <path
-                      d="M 20 100 A 80 80 0 0 1 180 100"
-                      stroke="grey"
-                      stroke-width="6"
-                      fill="none"
-                    />
-             <path
-        ref={arcRef}
-        d="M 20 100 A 80 80 0 0 1 180 100"
-        stroke="white"
-        strokeWidth="6"
-        fill="none"
-        strokeDasharray="100 250"
-        strokeLinecap="round"
-      />
-                    <text
-                      x="100"
-                      y="70"
-                      font-size="12"
-                      text-anchor="middle"
-                      fill="black"
-                      className="font-neuehaas45"
-                    >
-                      250/month
-                    </text>
-                    <text
-                      x="70"
-                      y="60"
-                      font-size="5"
-                      text-anchor="end"
-                      fill="black"
-                      class="font-khteka uppercase"
-                    >
-                      Starting
-                    </text>
-                  </svg>
-
-                  <div className="relative mt-4">
-                    <div className="h-[1px] bg-black/20 rounded-full"></div>
-
-                 
-                    <div className="absolute top-1/2 left-[55%] -translate-y-1/2 w-[20%] h-[6px] bg-white rounded-full"></div>
-
-                    <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
-                    <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
-
-                    <div className="absolute top-full left-[65%] mt-2 flex flex-col items-center">
-                      <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-black"></div>
-                      <span className="mt-1 font-khteka text-[10px] uppercase">
-                        Our price
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="relative backdrop-blur-xl bg-white/70 shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10 flex flex-col justify-between">
-
-  <div className="flex items-center gap-2 mb-4">
-    <div className="w-10 h-5 bg-gray-300 rounded-full relative">
-      <div className="w-4 h-4 bg-white rounded-full absolute left-0 top-0.5 shadow-md transition-all"></div>
-    </div>
-    <span className="text-xs text-gray-600 font-neuehaas45">
-      AutoPay Enabled
-    </span>
-  </div>
-
-  <div className="flex items-center justify-between mb-2">
-
-  <p className="text-[13px] text-gray-700 font-neuehaas45">
-    Flexible monthly payments — as low as 0% APR. Exact rate based on your credit profile.
-  </p>
-
-</div>
-
-  <div className="flex items-start gap-3 mb-6">
-
-  <div className="w-4 h-4 rounded-full border border-gray-400 flex items-center justify-center mt-[2px]">
-    <div className="w-2 h-2 bg-gray-900 rounded-full"></div>
-  </div>
-
-
-  <div className="flex-1">
-    <div className="flex items-center justify-between">
-      <span className="font-neuehaas45 font-semibold text-sm text-black">Financing.</span>
-      <span className="bg-[#ffe5f2] text-[#7f187f] text-[10px] uppercase px-2 py-0.5 rounded-full font-khteka tracking-wider">
-        Klarna
-      </span>
-    </div>
-    <p className="text-[13px] text-gray-500 mt-0.5 font-neuehaas45">Pay over 6 – 36 months.</p>
-  </div>
-</div>
-
-
-  <ul className="text-sm text-gray-700 font-neuehaas45 space-y-2 mb-4">
-    <li>Instant monthly quote</li>
-    <li>No impact on credit to explore</li>
-  </ul>
-
-
-  <div className="w-full bg-gray-200 rounded-full h-[6px] relative mb-1">
-    <div className="bg-[#ffb3d6] h-full rounded-full w-[65%]"></div>
-  </div>
-  <span className="text-[10px] text-[#7f187f] font-khteka uppercase tracking-wider">
-    Prequalifying with Klarna...
-  </span>
-
-
-  <button className="mt-4 w-full bg-[#ffe5f2] border border-[#ffb3d6] text-[#7f187f] py-2 rounded-md text-xs font-khteka uppercase hover:bg-[#ffd6e9] transition-all">
-    Continue with Klarna
-  </button>
-
-
-  <div className="mt-3 text-center">
-
-  </div>
-</div>
-              <div className="relative backdrop-blur-xl bg-white/70  shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10">
-                <div className="flex justify-between mt-4 px-6">
-                  {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-2 h-2 rounded-full bg-black/10"
-                    ></div>
-                  ))}
-                </div>
-
-                <div className="text-[14px] uppercase font-khteka text-gray-700 tracking-widest mb-4" ref={text2Ref} id="text-2" />
-       
-    
-                <div
-  className="text-sm text-gray-700 font-neuehaas45 mb-6 min-h-[40px]"
-  ref={text3Ref}
-  id="text-3"
-/>
-
-
-
-                <button className="w-full bg-black text-white py-2 rounded-md text-sm font-khteka uppercase hover:bg-gray-900 transition-all">
-                  Text Our Team
-                </button>
-
-            
-              </div>
-            </div>
-            
-          </div>
-        </div>
-      </div>
-      
-      <div className="bg-[#F2F3F5] min-h-screen pt-[160px] relative ">
-
-      <section className="relative flex items-center justify-center">
-          <div className=" w-[36vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
-            <Copy>
-              <p className="font-neueroman text-[18px] uppercase leading-snug text-black">
-                Orthodontic treatment is a transformative investment in both
-                your appearance and long-term dental health — ideally, a
-                once-in-a-lifetime experience. While many orthodontists can
-                straighten teeth with braces or Invisalign, the quality of
-                outcomes varies widely. With today's advanced technology,
-                treatment goes far beyond alignment — it can enhance facial
-                aesthetics and deliver truly life-changing results.
-              </p>
-            </Copy>
-          </div>
-
-          <svg
-            width="90vw"
-            height="170vh"
-            viewBox="-100 0 1100 1800"
-            xmlns="http://www.w3.org/2000/svg"
-            ref={svgRef}
-            className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
-          >
-            <defs>
-              <path
-                id="text-arc-path"
-                d="M0,820 
-           A450,450 0 0 1 900,820 
-           L900,1440 
-           L0,1440 
-           Z"
-                fill="none"
-              />
-            </defs>
-
-            <path
-              d="M0,820 
-         A450,450 0 0 1 900,820 
-         L900,1400 
-         L0,1400 
-         Z"
-              fill="none"
-              // stroke="#fe6531"
-              // strokeWidth="4"
-            />
-
-            <text
-              className="text-[12vw] tracking-wide font-neueroman fill-[#FEB448] font-sinistre"
-              textAnchor="middle"
-              dominantBaseline="middle"
+        <div ref={cardRef} className="relative">
+          <div className="h-screen flex justify-center items-center">
+            <div
+              style={{
+                padding: "20px",
+                background: "rgba(0, 0, 0, 0.05)",
+                boxShadow: `
+                    inset 1px 1.5px 2px rgba(255, 255, 255, 0.6),
+                    inset 1px -0.5px 2px rgba(255, 255, 255, 0.3),
+                    0 0.6px 0.6px -1.25px rgba(0, 0, 0, 0.18),
+                    0 2.29px 2.29px -2.5px rgba(0, 0, 0, 0.16),
+                    0 10px 10px -3.75px rgba(0, 0, 0, 0.06)
+                  `,
+                backdropFilter: "blur(45px)",
+                WebkitBackdropFilter: "blur(45px)",
+                borderRadius: "30px",
+              }}
+              className="h-[90vh] max-w-7xl p-10"
             >
-              <textPath
-                ref={textPathRef}
-                href="#text-arc-path"
-                startOffset="4%"
-              >
-                GETTING STARTED
-              </textPath>
-            </text>
-          </svg>
-        </section>
-        <div className="overflow-hidden" style={{ height: "400vh" }}>
-          <svg
-            ref={curveSvgRef}
-            className="svgtext"
-            data-filter-type="distortion"
-            width="120%"
-            viewBox="0 0 1000 200"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <defs>
-              <filter id="distortionFilter">
-                <feTurbulence
-                  type="turbulence"
-                  baseFrequency="0.01"
-                  numOctaves="1"
-                  result="noise"
-                />
-                <feDisplacementMap
-                  ref={filterRef}
-                  in="SourceGraphic"
-                  in2="noise"
-                  scale="0"
-                  xChannelSelector="R"
-                  yChannelSelector="G"
-                  data-min-scale="0"
-                  data-max-scale="80"
-                />
-              </filter>
-            </defs>
+              {/* <div className="absolute w-[400px] h-[400px] bg-purple-500 opacity-20 blur-[140px] rounded-full top-1/3 left-[-140px] pointer-events-none mix-blend-screen"></div>
+            <div className="absolute w-[400px] h-[400px] bg-orange-500 opacity-20 blur-[140px] rounded-full top-[40%] left-[-100px] pointer-events-none mix-blend-screen"></div>
+            <div className="absolute w-[400px] h-[400px] bg-sky-300 opacity-30 blur-[140px] rounded-full top-1/4 right-[-120px] pointer-events-none"></div> */}
 
-            <path
-              id="text-curve"
-              d="M 0 50 Q 100 0 200 100 Q 300 200 650 50 C 750 0 750 150 1000 50"
-              fill="none"
-            />
-            <text filter="url(#distortionFilter)">
-              <textPath
-                className="font-neueroman uppercase text-[20px] fill-[#624B48]"
-                ref={textCurveRef}
-                href="#text-curve"
-              >
-                Invest in your smile, with flexibility built in.
-              </textPath>
-            </text>
-          </svg>
+              <div className="grid grid-cols-3 gap-4 h-full">
+                <div className="flex flex-col items-center justify-center h-full">
+                  <div className="relative backdrop-blur-xl bg-white/70  shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10">
+                    <div className="absolute top-4 right-4 w-4 h-5 text-white text-xs flex items-center justify-center "></div>
+                    <div className="space-y-2">
+                      <span className="inline-block bg-black/10 text-[10px] uppercase px-3 py-2 rounded-full text-gray-600 font-khteka tracking-wider">
+                        Transparent Pricing
+                      </span>
+                      <div>
+                        <h3 className="font-neuehaas45 text-black text-[16px] mb-2">
+                          No Hidden Fees
+                        </h3>
+                        <ul className="list-disc pl-[1.25em] text-sm text-gray-700 font-neuehaas45 space-y-1">
+                          <li>All-inclusive pricing — from start to finish.</li>
+                          <li>
+                            No up-charges for ceramic or “special” braces.
+                          </li>
+                          <li>No surprise fees or unexpected add-ons.</li>
+                        </ul>
+                      </div>
 
-          <section
-            ref={sectionRef}
-            className="w-screen h-screen overflow-hidden flex items-center px-10"
-          >
-            <div ref={scrollContainerRef}>
-              <svg
-                width="3370"
-                height="671"
-                viewBox="0 0 3370 671"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  ref={drawPathRef}
-                  d="M0.998047 1C0.998047 1 849.498 764.605 786.498 659.553C723.498 554.5 1725.51 370.052 1660.51 419.052C1595.5 468.052 2515.02 616.409 2491.26 660.981C2467.5 705.553 3369 419.052 3369 419.052"
-                  stroke="#EBFD15"
-                  strokeWidth="3"
-                />
-              </svg>
-            </div>
-          </section>
-        </div>
-        <section className="flex flex-col lg:flex-row items-center justify-between px-8 py-24 gap-12 w-full">
-          {/* LEFT CONTENT */}
-          <div className="flex-1 flex flex-col gap-8">
-            <h2 className="text-5xl font-neueroman leading-tight">
-              {" "}
-              Stress-Free Payments
-              <br />
-              Made Simple
-            </h2>
+                      <div>
+                        <h3 className="font-neuehaas45 text-black text-[16px] mb-2">
+                          Flexible Monthly Plans
+                        </h3>
+                        <ul className="list-disc pl-[1.25em] text-sm text-gray-700 font-neuehaas45 space-y-1">
+                          <li>Payment plans typically span 12–24 months.</li>
+                          <li>
+                            A manageable down payment, with monthly plans
+                            available
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
 
-            <p className="text-base font-neuehaas45 max-w-md">
-              We’ve partnered with Klarna to offer flexible, hassle-free payment
-              options. Split your costs over time with zero fuss, zero stress —
-              no forms, no fine print. Just flexibility that fits your flow.
-            </p>
-          </div>
+                  <div className="w-full max-w-md mx-auto mt-4">
+                    <svg width="400" height="200" viewBox="0 0 200 100">
+                      <path
+                        d="M 20 100 A 80 80 0 0 1 180 100"
+                        stroke="grey"
+                        stroke-width="6"
+                        fill="none"
+                      />
+                      <path
+                        ref={arcRef}
+                        d="M 20 100 A 80 80 0 0 1 180 100"
+                        stroke="white"
+                        strokeWidth="6"
+                        fill="none"
+                        strokeDasharray="100 250"
+                        strokeLinecap="round"
+                      />
+                      <text
+                        x="100"
+                        y="70"
+                        font-size="12"
+                        text-anchor="middle"
+                        fill="black"
+                        className="font-neuehaas45"
+                      >
+                        250/month
+                      </text>
+                      <text
+                        x="70"
+                        y="60"
+                        font-size="5"
+                        text-anchor="end"
+                        fill="black"
+                        class="font-khteka uppercase"
+                      >
+                        Starting
+                      </text>
+                    </svg>
 
-          <div className="flex-1 flex flex-col items-center relative">
-            <div className="relative w-2/3">
-              <img src="../images/iphoneoutline.png" className="w-full" />
-              <div
+                    <div className="relative mt-4">
+                      <div className="h-[1px] bg-black/20 rounded-full"></div>
+
+                      <div className="absolute top-1/2 left-[55%] -translate-y-1/2 w-[20%] h-[6px] bg-white rounded-full"></div>
+
+                      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
+                      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
+
+                      <div className="absolute top-full left-[65%] mt-2 flex flex-col items-center">
+                        <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-black"></div>
+                        <span className="mt-1 font-khteka text-[10px] uppercase">
+                          Our price
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    background: "rgba(255, 255, 255, 0.6)",
+                    borderRadius: "16px",
+                    boxShadow: "0 0 20px rgba(255, 255, 255, 0.2)",
+                    backdropFilter: "blur(7.4px)",
+                    WebkitBackdropFilter: "blur(7.4px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    padding: "2rem",
+                  }}
+                  className="relative  p-10 flex flex-col justify-between"
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-10 h-5 bg-gray-300 rounded-full relative">
+                      <div className="w-4 h-4 bg-white rounded-full absolute left-0 top-0.5 shadow-md transition-all"></div>
+                    </div>
+                    <span className="text-xs text-gray-600 font-neuehaas45">
+                      AutoPay Enabled
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[13px] text-gray-700 font-neuehaas45">
+                      Flexible monthly payments — as low as 0% APR. Exact rate
+                      based on your credit profile.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-3 mb-6">
+                    <div className="w-4 h-4 rounded-full border border-gray-400 flex items-center justify-center mt-[2px]">
+                      <div className="w-2 h-2 bg-gray-900 rounded-full"></div>
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-neuehaas45 font-semibold text-sm text-black">
+                          Financing.
+                        </span>
+                        <span className="bg-[#ffe5f2] text-[#7f187f] text-[10px] uppercase px-2 py-0.5 rounded-full font-khteka tracking-wider">
+                          Klarna
+                        </span>
+                      </div>
+                      <p className="text-[13px] text-gray-500 mt-0.5 font-neuehaas45">
+                        Pay over 6 – 36 months.
+                      </p>
+                    </div>
+                  </div>
+
+                  <ul className="text-sm text-gray-700 font-neuehaas45 space-y-2 mb-4">
+                    <li>Instant monthly quote</li>
+                    <li>No impact on credit to explore</li>
+                  </ul>
+
+                  <div className="w-full bg-gray-200 rounded-full h-[6px] relative mb-1">
+                    <div className="bg-[#ffb3d6] h-full rounded-full w-[65%]"></div>
+                  </div>
+                  {/* <div
                 ref={processingRef}
                 id="processing"
                 className={`absolute inset-0 flex flex-col justify-center items-center ${
@@ -1364,314 +1334,487 @@ const FinancingTreatment = () => {
                     />
                   </svg>
                 </div>
-              </div>
-            </div>
+              </div> */}
+                  <span className="text-[10px] text-[#7f187f] font-khteka uppercase tracking-wider">
+                    Prequalifying with Klarna...
+                  </span>
+                  <div className="w-[300px] space-y-4">
+                    <div>
+                      <div className="flex justify-between text-xs mb-1 font-neuehaas45 uppercase">
+                        <span>Remaining balance</span>
+                      </div>
+                      <div className="bg-black/10 h-2 rounded-full relative overflow-hidden">
+                        <div className="bg-lime-300 h-full rounded-full w-[75%]"></div>
+                      </div>
+                    </div>
 
-            <div className="w-[300px] space-y-4">
-              <div>
-                <div className="flex justify-between text-xs mb-1 font-neuehaas45 uppercase">
-                  <span>Remaining balance</span>
-                </div>
-                <div className="bg-black/10 h-2 rounded-full relative overflow-hidden">
-                  <div className="bg-lime-300 h-full rounded-full w-[75%]"></div>
-                </div>
-              </div>
+                    <div>
+                      <div className="flex justify-between text-xs mb-1 font-neuehaas45 uppercase">
+                        <span>NEXT PAYMENT DUE</span>
+                      </div>
+                      <div className="bg-black/10 h-2 rounded-full relative overflow-hidden">
+                        <div className="bg-purple-300 h-full rounded-full w-[45%]"></div>
+                      </div>
+                    </div>
+                  </div>
 
-              <div>
-                <div className="flex justify-between text-xs mb-1 font-neuehaas45 uppercase">
-                  <span>NEXT PAYMENT DUE</span>
+                  <button className="mt-4 w-full bg-[#ffe5f2] border border-[#ffb3d6] text-[#7f187f] py-2 rounded-md text-xs font-khteka uppercase hover:bg-[#ffd6e9] transition-all">
+                    Continue with Klarna
+                  </button>
+
+                  <div className="mt-3 text-center"></div>
                 </div>
-                <div className="bg-black/10 h-2 rounded-full relative overflow-hidden">
-                  <div className="bg-purple-300 h-full rounded-full w-[45%]"></div>
+                <div className="relative border border-white border-[4px] rounded-[8px] p-10">
+                  <div className="flex justify-between mt-4 px-6">
+                    {[...Array(5)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-2 h-2 rounded-full bg-black/10"
+                      ></div>
+                    ))}
+                  </div>
+
+                  <div
+                    className="text-[14px] uppercase font-khteka text-gray-700 tracking-widest mb-4"
+                    ref={text2Ref}
+                    id="text-2"
+                  />
+
+                  <div
+                    className="text-sm text-gray-700 font-neuehaas45 mb-6 min-h-[40px]"
+                    ref={text3Ref}
+                    id="text-3"
+                  />
+
+                  <div className="relative w-full">
+                    <img src="../images/iphoneoutline.png" className="w-full" />
+                  </div>
+
+                  <button className="w-full bg-black text-white py-2 rounded-md text-sm font-khteka uppercase hover:bg-gray-900 transition-all">
+                    Text Our Team
+                  </button>
+                  <div className="flex-1 flex flex-col items-center relative"></div>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        <svg
-          ref={starRef}
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 162 162"
-          style={{ enableBackground: "new 0 0 162 162" }}
-        >
-          <g
-            className="shape-wrapper"
-            style={{ transformOrigin: "center center" }}
-          >
-            <path
-              className="hsc-img-path"
-              d="M108 88.7c-10.8 0-19.7 8.8-19.7 19.7v47.4c0 1.9-1.5 3.4-3.4 3.4h-8.6c-1.9 0-3.4-1.5-3.4-3.4v-47.4c0-10.8-8.8-19.7-19.7-19.7H6.4c-1.9 0-3.4-1.5-3.4-3.4v-8c0-1.9 1.5-3.4 3.4-3.4h46.9c10.8 0 19.7-8.8 19.6-19.7V6.4c0-1.9 1.5-3.4 3.4-3.4H85c1.9 0 3.4 1.5 3.4 3.4v47.8c0 10.8 8.8 19.7 19.7 19.7h46.6c1.9 0 3.4 1.5 3.4 3.4v8c0 1.9-1.5 3.4-3.4 3.4H108z"
-              fill="#EAFE08"
-            />
-          </g>
+        <div className="min-h-screen pt-[160px] relative ">
+          <section className="relative flex items-center justify-center">
+            <div className=" w-[36vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
+              <Copy>
+                <p className="font-neueroman text-[18px] uppercase leading-snug text-black">
+                  Orthodontic treatment is a transformative investment in both
+                  your appearance and long-term dental health — ideally, a
+                  once-in-a-lifetime experience. While many orthodontists can
+                  straighten teeth with braces or Invisalign, the quality of
+                  outcomes varies widely. With today's advanced technology,
+                  treatment goes far beyond alignment — it can enhance facial
+                  aesthetics and deliver truly life-changing results.
+                </p>
+              </Copy>
+            </div>
 
-          <text
-            x="50%"
-            y="50%"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            className="scrolling-content"
-            style={{
-              fontFamily: "sans-serif",
-              fontSize: "4px",
-              fill: "black",
-              opacity: 0,
-              pointerEvents: "none",
-            }}
+            <svg
+              width="90vw"
+              height="170vh"
+              viewBox="-100 0 1100 1800"
+              xmlns="http://www.w3.org/2000/svg"
+              ref={svgRef}
+              className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
+            >
+              <defs>
+                <path
+                  id="text-arc-path"
+                  d="M0,820 
+           A450,450 0 0 1 900,820 
+           L900,1440 
+           L0,1440 
+           Z"
+                  fill="none"
+                />
+              </defs>
+
+              <path
+                d="M0,820 
+         A450,450 0 0 1 900,820 
+         L900,1400 
+         L0,1400 
+         Z"
+                fill="none"
+                // stroke="#fe6531"
+                // strokeWidth="4"
+              />
+
+              <text
+                className="text-[12vw] tracking-wide font-neueroman fill-[#FEB448] font-sinistre"
+                textAnchor="middle"
+                dominantBaseline="middle"
+              >
+                <textPath
+                  ref={textPathRef}
+                  href="#text-arc-path"
+                  startOffset="4%"
+                >
+                  GETTING STARTED
+                </textPath>
+              </text>
+            </svg>
+          </section>
+          <div className="overflow-hidden" style={{ height: "400vh" }}>
+            <svg
+              ref={curveSvgRef}
+              className="svgtext"
+              data-filter-type="distortion"
+              width="120%"
+              viewBox="0 0 1000 200"
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <defs>
+                <filter id="distortionFilter">
+                  <feTurbulence
+                    type="turbulence"
+                    baseFrequency="0.01"
+                    numOctaves="1"
+                    result="noise"
+                  />
+                  <feDisplacementMap
+                    ref={filterRef}
+                    in="SourceGraphic"
+                    in2="noise"
+                    scale="0"
+                    xChannelSelector="R"
+                    yChannelSelector="G"
+                    data-min-scale="0"
+                    data-max-scale="80"
+                  />
+                </filter>
+              </defs>
+
+              <path
+                id="text-curve"
+                d="M 0 50 Q 100 0 200 100 Q 300 200 650 50 C 750 0 750 150 1000 50"
+                fill="none"
+              />
+              <text filter="url(#distortionFilter)">
+                <textPath
+                  className="font-neueroman uppercase text-[20px] fill-[#624B48]"
+                  ref={textCurveRef}
+                  href="#text-curve"
+                >
+                  Invest in your smile, with flexibility built in.
+                </textPath>
+              </text>
+            </svg>
+
+            <section
+              ref={sectionRef}
+              className="w-screen h-screen overflow-hidden flex items-center px-10"
+            >
+              <div ref={scrollContainerRef}>
+                <svg
+                  width="3370"
+                  height="671"
+                  viewBox="0 0 3370 671"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    ref={drawPathRef}
+                    d="M0.998047 1C0.998047 1 849.498 764.605 786.498 659.553C723.498 554.5 1725.51 370.052 1660.51 419.052C1595.5 468.052 2515.02 616.409 2491.26 660.981C2467.5 705.553 3369 419.052 3369 419.052"
+                    stroke="#EBFD15"
+                    strokeWidth="3"
+                  />
+                </svg>
+              </div>
+            </section>
+          </div>
+
+          <svg
+            ref={starRef}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 162 162"
+            style={{ enableBackground: "new 0 0 162 162" }}
           >
-            <tspan x="50%" dy="-1em">
-              AFFORDABLE FINANCING
-            </tspan>
-            <tspan x="50%" dy="1.2em">
-              NO HIDDEN COSTS
-            </tspan>
-          </text>
-        </svg>
-        <section className="relative w-full h-screen font-neuehaas45">
-          <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
-            <path
-              ref={lineRef}
-              strokeLinecap="round"
-              strokeLinejoin="miter"
-              fillOpacity="0"
-              strokeMiterlimit="4"
-              stroke="rgb(248,134,63)"
-              strokeOpacity="1"
-              strokeWidth="1.5"
-              d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
-            />
+            <g
+              className="shape-wrapper"
+              style={{ transformOrigin: "center center" }}
+            >
+              <path
+                className="hsc-img-path"
+                d="M108 88.7c-10.8 0-19.7 8.8-19.7 19.7v47.4c0 1.9-1.5 3.4-3.4 3.4h-8.6c-1.9 0-3.4-1.5-3.4-3.4v-47.4c0-10.8-8.8-19.7-19.7-19.7H6.4c-1.9 0-3.4-1.5-3.4-3.4v-8c0-1.9 1.5-3.4 3.4-3.4h46.9c10.8 0 19.7-8.8 19.6-19.7V6.4c0-1.9 1.5-3.4 3.4-3.4H85c1.9 0 3.4 1.5 3.4 3.4v47.8c0 10.8 8.8 19.7 19.7 19.7h46.6c1.9 0 3.4 1.5 3.4 3.4v8c0 1.9-1.5 3.4-3.4 3.4H108z"
+                fill="#EAFE08"
+              />
+            </g>
+
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              className="scrolling-content"
+              style={{
+                fontFamily: "sans-serif",
+                fontSize: "4px",
+                fill: "black",
+                opacity: 0,
+                pointerEvents: "none",
+              }}
+            >
+              <tspan x="50%" dy="-1em">
+                AFFORDABLE FINANCING
+              </tspan>
+              <tspan x="50%" dy="1.2em">
+                NO HIDDEN COSTS
+              </tspan>
+            </text>
           </svg>
-          <section className="bg-[#FF621D]"></section>
-          <div className="items-start flex flex-col px-6">
-            <div className="cube-outline">
-              <div class="cube">
-                <div className="cube-face cube-face--front">
-                  <div className="text-overlay">
-                    <p className="first-line font-neueroman uppercase">
-                      One year post-treatment follow-up
-                    </p>
-                    <p
-                      className=" font-neueroman uppercase"
-                      style={{
-                        position: "absolute",
-                        transform: "rotate(90deg)",
-                        transformOrigin: "left top",
-                        top: "40%",
-                        left: "70%",
-                        fontSize: ".8rem",
-                        lineHeight: "1.2",
-                        color: "black",
-                        maxWidth: "120px",
-                      }}
-                    >
-                      Retainers and retention visits for one year post-treatment
-                      included.
-                    </p>
+          <section className="relative w-full h-screen font-neuehaas45">
+            <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
+              <path
+                ref={lineRef}
+                strokeLinecap="round"
+                strokeLinejoin="miter"
+                fillOpacity="0"
+                strokeMiterlimit="4"
+                stroke="rgb(248,134,63)"
+                strokeOpacity="1"
+                strokeWidth="1.5"
+                d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
+              />
+            </svg>
+            <section className="bg-[#FF621D]"></section>
+            <div className="items-start flex flex-col px-6">
+              <div className="cube-outline">
+                <div class="cube">
+                  <div className="cube-face cube-face--front">
+                    <div className="text-overlay">
+                      <p className="first-line font-neueroman uppercase">
+                        One year post-treatment follow-up
+                      </p>
+                      <p
+                        className=" font-neueroman uppercase"
+                        style={{
+                          position: "absolute",
+                          transform: "rotate(90deg)",
+                          transformOrigin: "left top",
+                          top: "40%",
+                          left: "70%",
+                          fontSize: ".8rem",
+                          lineHeight: "1.2",
+                          color: "black",
+                          maxWidth: "120px",
+                        }}
+                      >
+                        Retainers and retention visits for one year
+                        post-treatment included.
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                <div class="cube-face cube-face--back">2</div>
-                <div class="cube-face cube-face--top "></div>
-                <div class="cube-face cube-face--bottom">4</div>
-                <div class="cube-face cube-face--left"></div>
-                <div class="cube-face cube-face--right"></div>
+                  <div class="cube-face cube-face--back">2</div>
+                  <div class="cube-face cube-face--top "></div>
+                  <div class="cube-face cube-face--bottom">4</div>
+                  <div class="cube-face cube-face--left"></div>
+                  <div class="cube-face cube-face--right"></div>
+                </div>
               </div>
             </div>
+          </section>
+        </div>
+        <section className="relative">
+          <div className="absolute inset-0 z-0 pointer-events-none flex justify-center items-center overflow-hidden px-5">
+            <svg
+              ref={svgPathRef}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 1484 3804"
+              preserveAspectRatio="xMidYMid meet"
+              className="w-full h-auto"
+            >
+              <defs>
+                <clipPath id="svg-clip-path">
+                  <rect width="1484" height="3804" x="0" y="0" />
+                </clipPath>
+              </defs>
+
+              <g clipPath="url(#svg-clip-path)">
+                <g
+                  transform="matrix(1,0,0,1,742,1902)"
+                  opacity="1"
+                  style={{ display: "block" }}
+                >
+                  <g opacity="1" transform="matrix(1,0,0,1,0,0)">
+                    <path
+                      id="text-follow-path"
+                      ref={pathRef}
+                      strokeLinecap="butt"
+                      strokeLinejoin="miter"
+                      fillOpacity="0"
+                      strokeMiterlimit="4"
+                      stroke="rgb(0,0,19)"
+                      strokeOpacity="1"
+                      strokeWidth="1"
+                      d="M-110,-1890 C-110,-1890 -110,-1780 -110,-1780 C-110,-1780 -630,-1780 -630,-1780 C-685.22900390625,-1780 -730,-1735.22900390625 -730,-1680 C-730,-1680 -730,-1310 -730,-1310 C-730,-1254.77099609375 -685.22900390625,-1210 -630,-1210 C-630,-1210 -10,-1210 -10,-1210 C45.229000091552734,-1210 90,-1165.22900390625 90,-1110 C90,-1110 90,-1050 90,-1050 C90,-1050 630,-1050 630,-1050 C685.22802734375,-1050 730,-1005.22900390625 730,-950 C730,-950 730,240 730,240 C730,295.22900390625 685.22802734375,340 630,340 C630,340 -270,340 -270,340 C-270,340 -270,1000 -270,1000 C-270,1000 390,1000 390,1000 C445.22900390625,1000 490,1044.77099609375 490,1100 C490,1100 490,1630 490,1630 C490,1685.22900390625 445.22900390625,1730 390,1730 C390,1730 -110,1730 -110,1730 C-110,1730 -110,1890 -110,1890"
+                    />
+                    <image
+                      href="/images/outlineshape.png"
+                      x="-100"
+                      y="-1940"
+                      width="800"
+                      height="800"
+                    />
+                    <text
+                      x="50"
+                      y="-1720"
+                      fill="black"
+                      font-size="46"
+                      font-family="NeueHaasRoman, sans-serif"
+                    >
+                      <tspan x="20" dy="1.4em">
+                        Initial consultations
+                      </tspan>
+                      <tspan x="20" dy="4.5em">
+                        Whether in person or virtual,
+                      </tspan>
+                      <tspan x="20" dy="1.2em">
+                        your first consultation is free.
+                      </tspan>
+                    </text>
+
+                    <image
+                      href="/images/chatbubble.svg"
+                      x="-500"
+                      y="-940"
+                      width="800"
+                      height="800"
+                    />
+                    <text
+                      x="-300"
+                      y="-620"
+                      fill="white"
+                      font-size="40"
+                      font-family="NeueHaasRoman, sans-serif"
+                    >
+                      <tspan x="-300" dy="-5.2em">
+                        Full Evaluation
+                      </tspan>
+                      <tspan x="-400" dy="1.4em">
+                        This initial visit includes an
+                      </tspan>
+                      <tspan x="-400" dy="1.4em">
+                        in-depth orthodontic evaluation
+                      </tspan>
+                      <tspan x="-250" dy="5.4em">
+                        digital radiographs and
+                      </tspan>
+                      <tspan x="-250" dy="1.2em">
+                        professional imaging.
+                      </tspan>
+                    </text>
+
+                    <image
+                      href="/images/outlineshape2.png"
+                      x="-100"
+                      y="240"
+                      width="800"
+                      height="800"
+                    />
+                    <text
+                      x="-100"
+                      y="520"
+                      fill="black"
+                      font-size="30"
+                      font-family="NeueHaasRoman, sans-serif"
+                    >
+                      <tspan x="100" dy="1.4em">
+                        Plan and Prepare
+                      </tspan>
+                      <tspan x="-60" dy="1.4em">
+                        We encourage all decision-makers to attend
+                      </tspan>
+                      <tspan x="-40" dy="1.2em">
+                        the initial visit so we can discuss the path
+                      </tspan>
+                      <tspan x="-40" dy="1.2em">
+                        ahead with clarity and transparency —
+                      </tspan>
+                      <tspan x="-40" dy="1.2em">
+                        ensuring everyone is aligned on expectations,
+                      </tspan>
+                      <tspan x="-40" dy="1.2em">
+                        preferences, and the ideal time to begin.
+                      </tspan>
+                    </text>
+                    <image
+                      href="/images/outlineshape3.png"
+                      x="-400"
+                      y="940"
+                      width="800"
+                      height="800"
+                    />
+                    <text
+                      x="-300"
+                      y="1050"
+                      fill="white"
+                      font-size="30"
+                      font-family="NeueHaasRoman, sans-serif"
+                    >
+                      <tspan x="-300" dy="3.4em">
+                        Treatment Roadmap
+                      </tspan>
+                      <tspan x="-360" dy="1.4em">
+                        {" "}
+                        If treatment isn’t yet needed,
+                      </tspan>
+                      <tspan x="-360" dy="1.2em">
+                        no cost observation check-ups will be
+                      </tspan>
+                      <tspan x="-360" dy="1.4em">
+                        coordinated every 6-12 months until
+                      </tspan>
+                      <tspan x="-360" dy="1.5em">
+                        {" "}
+                        treatment is needed. These are
+                      </tspan>
+                      <tspan x="-360" dy="3.6em">
+                        shorter and fun visits where
+                      </tspan>
+                      <tspan x="-360" dy="1.2em">
+                        where you'll have access to
+                      </tspan>
+                      <tspan x="-360" dy="1.2em">
+                        to all four of our locations
+                      </tspan>
+                      <tspan x="-360" dy="1.3em">
+                        to play video games and
+                      </tspan>
+                      <tspan x="-340" dy="1.3em">
+                        get to know our team.
+                      </tspan>
+                    </text>
+                  </g>
+                </g>
+
+                <g
+                  ref={dotRef}
+                  transform="matrix(.7,0,0,.7,132.8538055419922,692)"
+                  opacity="1"
+                  style={{ display: "block" }}
+                >
+                  <g opacity="1" transform="matrix(1,0,0,1,0,0)">
+                    <path
+                      fill="rgb(0,0,254)"
+                      fillOpacity="1"
+                      d="M0,-12 C6.622799873352051,-12 12,-6.622799873352051 12,0 C12,6.622799873352051 6.622799873352051,12 0,12 C-6.622799873352051,12 -12,6.622799873352051 -12,0 C-12,-6.622799873352051 -6.622799873352051,-12 0,-12z"
+                    />
+                  </g>
+                </g>
+              </g>
+            </svg>
           </div>
         </section>
       </div>
-      <section className="relative">
-        <div className="absolute inset-0 z-0 pointer-events-none flex justify-center items-center overflow-hidden px-5">
-          <svg
-            ref={svgPathRef}
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 1484 3804"
-            preserveAspectRatio="xMidYMid meet"
-            className="w-full h-auto"
-          >
-            <defs>
-              <clipPath id="svg-clip-path">
-                <rect width="1484" height="3804" x="0" y="0" />
-              </clipPath>
-            </defs>
-
-            <g clipPath="url(#svg-clip-path)">
-              <g
-                transform="matrix(1,0,0,1,742,1902)"
-                opacity="1"
-                style={{ display: "block" }}
-              >
-                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                  <path
-                    id="text-follow-path"
-                    ref={pathRef}
-                    strokeLinecap="butt"
-                    strokeLinejoin="miter"
-                    fillOpacity="0"
-                    strokeMiterlimit="4"
-                    stroke="rgb(0,0,19)"
-                    strokeOpacity="1"
-                    strokeWidth="1"
-                    d="M-110,-1890 C-110,-1890 -110,-1780 -110,-1780 C-110,-1780 -630,-1780 -630,-1780 C-685.22900390625,-1780 -730,-1735.22900390625 -730,-1680 C-730,-1680 -730,-1310 -730,-1310 C-730,-1254.77099609375 -685.22900390625,-1210 -630,-1210 C-630,-1210 -10,-1210 -10,-1210 C45.229000091552734,-1210 90,-1165.22900390625 90,-1110 C90,-1110 90,-1050 90,-1050 C90,-1050 630,-1050 630,-1050 C685.22802734375,-1050 730,-1005.22900390625 730,-950 C730,-950 730,240 730,240 C730,295.22900390625 685.22802734375,340 630,340 C630,340 -270,340 -270,340 C-270,340 -270,1000 -270,1000 C-270,1000 390,1000 390,1000 C445.22900390625,1000 490,1044.77099609375 490,1100 C490,1100 490,1630 490,1630 C490,1685.22900390625 445.22900390625,1730 390,1730 C390,1730 -110,1730 -110,1730 C-110,1730 -110,1890 -110,1890"
-                  />
-                  <image
-                    href="/images/outlineshape.png"
-                    x="-100"
-                    y="-1940"
-                    width="800"
-                    height="800"
-                  />
-                  <text
-                    x="50"
-                    y="-1720"
-                    fill="black"
-                    font-size="46"
-                    font-family="NeueHaasRoman, sans-serif"
-                  >
-                    <tspan x="20" dy="1.4em">
-                      Initial consultations
-                    </tspan>
-                    <tspan x="20" dy="4.5em">
-                      Whether in person or virtual,
-                    </tspan>
-                    <tspan x="20" dy="1.2em">
-                      your first consultation is free.
-                    </tspan>
-                  </text>
-
-                  <image
-                    href="/images/chatbubble.svg"
-                    x="-500"
-                    y="-940"
-                    width="800"
-                    height="800"
-                  />
-                  <text
-                    x="-300"
-                    y="-620"
-                    fill="white"
-                    font-size="40"
-                    font-family="NeueHaasRoman, sans-serif"
-                  >
-                    <tspan x="-300" dy="-5.2em">
-                      Full Evaluation
-                    </tspan>
-                    <tspan x="-400" dy="1.4em">
-                      This initial visit includes an
-                    </tspan>
-                    <tspan x="-400" dy="1.4em">
-                      in-depth orthodontic evaluation
-                    </tspan>
-                    <tspan x="-250" dy="5.4em">
-                      digital radiographs and
-                    </tspan>
-                    <tspan x="-250" dy="1.2em">
-                      professional imaging.
-                    </tspan>
-                  </text>
-
-                  <image
-                    href="/images/outlineshape2.png"
-                    x="-100"
-                    y="240"
-                    width="800"
-                    height="800"
-                  />
-                  <text
-                    x="-100"
-                    y="520"
-                    fill="black"
-                    font-size="30"
-                    font-family="NeueHaasRoman, sans-serif"
-                  >
-                    <tspan x="100" dy="1.4em">
-                      Plan and Prepare
-                    </tspan>
-                    <tspan x="-60" dy="1.4em">
-                      We encourage all decision-makers to attend
-                    </tspan>
-                    <tspan x="-40" dy="1.2em">
-                      the initial visit so we can discuss the path
-                    </tspan>
-                    <tspan x="-40" dy="1.2em">
-                      ahead with clarity and transparency —
-                    </tspan>
-                    <tspan x="-40" dy="1.2em">
-                      ensuring everyone is aligned on expectations,
-                    </tspan>
-                    <tspan x="-40" dy="1.2em">
-                      preferences, and the ideal time to begin.
-                    </tspan>
-                  </text>
-                  <image
-                    href="/images/outlineshape3.png"
-                    x="-400"
-                    y="940"
-                    width="800"
-                    height="800"
-                  />
-                  <text
-                    x="-300"
-                    y="1050"
-                    fill="white"
-                    font-size="30"
-                    font-family="NeueHaasRoman, sans-serif"
-                  >
-                    <tspan x="-300" dy="3.4em">
-                      Treatment Roadmap
-                    </tspan>
-                    <tspan x="-360" dy="1.4em">
-                      {" "}
-                      If treatment isn’t yet needed,
-                    </tspan>
-                    <tspan x="-360" dy="1.2em">
-                      no cost observation check-ups will be
-                    </tspan>
-                    <tspan x="-360" dy="1.4em">
-                      coordinated every 6-12 months until
-                    </tspan>
-                    <tspan x="-360" dy="1.5em">
-                      {" "}
-                      treatment is needed. These are
-                    </tspan>
-                    <tspan x="-360" dy="3.6em">
-                      shorter and fun visits where
-                    </tspan>
-                    <tspan x="-360" dy="1.2em">
-                      where you'll have access to
-                    </tspan>
-                    <tspan x="-360" dy="1.2em">
-                      to all four of our locations
-                    </tspan>
-                    <tspan x="-360" dy="1.3em">
-                      to play video games and
-                    </tspan>
-                    <tspan x="-340" dy="1.3em">
-                      get to know our team.
-                    </tspan>
-                  </text>
-                </g>
-              </g>
-
-              <g
-                ref={dotRef}
-                transform="matrix(.7,0,0,.7,132.8538055419922,692)"
-                opacity="1"
-                style={{ display: "block" }}
-              >
-                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                  <path
-                    fill="rgb(0,0,254)"
-                    fillOpacity="1"
-                    d="M0,-12 C6.622799873352051,-12 12,-6.622799873352051 12,0 C12,6.622799873352051 6.622799873352051,12 0,12 C-6.622799873352051,12 -12,6.622799873352051 -12,0 C-12,-6.622799873352051 -6.622799873352051,-12 0,-12z"
-                  />
-                </g>
-              </g>
-            </g>
-          </svg>
-        </div>
-      </section>
 
       {/* <div style={{ width: '100vw', height: '100vh', background: '#09090b' }}>
       <PixelCanvas
@@ -1722,6 +1865,51 @@ const FinancingTreatment = () => {
       </div> */}
       {/* <div ref={canvasRef} className="w-32 h-32"></div> */}
     </>
+  );
+};
+const NebulaHeading = () => {
+  useEffect(() => {
+    const headings = document.querySelectorAll(".heading span");
+
+    // First animation - blur effect
+    gsap.from(headings, {
+      filter: "blur(0.15em)",
+      stagger: {
+        from: "left",
+        each: 0.1,
+      },
+      duration: (i) => 1.25 + i * 0.5,
+      ease: "power2.inOut",
+    });
+
+    // Second animation - slide in with opacity
+    gsap.from(
+      headings,
+      {
+        xPercent: (i) => (i + 1) * 20,
+        opacity: 0,
+        stagger: {
+          from: "left",
+          each: 0.1,
+        },
+        duration: (i) => 1 + i * 0.65,
+        ease: "power2.inOut",
+      },
+      "<"
+    );
+  }, []);
+
+  return (
+    <div className="container">
+      <h1 className="heading">
+        <span>n</span>
+        <span>e</span>
+        <span>b</span>
+        <span>u</span>
+        <span>l</span>
+        <span>a</span>
+      </h1>
+    </div>
   );
 };
 
