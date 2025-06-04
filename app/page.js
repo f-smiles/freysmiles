@@ -49,6 +49,7 @@ import {
   Text,
   OrbitControls,
   useGLTF,
+  useFBO 
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
 
@@ -68,7 +69,7 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 extend({ Water, Sky });
 
 
-function DoorModel() {
+function DoorModel({ fbo }) {
   const { scene, animations } = useGLTF('/models/openingclosingdoor3d.glb');
   const mixer = useRef();
   const actionRef = useRef();
@@ -118,8 +119,8 @@ function DoorModel() {
       const openEnd = clip.duration * 0.68;
   
       const clampedTime = offset === 0 
-        ? openStart 
-        : THREE.MathUtils.lerp(openStart, openEnd, offset);
+      ? openStart 
+      : THREE.MathUtils.lerp(openStart, openEnd, offset * 1.25); 
   
       action.time = THREE.MathUtils.damp(action.time, clampedTime, 100, delta);
     });
@@ -128,24 +129,30 @@ function DoorModel() {
   });
   
   return (
-    <primitive
-      object={scene}
-      position={[0, -1.5, -5]}
-      rotation={[0, Math.PI, 0]}
-      scale={6.25}
-    />
+    <group position={[0, -.5, -5]} rotation={[0, Math.PI, 0]} scale={6.25}>
+    <primitive object={scene} />
+
+    <mesh position={[0, 1.5, 0.01]} rotation={[0, Math.PI, 0]}>
+  <planeGeometry args={[1.2, 2.4]} />
+  <meshBasicMaterial map={fbo.texture} toneMapped={false} />
+</mesh>
+
+  </group>
+    
   );
 }
 
 
 const OceanScene = () => {
+  const fbo = useFBO(); 
+  const scroll = useThreeScroll();
   const { scene, gl, camera } = useThree();
   const waterRef = useRef();
   const meshRef = useRef();
-  useEffect(() => {
-    camera.position.set(-5, 5, 22.5); //-x moves the right part of door back positive moves it forward
-    camera.lookAt(0, 5, 0);
-  }, [camera]);
+  // useEffect(() => {
+  //   camera.position.set(-5, 5, 22.5); 
+  //   camera.lookAt(0, 5, 0);
+  // }, [camera]);
 
   useEffect(() => {
     const waterNormals = new THREE.TextureLoader().load(
@@ -204,19 +211,38 @@ const OceanScene = () => {
     };
   }, [scene, gl]);
 
-  useFrame(({ clock }) => {
-    const time = clock.getElapsedTime();
+  const [enteredPortal, setEnteredPortal] = useState(false);
 
-    if (meshRef.current) {
-      meshRef.current.position.y = Math.sin(time) * 20 + 5;
-      meshRef.current.rotation.x = time * 0.5;
-      meshRef.current.rotation.z = time * 0.51;
+  useFrame(() => {
+    const t = scroll.offset;
+    const camY = 8.0;
+
+    if (t < 0.8) {
+      const ease = Math.pow(t * 1.25, 0.85);
+    
+      const targetZ = THREE.MathUtils.lerp(22.5, 1, ease);
+      const targetY = THREE.MathUtils.lerp(5, camY, ease);
+      const lookY = THREE.MathUtils.lerp(5, camY, ease); 
+    
+      camera.position.set(0, targetY, targetZ);
+      camera.lookAt(0, lookY, 0);
+    } else {
+      if (!enteredPortal) setEnteredPortal(true);
+    
+      const portalProgress = (t - 0.8) / 0.2;
+      const targetZ = THREE.MathUtils.lerp(1, -10, portalProgress);
+    
+      camera.position.set(0, camY, targetZ);
+
+      const forward = new THREE.Vector3(0, camY, targetZ - 10);
+      camera.lookAt(forward);
     }
-
+    
     if (waterRef.current) {
-      waterRef.current.material.uniforms["time"].value += 1.0 / 60.0;
+      waterRef.current.material.uniforms.time.value += 1.0 / 60.0;
     }
   });
+  
 
   return (
     <>
@@ -226,7 +252,12 @@ const OceanScene = () => {
         minDistance={30.0}
         maxDistance={30.0}
       /> */}
-          <DoorModel />
+      <DoorModel fbo={fbo} />
+    <PortalScene 
+        target={fbo} 
+        active={enteredPortal} 
+        intensity={enteredPortal ? 1 : 0}
+      />
       <mesh ref={meshRef} position={[0, 10, 0]}>
 
         {/* <boxGeometry args={[30, 30, 30]} /> */}
@@ -235,6 +266,80 @@ const OceanScene = () => {
     </>
   );
 };
+function PortalScene({ target }) {
+  const { gl, size } = useThree();
+  const materialRef = useRef();
+
+  const virtualScene = useMemo(() => new THREE.Scene(), []);
+  const virtualCamera = useMemo(() => {
+    const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+    cam.position.z = 1;
+    return cam;
+  }, []);
+
+  useEffect(() => {
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const material = new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec2 iResolution;
+        uniform float iTime;
+        varying vec2 vUv;
+
+        void mainImage(out vec4 o, vec2 x) {
+          vec3 t = iTime * vec3(.618, 1.0, 6.0);
+          vec3 p = vec3(1.5 * cos(t.x), -0.15, cos(t.y) - 5.0),
+               d = normalize(iResolution.xyy - vec3(x + x, 0.0));
+          o = vec4(4.0, 3.0, 2.0, 0.0);
+          float B = dot(p, d),
+                D = B * B - dot(p, p) + 2.0;
+          if (D > 0.0) {
+            p -= d * (B + sqrt(D));
+            D = dot(p, d);
+            o = vec4(4.0, 3.0, 2.0, 0.0) * (.9 + pow(1.0 + D, 5.0));
+            d -= 2.0 * D * p;
+          }
+          p += d * ((6.0 * sign(d) - p) / d).x;
+          B = (p + t).z;
+          o = sqrt(o / dot(p, p) * clamp(2.0 + 65.0 * cos(8.0 * p.y) * sin(B + B) + 36.0 * sin(B / 8.0), 0.0, 4.0));
+        }
+
+        void main() {
+          vec2 uv = vUv * iResolution.xy;
+          vec4 color;
+          mainImage(color, uv);
+          gl_FragColor = color;
+        }
+      `,
+      uniforms: {
+        iResolution: { value: new THREE.Vector2(size.width, size.height) },
+        iTime: { value: 0 },
+      }
+    });
+
+    const mesh = new THREE.Mesh(geometry, material);
+    materialRef.current = material;
+    virtualScene.add(mesh);
+  }, [size, virtualScene]);
+
+  useFrame(() => {
+    if (!target || !materialRef.current) return;
+    materialRef.current.uniforms.iTime.value = performance.now() / 1000;
+    gl.setRenderTarget(target);
+    gl.clear();
+    gl.render(virtualScene, virtualCamera);
+    gl.setRenderTarget(null);
+  });
+
+  return null;
+}
+
 
 export default function LandingComponent() {
   return (
