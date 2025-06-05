@@ -3,7 +3,7 @@
 import { Water } from "three/examples/jsm/objects/Water";
 import { Sky } from "three/examples/jsm/objects/Sky";
 import { Curtains, Plane } from "curtainsjs";
-import { Vector2, Vector4, TextureLoader } from "three";
+import { Vector2, Vector4, TextureLoader, CatmullRomCurve3, Vector3  } from "three";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Keyboard, Mousewheel } from "swiper/core";
 import { Navigation } from "swiper/modules";
@@ -68,7 +68,12 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 extend({ Water, Sky });
 
-function DoorModel({ fbo }) {
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils";
+
+extend({ MeshLambertMaterial: THREE.MeshLambertMaterial });
+
+
+function DoorModel() {
   const { scene, animations } = useGLTF("/models/openingclosingdoor3d.glb");
   const mixer = useRef();
   const actionRef = useRef();
@@ -110,48 +115,102 @@ function DoorModel({ fbo }) {
 
   useFrame((_, delta) => {
     if (!mixer.current || !actionRef.current) return;
-
+  
     const offset = scroll.offset;
-
+  
     actionRef.current.forEach((action) => {
       const clip = action.getClip();
-      const openStart = 0;
-      const openEnd = clip.duration * 0.68;
-
-      const clampedTime =
-        offset === 0
-          ? openStart
-          : THREE.MathUtils.lerp(openStart, openEnd, offset * 1.25);
-
+      const clipStart = 0;
+      const clipEnd = clip.duration * 0.68;
+  
+      // ⏱ Door starts opening at t = 0.15, finishes at t = 0.4
+      const openStart = 0.15;
+      const openEnd = 0.4;
+  
+      const openProgress = THREE.MathUtils.clamp(
+        (offset - openStart) / (openEnd - openStart),
+        0,
+        1
+      );
+  
+      const clampedTime = THREE.MathUtils.lerp(clipStart, clipEnd, openProgress);
+  
       action.time = THREE.MathUtils.damp(action.time, clampedTime, 100, delta);
     });
-
+  
     mixer.current.update(delta);
   });
 
   return (
     <group position={[0, -0.5, -5]} rotation={[0, Math.PI, 0]} scale={6.25}>
       <primitive object={scene} />
+    </group>
+  );
+}
 
-      <mesh position={[0, 1.5, 0.01]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[1.2, 2.4]} />
-        <meshBasicMaterial map={fbo.texture} toneMapped={false} />
+
+function Tunnel() {
+  const { camera } = useThree();
+  const scroll = useThreeScroll();
+
+  const path = useMemo(() => {
+    const rawPoints = [
+      [68.5, 185.5],
+      [1, 262.5],
+      [270.9, 281.9],
+      [345.5, 212.8],
+      [178, 155.7],
+      [240.3, 72.3],
+      [153.4, 0.6],
+      [52.6, 53.3],
+      [68.5, 185.5]
+    ];
+
+
+    const points = rawPoints.map(([x, y]) =>
+      new Vector3((x - 150) * 0.05, 8, (y - 150) * 0.05 - 5) // tunnel camera height is 8 to match door
+    );
+
+    return new THREE.CatmullRomCurve3(points, true);
+  }, []);
+
+  useFrame(() => {
+    const t = scroll.offset;
+
+    if (t < 0.4) return; // only control camera after door opens
+
+    const tunnelProgress = THREE.MathUtils.clamp((t - 0.4) / 1.2, 0, 1); 
+    const tunnelT = (tunnelProgress * 2) % 1; // 2 loops
+    const p1 = path.getPointAt(tunnelT);
+    const p2 = path.getPointAt((tunnelT + 0.01) % 1);
+
+    camera.position.copy(p1);
+    camera.lookAt(p2);
+  });
+
+  return (
+    <group visible={scroll.offset > 0.39}>
+      <mesh>
+        <tubeGeometry args={[path, 300, 1.2, 20, true]} />
+        <meshStandardMaterial color="hotpink" wireframe />
       </mesh>
     </group>
   );
 }
 
+
+function PortalScene() {
+  return null;
+}
+
 const OceanScene = () => {
-  const fbo = useFBO();
   const scroll = useThreeScroll();
   const { scene, gl, camera } = useThree();
   const waterRef = useRef();
   const meshRef = useRef();
-  // useEffect(() => {
-  //   camera.position.set(-5, 5, 22.5);
-  //   camera.lookAt(0, 5, 0);
-  // }, [camera]);
-
+  const [enteredPortal, setEnteredPortal] = useState(false);
+  const tunnelStart = new Vector3((68.5 - 150) * 0.05, 0, (185.5 - 150) * 0.05 - 5);
+  const tunnelNext = new Vector3((1 - 150) * 0.05, 0, (262.5 - 150) * 0.05 - 5);
   useEffect(() => {
     const waterNormals = new THREE.TextureLoader().load(
       "https://threejs.org/examples/textures/waternormals.jpg"
@@ -209,132 +268,54 @@ const OceanScene = () => {
     };
   }, [scene, gl]);
 
-  const [enteredPortal, setEnteredPortal] = useState(false);
-
   useFrame(() => {
     const t = scroll.offset;
-    const camY = 8.0;
-
-    if (t < 0.8) {
-      const ease = Math.pow(t * 1.25, 0.85);
-
-      const targetZ = THREE.MathUtils.lerp(22.5, 1, ease);
+    const camY = 8;
+  
+    // camera approaches door from fov 35
+    if (t < 0.4) {
+      const ease = Math.pow(t / 0.4, 0.85); 
+      const targetZ = THREE.MathUtils.lerp(35, 5, ease);
       const targetY = THREE.MathUtils.lerp(5, camY, ease);
       const lookY = THREE.MathUtils.lerp(5, camY, ease);
-
+  
       camera.position.set(0, targetY, targetZ);
       camera.lookAt(0, lookY, 0);
-    } else {
-      if (!enteredPortal) setEnteredPortal(true);
-
-      const portalProgress = (t - 0.8) / 0.2;
-      const targetZ = THREE.MathUtils.lerp(1, -10, portalProgress);
-
-      camera.position.set(0, camY, targetZ);
-
-      const forward = new THREE.Vector3(0, camY, targetZ - 10);
-      camera.lookAt(forward);
     }
-
+  
+    // door opens when >.3 
+    if (t >= 0.3 && !enteredPortal) {
+      setEnteredPortal(true);
+    }
+  
+    // transition (need to fix this)
+    if (t >= 0.4 && t < 0.45) {
+      const ease = (t - 0.4) / 0.05;
+      const from = new THREE.Vector3(0, camY, 1);
+      camera.position.lerpVectors(from, tunnelStart, ease);
+      camera.lookAt(tunnelStart.clone().lerp(tunnelNext, ease));
+    }
+  
+    // Tunnel takes over camera in tunnel.jsx 
     if (waterRef.current) {
       waterRef.current.material.uniforms.time.value += 1.0 / 60.0;
     }
   });
-
   return (
     <>
-      {/* <OrbitControls
-        maxPolarAngle={Math.PI * 0.495}
-        target={[0, 10, 0]}
-        minDistance={30.0}
-        maxDistance={30.0}
-      /> */}
-      <DoorModel fbo={fbo} />
+      <DoorModel />
+      {/* <Tunnel /> */}
       <PortalScene
-        target={fbo}
         active={enteredPortal}
         intensity={enteredPortal ? 1 : 0}
       />
       <mesh ref={meshRef} position={[0, 10, 0]}>
-        {/* <boxGeometry args={[30, 30, 30]} /> */}
         <meshStandardMaterial roughness={0} color="white" />
       </mesh>
     </>
   );
 };
-function PortalScene({ target }) {
-  const { gl, size } = useThree();
-  const materialRef = useRef();
 
-  const virtualScene = useMemo(() => new THREE.Scene(), []);
-  const virtualCamera = useMemo(() => {
-    const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
-    cam.position.z = 1;
-    return cam;
-  }, []);
-
-  useEffect(() => {
-    const geometry = new THREE.PlaneGeometry(2, 2);
-    const material = new THREE.ShaderMaterial({
-      vertexShader: `
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform vec2 iResolution;
-        uniform float iTime;
-        varying vec2 vUv;
-
-        void mainImage(out vec4 o, vec2 x) {
-          vec3 t = iTime * vec3(.618, 1.0, 6.0);
-          vec3 p = vec3(1.5 * cos(t.x), -0.15, cos(t.y) - 5.0),
-               d = normalize(iResolution.xyy - vec3(x + x, 0.0));
-          o = vec4(4.0, 3.0, 2.0, 0.0);
-          float B = dot(p, d),
-                D = B * B - dot(p, p) + 2.0;
-          if (D > 0.0) {
-            p -= d * (B + sqrt(D));
-            D = dot(p, d);
-            o = vec4(4.0, 3.0, 2.0, 0.0) * (.9 + pow(1.0 + D, 5.0));
-            d -= 2.0 * D * p;
-          }
-          p += d * ((6.0 * sign(d) - p) / d).x;
-          B = (p + t).z;
-          o = sqrt(o / dot(p, p) * clamp(2.0 + 65.0 * cos(8.0 * p.y) * sin(B + B) + 36.0 * sin(B / 8.0), 0.0, 4.0));
-        }
-
-        void main() {
-          vec2 uv = vUv * iResolution.xy;
-          vec4 color;
-          mainImage(color, uv);
-          gl_FragColor = color;
-        }
-      `,
-      uniforms: {
-        iResolution: { value: new THREE.Vector2(size.width, size.height) },
-        iTime: { value: 0 },
-      },
-    });
-
-    const mesh = new THREE.Mesh(geometry, material);
-    materialRef.current = material;
-    virtualScene.add(mesh);
-  }, [size, virtualScene]);
-
-  useFrame(() => {
-    if (!target || !materialRef.current) return;
-    materialRef.current.uniforms.iTime.value = performance.now() / 1000;
-    gl.setRenderTarget(target);
-    gl.clear();
-    gl.render(virtualScene, virtualCamera);
-    gl.setRenderTarget(null);
-  });
-
-  return null;
-}
 const ScrollTracker = ({ onScrollChange }) => {
   const scroll = useThreeScroll();
 
@@ -371,7 +352,83 @@ export default function LandingComponent() {
 
   return (
     <>
-      <div style={{ height: "200vh", margin: 0 }}>
+      <div style={{ height: '100vh', width: '100vw' }}>
+      <Canvas camera={{ position: [0, 5, 30], fov: 50 }}>
+  <ambientLight intensity={0.5} />
+
+  <ScrollControls pages={5} damping={0.1}>
+    <ScrollTracker onScrollChange={setScrollOffset} />
+    
+
+    <OceanScene />
+    <Tunnel />
+  </ScrollControls>
+</Canvas>
+<div
+          style={{
+            position: "fixed",
+            top: "40%",
+            right: "10%",
+            transform: `translateY(${topTextTranslateY}px)`,
+            opacity,
+            zIndex: 10,
+            color: "white",
+            maxWidth: "400px",
+            textAlign: "left",
+            textTransform: "uppercase",
+            pointerEvents: "none",
+            transition:
+              "opacity 0.2s linear, transform 0.2s linear, filter 0.2s linear",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "12px",
+              lineHeight: "1.4",
+              marginBottom: "20px",
+              fontFamily: "KHTekaTrial-Light",
+            }}
+          >
+            Behind every smile lies a story in progress. At our office, we guide
+            you through every step of your orthodontic journey — with advanced
+            treatment, personalized care, and results that go beyond the
+            ordinary.
+          </p>
+          <div className="font-khteka">Scroll To Discover</div>
+        </div>
+
+        <div
+          style={{
+            position: "fixed",
+            top: "95%",
+            right: "10%",
+            transform: `translateY(${bottomTextTranslateY}px)`,
+            opacity: bottomTextOpacity,
+            transition: "all 0.2s linear",
+            zIndex: 10,
+            color: "white",
+            maxWidth: "400px",
+            textAlign: "left",
+            textTransform: "uppercase",
+            pointerEvents: "none",
+            transition:
+              "opacity 0.2s linear, transform 0.2s linear, filter 0.2s linear",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "12px",
+              lineHeight: "1.4",
+              marginBottom: "20px",
+              fontFamily: "KHTekaTrial-Light",
+            }}
+          >
+     
+     Modern care. Designed to move with you
+          </p>
+        </div>
+    </div>
+      {/* <div style={{ height: "200vh", margin: 0 }}>
         <div
           style={{
             position: "fixed",
@@ -453,7 +510,7 @@ export default function LandingComponent() {
      Modern care. Designed to move with you
           </p>
         </div>
-      </div>
+      </div> */}
       {/* <div style={{ overflowX: "hidden" }}>
         <div class="MainContainer">
           <div class="ParallaxContainer">

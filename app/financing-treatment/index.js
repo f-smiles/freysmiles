@@ -34,6 +34,7 @@ gsap.registerPlugin(
   MorphSVGPlugin
 );
 
+
 const ScrollAnimation = () => {
   const stickySectionRef = useRef(null);
   const cardRefs = useRef([]);
@@ -152,51 +153,13 @@ const ScrollAnimation = () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
-  const textRefs = useRef([]);
 
-  useEffect(() => {
-    const stackHeight = window.innerHeight * 0.25;
 
-    textRefs.current.forEach((el, i) => {
-      const progressDepth = textRefs.current.length - i;
 
-      gsap.fromTo(
-        el,
-        {
-          scale: 1,
-          y: 0,
-          filter: "blur(0px)",
-          transformOrigin: "center top",
-        },
-        {
-          scale: gsap.utils.mapRange(1, textRefs.current.length, 0.5, 0.95, i),
-          y: gsap.utils.mapRange(1, textRefs.current.length, -20, -stackHeight + 20, progressDepth),
-          filter: `blur(${gsap.utils.mapRange(1, textRefs.current.length, 4, 20, progressDepth)}px)`,
-          scrollTrigger: {
-            trigger: el,
-            start: `top ${stackHeight}px`,
-            end: "+=200%",
-            scrub: true,
-            invalidateOnRefresh: true,
-          },
-        }
-      );
-
-      ScrollTrigger.create({
-        trigger: el,
-        pin: true,
-        start: `top ${stackHeight}px`,
-        end: "bottom top",
-        pinSpacing: false,
-      });
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, []);
+  
   return (
     <div className="relative">
+  
 
       <section 
         className="movingcard-sticky-section h-screen w-full relative" 

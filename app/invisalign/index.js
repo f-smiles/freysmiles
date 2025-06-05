@@ -1385,7 +1385,7 @@ const Invisalign = () => {
           <div className="flex justify-center items-center px-4 sm:px-8 lg:px-12 py-10">
             <img
               ref={imageRef}
-              src="/images/manholdinglaptop.png"
+              src="/images/ipadmockup.png"
               className="max-w-[90%] sm:max-w-[90%] lg:max-w-[90%] h-auto"
               alt="Man holding laptop"
             />
@@ -1541,7 +1541,7 @@ const Invisalign = () => {
           </div>
           <div className="flex justify-center gap-6 p-6">
             <img
-              src="/images/adobetest.png"
+              src="/images/manholdinglaptop.png"
               className="max-w-[45%] h-auto rounded-md"
             />
             <img
