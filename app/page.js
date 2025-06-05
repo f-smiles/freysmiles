@@ -49,7 +49,7 @@ import {
   Text,
   OrbitControls,
   useGLTF,
-  useFBO 
+  useFBO,
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
 
@@ -68,16 +68,15 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 extend({ Water, Sky });
 
-
 function DoorModel({ fbo }) {
-  const { scene, animations } = useGLTF('/models/openingclosingdoor3d.glb');
+  const { scene, animations } = useGLTF("/models/openingclosingdoor3d.glb");
   const mixer = useRef();
   const actionRef = useRef();
   const scroll = useThreeScroll();
 
   useEffect(() => {
     const textureLoader = new THREE.TextureLoader();
-    const matcap = textureLoader.load('/images/matcap-green-yellow-pink.png');
+    const matcap = textureLoader.load("/images/matcap-green-yellow-pink.png");
     scene.traverse((child) => {
       if (child.isMesh) {
         child.material = new THREE.MeshMatcapMaterial({ matcap });
@@ -88,13 +87,13 @@ function DoorModel({ fbo }) {
 
   useEffect(() => {
     if (!animations.length) return;
-  
+
     mixer.current = new THREE.AnimationMixer(scene);
-  
+
     const relevantClips = animations.filter(
-      (a) => a.name === 'Action' || a.name === 'Curve.006Action'
+      (a) => a.name === "Action" || a.name === "Curve.006Action"
     );
-  
+
     relevantClips.forEach((clip) => {
       const action = mixer.current.clipAction(clip);
       action.reset();
@@ -102,55 +101,54 @@ function DoorModel({ fbo }) {
       action.play();
       action.time = 0;
     });
-  
-    actionRef.current = relevantClips.map((clip) => mixer.current.clipAction(clip));
+
+    actionRef.current = relevantClips.map((clip) =>
+      mixer.current.clipAction(clip)
+    );
     mixer.current.update(0);
   }, [animations, scene]);
-  
 
   useFrame((_, delta) => {
     if (!mixer.current || !actionRef.current) return;
-  
+
     const offset = scroll.offset;
-  
+
     actionRef.current.forEach((action) => {
       const clip = action.getClip();
       const openStart = 0;
       const openEnd = clip.duration * 0.68;
-  
-      const clampedTime = offset === 0 
-      ? openStart 
-      : THREE.MathUtils.lerp(openStart, openEnd, offset * 1.25); 
-  
+
+      const clampedTime =
+        offset === 0
+          ? openStart
+          : THREE.MathUtils.lerp(openStart, openEnd, offset * 1.25);
+
       action.time = THREE.MathUtils.damp(action.time, clampedTime, 100, delta);
     });
-  
+
     mixer.current.update(delta);
   });
-  
+
   return (
-    <group position={[0, -.5, -5]} rotation={[0, Math.PI, 0]} scale={6.25}>
-    <primitive object={scene} />
+    <group position={[0, -0.5, -5]} rotation={[0, Math.PI, 0]} scale={6.25}>
+      <primitive object={scene} />
 
-    <mesh position={[0, 1.5, 0.01]} rotation={[0, Math.PI, 0]}>
-  <planeGeometry args={[1.2, 2.4]} />
-  <meshBasicMaterial map={fbo.texture} toneMapped={false} />
-</mesh>
-
-  </group>
-    
+      <mesh position={[0, 1.5, 0.01]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[1.2, 2.4]} />
+        <meshBasicMaterial map={fbo.texture} toneMapped={false} />
+      </mesh>
+    </group>
   );
 }
 
-
 const OceanScene = () => {
-  const fbo = useFBO(); 
+  const fbo = useFBO();
   const scroll = useThreeScroll();
   const { scene, gl, camera } = useThree();
   const waterRef = useRef();
   const meshRef = useRef();
   // useEffect(() => {
-  //   camera.position.set(-5, 5, 22.5); 
+  //   camera.position.set(-5, 5, 22.5);
   //   camera.lookAt(0, 5, 0);
   // }, [camera]);
 
@@ -219,30 +217,29 @@ const OceanScene = () => {
 
     if (t < 0.8) {
       const ease = Math.pow(t * 1.25, 0.85);
-    
+
       const targetZ = THREE.MathUtils.lerp(22.5, 1, ease);
       const targetY = THREE.MathUtils.lerp(5, camY, ease);
-      const lookY = THREE.MathUtils.lerp(5, camY, ease); 
-    
+      const lookY = THREE.MathUtils.lerp(5, camY, ease);
+
       camera.position.set(0, targetY, targetZ);
       camera.lookAt(0, lookY, 0);
     } else {
       if (!enteredPortal) setEnteredPortal(true);
-    
+
       const portalProgress = (t - 0.8) / 0.2;
       const targetZ = THREE.MathUtils.lerp(1, -10, portalProgress);
-    
+
       camera.position.set(0, camY, targetZ);
 
       const forward = new THREE.Vector3(0, camY, targetZ - 10);
       camera.lookAt(forward);
     }
-    
+
     if (waterRef.current) {
       waterRef.current.material.uniforms.time.value += 1.0 / 60.0;
     }
   });
-  
 
   return (
     <>
@@ -253,13 +250,12 @@ const OceanScene = () => {
         maxDistance={30.0}
       /> */}
       <DoorModel fbo={fbo} />
-    <PortalScene 
-        target={fbo} 
-        active={enteredPortal} 
+      <PortalScene
+        target={fbo}
+        active={enteredPortal}
         intensity={enteredPortal ? 1 : 0}
       />
       <mesh ref={meshRef} position={[0, 10, 0]}>
-
         {/* <boxGeometry args={[30, 30, 30]} /> */}
         <meshStandardMaterial roughness={0} color="white" />
       </mesh>
@@ -320,7 +316,7 @@ function PortalScene({ target }) {
       uniforms: {
         iResolution: { value: new THREE.Vector2(size.width, size.height) },
         iTime: { value: 0 },
-      }
+      },
     });
 
     const mesh = new THREE.Mesh(geometry, material);
@@ -339,37 +335,125 @@ function PortalScene({ target }) {
 
   return null;
 }
+const ScrollTracker = ({ onScrollChange }) => {
+  const scroll = useThreeScroll();
 
+  useFrame(() => {
+    onScrollChange(scroll.offset);
+  });
+
+  return null;
+};
 
 export default function LandingComponent() {
+  const [scrollOffset, setScrollOffset] = useState(0);
+
+  const fadeStart = 0;
+  const fadeEnd = 0.3;
+
+  const fadeProgress = Math.min(
+    Math.max((scrollOffset - fadeStart) / (fadeEnd - fadeStart), 0),
+    1
+  );
+  const opacity = 1 - fadeProgress;
+
+  const progress = Math.min(
+    Math.max((scrollOffset - fadeStart) / (fadeEnd - fadeStart), 0),
+    1
+  );
+
+  const topTextTranslateY = -progress * window.innerHeight * 1.25;
+
+  const bottomStartY = window.innerHeight * 1;
+  const bottomTextTranslateY =
+    bottomStartY - progress * (bottomStartY + window.innerHeight);
+  const bottomTextOpacity = progress;
+
   return (
     <>
-<div style={{ height: "200vh", margin: 0 }}>
-  <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: 0 }}>
-    <Canvas>
-      <ScrollControls pages={3} damping={0.1}>
-        <OceanScene />
-      </ScrollControls>
-    </Canvas>
-  </div>
+      <div style={{ height: "200vh", margin: 0 }}>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            zIndex: 0,
+          }}
+        >
+          <Canvas>
+            <ScrollControls pages={3} damping={0.1}>
+              <ScrollTracker onScrollChange={setScrollOffset} />
+              <OceanScene />
+            </ScrollControls>
+          </Canvas>
+        </div>
 
-  <div style={{
-  position: "fixed",
-  top: "50%",
-  right: "10%",
-  transform: "translateY(-50%)",
-  zIndex: 10,
-  color: "white",
-  maxWidth: "400px",
-  textAlign: "left",
-  textTransform:"uppercase"
-}}>
-  <p style={{ fontSize: "12px", lineHeight: "1.4", marginBottom: "20px", fontFamily:"KHTekaTrial-Light" }}>
-  Behind every smile lies a story in progress. At Frey Smiles, we guide you through every step of your orthodontic journey — with advanced treatment, personalized care, and results that go beyond the ordinary.
-  </p>
-<div className="font-khteka">Scroll To Discover</div>
-</div>
-</div>
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            right: "10%",
+            transform: `translateY(${topTextTranslateY}px)`,
+            opacity,
+            zIndex: 10,
+            color: "white",
+            maxWidth: "400px",
+            textAlign: "left",
+            textTransform: "uppercase",
+            pointerEvents: "none",
+            transition:
+              "opacity 0.2s linear, transform 0.2s linear, filter 0.2s linear",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "12px",
+              lineHeight: "1.4",
+              marginBottom: "20px",
+              fontFamily: "KHTekaTrial-Light",
+            }}
+          >
+            Behind every smile lies a story in progress. At our office, we guide
+            you through every step of your orthodontic journey — with advanced
+            treatment, personalized care, and results that go beyond the
+            ordinary.
+          </p>
+          <div className="font-khteka">Scroll To Discover</div>
+        </div>
+
+        <div
+          style={{
+            position: "fixed",
+            top: "95%",
+            right: "10%",
+            transform: `translateY(${bottomTextTranslateY}px)`,
+            opacity: bottomTextOpacity,
+            transition: "all 0.2s linear",
+            zIndex: 10,
+            color: "white",
+            maxWidth: "400px",
+            textAlign: "left",
+            textTransform: "uppercase",
+            pointerEvents: "none",
+            transition:
+              "opacity 0.2s linear, transform 0.2s linear, filter 0.2s linear",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "12px",
+              lineHeight: "1.4",
+              marginBottom: "20px",
+              fontFamily: "KHTekaTrial-Light",
+            }}
+          >
+     
+     Modern care. Designed to move with you
+          </p>
+        </div>
+      </div>
       {/* <div style={{ overflowX: "hidden" }}>
         <div class="MainContainer">
           <div class="ParallaxContainer">
@@ -391,7 +475,6 @@ export default function LandingComponent() {
 }
 
 const Hero = () => {
-
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -822,7 +905,6 @@ const Hero = () => {
             </svg>
           </main>
           <div className="max-w-3xl text-[#1D64EF]">
-     
             {/* <p className="uppercase text-[12px] font-semibold font-helvetica-neue-light tracking-widest">
               Vision
             </p>
@@ -1006,8 +1088,6 @@ const Stats = () => {
     }
   }, []);
 
-
-
   return (
     <section className="bg-[#F2F2F2] w-full min-h-screen flex items-center justify-center">
       <section className="grid grid-cols-12 px-12">
@@ -1056,7 +1136,6 @@ const Stats = () => {
         </div>
 
         <div className="flex flex-col col-span-8">
-
           {/* Stats Section */}
           <div className="flex flex-wrap justify-end mt-8 space-x-4 sm:flex-nowrap sm:space-x-6 md:space-x-12">
             <div className="text-center">
@@ -1153,9 +1232,7 @@ const NewSection = () => {
     <>
       <section className="flex items-center justify-center min-h-screen px-8  md:px-16">
         <div className="grid w-full grid-cols-1 gap-8 max-w-7xl md:grid-cols-2">
-
           <div className=" text-black flex flex-col justify-center">
-
             <div className="relative flex items-center justify-center mx-auto max-w-[80vw]">
               <div className="absolute inset-0 bg-[#1d2120] h-full w-full" />
               <div className="relative w-[110%] bg-[#FFF] px-48 py-2 rounded-[100px] border-t border-b border-[#1d2120] overflow-hidden">
@@ -1597,8 +1674,6 @@ const Testimonials = ({ textureUrl, position }) => {
 
   const controls = useAnimation();
 
-
-
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const prevSlide = () => {
@@ -1682,74 +1757,78 @@ const Testimonials = ({ textureUrl, position }) => {
 
         {/* Right Column */}
         <div className="w-[75%] relative flex overflow-hidden">
-  
-          <div className="flex w-full overflow-x-auto snap-mandatory snap-x"
-          style={{
-            scrollSnapType: "x mandatory",
-            scrollBehavior: "smooth",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          }}>
-        <motion.div
-  ref={carouselRef}
-  className="flex w-full h-full cursor-grab active:cursor-grabbing gap-[2vw] pl-[2vw]" 
-  style={{ willChange: "transform" }}
-  drag="x"
-  dragConstraints={{ left: maxDrag, right: 0 }}
-  dragElastic={0.1}
-  dragMomentum={false}
-  onDragEnd={(event, info) => {
-    const offset = info.offset.x;
-    const velocity = info.velocity.x;
-    const threshold = 60;
-    const velocityThreshold = 400;
+          <div
+            className="flex w-full overflow-x-auto snap-mandatory snap-x"
+            style={{
+              scrollSnapType: "x mandatory",
+              scrollBehavior: "smooth",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
+            <motion.div
+              ref={carouselRef}
+              className="flex w-full h-full cursor-grab active:cursor-grabbing gap-[2vw] pl-[2vw]"
+              style={{ willChange: "transform" }}
+              drag="x"
+              dragConstraints={{ left: maxDrag, right: 0 }}
+              dragElastic={0.1}
+              dragMomentum={false}
+              onDragEnd={(event, info) => {
+                const offset = info.offset.x;
+                const velocity = info.velocity.x;
+                const threshold = 60;
+                const velocityThreshold = 400;
 
-    if (offset > threshold || velocity > velocityThreshold) {
-      prevSlide();
-    } else if (offset < -threshold || velocity < -velocityThreshold) {
-      nextSlide();
-    }
-  }}
->
-  {carouselItems.map((item, index) => (
-    <motion.div
-      key={index}
-      className="flex flex-col items-center justify-center flex-none cursor-grab active:cursor-grabbing"
-      whileTap={{ scale: 0.98 }}
-    >
- {item.type === "image" ? (
-    <div className="relative w-[30vw] h-[70vh] flex items-center justify-center">
-      <img
-        src={item.src}
-        alt={item.name}
-        className="object-cover w-full h-full pointer-events-none"
-        draggable={false}
-        loading="lazy"
-      />
-      <div className="absolute inset-0 flex items-center justify-center font-neue-montreal text-[#17191A] text-[15px] p-4">
-        {item.description}
-      </div>
-    </div>
-  ) : (
-    <video
-      src={item.src}
-      autoPlay
-      loop
-      muted
-      className="w-auto h-full max-w-[40vw] max-h-[85vh] object-cover pointer-events-none"
-      draggable={false}
-      preload="auto"
-    />
-  )}
-      <p className="text-sm text-center font-neue-montreal">{item.name}</p>
-    </motion.div>
-  ))}
-</motion.div>
-
+                if (offset > threshold || velocity > velocityThreshold) {
+                  prevSlide();
+                } else if (
+                  offset < -threshold ||
+                  velocity < -velocityThreshold
+                ) {
+                  nextSlide();
+                }
+              }}
+            >
+              {carouselItems.map((item, index) => (
+                <motion.div
+                  key={index}
+                  className="flex flex-col items-center justify-center flex-none cursor-grab active:cursor-grabbing"
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {item.type === "image" ? (
+                    <div className="relative w-[30vw] h-[70vh] flex items-center justify-center">
+                      <img
+                        src={item.src}
+                        alt={item.name}
+                        className="object-cover w-full h-full pointer-events-none"
+                        draggable={false}
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center font-neue-montreal text-[#17191A] text-[15px] p-4">
+                        {item.description}
+                      </div>
+                    </div>
+                  ) : (
+                    <video
+                      src={item.src}
+                      autoPlay
+                      loop
+                      muted
+                      className="w-auto h-full max-w-[40vw] max-h-[85vh] object-cover pointer-events-none"
+                      draggable={false}
+                      preload="auto"
+                    />
+                  )}
+                  <p className="text-sm text-center font-neue-montreal">
+                    {item.name}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
         </div>
-        </div>
       </div>
-
     </div>
   );
 };

@@ -7,7 +7,7 @@ import {
   Environment,
   shaderMaterial,
 } from "@react-three/drei";
-import { Fluid } from "/utils/FluidCursorTemp.js";
+
 import { Media } from "/utils/Media.js";
 import { EffectComposer } from "@react-three/postprocessing";
 import { useControls } from "leva";
@@ -37,6 +37,7 @@ gsap.registerPlugin(
 const ScrollAnimation = () => {
   const stickySectionRef = useRef(null);
   const cardRefs = useRef([]);
+  const textSectionRef = useRef(null);
 
   const cardsData = [
     {
@@ -96,7 +97,6 @@ const ScrollAnimation = () => {
       trigger: stickySection,
       start: "top top",
       end: `+=${stickyHeight}px`,
-
       pin: true,
       pinSpacing: true,
       onUpdate: (self) => {
@@ -152,119 +152,105 @@ const ScrollAnimation = () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
+  const textRefs = useRef([]);
 
+  useEffect(() => {
+    const stackHeight = window.innerHeight * 0.25;
+
+    textRefs.current.forEach((el, i) => {
+      const progressDepth = textRefs.current.length - i;
+
+      gsap.fromTo(
+        el,
+        {
+          scale: 1,
+          y: 0,
+          filter: "blur(0px)",
+          transformOrigin: "center top",
+        },
+        {
+          scale: gsap.utils.mapRange(1, textRefs.current.length, 0.5, 0.95, i),
+          y: gsap.utils.mapRange(1, textRefs.current.length, -20, -stackHeight + 20, progressDepth),
+          filter: `blur(${gsap.utils.mapRange(1, textRefs.current.length, 4, 20, progressDepth)}px)`,
+          scrollTrigger: {
+            trigger: el,
+            start: `top ${stackHeight}px`,
+            end: "+=200%",
+            scrub: true,
+            invalidateOnRefresh: true,
+          },
+        }
+      );
+
+      ScrollTrigger.create({
+        trigger: el,
+        pin: true,
+        start: `top ${stackHeight}px`,
+        end: "bottom top",
+        pinSpacing: false,
+      });
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
   return (
-    <section className="movingcard-sticky-section" ref={stickySectionRef}>
-      {cardsData.map((card, index) => (
-        <div
-          className="movingcard-card"
-          key={index}
-          ref={(el) => addToRefs(el, index)}
+    <div className="relative">
+
+      <section 
+        className="movingcard-sticky-section h-screen w-full relative" 
+        ref={stickySectionRef}
+      >
+
+        <div 
+          className="absolute inset-0 flex flex-col items-center justify-center z-0"
+          ref={textSectionRef}
         >
-          <div className="movingcard-content">
-            <div className="movingcard-title">
-              <h2 className="movingcard-title-text font-neuehaas45">{card.title}</h2>
-            </div>
-            <div className="movingcard-description">
-              <p className="movingcard-description-text font-neuehaas45">{card.description}</p>
-            </div>
+          <div className="w-full max-w-5xl px-8">
+<h1 className="text-[3vw] sm:text-[4vw] lg:text-[3.5vw] font-neuehaas45 text-white leading-[1.1]">
+  Orthodontic treatment is more than just straightening teeth —
+  it’s about setting the foundation for long-term health, confidence,<br />
+  and facial harmony.
+</h1>
+<div className="font-neuehaas45 mt-10 max-w-xl text-[16px] text-white leading-[1.2] mx-auto">
+
+    While many orthodontists offer Invisalign or braces, the difference lies in how they approach treatment — what they’re aiming to achieve, and how precisely they execute it. Advances in modern orthodontics now allow us to do far more than align teeth. We can optimize jaw positioning, enhance facial balance, and design results that feel both natural and transformative.
+    We understand that cost matters — but choosing an orthodontist is ultimately about trust. Who do you believe will deliver the best result? Who sees the full picture, not just the teeth? A slightly lower fee might save money in the short term, but true value comes from results that last a lifetime.
+
+ 
+</div>
+
           </div>
         </div>
-      ))}
-    </section>
+
+        {cardsData.map((card, index) => (
+          <div
+            className="movingcard-card absolute z-10"
+            key={index}
+            ref={(el) => addToRefs(el, index)}
+          >
+            <div className="movingcard-content">
+              <div className="movingcard-title">
+                <h2 className="movingcard-title-text font-neuehaas45">{card.title}</h2>
+              </div>
+              <div className="movingcard-description">
+                <p className="movingcard-description-text font-neuehaas45">{card.description}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+
+
+    </div>
   );
 };
 
 const FinancingTreatment = () => {
-  // const canvasRef = useRef();
 
-  // useEffect(() => {
-  //   const camera = new THREE.PerspectiveCamera(
-  //     45,
-  //     window.innerWidth / window.innerHeight,
-  //     1,
-  //     100
-  //   );
-  //   camera.position.set(0, -0.5, 25);
-  //   const scene = new THREE.Scene();
-  //   const renderer = new THREE.WebGLRenderer({ alpha: true });
-  //   renderer.setClearColor(0x000000, 0);
 
-  //   renderer.setSize(window.innerWidth, window.innerHeight);
-  //   canvasRef.current.appendChild(renderer.domElement);
-
-  //   const vertexShader = `
-  //       varying vec2 vUv;
-  //       void main() {
-  //         vUv = uv;
-  //         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  //       }
-  //     `;
-
-  //   const fragmentShader = `
-  //       precision highp float;
-  //       varying vec2 vUv;
-  //       uniform vec3 u_c1;
-  //       uniform vec3 u_c2;
-  //       uniform float u_time;
-  //       void main() {
-  //         vec3 pX = vec3(vUv.x);
-  //         vec3 pY = vec3(vUv.y);
-  //         vec3 c1 = u_c1;
-  //         vec3 c2 = u_c2;
-  //         vec3 c3 = vec3(0.0, 1.0, 1.0); // aqua
-  //         vec3 cmix1 = mix(c1, c2, pX + pY/2. + cos(u_time));
-  //         vec3 cmix2 = mix(c2, c3, (pY - sin(u_time))*0.5);
-  //         vec3 color = mix(cmix1, cmix2, pX * cos(u_time+2.));
-  //         gl_FragColor = vec4(color, 1.0);
-  //       }
-  //     `;
-
-  //   const uniforms = {
-  //     u_c1: { type: "v3", value: new THREE.Vector3(0.9, 0.8, 0.3) },
-  //     u_c2: { type: "v3", value: new THREE.Vector3(1.0, 0.54, 0.4) },
-  //     u_time: { type: "f", value: 0 },
-  //   };
-  //   const shaderMaterial = new THREE.ShaderMaterial({
-  //     uniforms,
-  //     vertexShader,
-  //     fragmentShader,
-  //   });
-
-  //   // const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
-  //   // const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
-  //   // scene.add(gum);
-
-  //   // const bgGeometry = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
-  //   // const bgMesh = new THREE.Mesh(bgGeometry, shaderMaterial);
-  //   // scene.add(bgMesh);
-
-  //   const gumGeometry = new THREE.SphereGeometry(5, 64, 64);
-  //   const gum = new THREE.Mesh(gumGeometry, shaderMaterial);
-  //   scene.add(gum);
-  //   const clock = new THREE.Clock();
-  //   const animate = () => {
-  //     uniforms.u_time.value = clock.getElapsedTime();
-  //     renderer.render(scene, camera);
-  //     requestAnimationFrame(animate);
-  //   };
-  //   animate();
-
-  //   const handleResize = () => {
-  //     camera.aspect = window.innerWidth / window.innerHeight;
-  //     camera.updateProjectionMatrix();
-  //     renderer.setSize(window.innerWidth, window.innerHeight);
-  //   };
-  //   window.addEventListener("resize", handleResize);
-
-  //   return () => {
-  //     window.removeEventListener("resize", handleResize);
-  //     const canvasElement = renderer.domElement;
-  //     if (canvasRef.current?.contains(canvasElement)) {
-  //       canvasRef.current.removeChild(canvasElement);
-  //     }
-  //   };
-  // }, []);
+  
 
   // const containerRef = useRef(null);
   // const pathRef = useRef(null);
@@ -880,34 +866,31 @@ const FinancingTreatment = () => {
     `;
 
     const fragmentShader = `
-precision mediump float;
-
-uniform vec2 u_resolution;
-
-void main() {
-  vec2 st = gl_FragCoord.xy / u_resolution;
-  float x = st.x, y = st.y;
-
-  vec3 peachDust = vec3(0.89, 0.75, 0.65);
-  vec3 mauveDust = vec3(0.82, 0.78, 0.88);
-  vec3 duskBase  = vec3(0.92, 0.90, 0.92);
-
-  // Distance from bottom-left
-  float dist = length(st - vec2(0.0, 0.0));
-
-  // Increase peach reach by bumping 0.7 → 0.9
-  float peachWeight = smoothstep(2.1, 0.0, dist);
-
-  vec3 blendColor = mix(mauveDust, peachDust, peachWeight);
-  vec3 color = mix(blendColor, duskBase, 0.22);
-
-  gl_FragColor = vec4(color, 1.0);
-}
-
-
-
-
-    `;
+    precision mediump float;
+    
+    uniform vec2 u_resolution;
+    
+    void main() {
+      vec2 st = gl_FragCoord.xy / u_resolution;
+      float x = st.x, y = st.y;
+    
+      vec3 peachDust = vec3(0.89, 0.75, 0.65);
+      vec3 mauveDust = vec3(0.82, 0.78, 0.88);
+      vec3 duskBase  = vec3(0.92, 0.90, 0.92);
+    
+      // Distance from bottom-left
+      float dist = length(st - vec2(0.0, 0.0));
+    
+      // Increase peach reach by bumping 0.7 → 0.9
+      float peachWeight = smoothstep(2.1, 0.0, dist);
+    
+      vec3 blendColor = mix(mauveDust, peachDust, peachWeight);
+      vec3 color = mix(blendColor, duskBase, 0.22);
+    
+      gl_FragColor = vec4(color, 1.0);
+    }
+    
+        `;
 
     const material = new THREE.ShaderMaterial({
       vertexShader,
@@ -1001,7 +984,10 @@ void main() {
           id="shader-bg"
           className="fixed top-0 left-0 w-full min-h-screen z-[-1] pointer-events-none"
         />
+        <div className="relative z-0 h-screen w-full">
+
         <div ref={cardRef} className="relative">
+
           <div className="h-screen flex justify-center items-center">
             <div
               style={{
@@ -1399,7 +1385,7 @@ void main() {
             </div>
           </div>
         </div>
-
+        </div>
         <div className="min-h-screen pt-[160px] relative ">
           <section className="relative flex items-center justify-center">
             <div className=" w-[36vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
@@ -1816,31 +1802,8 @@ void main() {
         </section>
       </div>
 
-      {/* <div style={{ width: '100vw', height: '100vh', background: '#09090b' }}>
-      <PixelCanvas
-        colors={["#e879f9", "#38bdf8", "#a855f7"]} 
-        gap={6}
-        speed={45}
-      />
-    </div> */}
-
       {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
-        <Canvas
-      gl={{ alpha: true }}
-      style={{
-         position: 'fixed',
-         top: 0,
-         left: 0,
-         width: '100%',
-         height: '100%',
-         pointerEvents: 'initial',  
-         zIndex: 10
-      }}
-   >
-      <EffectComposer>
-         <Fluid />
-      </EffectComposer>
-   </Canvas>
+
         <div className="pointer-events-none h-screen flex items-center justify-center">
           <div className="relative h-screen bg-[#F2F2F4] flex items-center justify-center">
 
@@ -1863,54 +1826,10 @@ void main() {
           />
         </div>
       </div> */}
-      {/* <div ref={canvasRef} className="w-32 h-32"></div> */}
+
     </>
   );
 };
-const NebulaHeading = () => {
-  useEffect(() => {
-    const headings = document.querySelectorAll(".heading span");
 
-    // First animation - blur effect
-    gsap.from(headings, {
-      filter: "blur(0.15em)",
-      stagger: {
-        from: "left",
-        each: 0.1,
-      },
-      duration: (i) => 1.25 + i * 0.5,
-      ease: "power2.inOut",
-    });
-
-    // Second animation - slide in with opacity
-    gsap.from(
-      headings,
-      {
-        xPercent: (i) => (i + 1) * 20,
-        opacity: 0,
-        stagger: {
-          from: "left",
-          each: 0.1,
-        },
-        duration: (i) => 1 + i * 0.65,
-        ease: "power2.inOut",
-      },
-      "<"
-    );
-  }, []);
-
-  return (
-    <div className="container">
-      <h1 className="heading">
-        <span>n</span>
-        <span>e</span>
-        <span>b</span>
-        <span>u</span>
-        <span>l</span>
-        <span>a</span>
-      </h1>
-    </div>
-  );
-};
 
 export default FinancingTreatment;
