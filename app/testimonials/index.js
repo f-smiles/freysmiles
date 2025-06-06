@@ -502,94 +502,21 @@ const ScrambleBlock = ({
   charsType = "letters",
 }) => {
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={`space-y-1 ${className}`}>
       {lines.map((line, i) => (
         <ScrambleText
           key={i}
           text={line}
           scrambleOnLoad={scrambleOnLoad}
           charsType={charsType}
+          
         />
       ))}
     </div>
   );
 };
 
-const RotatingModel = () => {
-  const { nodes } = useGLTF("/images/SVOX1F.glb");
-  console.log(nodes);
-  const modelRef = useRef();
 
-  useFrame(() => {
-    if (modelRef.current) {
-      modelRef.current.rotation.y += 0.005;
-    }
-  });
-  const { clock } = useThree();
-
-  return (
-    <>
-      <group ref={modelRef} position={[0, 0, 0]} scale={[3, 3, 3]}>
-        {nodes.mesh_0 && (
-          <mesh geometry={nodes.mesh_0.geometry}>
-            <meshPhysicalMaterial
-              transmission={1}
-              thickness={1.5}
-              roughness={0.07}
-              clearcoat={1}
-              clearcoatRoughness={0.2}
-              envMapIntensity={1.5}
-              metalness={0}
-              reflectivity={0.9}
-              sheen={0.3}
-              color={"#FFFFFF"}
-              iridescence={0.05}
-              iridescenceIOR={1.1}
-              // ior={1.47}
-              iridescenceThicknessRange={[100, 500]}
-            />
-          </mesh>
-        )}
-        {nodes.mesh_0_1 && (
-          <mesh geometry={nodes.mesh_0_1.geometry}>
-            <meshPhysicalMaterial
-              transmission={1}
-              thickness={1.5}
-              roughness={0.07}
-              clearcoat={1}
-              clearcoatRoughness={0.2}
-              envMapIntensity={1.5}
-              metalness={0}
-              reflectivity={0.9}
-              sheen={0.3}
-              // ior={1.47}
-              color={"#FFFFFF"}
-              iridescence={0.05}
-              iridescenceIOR={1.1}
-              iridescenceThicknessRange={[100, 500]}
-            />
-          </mesh>
-        )}
-      </group>
-      <EffectComposer>
-        <ChromaticAberration
-          blendFunction={BlendFunction.NORMAL}
-          offset={[
-            0.00002 + Math.sin(clock.elapsedTime) * 0.00005,
-            0.00002 + Math.cos(clock.elapsedTime) * 0.00005,
-          ]}
-        />
-
-        <Outline
-          edgeStrength={5}
-          pulseSpeed={0}
-          visibleEdgeColor="#BCC6CC"
-          hiddenEdgeColor="#BCC6CC"
-        />
-      </EffectComposer>
-    </>
-  );
-};
 
 const Testimonials = () => {
   // const { scene } = useGLTF("/images/SVOX1F.glb");
@@ -1054,89 +981,130 @@ const Testimonials = () => {
   return (
     <>
       <Background />
-{/* <Contents /> */}
       <section
-        ref={sectionOneRef}
-        className="z-10 relative w-full min-h-[110vh] flex flex-col px-12"
-      >
-        <div className="z-10 max-w-[1400px] w-full flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1"></div>
-          <MouseTrail
-            images={[
-              "../images/mousetrail/flame.png",
-              "../images/mousetrail/cat.png",
-              "../images/mousetrail/pixelstar.png",
-              "../images/mousetrail/avocado.png",
-              "../images/mousetrail/ghost.png",
-              "../images/mousetrail/pacman.png",
-              "../images/mousetrail/evilrobot.png",
-              "../images/mousetrail/thirdeye.png",
-              "../images/mousetrail/alientcat.png",
-              "../images/mousetrail/gotcha.png",
-              "../images/mousetrail/karaokekawaii.png",
-              "../images/mousetrail/mushroom.png",
-              "../images/mousetrail/pixelcloud.png",
-              "../images/mousetrail/pineapple.png",
-              // "../images/mousetrail/upsidedowncat.png",
-              "../images/mousetrail/pixelsun.png",
-              "../images/mousetrail/cherries.png",
-              "../images/mousetrail/watermelon.png",
-              "../images/mousetrail/dolphins.png",
-              "../images/mousetrail/jellyfish.png",
-              "../images/mousetrail/nyancat.png",
-              "../images/mousetrail/donut.png",
-              "../images/mousetrail/controller.png",
-              "../images/mousetrail/dinosaur.png",
-              "../images/mousetrail/headphones.png",
-              "../images/mousetrail/porsche.png",
+  ref={sectionOneRef}
+  className="z-10 relative w-full min-h-[110vh] px-6 md:px-12"
+>
+  <div className="z-10 max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-0">
+
+    <div className="w-full md:w-1/2 min-h-[100vh]"></div>
+
+
+    <div className="w-full md:w-1/2 flex items-center justify-center min-h-[100vh]">
+      <div className="max-w-[500px] w-full">
+        <h2 className="mb-6 text-3xl uppercase font-neuehaas45 text-center md:text-left md:text-4xl">
+          Join the smile club
+        </h2>
+
+        <div className="font-khteka text-[13px] uppercase relative">
+          {/* <span className="leading-none absolute invisible block">
+            We are committed to setting the standard for exceptional service.
+            Our communication is always open—every question is welcome, and
+            every concern is met with care and professionalism.
+          </span> */}
+
+          <ScrambleBlock
+            lines={[
+              "We are committed to setting the standard for exceptional service.",
+              "Our communication is always open—every question and every concern",
+              "is met with care and professionalism is welcome.",
             ]}
+            scrambleOnLoad={true}
+            charsType="letters"
           />
-          <div className="flex-1 max-w-[500px] flex flex-col justify-center h-full min-h-[100vh]">
-            <h2 className="flex justify-center mb-6 text-3xl uppercase font-neueroman md:text-4xl">
-              Join the smile club
-            </h2>
-
-            <div className="font-khteka text-[14px] leading-none  uppercase relative">
-              <span className="absolute invisible block">
-                We are committed to setting the standard for exceptional
-                service. Our communication is always open—every question is
-                welcome, and every concern is met with care and professionalism.
-              </span>
-
-              <ScrambleBlock
-                lines={[
-                  "We are committed to setting the standard for exceptional service.",
-                  "Our communication is always open—every question and every concern",
-                  "is met with care and professionalism is welcome.",
-                ]}
-                scrambleOnLoad={true}
-                charsType="letters"
-              />
-            </div>
-          </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div ref={navBarRef} className="absolute bottom-0 left-0 w-full pb-2">
-          <div className="flex items-center justify-center text-[14px] uppercase font-khteka gap-4">
-            <span
-              className={isPatientSectionInView ? "opacity-100" : "opacity-30"}
-            >
-              ●
-            </span>
-            <span>Our patient results</span>
 
-            <span
-              className={!isPatientSectionInView ? "opacity-100" : "opacity-30"}
-            >
-              ●
-            </span>
-            <span>Read the reviews</span>
-          </div>
+  <div ref={navBarRef} className="absolute bottom-0 left-0 w-full pb-2">
+    <div className="flex items-center justify-center text-[14px] uppercase font-khteka gap-4">
+      <span className={isPatientSectionInView ? "opacity-100" : "opacity-30"}>
+        ●
+      </span>
+      <span>Our patient results</span>
+      <span className={!isPatientSectionInView ? "opacity-100" : "opacity-30"}>
+        ●
+      </span>
+      <span>Read the reviews</span>
+    </div>
+    <div className="mt-1 w-full border-b border-[#D3D3D3]"></div>
+  </div>
 
-          <div className="mt-1 w-full border-b border-[#D3D3D3]"></div>
-        </div>
-      </section>
+
+  <MouseTrail
+    images={[
+      "../images/mousetrail/flame.png",
+      "../images/mousetrail/cat.png",
+      "../images/mousetrail/pixelstar.png",
+      "../images/mousetrail/avocado.png",
+      "../images/mousetrail/ghost.png",
+      "../images/mousetrail/pacman.png",
+      "../images/mousetrail/evilrobot.png",
+      "../images/mousetrail/thirdeye.png",
+      "../images/mousetrail/alientcat.png",
+      "../images/mousetrail/gotcha.png",
+      "../images/mousetrail/karaokekawaii.png",
+      "../images/mousetrail/mushroom.png",
+      "../images/mousetrail/pixelcloud.png",
+      "../images/mousetrail/pineapple.png",
+      "../images/mousetrail/pixelsun.png",
+      "../images/mousetrail/cherries.png",
+      "../images/mousetrail/watermelon.png",
+      "../images/mousetrail/dolphins.png",
+      "../images/mousetrail/jellyfish.png",
+      "../images/mousetrail/nyancat.png",
+      "../images/mousetrail/donut.png",
+      "../images/mousetrail/controller.png",
+      "../images/mousetrail/dinosaur.png",
+      "../images/mousetrail/headphones.png",
+      "../images/mousetrail/porsche.png",
+    ]}
+  />
+</section>
+
       <Testimonial />
+      <section
+        ref={dragCardRef}
+        className="relative flex flex-wrap items-center justify-center min-h-screen gap-4 p-8 overflow-hidden"
+      >
+        {testimonials.map((t, i) => (
+          <motion.div
+            key={i}
+            drag
+            dragConstraints={dragCardRef}
+            dragElastic={0.05}
+            whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
+            dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
+            dragMomentum={false}
+            className="relative bg-[#F3F2F6]/70 text-black backdrop-blur-md
+            w-[320px] min-h-[450px] flex flex-col justify-start
+            border border-gray-300 cursor-grab active:cursor-grabbing
+            will-change-transform"
+            style={{ zIndex: i }}
+          >
+            <div className="relative w-full h-[240px] p-2">
+              <div
+                className="w-full h-full bg-cover bg-center rounded-[8px] overflow-hidden relative"
+                style={{ backgroundImage: `url(${t.image})` }}
+              >
+                <div className="absolute inset-0 z-10 pointer-events-none tile-overlay" />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 p-4">
+              <h3 className="text-xl leading-tight uppercase font-neuehaas45">
+                {t.name}
+              </h3>
+              <p className="font-khteka uppercase text-[11px] leading-snug tracking-tight">
+                {t.text}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+      </section>
+{/* <Contents /> */}
       {/* <section
         ref={patientSectionRef}
         className="relative w-full min-h-screen px-6 overflow-hidden "
@@ -1230,45 +1198,7 @@ const Testimonials = () => {
         </AnimatePresence>
       </section> */}
 
-      <section
-        ref={dragCardRef}
-        className="relative flex flex-wrap items-center justify-center min-h-screen gap-4 p-8 overflow-hidden"
-      >
-        {testimonials.map((t, i) => (
-          <motion.div
-            key={i}
-            drag
-            dragConstraints={dragCardRef}
-            dragElastic={0.05}
-            whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
-            dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
-            dragMomentum={false}
-            className="relative bg-[#F3F2F6]/70 text-black backdrop-blur-md
-            w-[320px] min-h-[450px] flex flex-col justify-start
-            border border-gray-300 cursor-grab active:cursor-grabbing
-            will-change-transform"
-            style={{ zIndex: i }}
-          >
-            <div className="relative w-full h-[240px] p-2">
-              <div
-                className="w-full h-full bg-cover bg-center rounded-[8px] overflow-hidden relative"
-                style={{ backgroundImage: `url(${t.image})` }}
-              >
-                <div className="absolute inset-0 z-10 pointer-events-none tile-overlay" />
-              </div>
-            </div>
 
-            <div className="flex flex-col gap-2 p-4">
-              <h3 className="text-xl leading-tight uppercase font-neuehaas45">
-                {t.name}
-              </h3>
-              <p className="font-khteka uppercase text-[11px] leading-snug tracking-tight">
-                {t.text}
-              </p>
-            </div>
-          </motion.div>
-        ))}
-      </section>
 
       {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
           <div className="w-[64px] h-auto">
@@ -1290,40 +1220,6 @@ const Testimonials = () => {
           </nav>
         </header> */}
 
-      {/* <section className="bg-[#fb542d] py-10">
-          <Canvas
-            camera={{ position: [0, 1.5, 4] }}
-            gl={{ alpha: true }}
-            style={{
-              position: "fixed",
-              top: "50%",
-              right: "20%",
-              transform: "translate(-95%, -50%)",
-              width: "20vw",
-              height: "100vh",
-              zIndex: 0,
-            }}
-          >
-            <ambientLight intensity={0.5} /> //lower to avoid washed out
-            <directionalLight position={[4, 4, 4]} intensity={4} castShadow />
-            <spotLight
-              position={[3, 4, 3]}
-              angle={0.2}
-              intensity={4.5} //brightness
-              penumbra={0.8}
-              distance={8}
-              castShadow
-            />
-            <pointLight position={[-4, 3, 2]} intensity={2} color="#000" />
-            <pointLight position={[0, 0, -5]} intensity={3} color="#BCC6CC" />
-            <Environment files="../images/studio_small_03_4k.hdr" />
-            <EffectComposer></EffectComposer>
-            <Suspense fallback={<span>Loading</span>}>
-              <RotatingModel />
-            </Suspense>
-            <OrbitControls enableZoom={false} />
-          </Canvas>
-        </section> */}
 
       {/* <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
 

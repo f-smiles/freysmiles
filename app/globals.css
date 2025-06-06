@@ -499,6 +499,7 @@ h6 {
   @apply text-lg;
 }
 
+
 .curtains-canvas {
   position: fixed;
   top: 0;
@@ -5225,143 +5226,8 @@ a {
 }
 /* #CADACF */
 
-/* .purpleSectionImage,
 
-.orangeSectionImage,
-.redSectionImage
-.blackSectionImage {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);   
-  width: 33.333vw;              
-  height: auto;
 
-} */
-
-.purpleImageWrapper {
-  position: absolute;
-  top: 50%;
-  left: 60%;
-  transform: translate(-100%, -50%);
-  width: 15vw;
-  height: 40vh;
-  overflow: hidden;
-}
-.yellowImageWrapper {
-  position: absolute;
-  top: 50%;
-  width: 33vw;
-  right: 40%;
-  transform: translate(-100%, -50%);
-  height: 40vh;
-  overflow: hidden;
-}
-
-.yellowImageWrapper .image-inner {
-  transform-origin: right center;
-  width: 100%;
-  height: 100%;
-}
-
-.whiteImageWrapper {
-  position: absolute;
-  top: 50%;
-  left: 87.777%;
-  transform: translate(-100%, -50%);
-  /* width: 15vw;            */
-  height: 40vh;
-  overflow: hidden;
-}
-.orangeImageWrapper {
-  position: absolute;
-  top: 50%;
-  left: 83.333%;
-  transform: translate(-100%, -50%);
-  /* width: 15vw; */
-  height: 40vh;
-  overflow: hidden;
-  z-index: 10;
-}
-.redImageWrapper {
-  position: absolute;
-  top: 50%;
-  left: 83.333%;
-  transform: translate(-100%, -50%);
-  /* width: 15vw; */
-  height: 40vh;
-  overflow: hidden;
-  z-index: 10;
-}
-
-.orangeSectionImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.yellowSectionImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  position: absolute;
-  top: 50%;
-  width: 33.333vw;
-  height: auto;
-  transform-origin: bottom right;
-}
-
-.whiteSectionImage {
-  position: absolute;
-  right: 50%;
-  top: 50%;
-  width: 33.333vw;
-  height: auto;
-}
-
-.purpleSectionImage,
-.yellowSectionImage,
-.whiteSectionImage {
-  aspect-ratio: 328 / 440;
-}
-
-.purpleImageInnerContainer {
-  background: url(/images/stayontrack.png) no-repeat center center;
-  background-size: cover;
-  width: 100%;
-  height: 100%;
-}
-
-.yellowImageInnerContainer {
-  width: 100%;
-  height: 100%;
-  background: url(/images/handholdingtoothbrush.jpg) no-repeat center center;
-  background-size: cover;
-}
-
-.whiteImageInnerContainer {
-  background: url(/images/dentalwax3.png) no-repeat center center;
-  background-size: cover;
-
-  width: 100%;
-  height: 100%;
-}
-
-.orangeImageInnerContainer {
-  background: url(/images/soda3.png) no-repeat center center;
-  background-size: cover;
-  width: 100%;
-  height: 100%;
-}
-
-.redImageInnerContainer {
-  background-size: cover;
-  background: url(/images/rubberbands2.png) no-repeat center center;
-  width: 100%;
-  height: 100%;
-}
 
 #effect {
   font-size: 48px;

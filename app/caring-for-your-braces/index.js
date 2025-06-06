@@ -47,11 +47,7 @@ const CaringForYourBraces = () => {
       gsap.set(".orangeSection", { x: "100vw" });
       gsap.set(".redSection", { x: "100vw" });
       gsap.set(".blackSection", { x: "100vw" });
-      gsap.set(".yellowImageWrapper .image-inner", { scale: 0.6, transformOrigin: "center center" });
-      gsap.set(".whiteImageWrapper .image-inner", { scale: 0.4, transformOrigin: "center center" });
-      gsap.set(".orangeImageWrapper .image-inner", { scale: 0.4, transformOrigin: "center center" });
-      gsap.set(".redImageWrapper .image-inner", { scale: 0.4, transformOrigin: "center center" });
-      
+
 
 
       tl = gsap.timeline({
@@ -95,38 +91,6 @@ const CaringForYourBraces = () => {
       );
       tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 0.2);
       tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 0.2);
-      tl.to(".yellowImageWrapper .image-inner", {
-        scale: 1,
-        duration: 1,
-        ease: "none"
-      }, 0);
-      
-    tl.to(".whiteImageWrapper .image-inner", {
-  scale: 1,
-  duration: 1,
-  ease: "none"
-}, 0); 
-
-      tl.to(".orangeImageWrapper .image-inner", {
-        scale: 1,
-        duration: 1.5,
-        ease: "none"
-}, 3);
-tl.to(".redImageWrapper .image-inner", {
-  scale: 1,
-  duration: 1.5,
-  ease: "none"
-}, 4);
-
-      // tl.to(
-      //   ".purpleImageInnerContainer",
-      //   {
-      //     scale: 1.2,
-      //     ease: "none",
-      //     duration: 2,
-      //   },
-      //   0
-      // );
 
       setTimeout(() => {
         ScrollTrigger.refresh();
@@ -146,43 +110,46 @@ tl.to(".redImageWrapper .image-inner", {
     };
 }, []);
 
-  useEffect(() => {
-    gsap.to(".fixedNav", {
-      duration: 0.5,
-      scrollTrigger: {
-        trigger: "body",
-        start: "top top",
-      },
-    });
-  }, []);
+
 
   return (
     <div ref={containerRef} className="min-h-screen ">
-      <div>
-        <div
-          style={{
-            position: "fixed",
-            top: "20vh",
-            width: "100%",
-            paddingLeft: "15rem",
-            zIndex: 10,
-            pointerEvents: "none",
-          }}
-        >
-          {/* <div className="relative w-fit">
 
-  <div className="absolute inset-0" />
-  <svg fill="none" height="83" viewBox="0 0 83 83" width="83" xmlns="http://www.w3.org/2000/svg"><path d="m28.9392 17.858c1.3435 1.3435 3.4104 1.3435 4.7539 0l5.5806-5.5806c1.3434-1.3434 3.4103-1.3434 4.7538 0l5.7872 5.7873c1.3435 1.3435 1.3435 3.4104.0001 4.7538l-49.295211 49.2952 10.541111 10.5411 49.2951-49.2952c1.3435-1.3434 3.4104-1.3434 4.7539 0l5.7873 5.7873c1.3434 1.3435 1.3434 3.4104 0 4.7538l-5.5806 5.5806c-1.3435 1.3435-1.3435 3.4104 0 4.7539l5.7872 5.7872c1.3435 1.3435 1.3435 3.4104 0 4.7539l-5.5805 5.5805c-1.3435 1.3435-1.3435 3.4104 0 4.7539l5.7872 5.7872c1.3435 1.3435 3.4104 1.3435 4.7539 0l5.5805-5.5806c1.3435-1.3434 1.3435-3.4103 0-4.7538l-5.7872-5.7872c-1.3435-1.3435-1.3435-3.4104 0-4.7539l5.5806-5.5806c1.3434-1.3434 1.3434-3.4103-.0001-4.7538l-5.7872-5.7873c-1.3435-1.3434-1.3435-3.4103 0-4.7538l5.5806-5.5806c1.3434-1.3435 1.3434-3.4103 0-4.7538l-5.7873-5.7873c-1.3435-1.3435-1.3435-3.4103 0-4.7538l5.5806-5.5806c1.3435-1.3435 1.3435-3.41035 0-4.75382l-5.7873-5.78728c-1.3435-1.343473-3.4103-1.343472-4.7538 0l-5.5806 5.58059c-1.3435 1.34347-3.4104 1.34346-4.7538-.00001l-5.7873-5.78726c-1.3435-1.34348-3.4104-1.343486-4.7538-.00001l-5.5806 5.58058c-1.3435 1.34348-3.4104 1.34348-4.7539.00001l-5.7872-5.78727c-1.3435-1.343477-3.4104-1.343476-4.7539 0l-5.5805 5.58058c-1.3435 1.34347-3.4104 1.34347-4.7539 0l-5.7872-5.78728c-1.3435-1.34347-3.41039-1.343472-4.75387 0l-5.58058 5.58058c-1.343475 1.34348-1.343473 3.41039 0 4.75379l5.78727 5.7873c1.34348 1.3435 3.41038 1.3435 4.75388 0l5.5805-5.5806c1.3435-1.3434 3.4104-1.3434 4.7539 0zm31.21-5.3739c1.3434-1.3435 3.4103-1.3435 4.7538 0l5.7873 5.7873c1.3434 1.3435 1.3434 3.4103 0 4.7538l-5.5806 5.5806c-1.3435 1.3435-3.4104 1.3435-4.7539 0l-5.7872-5.7873c-1.3435-1.3434-1.3435-3.4103 0-4.7538z" fill="#C9FE6E"/></svg>
-
-  <h1
-    className="relative text-[64px] font-neuehaas45 leading-none "
+<div
+  style={{
+    position: "fixed",
+    top: "20vh",
+    right: "25vw",
+    zIndex: 10,
+    pointerEvents: "none",
+    width: "300px",
+    height: "400px",
+    overflow: "hidden", 
+  }}
+>
+  <div
+    className="relative border-4 border-red-400 w-[300px] h-[400px]"
   >
-    Braces Care
-  </h1>
-</div> */}
-        </div>
+ {[
+    "/images/stayontrack.png",
+    // "/images/handholdingtoothbrush.jpg",
+    // "/images/dentalwax3.png",
+    // "/images/soda3.png",
+    // "/images/rubberbands2.png"
+  ].map((src, i) => (
+    <img
+      key={i}
+      src={src}
+      className={`slide-image absolute inset-0 w-full h-full object-cover ${i === 0 ? 'z-10' : 'z-0'}`}
+      data-index={i}
+    
+    />
+  ))}
+  </div>
+</div>
 
-        <div>
+
+
           <div
             style={{
               fontFamily: "NeueMontrealBook",
@@ -236,14 +203,12 @@ tl.to(".redImageWrapper .image-inner", {
                       handle the rest.
                     </p>
                   </div>
-                  <div className="purpleImageWrapper">
+                  {/* <div className="purpleImageWrapper">
                     <div
               className="purpleImageInnerContainer"
-              // style={{
-              //   marginTop: "18.25rem",
-              // }}
+              
                     >
-                      {/* <img
+                      <img
                         src="../images/stayontrack.png"
                         alt="portal"
                         style={{
@@ -251,7 +216,7 @@ tl.to(".redImageWrapper .image-inner", {
                           height: "auto",
                           objectFit: "contain",
                         }}
-                      /> */}
+                      />
 
                       <div
                         style={{
@@ -269,7 +234,7 @@ tl.to(".redImageWrapper .image-inner", {
                         <h1 id="effect">STAY ON TRACK</h1>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -321,7 +286,7 @@ tl.to(".redImageWrapper .image-inner", {
                   </p>
                   <div className="flex items-center space-x-2"></div>
                 </div>
-                <div className="yellowImageWrapper">
+                {/* <div className="yellowImageWrapper">
   <div className="image-inner">
     <img
       src="../images/handholdingtoothbrush.jpg"
@@ -333,7 +298,7 @@ tl.to(".redImageWrapper .image-inner", {
       }}
     />
   </div>
-</div>
+</div> */}
 
               </div>
             </div>
@@ -382,7 +347,7 @@ tl.to(".redImageWrapper .image-inner", {
                     and irritation. Hang in there—it gets easier!
                   </div>
                 </div>
-                <div className="whiteImageWrapper">
+                {/* <div className="whiteImageWrapper">
   <div className="image-inner">
     <img
       src="../images/dentalwax3.png"
@@ -394,7 +359,7 @@ tl.to(".redImageWrapper .image-inner", {
       }}
     />
   </div>
-</div>
+</div> */}
 
               </div>
             </div>
@@ -441,14 +406,12 @@ tl.to(".redImageWrapper .image-inner", {
                     and corn on the cob may require careful navigation.
                   </div>
                 </div>
-                <div className="orangeImageWrapper">
+                {/* <div className="orangeImageWrapper">
                    <div
               className="orangeImageInnerContainer"
-              // style={{
-              //   marginTop: "18.25rem",
-              // }}
+             
                     >
-                  {/* <img
+                  <img
                     src="../images/soda3.png"
                     alt="portal"
                     style={{
@@ -456,9 +419,9 @@ tl.to(".redImageWrapper .image-inner", {
                       height: "auto",
                       objectFit: "contain",
                     }}
-                  /> */}
+                  />
                 </div>
-</div>
+</div> */}
               </div>
             </div>
             <div
@@ -505,14 +468,14 @@ tl.to(".redImageWrapper .image-inner", {
                     configuration.
                   </div>
                 </div>
-                <div className="redImageWrapper">
+                {/* <div className="redImageWrapper">
                 <div
               className="redImageInnerContainer"
          
                     >
                
                 </div>
-</div>
+</div> */}
               </div>
             </div>
             <div
@@ -568,11 +531,9 @@ tl.to(".redImageWrapper .image-inner", {
                 <div className="blackSectionImage">
                 <div
               // className="imageInnerContainer"
-              // style={{
-              //   marginTop: "18.25rem",
-              // }}
+         
               >
-                  <video
+                  {/* <video
                     src="https://video.wixstatic.com/video/11062b_163d7539f7824eb895994a6460f0995b/720p/mp4/file.mp4"
                     className="object-cover w-full h-full"
                     autoPlay
@@ -581,14 +542,14 @@ tl.to(".redImageWrapper .image-inner", {
                     playsInline
                   >
                     
-                  </video>
+                  </video> */}
                 </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+  
+
     </div>
   );
 };
