@@ -1,202 +1,9 @@
 'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
-import { extend, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, shaderMaterial, useTexture } from '@react-three/drei'
+import { useFrame, useThree } from '@react-three/fiber'
+import { useTexture } from '@react-three/drei'
 import gsap from 'gsap'
-
-
-export default function SceneContent() {
-  // const [textures, setTextures] = useState<{ image: THREE.Texture; hover: THREE.Texture } | null>(null)
-  const meshRef = useRef()
-  const [texture, setTexture] = useState({ imgSrc: '', hoverSrc: '' })
-  const mouse = useRef(new THREE.Vector2(0, 0))
-  const time = useRef(0)
-  const { size, viewport } = useThree()
-
-  const uniforms = useMemo(() => {
-    return {
-      u_image: { value: null },
-      u_imagehover: { value: null },
-      u_mouse: { value: mouse.current },
-      u_time: { value: time.current },
-      u_res: { value: new THREE.Vector2(size.width, size.height) },
-    }
-  }, [size])
-
-  return (
-    <mesh ref={meshRef}>
-      <planeGeometry args={[1, 1, 1, 1]} />
-      {/* <shaderMaterial
-        uniforms={uniforms}
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        defines={{ PR: window.devicePixelRatio.toFixed(1) }}
-        transparent
-      /> */}
-    </mesh>
-    // <>
-      // {/* <OrbitControls /> */}
-      // {/* <DisplamentImage /> */}
-      // {/* <Image /> */}
-    // </>
-  )
-}
-
-const ImageGooeyMaterial = shaderMaterial(
-  {
-    effectFactor: 1.2,
-    dispFactor: 0,
-    tex: undefined,
-    tex2: undefined,
-    disp: undefined
-  },
-  /*glsl*/`
-  varying vec2 vUv;
-  void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-  }`,
-  /*glsl*/`
-  varying vec2 vUv;
-  uniform sampler2D tex;
-  uniform sampler2D tex2;
-  uniform sampler2D disp;
-  uniform float _rot;
-  uniform float dispFactor;
-  uniform float effectFactor;
-  void main() {
-      vec2 uv = vUv;
-      vec4 disp = texture2D(disp, uv);
-      vec2 distortedPosition = vec2(uv.x, uv.y + dispFactor * (disp.r*effectFactor));
-      vec2 distortedPosition2 = vec2(uv.x, uv.y - (1.0 - dispFactor) * (disp.r*effectFactor));
-      vec4 _texture = texture2D(tex, distortedPosition);
-      vec4 _texture2 = texture2D(tex2, distortedPosition2);
-      vec4 finalTexture = mix(_texture, _texture2, dispFactor);
-      gl_FragColor = finalTexture;
-      #include <tonemapping_fragment>
-      #include <encodings_fragment>
-  }`
-)
-extend({ ImageGooeyMaterial })
-
-export const DisplamentImage = (props) => {
-  const ref = useRef()
-  const [hovered, setHover] = useState(false)
-  const [texture1, texture2, displacementTexture] = useTexture([
-    "/images/textures/portrait2.jpg",
-    "/images/textures/full_body2.jpg",
-    "/images/textures/displacement/11.jpg"
-  ])
-  useFrame(() => {
-    ref.current.dispFactor = THREE.MathUtils.lerp(ref.current.dispFactor, hovered ? 1 : 0, 0.055)
-  })
-  return (
-    <mesh {...props} onPointerOver={(e) => setHover(true)} onPointerOut={(e) => setHover(false)}>
-      <planeGeometry args={[2.25, 4]} />
-      <imageGooeyMaterial ref={ref} texture1={texture1} texture2={texture2} displacementTexture={displacementTexture} />
-    </mesh>
-  )
-}
-
-
-
-export function OldSceneContent() {
-  const meshRef = useRef()
-  const mouse = useRef(new THREE.Vector2(0, 0))
-  const { viewport, size, gl, scene } = useThree()
-
-  const imageElement = document.querySelector('.tile__image')
-  const imageSrc = imageElement?.src
-  const hoverSrc = imageElement?.dataset.hover
-
-  const [image, hover] = useTexture([imageSrc, hoverSrc])
-
-  const uniforms = useMemo(() => ({
-    u_image: { value: image },
-    u_imagehover: { value: hover },
-    u_mouse: { value: mouse.current },
-    u_time: { value: 0 },
-    u_res: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-  }), [image, hover])
-
-  useEffect(() => {
-    if (imageElement) imageElement.style.opacity = 0
-  }, [])
-
-  // const [offset, sizes] = useMemo(() => {
-  //   if (!imageElement) return [new THREE.Vector2(), new THREE.Vector2()]
-  //   const { width, height, top, left } = imageElement.getBoundingClientRect()
-  //   const sizeVector = new THREE.Vector2(width, height)
-  //   const offsetVector = new THREE.Vector2(
-  //     left - window.innerWidth / 2 + width / 2,
-  //     -top + window.innerHeight / 2 - height / 2
-  //   )
-  //   return [offsetVector, sizeVector]
-  // }, [imageElement])
-
-  const [meshTransform, setMeshTransform] = useState({
-    offset: new THREE.Vector2(),
-    size: new THREE.Vector2(),
-  })
-
-  useEffect(() => {
-    const updateTransform = () => {
-      if (!imageElement) return
-      const { width, height, top, left } = imageElement.getBoundingClientRect()
-      const offsetVector = new THREE.Vector2(
-        left - window.innerWidth / 2 + width / 2,
-        -top + window.innerHeight / 2 - height / 2
-      )
-      const sizeVector = new THREE.Vector2(width, height)
-
-      setMeshTransform({ offset: offsetVector, size: sizeVector })
-    }
-    updateTransform()
-    window.addEventListener('resize', updateTransform)
-
-    return () => window.removeEventListener('resize', updateTransform)
-  }, [imageElement])
-
-  useEffect(() => {
-    const handleMouseMove = (event) => {
-      gsap.to(mouse.current, {
-        duration: 0.5,
-        x: (event.clientX / window.innerWidth) * 2 - 1,
-        y: -(event.clientY / window.innerHeight) * 2 + 1,
-        overwrite: true,
-      })
-    }
-    const handleResize = () => uniforms.u_res.value.set(window.innerWidth, window.innerHeight)
-    window.addEventListener('resize', handleResize)
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
-
-  // animates outline of shader mask
-  // useFrame(() => uniforms.u_time.value += 0.01)
-
-  return (
-    <mesh
-      ref={meshRef}
-      position={[meshTransform.offset.x, meshTransform.offset.y, 0 ]}
-      scale={[meshTransform.size.x, meshTransform.size.y, 1]}
-      // position={[offset.x, offset.y, 0]}
-      // scale={[sizes.x, sizes.y, 1]}
-    >
-      <planeGeometry args={[1, 1, 1, 1]} />
-      <shaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
-        defines={{ PR: window.devicePixelRatio.toFixed(1) }}
-      />
-    </mesh>
-  )
-}
 
 const vertexShader = `
   varying vec2 v_uv;
@@ -338,3 +145,89 @@ const fragmentShader = `
     gl_FragColor = finalImage;
   }
 `
+
+export default function SceneContent() {
+  const meshRef = useRef(null)
+  const [textures, setTextures] = useState(null)
+  const mouse = useRef(new THREE.Vector2(0, 0))
+  const time = useRef(0)
+  const { size, viewport } = useThree()
+ 
+  // load image and hover texture
+  const imgEl = typeof window !== 'undefined'
+  ? document.querySelector('.tile__image')
+  : null
+  const imageSrc = imgEl?.src ?? ''
+  const hoverSrc = imgEl?.dataset.hover ?? ''
+  const [image, hover] = useTexture([imageSrc, hoverSrc])
+ 
+  const uniforms = useMemo(() => {
+    return {
+      u_image: { value: null },
+      u_imagehover: { value: null },
+      u_mouse: { value: mouse.current },
+      u_time: { value: time.current },
+      u_res: { value: new THREE.Vector2(size.width, size.height) },
+    }
+  }, [image, hover, size])
+
+  // Update uniforms when textures are loaded
+  useEffect(() => {
+    if (!textures) return
+    uniforms.u_image.value = image
+    uniforms.u_imagehover.value = hover
+
+    const imgEl = document.querySelector<HTMLImageElement>('.tile__image')
+    if (!imgEl || !meshRef.current) return
+
+    const { width, height, top, left } = imgEl.getBoundingClientRect()
+    const offsetX = left - window.innerWidth / 2 + width / 2
+    const offsetY = -top + window.innerHeight / 2 - height / 2
+
+    meshRef.current.position.set(offsetX, offsetY, 0)
+    meshRef.current.scale.set(width, height, 1)
+  }, [textures, uniforms])
+  
+  // Mouse movement
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      gsap.to(mouse.current, {
+        duration: 0.5,
+        x: (e.clientX / window.innerWidth) * 2 - 1,
+        y: -(e.clientY / window.innerHeight) * 2 + 1,
+      })
+    }
+    // const handleResize = (e) => {
+
+    // }
+    window.addEventListener('mousemove', handleMouseMove)
+    // window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      // window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  // Animate
+  useFrame(() => {
+    time.current += 0.01
+    if (uniforms.u_time) {
+      uniforms.u_time.value = time.current
+    }
+  })
+
+  if (!textures) return null
+
+  return (
+    <mesh ref={meshRef}>
+      <planeGeometry args={[1, 1, 1, 1]} />
+      <shaderMaterial
+        uniforms={uniforms}
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        defines={{ PR: window.devicePixelRatio.toFixed(1) }}
+        transparent
+      />
+    </mesh>
+  )
+}
