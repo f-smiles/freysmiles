@@ -3,7 +3,7 @@
 import { Renderer, Program, Mesh, Plane, Uniform } from "wtc-gl";
 import { Vec2, Mat2 } from "wtc-math";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
-import { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import "tw-elements";
 import gsap from "gsap";
@@ -12,6 +12,7 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import { Text, OrbitControls } from "@react-three/drei";
 import { useThree, useFrame, extend, Canvas } from "@react-three/fiber";
 import * as THREE from "three";
+import { NormalBlending } from 'three';
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin);
@@ -19,7 +20,7 @@ gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin);
 extend({ OrbitControls, EffectComposer });
 
 const ParticleSystem = () => {
-  const particlesCount = 16000;
+  const particlesCount = 20000;
   const mouseRef = useRef({ x: 0, y: 0 });
   const particlesRef = useRef();
 
@@ -111,7 +112,16 @@ const ParticleSystem = () => {
           itemSize={3}
         />
       </bufferGeometry>
-      <pointsMaterial color={0xff00ff} size={2} sizeAttenuation />
+      <pointsMaterial
+  color={0xff33cc} 
+  size={2.6}
+  sizeAttenuation
+  transparent
+  opacity={0.4}
+  depthWrite={false}
+  blending={NormalBlending}
+/>
+
     </points>
   );
 };
@@ -138,316 +148,7 @@ const Scene = () => {
   );
 };
 
-const TextEffect = ({
-  text = "braces",
-  font = "NeueHaasDisplay35",
-  fontWeight = "100",
-}) => {
-  const containerRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const rendererRef = useRef(null);
-  const planeMeshRef = useRef(null);
-  const mousePositionRef = useRef({ x: 0.5, y: 0.5 });
-  const targetMousePositionRef = useRef({ x: 0.5, y: 0.5 });
-  const prevPositionRef = useRef({ x: 0.5, y: 0.5 });
-  const easeFactorRef = useRef(0.02);
-  const animationRef = useRef(null);
-  const textureRef = useRef(null);
 
-  const vertexShader = `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `;
-
-  const fragmentShader = `
-    varying vec2 vUv;
-    uniform sampler2D u_texture;
-    uniform vec2 u_mouse;
-    uniform vec2 u_prevMouse;
-
-    void main() {
-      vec2 gridUV = floor(vUv * vec2(40.0, 40.0)) / vec2(40.0, 40.0);
-      vec2 centerOfPixel = gridUV + vec2(1.0/40.0, 1.0/40.0);
-
-      vec2 mouseDirection = u_mouse - u_prevMouse;
-
-      vec2 pixelToMouseDirection = centerOfPixel - u_mouse;
-      float pixelDistanceToMouse = length(pixelToMouseDirection);
-      float strength = smoothstep(0.3, 0.0, pixelDistanceToMouse);
-
-      vec2 uvOffset = strength * -mouseDirection * 0.4;
-      vec2 uv = vUv - uvOffset;
-
-      vec4 color = texture2D(u_texture, uv);
-      gl_FragColor = color;
-    }
-  `;
-
-  const createTextTexture = (text, font, size, color, fontWeight = "100") => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    const canvasWidth = window.innerWidth * 2;
-    const canvasHeight = window.innerHeight * 2;
-
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const fontSize = size || Math.floor(canvasWidth * 2);
-
-    ctx.fillStyle = "#1a1a1a";
-    ctx.font = `${fontWeight} ${fontSize}px "${font || "NeueHaasRoman"}"`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-
-    const textMetrics = ctx.measureText(text);
-    const textWidth = textMetrics.width;
-
-    const scaleFactor = Math.min(1, (canvasWidth * 1) / textWidth);
-    const aspectCorrection = canvasWidth / canvasHeight;
-
-    ctx.setTransform(
-      scaleFactor,
-      0,
-      0,
-      scaleFactor / aspectCorrection,
-      canvasWidth / 2,
-      canvasHeight / 2
-    );
-
-    ctx.strokeStyle = "#1a1a1a";
-    ctx.lineWidth = fontSize * 0.005;
-    for (let i = 0; i < 3; i++) {
-      ctx.strokeText(text, 0, 0);
-    }
-    ctx.fillText(text, 0, 0);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    textureRef.current = texture;
-    return texture;
-  };
-
-  const initializeScene = (texture) => {
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    const camera = new THREE.OrthographicCamera(
-      -1,
-      1,
-      1 / aspectRatio,
-      -1 / aspectRatio,
-      0.1,
-      1000
-    );
-    camera.position.z = 1;
-    cameraRef.current = camera;
-
-    const shaderUniforms = {
-      u_mouse: { type: "v2", value: new THREE.Vector2() },
-      u_prevMouse: { type: "v2", value: new THREE.Vector2() },
-      u_texture: { type: "t", value: texture },
-    };
-
-    const planeMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(2, 2),
-      new THREE.ShaderMaterial({
-        uniforms: shaderUniforms,
-        vertexShader,
-        fragmentShader,
-      })
-    );
-    planeMeshRef.current = planeMesh;
-
-    scene.add(planeMesh);
-    planeMesh.scale.set(0.5, 0.5, 1); // scale to 50%
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setClearColor(0xffffff, 1);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    rendererRef.current = renderer;
-
-    containerRef.current.appendChild(renderer.domElement);
-  };
-
-  const reloadTexture = () => {
-    const newTexture = createTextTexture(text, font, null, color, fontWeight);
-    planeMeshRef.current.material.uniforms.u_texture.value = newTexture;
-    if (textureRef.current) {
-      textureRef.current.dispose();
-    }
-    textureRef.current = newTexture;
-  };
-
-  const animateScene = () => {
-    if (
-      !planeMeshRef.current ||
-      !rendererRef.current ||
-      !sceneRef.current ||
-      !cameraRef.current
-    ) {
-      return;
-    }
-
-    const { x: mouseX, y: mouseY } = mousePositionRef.current;
-    const { x: targetX, y: targetY } = targetMousePositionRef.current;
-    const { x: prevX, y: prevY } = prevPositionRef.current;
-    const easeFactor = easeFactorRef.current;
-
-    mousePositionRef.current.x += (targetX - mouseX) * easeFactor;
-    mousePositionRef.current.y += (targetY - mouseY) * easeFactor;
-
-    planeMeshRef.current.material.uniforms.u_mouse.value.set(
-      mousePositionRef.current.x,
-      1.0 - mousePositionRef.current.y
-    );
-
-    planeMeshRef.current.material.uniforms.u_prevMouse.value.set(
-      prevX,
-      1.0 - prevY
-    );
-
-    rendererRef.current.render(sceneRef.current, cameraRef.current);
-    animationRef.current = requestAnimationFrame(animateScene);
-  };
-
-  const handleMouseMove = (event) => {
-    if (!containerRef.current) return;
-
-    easeFactorRef.current = 0.035;
-    const rect = containerRef.current.getBoundingClientRect();
-    prevPositionRef.current = {
-      x: targetMousePositionRef.current.x,
-      y: targetMousePositionRef.current.y,
-    };
-
-    targetMousePositionRef.current.x = (event.clientX - rect.left) / rect.width;
-    targetMousePositionRef.current.y = (event.clientY - rect.top) / rect.height;
-  };
-
-  const handleMouseEnter = (event) => {
-    if (!containerRef.current) return;
-
-    easeFactorRef.current = 0.01;
-    const rect = containerRef.current.getBoundingClientRect();
-
-    mousePositionRef.current.x = targetMousePositionRef.current.x =
-      (event.clientX - rect.left) / rect.width;
-    mousePositionRef.current.y = targetMousePositionRef.current.y =
-      (event.clientY - rect.top) / rect.height;
-  };
-
-  const handleMouseLeave = () => {
-    easeFactorRef.current = 0.01;
-    targetMousePositionRef.current = {
-      x: prevPositionRef.current.x,
-      y: prevPositionRef.current.y,
-    };
-  };
-
-  const onWindowResize = () => {
-    if (!cameraRef.current || !rendererRef.current) return;
-
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    cameraRef.current.left = -1;
-    cameraRef.current.right = 1;
-    cameraRef.current.top = 1 / aspectRatio;
-    cameraRef.current.bottom = -1 / aspectRatio;
-    cameraRef.current.updateProjectionMatrix();
-
-    rendererRef.current.setSize(window.innerWidth, window.innerHeight);
-    reloadTexture();
-  };
-  useEffect(() => {
-    let mounted = true;
-    const currentContainer = containerRef.current;
-
-    const init = async () => {
-      try {
-        const fontSize = Math.floor(window.innerWidth * 2);
-        await document.fonts.load(`${fontWeight} ${fontSize}px "${font}"`);
-        await document.fonts.ready;
-
-        if (!mounted) return;
-
-        const texture = createTextTexture(text, font, null, color, fontWeight);
-        initializeScene(texture);
-        animationRef.current = requestAnimationFrame(animateScene);
-
-        if (currentContainer) {
-          currentContainer.addEventListener("mousemove", handleMouseMove);
-          currentContainer.addEventListener("mouseenter", handleMouseEnter);
-          currentContainer.addEventListener("mouseleave", handleMouseLeave);
-        }
-        window.addEventListener("resize", onWindowResize);
-      } catch (error) {
-        console.error("Font loading error:", error);
-
-        if (!mounted) return;
-
-        const texture = createTextTexture(text, font, null, fontWeight);
-        initializeScene(texture);
-        animationRef.current = requestAnimationFrame(animateScene);
-
-        if (currentContainer) {
-          currentContainer.addEventListener("mousemove", handleMouseMove);
-          currentContainer.addEventListener("mouseenter", handleMouseEnter);
-          currentContainer.addEventListener("mouseleave", handleMouseLeave);
-        }
-        window.addEventListener("resize", onWindowResize);
-      }
-    };
-
-    init();
-
-    return () => {
-      mounted = false;
-      cancelAnimationFrame(animationRef.current);
-
-      if (currentContainer) {
-        currentContainer.removeEventListener("mousemove", handleMouseMove);
-        currentContainer.removeEventListener("mouseenter", handleMouseEnter);
-        currentContainer.removeEventListener("mouseleave", handleMouseLeave);
-      }
-      window.removeEventListener("resize", onWindowResize);
-
-      if (rendererRef.current) {
-        rendererRef.current.dispose();
-        rendererRef.current.domElement?.remove();
-      }
-      if (planeMeshRef.current) {
-        planeMeshRef.current.material?.dispose();
-        planeMeshRef.current.geometry?.dispose();
-      }
-      if (textureRef.current) {
-        textureRef.current.dispose();
-      }
-      if (sceneRef.current) {
-        sceneRef.current.traverse((child) => {
-          child.material?.dispose();
-          child.geometry?.dispose();
-        });
-      }
-    };
-  }, [text, font, fontWeight]);
-
-  return (
-    <div
-      ref={containerRef}
-      style={{ width: "100%", height: "100vh", cursor: "none" }}
-    />
-  );
-};
 const ScrambleText = ({
   text,
   className,
@@ -507,7 +208,90 @@ const ScrambleText = ({
     </span>
   );
 };
+
+
+
+const RaymarchingShader = () => {
+  const meshRef = useRef();
+  const { size, viewport } = useThree();
+  
+
+  const uniforms = React.useMemo(() => ({
+    time: { value: 0 },
+    resolution: { value: new THREE.Vector2(size.width, size.height) },
+    mouse: { value: new THREE.Vector2(0, 0) }
+  }), []);
+
+
+  useEffect(() => {
+    uniforms.resolution.value.set(size.width, size.height);
+  }, [size]);
+
+  useFrame(({ clock }) => {
+    uniforms.time.value = clock.getElapsedTime();
+  });
+
+
+  const vertexShader = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+
+
+  const fragmentShader = `
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform float time;
+uniform vec2 resolution;
+varying vec2 vUv;
+
+void main() {
+  vec2 uv = (2.0 * vUv - 1.0) * vec2(resolution.x / resolution.y, 1.0);
+  float PI = 3.1415926535;
+
+  float wave = sin((uv.x + uv.y - time * 0.25) * PI * 0.4);
+
+
+  float subtleShift = 0.05 * sin((uv.x + uv.y + time * 0.1) * PI * 0.8);
+
+  float combined = wave + subtleShift;
+
+  float band = smoothstep(-0.6, 0.6, combined);
+
+  vec3 darkest = vec3(0.78);
+  vec3 midtone = vec3(0.88);
+  vec3 highlight = vec3(0.98);
+
+  vec3 color = mix(darkest, midtone, band);
+  color = mix(color, highlight, pow(band, 2.0));
+
+  gl_FragColor = vec4(color, 1.0);
+}
+
+  `;
+
+  return (
+<mesh ref={meshRef}>
+  <planeGeometry args={[viewport.width, viewport.height]} />
+  <shaderMaterial
+    uniforms={uniforms}
+    vertexShader={vertexShader}
+    fragmentShader={fragmentShader}
+  />
+</mesh>
+
+  );
+};
+
+
+
 export default function BookNow() {
+  
   const fadeUpMaskedVariants = {
     hidden: { y: "100%", opacity: 0 },
     visible: {
@@ -590,25 +374,27 @@ export default function BookNow() {
 
   return (
     <>
-      {/* <div>
-    <TextEffect 
-        text="BOOK" 
-        font="NeueHaasRoman" 
-   
-        fontWeight="normal" 
-      />
-    </div> */}
-      <section
-        ref={sectionRef}
-        className="relative w-full min-h-screen bg-center bg-cover"
-        // style={{ backgroundImage: "url(/images/portraitglass.jpg)" }}
-      >
 
-        <div className="relative z-10 flex min-h-screen pt-10 pl-10">
+
+<section  className="border border-red-500 relative w-full h-screen">
+  <div style={{ 
+    position: 'fixed', 
+    top: 0, 
+    left: 0, 
+    width: '100vw', 
+    height: '100vh', 
+    zIndex: 0 
+  }}>
+    <Canvas>
+      <RaymarchingShader />
+    </Canvas>
+  </div>
+
+        <div className="relative z-10 pt-10 pl-10">
           
           <div
-            ref={panelRef}
-            className="flex justify-between w-full p-10 border shadow-md backdrop-blur-md bg-white/80 border-white/20 lg:p-20"
+ 
+            className="flex justify-between w-full p-10 border shadow-md backdrop-blur-md bg-white/60 border-white/20 lg:p-20"
           >
             <div className="w-1/2 relative h-screen">
               <Canvas

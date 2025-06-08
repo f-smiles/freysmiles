@@ -605,127 +605,226 @@ const MorphingSphere = () => {
     }
   `;
 
+
   const fragmentShader = `
-    ${helperFunctions}
-    
-    varying vec3 vNormal;
-    varying vec3 vViewDir;
-    varying vec3 vPosition;
-    varying vec3 vOrigPosition;
-    varying vec3 vWorldPosition;
-    varying float vFresnel;
-    varying float vElevation;
-    varying float vDistortion;
-    
-    uniform float uLineCount;
-    uniform float uLineWidth;
-    uniform float uLineSharpness;
-    uniform float uRimEffect;
-    uniform float uRimWidth;
-    uniform float uOffset;
-    uniform bool uUseHighlights;
-    uniform float uHighlightIntensity;
-    uniform float uOcclusion;
-    uniform float uScrollProgress;
-    uniform float uDistortion;
-    uniform float uTime;
-    uniform float uGlowIntensity;
-    uniform vec3 uGlowColor;
-    uniform float uColorShift;
-    uniform vec3 uLineColorA;
-    uniform vec3 uLineColorB;
-    
-    void main() {
-      vec3 dir = normalize(vPosition);
-      float elevation = vElevation;
-      
-      // Add organic variation based on distortion and position
-      elevation += (vDistortion * 0.5 + dot(normalize(vNormal), dir) * 0.1 + 
+  ${helperFunctions}
+
+  varying vec3 vNormal;
+  varying vec3 vViewDir;
+  varying vec3 vPosition;
+  varying vec3 vOrigPosition;
+  varying vec3 vWorldPosition;
+  varying float vFresnel;
+  varying float vElevation;
+  varying float vDistortion;
+  
+  uniform float uLineCount;
+  uniform float uLineWidth;
+  uniform float uLineSharpness;
+  uniform float uRimEffect;
+  uniform float uRimWidth;
+  uniform float uOffset;
+  uniform bool uUseHighlights;
+  uniform float uHighlightIntensity;
+  uniform float uOcclusion;
+  uniform float uScrollProgress;
+  uniform float uDistortion;
+  uniform float uTime;
+  uniform float uGlowIntensity;
+  uniform vec3 uGlowColor;
+  uniform float uColorShift;
+  uniform vec3 uLineColorA;
+  uniform vec3 uLineColorB;
+  
+  void main() {
+    vec3 dir = normalize(vPosition);
+    float elevation = vElevation;
+  
+    elevation += (vDistortion * 0.5 + dot(normalize(vNormal), dir) * 0.1 + 
                   sin(vPosition.x * 5.0 + uTime * 0.2) * 0.05 +
                   cos(vPosition.y * 7.0 + uTime * 0.15) * 0.05 +
                   sin(vPosition.z * 3.0 + uTime * 0.1) * 0.05);
-      
-      float timeOffset = sin(uTime * 0.3) * 0.1;
-      float rimFactor = vFresnel * uRimEffect;
-      
-      // Dynamic gradient that changes with time
-      float gradient = 1.0 + pow(rimFactor, 2.0) * (5.0 + sin(uTime * 0.5) * 2.0);
-      
-      float contourValue;
-      
-      // Enhanced contour patterns with more organic feel
-      if (uScrollProgress < 0.33) {
-        // Starting with more complex organic pattern
-        float noisePattern = fbm(vPosition * 2.0 + vec3(0.0, uTime * 0.1, 0.0), 2);
-        contourValue = (elevation + uOffset + noisePattern * 0.3 + timeOffset) * 
-                      uLineCount * mix(1.0, gradient, uRimWidth);
-      } else if (uScrollProgress < 0.66) {
-        float localProgress = (uScrollProgress - 0.33) * 3.0;
-        float pulseEffect = 0.3 + 0.2 * sin(uTime * 0.7);
-        vec3 localPos = vPosition * (1.0 + sin(localProgress * 6.28) * pulseEffect);
-        contourValue = length(localPos.xz) * uLineCount * (2.0 + sin(uTime * 0.3) * 0.5);
-      } else {
-        float localProgress = (uScrollProgress - 0.66) * 3.0;
-        float noise1 = fbm(vPosition * 5.0 + vec3(uTime * 0.2, 0.0, uScrollProgress), 3);
-        float noise2 = fbm(vPosition * 2.0 - vec3(0.0, uTime * 0.3, uScrollProgress * 3.0), 2);
-        contourValue = (elevation * (noise1 * 0.7 + 0.3) + noise2 * 2.0) * uLineCount;
-      }
-      
-      // Sharper lines with organic variation
-      float lineVal = 1.0 - contour(contourValue, uLineWidth * (0.9 + sin(uTime * 0.4) * 0.1), 
-                                   uLineSharpness * (1.0 + cos(uTime * 0.2) * 0.2));
-      
-      // Rim enhancement with organic variation
-      lineVal = mix(lineVal, step(uLineWidth * (1.5 + sin(uTime * 0.5) * 0.5), 
-                                 abs(fract(contourValue) - 0.5)), 
-                   rimFactor * (0.7 + sin(uTime * 0.6) * 0.1));
-      
-      // Dynamic color mixing with more variation
-      float colorMix = 0.5 + 0.5 * sin(vElevation * 7.0 + uTime * 0.5 + vDistortion * 3.0);
-      colorMix = mix(colorMix, rimFactor, uColorShift * (1.0 + sin(uTime * 0.4) * 0.2));
-      
-      vec3 lineColor = mixColor(uLineColorA, uLineColorB, colorMix);
-      
-      // Base color with organic highlights
-      vec3 color = lineColor * lineVal;
-      
-      // Enhanced lighting effects
-      if (uUseHighlights) {
-        // Dynamic lighting direction
-        vec3 lightDir = normalize(vec3(
-          sin(uScrollProgress * 6.28 + uTime * 0.3), 
-          0.8 + 0.2 * cos(uTime * 0.4),
-          cos(uScrollProgress * 6.28 + uTime * 0.25)
-        ));
-        
-        // Specular highlight with organic variation
-        vec3 halfVector = normalize(lightDir + vViewDir);
-        float specular = pow(max(0.0, dot(vNormal, halfVector)), 
-                     16.0 + sin(uTime * 0.5) * 4.0);
-        
-        color += vec3(specular) * lineVal * uHighlightIntensity * (1.0 + sin(uTime * 0.7) * 0.2);
-        
-        // Organic ambient occlusion
-        float ao = 1.0 - uOcclusion * (1.0 - dot(vNormal, vec3(0.0, 1.0, 0.0))) * 
-                  (0.9 + 0.1 * sin(vPosition.y * 10.0 + uTime * 0.2));
-        color *= ao;
-      }
-      
-      // Organic noise to break up perfection
-      color *= (0.95 + hash(vPosition * 500.0) * 0.1);
-      
-      // Enhanced glow with pulse effect
-      float glowPulse = 0.8 + 0.2 * sin(uTime * 0.8);
-      vec3 glowColor = uGlowColor * pow(rimFactor, 1.5) * uGlowIntensity * glowPulse;
-      color += glowColor;
-      
-      // Alpha with organic variation
-      float alpha = lineVal * (0.7 + 0.1 * sin(uTime * 0.9)) + 
-                   rimFactor * (0.3 + 0.1 * cos(uTime * 0.6));
-      
-      gl_FragColor = vec4(color, alpha);
+  
+    float timeOffset = sin(uTime * 0.3) * 0.1;
+    float rimFactorRaw = vFresnel * uRimEffect;
+    float rimFactor = clamp(rimFactorRaw, 0.0, 1.0); // less clamping now
+  
+    float gradient = 1.0 + pow(rimFactor, 2.0) * (5.0 + sin(uTime * 0.5) * 2.0);
+  
+    float contourValue;
+  
+    if (uScrollProgress < 0.33) {
+      float noisePattern = fbm(vPosition * 2.0 + vec3(0.0, uTime * 0.1, 0.0), 2);
+      contourValue = (elevation + uOffset + noisePattern * 0.3 + timeOffset) *
+                     uLineCount * mix(1.0, gradient, uRimWidth);
+    } else if (uScrollProgress < 0.66) {
+      float localProgress = (uScrollProgress - 0.33) * 3.0;
+      float pulseEffect = 0.3 + 0.2 * sin(uTime * 0.7);
+      vec3 localPos = vPosition * (1.0 + sin(localProgress * 6.28) * pulseEffect);
+      contourValue = length(localPos.xz) * uLineCount * (2.0 + sin(uTime * 0.3) * 0.5);
+    } else {
+      float localProgress = (uScrollProgress - 0.66) * 3.0;
+      float noise1 = fbm(vPosition * 5.0 + vec3(uTime * 0.2, 0.0, uScrollProgress), 3);
+      float noise2 = fbm(vPosition * 2.0 - vec3(0.0, uTime * 0.3, uScrollProgress * 3.0), 2);
+      contourValue = (elevation * (noise1 * 0.7 + 0.3) + noise2 * 2.0) * uLineCount;
     }
+  
+    float lineVal = 1.0 - contour(contourValue, uLineWidth * (1.0 + sin(uTime * 0.4) * 0.15),
+                                  uLineSharpness * (1.0 + cos(uTime * 0.2) * 0.3));
+  
+    lineVal = mix(lineVal, step(uLineWidth * (1.5 + sin(uTime * 0.5) * 0.5),
+                                abs(fract(contourValue) - 0.5)),
+                  rimFactor * 0.8); 
+  
+
+    vec3 lineColor = mix(vec3(0.7, 0.9, 1.4), vec3(0.3, 0.5, 1.0), sin(uTime * 0.3 + elevation * 5.0) * 0.5 + 0.5);
+    vec3 color = lineColor * lineVal;
+  
+    //  Extra bloom from rim edges (like powder halo)
+    float halo = smoothstep(0.2, 0.9, rimFactor);
+    color += vec3(0.65, 0.8, 1.2) * halo * 0.1;
+  
+
+    // float ao = 1.0 - uOcclusion * (1.0 - dot(vNormal, vec3(0.0, 1.0, 0.0))) *
+    //           (0.9 + 0.1 * sin(vPosition.y * 10.0 + uTime * 0.2));
+    // color *= ao;
+  
+    //  Stronger glow
+    float glowPulse = 0.9 + 0.2 * sin(uTime * 0.8);
+    vec3 glowColor = vec3(0.5, 0.75, 1.4) * pow(rimFactor, 1.25) * uGlowIntensity * glowPulse;
+    color += glowColor;
+  
+    //  Slight shimmer noise
+    color *= (0.97 + hash(vPosition * 1000.0) * 0.1);
+  
+    // Clamp and output
+    color = clamp(color, 0.0, 1.0);
+    float alpha = lineVal * 0.7 + rimFactor * 0.35;
+    gl_FragColor = vec4(color, alpha);
+  }
+  
   `;
+  // const fragmentShader = `
+  //   ${helperFunctions}
+    
+  //   varying vec3 vNormal;
+  //   varying vec3 vViewDir;
+  //   varying vec3 vPosition;
+  //   varying vec3 vOrigPosition;
+  //   varying vec3 vWorldPosition;
+  //   varying float vFresnel;
+  //   varying float vElevation;
+  //   varying float vDistortion;
+    
+  //   uniform float uLineCount;
+  //   uniform float uLineWidth;
+  //   uniform float uLineSharpness;
+  //   uniform float uRimEffect;
+  //   uniform float uRimWidth;
+  //   uniform float uOffset;
+  //   uniform bool uUseHighlights;
+  //   uniform float uHighlightIntensity;
+  //   uniform float uOcclusion;
+  //   uniform float uScrollProgress;
+  //   uniform float uDistortion;
+  //   uniform float uTime;
+  //   uniform float uGlowIntensity;
+  //   uniform vec3 uGlowColor;
+  //   uniform float uColorShift;
+  //   uniform vec3 uLineColorA;
+  //   uniform vec3 uLineColorB;
+    
+  //   void main() {
+  //     vec3 dir = normalize(vPosition);
+  //     float elevation = vElevation;
+      
+  //     // Add organic variation based on distortion and position
+  //     elevation += (vDistortion * 0.5 + dot(normalize(vNormal), dir) * 0.1 + 
+  //                 sin(vPosition.x * 5.0 + uTime * 0.2) * 0.05 +
+  //                 cos(vPosition.y * 7.0 + uTime * 0.15) * 0.05 +
+  //                 sin(vPosition.z * 3.0 + uTime * 0.1) * 0.05);
+      
+  //     float timeOffset = sin(uTime * 0.3) * 0.1;
+  //     float rimFactor = vFresnel * uRimEffect;
+      
+  //     // Dynamic gradient that changes with time
+  //     float gradient = 1.0 + pow(rimFactor, 2.0) * (5.0 + sin(uTime * 0.5) * 2.0);
+      
+  //     float contourValue;
+      
+  //     // Enhanced contour patterns with more organic feel
+  //     if (uScrollProgress < 0.33) {
+  //       // Starting with more complex organic pattern
+  //       float noisePattern = fbm(vPosition * 2.0 + vec3(0.0, uTime * 0.1, 0.0), 2);
+  //       contourValue = (elevation + uOffset + noisePattern * 0.3 + timeOffset) * 
+  //                     uLineCount * mix(1.0, gradient, uRimWidth);
+  //     } else if (uScrollProgress < 0.66) {
+  //       float localProgress = (uScrollProgress - 0.33) * 3.0;
+  //       float pulseEffect = 0.3 + 0.2 * sin(uTime * 0.7);
+  //       vec3 localPos = vPosition * (1.0 + sin(localProgress * 6.28) * pulseEffect);
+  //       contourValue = length(localPos.xz) * uLineCount * (2.0 + sin(uTime * 0.3) * 0.5);
+  //     } else {
+  //       float localProgress = (uScrollProgress - 0.66) * 3.0;
+  //       float noise1 = fbm(vPosition * 5.0 + vec3(uTime * 0.2, 0.0, uScrollProgress), 3);
+  //       float noise2 = fbm(vPosition * 2.0 - vec3(0.0, uTime * 0.3, uScrollProgress * 3.0), 2);
+  //       contourValue = (elevation * (noise1 * 0.7 + 0.3) + noise2 * 2.0) * uLineCount;
+  //     }
+      
+  //     // Sharper lines with organic variation
+  //     float lineVal = 1.0 - contour(contourValue, uLineWidth * (0.9 + sin(uTime * 0.4) * 0.1), 
+  //                                  uLineSharpness * (1.0 + cos(uTime * 0.2) * 0.2));
+      
+  //     // Rim enhancement with organic variation
+  //     lineVal = mix(lineVal, step(uLineWidth * (1.5 + sin(uTime * 0.5) * 0.5), 
+  //                                abs(fract(contourValue) - 0.5)), 
+  //                  rimFactor * (0.7 + sin(uTime * 0.6) * 0.1));
+      
+  //     // Dynamic color mixing with more variation
+  //     float colorMix = 0.5 + 0.5 * sin(vElevation * 7.0 + uTime * 0.5 + vDistortion * 3.0);
+  //     colorMix = mix(colorMix, rimFactor, uColorShift * (1.0 + sin(uTime * 0.4) * 0.2));
+      
+  //     vec3 lineColor = mixColor(uLineColorA, uLineColorB, colorMix);
+      
+  //     // Base color with organic highlights
+  //     vec3 color = lineColor * lineVal;
+      
+  //     // Enhanced lighting effects
+  //     if (uUseHighlights) {
+  //       // Dynamic lighting direction
+  //       vec3 lightDir = normalize(vec3(
+  //         sin(uScrollProgress * 6.28 + uTime * 0.3), 
+  //         0.8 + 0.2 * cos(uTime * 0.4),
+  //         cos(uScrollProgress * 6.28 + uTime * 0.25)
+  //       ));
+        
+  //       // Specular highlight with organic variation
+  //       vec3 halfVector = normalize(lightDir + vViewDir);
+  //       float specular = pow(max(0.0, dot(vNormal, halfVector)), 
+  //                    16.0 + sin(uTime * 0.5) * 4.0);
+        
+  //       color += vec3(specular) * lineVal * uHighlightIntensity * (1.0 + sin(uTime * 0.7) * 0.2);
+        
+  //       // Organic ambient occlusion
+  //       float ao = 1.0 - uOcclusion * (1.0 - dot(vNormal, vec3(0.0, 1.0, 0.0))) * 
+  //                 (0.9 + 0.1 * sin(vPosition.y * 10.0 + uTime * 0.2));
+  //       color *= ao;
+  //     }
+      
+  //     // Organic noise to break up perfection
+  //     color *= (0.95 + hash(vPosition * 500.0) * 0.1);
+      
+  //     // Enhanced glow with pulse effect
+  //     float glowPulse = 0.8 + 0.2 * sin(uTime * 0.8);
+  //     vec3 glowColor = uGlowColor * pow(rimFactor, 1.5) * uGlowIntensity * glowPulse;
+  //     color += glowColor;
+      
+  //     // Alpha with organic variation
+  //     float alpha = lineVal * (0.7 + 0.1 * sin(uTime * 0.9)) + 
+  //                  rimFactor * (0.3 + 0.1 * cos(uTime * 0.6));
+      
+  //     gl_FragColor = vec4(color, alpha);
+  //   }
+  // `;
 
   const createGeometry = () => {
     if (leftSphereRef.current) {
@@ -842,145 +941,67 @@ const MorphingSphere = () => {
     materialsRef.current.forEach((mat) => {
       mat.uniforms.uScrollProgress.value = progress;
     });
-    3;
+  
 
     if (scrollProgressRef.current < 0.25) {
       const localProgress = scrollProgressRef.current * 4.0;
-      settingsRef.current.gap = gsap.utils.interpolate(0.3, 0.5, localProgress);
-      settingsRef.current.distortion = gsap.utils.interpolate(
-        0.5,
-        0.3,
-        localProgress
-      );
-      settingsRef.current.twist = gsap.utils.interpolate(
-        1.5,
-        2.0,
-        localProgress
-      );
-      settingsRef.current.colorShift = gsap.utils.interpolate(
-        0.4,
-        0.6,
-        localProgress
-      );
-      settingsRef.current.glowIntensity = gsap.utils.interpolate(
-        0.7,
-        0.5,
-        localProgress
-      );
-
-      groupRef.current.rotation.x = gsap.utils.interpolate(
-        0.1,
-        0.3,
-        localProgress
-      );
-      groupRef.current.rotation.y = gsap.utils.interpolate(
-        Math.PI * 0.2,
-        Math.PI * 0.5,
-        localProgress
-      );
+      settingsRef.current.gap = gsap.utils.interpolate(0.3, 0.4, localProgress);
+      settingsRef.current.distortion = gsap.utils.interpolate(0.5, 0.4, localProgress);
+      settingsRef.current.twist = gsap.utils.interpolate(1.5, 1.8, localProgress);
+      settingsRef.current.lineCount = gsap.utils.interpolate(35, 45, localProgress);
+      settingsRef.current.lineWidth = gsap.utils.interpolate(0.02, 0.025, localProgress);
+      settingsRef.current.colorShift = gsap.utils.interpolate(0.4, 0.5, localProgress);
+      settingsRef.current.glowIntensity = gsap.utils.interpolate(0.7, 0.6, localProgress);
+  
+      groupRef.current.rotation.x = gsap.utils.interpolate(0.1, 0.3, localProgress);
+      groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI * 0.2, Math.PI * 0.5, localProgress);
+  
     } else if (scrollProgressRef.current < 0.5) {
       const localProgress = (scrollProgressRef.current - 0.25) * 4.0;
-      settingsRef.current.gap = gsap.utils.interpolate(0.5, 0.4, localProgress);
-      settingsRef.current.distortion = gsap.utils.interpolate(
-        0.3,
-        0.6,
-        localProgress
-      );
-      settingsRef.current.twist = gsap.utils.interpolate(
-        2.0,
-        1.0,
-        localProgress
-      );
-      settingsRef.current.colorShift = gsap.utils.interpolate(
-        0.6,
-        0.8,
-        localProgress
-      );
-      settingsRef.current.glowIntensity = gsap.utils.interpolate(
-        0.5,
-        0.8,
-        localProgress
-      );
-
-      groupRef.current.rotation.x = gsap.utils.interpolate(
-        0.3,
-        Math.PI * 0.25,
-        localProgress
-      );
-      groupRef.current.rotation.y = gsap.utils.interpolate(
-        Math.PI * 0.5,
-        Math.PI * 0.75,
-        localProgress
-      );
+      settingsRef.current.gap = gsap.utils.interpolate(0.4, 0.35, localProgress);
+      settingsRef.current.distortion = gsap.utils.interpolate(0.4, 0.5, localProgress);
+      settingsRef.current.twist = gsap.utils.interpolate(1.8, 1.6, localProgress);
+      settingsRef.current.lineCount = gsap.utils.interpolate(45, 50, localProgress);
+      settingsRef.current.lineWidth = gsap.utils.interpolate(0.025, 0.03, localProgress);
+      settingsRef.current.colorShift = gsap.utils.interpolate(0.5, 0.7, localProgress);
+      settingsRef.current.glowIntensity = gsap.utils.interpolate(0.6, 0.7, localProgress);
+  
+      groupRef.current.rotation.x = gsap.utils.interpolate(0.3, Math.PI * 0.25, localProgress);
+      groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI * 0.5, Math.PI * 0.75, localProgress);
+  
     } else if (scrollProgressRef.current < 0.75) {
       const localProgress = (scrollProgressRef.current - 0.5) * 4.0;
-      settingsRef.current.gap = gsap.utils.interpolate(0.4, 0.2, localProgress);
-      settingsRef.current.distortion = gsap.utils.interpolate(
-        0.6,
-        0.2,
-        localProgress
-      );
-      settingsRef.current.twist = gsap.utils.interpolate(
-        1.0,
-        0.5,
-        localProgress
-      );
-      settingsRef.current.colorShift = gsap.utils.interpolate(
-        0.8,
-        0.9,
-        localProgress
-      );
-      settingsRef.current.glowIntensity = gsap.utils.interpolate(
-        0.8,
-        0.6,
-        localProgress
-      );
-
+      settingsRef.current.gap = gsap.utils.interpolate(0.35, 0.3, localProgress);
+      settingsRef.current.distortion = gsap.utils.interpolate(0.5, 0.4, localProgress);
+      settingsRef.current.twist = gsap.utils.interpolate(1.6, 1.4, localProgress);
+      settingsRef.current.lineCount = gsap.utils.interpolate(50, 55, localProgress);
+      settingsRef.current.lineWidth = gsap.utils.interpolate(0.03, 0.035, localProgress);
+      settingsRef.current.colorShift = gsap.utils.interpolate(0.7, 0.8, localProgress);
+      settingsRef.current.glowIntensity = gsap.utils.interpolate(0.7, 0.8, localProgress);
+  
       groupRef.current.rotation.x = Math.PI * 0.25;
-      groupRef.current.rotation.y = gsap.utils.interpolate(
-        Math.PI * 0.75,
-        Math.PI,
-        localProgress
-      );
+      groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI * 0.75, Math.PI, localProgress);
+  
     } else {
       const localProgress = (scrollProgressRef.current - 0.75) * 4.0;
-      settingsRef.current.gap = gsap.utils.interpolate(0.2, 0.1, localProgress);
-      settingsRef.current.distortion = gsap.utils.interpolate(
-        0.2,
-        0.0,
-        localProgress
-      );
-      settingsRef.current.twist = gsap.utils.interpolate(
-        0.5,
-        0.0,
-        localProgress
-      );
-      settingsRef.current.colorShift = gsap.utils.interpolate(
-        0.9,
-        0.0,
-        localProgress
-      );
-      settingsRef.current.glowIntensity = gsap.utils.interpolate(
-        0.6,
-        0.2,
-        localProgress
-      );
-
-      groupRef.current.rotation.x = gsap.utils.interpolate(
-        Math.PI * 0.25,
-        0,
-        localProgress
-      );
-      groupRef.current.rotation.y = gsap.utils.interpolate(
-        Math.PI,
-        Math.PI * 2,
-        localProgress
-      );
+      settingsRef.current.gap = gsap.utils.interpolate(0.3, 0.25, localProgress);
+      settingsRef.current.distortion = gsap.utils.interpolate(0.4, 0.35, localProgress);
+      settingsRef.current.twist = gsap.utils.interpolate(1.4, 1.2, localProgress); 
+      settingsRef.current.lineCount = gsap.utils.interpolate(55, 60, localProgress); 
+      settingsRef.current.lineWidth = gsap.utils.interpolate(0.035, 0.04, localProgress); 
+      settingsRef.current.colorShift = gsap.utils.interpolate(0.8, 0.9, localProgress);
+      settingsRef.current.glowIntensity = gsap.utils.interpolate(0.8, 0.9, localProgress);
+  
+      groupRef.current.rotation.x = gsap.utils.interpolate(Math.PI * 0.25, 0.1, localProgress); 
+      groupRef.current.rotation.y = gsap.utils.interpolate(Math.PI, Math.PI * 1.5, localProgress); 
     }
+  
 
     materialsRef.current.forEach((mat) => {
       mat.uniforms.uDistortion.value = settingsRef.current.distortion;
       mat.uniforms.uTwist.value = settingsRef.current.twist;
+      mat.uniforms.uLineCount.value = settingsRef.current.lineCount;
+      mat.uniforms.uLineWidth.value = settingsRef.current.lineWidth;
       mat.uniforms.uColorShift.value = settingsRef.current.colorShift;
       mat.uniforms.uGlowIntensity.value = settingsRef.current.glowIntensity;
       mat.uniforms.uGlowColor.value = new THREE.Color(
@@ -989,7 +1010,7 @@ const MorphingSphere = () => {
         0.8 + settingsRef.current.colorShift * 0.1
       );
     });
-
+  
     if (leftSphereRef.current && rightSphereRef.current) {
       const gap = settingsRef.current.gap / 2;
       leftSphereRef.current.position.x = -gap;
@@ -1320,7 +1341,7 @@ const Invisalign = () => {
         <section className="mt-[20vh] z-10 relative min-h-screen">
           <MorphingSphere />
             <Copy>
-              <div className="relative ml-10 text-[32px] sm:text-[32px] leading-tight text-black font-light font-neuehaasdisplaythin">
+              <div className="relative ml-10 text-[26px] sm:text-[26px] leading-tight text-black font-neuehaasdisplaythin">
                 <span className="font-normal">Our doctors </span>{" "}
                 <span className="font-light">have treated</span>{" "}
                 <span className="font-saolitalic">thousands</span>{" "}
