@@ -1082,9 +1082,7 @@ const MorphingSphere = () => {
 
   return (
     <>
-      <div ref={containerRef} className="fixed inset-0 w-full h-full">
-        <canvas ref={canvasRef} className="webgl" />
-      </div>
+      <canvas ref={canvasRef} className="webgl w-full h-full" />
     </>
   );
 };
@@ -1305,6 +1303,7 @@ const Invisalign = () => {
 
   return (
     <>
+
       {/* <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
 
 
@@ -1337,9 +1336,13 @@ const Invisalign = () => {
         </Canvas>
      
       </div> */}
-      <div className="">
+      <div className="relative">
+      <div className="fixed top-[20vh] transform  z-0 w-[300px] h-[300px]">
+  <MorphingSphere />
+</div>
+
         <section className="mt-[20vh] z-10 relative min-h-screen">
-          <MorphingSphere />
+
             <Copy>
               <div className="relative ml-10 text-[26px] sm:text-[26px] leading-tight text-black font-neuehaasdisplaythin">
                 <span className="font-normal">Our doctors </span>{" "}
@@ -3002,3 +3005,6 @@ export default Invisalign;
 //     />
 //   );
 // };
+
+
+

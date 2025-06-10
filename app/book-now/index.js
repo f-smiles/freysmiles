@@ -376,7 +376,7 @@ export default function BookNow() {
     <>
 
 
-<section  className="border border-red-500 relative w-full h-screen">
+<section  className="border border-red-500 relative w-full h-[100vh]">
   <div style={{ 
     position: 'fixed', 
     top: 0, 
