@@ -19,7 +19,7 @@ import {
   Text,
   shaderMaterial,
   useTexture,
-   Lightformer 
+  Lightformer,
 } from "@react-three/drei";
 import * as THREE from "three";
 import { Observer } from "gsap/Observer";
@@ -44,8 +44,8 @@ import React, {
   useLayoutEffect,
   useMemo,
   Suspense,
-  forwardRef, 
-  useReducer
+  forwardRef,
+  useReducer,
 } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -58,10 +58,15 @@ import Shape03 from "../_components/shapes/shape03";
 import Shape05 from "../_components/shapes/shape05";
 import Shape06 from "../_components/shapes/shape06";
 import VennDiagram from "./vennDiagram";
-import { GUI } from 'dat.gui';
-import { CuboidCollider, BallCollider, Physics, RigidBody } from '@react-three/rapier'
-import { EffectComposer, N8AO } from '@react-three/postprocessing'
-import { easing } from 'maath'
+import { GUI } from "dat.gui";
+import {
+  CuboidCollider,
+  BallCollider,
+  Physics,
+  RigidBody,
+} from "@react-three/rapier";
+import { EffectComposer, N8AO } from "@react-three/postprocessing";
+import { easing } from "maath";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
     ScrollSmoother,
@@ -72,9 +77,90 @@ if (typeof window !== "undefined") {
   );
 }
 
+function ScrollPanels() {
+  return (
+    <div className="bg-[#F7F5EF] parallax-container">
+      <section
+        // style={{
+
+        //   background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+
+        // }}
+        className="bg-[#F7F5EF] h-screen flex flex-col justify-center items-start px-16"
+      >
+        <div>
+          <div
+            style={{
+              fontSize: "2.4rem",
+              lineHeight: 1,
+              fontFamily: "NeueHaasDisplay35",
+              textTransform: "uppercase",
+              color: "var(--color-text)",
+              WebkitFontSmoothing: "antialiased",
+              MozOsxFontSmoothing: "grayscale",
+            }}
+          >
+            Orthodontics isn't just a{" "}
+            <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
+              treatment
+            </span>
+            ,
+          </div>
+
+          <div
+            style={{
+              fontSize: "2.4rem",
+              lineHeight: 1,
+              fontFamily: "NeueHaasDisplay35",
+              textTransform: "uppercase",
+              color: "var(--color-text)",
+              WebkitFontSmoothing: "antialiased",
+              MozOsxFontSmoothing: "grayscale",
+            }}
+          >
+            it's a lasting{" "}
+            <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
+              investment
+            </span>{" "}
+            in your
+          </div>
+
+          <div
+            style={{
+              fontSize: "2.4rem",
+              lineHeight: 1,
+              fontFamily: "NeueHaasDisplay35",
+              textTransform: "uppercase",
+              color: "var(--color-text)",
+              WebkitFontSmoothing: "antialiased",
+              MozOsxFontSmoothing: "grayscale",
+            }}
+          >
+            <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
+              confidence
+            </span>
+            . Choose with care.
+          </div>
+        </div>
+      </section>
+
+      <section class="make">
+        <div class="make-main">
+          <div class="make-text title-h2 up-text text-[4rem] leading-none font-neuehaas45 uppercase">
+            Backed <br />
+            by over 60 years
+          </div>
+          <div class="make-text title-h2 up-text text-[4rem] leading-none font-neuehaas45 uppercase">
+            {" "}
+            of combined orthodontic experience
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
 
 const ImageGrid = () => {
-
   const headerRef = useRef(null);
 
   useEffect(() => {
@@ -91,7 +177,6 @@ const ImageGrid = () => {
       }, 1000);
     }
   }, []);
-
 
   const createItems = () => {
     const elements = document.querySelectorAll(".gtext");
@@ -134,7 +219,7 @@ const ImageGrid = () => {
 
   return (
     <div>
-      <div className="bg-[#E7E8EA] px-10 py-10">
+      <div className="bg-[#F7F5EF] px-10 py-10">
         <div className="content content--full">
           <h1
             ref={textExpertiseRef}
@@ -165,7 +250,7 @@ const VideoAnimation = () => {
       videoHeight = video.offsetHeight;
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     const snap = gsap.utils.snap(2);
 
@@ -175,8 +260,8 @@ const VideoAnimation = () => {
         start: "center center",
         end: "+=1000",
         pin: true,
-        scrub: true
-      }
+        scrub: true,
+      },
     });
 
     videoPinTl.fromTo(
@@ -189,56 +274,53 @@ const VideoAnimation = () => {
         onUpdate() {
           video.style.clipPath = `inset(${Math.round(
             (inset.current.x * videoWidth) / 200
-          )}px ${Math.round((inset.current.y * videoHeight) / 200)}px round ${snap(
-            inset.current.r
-          )}px)`;
-        }
+          )}px ${Math.round(
+            (inset.current.y * videoHeight) / 200
+          )}px round ${snap(inset.current.r)}px)`;
+        },
       }
     );
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      ScrollTrigger.getAll().forEach(instance => instance.kill());
+      window.removeEventListener("resize", handleResize);
+      ScrollTrigger.getAll().forEach((instance) => instance.kill());
     };
   }, []);
 
   return (
     <div>
-      <div style={{ margin: '5vh 0' }}>
-        <div style={{ maxWidth: '98%', margin: '0 auto' }}>
-          <div ref={videoWrapperRef} style={{ height: '100vh' }}>
-            <video 
+      <div style={{ margin: "5vh 0" }}>
+        <div style={{ maxWidth: "98%", margin: "0 auto" }}>
+          <div ref={videoWrapperRef} style={{ height: "100vh" }}>
+            <video
               ref={videoRef}
               style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover'
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
               }}
-              src="/videos/cbctscan.mp4" 
-              muted 
-              autoPlay 
+              src="/videos/cbctscan.mp4"
+              muted
+              autoPlay
               loop
             />
           </div>
         </div>
       </div>
-      
     </div>
   );
 };
 
 const globalClock = new THREE.Clock(true);
 function GooeyMesh({ imageRef }) {
-
-const vertexShader = 
-`varying vec2 v_uv;
+  const vertexShader = `varying vec2 v_uv;
 
 void main() {
     v_uv = uv;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }`;
 
-const fragmentShader = `
+  const fragmentShader = `
 uniform vec2 u_mouse;
 uniform vec2 u_res;
 uniform sampler2D u_image;
@@ -350,176 +432,116 @@ void main() {
   vec4 hover = texture2D(u_imagehover, v_uv);
   vec4 finalImage = mix(image, hover, finalMask);
   gl_FragColor = finalImage;
-}`; 
-; 
-  const meshRef = useRef()
-  const mouse = useRef(new THREE.Vector2())
-  const { size, viewport } = useThree()
+}`;
+  const meshRef = useRef();
+  const mouse = useRef(new THREE.Vector2());
+  const { size, viewport } = useThree();
 
-  const uniforms = useMemo(() => ({
-    u_image: { value: null },
-    u_imagehover: { value: null },
-    u_mouse: { value: mouse.current },
-    u_time: { value: 0 },
-    u_res: { value: new THREE.Vector2(size.width, size.height) },
-  }), [size])
+  const uniforms = useMemo(
+    () => ({
+      u_image: { value: null },
+      u_imagehover: { value: null },
+      u_mouse: { value: mouse.current },
+      u_time: { value: 0 },
+      u_res: { value: new THREE.Vector2(size.width, size.height) },
+    }),
+    [size]
+  );
 
   useEffect(() => {
-    if (!imageRef.current) return
-    const img = imageRef.current
-    const loader = new THREE.TextureLoader()
+    if (!imageRef.current) return;
+    const img = imageRef.current;
+    const loader = new THREE.TextureLoader();
     loader.load(img.src, (tex) => {
-      uniforms.u_image.value = tex
-    })
+      uniforms.u_image.value = tex;
+    });
     loader.load(img.dataset.hover, (tex) => {
-      uniforms.u_imagehover.value = tex
-    })
+      uniforms.u_imagehover.value = tex;
+    });
 
-    img.style.opacity = 0
-  }, [imageRef, uniforms])
+    img.style.opacity = 0;
+  }, [imageRef, uniforms]);
 
   useEffect(() => {
     const onMouseMove = (e) => {
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
-  
+
       gsap.to(mouse.current, {
         x,
         y,
         duration: 0.5,
-      })
-    }
-  
-    window.addEventListener('mousemove', onMouseMove)
-    return () => window.removeEventListener('mousemove', onMouseMove)
-  }, [])
-  
+      });
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    return () => window.removeEventListener("mousemove", onMouseMove);
+  }, []);
 
   useEffect(() => {
-    if (!imageRef.current || !meshRef.current) return
+    if (!imageRef.current || !meshRef.current) return;
 
-    const rect = imageRef.current.getBoundingClientRect()
+    const rect = imageRef.current.getBoundingClientRect();
     const offset = new THREE.Vector2(
       rect.left - window.innerWidth / 2 + rect.width / 2,
       -rect.top + window.innerHeight / 2 - rect.height / 2
-    )
+    );
 
-    meshRef.current.position.set(offset.x, offset.y, 0)
-    meshRef.current.scale.set(rect.width, rect.height, 1)
-  }, [imageRef])
+    meshRef.current.position.set(offset.x, offset.y, 0);
+    meshRef.current.scale.set(rect.width, rect.height, 1);
+  }, [imageRef]);
 
   useFrame(() => {
     uniforms.u_time.value += 0.01;
-  
+
     if (!imageRef.current || !meshRef.current) return;
-  
+
     const rect = imageRef.current.getBoundingClientRect();
-  
+
     const x = rect.left - window.innerWidth / 2 + rect.width / 2;
     const y = -rect.top + window.innerHeight / 2 - rect.height / 2;
-  
+
     meshRef.current.position.set(x, y, 0);
     meshRef.current.scale.set(rect.width, rect.height, 1);
   });
-  
-  
 
   return (
-<mesh ref={meshRef}>
-  <planeGeometry args={[1, 1, 1, 1]} />
-  <shaderMaterial
-    vertexShader={vertexShader}
-    fragmentShader={fragmentShader}
-    uniforms={uniforms}
-    defines={{ PR: window.devicePixelRatio.toFixed(1) }}
-    transparent
-  />
-</mesh>
-
-  )
+    <mesh ref={meshRef}>
+      <planeGeometry args={[1, 1, 1, 1]} />
+      <shaderMaterial
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={uniforms}
+        defines={{ PR: window.devicePixelRatio.toFixed(1) }}
+        transparent
+      />
+    </mesh>
+  );
 }
 
 function HoverScene({ imageRef }) {
-
-
   return (
-<Canvas
-  frameloop="always"
-  gl={{ alpha: true }}
-  camera={{ fov: 75, near: 1, far: 1000, position: [0, 0, 800] }}
-  style={{
-    position: 'fixed',  
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
-    zIndex: 0,          
-    pointerEvents: 'none' 
-  }}
->
-  <ambientLight intensity={2} />
-  <GooeyMesh imageRef={imageRef} />
-</Canvas>
-
-  )
+    <Canvas
+      frameloop="always"
+      gl={{ alpha: true }}
+      camera={{ fov: 75, near: 1, far: 1000, position: [0, 0, 800] }}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 0,
+        pointerEvents: "none",
+      }}
+    >
+      <ambientLight intensity={2} />
+      <GooeyMesh imageRef={imageRef} />
+    </Canvas>
+  );
 }
 
-
-
-
-function AutoTextReveal({ children, delay = 0 }) {
-  const containerRef = useRef();
-  const linesRef = useRef([]);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const tag = el.firstElementChild?.tagName?.toLowerCase();
-    const isParagraph = tag === 'p' || tag === 'div';
-
-    let split;
-    if (isParagraph) {
-      split = new SplitText(el, { type: 'lines' });
-      const wrapped = split.lines.map(line => {
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('oh');
-        wrapper.style.overflow = 'hidden';
-        line.parentNode.insertBefore(wrapper, line);
-        wrapper.appendChild(line);
-        return line;
-      });
-      linesRef.current = wrapped;
-
-      gsap.set(wrapped, { y: '150%' });
-      gsap.to(wrapped, {
-        y: '0%',
-        duration: 1.2,
-        ease: 'expo.out',
-        stagger: 0.1,
-        delay, 
-      });
-    } else {
-      gsap.set(el, { y: 50, opacity: 0 });
-      gsap.to(el, {
-        y: 0,
-        opacity: 1,
-        duration: 1.2,
-        ease: 'expo.out',
-        delay,
-      });
-    }
-
-    return () => {
-      if (split) split.revert();
-    };
-  }, [delay]);
-
-  return <div ref={containerRef}>{children}</div>;
-}
 const ServicesSection = () => {
-
-
   const sectionRef = useRef(null);
   const headingRefs = useRef([]);
 
@@ -579,11 +601,10 @@ const ServicesSection = () => {
     { scope: sectionRef }
   );
 
-
   return (
     <>
       <div className="space">
-      <section ref={sectionRef} className="px-6 py-12 md:px-12">
+        <section ref={sectionRef} className="px-6 py-12 md:px-12">
           <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
             <span className="uppercase text-[#d2ff8c] font-neuehaas45">
               All. <sup className="text-xs align-super">(16)</sup>
@@ -612,46 +633,62 @@ const ServicesSection = () => {
               — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
             </span>
           </div>
-
-
         </section>
       </div>
-      
-
-      
-
     </>
   );
 };
 
-const accents = ['#f4b9b2', '#cfc1ff', '#f0d8c9']
+const accents = ["#f4b9b2", "#cfc1ff", "#f0d8c9"];
 
 const shuffle = (accent = 0) => [
-  { color: '#f4b9b2', roughness: 0.2 },
-  { color: '#f0d8c9', roughness: 0.3 },
-  { color: '#cfc1ff', roughness: 0.15 },
-  { color: '#f4b9b2', roughness: 0.75 },
-  { color: '#cfc1ff', roughness: 0.5 },
-  { color: '#f0d8c9', roughness: 0.75 },
+  { color: "#f4b9b2", roughness: 0.2 },
+  { color: "#f0d8c9", roughness: 0.3 },
+  { color: "#cfc1ff", roughness: 0.15 },
+  { color: "#f4b9b2", roughness: 0.75 },
+  { color: "#cfc1ff", roughness: 0.5 },
+  { color: "#f0d8c9", roughness: 0.75 },
   { color: accents[accent], roughness: 0.2, accent: true },
   { color: accents[accent], roughness: 0.5, accent: true },
-  { color: accents[accent], roughness: 0.1, accent: true }
-]
+  { color: accents[accent], roughness: 0.1, accent: true },
+];
 
 function Scene(props) {
-  const [accent, click] = useReducer((state) => ++state % accents.length, 0)
-  const connectors = useMemo(() => shuffle(accent), [accent])
+  const [accent, click] = useReducer((state) => ++state % accents.length, 0);
+  const connectors = useMemo(() => shuffle(accent), [accent]);
   return (
-    <Canvas onClick={click} shadows dpr={[1, 1.5]} gl={{ antialias: false }} camera={{ position: [0, 0, 15], fov: 17.5, near: 1, far: 20 }} {...props}>
-<color attach="background" args={['#000']} />
+    <Canvas
+      onClick={click}
+      shadows
+      dpr={[1, 1.5]}
+      gl={{ antialias: false }}
+      camera={{ position: [0, 0, 15], fov: 17.5, near: 1, far: 20 }}
+      {...props}
+    >
+      <color attach="background" args={["#000"]} />
       <ambientLight intensity={0.4} />
-      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
+      <spotLight
+        position={[10, 10, 10]}
+        angle={0.15}
+        penumbra={1}
+        intensity={1}
+        castShadow
+      />
       <Physics gravity={[0, 0, 0]}>
         <Pointer />
-        {connectors.map((props, i) => <Connector key={i} {...props} />) }
+        {connectors.map((props, i) => (
+          <Connector key={i} {...props} />
+        ))}
         <Connector position={[10, 10, 5]}>
           <Model>
-            <MeshTransmissionMaterial clearcoat={1} thickness={0.1} anisotropicBlur={0.1} chromaticAberration={0.1} samples={8} resolution={512} />
+            <MeshTransmissionMaterial
+              clearcoat={1}
+              thickness={0.1}
+              anisotropicBlur={0.1}
+              chromaticAberration={0.1}
+              samples={8}
+              resolution={512}
+            />
           </Model>
         </Connector>
       </Physics>
@@ -660,173 +697,229 @@ function Scene(props) {
       </EffectComposer>
       <Environment resolution={256}>
         <group rotation={[-Math.PI / 3, 0, 1]}>
-          <Lightformer form="circle" intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={2} />
-          <Lightformer form="circle" intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={2} />
-          <Lightformer form="circle" intensity={2} rotation-y={Math.PI / 2} position={[-5, -1, -1]} scale={2} />
-          <Lightformer form="circle" intensity={2} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={8} />
+          <Lightformer
+            form="circle"
+            intensity={4}
+            rotation-x={Math.PI / 2}
+            position={[0, 5, -9]}
+            scale={2}
+          />
+          <Lightformer
+            form="circle"
+            intensity={2}
+            rotation-y={Math.PI / 2}
+            position={[-5, 1, -1]}
+            scale={2}
+          />
+          <Lightformer
+            form="circle"
+            intensity={2}
+            rotation-y={Math.PI / 2}
+            position={[-5, -1, -1]}
+            scale={2}
+          />
+          <Lightformer
+            form="circle"
+            intensity={2}
+            rotation-y={-Math.PI / 2}
+            position={[10, 1, 0]}
+            scale={8}
+          />
         </group>
       </Environment>
     </Canvas>
-  )
+  );
 }
 
-function Connector({ position, children, vec = new THREE.Vector3(), scale, r = THREE.MathUtils.randFloatSpread, accent, ...props }) {
-  const api = useRef()
-  const pos = useMemo(() => position || [r(10), r(10), r(10)], [])
+function Connector({
+  position,
+  children,
+  vec = new THREE.Vector3(),
+  scale,
+  r = THREE.MathUtils.randFloatSpread,
+  accent,
+  ...props
+}) {
+  const api = useRef();
+  const pos = useMemo(() => position || [r(10), r(10), r(10)], []);
   useFrame((state, delta) => {
-    delta = Math.min(0.1, delta)
-    api.current?.applyImpulse(vec.copy(api.current.translation()).negate().multiplyScalar(0.2))
-  })
+    delta = Math.min(0.1, delta);
+    api.current?.applyImpulse(
+      vec.copy(api.current.translation()).negate().multiplyScalar(0.2)
+    );
+  });
   return (
-    <RigidBody linearDamping={4} angularDamping={1} friction={0.1} position={pos} ref={api} colliders={false}>
+    <RigidBody
+      linearDamping={4}
+      angularDamping={1}
+      friction={0.1}
+      position={pos}
+      ref={api}
+      colliders={false}
+    >
       <BallCollider args={[0.38, 1.27, 0.38]} />
       <BallCollider args={[1.27, 0.38, 0.38]} />
       <BallCollider args={[0.38, 0.38, 1.27]} />
       {children ? children : <Model {...props} />}
-      {accent && <pointLight intensity={4} distance={2.5} color={props.color} />}
+      {accent && (
+        <pointLight intensity={4} distance={2.5} color={props.color} />
+      )}
     </RigidBody>
-  )
+  );
 }
 
 function Pointer({ vec = new THREE.Vector3() }) {
-  const ref = useRef()
+  const ref = useRef();
   useFrame(({ mouse, viewport }) => {
-    ref.current?.setNextKinematicTranslation(vec.set((mouse.x * viewport.width) / 2, (mouse.y * viewport.height) / 2, 0))
-  })
+    ref.current?.setNextKinematicTranslation(
+      vec.set(
+        (mouse.x * viewport.width) / 2,
+        (mouse.y * viewport.height) / 2,
+        0
+      )
+    );
+  });
   return (
-    <RigidBody position={[0, 0, 0]} type="kinematicPosition" colliders={false} ref={ref}>
+    <RigidBody
+      position={[0, 0, 0]}
+      type="kinematicPosition"
+      colliders={false}
+      ref={ref}
+    >
       <BallCollider args={[1]} />
     </RigidBody>
-  )
+  );
 }
 
-function Model({ children, color = 'white', roughness = 0, ...props }) {
-  const ref = useRef()
+function Model({ children, color = "white", roughness = 0, ...props }) {
+  const ref = useRef();
 
-  const { nodes, materials } = useGLTF('/models/lego_head.glb')
+  const { nodes, materials } = useGLTF("/models/lego_head.glb");
   console.log(Object.keys(nodes));
 
-
   useFrame((state, delta) => {
-    easing.dampC(ref.current.material.color, color, 0.2, delta)
-  })
+    easing.dampC(ref.current.material.color, color, 0.2, delta);
+  });
   return (
-<mesh ref={ref} castShadow receiveShadow scale={1} geometry={nodes.defaultMaterial.geometry}>
-  <meshStandardMaterial metalness={0.2} roughness={roughness} map={materials.base?.map} />
-  {children}
-</mesh>
-
-  
-  )
+    <mesh
+      ref={ref}
+      castShadow
+      receiveShadow
+      scale={1}
+      geometry={nodes.defaultMaterial.geometry}
+    >
+      <meshStandardMaterial
+        metalness={0.2}
+        roughness={roughness}
+        map={materials.base?.map}
+      />
+      {children}
+    </mesh>
+  );
 }
 export default function WhyChooseUs() {
-  const imageRef = useRef()
-  const [isMobile, setIsMobile] = useState(false)
+  const imageRef = useRef();
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkSize = () => setIsMobile(window.innerWidth <= 800)
-    checkSize()
-    window.addEventListener('resize', checkSize)
-    return () => window.removeEventListener('resize', checkSize)
-  }, [])
+    const checkSize = () => setIsMobile(window.innerWidth <= 800);
+    checkSize();
+    window.addEventListener("resize", checkSize);
+    return () => window.removeEventListener("resize", checkSize);
+  }, []);
 
-
-  
   return (
     <>
-<div className="w-full flex justify-center items-center py-12 px-6">
-  <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
-    <Scene />
-  </div>
-</div>
-
-
-<Hero />
-<ImageGrid />
-<ServicesSection />
-<CardStack />
-<StackCards />
-        <div className="relative w-full h-screen">
-
-          <Canvas
-            className="absolute inset-0 z-10"
-            camera={{ position: [0, 6, 12], fov: 45 }}
-            style={{ pointerEvents: "none" }}
-          >
-            <color attach="background" args={["#ffffff"]} />
-            <ambientLight intensity={0.86} color={0xffffff} />
-            <directionalLight
-              position={[0, -10, -10]}
-              intensity={1}
-              color={0xffffff}
-            />
-            <RibbonAroundSphere />
-          </Canvas>
-
-          {/* <div className="absolute inset-0 z-20 flex items-center justify-center"></div> */}
+      <ScrollPanels />
+      <div className="w-full flex justify-center items-center py-12 px-6">
+        <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
+          <Scene />
         </div>
-        <section
-  style={{
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100vh',
-    overflow: 'hidden',
-  }}
->
-  <article style={{ width: '100vmin', flex: '0 0 auto' }}>
-    <figure style={{ margin: 0, padding: 0, width: '100%' }}>
-      <img
-        ref={imageRef}
-        src="/images/testdisplay.png"
-        data-hover="/images/1.jpg"
-        alt=""
+      </div>
+
+      {/* <Hero /> */}
+      <ImageGrid />
+      <ServicesSection />
+      <CardStack />
+      <StackCards />
+      <div className="relative w-full h-screen">
+        <Canvas
+          className="absolute inset-0 z-10"
+          camera={{ position: [0, 6, 12], fov: 45 }}
+          style={{ pointerEvents: "none" }}
+        >
+          <color attach="background" args={["#ffffff"]} />
+          <ambientLight intensity={0.86} color={0xffffff} />
+          <directionalLight
+            position={[0, -10, -10]}
+            intensity={1}
+            color={0xffffff}
+          />
+          <RibbonAroundSphere />
+        </Canvas>
+
+        {/* <div className="absolute inset-0 z-20 flex items-center justify-center"></div> */}
+      </div>
+      <section
         style={{
-          pointerEvents: 'none', 
-          maxWidth: '100%',
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          objectPosition: 'center',
-          display: 'block',
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "100vh",
+          overflow: "hidden",
         }}
-      />
-    </figure>
-  </article>
+      >
+        <article style={{ width: "100vmin", flex: "0 0 auto" }}>
+          <figure style={{ margin: 0, padding: 0, width: "100%" }}>
+            <img
+              ref={imageRef}
+              src="/images/testdisplay.png"
+              data-hover="/images/1.jpg"
+              alt=""
+              style={{
+                pointerEvents: "none",
+                maxWidth: "100%",
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                display: "block",
+              }}
+            />
+          </figure>
+        </article>
 
+        <div
+          id="stage"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 2,
+            pointerEvents: "none",
+          }}
+        >
+          <HoverScene imageRef={imageRef} />
+        </div>
+      </section>
 
-  <div
-    id="stage"
-    style={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      zIndex: 2,
-      pointerEvents: 'none',
-    }}
-  >
-    <HoverScene imageRef={imageRef} />
-  </div>
-</section>
-  
+      <TechSection />
 
-        <TechSection />
-
-        {/* <RepeatText /> */}
-        <MoreThanSmiles />
-        <About />
-        <VennDiagram />
-        <Marquee />
-        {/* <div className="h-[100vh] w-auto">
+      {/* <RepeatText /> */}
+      <MoreThanSmiles />
+      <About />
+      <VennDiagram />
+      <Marquee />
+      {/* <div className="h-[100vh] w-auto">
           <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
             <SimplePlane />
           </Curtains>
         </div> */}
-{/* <Rays /> */}
+      {/* <Rays /> */}
     </>
   );
 }
@@ -993,7 +1086,6 @@ const PixelImage = ({ imgSrc, containerRef }) => {
   );
 };
 
-
 function RibbonAroundSphere() {
   const ribbonRef = useRef();
   const segments = 1000;
@@ -1130,10 +1222,7 @@ function RibbonAroundSphere() {
   );
 }
 
-
-
 function Hero() {
-
   const pathRef = useRef(null);
   const cardsectionRef = useRef(null);
 
@@ -1174,63 +1263,7 @@ function Hero() {
   // }, []);
 
   return (
-    <div className=" relative min-h-screen w-full bg-[#FAFAFA] text-black">
-<div
-  style={{ width: "100vw", height: "100vh"}}
->
-  <section
-    style={{
-      height: "100%",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "flex-start",
-      padding: "0 4rem",      
-      textAlign: "left",   
-    }}
-  >
-<div>
-  <AutoTextReveal>
-    <div
-      style={{
-        fontSize: "3.4rem",
-        lineHeight: 1,
-        fontFamily: "NeueHaasGroteskDisplayPro45Light",
-      }}
-    >
-      Orthodontics isn't just a <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>treatment</span>,
-    </div>
-  </AutoTextReveal>
-
-  <AutoTextReveal>
-    <div
-      style={{
-        fontSize: "3.4rem",
-        lineHeight: 1,
-        fontFamily: "NeueHaasGroteskDisplayPro45Light",
-      }}
-    >
-      it's a lasting <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>investment</span> in your
-    </div>
-  </AutoTextReveal>
-
-  <AutoTextReveal>
-    <div
-      style={{
-        fontSize: "3.4rem",
-        lineHeight: 1,
-        fontFamily: "NeueHaasGroteskDisplayPro45Light",
-      }}
-    >
-      <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>confidence</span>. Choose with care.
-    </div>
-  </AutoTextReveal>
-</div>
-
-
-  </section>
-</div>
-
+    <div className=" relative min-h-screen w-full bg-[#F7F5EF] text-black">
       {/* <section
         ref={cardsectionRef}
         className="h-[100vh] relative z-10 flex items-center justify-center"
@@ -1301,7 +1334,7 @@ const CardStack = () => {
 
   return (
     <>
-      <div className="bg-[#FAFAFA] ">
+      <div className="bg-[#F7F5EF]">
         <div className="l-wrapper ">
           <div className="list1" id="list1" ref={list1Ref}>
             <ul className="card-list list">
@@ -1360,8 +1393,6 @@ const CardStack = () => {
 };
 
 const TechSection = () => {
-
-
   const images = [
     { src: "/images/signonmetalrack.png", alt: "First Image" },
     { src: "/images/signonmetalrack.png", alt: "Second Image" },
@@ -1454,24 +1485,21 @@ const TechSection = () => {
     { scope: sectionRef }
   );
 
-
-  
   return (
     <>
-    
       <div className="bg-[#FAFAFA]">
         <main>
-        <Copy>
-          {" "}
-          <p className="text-[16px] ml-10 mb-10 max-w-[600px] font-neuehaas45 leading-[1.2]">
-            Certain treatment plans rely on precise growth timing to ensure
-            stable, long-lasting results. Our 3D imaging technology lets us
-            track the exact position and trajectory of traditionally problematic
-            teeth—while also helping rule out certain pathologies. It’s changing
-            the face of dentistry and orthodontics. Expect more advanced
-            insights than what you’ll hear from most competitors.
-          </p>
-        </Copy>
+          <Copy>
+            {" "}
+            <p className="text-[16px] ml-10 mb-10 max-w-[600px] font-neuehaas45 leading-[1.2]">
+              Certain treatment plans rely on precise growth timing to ensure
+              stable, long-lasting results. Our 3D imaging technology lets us
+              track the exact position and trajectory of traditionally
+              problematic teeth—while also helping rule out certain pathologies.
+              It’s changing the face of dentistry and orthodontics. Expect more
+              advanced insights than what you’ll hear from most competitors.
+            </p>
+          </Copy>
           {images.map((img, i) => (
             <section
               key={i}
@@ -1517,7 +1545,6 @@ const TechSection = () => {
           ))}
         </main>
         {/* <div className="bg-[#DCDCDC] text-[#d2ff8c]"> */}
-
 
         <section ref={sectionRef} className="px-6 py-12 md:px-12">
           <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
@@ -1579,50 +1606,46 @@ const TechSection = () => {
             </div>
           </div>
           <div className="mt-12 w-full flex gap-4">
-  <div className="w-1/2">
-    <div className="img-container relative overflow-hidden">
-      <img
-        src="/images/iphonemockup.jpg"
-        className="w-full h-full object-contain"
-        style={{
-          transform: "translateY(0%) scale(1.0)",
-          transformOrigin: "center",
-        }}
-      />
-    </div>
-  </div>
+            <div className="w-1/2">
+              <div className="img-container relative overflow-hidden">
+                <img
+                  src="/images/iphonemockup.jpg"
+                  className="w-full h-full object-contain"
+                  style={{
+                    transform: "translateY(0%) scale(1.0)",
+                    transformOrigin: "center",
+                  }}
+                />
+              </div>
+            </div>
 
-  <div className="w-1/2">
-  {/* <ParticleAnimation /> */}
-  </div>
-</div>
-
+            <div className="w-1/2">{/* <ParticleAnimation /> */}</div>
+          </div>
         </section>
 
         <section className="min-h-screen bg-[#f4eef4] flex flex-col items-center justify-center px-6 py-16 text-center">
-  <h2 className="max-w-5xl font-neuehaas45  mb-16">
-    Our office was the first in the region to pioneer fully digital orthodontics—leading the way with 3D iTero scanning and in-house 3D printing for appliance design and fabrication.
-  </h2>
+          <h2 className="max-w-5xl font-neuehaas45  mb-16">
+            Our office was the first in the region to pioneer fully digital
+            orthodontics—leading the way with 3D iTero scanning and in-house 3D
+            printing for appliance design and fabrication.
+          </h2>
 
-  <div className="relative w-[360px] h-[540px] rounded-[32px] overflow-hidden bg-black/10 shadow-md">
-    <video
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="w-full h-full object-cover opacity-50"
-    >
-      <source src="/images/retaintracing.mp4" type="video/mp4" />
-    </video>
+          <div className="relative w-[360px] h-[540px] rounded-[32px] overflow-hidden bg-black/10 shadow-md">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover opacity-50"
+            >
+              <source src="/images/retaintracing.mp4" type="video/mp4" />
+            </video>
 
-    <div className="absolute inset-0 flex items-center justify-center">
-      <div className="w-3.5 h-3.5 border-[3px] border-black rounded-full" />
-    </div>
-  </div>
-</section>
-
-    
-
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-3.5 h-3.5 border-[3px] border-black rounded-full" />
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );
@@ -1805,24 +1828,24 @@ function StackCards() {
   useEffect(() => {
     const stage = svgRef.current;
     const dots = [];
-    
+
     for (let x = 1; x <= 5; x++) {
       for (let y = 1; y <= 5; y++) {
         const eye = makeEye(x * 10, y * 10, stage);
         dots.push(eye);
       }
     }
-    
+
     dotsRef.current = dots;
 
     return () => {
-      gsap.globalTimeline.getChildren().forEach(t => t.kill());
+      gsap.globalTimeline.getChildren().forEach((t) => t.kill());
     };
   }, []);
 
   useEffect(() => {
     // Update all eyes when mouse position changes
-    dotsRef.current.forEach(t => redraw(t));
+    dotsRef.current.forEach((t) => redraw(t));
   }, [mPos]);
 
   const makeEye = (x, y, stage) => {
@@ -1830,20 +1853,20 @@ function StackCards() {
     const g = document.createElementNS(ns, "g");
     const c1 = document.createElementNS(ns, "circle");
     const c2 = document.createElementNS(ns, "circle");
-    
+
     gsap.set([c1, c2], {
       x: x,
       y: y,
       attr: {
         r: (i) => [4.2, 2][i],
-        fill: (i) => ['#FF98FB','#1C7412'][i]
-      }
+        fill: (i) => ["#FF98FB", "#1C7412"][i],
+      },
     });
-    
+
     g.appendChild(c1);
     g.appendChild(c2);
     stage.appendChild(g);
-    
+
     return { g, c1, c2, x, y };
   };
 
@@ -1854,13 +1877,12 @@ function StackCards() {
     gsap.to(c2, { x: c2x, y: c2y });
   };
 
-
   const handlePointerMove = (e) => {
     const svg = svgRef.current;
     const pt = svg.createSVGPoint();
     pt.x = e.clientX;
     pt.y = e.clientY;
-    
+
     // Convert screen coordinates to SVG coordinates
     const svgPt = pt.matrixTransform(svg.getScreenCTM().inverse());
     setMPos({ x: svgPt.x, y: svgPt.y });
@@ -1872,62 +1894,118 @@ function StackCards() {
   return (
     <section ref={containerRef}>
       <section className="bg-[#FAFAFA]">
-      <div
+        <div
           ref={textRef}
           className="mx-auto font-neuehaas45 mb-60 text-[1.6vw] max-w-[900px] leading-[1.3]"
         >
           Our doctors aren’t just orthodontists — they’ve gone the extra miles
-          (and years) to become true specialists. Dr. Gregg Frey holds lifetime board
-          certification, and Dr. Daniel Frey is wrapping his up this year — a level
-          fewer than 25% of orthodontists reach. When it comes to Invisalign- we
-          don’t just do it — we lead it. As the region’s top Diamond Plus
-          providers, we’ve treated thousands of cases and helped shape how clear
-          aligners are used today.
+          (and years) to become true specialists. Dr. Gregg Frey holds lifetime
+          board certification, and Dr. Daniel Frey is wrapping his up this year
+          — a level fewer than 25% of orthodontists reach. When it comes to
+          Invisalign- we don’t just do it — we lead it. As the region’s top
+          Diamond Plus providers, we’ve treated thousands of cases and helped
+          shape how clear aligners are used today.
           <br />
           <br />
           <span>TL;DR: You’re in very good hands.</span>
-          <div   style={{
-    color: "rgb(45, 45, 45)",
-    willChange: "transform",
-    transform: "translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(-28.3716deg) skew(0deg, 0deg)",
-    transformStyle: "preserve-3d"
-  }}>
-    
-    <svg xmlns="http://www.w3.org/2000/svg" width="10%" height="10%" viewBox="0 0 103.785 103.785"><g transform="translate(51.892 -28.764) rotate(45)"><g transform="matrix(-0.875, 0.485, -0.485, -0.875, 114.066, 73.387)" fill="none" stroke="currentColor" stroke-width="1"><ellipse cx="41.954" cy="41.954" rx="41.954" ry="41.954" stroke="none"></ellipse><ellipse cx="41.954" cy="41.954" rx="41.454" ry="41.454" fill="none"></ellipse></g><path d="M22.953,11.638A10.5,10.5,0,0,0,15.677.932C7.59-1.911,2.457,2.355,0,5.61" transform="matrix(-0.875, 0.485, -0.485, -0.875, 57.727, 61.933)" fill="none" stroke="currentColor" stroke-width="1"></path><ellipse cx="1.694" cy="1.694" rx="1.694" ry="1.694" transform="matrix(-0.875, 0.485, -0.485, -0.875, 53.153, 47.112)" fill="currentColor"></ellipse><ellipse cx="1.694" cy="1.694" rx="1.694" ry="1.694" transform="matrix(-0.875, 0.485, -0.485, -0.875, 31.697, 55.017)" fill="currentColor"></ellipse></g></svg></div>
+          <div
+            style={{
+              color: "rgb(45, 45, 45)",
+              willChange: "transform",
+              transform:
+                "translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(-28.3716deg) skew(0deg, 0deg)",
+              transformStyle: "preserve-3d",
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="10%"
+              height="10%"
+              viewBox="0 0 103.785 103.785"
+            >
+              <g transform="translate(51.892 -28.764) rotate(45)">
+                <g
+                  transform="matrix(-0.875, 0.485, -0.485, -0.875, 114.066, 73.387)"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1"
+                >
+                  <ellipse
+                    cx="41.954"
+                    cy="41.954"
+                    rx="41.954"
+                    ry="41.954"
+                    stroke="none"
+                  ></ellipse>
+                  <ellipse
+                    cx="41.954"
+                    cy="41.954"
+                    rx="41.454"
+                    ry="41.454"
+                    fill="none"
+                  ></ellipse>
+                </g>
+                <path
+                  d="M22.953,11.638A10.5,10.5,0,0,0,15.677.932C7.59-1.911,2.457,2.355,0,5.61"
+                  transform="matrix(-0.875, 0.485, -0.485, -0.875, 57.727, 61.933)"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1"
+                ></path>
+                <ellipse
+                  cx="1.694"
+                  cy="1.694"
+                  rx="1.694"
+                  ry="1.694"
+                  transform="matrix(-0.875, 0.485, -0.485, -0.875, 53.153, 47.112)"
+                  fill="currentColor"
+                ></ellipse>
+                <ellipse
+                  cx="1.694"
+                  cy="1.694"
+                  rx="1.694"
+                  ry="1.694"
+                  transform="matrix(-0.875, 0.485, -0.485, -0.875, 31.697, 55.017)"
+                  fill="currentColor"
+                ></ellipse>
+              </g>
+            </svg>
+          </div>
         </div>
-        <div style={{
-      width: '50%',
-      height: '50%',
-      margin: 0,
-      padding: 0,
-      overflow: 'hidden',
-      background: '#1C7412',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      position: 'relative'
-    }}>
-<svg
-  ref={svgRef}
-  viewBox="0 0 100 100"
-  preserveAspectRatio="xMidYMid meet"
-  style={{ width: 800, height: 800 }}
-/>
+        <div
+          style={{
+            width: "50%",
+            height: "50%",
+            margin: 0,
+            padding: 0,
+            overflow: "hidden",
+            background: "#1C7412",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            position: "relative",
+          }}
+        >
+          <svg
+            ref={svgRef}
+            viewBox="0 0 100 100"
+            preserveAspectRatio="xMidYMid meet"
+            style={{ width: 800, height: 800 }}
+          />
 
-      <div
-        ref={hitAreaRef}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-   
-        }}
-        onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerLeave}
-      />
-    </div>
+          <div
+            ref={hitAreaRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+            }}
+            onPointerMove={handlePointerMove}
+            onPointerLeave={handlePointerLeave}
+          />
+        </div>
         <div className="blockcontainer">
           <p>
             <span></span>
@@ -1946,7 +2024,7 @@ function StackCards() {
         <div className="w-48 h-48 translate-x-1/3 -z-10">
           <Shape06 />
         </div>
-     
+
         <div className="font-neuehaas45 min-h-screen text-[16px] leading-[1.2] px-10">
           {/* Block 1 */}
           <div className="w-full border-t border-black">
@@ -2403,10 +2481,7 @@ const KineticText = ({ text = "More Than Smiles" }) => {
   );
 };
 
-
 function MoreThanSmiles() {
-
-
   // const imagesContainerRef = useRef(null);
 
   // const [images, setImages] = useState([
@@ -2493,7 +2568,6 @@ function MoreThanSmiles() {
   //     );
   //   };
   // }, [images]);
- 
 
   const cardRefs = useRef([]);
 
@@ -2526,10 +2600,8 @@ function MoreThanSmiles() {
     };
   }, []);
 
-
   const itemsRef = useRef([]);
   const [scrollY, setScrollY] = useState(0);
-
 
   const textRef = useRef(null);
   const blockRef = useRef(null);
@@ -2573,10 +2645,10 @@ function MoreThanSmiles() {
     "/images/morethansmiles5.png",
     "/images/morethansmiles6.png",
   ];
-  
+
   useEffect(() => {
     if (!sectionRef.current || imageRefs.current.length === 0) return;
-  
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
@@ -2586,33 +2658,31 @@ function MoreThanSmiles() {
         pin: true,
       },
     });
-  
+
     const customOrder = [0, 4, 1, 5, 2, 3];
-  
+
     customOrder.forEach((index, i) => {
       const img = imageRefs.current[index];
       if (!img) return;
-  
+
       tl.fromTo(
         img,
         { yPercent: 100 },
         {
           yPercent: -200,
-  
+
           ease: "power2.out",
           duration: 1,
         },
-        i * 0.2 
+        i * 0.2
       );
     });
-  
+
     return () => {
       tl.scrollTrigger?.kill();
       tl.kill();
     };
   }, []);
-  
-  
 
   const cardsRef = useRef([]);
 
@@ -2627,8 +2697,8 @@ function MoreThanSmiles() {
     });
 
     ScrollTrigger.create({
-      trigger: '.sticky-cards',
-      start: 'top top',
+      trigger: ".sticky-cards",
+      start: "top top",
       end: `+=${window.innerHeight * 8}`,
       pin: true,
       pinSpacing: true,
@@ -2653,9 +2723,15 @@ function MoreThanSmiles() {
             if (remainingProgress > 0) {
               const distanceMultiplier = 1 - index * 0.15;
               xPos =
-                -window.innerWidth * 0.3 * distanceMultiplier * remainingProgress;
+                -window.innerWidth *
+                0.3 *
+                distanceMultiplier *
+                remainingProgress;
               yPos =
-                -window.innerHeight * 0.3 * distanceMultiplier * remainingProgress;
+                -window.innerHeight *
+                0.3 *
+                distanceMultiplier *
+                remainingProgress;
             }
           }
 
@@ -2663,7 +2739,7 @@ function MoreThanSmiles() {
             y: yPos,
             x: xPos,
             duration: 0,
-            ease: 'none',
+            ease: "none",
           });
         });
       },
@@ -2674,84 +2750,94 @@ function MoreThanSmiles() {
     };
   }, []);
 
-  const colors = ['#f6b12d', '#eb4f2f', '#b26e5e', '#c588bb', '#699ef6', '#858B3F'];
+  const colors = [
+    "#f6b12d",
+    "#eb4f2f",
+    "#b26e5e",
+    "#c588bb",
+    "#699ef6",
+    "#858B3F",
+  ];
   const sectionStyle = {
-    position: 'relative',
-    width: '100vw',
-    height: '100vh',
-    overflow: 'hidden',
+    position: "relative",
+    width: "100vw",
+    height: "100vh",
+    overflow: "hidden",
   };
 
   const centerTextStyle = {
-    position: 'relative',
-    height: '100%',
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'space-between', 
-    alignItems: 'center',
-    gap: '2vw',
-    padding: '0 3vw',
+    position: "relative",
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "2vw",
+    padding: "0 3vw",
   };
 
   const stickyStyle = {
     ...sectionStyle,
-    backgroundColor: '#e3e3e3',
+    backgroundColor: "#e3e3e3",
   };
 
   const cardStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    willChange: 'transform',
-    width: '330px',
-    height: '460px',
-    padding: '1.5em',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    borderRadius: '20px',
-    color: '#000',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    willChange: "transform",
+    width: "330px",
+    height: "460px",
+    padding: "1.5em",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    borderRadius: "20px",
+    color: "#000",
   };
   const cardImgStyle = {
-    width: '100%',
-    height: '66%',
-    borderRadius: '16px',
-    overflow: 'hidden',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "100%",
+    height: "66%",
+    borderRadius: "16px",
+    overflow: "hidden",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   };
   const imgStyle = {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    display: 'block',
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
   };
 
   const cardContentStyle = {
-    flex: '0 0 12px',
-    display: 'flex',
-    alignItems: 'center',
+    flex: "0 0 12px",
+    display: "flex",
+    alignItems: "center",
   };
   const rotations = [-12, 10, -5, 5, -5, -2];
 
   return (
     <>
-
-<section className="sticky-cards" style={stickyStyle}>
-<KineticText text="More Than Smiles" />
-  <div style={{ ...centerTextStyle, fontSize: '2rem', paddingBottom: '2em' }}>
-  <div className="flex flex-col items-center justify-center h-full">
-  <p className="font-khteka max-w-[600px] text-[14px] leading-snug uppercase">
-      We’re committed to making world-class orthodontic care accessible to all.
-      In 2011, we launched More Than Smiles to provide treatment and promote
-      community education around dental and orthodontic health.
-    </p>
-    <h1 className="font-khteka max-w-[600px] text-[14px] leading-snug uppercase">
-  Nominate someone who deserves a confident smile through our non-profit More Than Smiles.
-    </h1>
-    <div className="z-10 absolute right-[3vw]">
+      <section className="sticky-cards" style={stickyStyle}>
+        <KineticText text="More Than Smiles" />
+        <div
+          style={{ ...centerTextStyle, fontSize: "2rem", paddingBottom: "2em" }}
+        >
+          <div className="flex flex-col items-center justify-center h-full">
+            <p className="font-khteka max-w-[600px] text-[14px] leading-snug uppercase">
+              We’re committed to making world-class orthodontic care accessible
+              to all. In 2011, we launched More Than Smiles to provide treatment
+              and promote community education around dental and orthodontic
+              health.
+            </p>
+            <h1 className="font-khteka max-w-[600px] text-[14px] leading-snug uppercase">
+              Nominate someone who deserves a confident smile through our
+              non-profit More Than Smiles.
+            </h1>
+            <div className="z-10 absolute right-[3vw]">
               <a
                 href="https://morethansmiles.org/"
                 target="_blank"
@@ -2778,40 +2864,38 @@ function MoreThanSmiles() {
                 </svg>
               </a>
             </div>
-  </div>
-
-  </div>
-  {images.map((src, i) => (
-  <div
-    key={i}
-    ref={(el) => (cardsRef.current[i] = el)}
-    style={{
-      ...cardStyle,
-      backgroundColor: colors[i % colors.length], 
-    }}
-  >
-      <div style={cardImgStyle}>
-        <img src={src} alt={`card-${i}`} style={imgStyle} />
-      </div>
-      <div style={cardContentStyle}>
-  <p className="font-khteka">Card {i + 1}</p>
-  <div
-    style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '26px',
-      height: '26px',
-      marginLeft: '0.5em',
-    }}
-  >
-<img src="/images/fspetallogo.png" />
-  </div>
-</div>
-    </div>
-  ))}
-</section>
-
+          </div>
+        </div>
+        {images.map((src, i) => (
+          <div
+            key={i}
+            ref={(el) => (cardsRef.current[i] = el)}
+            style={{
+              ...cardStyle,
+              backgroundColor: colors[i % colors.length],
+            }}
+          >
+            <div style={cardImgStyle}>
+              <img src={src} alt={`card-${i}`} style={imgStyle} />
+            </div>
+            <div style={cardContentStyle}>
+              <p className="font-khteka">Card {i + 1}</p>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "26px",
+                  height: "26px",
+                  marginLeft: "0.5em",
+                }}
+              >
+                <img src="/images/fspetallogo.png" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
 
       <div
         ref={canvasContainerRef}
@@ -2848,7 +2932,6 @@ function MoreThanSmiles() {
           </div>
         </div>
       </section> */}
-
     </>
   );
 }
@@ -3156,32 +3239,31 @@ function Rays() {
     return () => ctx.revert();
   }, []);
   return (
-        <section className="bg-[#F1F1F1] sun-section">
-          <div className="sun-wrapper">
-            <div className="sun-content leading-none">
-              <div className="frame-line line-1">Benefits</div>
+    <section className="bg-[#F1F1F1] sun-section">
+      <div className="sun-wrapper">
+        <div className="sun-content leading-none">
+          <div className="frame-line line-1">Benefits</div>
 
-              <div className="frame-connector connector-1" />
-              <div className="frame-line line-2">of working</div>
-              <div className="frame-connector connector-2" />
-              <div className="frame-line line-3">with us</div>
-            </div>
+          <div className="frame-connector connector-1" />
+          <div className="frame-line line-2">of working</div>
+          <div className="frame-connector connector-2" />
+          <div className="frame-line line-3">with us</div>
+        </div>
 
-            <div className="sun-mask">
-              <div className="rays">
-                {rays.map((_, i) => (
-                  <div className={`ray ray-${i}`} key={i} />
-                ))}
-              </div>
-            </div>
+        <div className="sun-mask">
+          <div className="rays">
+            {rays.map((_, i) => (
+              <div className={`ray ray-${i}`} key={i} />
+            ))}
           </div>
-        </section>
-  )
+        </div>
+      </div>
+    </section>
+  );
 }
 
-
-
-{/* <div className="mt-10 w-full flex justify-center flex-row gap-6">
+{
+  /* <div className="mt-10 w-full flex justify-center flex-row gap-6">
           <div className="w-[540px] ">
             <svg
               width="100%"
@@ -3268,8 +3350,10 @@ function Rays() {
               </foreignObject>
             </svg>
           </div>
-        </div> */}
-        {/* <div className="flex justify-center items-center" style={{ width:'500px', position: 'relative'}}>
+        </div> */
+}
+{
+  /* <div className="flex justify-center items-center" style={{ width:'500px', position: 'relative'}}>
 
   <svg
   className="masksvgshape"
@@ -3301,9 +3385,11 @@ function Rays() {
       WebkitClipPath: 'url(#svg-path)',
     }}
   />
-</div> */}
+</div> */
+}
 
-        {/* <div className="w-2/3 ml-auto">
+{
+  /* <div className="w-2/3 ml-auto">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-32 min-h-screen">
 
     <div className="rounded-3xl overflow-hidden bg-[#FAFF00] flex flex-col">
@@ -3338,4 +3424,5 @@ function Rays() {
       </div>
     </div>
   </div>
-</div> */}
+</div> */
+}

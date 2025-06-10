@@ -6384,4 +6384,30 @@ main {
   height: 100%;
 }
 
+ 
 
+
+  
+.make {
+  position: relative;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+
+.make-main {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  margin-top: 10px;
+  padding: 0 5%;
+}
+
+.make-text:nth-child(2n) {
+  text-align: right;
+  margin-top: 1.1em;
+}
