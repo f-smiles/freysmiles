@@ -20,6 +20,7 @@ import {
   shaderMaterial,
   useTexture,
   Lightformer,
+  ScrollControls,
 } from "@react-three/drei";
 import * as THREE from "three";
 import { Observer } from "gsap/Observer";
@@ -77,9 +78,443 @@ if (typeof window !== "undefined") {
   );
 }
 
-function ScrollPanels() {
+export default function WhyChooseUs() {
+  const imageRef = useRef();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkSize = () => setIsMobile(window.innerWidth <= 800);
+    checkSize();
+    window.addEventListener("resize", checkSize);
+    return () => window.removeEventListener("resize", checkSize);
+  }, []);
+
   return (
-    <div className="bg-[#F7F5EF] parallax-container">
+    <>
+      <div
+        style={{ position: "relative", height: "400vh", overflow: "hidden" }}
+      >
+        <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+          <StringScene />
+        </div>
+
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <ScrollPanels />
+        </div>
+      </div>
+
+      <div className="w-full flex justify-center items-center py-12 px-6">
+        <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
+          <Scene />
+        </div>
+      </div>
+
+      {/* <Hero /> */}
+      <ImageGrid />
+
+      <CardStack />
+      <StackCards />
+      <TechSection />
+
+      <div className="relative w-full h-screen">
+        <Canvas
+          className="absolute inset-0 z-10"
+          camera={{ position: [0, 6, 12], fov: 45 }}
+          style={{ pointerEvents: "none" }}
+        >
+          <color attach="background" args={["#ffffff"]} />
+          <ambientLight intensity={0.86} color={0xffffff} />
+          <directionalLight
+            position={[0, -10, -10]}
+            intensity={1}
+            color={0xffffff}
+          />
+          <RibbonAroundSphere />
+        </Canvas>
+
+        {/* <div className="absolute inset-0 z-20 flex items-center justify-center"></div> */}
+      </div>
+      <section
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          height: "100vh",
+          overflow: "hidden",
+        }}
+      >
+        <article style={{ width: "100vmin", flex: "0 0 auto" }}>
+          <figure style={{ margin: 0, padding: 0, width: "100%" }}>
+            <img
+              ref={imageRef}
+              src="/images/testdisplay.png"
+              data-hover="/images/1.jpg"
+              alt=""
+              style={{
+                pointerEvents: "none",
+                maxWidth: "100%",
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                display: "block",
+              }}
+            />
+          </figure>
+        </article>
+
+        <div
+          id="stage"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 2,
+            pointerEvents: "none",
+          }}
+        >
+          <HoverScene imageRef={imageRef} />
+        </div>
+      </section>
+
+      {/* <RepeatText /> */}
+      <MoreThanSmiles />
+      <About />
+      <VennDiagram />
+      <Marquee />
+      {/* <div className="h-[100vh] w-auto">
+          <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
+            <SimplePlane />
+          </Curtains>
+        </div> */}
+      {/* <Rays /> */}
+    </>
+  );
+}
+
+function WigglyString({
+  segments = 600,
+  baseAmplitude = 0.05,
+  frequency = 2,
+  cycles = 5.5,
+  margin = 0.12,
+}) {
+  const { viewport } = useThree();
+  const { width, height } = viewport;
+
+  const easedSin = (v, pow = 2.4, blend = 0.3) => {
+    const raw = Math.sin(v);
+    const eased = Math.sign(raw) * Math.pow(Math.abs(raw), pow);
+    return THREE.MathUtils.lerp(raw, eased, blend);
+  };
+
+  const mouse = useRef({ x: 0, y: 0 });
+  const lastMouse = useRef({ x: 0, y: 0, time: performance.now() });
+  const velocity = useRef(0);
+  const amplitudes = useRef(new Array(segments + 1).fill(baseAmplitude));
+
+  const geometry = useMemo(() => {
+    const points = new Float32Array((segments + 1) * 3);
+    const totalHeight = height * 4;
+    const snakeAmplitude = width * (0.5 - margin);
+
+    for (let i = 0; i <= segments; i++) {
+      const t = i / segments;
+      const y = t * totalHeight - totalHeight / 2;
+      const x = easedSin(t * Math.PI * 2 * cycles) * snakeAmplitude;
+
+      points[i * 3] = x;
+      points[i * 3 + 1] = y;
+      points[i * 3 + 2] = 0;
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(points, 3));
+    return geo;
+  }, [segments, width, height, cycles, margin]);
+
+  useEffect(() => {
+    const handleMove = (e) => {
+      const now = performance.now();
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      mouse.current.x = x;
+      mouse.current.y = y;
+
+      const dx = x - lastMouse.current.x;
+      const dy = y - lastMouse.current.y;
+      const dt = now - lastMouse.current.time;
+
+      velocity.current = Math.sqrt(dx * dx + dy * dy) / Math.max(dt, 1);
+      lastMouse.current = { x, y, time: now };
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, []);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    const scroll = window.scrollY / window.innerHeight;
+    const revealProgress = THREE.MathUtils.clamp(scroll, 0.001, 1);
+    const pos = geometry.attributes.position.array;
+    const pulse = Math.min(velocity.current * 0.5, 0.2);
+    const totalHeight = height * 4;
+    const snakeAmplitude = width * (0.5 - margin);
+    const maxY = revealProgress * totalHeight - totalHeight / 2;
+
+    for (let i = 0; i <= segments; i++) {
+      const idx = i * 3;
+      const tNorm = i / segments;
+      const yTarget = tNorm * totalHeight - totalHeight / 2;
+
+      if (yTarget > maxY) continue;
+
+      const dist = Math.abs(mouse.current.y - (yTarget * 2) / height);
+      const falloff = Math.max(0, 1 - dist * 3);
+      const targetAmp = baseAmplitude + falloff * (0.1 + pulse);
+      amplitudes.current[i] = THREE.MathUtils.lerp(
+        amplitudes.current[i],
+        targetAmp,
+        0.08
+      );
+      const amp = amplitudes.current[i];
+
+      const angle = tNorm * Math.PI * 2 * frequency + t * frequency;
+      const baseX = easedSin(tNorm * Math.PI * 4 * cycles) * snakeAmplitude;
+      const offsetX = Math.sin(angle) * amp;
+      const offsetZ = Math.cos(angle) * amp;
+
+      pos[idx] = baseX + offsetX;
+      pos[idx + 1] = yTarget;
+      pos[idx + 2] = offsetZ;
+    }
+
+    geometry.attributes.position.needsUpdate = true;
+  });
+
+  return (
+    <line geometry={geometry}>
+      <lineBasicMaterial attach="material" color="black" />
+    </line>
+  );
+}
+function StringScene() {
+  return (
+    <Canvas camera={{ position: [0, 0, 1.5] }}>
+      <ambientLight intensity={0.5} />
+      <WigglyString />
+    </Canvas>
+  );
+}
+
+const TechSection = () => {
+  useEffect(() => {
+    const triggers = [];
+
+    gsap.utils.toArray(".img-container").forEach((container) => {
+      const img = container.querySelector("img");
+
+      const trigger = gsap.fromTo(
+        img,
+        { yPercent: -20, ease: "none" },
+        {
+          yPercent: 20,
+          ease: "none",
+          scrollTrigger: {
+            trigger: container,
+            scrub: true,
+          },
+        }
+      ).scrollTrigger;
+
+      triggers.push(trigger);
+    });
+
+    return () => {
+      triggers.forEach((trigger) => trigger.kill());
+    };
+  }, []);
+
+  const sectionRef = useRef(null);
+  const headingRefs = useRef([]);
+
+  useGSAP(
+    () => {
+      gsap.set(headingRefs.current, { opacity: 0 });
+    },
+    { scope: sectionRef }
+  );
+
+  useGSAP(
+    () => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              headingRefs.current.forEach((el) => {
+                if (!el) return;
+
+                gsap.set(el, { opacity: 0 });
+
+                const childSplit = new SplitText(el, {
+                  type: "lines",
+                  linesClass: "split-child",
+                });
+
+                new SplitText(el, {
+                  type: "lines",
+                  linesClass: "split-parent",
+                });
+
+                gsap.set(childSplit.lines, {
+                  yPercent: 100,
+                  opacity: 1,
+                });
+
+                gsap.to(childSplit.lines, {
+                  yPercent: 0,
+                  duration: 1.5,
+                  ease: "power4.out",
+                  stagger: 0.1,
+                  onStart: () => {
+                    gsap.set(el, { opacity: 1 });
+                  },
+                });
+              });
+              observer.disconnect();
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+
+      if (sectionRef.current) observer.observe(sectionRef.current);
+      return () => observer.disconnect();
+    },
+    { scope: sectionRef }
+  );
+
+  return (
+    <>
+      <div>
+        {/* <div className="bg-[#DCDCDC] text-[#d2ff8c]"> */}
+
+        <section ref={sectionRef} className="px-6 py-12 md:px-12">
+          <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
+            <span className="uppercase text-[#d2ff8c] font-neuehaas45">
+              All. <sup className="text-xs align-super">(16)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[0] = el)}>
+              — Invisalign <sup className="text-xs align-super">(2k)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[1] = el)}>
+              — Accelerated Treatment.{" "}
+              <sup className="text-xs align-super">(12)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[2] = el)}>
+              — Low-Dose Digital 3D Radiographs{" "}
+              <sup className="text-xs align-super">(15)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[3] = el)}>
+              Damon Braces. <sup className="text-xs align-super">(2k)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[4] = el)}>
+              — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[5] = el)}>
+              — 3D Printing. <sup className="text-xs align-super">(8)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[6] = el)}>
+              — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
+            </span>
+          </div>
+          <VideoAnimation />
+          <div className="mt-12 w-full flex gap-4">
+            <div className="w-1/2">
+              <div className="relative overflow-hidden img-container">
+                <img
+                  src="/images/signonmetalrack.png"
+                  alt="metalrack"
+                  className="object-contain w-full h-full"
+                  style={{
+                    transform: "translateY(0%) scale(1.0)",
+                    transformOrigin: "center",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="w-1/2">
+              <div className="relative overflow-hidden img-container">
+                <img
+                  src="/images/testdisplay.png"
+                  alt="placeholder"
+                  className="object-contain w-full h-full"
+                  style={{
+                    transform: "translateY(0%) scale(1.0)",
+                    transformOrigin: "center",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="mt-12 w-full flex gap-4">
+            <div className="w-1/2">
+              <div className="img-container relative overflow-hidden">
+                <img
+                  src="/images/iphonemockup.jpg"
+                  className="w-full h-full object-contain"
+                  style={{
+                    transform: "translateY(0%) scale(1.0)",
+                    transformOrigin: "center",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="min-h-screen bg-[#f4eef4] flex flex-col items-center justify-center px-6 py-16 text-center">
+          <h2 className="max-w-5xl font-neuehaas45  mb-16">
+            Our office was the first in the region to pioneer fully digital
+            orthodontics—leading the way with 3D iTero scanning and in-house 3D
+            printing for appliance design and fabrication.
+          </h2>
+
+          <div className="relative w-[360px] h-[540px] rounded-[32px] overflow-hidden bg-black/10 shadow-md">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover opacity-50"
+            >
+              <source src="/images/retaintracing.mp4" type="video/mp4" />
+            </video>
+
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-3.5 h-3.5 border-[3px] border-black rounded-full" />
+            </div>
+          </div>
+        </section>
+      </div>
+    </>
+  );
+};
+function ScrollPanels() {
+  const images = [
+    { src: "/images/signonmetalrack.png", alt: "First Image" },
+    { src: "/images/signonmetalrack.png", alt: "Second Image" },
+    { src: "/images/signonmetalrack.png", alt: "Third Image" },
+  ];
+  return (
+    <div className="">
       <section
         // style={{
 
@@ -87,62 +522,7 @@ function ScrollPanels() {
 
         // }}
         className="bg-[#F7F5EF] h-screen flex flex-col justify-center items-start px-16"
-      >
-        <div>
-          <div
-            style={{
-              fontSize: "2.4rem",
-              lineHeight: 1,
-              fontFamily: "NeueHaasDisplay35",
-              textTransform: "uppercase",
-              color: "var(--color-text)",
-              WebkitFontSmoothing: "antialiased",
-              MozOsxFontSmoothing: "grayscale",
-            }}
-          >
-            Orthodontics isn't just a{" "}
-            <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
-              treatment
-            </span>
-            ,
-          </div>
-
-          <div
-            style={{
-              fontSize: "2.4rem",
-              lineHeight: 1,
-              fontFamily: "NeueHaasDisplay35",
-              textTransform: "uppercase",
-              color: "var(--color-text)",
-              WebkitFontSmoothing: "antialiased",
-              MozOsxFontSmoothing: "grayscale",
-            }}
-          >
-            it's a lasting{" "}
-            <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
-              investment
-            </span>{" "}
-            in your
-          </div>
-
-          <div
-            style={{
-              fontSize: "2.4rem",
-              lineHeight: 1,
-              fontFamily: "NeueHaasDisplay35",
-              textTransform: "uppercase",
-              color: "var(--color-text)",
-              WebkitFontSmoothing: "antialiased",
-              MozOsxFontSmoothing: "grayscale",
-            }}
-          >
-            <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
-              confidence
-            </span>
-            . Choose with care.
-          </div>
-        </div>
-      </section>
+      ></section>
 
       <section class="make">
         <div class="make-main">
@@ -156,6 +536,51 @@ function ScrollPanels() {
           </div>
         </div>
       </section>
+      <main>
+        {images.map((img, i) => (
+          <section
+            key={i}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "100vh",
+            }}
+          >
+            <div
+              className="img"
+              style={{
+                width: "min(80vw, 900px)",
+                padding: "10vw",
+              }}
+            >
+              <div
+                className="img-container"
+                style={{
+                  width: "100%",
+                  paddingTop: "80%",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  style={{
+                    width: "auto",
+                    height: "100%",
+                    position: "absolute",
+                    top: 0,
+                    left: "50%",
+                    transform: "translateX(-50%) scale(1.4)",
+                    transformOrigin: "center",
+                  }}
+                />
+              </div>
+            </div>
+          </section>
+        ))}
+      </main>
     </div>
   );
 }
@@ -541,104 +966,6 @@ function HoverScene({ imageRef }) {
   );
 }
 
-const ServicesSection = () => {
-  const sectionRef = useRef(null);
-  const headingRefs = useRef([]);
-
-  useGSAP(
-    () => {
-      gsap.set(headingRefs.current, { opacity: 0 });
-    },
-    { scope: sectionRef }
-  );
-
-  useGSAP(
-    () => {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              headingRefs.current.forEach((el) => {
-                if (!el) return;
-
-                gsap.set(el, { opacity: 0 });
-
-                const childSplit = new SplitText(el, {
-                  type: "lines",
-                  linesClass: "split-child",
-                });
-
-                new SplitText(el, {
-                  type: "lines",
-                  linesClass: "split-parent",
-                });
-
-                gsap.set(childSplit.lines, {
-                  yPercent: 100,
-                  opacity: 1,
-                });
-
-                gsap.to(childSplit.lines, {
-                  yPercent: 0,
-                  duration: 1.5,
-                  ease: "power4.out",
-                  stagger: 0.1,
-                  onStart: () => {
-                    gsap.set(el, { opacity: 1 });
-                  },
-                });
-              });
-              observer.disconnect();
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
-
-      if (sectionRef.current) observer.observe(sectionRef.current);
-      return () => observer.disconnect();
-    },
-    { scope: sectionRef }
-  );
-
-  return (
-    <>
-      <div className="space">
-        <section ref={sectionRef} className="px-6 py-12 md:px-12">
-          <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
-            <span className="uppercase text-[#d2ff8c] font-neuehaas45">
-              All. <sup className="text-xs align-super">(16)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[0] = el)}>
-              — Invisalign <sup className="text-xs align-super">(2k)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[1] = el)}>
-              — Accelerated Treatment.{" "}
-              <sup className="text-xs align-super">(12)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[2] = el)}>
-              — Low-Dose Digital 3D Radiographs{" "}
-              <sup className="text-xs align-super">(15)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[3] = el)}>
-              Damon Braces. <sup className="text-xs align-super">(2k)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[4] = el)}>
-              — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[5] = el)}>
-              — 3D Printing. <sup className="text-xs align-super">(8)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[6] = el)}>
-              — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
-            </span>
-          </div>
-        </section>
-      </div>
-    </>
-  );
-};
-
 const accents = ["#f4b9b2", "#cfc1ff", "#f0d8c9"];
 
 const shuffle = (accent = 0) => [
@@ -815,112 +1142,6 @@ function Model({ children, color = "white", roughness = 0, ...props }) {
       />
       {children}
     </mesh>
-  );
-}
-export default function WhyChooseUs() {
-  const imageRef = useRef();
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkSize = () => setIsMobile(window.innerWidth <= 800);
-    checkSize();
-    window.addEventListener("resize", checkSize);
-    return () => window.removeEventListener("resize", checkSize);
-  }, []);
-
-  return (
-    <>
-      <ScrollPanels />
-      <div className="w-full flex justify-center items-center py-12 px-6">
-        <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
-          <Scene />
-        </div>
-      </div>
-
-      {/* <Hero /> */}
-      <ImageGrid />
-      <ServicesSection />
-      <CardStack />
-      <StackCards />
-      <div className="relative w-full h-screen">
-        <Canvas
-          className="absolute inset-0 z-10"
-          camera={{ position: [0, 6, 12], fov: 45 }}
-          style={{ pointerEvents: "none" }}
-        >
-          <color attach="background" args={["#ffffff"]} />
-          <ambientLight intensity={0.86} color={0xffffff} />
-          <directionalLight
-            position={[0, -10, -10]}
-            intensity={1}
-            color={0xffffff}
-          />
-          <RibbonAroundSphere />
-        </Canvas>
-
-        {/* <div className="absolute inset-0 z-20 flex items-center justify-center"></div> */}
-      </div>
-      <section
-        style={{
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "100%",
-          height: "100vh",
-          overflow: "hidden",
-        }}
-      >
-        <article style={{ width: "100vmin", flex: "0 0 auto" }}>
-          <figure style={{ margin: 0, padding: 0, width: "100%" }}>
-            <img
-              ref={imageRef}
-              src="/images/testdisplay.png"
-              data-hover="/images/1.jpg"
-              alt=""
-              style={{
-                pointerEvents: "none",
-                maxWidth: "100%",
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                objectPosition: "center",
-                display: "block",
-              }}
-            />
-          </figure>
-        </article>
-
-        <div
-          id="stage"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 2,
-            pointerEvents: "none",
-          }}
-        >
-          <HoverScene imageRef={imageRef} />
-        </div>
-      </section>
-
-      <TechSection />
-
-      {/* <RepeatText /> */}
-      <MoreThanSmiles />
-      <About />
-      <VennDiagram />
-      <Marquee />
-      {/* <div className="h-[100vh] w-auto">
-          <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
-            <SimplePlane />
-          </Curtains>
-        </div> */}
-      {/* <Rays /> */}
-    </>
   );
 }
 
@@ -1392,265 +1613,6 @@ const CardStack = () => {
   );
 };
 
-const TechSection = () => {
-  const images = [
-    { src: "/images/signonmetalrack.png", alt: "First Image" },
-    { src: "/images/signonmetalrack.png", alt: "Second Image" },
-    { src: "/images/signonmetalrack.png", alt: "Third Image" },
-  ];
-
-  useEffect(() => {
-    const triggers = [];
-
-    gsap.utils.toArray(".img-container").forEach((container) => {
-      const img = container.querySelector("img");
-
-      const trigger = gsap.fromTo(
-        img,
-        { yPercent: -20, ease: "none" },
-        {
-          yPercent: 20,
-          ease: "none",
-          scrollTrigger: {
-            trigger: container,
-            scrub: true,
-          },
-        }
-      ).scrollTrigger;
-
-      triggers.push(trigger);
-    });
-
-    return () => {
-      triggers.forEach((trigger) => trigger.kill());
-    };
-  }, []);
-
-  const sectionRef = useRef(null);
-  const headingRefs = useRef([]);
-
-  useGSAP(
-    () => {
-      gsap.set(headingRefs.current, { opacity: 0 });
-    },
-    { scope: sectionRef }
-  );
-
-  useGSAP(
-    () => {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              headingRefs.current.forEach((el) => {
-                if (!el) return;
-
-                gsap.set(el, { opacity: 0 });
-
-                const childSplit = new SplitText(el, {
-                  type: "lines",
-                  linesClass: "split-child",
-                });
-
-                new SplitText(el, {
-                  type: "lines",
-                  linesClass: "split-parent",
-                });
-
-                gsap.set(childSplit.lines, {
-                  yPercent: 100,
-                  opacity: 1,
-                });
-
-                gsap.to(childSplit.lines, {
-                  yPercent: 0,
-                  duration: 1.5,
-                  ease: "power4.out",
-                  stagger: 0.1,
-                  onStart: () => {
-                    gsap.set(el, { opacity: 1 });
-                  },
-                });
-              });
-              observer.disconnect();
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
-
-      if (sectionRef.current) observer.observe(sectionRef.current);
-      return () => observer.disconnect();
-    },
-    { scope: sectionRef }
-  );
-
-  return (
-    <>
-      <div className="bg-[#FAFAFA]">
-        <main>
-          <Copy>
-            {" "}
-            <p className="text-[16px] ml-10 mb-10 max-w-[600px] font-neuehaas45 leading-[1.2]">
-              Certain treatment plans rely on precise growth timing to ensure
-              stable, long-lasting results. Our 3D imaging technology lets us
-              track the exact position and trajectory of traditionally
-              problematic teeth—while also helping rule out certain pathologies.
-              It’s changing the face of dentistry and orthodontics. Expect more
-              advanced insights than what you’ll hear from most competitors.
-            </p>
-          </Copy>
-          {images.map((img, i) => (
-            <section
-              key={i}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: "100vh",
-              }}
-            >
-              <div
-                className="img"
-                style={{
-                  width: "min(80vw, 900px)",
-                  padding: "10vw",
-                }}
-              >
-                <div
-                  className="img-container"
-                  style={{
-                    width: "100%",
-                    paddingTop: "80%",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  <img
-                    src={img.src}
-                    alt={img.alt}
-                    style={{
-                      width: "auto",
-                      height: "100%",
-                      position: "absolute",
-                      top: 0,
-                      left: "50%",
-                      transform: "translateX(-50%) scale(1.4)",
-                      transformOrigin: "center",
-                    }}
-                  />
-                </div>
-              </div>
-            </section>
-          ))}
-        </main>
-        {/* <div className="bg-[#DCDCDC] text-[#d2ff8c]"> */}
-
-        <section ref={sectionRef} className="px-6 py-12 md:px-12">
-          <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
-            <span className="uppercase text-[#d2ff8c] font-neuehaas45">
-              All. <sup className="text-xs align-super">(16)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[0] = el)}>
-              — Invisalign <sup className="text-xs align-super">(2k)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[1] = el)}>
-              — Accelerated Treatment.{" "}
-              <sup className="text-xs align-super">(12)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[2] = el)}>
-              — Low-Dose Digital 3D Radiographs{" "}
-              <sup className="text-xs align-super">(15)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[3] = el)}>
-              Damon Braces. <sup className="text-xs align-super">(2k)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[4] = el)}>
-              — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[5] = el)}>
-              — 3D Printing. <sup className="text-xs align-super">(8)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[6] = el)}>
-              — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
-            </span>
-          </div>
-          <VideoAnimation />
-          <div className="mt-12 w-full flex gap-4">
-            <div className="w-1/2">
-              <div className="relative overflow-hidden img-container">
-                <img
-                  src="/images/signonmetalrack.png"
-                  alt="metalrack"
-                  className="object-contain w-full h-full"
-                  style={{
-                    transform: "translateY(0%) scale(1.0)",
-                    transformOrigin: "center",
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="w-1/2">
-              <div className="relative overflow-hidden img-container">
-                <img
-                  src="/images/testdisplay.png"
-                  alt="placeholder"
-                  className="object-contain w-full h-full"
-                  style={{
-                    transform: "translateY(0%) scale(1.0)",
-                    transformOrigin: "center",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="mt-12 w-full flex gap-4">
-            <div className="w-1/2">
-              <div className="img-container relative overflow-hidden">
-                <img
-                  src="/images/iphonemockup.jpg"
-                  className="w-full h-full object-contain"
-                  style={{
-                    transform: "translateY(0%) scale(1.0)",
-                    transformOrigin: "center",
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="w-1/2">{/* <ParticleAnimation /> */}</div>
-          </div>
-        </section>
-
-        <section className="min-h-screen bg-[#f4eef4] flex flex-col items-center justify-center px-6 py-16 text-center">
-          <h2 className="max-w-5xl font-neuehaas45  mb-16">
-            Our office was the first in the region to pioneer fully digital
-            orthodontics—leading the way with 3D iTero scanning and in-house 3D
-            printing for appliance design and fabrication.
-          </h2>
-
-          <div className="relative w-[360px] h-[540px] rounded-[32px] overflow-hidden bg-black/10 shadow-md">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover opacity-50"
-            >
-              <source src="/images/retaintracing.mp4" type="video/mp4" />
-            </video>
-
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-3.5 h-3.5 border-[3px] border-black rounded-full" />
-            </div>
-          </div>
-        </section>
-      </div>
-    </>
-  );
-};
-
 const RepeatText = ({ text = "MTS", totalLayers = 7 }) => {
   const containerRef = useRef();
 
@@ -1893,10 +1855,63 @@ function StackCards() {
   };
   return (
     <section ref={containerRef}>
-      <section className="bg-[#FAFAFA]">
+
+      <section className="bg-[#F7F5EF]">
+        <div className="px-10">
+      <div
+        style={{
+          fontSize: "2.4rem",
+          lineHeight: 1,
+          fontFamily: "NeueHaasDisplay35",
+          textTransform: "uppercase",
+          color: "var(--color-text)",
+          WebkitFontSmoothing: "antialiased",
+          MozOsxFontSmoothing: "grayscale",
+        }}
+      >
+        Orthodontics isn't just a{" "}
+        <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>treatment</span>
+        ,
+      </div>
+
+      <div
+        style={{
+          fontSize: "2.4rem",
+          lineHeight: 1,
+          fontFamily: "NeueHaasDisplay35",
+          textTransform: "uppercase",
+          color: "var(--color-text)",
+          WebkitFontSmoothing: "antialiased",
+          MozOsxFontSmoothing: "grayscale",
+        }}
+      >
+        it's a lasting{" "}
+        <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
+          investment
+        </span>{" "}
+        in your
+      </div>
+
+      <div
+        style={{
+          fontSize: "2.4rem",
+          lineHeight: 1,
+          fontFamily: "NeueHaasDisplay35",
+          textTransform: "uppercase",
+          color: "var(--color-text)",
+          WebkitFontSmoothing: "antialiased",
+          MozOsxFontSmoothing: "grayscale",
+        }}
+      >
+        <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
+          confidence
+        </span>
+        . Choose with care.
+      </div>
+      </div>
         <div
           ref={textRef}
-          className="mx-auto font-neuehaas45 mb-60 text-[1.6vw] max-w-[900px] leading-[1.3]"
+          className="mx-auto font-neuehaas35 mb-60 text-[1.4vw] max-w-[800px] leading-[1.3]"
         >
           Our doctors aren’t just orthodontists — they’ve gone the extra miles
           (and years) to become true specialists. Dr. Gregg Frey holds lifetime
@@ -1908,7 +1923,7 @@ function StackCards() {
           <br />
           <br />
           <span>TL;DR: You’re in very good hands.</span>
-          <div
+          {/* <div
             style={{
               color: "rgb(45, 45, 45)",
               willChange: "transform",
@@ -1970,7 +1985,7 @@ function StackCards() {
                 ></ellipse>
               </g>
             </svg>
-          </div>
+          </div> */}
         </div>
         <div
           style={{
@@ -2469,18 +2484,6 @@ const ProjectImage = ({
   );
 };
 
-const KineticText = ({ text = "More Than Smiles" }) => {
-  return (
-    <figure className="kinetic">
-      {[...Array(5)].map((_, i) => (
-        <div key={i} className="kinetic-line">
-          <span style={{ animationDelay: `${i * 0.2}s` }}>{text}</span>
-        </div>
-      ))}
-    </figure>
-  );
-};
-
 function MoreThanSmiles() {
   // const imagesContainerRef = useRef(null);
 
@@ -2822,7 +2825,6 @@ function MoreThanSmiles() {
   return (
     <>
       <section className="sticky-cards" style={stickyStyle}>
-        <KineticText text="More Than Smiles" />
         <div
           style={{ ...centerTextStyle, fontSize: "2rem", paddingBottom: "2em" }}
         >
