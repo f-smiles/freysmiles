@@ -1640,7 +1640,7 @@ const Invisalign = () => {
                     <div className="flex flex-col items-center justify-center relative w-full overflow-hidden px-0 py-[70px] min-h-fit rounded-[8px] border border-solid border-[rgba(240,240,240)] bg-[rgba(240,240,240,0.19)] opacity-100">
                       <div className="relative w-[86%] aspect-[1.6] overflow-hidden rounded-[8px] border border-solid border-[rgb(240,240,240)]">
                         <img
-                          src="/images/boxtest.jpg"
+                          src="/images/invisbox.png"
                           alt="Frysta"
                           className="absolute inset-0 w-full h-full object-cover"
                         />

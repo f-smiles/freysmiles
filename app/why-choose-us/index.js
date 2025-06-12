@@ -103,11 +103,7 @@ export default function WhyChooseUs() {
         </div>
       </div>
 
-      <div className="w-full flex justify-center items-center py-12 px-6">
-        <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
-          <Scene />
-        </div>
-      </div>
+
 
       {/* <Hero /> */}
       <ImageGrid />
@@ -407,30 +403,30 @@ const TechSection = () => {
 
         <section ref={sectionRef} className="px-6 py-12 md:px-12">
           <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
-            <span className="uppercase text-[#d2ff8c] font-neuehaas45">
-              All. <sup className="text-xs align-super">(16)</sup>
-            </span>
-            <span ref={(el) => (headingRefs.current[0] = el)}>
-              — Invisalign <sup className="text-xs align-super">(2k)</sup>
+          <span ref={(el) => (headingRefs.current[0] = el)}>
+              All.
             </span>
             <span ref={(el) => (headingRefs.current[1] = el)}>
+              — Invisalign <sup className="text-xs align-super">(10k)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[2] = el)}>
               — Accelerated Treatment.{" "}
               <sup className="text-xs align-super">(12)</sup>
             </span>
-            <span ref={(el) => (headingRefs.current[2] = el)}>
+            <span ref={(el) => (headingRefs.current[3] = el)}>
               — Low-Dose Digital 3D Radiographs{" "}
               <sup className="text-xs align-super">(15)</sup>
             </span>
-            <span ref={(el) => (headingRefs.current[3] = el)}>
-              Damon Braces. <sup className="text-xs align-super">(2k)</sup>
-            </span>
             <span ref={(el) => (headingRefs.current[4] = el)}>
-              — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
+              Damon Braces. <sup className="text-xs align-super">(15k)</sup>
             </span>
             <span ref={(el) => (headingRefs.current[5] = el)}>
-              — 3D Printing. <sup className="text-xs align-super">(8)</sup>
+              — iTero Lumina. <sup className="text-xs align-super">(5)</sup>
             </span>
             <span ref={(el) => (headingRefs.current[6] = el)}>
+              — 3D Printing. <sup className="text-xs align-super">(8)</sup>
+            </span>
+            <span ref={(el) => (headingRefs.current[7] = el)}>
               — Laser Therapy. <sup className="text-xs align-super">(8)</sup>
             </span>
           </div>
@@ -481,7 +477,7 @@ const TechSection = () => {
         </section>
 
         <section className="min-h-screen bg-[#f4eef4] flex flex-col items-center justify-center px-6 py-16 text-center">
-          <h2 className="max-w-5xl font-neuehaas45  mb-16">
+          <h2 className="max-w-5xl text-[#d2ff8c] font-neuehaas45  mb-16">
             Our office was the first in the region to pioneer fully digital
             orthodontics—leading the way with 3D iTero scanning and in-house 3D
             printing for appliance design and fabrication.
@@ -536,7 +532,7 @@ function ScrollPanels() {
           </div>
         </div>
       </section>
-      <main>
+      <div>
         {images.map((img, i) => (
           <section
             key={i}
@@ -580,7 +576,12 @@ function ScrollPanels() {
             </div>
           </section>
         ))}
-      </main>
+      </div>
+      <div className="w-full flex justify-center items-center py-12 px-6">
+        <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
+          <Scene />
+        </div>
+      </div>
     </div>
   );
 }
@@ -1806,7 +1807,7 @@ function StackCards() {
   }, []);
 
   useEffect(() => {
-    // Update all eyes when mouse position changes
+
     dotsRef.current.forEach((t) => redraw(t));
   }, [mPos]);
 
@@ -1820,7 +1821,8 @@ function StackCards() {
       x: x,
       y: y,
       attr: {
-        r: (i) => [4.2, 2][i],
+ r: (i) => [4, 1.5][i],
+
         fill: (i) => ["#FF98FB", "#1C7412"][i],
       },
     });
@@ -1857,6 +1859,7 @@ function StackCards() {
     <section ref={containerRef}>
 
       <section className="bg-[#F7F5EF]">
+        <div className="mx-auto flex flex-row">
         <div className="px-10">
       <div
         style={{
@@ -1870,8 +1873,7 @@ function StackCards() {
         }}
       >
         Orthodontics isn't just a{" "}
-        <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>treatment</span>
-        ,
+  
       </div>
 
       <div
@@ -1885,45 +1887,84 @@ function StackCards() {
           MozOsxFontSmoothing: "grayscale",
         }}
       >
-        it's a lasting{" "}
-        <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
-          investment
-        </span>{" "}
-        in your
+              <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>treatment</span>
+              ,
+        it's a phase shift.
       </div>
 
       <div
-        style={{
-          fontSize: "2.4rem",
-          lineHeight: 1,
-          fontFamily: "NeueHaasDisplay35",
-          textTransform: "uppercase",
-          color: "var(--color-text)",
-          WebkitFontSmoothing: "antialiased",
-          MozOsxFontSmoothing: "grayscale",
-        }}
-      >
-        <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
-          confidence
-        </span>
-        . Choose with care.
+  style={{
+    fontSize: "2.4rem",
+    lineHeight: 1,
+    fontFamily: "NeueHaasDisplay35",
+    textTransform: "uppercase",
+    color: "var(--color-text)",
+    WebkitFontSmoothing: "antialiased",
+    MozOsxFontSmoothing: "grayscale",
+  }}
+>
+  Your{" "}
+  <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
+    future
+  </span>{" "}
+  self says thanks.
+</div>
+
       </div>
-      </div>
+ 
+        <div
+          style={{
+            width: "50%",
+            height: "50%",
+            margin: 0,
+            padding: 0,
+            overflow: "hidden",
+            background: "#1C7412",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            position: "relative",
+          }}
+        >
+<svg
+  ref={svgRef}
+  viewBox="5.5 5.5 50 50"
+  preserveAspectRatio="xMidYMid meet"
+  style={{ width: "50%", height: "50%" }}
+/>
+
+
+
+          <div
+            ref={hitAreaRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+            }}
+            onPointerMove={handlePointerMove}
+            onPointerLeave={handlePointerLeave}
+          />
+        </div>
+        </div>
         <div
           ref={textRef}
-          className="mx-auto font-neuehaas35 mb-60 text-[1.4vw] max-w-[800px] leading-[1.3]"
+          className="mt-60 mx-auto font-neuehaas35 mb-40 text-[1.4vw] max-w-[800px] leading-[1.3]"
         >
-          Our doctors aren’t just orthodontists — they’ve gone the extra miles
-          (and years) to become true specialists. Dr. Gregg Frey holds lifetime
-          board certification, and Dr. Daniel Frey is wrapping his up this year
-          — a level fewer than 25% of orthodontists reach. When it comes to
-          Invisalign- we don’t just do it — we lead it. As the region’s top
-          Diamond Plus providers, we’ve treated thousands of cases and helped
-          shape how clear aligners are used today.
+  Our doctors aren’t just orthodontists — they’re in the top 1%.
+Dr. Gregg Frey is board certified for life. Dr. Daniel Frey is locking his in this year. That’s a level fewer than 1 in 4 orthodontists reach.
+
+And when it comes to Invisalign? We don’t follow trends — we set them.
+As Diamond Plus providers, we’ve shaped how clear aligners are done in the region (and treated thousands along the way).
+
           <br />
           <br />
-          <span>TL;DR: You’re in very good hands.</span>
-          {/* <div
+          <span> TL;DR: You’re in elite company.</span>
+    
+        </div>
+              {/* <div
             style={{
               color: "rgb(45, 45, 45)",
               willChange: "transform",
@@ -1986,42 +2027,7 @@ function StackCards() {
               </g>
             </svg>
           </div> */}
-        </div>
-        <div
-          style={{
-            width: "50%",
-            height: "50%",
-            margin: 0,
-            padding: 0,
-            overflow: "hidden",
-            background: "#1C7412",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            position: "relative",
-          }}
-        >
-          <svg
-            ref={svgRef}
-            viewBox="0 0 100 100"
-            preserveAspectRatio="xMidYMid meet"
-            style={{ width: 800, height: 800 }}
-          />
-
-          <div
-            ref={hitAreaRef}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-            }}
-            onPointerMove={handlePointerMove}
-            onPointerLeave={handlePointerLeave}
-          />
-        </div>
-        <div className="blockcontainer">
+        {/* <div className="blockcontainer">
           <p>
             <span></span>
             <span></span>
@@ -2034,22 +2040,22 @@ function StackCards() {
             <span></span>
             <span></span>
           </p>
-        </div>
-
+        </div> */}
+{/* 
         <div className="w-48 h-48 translate-x-1/3 -z-10">
           <Shape06 />
-        </div>
+        </div> */}
 
-        <div className="font-neuehaas45 min-h-screen text-[16px] leading-[1.2] px-10">
+        <div className="font-khteka min-h-screen text-[11px] leading-[1.1] uppercase px-10">
           {/* Block 1 */}
           <div className="w-full border-t border-black">
             <div
               className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
               style={{ "--br": "0px" }}
             >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FAFAFA] before:transition-none before:rounded-[var(--br)]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-sm text-[#ff007f] ">
+              <div className="relative z-10 text-[12px] text-[#ff007f] ">
                 ABO Treatment Standards
               </div>
 
@@ -2063,7 +2069,7 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#ff007f]">
+              <div className="relative z-10 text-[12px] text-[#ff007f] ">
                 Learn More
               </div>
             </div>
@@ -2075,9 +2081,9 @@ function StackCards() {
               className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
               style={{ "--br": "0px" }}
             >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FAFAFA] before:transition-none before:rounded-[var(--br)]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-sm text-[#ff007f] ">
+              <div className="relative z-10 text-[12px] text-[#ff007f] ">
                 Board Certification Process
               </div>
 
@@ -2089,7 +2095,7 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#ff007f] ">
+              <div className="relative z-10 text-[12px] text-[#ff007f] ">
                 Learn More
               </div>
             </div>
@@ -2101,9 +2107,9 @@ function StackCards() {
               className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
               style={{ "--br": "0px" }}
             >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FAFAFA] before:transition-none before:rounded-[var(--br)]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-sm text-[#ff007f] ">
+              <div className="relative z-10 text-[12px] text-[#ff007f] ">
                 Diagnostic Record Accuracy
               </div>
 
@@ -2115,7 +2121,8 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#ff007f] ">
+            
+              <div className="relative z-10 text-[12px] text-[#ff007f] ">
                 Learn More
               </div>
             </div>
@@ -2127,9 +2134,9 @@ function StackCards() {
               className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
               style={{ "--br": "0px" }}
             >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#FAFAFA] before:transition-none before:rounded-[var(--br)]" />
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-sm text-[#ff007f] ">
+              <div className="relative z-10 text-[12px] text-[#ff007f] ">
                 Trusted Expertise
               </div>
 
@@ -2142,7 +2149,7 @@ function StackCards() {
                 </div>
               </div>
 
-              <div className="relative z-10 text-sm text-[#ff007f] ">
+              <div className="relative z-10 text-[12px] text-[#ff007f] ">
                 Learn More
               </div>
             </div>
