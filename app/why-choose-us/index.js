@@ -91,6 +91,7 @@ export default function WhyChooseUs() {
 
   return (
     <>
+    <div className="overflow-x-hidden w-full">
       <div
         style={{ position: "relative", height: "400vh", overflow: "hidden" }}
       >
@@ -101,9 +102,14 @@ export default function WhyChooseUs() {
         <div style={{ position: "relative", zIndex: 1 }}>
           <ScrollPanels />
         </div>
+        
       </div>
 
-
+      <div className="w-full flex justify-center items-center py-12 px-6">
+        <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
+          <Scene />
+        </div>
+      </div>
 
       {/* <Hero /> */}
       <ImageGrid />
@@ -188,6 +194,7 @@ export default function WhyChooseUs() {
           </Curtains>
         </div> */}
       {/* <Rays /> */}
+      </div>
     </>
   );
 }
@@ -577,11 +584,7 @@ function ScrollPanels() {
           </section>
         ))}
       </div>
-      <div className="w-full flex justify-center items-center py-12 px-6">
-        <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
-          <Scene />
-        </div>
-      </div>
+ 
     </div>
   );
 }
@@ -1858,16 +1861,16 @@ function StackCards() {
   return (
     <section ref={containerRef}>
 
-      <section className="bg-[#F7F5EF]">
-        <div className="mx-auto flex flex-row">
-        <div className="px-10">
+      <section className="bg-[#F7F5EF] w-full flex flex-col items-center">
+        <div className=" flex flex-row gap-x-12">
+        <div className=" flex flex-col justify-center">
       <div
         style={{
           fontSize: "2.4rem",
           lineHeight: 1,
           fontFamily: "NeueHaasDisplay35",
           textTransform: "uppercase",
-          color: "var(--color-text)",
+
           WebkitFontSmoothing: "antialiased",
           MozOsxFontSmoothing: "grayscale",
         }}
@@ -1882,7 +1885,7 @@ function StackCards() {
           lineHeight: 1,
           fontFamily: "NeueHaasDisplay35",
           textTransform: "uppercase",
-          color: "var(--color-text)",
+       
           WebkitFontSmoothing: "antialiased",
           MozOsxFontSmoothing: "grayscale",
         }}
@@ -1898,7 +1901,7 @@ function StackCards() {
     lineHeight: 1,
     fontFamily: "NeueHaasDisplay35",
     textTransform: "uppercase",
-    color: "var(--color-text)",
+
     WebkitFontSmoothing: "antialiased",
     MozOsxFontSmoothing: "grayscale",
   }}
@@ -1911,27 +1914,27 @@ function StackCards() {
 </div>
 
       </div>
- 
-        <div
-          style={{
-            width: "50%",
-            height: "50%",
-            margin: 0,
-            padding: 0,
-            overflow: "hidden",
-            background: "#1C7412",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            position: "relative",
-          }}
-        >
-<svg
-  ref={svgRef}
-  viewBox="5.5 5.5 50 50"
-  preserveAspectRatio="xMidYMid meet"
-  style={{ width: "50%", height: "50%" }}
-/>
+  <div
+
+    style={{
+      width: "min(50vw, 50vh)", 
+      aspectRatio: "1 / 1",
+      margin: 0,
+      padding: 0,
+      overflow: "hidden",
+      background: "#1C7412",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      position: "relative",
+    }}
+  >
+    <svg
+      ref={svgRef}
+      viewBox="5.5 5.5 50 50"
+      preserveAspectRatio="xMidYMid meet"
+      style={{ width: "90%", height: "90%" }}
+    />
 
 
 
@@ -1951,7 +1954,7 @@ function StackCards() {
         </div>
         <div
           ref={textRef}
-          className="mt-60 mx-auto font-neuehaas35 mb-40 text-[1.4vw] max-w-[800px] leading-[1.3]"
+          className="mt-60 mx-auto font-neuehaas35 mb-40 text-[1.5vw] max-w-[800px] leading-[1.3]"
         >
   Our doctors aren’t just orthodontists — they’re in the top 1%.
 Dr. Gregg Frey is board certified for life. Dr. Daniel Frey is locking his in this year. That’s a level fewer than 1 in 4 orthodontists reach.
@@ -2046,7 +2049,9 @@ As Diamond Plus providers, we’ve shaped how clear aligners are done in the reg
           <Shape06 />
         </div> */}
 
-        <div className="font-khteka min-h-screen text-[11px] leading-[1.1] uppercase px-10">
+  
+      </section>
+      <div className="font-khteka min-h-screen text-[11px] leading-[1.1] uppercase px-2">
           {/* Block 1 */}
           <div className="w-full border-t border-black">
             <div
@@ -2055,7 +2060,7 @@ As Diamond Plus providers, we’ve shaped how clear aligners are done in the reg
             >
               <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-[12px] text-[#ff007f] ">
+              <div className="relative z-10 text-[11px] text-[#ff007f] ">
                 ABO Treatment Standards
               </div>
 
@@ -2069,9 +2074,7 @@ As Diamond Plus providers, we’ve shaped how clear aligners are done in the reg
                 </div>
               </div>
 
-              <div className="relative z-10 text-[12px] text-[#ff007f] ">
-                Learn More
-              </div>
+           
             </div>
           </div>
 
@@ -2083,7 +2086,7 @@ As Diamond Plus providers, we’ve shaped how clear aligners are done in the reg
             >
               <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-[12px] text-[#ff007f] ">
+              <div className="relative z-10 text-[11px] text-[#ff007f] ">
                 Board Certification Process
               </div>
 
@@ -2095,9 +2098,7 @@ As Diamond Plus providers, we’ve shaped how clear aligners are done in the reg
                 </div>
               </div>
 
-              <div className="relative z-10 text-[12px] text-[#ff007f] ">
-                Learn More
-              </div>
+           
             </div>
           </div>
 
@@ -2109,7 +2110,7 @@ As Diamond Plus providers, we’ve shaped how clear aligners are done in the reg
             >
               <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-[12px] text-[#ff007f] ">
+              <div className="relative z-10 text-[11px] text-[#ff007f] ">
                 Diagnostic Record Accuracy
               </div>
 
@@ -2121,10 +2122,7 @@ As Diamond Plus providers, we’ve shaped how clear aligners are done in the reg
                 </div>
               </div>
 
-            
-              <div className="relative z-10 text-[12px] text-[#ff007f] ">
-                Learn More
-              </div>
+         
             </div>
           </div>
 
@@ -2136,7 +2134,7 @@ As Diamond Plus providers, we’ve shaped how clear aligners are done in the reg
             >
               <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
 
-              <div className="relative z-10 text-[12px] text-[#ff007f] ">
+              <div className="relative z-10 text-[11px] text-[#ff007f] ">
                 Trusted Expertise
               </div>
 
@@ -2149,13 +2147,10 @@ As Diamond Plus providers, we’ve shaped how clear aligners are done in the reg
                 </div>
               </div>
 
-              <div className="relative z-10 text-[12px] text-[#ff007f] ">
-                Learn More
-              </div>
+            
             </div>
           </div>
         </div>
-      </section>
     </section>
   );
 }
