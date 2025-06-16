@@ -1493,40 +1493,50 @@ const FluidSimulation = () => {
       updatePointerUpData(pointers[0]);
     };
 
-    canvas.addEventListener("mousedown", handleMouseDown);
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("touchstart", handleTouchStart);
-    canvas.addEventListener("touchmove", handleTouchMove);
-    canvas.addEventListener("touchend", handleTouchEnd);
-
-    function waitForCanvasReady(cb) {
-      let attempts = 0;
-      function check() {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const rect = canvas.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-          cb();
-        } else {
-          attempts++;
-          if (attempts < 60) requestAnimationFrame(check);
-        }
-      }
-      requestAnimationFrame(check);
+    function attachListeners() {
+      canvas.addEventListener("mousedown", handleMouseDown);
+      canvas.addEventListener("mousemove", handleMouseMove);
+      canvas.addEventListener("touchstart", handleTouchStart);
+      canvas.addEventListener("touchmove", handleTouchMove);
+      canvas.addEventListener("touchend", handleTouchEnd);
+      console.log("Event listeners attached");
     }
-
-    const cleanupListeners = [];
-    cleanupListeners.forEach((fn) => fn());
-
-    waitForCanvasReady(initFluid);
-
-    return () => {
+  
+    function detachListeners() {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("touchstart", handleTouchStart);
       canvas.removeEventListener("touchmove", handleTouchMove);
       canvas.removeEventListener("touchend", handleTouchEnd);
+    }
+  
+    function waitForCanvasReady(cb) {
+      let attempts = 0;
+      function check() {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+  
+        const rect = canvas.getBoundingClientRect();
+        const hasSize = rect.width > 0 && rect.height > 0;
+        if (hasSize) {
+          console.log(" Canvas ready with size", rect);
+          cb();
+        } else {
+          attempts++;
+          if (attempts < 60) requestAnimationFrame(check);
+          else console.warn(" Canvas never became visible");
+        }
+      }
+      requestAnimationFrame(check);
+    }
+  
+    waitForCanvasReady(() => {
+      attachListeners();
+      initFluid(); 
+    });
+  
+    return () => {
+      detachListeners();
     };
   }, []);
 
@@ -1542,7 +1552,7 @@ const FluidSimulation = () => {
         margin: 0,
         padding: 0,
         pointerEvents: "none",
-        zIndex: 2147483646,
+        zIndex: 998,
       }}
     >
       <canvas
@@ -1554,8 +1564,8 @@ const FluidSimulation = () => {
           width: "100vw",
           height: "100vh",
           pointerEvents: "auto",
-          background: "black",
-          zIndex: 2147483647,
+          background: "transparent",
+          zIndex:999,
         }}
       />
     </div>
@@ -1575,9 +1585,9 @@ export default function WhyChooseUs() {
 
   return (
     <>
-      <div className="w-full h-screen">
-        <FluidSimulation />
-      </div>
+
+<div className="relative"> 
+<FluidSimulation />
 
       <div className="overflow-x-hidden w-full">
         <div
@@ -1682,6 +1692,7 @@ export default function WhyChooseUs() {
           </Curtains>
         </div> */}
         {/* <Rays /> */}
+      </div>
       </div>
     </>
   );
