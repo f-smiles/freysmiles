@@ -154,8 +154,12 @@ function PixiFlower() {
 
 const FluidSimulation = () => {
   const canvasRef = useRef(null);
+  const initialized = useRef(false);
+
   let blit;
   useEffect(() => {
+    if (initialized.current) return; 
+    initialized.current = true;
     const canvas = canvasRef.current;
     if (!canvas) {
 
@@ -1002,6 +1006,7 @@ const FluidSimulation = () => {
       return false;
     }
 
+
     function updateColors(dt) {
       colorUpdateTimer += dt * config.COLOR_UPDATE_SPEED;
       if (colorUpdateTimer >= 1) {
@@ -1161,11 +1166,16 @@ const FluidSimulation = () => {
       return hash;
     }
 
+    
     function initFluid() {
-      const canvas = canvasRef.current;
-      console.log("initFluid called");
 
-      resizeCanvas();
+
+      if (gl) return;
+      const canvas = canvasRef.current;
+
+
+
+
 
       const context = getWebGLContext(canvas);
       gl = context.gl;
@@ -1175,7 +1185,7 @@ const FluidSimulation = () => {
         config.DYE_RESOLUTION = 512;
         config.SHADING = false;
       }
-
+      resizeCanvas();
       blit = (() => {
         gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
         gl.bufferData(
@@ -1531,9 +1541,17 @@ const FluidSimulation = () => {
     }
   
     waitForCanvasReady(() => {
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+
+    
       attachListeners();
-      initFluid(); 
+      initFluid();
     });
+    
+  
+
+  
   
     return () => {
       detachListeners();
@@ -2076,6 +2094,15 @@ function ScrollPanels() {
     { src: "/images/signonmetalrack.png", alt: "Second Image" },
     { src: "/images/signonmetalrack.png", alt: "Third Image" },
   ];
+  useEffect(() => {
+    gsap.to('.textslide', {
+      y: '0%',
+      duration: 1,
+      stagger: 0.2,
+      ease: 'power3.out'
+    });
+  }, []);
+  
   return (
     <div className="">
       {/* <section
@@ -2089,13 +2116,15 @@ function ScrollPanels() {
       <div className="relative">
         <section class="make">
           <div class="make-main">
-            <div class="make-text title-h2 up-text text-[4rem] leading-none font-neuehaas45 uppercase">
-              Backed <br />
-              by over 60 years
-            </div>
+          <div className="make-text title-h2 up-text text-[4rem] leading-none font-neuehaas45 uppercase">
+  <div className="reveal-line"><span className="textslide">Backed</span></div>
+  <div className="reveal-line"><span className="textslide">by over 60 years</span></div>
+</div>
+
+
             <div class="make-text title-h2 up-text text-[4rem] leading-none font-neuehaas45 uppercase">
               {" "}
-              of combined orthodontic experience
+              <div className="reveal-line"><span className="textslide">of combined</span></div>  <div className="reveal-line"><span className="textslide">orthodontic</span></div>   <div className="reveal-line"><span className="textslide">experience</span></div>
             </div>
           </div>
         </section>

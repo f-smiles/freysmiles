@@ -6411,3 +6411,14 @@ main {
   text-align: right;
   margin-top: 1.1em;
 }
+
+.reveal-line {
+  overflow: hidden;
+  display: block;
+}
+
+.textslide {
+  display: inline-block;
+  transform: translateY(100%);
+  will-change: transform;
+}
