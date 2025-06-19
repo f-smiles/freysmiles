@@ -158,11 +158,10 @@ const FluidSimulation = () => {
 
   let blit;
   useEffect(() => {
-    if (initialized.current) return; 
+    if (initialized.current) return;
     initialized.current = true;
     const canvas = canvasRef.current;
     if (!canvas) {
-
       return;
     }
 
@@ -1006,7 +1005,6 @@ const FluidSimulation = () => {
       return false;
     }
 
-
     function updateColors(dt) {
       colorUpdateTimer += dt * config.COLOR_UPDATE_SPEED;
       if (colorUpdateTimer >= 1) {
@@ -1018,7 +1016,6 @@ const FluidSimulation = () => {
     }
 
     function splat(x, y, dx, dy, color) {
-   
       splatProgram.bind();
       gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read.attach(0));
       gl.uniform1f(
@@ -1166,16 +1163,9 @@ const FluidSimulation = () => {
       return hash;
     }
 
-    
     function initFluid() {
-
-
       if (gl) return;
       const canvas = canvasRef.current;
-
-
-
-
 
       const context = getWebGLContext(canvas);
       gl = context.gl;
@@ -1511,7 +1501,7 @@ const FluidSimulation = () => {
       canvas.addEventListener("touchend", handleTouchEnd);
       console.log("Event listeners attached");
     }
-  
+
     function detachListeners() {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
@@ -1519,13 +1509,13 @@ const FluidSimulation = () => {
       canvas.removeEventListener("touchmove", handleTouchMove);
       canvas.removeEventListener("touchend", handleTouchEnd);
     }
-  
+
     function waitForCanvasReady(cb) {
       let attempts = 0;
       function check() {
         const canvas = canvasRef.current;
         if (!canvas) return;
-  
+
         const rect = canvas.getBoundingClientRect();
         const hasSize = rect.width > 0 && rect.height > 0;
         if (hasSize) {
@@ -1539,20 +1529,15 @@ const FluidSimulation = () => {
       }
       requestAnimationFrame(check);
     }
-  
+
     waitForCanvasReady(() => {
       const canvas = canvasRef.current;
       const rect = canvas.getBoundingClientRect();
 
-    
       attachListeners();
       initFluid();
     });
-    
-  
 
-  
-  
     return () => {
       detachListeners();
     };
@@ -1570,7 +1555,7 @@ const FluidSimulation = () => {
         margin: 0,
         padding: 0,
         pointerEvents: "none",
-        zIndex: -2,
+        zIndex: 99,
       }}
     >
       <canvas
@@ -1583,7 +1568,7 @@ const FluidSimulation = () => {
           height: "100vh",
           pointerEvents: "auto",
           background: "transparent",
-          zIndex: -1,
+          zIndex: 100,
         }}
       />
     </div>
@@ -1603,57 +1588,53 @@ export default function WhyChooseUs() {
 
   return (
     <>
+      <div className="relative">
+        <FluidSimulation />
 
-<div className="relative"> 
-<FluidSimulation />
+        <div className="overflow-x-hidden w-full">
+          <div className="relative w-full h-screen">
+            <Canvas
+              className="absolute inset-0 z-10"
+              camera={{ position: [0, 6, 12], fov: 45 }}
+              style={{ pointerEvents: "none" }}
+            >
+              <color attach="background" args={["#ffffff"]} />
+              <ambientLight intensity={0.86} color={0xffffff} />
+              <directionalLight
+                position={[0, -10, -10]}
+                intensity={1}
+                color={0xffffff}
+              />
+              <RibbonAroundSphere />
+            </Canvas>
 
-      <div className="overflow-x-hidden w-full">
-      <div className="relative w-full h-screen">
-          <Canvas
-            className="absolute inset-0 z-10"
-            camera={{ position: [0, 6, 12], fov: 45 }}
-            style={{ pointerEvents: "none" }}
-          >
-            <color attach="background" args={["#ffffff"]} />
-            <ambientLight intensity={0.86} color={0xffffff} />
-            <directionalLight
-              position={[0, -10, -10]}
-              intensity={1}
-              color={0xffffff}
-            />
-            <RibbonAroundSphere />
-          </Canvas>
-
-          {/* <div className="absolute inset-0 z-20 flex items-center justify-center"></div> */}
-        </div>
-        <div
+            {/* <div className="absolute inset-0 z-20 flex items-center justify-center"></div> */}
+          </div>
+          <div
           // style={{ position: "relative", height: "400vh", overflow: "hidden" }}
-        >
-          {/* <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+          >
+            {/* <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
           <StringScene />
         </div> */}
 
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <ScrollPanels />
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <ScrollPanels />
+            </div>
           </div>
-        </div>
 
-        {/* <div className="w-full flex justify-center items-center py-12 px-6">
+          {/* <div className="w-full flex justify-center items-center py-12 px-6">
           <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
             <Scene />
           </div>
         </div> */}
 
-        {/* <Hero /> */}
+          <ImageGrid />
 
-        <ImageGrid />
+          <CardStack />
+          <StackCards />
+          <TechSection />
 
-        <CardStack />
-        <StackCards />
-        <TechSection />
-
-
-        <section
+          {/* <section
           style={{
             position: "relative",
             display: "flex",
@@ -1698,20 +1679,20 @@ export default function WhyChooseUs() {
           >
             <HoverScene imageRef={imageRef} />
           </div>
-        </section>
+        </section> */}
 
-        {/* <RepeatText /> */}
-        <MoreThanSmiles />
-        <About />
-        <VennDiagram />
-        <Marquee />
-        {/* <div className="h-[100vh] w-auto">
+          {/* <RepeatText /> */}
+          <MoreThanSmiles />
+          <About />
+          <VennDiagram />
+          <Marquee />
+          {/* <div className="h-[100vh] w-auto">
           <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
             <SimplePlane />
           </Curtains>
         </div> */}
-        {/* <Rays /> */}
-      </div>
+          {/* <Rays /> */}
+        </div>
       </div>
     </>
   );
@@ -2017,58 +1998,108 @@ const TechSection = () => {
             </span>
           </div>
           <VideoAnimation />
-          <div className="mt-12 w-full flex gap-4">
-            <div className="w-1/2">
-              <div className="relative overflow-hidden img-container">
-                <img
-                  src="/images/signonmetalrack.png"
-                  alt="metalrack"
-                  className="object-contain w-full h-full"
-                  style={{
-                    transform: "translateY(0%) scale(1.0)",
-                    transformOrigin: "center",
-                  }}
-                />
+          <div className="mt-12 w-full flex flex-col gap-4">
+            <div className="mb-16">
+              <p className="uppercase tracking-wide text-[12px] font-neuehaas35 mb-4">
+                Pioneering Digital Orthodontics
+              </p>
+              <h2 className="max-w-3xl font-neuehaas45 text-[26px] leading-tight">
+                Our office was the first in the region to go fully digital—
+                leveraging iTero 3D scanning and in-house printing to lead a new
+                era of appliance design and fabrication.
+              </h2>
+            </div>
+
+            <div className="w-full flex gap-4">
+              <div className="w-1/2">
+                <div className="relative overflow-hidden img-container">
+                  <img
+                    src="/images/3dprinting.png"
+                    alt="metalrack"
+                    className="object-contain w-full h-full"
+                    style={{
+                      transform: "translateY(0%) scale(1.0)",
+                      transformOrigin: "center",
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="w-1/2"></div>
+            </div>
+
+            <div className="w-full flex gap-4">
+              <div className="w-1/2"></div>
+              <div className="w-1/2">
+                <div className="img-container relative overflow-hidden">
+                  <img
+                    src="/images/iteroluminamockup.png"
+                    alt="placeholder"
+                    className="object-contain w-full h-full"
+                    style={{
+                      transform: "translateY(0%) scale(1.0)",
+                      transformOrigin: "center",
+                    }}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="w-1/2">
-              <div className="relative overflow-hidden img-container">
-                <img
-                  src="/images/testdisplay.png"
-                  alt="placeholder"
-                  className="object-contain w-full h-full"
-                  style={{
-                    transform: "translateY(0%) scale(1.0)",
-                    transformOrigin: "center",
-                  }}
-                />
+            <div className="w-full flex gap-4">
+              <div className="w-1/2">
+                <div className="relative overflow-hidden img-container">
+                  <img
+                    src="/images/glassflower.jpeg"
+                    alt="placeholder"
+                    className="object-contain w-full h-full"
+                    style={{
+                      transform: "translateY(0%) scale(1.0)",
+                      transformOrigin: "center",
+                    }}
+                  />
+                </div>
               </div>
+              <div className="w-1/2"></div>
             </div>
-          </div>
-          <div className="mt-12 w-full flex gap-4">
-            <div className="w-1/2">
-              <div className="img-container relative overflow-hidden">
-                <img
-                  src="/images/handholdingphone.png"
-                  className="w-full h-full object-contain"
-                  style={{
-                    transform: "translateY(0%) scale(1.0)",
-                    transformOrigin: "center",
-                  }}
-                />
+
+            <div className="w-full flex gap-4">
+              <div className="w-1/2"></div>
+              <div className="w-1/2">
+                <div className="relative overflow-hidden img-container">
+                  <img
+                    src="/images/testphonemockup.png"
+                    className="w-full h-full object-contain"
+                    style={{
+                      transform: "translateY(0%) scale(1.0)",
+                      transformOrigin: "center",
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </section>
+      </div>
+    </>
+  );
+};
+function ScrollPanels() {
+  const images = [
+    { src: "/images/signonmetalrack.png", alt: "sign" },
+    { src: "/images/tablemockup.png", alt: "table" },
+    { src: "/images/signonmetalrack.png", alt: "3" },
+  ];
+  useEffect(() => {
+    gsap.to(".textslide", {
+      y: "0%",
+      duration: 1,
+      stagger: 0.2,
+      ease: "power3.out",
+    });
+  }, []);
 
-        <section className="min-h-screen bg-[#f4eef4] flex flex-col items-center justify-center px-6 py-16 text-center">
-          <h2 className="max-w-5xl text-[#d2ff8c] font-neuehaas45  mb-16">
-            Our office was the first in the region to pioneer fully digital
-            orthodontics—leading the way with 3D iTero scanning and in-house 3D
-            printing for appliance design and fabrication.
-          </h2>
-
+  return (
+    <div className="bg-[#F9F9F9]">
+      {/* <section className="min-h-screen flex flex-col items-center justify-center px-6 py-16 text-center">
           <div className="relative w-[360px] h-[540px] rounded-[32px] overflow-hidden bg-black/10 shadow-md">
             <video
               autoPlay
@@ -2084,28 +2115,7 @@ const TechSection = () => {
               <div className="w-3.5 h-3.5 border-[3px] border-black rounded-full" />
             </div>
           </div>
-        </section>
-      </div>
-    </>
-  );
-};
-function ScrollPanels() {
-  const images = [
-    { src: "/images/signonmetalrack.png", alt: "sign" },
-    { src: "/images/tablemockup.png", alt: "table" },
-    { src: "/images/signonmetalrack.png", alt: "3" },
-  ];
-  useEffect(() => {
-    gsap.to('.textslide', {
-      y: '0%',
-      duration: 1,
-      stagger: 0.2,
-      ease: 'power3.out'
-    });
-  }, []);
-  
-  return (
-    <div className="bg-[#F9F9F9]">
+        </section> */}
       {/* <section
         style={{
 
@@ -2117,67 +2127,85 @@ function ScrollPanels() {
       <div className="relative">
         <section class="make">
           <div class="make-main">
-          <div className="make-text title-h2 up-text text-[4rem] leading-none font-neuehaas45 uppercase">
-  <div className="reveal-line"><span className="textslide">Backed</span></div>
-  <div className="reveal-line"><span className="textslide">by over 60 years</span></div>
-</div>
-
+            <div className="make-text title-h2 up-text text-[4rem] leading-none font-neuehaas45 uppercase">
+              <div className="reveal-line">
+                <span className="textslide">Backed</span>
+              </div>
+              <div className="reveal-line">
+                <span className="textslide">by over 60 years</span>
+              </div>
+            </div>
 
             <div class="make-text title-h2 up-text text-[4rem] leading-none font-neuehaas45 uppercase">
               {" "}
-              <div className="reveal-line"><span className="textslide">of combined</span></div>  <div className="reveal-line"><span className="textslide">orthodontic</span></div>   <div className="reveal-line"><span className="textslide">experience</span></div>
+              <div className="reveal-line">
+                <span className="textslide">of combined</span>
+              </div>{" "}
+              <div className="reveal-line">
+                <span className="textslide">orthodontic</span>
+              </div>{" "}
+              <div className="reveal-line">
+                <span className="textslide">experience</span>
+              </div>
             </div>
           </div>
         </section>
+        <section className="w-full bg-[#f9f9f9] flex flex-col items-center">
+          <div className="w-full px-[6vw]">
+            <div className="border-t border-black/10 w-full" />
+          </div>
 
-<section className="h-screen w-full bg-[#f9f9f9] py-12">
-  <div className="w-full px-[12vw]">
-    <div className="border-t border-black/10 w-full mb-10" />
-    <div className="flex items-center justify-between">
+          <div className="w-full px-[6vw] py-[10vh]">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+              <div className="flex flex-col text-left z-10">
+                <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45 uppercase">
+                  Smart <br />
+                  <span className="mt-2 pt-2 block">Orthodontics</span>
+                </h1>
+                <p className="text-[12px] uppercase mt-4 text-black/70 font-khteka">
+                  Built around your life
+                </p>
+              </div>
+              <div className="w-full lg:w-[40vw]">
+                <img
+                  src="/images/signonmetalrack.png"
+                  alt="sign"
+                  className="w-full h-auto"
+                />
+              </div>
+            </div>
+          </div>
 
-      <div className="flex flex-col relative z-10">
-        <h1 className="text-[3.5vw] leading-[1] font-neuehaas45 uppercase">
-          Smart <br />
-          <span className="mt-2 pt-2 block">Orthodontics</span>
-        </h1>
-        <p className="text-[12px] uppercase mt-4 text-black/70 font-khteka">
-          Built around your life
-        </p>
-      </div>
+          <div className="w-full px-[6vw]">
+            <div className="border-t border-black/10 w-full" />
+          </div>
 
-    
-      <div className="w-[40vw]">
-        <img src="/images/signonmetalrack.png" alt="sign" className="w-full h-auto" />
-      </div>
-    </div>
-  </div>
-</section>
+          <div className="w-full px-[6vw] py-[10vh]">
+            <div className="flex flex-col lg:flex-row-reverse items-center justify-between gap-12">
+              <div className="flex flex-col text-left z-10">
+                <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45 uppercase">
+                  3D <br />
+                  <span className="mt-2 pt-2 block">Imaging</span>
+                </h1>
+                <p className="max-w-[400px] text-[12px] uppercase mt-4 text-black/70 font-khteka">
+                  3D technology is reshaping modern orthodontics. Expect
+                  different information from our competitors.
+                </p>
+              </div>
+              <div className="w-full lg:w-[50vw]">
+                <img
+                  src="/images/tablemockup.png"
+                  alt="table"
+                  className="w-full h-auto"
+                />
+              </div>
+            </div>
+          </div>
 
-<section className="w-full bg-[#f9f9f9] py-12">
-  <div className="w-full px-[12vw]">
-    <div className="border-t border-black/10 w-full mb-10 -mt-[10vh]" />
-    <div className="flex items-center justify-between flex-row-reverse">
-
-    <div className="flex flex-col relative z-10 text-left ml-[4vw]">
-        <h1 className="text-[3.5vw] leading-[1] font-neuehaas45 uppercase">
-          3d <br />
-          <span className="mt-2 pt-2 block">Imaging</span>
-        </h1>
-        <p className="max-w-[400px] text-[12px] uppercase mt-4 text-black/70 font-khteka">
-        3d technology is reshaping modern orthodontics. Expect different information from our competitors. 
-        </p>
-      </div>
-
-      <div className="w-[50vw]">
-        <img src="/images/tablemockup.png" alt="table" className="w-full h-auto" />
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
-
+          <div className="w-full px-[6vw]">
+            <div className="border-t border-black/10 w-full" />
+          </div>
+        </section>
         {/* <div className="image-grid px-16 grid grid-cols-1 md:grid-cols-2 ">
   {images.map((img, i) => (
     <div
@@ -2200,7 +2228,6 @@ function ScrollPanels() {
     </div>
   ))}
 </div> */}
-
       </div>
     </div>
   );
@@ -2264,18 +2291,16 @@ const ImageGrid = () => {
   }, []);
 
   return (
-    <div>
-      <div className="bg-[#F9F9F9] px-10 py-10">
-        <div className="content content--full">
-          <h1
-            ref={textExpertiseRef}
-            className="gtext size-xl font-neuehaas45 spaced"
-            data-text="Expertise"
-            data-effect="2"
-          >
-            Expertise
-          </h1>
-        </div>
+    <div className="bg-[#F9F9F9] px-10 py-10">
+      <div className="content content--full">
+        <h1
+          ref={textExpertiseRef}
+          className="gtext size-xl font-neuehaas45 spaced"
+          data-text="Expertise"
+          data-effect="2"
+        >
+          Expertise
+        </h1>
       </div>
     </div>
   );
@@ -2334,23 +2359,21 @@ const VideoAnimation = () => {
   }, []);
 
   return (
-    <div>
-      <div style={{ margin: "5vh 0" }}>
-        <div style={{ maxWidth: "98%", margin: "0 auto" }}>
-          <div ref={videoWrapperRef} style={{ height: "100vh" }}>
-            <video
-              ref={videoRef}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-              src="/videos/cbctscan.mp4"
-              muted
-              autoPlay
-              loop
-            />
-          </div>
+    <div className="bg-[#F9F9F9]" style={{ margin: "5vh 0" }}>
+      <div style={{ maxWidth: "98%", margin: "0 auto" }}>
+        <div ref={videoWrapperRef} style={{ height: "100vh" }}>
+          <video
+            ref={videoRef}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+            src="/videos/cbctscan.mp4"
+            muted
+            autoPlay
+            loop
+          />
         </div>
       </div>
     </div>
@@ -3064,72 +3087,6 @@ function RibbonAroundSphere() {
   );
 }
 
-function Hero() {
-  const pathRef = useRef(null);
-  const cardsectionRef = useRef(null);
-
-  // useEffect(() => {
-  //   const path = pathRef.current;
-  //   const pathLength = path.getTotalLength();
-
-  //   gsap.set(path, {
-  //     strokeDasharray: pathLength,
-  //     strokeDashoffset: pathLength,
-  //   });
-
-  //   gsap.to(path, {
-  //     strokeDashoffset: 0,
-  //     duration: 3,
-  //     ease: "power2.out",
-  //     onComplete: () => {
-  //       gsap.to(path, {
-  //         strokeDashoffset: pathLength,
-  //         ease: "none",
-  //         scrollTrigger: {
-  //           trigger: cardsectionRef.current,
-  //           start: "top top",
-  //           end: "bottom top",
-  //           scrub: 1,
-  //         },
-  //       });
-  //     },
-  //   });
-
-  //   ScrollTrigger.create({
-  //     trigger: cardsectionRef.current,
-  //     start: "top top",
-  //     end: "+=150%",
-  //     pin: true,
-  //     pinSpacing: true,
-  //   });
-  // }, []);
-
-  return (
-    <div className=" relative min-h-screen w-full bg-[#F7F5EF] text-black">
-      {/* <section
-        ref={cardsectionRef}
-        className="h-[100vh] relative z-10 flex items-center justify-center"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 951 367"
-          fill="none"
-          className="w-full h-auto max-w-5xl pt-40 mx-auto"
-        >
-          <path
-            ref={pathRef}
-            d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
-            stroke="#0C0EFE"
-            strokeWidth="40"
-            strokeMiterlimit="10"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </section> */}
-    </div>
-  );
-}
-
 const CardStack = () => {
   const list1Ref = useRef(null);
 
@@ -3474,96 +3431,97 @@ function StackCards() {
     setMPos({ x: 50, y: 50 });
   };
   return (
-    <section className="bg-[#F9F9F9]" ref={containerRef}>
-      <section className="-mt-20 bg-[#F9F9F9] w-full flex flex-col items-center">
-        <div className=" flex flex-row gap-x-12">
-          <div className=" flex flex-col justify-center">
-            <div
-              style={{
-                fontSize: "2.4rem",
-                lineHeight: 1,
-                fontFamily: "NeueHaasDisplay35",
-                textTransform: "uppercase",
+    <>
+      <section className="bg-[#F9F9F9]" ref={containerRef}>
+        <section className="-mt-20 w-full flex flex-col items-center">
+          <div className="flex flex-row gap-x-12">
+            <div className=" flex flex-col justify-center">
+              <div
+                style={{
+                  fontSize: "2.4rem",
+                  lineHeight: 1,
+                  fontFamily: "NeueHaasDisplay35",
+                  textTransform: "uppercase",
 
-                WebkitFontSmoothing: "antialiased",
-                MozOsxFontSmoothing: "grayscale",
-              }}
-            >
-              Orthodontics isn't just a{" "}
+                  WebkitFontSmoothing: "antialiased",
+                  MozOsxFontSmoothing: "grayscale",
+                }}
+              >
+                Orthodontics isn't just a{" "}
+              </div>
+
+              <div
+                style={{
+                  fontSize: "2.4rem",
+                  lineHeight: 1,
+                  fontFamily: "NeueHaasDisplay35",
+                  textTransform: "uppercase",
+
+                  WebkitFontSmoothing: "antialiased",
+                  MozOsxFontSmoothing: "grayscale",
+                }}
+              >
+                <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
+                  treatment
+                </span>
+                , it's a phase shift.
+              </div>
+
+              <div
+                style={{
+                  fontSize: "2.4rem",
+                  lineHeight: 1,
+                  fontFamily: "NeueHaasDisplay35",
+                  textTransform: "uppercase",
+
+                  WebkitFontSmoothing: "antialiased",
+                  MozOsxFontSmoothing: "grayscale",
+                }}
+              >
+                Your{" "}
+                <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
+                  future
+                </span>{" "}
+                self says thanks.
+              </div>
             </div>
-
             <div
               style={{
-                fontSize: "2.4rem",
-                lineHeight: 1,
-                fontFamily: "NeueHaasDisplay35",
-                textTransform: "uppercase",
-
-                WebkitFontSmoothing: "antialiased",
-                MozOsxFontSmoothing: "grayscale",
+                width: "min(50vw, 50vh)",
+                aspectRatio: "1 / 1",
+                margin: 0,
+                padding: 0,
+                overflow: "hidden",
+                background: "#1C7412",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                position: "relative",
               }}
             >
-              <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
-                treatment
-              </span>
-              , it's a phase shift.
-            </div>
+              <svg
+                ref={svgRef}
+                viewBox="5.5 5.5 50 50"
+                preserveAspectRatio="xMidYMid meet"
+                style={{ width: "90%", height: "90%" }}
+              />
 
-            <div
-              style={{
-                fontSize: "2.4rem",
-                lineHeight: 1,
-                fontFamily: "NeueHaasDisplay35",
-                textTransform: "uppercase",
-
-                WebkitFontSmoothing: "antialiased",
-                MozOsxFontSmoothing: "grayscale",
-              }}
-            >
-              Your{" "}
-              <span style={{ fontFamily: "SaolDisplay-LightItalic" }}>
-                future
-              </span>{" "}
-              self says thanks.
+              <div
+                ref={hitAreaRef}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                }}
+                onPointerMove={handlePointerMove}
+                onPointerLeave={handlePointerLeave}
+              />
             </div>
           </div>
-          <div
-            style={{
-              width: "min(50vw, 50vh)",
-              aspectRatio: "1 / 1",
-              margin: 0,
-              padding: 0,
-              overflow: "hidden",
-              background: "#1C7412",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              position: "relative",
-            }}
-          >
-            <svg
-              ref={svgRef}
-              viewBox="5.5 5.5 50 50"
-              preserveAspectRatio="xMidYMid meet"
-              style={{ width: "90%", height: "90%" }}
-            />
 
-            <div
-              ref={hitAreaRef}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-              }}
-              onPointerMove={handlePointerMove}
-              onPointerLeave={handlePointerLeave}
-            />
-          </div>
-        </div>
- 
-        {/* <div className="blockcontainer">
+          {/* <div className="blockcontainer">
           <p>
             <span></span>
             <span></span>
@@ -3577,121 +3535,118 @@ function StackCards() {
             <span></span>
           </p>
         </div> */}
+        </section>
+        <div className="mt-20">
+          <div
+            ref={textRef}
+            className="mx-auto font-neuehaas35 mb-40 text-[1.5vw] max-w-[800px] leading-[1.3]"
+          >
+            Our doctors aren’t just orthodontists — they’re in the top 1%. Dr.
+            Gregg Frey is board certified for life. Dr. Daniel Frey is locking
+            his in this year. That’s a level fewer than 1 in 4 orthodontists
+            reach. And when it comes to Invisalign? We don’t follow trends — we
+            set them. As Diamond Plus providers, we’ve shaped how clear aligners
+            are done in the region (and treated thousands along the way).
+            <br />
+            <br />
+            <span> TL;DR: You’re in elite company.</span>
+          </div>
+        </div>
+        <div className="mt-20 font-khteka min-h-screen text-[11px] leading-[1.1] uppercase px-2">
+          {/* Block 1 */}
+          <div className="w-full border-t border-black">
+            <div
+              className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
+              style={{ "--br": "0px" }}
+            >
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
+
+              <div className="relative z-10 text-[11px] text-[#ff007f] ">
+                ABO Treatment Standards
+              </div>
+
+              <div className="relative z-10 leading-relaxed max-w-4xl text-black">
+                <div>
+                  We strive to attain finished results consistent with the
+                  American Board of Orthodontics (ABO) qualitative standards.
+                  Our doctors place great priority on the certification and
+                  recertification process, ensuring that all diagnostic records
+                  adhere to ABO standards.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Block 2 */}
+          <div className="w-full border-t border-black">
+            <div
+              className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
+              style={{ "--br": "0px" }}
+            >
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
+
+              <div className="relative z-10 text-[11px] text-[#ff007f] ">
+                Board Certification Process
+              </div>
+
+              <div className="relative z-10  leading-relaxed max-w-4xl text-black">
+                <div>
+                  Currently, Dr. Gregg is a certified orthodontist and is
+                  preparing cases for recertification. Dr. Daniel is in the
+                  final stages of obtaining his initial certification.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Block 3 */}
+          <div className="w-full border-t border-black">
+            <div
+              className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
+              style={{ "--br": "0px" }}
+            >
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
+
+              <div className="relative z-10 text-[11px] text-[#ff007f] ">
+                Diagnostic Record Accuracy
+              </div>
+
+              <div className="relative z-10 leading-relaxed max-w-4xl text-black">
+                <div>
+                  To complement our use of cutting-edge diagnostic technology,
+                  we uphold the highest standards for our records, ensuring
+                  accuracy and precision throughout the treatment process.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Block 4 */}
+          <div className="w-full border-t border-black">
+            <div
+              className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
+              style={{ "--br": "0px" }}
+            >
+              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
+
+              <div className="relative z-10 text-[11px] text-[#ff007f] ">
+                Trusted Expertise
+              </div>
+
+              <div className="relative z-10 leading-relaxed max-w-4xl">
+                <div>
+                  Our office holds the distinction of being the
+                  longest-standing, active board-certified orthodontic office in
+                  the area. With four offices in the Lehigh Valley, we have been
+                  providing unparalleled orthodontic care for over four decades.
+                </div>
+              </div>
+            </div>
+            <div className="w-full border-b border-black" />
+          </div>
+        </div>
       </section>
-
-      <div className="mt-20 font-khteka min-h-screen text-[11px] leading-[1.1] uppercase px-2">
-        {/* Block 1 */}
-        <div className="w-full border-t border-black">
-          <div
-            className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
-            style={{ "--br": "0px" }}
-          >
-            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-
-            <div className="relative z-10 text-[11px] text-[#ff007f] ">
-              ABO Treatment Standards
-            </div>
-
-            <div className="relative z-10 leading-relaxed max-w-4xl text-black">
-              <div>
-                We strive to attain finished results consistent with the
-                American Board of Orthodontics (ABO) qualitative standards. Our
-                doctors place great priority on the certification and
-                recertification process, ensuring that all diagnostic records
-                adhere to ABO standards.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Block 2 */}
-        <div className="w-full border-t border-black">
-          <div
-            className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
-            style={{ "--br": "0px" }}
-          >
-            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-
-            <div className="relative z-10 text-[11px] text-[#ff007f] ">
-              Board Certification Process
-            </div>
-
-            <div className="relative z-10  leading-relaxed max-w-4xl text-black">
-              <div>
-                Currently, Dr. Gregg is a certified orthodontist and is
-                preparing cases for recertification. Dr. Daniel is in the final
-                stages of obtaining his initial certification.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Block 3 */}
-        <div className="w-full border-t border-black">
-          <div
-            className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
-            style={{ "--br": "0px" }}
-          >
-            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-
-            <div className="relative z-10 text-[11px] text-[#ff007f] ">
-              Diagnostic Record Accuracy
-            </div>
-
-            <div className="relative z-10 leading-relaxed max-w-4xl text-black">
-              <div>
-                To complement our use of cutting-edge diagnostic technology, we
-                uphold the highest standards for our records, ensuring accuracy
-                and precision throughout the treatment process.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Block 4 */}
-        <div className="w-full border-t border-black">
-          <div
-            className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
-            style={{ "--br": "0px" }}
-          >
-            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-
-            <div className="relative z-10 text-[11px] text-[#ff007f] ">
-              Trusted Expertise
-            </div>
-
-            <div className="relative z-10 leading-relaxed max-w-4xl">
-              <div>
-                Our office holds the distinction of being the longest-standing,
-                active board-certified orthodontic office in the area. With four
-                offices in the Lehigh Valley, we have been providing
-                unparalleled orthodontic care for over four decades.
-              </div>
-            </div>
-          </div>
-          <div className="w-full border-b border-black" />
-        </div>
-      </div>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-start justify-start">
-          <PixiFlower />
-        </div>
-        <div
-          ref={textRef}
-          className="mx-auto font-neuehaas35 mb-40 text-[1.5vw] max-w-[800px] leading-[1.3]"
-        >
-          Our doctors aren’t just orthodontists — they’re in the top 1%. Dr.
-          Gregg Frey is board certified for life. Dr. Daniel Frey is locking his
-          in this year. That’s a level fewer than 1 in 4 orthodontists reach.
-          And when it comes to Invisalign? We don’t follow trends — we set them.
-          As Diamond Plus providers, we’ve shaped how clear aligners are done in
-          the region (and treated thousands along the way).
-          <br />
-          <br />
-          <span> TL;DR: You’re in elite company.</span>
-        </div>
-      </div>
-    </section>
+    </>
   );
 }
 
@@ -4323,7 +4278,7 @@ function MoreThanSmiles() {
 
   const stickyStyle = {
     ...sectionStyle,
-    backgroundColor: "#e3e3e3",
+    backgroundColor: "#f9f9f9",
   };
 
   const cardStyle = {
@@ -4364,82 +4319,184 @@ function MoreThanSmiles() {
   };
   const rotations = [-12, 10, -5, 5, -5, -2];
 
+  const pathRef = useRef(null);
+  const cardsectionRef = useRef(null);
+  const textContainerRef = useRef(null);
+  useEffect(() => {
+    const path = pathRef.current;
+    const text = textContainerRef.current;
+    const pathLength = path.getTotalLength();
+  
+    gsap.set(path, {
+      strokeDasharray: pathLength,
+      strokeDashoffset: 0
+    });
+    
+    gsap.set(text, {
+      opacity: 0,
+      y: 30,
+      filter: "blur(2px)"
+    });
+  
+    const trigger = ScrollTrigger.create({
+      trigger: cardsectionRef.current,
+      start: "top top",
+      end: "bottom top",
+      scrub: 1,
+      pin: true,
+      pinSpacing: true,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        
+        gsap.to(path, {
+          strokeDashoffset: progress * pathLength,
+          ease: "none",
+          overwrite: true
+        });
+  
+        const textFadeStart = 0.66;
+        const textFadeDuration = 0.33;
+        
+        if (progress >= textFadeStart) {
+          const textProgress = (progress - textFadeStart) / textFadeDuration;
+          const easedProgress = gsap.parseEase("sine.out")(Math.min(1, textProgress));
+          
+          gsap.to(text, {
+            opacity: easedProgress,
+            y: 30 * (1 - easedProgress),
+            filter: `blur(${2 * (1 - easedProgress)}px)`,
+            ease: "none",
+            overwrite: true
+          });
+        } else {
+          gsap.to(text, {
+            opacity: 0,
+            y: 30,
+            filter: "blur(2px)",
+            overwrite: true,
+            duration: 0.2
+          });
+        }
+      },
+      onLeave: () => {
+        gsap.to(text, {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          overwrite: true,
+          duration: 0.3
+        });
+      }
+    });
+  
+    return () => {
+      if (trigger) trigger.kill();
+      gsap.killTweensOf([path, text]);
+    };
+  }, []);
+  
   return (
     <>
-      <section className="sticky-cards" style={stickyStyle}>
-        <div
-          style={{ ...centerTextStyle, fontSize: "2rem", paddingBottom: "2em" }}
+      <div className="bg-[#F9F9F9] relative min-h-screen w-full">
+        <section
+          ref={cardsectionRef}
+          className="h-[100vh] relative z-10 flex items-center justify-center"
         >
-          <div className="flex flex-col items-center justify-center h-full">
-            <p className="font-khteka max-w-[600px] text-[14px] leading-snug uppercase">
-              We’re committed to making world-class orthodontic care accessible
-              to all. In 2011, we launched More Than Smiles to provide treatment
-              and promote community education around dental and orthodontic
-              health.
-            </p>
-            <h1 className="font-khteka max-w-[600px] text-[14px] leading-snug uppercase">
-              Nominate someone who deserves a confident smile through our
-              non-profit More Than Smiles.
-            </h1>
-            <div className="z-10 absolute right-[3vw]">
-              <a
-                href="https://morethansmiles.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <svg
-                  className="w-full cursor-pointer"
-                  viewBox="-50 -50 100 100"
-                >
-                  <circle
-                    r="22.4"
-                    fill="none"
-                    stroke="#DFDFDF"
-                    stroke-width=".5"
-                  />
-                  <text
-                    className="txt fill-black text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
-                    x="0"
-                    y="2"
-                    textAnchor="middle"
-                  >
-                    Nominate
-                  </text>
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
-        {images.map((src, i) => (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 951 367"
+            fill="none"
+            className="w-full h-auto max-w-5xl pt-40 mx-auto"
+          >
+            <path
+              ref={pathRef}
+              d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
+              stroke="#0C0EFE"
+              strokeWidth="40"
+              strokeMiterlimit="10"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </section>
+        <section className="sticky-cards" style={stickyStyle}>
           <div
-            key={i}
-            ref={(el) => (cardsRef.current[i] = el)}
             style={{
-              ...cardStyle,
-              backgroundColor: colors[i % colors.length],
+              ...centerTextStyle,
+              fontSize: "2rem",
+              paddingBottom: "2em",
             }}
           >
-            <div style={cardImgStyle}>
-              <img src={src} alt={`card-${i}`} style={imgStyle} />
-            </div>
-            <div style={cardContentStyle}>
-              <p className="font-khteka">Card {i + 1}</p>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "26px",
-                  height: "26px",
-                  marginLeft: "0.5em",
-                }}
-              >
-                <img src="/images/fspetallogo.png" />
+            <div
+              ref={textContainerRef}
+              className="flex flex-col items-center justify-center h-full"
+            >
+              <p className="font-neuehaas45 max-w-[600px] text-[16px] leading-snug">
+                We’re committed to making world-class orthodontic care
+                accessible to all. In 2011, we launched More Than Smiles to
+                provide treatment and promote community education around dental
+                and orthodontic health. Nominate someone who deserves a
+                confident smile through our non-profit More Than Smiles.
+              </p>
+              <div className="z-10 absolute right-[3vw]">
+                <a
+                  href="https://morethansmiles.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg
+                    className="w-full cursor-pointer"
+                    viewBox="-50 -50 100 100"
+                  >
+                    <circle
+                      r="22.4"
+                      fill="none"
+                      stroke="#DFDFDF"
+                      stroke-width=".5"
+                    />
+                    <text
+                      className="txt fill-black text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
+                      x="0"
+                      y="2"
+                      textAnchor="middle"
+                    >
+                      Nominate
+                    </text>
+                  </svg>
+                </a>
               </div>
             </div>
           </div>
-        ))}
-      </section>
+          {images.map((src, i) => (
+            <div
+              key={i}
+              ref={(el) => (cardsRef.current[i] = el)}
+              style={{
+                ...cardStyle,
+                backgroundColor: colors[i % colors.length],
+              }}
+            >
+              <div style={cardImgStyle}>
+                <img src={src} alt={`card-${i}`} style={imgStyle} />
+              </div>
+              <div style={cardContentStyle}>
+                <p className="font-khteka">Card {i + 1}</p>
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "26px",
+                    height: "26px",
+                    marginLeft: "0.5em",
+                  }}
+                >
+                  <img src="/images/fspetallogo.png" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </section>
+      </div>
 
       <div
         ref={canvasContainerRef}

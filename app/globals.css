@@ -4969,7 +4969,7 @@ a {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  /* box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12); */
 
   border-radius: 1rem;
   display: flex;
