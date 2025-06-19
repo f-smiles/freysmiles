@@ -275,13 +275,15 @@ const bgRef = useRef(null);
           >
             {/* styles.el */}
             <motion.div className="flex items-center">
-              <motion.div
-                className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 rounded-full px-1 py-4"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <CartComponent />
-              </motion.div>
+              {cart.length > 0 && (
+                <motion.div
+                  className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 rounded-full px-1 py-4"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <CartComponent />
+                </motion.div>
+              )}
               <Link href="/book-now">
                 <motion.div
                   className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 text-[white] rounded-full px-6 py-5 font-helvetica-neue-light tracking-wider text-[11px]"
