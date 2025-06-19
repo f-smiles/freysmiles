@@ -1,0 +1,163 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --padding: 2rem;
+  --gutter: 0.75rem; /* Reduced spacing between lines */
+  --columns: 12;
+  --bg-color: #0a0a0a;
+  --text-color: #e0e0e0;
+  --accent-color: #3a3aff;
+  --grid-color: rgba(255, 255, 255, 0.15);
+  --row-spacing: 4rem;
+}
+
+body {
+  font-family: "NeueMontrealLight", sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: var(--padding);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Grid overlay */
+.grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--padding);
+  pointer-events: none;
+  z-index: -1000;
+  background: none;
+}
+
+.grid-overlay-inner {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), 1fr);
+  gap: var(--gutter);
+  height: 100%;
+  width: 100%; /* Match the grid container width */
+  margin: 0 auto;
+}
+
+.grid-column {
+  height: 100%;
+  border-left: 1px solid var(--grid-color);
+  border-right: 1px solid var(--grid-color);
+  border-top: none;
+  border-bottom: none;
+  opacity: 0;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), 1fr);
+  gap: var(--gutter);
+  row-gap: var(--row-spacing);
+  width: 100%; /* Use 100% width instead of fixed max-width */
+  margin: 0 auto;
+  position: relative;
+}
+
+.inversion-lens {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.inversion-lens img {
+  display: none;
+}
+
+.inversion-lens .canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  border: 1px solid white;
+}
+
+.member-info {
+  font-size: 1rem;
+  margin-top: 1rem;
+  line-height: 1.2;
+}
+
+.member-role {
+  font-size: 1rem;
+  text-transform: uppercase;
+  margin-bottom: 0.1rem;
+}
+
+.member-name {
+  font-weight: 700;
+  font-size: 2rem;
+  margin-top: 0.125rem;
+  text-transform: uppercase;
+}
+
+.project-subtitle {
+  margin-top: 0.125rem;
+  font-size: 1rem;
+}
+
+/* Editorial grid layout with increased row spacing */
+.item-1-container {
+  grid-column: 2 / span 5;
+  grid-row: 2 / span 2;
+}
+
+.item-1 {
+  height: 700px;
+}
+
+.item-2-container {
+  grid-column: 8 / span 4;
+  grid-row: 2;
+}
+
+.item-2 {
+  height: 350px;
+}
+
+.item-3-container {
+  grid-column: 3 / span 4;
+  grid-row: 4 / span 2;
+  margin-top: var(--row-spacing); /* Added extra spacing */
+}
+
+.item-3 {
+  height: 500px;
+}
+
+.item-4-container {
+  grid-column: 8 / span 4;
+  grid-row: 3;
+  margin-top: var(--row-spacing); /* Added extra spacing */
+}
+
+.item-4 {
+  height: 500px;
+}
+
+.item-5-container {
+  grid-column: 8 / span 4;
+  grid-row: 4;
+  margin-top: var(--row-spacing); /* Added extra spacing */
+}
+
+.item-5 {
+  height: 700px;
+}
