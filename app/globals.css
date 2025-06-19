@@ -6187,9 +6187,7 @@ body,
   padding: 0;
 }
 
-body {
-  background: #f0f0f0;
-}
+
 
 @keyframes fade-in {
   from {
@@ -6199,8 +6197,6 @@ body {
     opacity: 1;
   }
 }
-
-
 
 
 .movingcard-card {

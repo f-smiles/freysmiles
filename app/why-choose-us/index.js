@@ -1570,7 +1570,7 @@ const FluidSimulation = () => {
         margin: 0,
         padding: 0,
         pointerEvents: "none",
-        zIndex: 998,
+        zIndex: -2,
       }}
     >
       <canvas
@@ -1583,7 +1583,7 @@ const FluidSimulation = () => {
           height: "100vh",
           pointerEvents: "auto",
           background: "transparent",
-          zIndex:999,
+          zIndex: -1,
         }}
       />
     </div>
@@ -1608,33 +1608,7 @@ export default function WhyChooseUs() {
 <FluidSimulation />
 
       <div className="overflow-x-hidden w-full">
-        <div
-          style={{ position: "relative", height: "400vh", overflow: "hidden" }}
-        >
-          {/* <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-          <StringScene />
-        </div> */}
-
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <ScrollPanels />
-          </div>
-        </div>
-
-        <div className="w-full flex justify-center items-center py-12 px-6">
-          <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
-            <Scene />
-          </div>
-        </div>
-
-        {/* <Hero /> */}
-
-        <ImageGrid />
-
-        <CardStack />
-        <StackCards />
-        <TechSection />
-
-        <div className="relative w-full h-screen">
+      <div className="relative w-full h-screen">
           <Canvas
             className="absolute inset-0 z-10"
             camera={{ position: [0, 6, 12], fov: 45 }}
@@ -1652,6 +1626,33 @@ export default function WhyChooseUs() {
 
           {/* <div className="absolute inset-0 z-20 flex items-center justify-center"></div> */}
         </div>
+        <div
+          // style={{ position: "relative", height: "400vh", overflow: "hidden" }}
+        >
+          {/* <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+          <StringScene />
+        </div> */}
+
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <ScrollPanels />
+          </div>
+        </div>
+
+        {/* <div className="w-full flex justify-center items-center py-12 px-6">
+          <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
+            <Scene />
+          </div>
+        </div> */}
+
+        {/* <Hero /> */}
+
+        <ImageGrid />
+
+        <CardStack />
+        <StackCards />
+        <TechSection />
+
+
         <section
           style={{
             position: "relative",
@@ -1983,7 +1984,7 @@ const TechSection = () => {
 
   return (
     <>
-      <div>
+      <div className="bg-[#F9F9F9]">
         {/* <div className="bg-[#DCDCDC] text-[#d2ff8c]"> */}
 
         <section ref={sectionRef} className="px-6 py-12 md:px-12">
@@ -2090,9 +2091,9 @@ const TechSection = () => {
 };
 function ScrollPanels() {
   const images = [
-    { src: "/images/signonmetalrack.png", alt: "First Image" },
-    { src: "/images/signonmetalrack.png", alt: "Second Image" },
-    { src: "/images/signonmetalrack.png", alt: "Third Image" },
+    { src: "/images/signonmetalrack.png", alt: "sign" },
+    { src: "/images/tablemockup.png", alt: "table" },
+    { src: "/images/signonmetalrack.png", alt: "3" },
   ];
   useEffect(() => {
     gsap.to('.textslide', {
@@ -2104,7 +2105,7 @@ function ScrollPanels() {
   }, []);
   
   return (
-    <div className="">
+    <div className="bg-[#F9F9F9]">
       {/* <section
         style={{
 
@@ -2128,51 +2129,78 @@ function ScrollPanels() {
             </div>
           </div>
         </section>
-        <div>
-          {images.map((img, i) => (
-            <section
-              key={i}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: "100vh",
-              }}
-            >
-              <div
-                className="img"
-                style={{
-                  width: "min(80vw, 900px)",
-                  padding: "10vw",
-                }}
-              >
-                <div
-                  className="img-container"
-                  style={{
-                    width: "100%",
-                    paddingTop: "80%",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  <img
-                    src={img.src}
-                    alt={img.alt}
-                    style={{
-                      width: "auto",
-                      height: "100%",
-                      position: "absolute",
-                      top: 0,
-                      left: "50%",
-                      transform: "translateX(-50%) scale(1.4)",
-                      transformOrigin: "center",
-                    }}
-                  />
-                </div>
-              </div>
-            </section>
-          ))}
-        </div>
+
+<section className="h-screen w-full bg-[#f9f9f9] py-12">
+  <div className="w-full px-[12vw]">
+    <div className="border-t border-black/10 w-full mb-10" />
+    <div className="flex items-center justify-between">
+
+      <div className="flex flex-col relative z-10">
+        <h1 className="text-[3.5vw] leading-[1] font-neuehaas45 uppercase">
+          Smart <br />
+          <span className="mt-2 pt-2 block">Orthodontics</span>
+        </h1>
+        <p className="text-[12px] uppercase mt-4 text-black/70 font-khteka">
+          Built around your life
+        </p>
+      </div>
+
+    
+      <div className="w-[40vw]">
+        <img src="/images/signonmetalrack.png" alt="sign" className="w-full h-auto" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section className="w-full bg-[#f9f9f9] py-12">
+  <div className="w-full px-[12vw]">
+    <div className="border-t border-black/10 w-full mb-10 -mt-[10vh]" />
+    <div className="flex items-center justify-between flex-row-reverse">
+
+    <div className="flex flex-col relative z-10 text-left ml-[4vw]">
+        <h1 className="text-[3.5vw] leading-[1] font-neuehaas45 uppercase">
+          3d <br />
+          <span className="mt-2 pt-2 block">Imaging</span>
+        </h1>
+        <p className="max-w-[400px] text-[12px] uppercase mt-4 text-black/70 font-khteka">
+        3d technology is reshaping modern orthodontics. Expect different information from our competitors. 
+        </p>
+      </div>
+
+      <div className="w-[50vw]">
+        <img src="/images/tablemockup.png" alt="table" className="w-full h-auto" />
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+        {/* <div className="image-grid px-16 grid grid-cols-1 md:grid-cols-2 ">
+  {images.map((img, i) => (
+    <div
+      key={i}
+      className="relative w-full overflow-hidden"
+      style={{
+        height: i % 2 === 0 ? '550px' : '500px', 
+        marginTop: i % 4 === 0 || i % 4 === 3 ? '0px' : '60px',
+      }}
+    >
+      <img
+        src={img.src}
+        alt={img.alt}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+        }}
+      />
+    </div>
+  ))}
+</div> */}
+
       </div>
     </div>
   );
@@ -2237,7 +2265,7 @@ const ImageGrid = () => {
 
   return (
     <div>
-      <div className="bg-[#F7F5EF] px-10 py-10">
+      <div className="bg-[#F9F9F9] px-10 py-10">
         <div className="content content--full">
           <h1
             ref={textExpertiseRef}
@@ -3147,7 +3175,7 @@ const CardStack = () => {
 
   return (
     <>
-      <div className="bg-[#F7F5EF]">
+      <div className="bg-[#F9F9F9]">
         <div className="l-wrapper ">
           <div className="list1" id="list1" ref={list1Ref}>
             <ul className="card-list list">
@@ -3446,8 +3474,8 @@ function StackCards() {
     setMPos({ x: 50, y: 50 });
   };
   return (
-    <section ref={containerRef}>
-      <section className="-mt-20 bg-[#F7F5EF] w-full flex flex-col items-center">
+    <section className="bg-[#F9F9F9]" ref={containerRef}>
+      <section className="-mt-20 bg-[#F9F9F9] w-full flex flex-col items-center">
         <div className=" flex flex-row gap-x-12">
           <div className=" flex flex-col justify-center">
             <div
@@ -3534,69 +3562,7 @@ function StackCards() {
             />
           </div>
         </div>
-        {/* <div
-            style={{
-              color: "rgb(45, 45, 45)",
-              willChange: "transform",
-              transform:
-                "translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(-28.3716deg) skew(0deg, 0deg)",
-              transformStyle: "preserve-3d",
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="10%"
-              height="10%"
-              viewBox="0 0 103.785 103.785"
-            >
-              <g transform="translate(51.892 -28.764) rotate(45)">
-                <g
-                  transform="matrix(-0.875, 0.485, -0.485, -0.875, 114.066, 73.387)"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1"
-                >
-                  <ellipse
-                    cx="41.954"
-                    cy="41.954"
-                    rx="41.954"
-                    ry="41.954"
-                    stroke="none"
-                  ></ellipse>
-                  <ellipse
-                    cx="41.954"
-                    cy="41.954"
-                    rx="41.454"
-                    ry="41.454"
-                    fill="none"
-                  ></ellipse>
-                </g>
-                <path
-                  d="M22.953,11.638A10.5,10.5,0,0,0,15.677.932C7.59-1.911,2.457,2.355,0,5.61"
-                  transform="matrix(-0.875, 0.485, -0.485, -0.875, 57.727, 61.933)"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1"
-                ></path>
-                <ellipse
-                  cx="1.694"
-                  cy="1.694"
-                  rx="1.694"
-                  ry="1.694"
-                  transform="matrix(-0.875, 0.485, -0.485, -0.875, 53.153, 47.112)"
-                  fill="currentColor"
-                ></ellipse>
-                <ellipse
-                  cx="1.694"
-                  cy="1.694"
-                  rx="1.694"
-                  ry="1.694"
-                  transform="matrix(-0.875, 0.485, -0.485, -0.875, 31.697, 55.017)"
-                  fill="currentColor"
-                ></ellipse>
-              </g>
-            </svg>
-          </div> */}
+ 
         {/* <div className="blockcontainer">
           <p>
             <span></span>
@@ -3613,14 +3579,14 @@ function StackCards() {
         </div> */}
       </section>
 
-      <div className="bg-[#F7F5EF] mt-20 font-khteka min-h-screen text-[11px] leading-[1.1] uppercase px-2">
+      <div className="mt-20 font-khteka min-h-screen text-[11px] leading-[1.1] uppercase px-2">
         {/* Block 1 */}
         <div className="w-full border-t border-black">
           <div
             className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
             style={{ "--br": "0px" }}
           >
-            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
+            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
 
             <div className="relative z-10 text-[11px] text-[#ff007f] ">
               ABO Treatment Standards
@@ -3644,7 +3610,7 @@ function StackCards() {
             className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
             style={{ "--br": "0px" }}
           >
-            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
+            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
 
             <div className="relative z-10 text-[11px] text-[#ff007f] ">
               Board Certification Process
@@ -3666,7 +3632,7 @@ function StackCards() {
             className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
             style={{ "--br": "0px" }}
           >
-            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
+            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
 
             <div className="relative z-10 text-[11px] text-[#ff007f] ">
               Diagnostic Record Accuracy
@@ -3688,7 +3654,7 @@ function StackCards() {
             className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
             style={{ "--br": "0px" }}
           >
-            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F7F5EF] before:transition-none before:rounded-[var(--br)]" />
+            <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
 
             <div className="relative z-10 text-[11px] text-[#ff007f] ">
               Trusted Expertise
@@ -3703,6 +3669,7 @@ function StackCards() {
               </div>
             </div>
           </div>
+          <div className="w-full border-b border-black" />
         </div>
       </div>
       <div className="relative">
