@@ -18,7 +18,7 @@ import { useCartStore } from "@/lib/cart-store";
 gsap.registerPlugin(ScrollTrigger, Flip);
 
 export default function DesktopNav({ user }) {
-  
+
   const pathname = usePathname();
   const [isActive, setIsActive] = useState(false);
   const [selectedLink, setSelectedLink] = useState(null);
@@ -126,7 +126,7 @@ const bgRef = useRef(null);
 
 //   const moveBg = (target) => {
 //     const state = Flip.getState(bg);
-//     target.appendChild(bg);         
+//     target.appendChild(bg);
 //     Flip.from(state, {
 //       duration: 0.4,
 //       ease: "power2.out",
@@ -157,60 +157,77 @@ const bgRef = useRef(null);
         } fixed top-0 w-full z-50 transition-all duration-300 ease-in-out`}
       >
         <motion.div
-          className="pt-[16px] flex items-center justify-between uppercase m-auto transition-[width] duration-1000 ease-in-out scroll-nav"
+          className="relative pt-[16px] flex items-center justify-between uppercase m-auto transition-[width] duration-1000 ease-in-out scroll-nav"
           variants={opacity}
           animate={!isActive ? "open" : "closed"}
         >
-<motion.div variants={opacity} animate={!isActive ? "open" : "closed"}>
-  <motion.div
-    ref={wrapperRef}
-    className="relative flex items-center py-4"
-  >
-    <div className="flex gap-1">
-      {links.slice(0, 4).map((link, i) => (
-        <motion.div
-          key={`${i}-${link.title}`}
-          data-flip-button="button"
-          className="bg-[#F2F2F2]/70 text-black rounded-[8px] px-6 py-3 flex items-center relative border border-gray-300 transition-colors duration-200 hover:border-gray-500"
-          onClick={() => {
-            setSelectedLink(link.title);
-            setIsActive(!isActive);
-            setActiveIndex(i);
-          }}
-        >
-          <motion.p
-            className="text-gray-500 font-neuehaas35 tracking-wider text-[11px] cursor-pointer"
-            variants={opacity}
-            animate={!isActive ? "open" : "closed"}
-          >
-            {link.title}
-          </motion.p>
-        </motion.div>
-      ))}
-    </div>
-  </motion.div>
-</motion.div>
-
-
-
-          <Link href="/">
+          <motion.div variants={opacity} animate={!isActive ? "open" : "closed"}>
             <motion.div
+              ref={wrapperRef}
+              className="relative flex items-center py-4"
+            >
+              <div className="flex gap-1">
+                {links.slice(0, 4).map((link, i) => (
+                  <motion.div
+                    key={`${i}-${link.title}`}
+                    data-flip-button="button"
+                    className="bg-[#F2F2F2]/70 text-black rounded-[8px] px-6 py-3 flex items-center relative border border-gray-300 transition-colors duration-200 hover:border-gray-500"
+                    onClick={() => {
+                      setSelectedLink(link.title);
+                      setIsActive(!isActive);
+                      setActiveIndex(i);
+                    }}
+                  >
+                    <motion.p
+                      className="text-gray-500 font-neuehaas35 tracking-wider text-[11px] cursor-pointer"
+                      variants={opacity}
+                      animate={!isActive ? "open" : "closed"}
+                    >
+                      {link.title}
+                    </motion.p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+
+          <Link href="/" className="absolute mx-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <svg className="size-[72px]" fill="#fff" id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 299.67 158">
+              <g id="Layer_4" data-name="Layer 4">
+                <g id="freysmiles_logo" data-name="freysmiles logo">
+                  <g id="f">
+                    <path d="M25,0h0C38.8,0,50,11.2,50,25v24c0,.55-.45,1-1,1H25C11.2,50,0,38.8,0,25H0C0,11.2,11.2,0,25,0Z" fill="#000" /> {/* red */}
+                    <path d="M79.37,0h30C123.17,0,134.38,11.2,134.38,25h0c0,13.8-11.2,25-25,25H55.38c-.55,0-1-.45-1-1V25C54.38,11.2,65.58,0,79.37,0Z" fill="#000" /> {/* orange */}
+                    <path d="M25,54h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25h0C11.2,104,0,92.8,0,79H0C0,65.2,11.2,54,25,54Z" fill="#000" /> {/* yellow */}
+                    <path d="M55.38,54h24c13.8,0,25,11.2,25,25h0c0,13.8-11.2,25-25,25h-24c-.55,0-1-.45-1-1V55c0-.55,.45-1,1-1Z" fill="#000" /> {/* green */}
+                    <path d="M25,108h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25H1C.45,158,0,157.55,0,157v-24C0,119.2,11.2,108,25,108Z" fill="#000" /> {/* light blue */}
+                  </g>
+                  <g id="s">
+                    <path d="M180.75,0h37.96c.55,0,1,.45,1,1V74.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-1.96C143.75,16.58,160.33,0,180.75,0Z" fill="#000" /> {/* purple */}
+                    <path d="M224.71,0h37.96C283.09,0,299.67,16.58,299.67,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37V1C223.71,.45,224.16,0,224.71,0Z" fill="#000" /> {/* blue */}
+                    <path d="M144.75,79.96h37.96c20.42,0,37,16.58,37,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-37.96c0-.55,.45-1,1-1Z" fill="#000" /> {/* indigo */}
+                    <path d="M224.71,79.96h37.96c20.42,0,37,16.58,37,37v1.96c0,20.42-16.58,37-37,37h-37.96c-.55,0-1-.45-1-1V80.96c0-.55,.45-1,1-1Z" fill="#000" /> {/* light green */}
+                  </g>
+                </g>
+              </g>
+            </svg>
+            {/* <motion.div
               className={`${
                 isActive ? "hidden" : "block"
               }    text-black flex justify-center items-center  p-3`}
             >
-                    <div
+              <div
                 style={{
                   width: "1.5em",
                   height: "1.5em",
-                  borderRadius: "50%", 
-                  overflow: "hidden", 
+                  borderRadius: "50%",
+                  overflow: "hidden",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-                {/* <video
+                <video
                   id="holovideo"
                   loop
                   muted
@@ -230,73 +247,75 @@ const bgRef = useRef(null);
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.
-                </video> */}
+                </video>
               </div>
               <svg width="14" height="17" viewBox="0 0 28 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="glassGradient" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#A3A8F0" stop-opacity="0.4" />
-      <stop offset="50%" stop-color="#C6B5F7" stop-opacity="0.3" />
-      <stop offset="100%" stop-color="#A0EACF" stop-opacity="0.2" />
-    </linearGradient>
-    <filter id="glassBlur" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="0.6" />
-    </filter>
-  </defs>
-   <g fill="url(#glassGradient)">
-    <path d="M0 8H8V34H0V24H8V16H0V8Z" />
-    <rect x="8" width="20" height="8" />
-    <rect x="8" y="16" width="16" height="8" />
-  </g>
-</svg>
-
-            </motion.div>
+                <defs>
+                  <linearGradient id="glassGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#A3A8F0" stop-opacity="0.4" />
+                    <stop offset="50%" stop-color="#C6B5F7" stop-opacity="0.3" />
+                    <stop offset="100%" stop-color="#A0EACF" stop-opacity="0.2" />
+                  </linearGradient>
+                  <filter id="glassBlur" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="0.6" />
+                  </filter>
+                </defs>
+                <g fill="url(#glassGradient)">
+                  <path d="M0 8H8V34H0V24H8V16H0V8Z" />
+                  <rect x="8" width="20" height="8" />
+                  <rect x="8" y="16" width="16" height="8" />
+                </g>
+              </svg>
+            </motion.div> */}
           </Link>
 
           <motion.div
             variants={opacity}
             animate={!isActive ? "open" : "closed"}
           >
-            {" "}
             {/* styles.el */}
-            <motion.div className="flex items-center ">
-
-  <Link href="/book-now">
-    <motion.div
-      className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 text-[white] rounded-full px-6 py-5 font-helvetica-neue-light tracking-wider text-[11px]"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-    >
-      Book
-    </motion.div>
-  </Link>
-
-  <Link href="/">
-  <motion.div
-    className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center text-[11px] font-helvetica-neue-light"
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-MAIN
-
-  </motion.div>
-  </Link>
-
-  <Link href="/shop/products">
-    <motion.div
-      className="flex items-center justify-center w-10 h-16 transition-all bg-black rounded-full shadow-lg cursor-pointer backdrop-blur-lg shadow-white/10"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-    >
-      <span className="rotate-90 text-white font-helvetica-neue-light text-[11px]">
-        Shop
-      </span>
-    </motion.div>
-  </Link>
-</motion.div>
+            <motion.div className="flex items-center">
+              <motion.div
+                className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 rounded-full px-1 py-4"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <CartComponent />
+              </motion.div>
+              <Link href="/book-now">
+                <motion.div
+                  className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 text-[white] rounded-full px-6 py-5 font-helvetica-neue-light tracking-wider text-[11px]"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Book
+                </motion.div>
+              </Link>
+              <Link href="/">
+                <motion.div
+                  className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center text-[11px] font-helvetica-neue-light"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  MAIN
+                </motion.div>
+              </Link>
+              <Link href="/shop/products">
+                <motion.div
+                  className="flex items-center justify-center w-10 h-16 transition-all bg-black rounded-full shadow-lg cursor-pointer backdrop-blur-lg shadow-white/10"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="rotate-90 text-white font-helvetica-neue-light text-[11px]">
+                    Shop
+                  </span>
+                </motion.div>
+              </Link>
+            </motion.div>
 
           </motion.div>
         </motion.div>
+
         <motion.div
           onClick={() => setIsActive(false)}
           variants={background}
@@ -343,7 +362,7 @@ MAIN
               initial="initial"
               animate="open"
               exit="closed"
-              custom={j} 
+              custom={j}
               whileHover="hover"
               className="relative flex flex-col py-2 overflow-hidden cursor-pointer"
             >
