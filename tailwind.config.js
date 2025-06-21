@@ -39,6 +39,8 @@ module.exports = withUt({
   		autumnchant: 'Autumn Chant',
 		bebas: 'BebasNeue-Regular',
 		calyx: 'Calyx Regular',
+		canelalight:'Canela-LightItalic',
+		canelathin:'Canela-ThinItalic',
   		cera: 'CeraProRegular',
   		'cera-bold': 'CeraProBold',
   		'Chaney-Ultra': 'Chaney-Ultra',

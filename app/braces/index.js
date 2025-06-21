@@ -52,10 +52,6 @@ if (typeof window !== "undefined") {
 
 gsap.registerPlugin(ScrollTrigger);
 
-
-
-
-
 const Braces = () => {
   return (
     <>
@@ -78,104 +74,104 @@ const Braces = () => {
           />
         </div>
 
+        <div className="h-[20vh]" />
+        <div className="grid grid-cols-2 h-screen w-screen">
+          <div className="flex justify-center">
+            <div className="w-full max-w-2xl mx-auto">
+              <section className="px-8 py-24 font-neuehaas45 text-sm tracking-tight">
+                <div className="mb-10">
+                  <h1 className="text-[42px] font-neuehaas45 tracking-wide flex items-center gap-2">
+                    <span className="w-[1px] h-[42px] bg-black opacity-30"></span>
+                    <span>Not Your</span>
+                    <span className="w-[1px] h-[42px] bg-black opacity-30"></span>
+                    <span>Average Braces</span>
+                  </h1>
+                  <p className="mt-4 text-[12px] tracking-wider max-w-xs leading-snug font-neuehaas45 uppercase">
+                    You may experience some <strong>or</strong> all of the many
+                    benefits
+                  </p>
+                </div>
 
-        <div className="grid grid-cols-2 w-screen">
-  <div className="flex justify-center">
-    <div className="w-full max-w-2xl mx-auto">
-      <section className="px-8 py-24 font-neuehaas45 text-sm tracking-tight">
-        <div className="flex items-center gap-8 mb-16">
-          <div className="flex flex-col leading-none">
-            <h1 className="text-[36px] tracking-wide font-neuehaas45">Not Your</h1>
-            <h2 className="font-saolitalic tracking-wide text-[30px] italic -mt-[4px]">
-              Average Braces
-            </h2>
+                <div className="space-y-4">
+                  {[
+                    "Cleaner braces",
+                    "Less discomfort",
+                    "Less time in treatment",
+                    "Fewer office visits",
+                    "Less frequent office visits",
+                    "Wider arches than other braces",
+                    "Fewer extractions of permanent teeth",
+                  ].map((item) => (
+                    <div
+                      key={item}
+                      className="tracking-wide font-neueroman uppercase text-[11px] pt-4 border-t border-[#cdccc9]"
+                    >
+                      <li>{item}</li>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
           </div>
 
-          <p className="tracking-wide font-neuehaas45 text-[14px] max-w-sm">
-            You may experience some OR all of the many benefits
-          </p>
+          <div className="flex justify-center items-center">
+            <img
+              src="/images/luckynumber7.png"
+              className="max-w-full max-h-[60vh] object-contain"
+              alt="7graphic"
+            />
+          </div>
         </div>
 
-        <div className="space-y-4">
-          {[
-            "Cleaner braces",
-            "Less discomfort",
-            "Less time in treatment",
-            "Fewer office visits",
-            "Less frequent office visits",
-            "Wider arches than other braces",
-            "Fewer extractions of permanent teeth",
-          ].map((item) => (
-            <div
-              key={item}
-              className="tracking-wider font-khteka uppercase text-[11px] pt-4 border-t border-[#cdccc9]"
-            >
-              <li>{item}</li>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <div className="flex justify-center items-center">
-
-  <img
-    src="/images/luckynumber7.png"
-    className="max-w-full max-h-[60vh] object-contain"
-    alt="Braces Patient"
-  />
-</div>
-
-</div>
-
-   
-
-        <div className="flex flex-col justify-center items-center min-h-screen space-y-24 font-neuehaas45 px-4">
-          <div className="flex flex-col md:flex-row justify-center items-start gap-12 px-4">
-          <div className="max-w-[500px]">
+        <div className="flex flex-col justify-center items-center min-h-screen space-y-24 font-neuehaas45 px-4 py-12">
+          <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
+            <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Cleaner by Design
+                \ Cleaner by Design
               </h2>
-              <p className="font-neuehaas45 text-[15px]">
-  The self-closing door means no need for elastic ties — fewer materials in your mouth and less friction. The wire itself is a shape-memory alloy engineered to move teeth smoothly and efficiently.
-</p>
-
+              <p className="text-[15px] leading-snug font-neuehaas45">
+                The self-closing door means no need for elastic ties — fewer
+                materials in your mouth and less friction. The wire itself is a
+                shape-memory alloy engineered to move teeth smoothly and
+                efficiently.
+              </p>
             </div>
-            <div className="w-full md:w-1/2 max-w-[500px]">
+
+            <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Less frequent office visits
+                \ Less Frequent Office Visits
               </h2>
-              <p className="font-neuehaas45 text-[15px] leading-snug">
+              <p className="text-[15px] leading-snug font-neuehaas45">
                 With Damon archwires, rubber ties are not a mandatory component.
                 The sliding door keeps the wire secure until we choose to move
                 it. No metal twist ties pretending to be high-tech.
               </p>
             </div>
-  
-     
           </div>
-          <h2 className="mb-2 text-[64px] font-saolitalic">
+
+          <h2 className="text-[60px] font-saolitalic pt-4 pb-2">
             Vivre sa vie
           </h2>
 
-          <div className="flex flex-wrap justify-between gap-8">
-          <div className="max-w-[500px]">
+          <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
+            <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Smarter Mechanics
+                \ Smarter Mechanics
               </h2>
-              <p className="font-neuehaas45 text-[15px]">
-                Damon braces uses a sliding door mechanism that reduces the amount
-                of friction during tooth movement. This allows for more efficient initial tooth alignment. Not only is this faster movement completely healthy
-                and safe, it will help you achieve the results in half the time.
+              <p className="text-[15px] leading-snug font-neuehaas45">
+                Damon braces uses a sliding door mechanism that reduces the
+                amount of friction during tooth movement. This allows for more
+                efficient initial tooth alignment. Not only is this faster
+                movement completely healthy and safe, it will help you achieve
+                the results in half the time.
               </p>
             </div>
 
-            <div className="w-full md:w-1/2 max-w-[500px]">
+            <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Fewer Appointments. More time for personal nonsense.
+                \ Fewer Appointments. More Time for Personal Nonsense
               </h2>
-              <p className="font-neuehaas45 text-[15px] leading-snug">
+              <p className="text-[15px] leading-snug font-neuehaas45">
                 Traditional braces (aka twin brackets) often require monthly
                 visits just to replace rubber bands that lose elasticity
                 fast—and don’t even hold the wire that well. In some cases, the
@@ -183,17 +179,66 @@ const Braces = () => {
                 Think—barbed wire, but in your mouth.
               </p>
             </div>
-  
+          </div>
+        </div>
+        <div className="flex justify-center items-start py-24 px-4">
+          <div className="max-w-2xl w-full text-[15px] font-neuehaas45 space-y-6 leading-snug">
+            <h2 className="text-[14px] uppercase tracking-wider font-neuehaas35 mb-2">
+              Considerations with Braces
+            </h2>
+            <p className="font-neuehaas45">
+              Because of their complex geometry, brackets make thorough cleaning
+              significantly more difficult. Plaque retention becomes almost
+              inevitable — which increases the risk of permanent enamel damage
+              and long-term discoloration due to decalcification.
+            </p>
+
+            <p className="font-neuehaas45">
+              A successful outcome with braces comes down to three essentials:
+              frequent and consistent hygiene practices, mindful eating, and
+              staying consistent with appointments. The constellation of these
+              habits works in tandem to keep your treatment efficient,
+              comfortable, and on track.
+            </p>
+
+            <p className="font-neuehaas45">
+              We’ve put together a few practical tips to help you stay on top of
+              it all.
+            </p>
+
+            <div className="pt-6">
+              <a
+                href="/caring-for-your-braces"
+                className="z-10 inline-flex items-center justify-center text-[14px] uppercase tracking-wide font-neuehaas35 border border-black px-6 py-2 hover:bg-black hover:text-white transition-all"
+                role="button"
+              >
+                How to Care for Your Braces
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-center items-center h-screen">
-          <div className="text-[12px] uppercase max-w-[500px] font-neuehaas45">
-            Very difficult to avoid staining and damage to the enamel. With
-            braces, we're gluing the brackets permanently to the teeth. You
-            really have to be diligent to clean the teeth.
+        <div className="flex justify-center items-start py-24 px-4">
+          <div className="w-full max-w-3xl text-center pt-12">
+            <p className="text-[14px] font-neuehaas35 uppercase tracking-wide opacity-60 mb-2">
+              One more thing
+            </p>
+            <h3 className="text-[32px] font-neuehaas45 leading-snug mb-4">
+              We’ll be honest — we still prefer finishing cases with aligners.
+            </h3>
+            <p className="text-[15px] leading-relaxed font-neuehaas45 max-w-xl mx-auto">
+              Our breadth of clinical experience with fixed appliances —
+              including Damon Braces — has shaped our current methodology: we
+              begin with braces when they offer a mechanical advantage, then
+              transition to clear aligners to guide teeth into their final
+              position. This hybrid approach creates a more cohesive treatment
+              arc — not only improving precision and predictability, but also
+              easing patients into the retention phase with less relapse and
+              better long-term compliance.
+            </p>
           </div>
         </div>
+
         <FluidSimulation />
         {/* <WebGLGalleryApp /> */}
       </div>

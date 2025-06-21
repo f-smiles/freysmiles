@@ -54,6 +54,16 @@
   font-family: "Sinistre-Regular";
   src: url("/fonts/Sinistre-Regular.woff") format("truetype");
 }
+@font-face {
+  font-family: "Canela-LightItalic";
+  src: url("/fonts/Canela-LightItalic-Trial.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Canela-ThinItalic";
+  src: url("/fonts/Canela-ThinItalic-Trial.otf") format("opentype");
+}
+
 
 @font-face {
   font-family: "Amribail";
