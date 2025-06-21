@@ -992,17 +992,11 @@ const Testimonials = () => {
 
     <div className="w-full md:w-1/2 flex items-center justify-center min-h-[100vh]">
       <div className="max-w-[500px] w-full">
-        <h2 className="mb-6 text-3xl uppercase font-neuehaas45 text-center md:text-left md:text-4xl">
+        <h2 className="mb-6 text-[40px] uppercase font-neuehaas45 text-center md:text-left md:text-[40px]">
           Join the smile club
         </h2>
 
-        <div className="font-khteka text-[13px] uppercase relative">
-          {/* <span className="leading-none absolute invisible block">
-            We are committed to setting the standard for exceptional service.
-            Our communication is always open—every question is welcome, and
-            every concern is met with care and professionalism.
-          </span> */}
-
+        <div className="font-khteka text-[12px] leading-[1.2] uppercase relative">
           <ScrambleBlock
             lines={[
               "We are committed to setting the standard for exceptional service.",

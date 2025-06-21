@@ -1,8 +1,8 @@
 "use client";
-import NormalizeWheel from 'normalize-wheel'
+import NormalizeWheel from "normalize-wheel";
 import * as THREE from "three";
 import { MeshDistortMaterial } from "@react-three/drei";
-import { useRef, useEffect, useState, Suspense} from "react";
+import { useRef, useEffect, useState, Suspense } from "react";
 import { Disclosure, Transition } from "@headlessui/react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
@@ -21,10 +21,23 @@ import {
   OrbitControls,
   useGLTF,
 } from "@react-three/drei";
-import { Canvas, useFrame, useThree, extend, useLoader, useTexture } from "@react-three/fiber";
-import { Renderer, Camera, Transform, Plane, Texture, Mesh, Program } from 'ogl'
-
-
+import {
+  Canvas,
+  useFrame,
+  useThree,
+  extend,
+  useLoader,
+  useTexture,
+} from "@react-three/fiber";
+import {
+  Renderer,
+  Camera,
+  Transform,
+  Plane,
+  Texture,
+  Mesh,
+  Program,
+} from "ogl";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
@@ -39,52 +52,43 @@ if (typeof window !== "undefined") {
 
 gsap.registerPlugin(ScrollTrigger);
 const Braces = () => {
-
   return (
     <>
+      <div
+        className="bg-[#E7E7E7] relative min-h-screen overflow-hidden"
+      >
+        <div>
+        <img src = "/images/ajomockupchair.png" />
+        </div>
 
-<div
-  className="relative min-h-screen overflow-hidden"
-  style={{
-    background: `linear-gradient(to bottom, #e7e2f1 0%, #E3DEEA 100%)`,
-  }}
-  
->
+ <div className="flex justify-center items-center h-screen">
+    <div className="text-[12px] uppercase max-w-[500px] font-neuehaas45">
+      We love our patients so much we only use braces when we have to. Not
+      because it’s cheaper. Not because it’s easier. Just because it’s what’s
+      best. And when braces are needed? We're using the best ones—and getting them off as fast as humanly possible.
+    </div>
+  </div>
+          <FluidSimulation />
+          {/* <WebGLGalleryApp /> */}
 
-  <main className="relative z-20">
-  <FluidSimulation />
-  
-  </main>
-</div>
+      </div>
 
-
-
-
-
-
-      {/* <div style={{ width: "50vw", height: "100vh" }}>
-        <FlutedGlassEffect
-          imageUrl="/images/1.jpg"
-          mode="mouse"
-          motionFactor={-50}
-          rotationAngle={45}
-          segments={50}
-          overlayOpacity={50}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </div> */}
-        {/* <TextEffect 
+      {/* <TextEffect 
     text="Braces" 
     font="NeueHaasRoman" 
     color="#ffffff" 
     fontWeight="normal" 
   /> */}
-  {/* <WebGLGalleryApp /> */}
     </>
   );
 };
 
-const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#ffffff", fontWeight = "100" }) => {
+const TextEffect = ({
+  text = "braces",
+  font = "NeueHaasDisplay35",
+  color = "#ffffff",
+  fontWeight = "100",
+}) => {
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
@@ -232,7 +236,12 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#fff
   };
 
   const animateScene = () => {
-    if (!planeMeshRef.current || !rendererRef.current || !sceneRef.current || !cameraRef.current) {
+    if (
+      !planeMeshRef.current ||
+      !rendererRef.current ||
+      !sceneRef.current ||
+      !cameraRef.current
+    ) {
       return;
     }
 
@@ -260,12 +269,12 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#fff
 
   const handleMouseMove = (event) => {
     if (!containerRef.current) return;
-    
+
     easeFactorRef.current = 0.035;
     const rect = containerRef.current.getBoundingClientRect();
-    prevPositionRef.current = { 
-      x: targetMousePositionRef.current.x, 
-      y: targetMousePositionRef.current.y 
+    prevPositionRef.current = {
+      x: targetMousePositionRef.current.x,
+      y: targetMousePositionRef.current.y,
     };
 
     targetMousePositionRef.current.x = (event.clientX - rect.left) / rect.width;
@@ -274,7 +283,7 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#fff
 
   const handleMouseEnter = (event) => {
     if (!containerRef.current) return;
-    
+
     easeFactorRef.current = 0.01;
     const rect = containerRef.current.getBoundingClientRect();
 
@@ -286,15 +295,15 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#fff
 
   const handleMouseLeave = () => {
     easeFactorRef.current = 0.01;
-    targetMousePositionRef.current = { 
-      x: prevPositionRef.current.x, 
-      y: prevPositionRef.current.y 
+    targetMousePositionRef.current = {
+      x: prevPositionRef.current.x,
+      y: prevPositionRef.current.y,
     };
   };
 
   const onWindowResize = () => {
     if (!cameraRef.current || !rendererRef.current) return;
-    
+
     const aspectRatio = window.innerWidth / window.innerHeight;
     cameraRef.current.left = -1;
     cameraRef.current.right = 1;
@@ -308,59 +317,55 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#fff
   useEffect(() => {
     let mounted = true;
     const currentContainer = containerRef.current;
-  
+
     const init = async () => {
       try {
-
         const fontSize = Math.floor(window.innerWidth * 2);
         await document.fonts.load(`${fontWeight} ${fontSize}px "${font}"`);
         await document.fonts.ready;
-  
+
         if (!mounted) return;
-  
 
         const texture = createTextTexture(text, font, null, color, fontWeight);
         initializeScene(texture);
         animationRef.current = requestAnimationFrame(animateScene);
 
         if (currentContainer) {
-          currentContainer.addEventListener('mousemove', handleMouseMove);
-          currentContainer.addEventListener('mouseenter', handleMouseEnter);
-          currentContainer.addEventListener('mouseleave', handleMouseLeave);
+          currentContainer.addEventListener("mousemove", handleMouseMove);
+          currentContainer.addEventListener("mouseenter", handleMouseEnter);
+          currentContainer.addEventListener("mouseleave", handleMouseLeave);
         }
-        window.addEventListener('resize', onWindowResize);
-  
+        window.addEventListener("resize", onWindowResize);
       } catch (error) {
         console.error("Font loading error:", error);
 
         if (!mounted) return;
-        
+
         const texture = createTextTexture(text, font, null, color, fontWeight);
         initializeScene(texture);
         animationRef.current = requestAnimationFrame(animateScene);
-  
+
         if (currentContainer) {
-          currentContainer.addEventListener('mousemove', handleMouseMove);
-          currentContainer.addEventListener('mouseenter', handleMouseEnter);
-          currentContainer.addEventListener('mouseleave', handleMouseLeave);
+          currentContainer.addEventListener("mousemove", handleMouseMove);
+          currentContainer.addEventListener("mouseenter", handleMouseEnter);
+          currentContainer.addEventListener("mouseleave", handleMouseLeave);
         }
-        window.addEventListener('resize', onWindowResize);
+        window.addEventListener("resize", onWindowResize);
       }
     };
-  
+
     init();
-  
+
     return () => {
       mounted = false;
       cancelAnimationFrame(animationRef.current);
 
       if (currentContainer) {
-        currentContainer.removeEventListener('mousemove', handleMouseMove);
-        currentContainer.removeEventListener('mouseenter', handleMouseEnter);
-        currentContainer.removeEventListener('mouseleave', handleMouseLeave);
+        currentContainer.removeEventListener("mousemove", handleMouseMove);
+        currentContainer.removeEventListener("mouseenter", handleMouseEnter);
+        currentContainer.removeEventListener("mouseleave", handleMouseLeave);
       }
-      window.removeEventListener('resize', onWindowResize);
-      
+      window.removeEventListener("resize", onWindowResize);
 
       if (rendererRef.current) {
         rendererRef.current.dispose();
@@ -374,7 +379,7 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#fff
         textureRef.current.dispose();
       }
       if (sceneRef.current) {
-        sceneRef.current.traverse(child => {
+        sceneRef.current.traverse((child) => {
           child.material?.dispose();
           child.geometry?.dispose();
         });
@@ -382,21 +387,22 @@ const TextEffect = ({ text = "braces", font = "NeueHaasDisplay35", color = "#fff
     };
   }, [text, font, color, fontWeight]);
 
-  return <div ref={containerRef} style={{ width: '100%', height: '100vh', cursor: 'none' }} />;
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100vh", cursor: "none" }}
+    />
+  );
 };
-
-
 
 export default Braces;
 
-
 const FluidSimulation = () => {
   const canvasRef = useRef(null);
-  
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
 
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
@@ -408,7 +414,7 @@ const FluidSimulation = () => {
       PRESSURE_DISSIPATION: 0.8,
       PRESSURE_ITERATIONS: 25,
       CURL: 28,
-      SPLAT_RADIUS: 0.0008 
+      SPLAT_RADIUS: 0.0008,
     };
 
     let pointers = [];
@@ -417,35 +423,50 @@ const FluidSimulation = () => {
     const { gl, ext } = getWebGLContext(canvas);
 
     function getWebGLContext(canvas) {
-      const params = { alpha: true, depth: false, stencil: false, antialias: false };
+      const params = {
+        alpha: true,
+        depth: false,
+        stencil: false,
+        antialias: false,
+      };
 
-      let gl = canvas.getContext('webgl2', params);
+      let gl = canvas.getContext("webgl2", params);
       const isWebGL2 = !!gl;
       if (!isWebGL2)
-        gl = canvas.getContext('webgl', params) || canvas.getContext('experimental-webgl', params);
+        gl =
+          canvas.getContext("webgl", params) ||
+          canvas.getContext("experimental-webgl", params);
 
       let halfFloat;
       let supportLinearFiltering;
       if (isWebGL2) {
-        gl.getExtension('EXT_color_buffer_float');
-        supportLinearFiltering = gl.getExtension('OES_texture_float_linear');
+        gl.getExtension("EXT_color_buffer_float");
+        supportLinearFiltering = gl.getExtension("OES_texture_float_linear");
       } else {
-        halfFloat = gl.getExtension('OES_texture_half_float');
-        supportLinearFiltering = gl.getExtension('OES_texture_half_float_linear');
+        halfFloat = gl.getExtension("OES_texture_half_float");
+        supportLinearFiltering = gl.getExtension(
+          "OES_texture_half_float_linear"
+        );
       }
 
       gl.clearColor(0.0, 0.0, 0.0, 0.0);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    
 
-      const halfFloatTexType = isWebGL2 ? gl.HALF_FLOAT : halfFloat.HALF_FLOAT_OES;
+      const halfFloatTexType = isWebGL2
+        ? gl.HALF_FLOAT
+        : halfFloat.HALF_FLOAT_OES;
       let formatRGBA;
       let formatRG;
       let formatR;
 
       if (isWebGL2) {
-        formatRGBA = getSupportedFormat(gl, gl.RGBA16F, gl.RGBA, halfFloatTexType);
+        formatRGBA = getSupportedFormat(
+          gl,
+          gl.RGBA16F,
+          gl.RGBA,
+          halfFloatTexType
+        );
         formatRG = getSupportedFormat(gl, gl.RG16F, gl.RG, halfFloatTexType);
         formatR = getSupportedFormat(gl, gl.R16F, gl.RED, halfFloatTexType);
       } else {
@@ -461,8 +482,8 @@ const FluidSimulation = () => {
           formatRG,
           formatR,
           halfFloatTexType,
-          supportLinearFiltering 
-        }
+          supportLinearFiltering,
+        },
       };
     }
 
@@ -480,7 +501,7 @@ const FluidSimulation = () => {
 
       return {
         internalFormat,
-        format 
+        format,
       };
     }
 
@@ -491,15 +512,30 @@ const FluidSimulation = () => {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, 4, 4, 0, format, type, null);
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        internalFormat,
+        4,
+        4,
+        0,
+        format,
+        type,
+        null
+      );
 
       let fbo = gl.createFramebuffer();
       gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+      gl.framebufferTexture2D(
+        gl.FRAMEBUFFER,
+        gl.COLOR_ATTACHMENT0,
+        gl.TEXTURE_2D,
+        texture,
+        0
+      );
 
       const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-      if (status != gl.FRAMEBUFFER_COMPLETE)
-        return false;
+      if (status != gl.FRAMEBUFFER_COMPLETE) return false;
       return true;
     }
 
@@ -528,10 +564,16 @@ const FluidSimulation = () => {
         if (!gl.getProgramParameter(this.program, gl.LINK_STATUS))
           throw gl.getProgramInfoLog(this.program);
 
-        const uniformCount = gl.getProgramParameter(this.program, gl.ACTIVE_UNIFORMS);
+        const uniformCount = gl.getProgramParameter(
+          this.program,
+          gl.ACTIVE_UNIFORMS
+        );
         for (let i = 0; i < uniformCount; i++) {
           const uniformName = gl.getActiveUniform(this.program, i).name;
-          this.uniforms[uniformName] = gl.getUniformLocation(this.program, uniformName);
+          this.uniforms[uniformName] = gl.getUniformLocation(
+            this.program,
+            uniformName
+          );
         }
       }
 
@@ -551,7 +593,9 @@ const FluidSimulation = () => {
       return shader;
     }
 
-    const baseVertexShader = compileShader(gl.VERTEX_SHADER, `
+    const baseVertexShader = compileShader(
+      gl.VERTEX_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -571,9 +615,12 @@ const FluidSimulation = () => {
           vB = vUv - vec2(0.0, texelSize.y);
           gl_Position = vec4(aPosition, 0.0, 1.0);
       }
-    `);
+    `
+    );
 
-    const clearShader = compileShader(gl.FRAGMENT_SHADER, `
+    const clearShader = compileShader(
+      gl.FRAGMENT_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -584,9 +631,12 @@ const FluidSimulation = () => {
       void main () {
           gl_FragColor = value * texture2D(uTexture, vUv);
       }
-    `);
+    `
+    );
 
-    const displayShader = compileShader(gl.FRAGMENT_SHADER, `
+    const displayShader = compileShader(
+      gl.FRAGMENT_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -611,10 +661,12 @@ void main() {
 
     gl_FragColor = vec4(color, alpha * 0.7);  // Slightly softer visibility
 }
-    `);
+    `
+    );
 
-
-    const splatShader = compileShader(gl.FRAGMENT_SHADER, `
+    const splatShader = compileShader(
+      gl.FRAGMENT_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -632,9 +684,12 @@ void main() {
           vec3 base = texture2D(uTarget, vUv).xyz;
           gl_FragColor = vec4(base + splat, 1.0);
       }
-    `);
+    `
+    );
 
-    const advectionManualFilteringShader = compileShader(gl.FRAGMENT_SHADER, `
+    const advectionManualFilteringShader = compileShader(
+      gl.FRAGMENT_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -663,9 +718,12 @@ void main() {
           gl_FragColor = dissipation * bilerp(uSource, coord);
           gl_FragColor.a = 1.0;
       }
-    `);
+    `
+    );
 
-    const advectionShader = compileShader(gl.FRAGMENT_SHADER, `
+    const advectionShader = compileShader(
+      gl.FRAGMENT_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -681,9 +739,12 @@ void main() {
           gl_FragColor = dissipation * texture2D(uSource, coord);
           gl_FragColor.a = 1.0;
       }
-    `);
+    `
+    );
 
-    const divergenceShader = compileShader(gl.FRAGMENT_SHADER, `
+    const divergenceShader = compileShader(
+      gl.FRAGMENT_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -711,9 +772,12 @@ void main() {
           float div = 0.5 * (R - L + T - B);
           gl_FragColor = vec4(div, 0.0, 0.0, 1.0);
       }
-    `);
+    `
+    );
 
-    const curlShader = compileShader(gl.FRAGMENT_SHADER, `
+    const curlShader = compileShader(
+      gl.FRAGMENT_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -732,9 +796,12 @@ void main() {
           float vorticity = R - L - T + B;
           gl_FragColor = vec4(vorticity, 0.0, 0.0, 1.0);
       }
-    `);
+    `
+    );
 
-    const vorticityShader = compileShader(gl.FRAGMENT_SHADER, `
+    const vorticityShader = compileShader(
+      gl.FRAGMENT_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -755,9 +822,12 @@ void main() {
           vec2 vel = texture2D(uVelocity, vUv).xy;
           gl_FragColor = vec4(vel + force * dt, 0.0, 1.0);
       }
-    `);
+    `
+    );
 
-    const pressureShader = compileShader(gl.FRAGMENT_SHADER, `
+    const pressureShader = compileShader(
+      gl.FRAGMENT_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -784,9 +854,12 @@ void main() {
           float pressure = (L + R + B + T - divergence) * 0.25;
           gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0);
       }
-    `);
+    `
+    );
 
-    const gradientSubtractShader = compileShader(gl.FRAGMENT_SHADER, `
+    const gradientSubtractShader = compileShader(
+      gl.FRAGMENT_SHADER,
+      `
       precision highp float;
       precision mediump sampler2D;
 
@@ -812,7 +885,8 @@ void main() {
           velocity.xy -= vec2(R - L, T - B);
           gl_FragColor = vec4(velocity, 0.0, 1.0);
       }
-    `);
+    `
+    );
 
     let textureWidth;
     let textureHeight;
@@ -831,11 +905,51 @@ void main() {
       const rg = ext.formatRG;
       const r = ext.formatR;
 
-      density = createDoubleFBO(2, textureWidth, textureHeight, rgba.internalFormat, rgba.format, texType, ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST);
-      velocity = createDoubleFBO(0, textureWidth, textureHeight, rg.internalFormat, rg.format, texType, ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST);
-      divergence = createFBO(4, textureWidth, textureHeight, r.internalFormat, r.format, texType, gl.NEAREST);
-      curl = createFBO(5, textureWidth, textureHeight, r.internalFormat, r.format, texType, gl.NEAREST);
-      pressure = createDoubleFBO(6, textureWidth, textureHeight, r.internalFormat, r.format, texType, gl.NEAREST);
+      density = createDoubleFBO(
+        2,
+        textureWidth,
+        textureHeight,
+        rgba.internalFormat,
+        rgba.format,
+        texType,
+        ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST
+      );
+      velocity = createDoubleFBO(
+        0,
+        textureWidth,
+        textureHeight,
+        rg.internalFormat,
+        rg.format,
+        texType,
+        ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST
+      );
+      divergence = createFBO(
+        4,
+        textureWidth,
+        textureHeight,
+        r.internalFormat,
+        r.format,
+        texType,
+        gl.NEAREST
+      );
+      curl = createFBO(
+        5,
+        textureWidth,
+        textureHeight,
+        r.internalFormat,
+        r.format,
+        texType,
+        gl.NEAREST
+      );
+      pressure = createDoubleFBO(
+        6,
+        textureWidth,
+        textureHeight,
+        r.internalFormat,
+        r.format,
+        texType,
+        gl.NEAREST
+      );
     }
 
     function createFBO(texId, w, h, internalFormat, format, type, param) {
@@ -846,11 +960,27 @@ void main() {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, param);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, null);
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        internalFormat,
+        w,
+        h,
+        0,
+        format,
+        type,
+        null
+      );
 
       let fbo = gl.createFramebuffer();
       gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+      gl.framebufferTexture2D(
+        gl.FRAMEBUFFER,
+        gl.COLOR_ATTACHMENT0,
+        gl.TEXTURE_2D,
+        texture,
+        0
+      );
       gl.viewport(0, 0, w, h);
       gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -859,7 +989,15 @@ void main() {
 
     function createDoubleFBO(texId, w, h, internalFormat, format, type, param) {
       let fbo1 = createFBO(texId, w, h, internalFormat, format, type, param);
-      let fbo2 = createFBO(texId + 1, w, h, internalFormat, format, type, param);
+      let fbo2 = createFBO(
+        texId + 1,
+        w,
+        h,
+        internalFormat,
+        format,
+        type,
+        param
+      );
 
       return {
         get read() {
@@ -872,19 +1010,27 @@ void main() {
           let temp = fbo1;
           fbo1 = fbo2;
           fbo2 = temp;
-        }
+        },
       };
     }
 
     const blit = (() => {
       gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]), gl.STATIC_DRAW);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]),
+        gl.STATIC_DRAW
+      );
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0, 1, 2, 0, 2, 3]), gl.STATIC_DRAW);
+      gl.bufferData(
+        gl.ELEMENT_ARRAY_BUFFER,
+        new Uint16Array([0, 1, 2, 0, 2, 3]),
+        gl.STATIC_DRAW
+      );
       gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(0);
 
-      return destination => {
+      return (destination) => {
         gl.bindFramebuffer(gl.FRAMEBUFFER, destination);
         gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
       };
@@ -893,12 +1039,20 @@ void main() {
     const clearProgram = new GLProgram(baseVertexShader, clearShader);
     const displayProgram = new GLProgram(baseVertexShader, displayShader);
     const splatProgram = new GLProgram(baseVertexShader, splatShader);
-    const advectionProgram = new GLProgram(baseVertexShader, ext.supportLinearFiltering ? advectionShader : advectionManualFilteringShader);
+    const advectionProgram = new GLProgram(
+      baseVertexShader,
+      ext.supportLinearFiltering
+        ? advectionShader
+        : advectionManualFilteringShader
+    );
     const divergenceProgram = new GLProgram(baseVertexShader, divergenceShader);
     const curlProgram = new GLProgram(baseVertexShader, curlShader);
     const vorticityProgram = new GLProgram(baseVertexShader, vorticityShader);
     const pressureProgram = new GLProgram(baseVertexShader, pressureShader);
-    const gradienSubtractProgram = new GLProgram(baseVertexShader, gradientSubtractShader);
+    const gradienSubtractProgram = new GLProgram(
+      baseVertexShader,
+      gradientSubtractShader
+    );
 
     initFramebuffers();
 
@@ -913,21 +1067,30 @@ void main() {
 
       gl.viewport(0, 0, textureWidth, textureHeight);
 
-      if (splatStack.length > 0)
-        multipleSplats(splatStack.pop());
+      if (splatStack.length > 0) multipleSplats(splatStack.pop());
 
       advectionProgram.bind();
-      gl.uniform2f(advectionProgram.uniforms.texelSize, 1.0 / textureWidth, 1.0 / textureHeight);
+      gl.uniform2f(
+        advectionProgram.uniforms.texelSize,
+        1.0 / textureWidth,
+        1.0 / textureHeight
+      );
       gl.uniform1i(advectionProgram.uniforms.uVelocity, velocity.read[2]);
       gl.uniform1i(advectionProgram.uniforms.uSource, velocity.read[2]);
       gl.uniform1f(advectionProgram.uniforms.dt, dt);
-      gl.uniform1f(advectionProgram.uniforms.dissipation, config.VELOCITY_DISSIPATION);
+      gl.uniform1f(
+        advectionProgram.uniforms.dissipation,
+        config.VELOCITY_DISSIPATION
+      );
       blit(velocity.write[1]);
       velocity.swap();
 
       gl.uniform1i(advectionProgram.uniforms.uVelocity, velocity.read[2]);
       gl.uniform1i(advectionProgram.uniforms.uSource, density.read[2]);
-      gl.uniform1f(advectionProgram.uniforms.dissipation, config.DENSITY_DISSIPATION);
+      gl.uniform1f(
+        advectionProgram.uniforms.dissipation,
+        config.DENSITY_DISSIPATION
+      );
       blit(density.write[1]);
       density.swap();
 
@@ -940,12 +1103,20 @@ void main() {
       }
 
       curlProgram.bind();
-      gl.uniform2f(curlProgram.uniforms.texelSize, 1.0 / textureWidth, 1.0 / textureHeight);
+      gl.uniform2f(
+        curlProgram.uniforms.texelSize,
+        1.0 / textureWidth,
+        1.0 / textureHeight
+      );
       gl.uniform1i(curlProgram.uniforms.uVelocity, velocity.read[2]);
       blit(curl[1]);
 
       vorticityProgram.bind();
-      gl.uniform2f(vorticityProgram.uniforms.texelSize, 1.0 / textureWidth, 1.0 / textureHeight);
+      gl.uniform2f(
+        vorticityProgram.uniforms.texelSize,
+        1.0 / textureWidth,
+        1.0 / textureHeight
+      );
       gl.uniform1i(vorticityProgram.uniforms.uVelocity, velocity.read[2]);
       gl.uniform1i(vorticityProgram.uniforms.uCurl, curl[2]);
       gl.uniform1f(vorticityProgram.uniforms.curl, config.CURL);
@@ -954,7 +1125,11 @@ void main() {
       velocity.swap();
 
       divergenceProgram.bind();
-      gl.uniform2f(divergenceProgram.uniforms.texelSize, 1.0 / textureWidth, 1.0 / textureHeight);
+      gl.uniform2f(
+        divergenceProgram.uniforms.texelSize,
+        1.0 / textureWidth,
+        1.0 / textureHeight
+      );
       gl.uniform1i(divergenceProgram.uniforms.uVelocity, velocity.read[2]);
       blit(divergence[1]);
 
@@ -968,7 +1143,11 @@ void main() {
       pressure.swap();
 
       pressureProgram.bind();
-      gl.uniform2f(pressureProgram.uniforms.texelSize, 1.0 / textureWidth, 1.0 / textureHeight);
+      gl.uniform2f(
+        pressureProgram.uniforms.texelSize,
+        1.0 / textureWidth,
+        1.0 / textureHeight
+      );
       gl.uniform1i(pressureProgram.uniforms.uDivergence, divergence[2]);
       pressureTexId = pressure.read[2];
       gl.uniform1i(pressureProgram.uniforms.uPressure, pressureTexId);
@@ -980,7 +1159,11 @@ void main() {
       }
 
       gradienSubtractProgram.bind();
-      gl.uniform2f(gradienSubtractProgram.uniforms.texelSize, 1.0 / textureWidth, 1.0 / textureHeight);
+      gl.uniform2f(
+        gradienSubtractProgram.uniforms.texelSize,
+        1.0 / textureWidth,
+        1.0 / textureHeight
+      );
       gl.uniform1i(gradienSubtractProgram.uniforms.uPressure, pressure.read[2]);
       gl.uniform1i(gradienSubtractProgram.uniforms.uVelocity, velocity.read[2]);
       blit(velocity.write[1]);
@@ -997,22 +1180,38 @@ void main() {
     function splat(x, y, dx, dy, color) {
       splatProgram.bind();
       gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read[2]);
-      gl.uniform1f(splatProgram.uniforms.aspectRatio, canvas.width / canvas.height);
-      gl.uniform2f(splatProgram.uniforms.point, x / canvas.width, 1.0 - y / canvas.height);
+      gl.uniform1f(
+        splatProgram.uniforms.aspectRatio,
+        canvas.width / canvas.height
+      );
+      gl.uniform2f(
+        splatProgram.uniforms.point,
+        x / canvas.width,
+        1.0 - y / canvas.height
+      );
       gl.uniform3f(splatProgram.uniforms.color, dx, -dy, 1.0);
       gl.uniform1f(splatProgram.uniforms.radius, config.SPLAT_RADIUS);
       blit(velocity.write[1]);
       velocity.swap();
 
       gl.uniform1i(splatProgram.uniforms.uTarget, density.read[2]);
-      gl.uniform3f(splatProgram.uniforms.color, color[0] * 0.3, color[1] * 0.3, color[2] * 0.3);
+      gl.uniform3f(
+        splatProgram.uniforms.color,
+        color[0] * 0.3,
+        color[1] * 0.3,
+        color[2] * 0.3
+      );
       blit(density.write[1]);
       density.swap();
     }
 
     function multipleSplats(amount) {
       for (let i = 0; i < amount; i++) {
-        const color = [Math.random() * 10, Math.random() * 10, Math.random() * 10];
+        const color = [
+          Math.random() * 10,
+          Math.random() * 10,
+          Math.random() * 10,
+        ];
         const x = canvas.width * Math.random();
         const y = canvas.height * Math.random();
         const dx = 1000 * (Math.random() - 0.5);
@@ -1020,14 +1219,18 @@ void main() {
         splat(x, y, dx, dy, color);
       }
     }
-
     function resizeCanvas() {
-      if (canvas.width != canvas.clientWidth || canvas.height != canvas.clientHeight) {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
         initFramebuffers();
       }
     }
+
+    window.addEventListener("resize", resizeCanvas);
 
     const handleMouseMove = (e) => {
       pointers[0].moved = true;
@@ -1035,12 +1238,11 @@ void main() {
       pointers[0].dy = (e.offsetY - pointers[0].y) * 10.0;
       pointers[0].x = e.offsetX;
       pointers[0].y = e.offsetY;
-    
 
-      const hue = Math.random(); 
-      const sat = 0.6 + Math.random() * 0.3; 
+      const hue = Math.random();
+      const sat = 0.6 + Math.random() * 0.3;
       const val = 0.8 + Math.random() * 0.2;
-    
+
       function hsv2rgb(h, s, v) {
         let r, g, b;
         const i = Math.floor(h * 6);
@@ -1049,21 +1251,42 @@ void main() {
         const q = v * (1 - f * s);
         const t = v * (1 - (1 - f) * s);
         switch (i % 6) {
-          case 0: r = v; g = t; b = p; break;
-          case 1: r = q; g = v; b = p; break;
-          case 2: r = p; g = v; b = t; break;
-          case 3: r = p; g = q; b = v; break;
-          case 4: r = t; g = p; b = v; break;
-          case 5: r = v; g = p; b = q; break;
+          case 0:
+            r = v;
+            g = t;
+            b = p;
+            break;
+          case 1:
+            r = q;
+            g = v;
+            b = p;
+            break;
+          case 2:
+            r = p;
+            g = v;
+            b = t;
+            break;
+          case 3:
+            r = p;
+            g = q;
+            b = v;
+            break;
+          case 4:
+            r = t;
+            g = p;
+            b = v;
+            break;
+          case 5:
+            r = v;
+            g = p;
+            b = q;
+            break;
         }
         return [r, g, b];
       }
-    
+
       pointers[0].color = hsv2rgb(hue, sat, val);
     };
-    
-    
-    
 
     const handleTouchMove = (e) => {
       e.preventDefault();
@@ -1080,21 +1303,28 @@ void main() {
 
     const handleMouseDown = () => {
       pointers[0].down = true;
-      pointers[0].color = [Math.random() + 0.2, Math.random() + 0.2, Math.random() + 0.2];
+      pointers[0].color = [
+        Math.random() + 0.2,
+        Math.random() + 0.2,
+        Math.random() + 0.2,
+      ];
     };
 
     const handleTouchStart = (e) => {
       e.preventDefault();
       const touches = e.targetTouches;
       for (let i = 0; i < touches.length; i++) {
-        if (i >= pointers.length)
-          pointers.push(new pointerPrototype());
+        if (i >= pointers.length) pointers.push(new pointerPrototype());
 
         pointers[i].id = touches[i].identifier;
         pointers[i].down = true;
         pointers[i].x = touches[i].pageX;
         pointers[i].y = touches[i].pageY;
-        pointers[i].color = [Math.random() + 0.2, Math.random() + 0.2, Math.random() + 0.2];
+        pointers[i].color = [
+          Math.random() + 0.2,
+          Math.random() + 0.2,
+          Math.random() + 0.2,
+        ];
       }
     };
 
@@ -1106,44 +1336,42 @@ void main() {
       const touches = e.changedTouches;
       for (let i = 0; i < touches.length; i++)
         for (let j = 0; j < pointers.length; j++)
-          if (touches[i].identifier == pointers[j].id)
-            pointers[j].down = false;
+          if (touches[i].identifier == pointers[j].id) pointers[j].down = false;
     };
 
-
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('touchmove', handleTouchMove, false);
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('mouseleave', handleMouseLeave);
-    window.addEventListener('touchend', handleTouchEnd);
-
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("touchmove", handleTouchMove, false);
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("touchend", handleTouchEnd);
 
     const animationId = requestAnimationFrame(update);
 
-
     return () => {
       cancelAnimationFrame(animationId);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('touchmove', handleTouchMove);
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('mouseleave', handleMouseLeave);
-      window.removeEventListener('touchend', handleTouchEnd);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("touchmove", handleTouchMove);
+      canvas.removeEventListener("mousedown", handleMouseDown);
+      canvas.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
   return (
-    <canvas 
-      ref={canvasRef} 
+    <canvas
+      ref={canvasRef}
       style={{
-        width: '100%',
-        height: '100vh',
-        display: 'block',
-        position: 'fixed',
+        width: "100vw",
+        height: "100vh",
+        display: "block",
+        position: "fixed",
         top: 0,
         left: 0,
-        zIndex: 1
+        zIndex: 1,
+        height: "-webkit-fill-available",
+        minHeight: "-webkit-fill-available",
       }}
     />
   );
@@ -1170,9 +1398,9 @@ void main() {
 
   gl_FragColor.rgb = texture2D(tMap, uv).rgb;
   gl_FragColor.a = 1.0;
-}`
+}`;
 
-const vertex =`
+const vertex = `
 #define PI 3.1415926535897932384626433832795
 
 precision highp float;
@@ -1195,68 +1423,68 @@ void main() {
   vUv = uv;
   gl_Position = projectionMatrix * newPosition;
 }
-`
+`;
 function WebGLGalleryApp() {
-  const canvasRef = useRef(null)
-  const galleryRef = useRef(null)
-  const mediasRef = useRef([])
-  const scrollRef = useRef({ ease: 0.05, current: 0, target: 0, last: 0 })
-  const rendererRef = useRef()
-  const sceneRef = useRef()
-  const cameraRef = useRef()
-  const geometryRef = useRef()
-  const viewportRef = useRef()
-  const screenRef = useRef()
-  const galleryHeightRef = useRef()
+  const canvasRef = useRef(null);
+  const galleryRef = useRef(null);
+  const mediasRef = useRef([]);
+  const scrollRef = useRef({ ease: 0.05, current: 0, target: 0, last: 0 });
+  const rendererRef = useRef();
+  const sceneRef = useRef();
+  const cameraRef = useRef();
+  const geometryRef = useRef();
+  const viewportRef = useRef();
+  const screenRef = useRef();
+  const galleryHeightRef = useRef();
 
   useEffect(() => {
-    const renderer = new Renderer({ canvas: canvasRef.current, alpha: true })
-    const gl = renderer.gl
-    const camera = new Camera(gl)
-    camera.position.z = 5
-    const scene = new Transform()
-    const geometry = new Plane(gl, { heightSegments: 10 })
-  
-    rendererRef.current = renderer
-    sceneRef.current = scene
-    cameraRef.current = camera
-    geometryRef.current = geometry
-  
+    const renderer = new Renderer({ canvas: canvasRef.current, alpha: true });
+    const gl = renderer.gl;
+    const camera = new Camera(gl);
+    camera.position.z = 5;
+    const scene = new Transform();
+    const geometry = new Plane(gl, { heightSegments: 10 });
+
+    rendererRef.current = renderer;
+    sceneRef.current = scene;
+    cameraRef.current = camera;
+    geometryRef.current = geometry;
+
     const resize = () => {
       screenRef.current = {
         width: window.innerWidth,
-        height: window.innerHeight
-      }
-  
-      renderer.setSize(screenRef.current.width, screenRef.current.height)
-  
+        height: window.innerHeight,
+      };
+
+      renderer.setSize(screenRef.current.width, screenRef.current.height);
+
       camera.perspective({
-        aspect: gl.canvas.width / gl.canvas.height
-      })
-  
-      const fov = camera.fov * (Math.PI / 180)
-      const height = 2 * Math.tan(fov / 2) * camera.position.z
-      const width = height * camera.aspect
-  
-      viewportRef.current = { width, height }
-  
-      const galleryBounds = galleryRef.current.getBoundingClientRect()
-      galleryHeightRef.current = galleryBounds.height
-  
+        aspect: gl.canvas.width / gl.canvas.height,
+      });
+
+      const fov = camera.fov * (Math.PI / 180);
+      const height = 2 * Math.tan(fov / 2) * camera.position.z;
+      const width = height * camera.aspect;
+
+      viewportRef.current = { width, height };
+
+      const galleryBounds = galleryRef.current.getBoundingClientRect();
+      galleryHeightRef.current = galleryBounds.height;
+
       if (mediasRef.current.length) {
-        mediasRef.current.forEach(media =>
+        mediasRef.current.forEach((media) =>
           media.onResize({
             screen: screenRef.current,
-            viewport: viewportRef.current
+            viewport: viewportRef.current,
           })
-        )
+        );
       }
-    }
-  
-    resize()
-  
-    const figures = galleryRef.current.querySelectorAll('figure')
-    const medias = Array.from(figures).map(element =>
+    };
+
+    resize();
+
+    const figures = galleryRef.current.querySelectorAll("figure");
+    const medias = Array.from(figures).map((element) =>
       createMedia({
         element,
         geometry,
@@ -1265,42 +1493,51 @@ function WebGLGalleryApp() {
         screen: screenRef.current,
         viewport: viewportRef.current,
         vertex,
-        fragment
+        fragment,
       })
-    )
-    mediasRef.current = medias
-  
+    );
+    mediasRef.current = medias;
+
     const update = () => {
-      scrollRef.current.current = lerp(scrollRef.current.current, scrollRef.current.target, scrollRef.current.ease)
-  
-      const direction = scrollRef.current.current > scrollRef.current.last ? 'down' : 'up'
-  
-      mediasRef.current.forEach(media => media.update(scrollRef.current, direction))
-  
-      renderer.render({ scene, camera })
-  
-      scrollRef.current.last = scrollRef.current.current
-  
-      requestAnimationFrame(update)
-    }
-  
-    update()
-  
-    window.addEventListener('resize', resize)
-    window.addEventListener('wheel', e => {
-      const normalized = NormalizeWheel(e)
-      scrollRef.current.target += normalized.pixelY * 0.5
-      
-  
-      const galleryHeight = galleryRef.current.getBoundingClientRect().height
-      const maxScroll = galleryHeight - window.innerHeight
-      scrollRef.current.target = Math.max(0, Math.min(maxScroll, scrollRef.current.target))
-    })
-  
+      scrollRef.current.current = lerp(
+        scrollRef.current.current,
+        scrollRef.current.target,
+        scrollRef.current.ease
+      );
+
+      const direction =
+        scrollRef.current.current > scrollRef.current.last ? "down" : "up";
+
+      mediasRef.current.forEach((media) =>
+        media.update(scrollRef.current, direction)
+      );
+
+      renderer.render({ scene, camera });
+
+      scrollRef.current.last = scrollRef.current.current;
+
+      requestAnimationFrame(update);
+    };
+
+    update();
+
+    window.addEventListener("resize", resize);
+    window.addEventListener("wheel", (e) => {
+      const normalized = NormalizeWheel(e);
+      scrollRef.current.target += normalized.pixelY * 0.5;
+
+      const galleryHeight = galleryRef.current.getBoundingClientRect().height;
+      const maxScroll = galleryHeight - window.innerHeight;
+      scrollRef.current.target = Math.max(
+        0,
+        Math.min(maxScroll, scrollRef.current.target)
+      );
+    });
+
     return () => {
-      window.removeEventListener('resize', resize)
-    }
-  }, [])
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
 
   return (
     <>
@@ -1308,11 +1545,14 @@ function WebGLGalleryApp() {
       <div className="gallery1" ref={galleryRef}>
         <main>
           <section className="gallery-section">
-
             <div className="gallery1">
               {images.map((src, i) => (
                 <figure key={i} className="gallery__item">
-                  <img className="gallery__image" src={src} alt={`Gallery ${i + 1}`} />
+                  <img
+                    className="gallery__image"
+                    src={src}
+                    alt={`Gallery ${i + 1}`}
+                  />
                 </figure>
               ))}
             </div>
@@ -1320,21 +1560,30 @@ function WebGLGalleryApp() {
         </main>
       </div>
     </>
-  )
+  );
 }
 
-function createMedia({ element, geometry, gl, scene, screen, viewport, vertex, fragment }) {
-  const img = element.querySelector('img')
-  const bounds = element.getBoundingClientRect()
-  const texture = new Texture(gl, { generateMipmaps: false })
-  const image = new Image()
-  image.crossOrigin = 'anonymous' 
-  image.src = img.src
+function createMedia({
+  element,
+  geometry,
+  gl,
+  scene,
+  screen,
+  viewport,
+  vertex,
+  fragment,
+}) {
+  const img = element.querySelector("img");
+  const bounds = element.getBoundingClientRect();
+  const texture = new Texture(gl, { generateMipmaps: false });
+  const image = new Image();
+  image.crossOrigin = "anonymous";
+  image.src = img.src;
 
   const state = {
     plane: null,
     program: null,
-  }
+  };
 
   const createMesh = () => {
     const program = new Program(gl, {
@@ -1345,86 +1594,95 @@ function createMedia({ element, geometry, gl, scene, screen, viewport, vertex, f
         uPlaneSizes: { value: [0, 0] },
         uImageSizes: { value: [0, 0] },
         uViewportSizes: { value: [viewport.width, viewport.height] },
-        uStrength: { value: 0 }
+        uStrength: { value: 0 },
       },
-      transparent: true
-    })
+      transparent: true,
+    });
 
-    const plane = new Mesh(gl, { geometry, program })
-    plane.setParent(scene)
+    const plane = new Mesh(gl, { geometry, program });
+    plane.setParent(scene);
 
-    state.plane = plane
-    state.program = program
-  }
+    state.plane = plane;
+    state.program = program;
+  };
 
   const updateScale = () => {
-    state.plane.scale.x = viewport.width * bounds.width / screen.width
-    state.plane.scale.y = viewport.height * bounds.height / screen.height
-  }
+    state.plane.scale.x = (viewport.width * bounds.width) / screen.width;
+    state.plane.scale.y = (viewport.height * bounds.height) / screen.height;
+  };
 
   const updateX = (x = 0) => {
     state.plane.position.x =
       -(viewport.width / 2) +
       state.plane.scale.x / 2 +
-      ((bounds.left - x) / screen.width) * viewport.width
-  }
+      ((bounds.left - x) / screen.width) * viewport.width;
+  };
 
   const updateY = (y = 0) => {
     state.plane.position.y =
-      (viewport.height / 2) -
-      (state.plane.scale.y / 2) -
-      ((bounds.top - y) / screen.height) * viewport.height
-  }
+      viewport.height / 2 -
+      state.plane.scale.y / 2 -
+      ((bounds.top - y) / screen.height) * viewport.height;
+  };
 
   const onResize = (sizes) => {
     if (sizes) {
-      if (sizes.screen) screen = sizes.screen
+      if (sizes.screen) screen = sizes.screen;
       if (sizes.viewport) {
-        viewport = sizes.viewport
-        state.program.uniforms.uViewportSizes.value = [viewport.width, viewport.height]
+        viewport = sizes.viewport;
+        state.program.uniforms.uViewportSizes.value = [
+          viewport.width,
+          viewport.height,
+        ];
       }
     }
-    updateBounds()
-  }
+    updateBounds();
+  };
 
   const updateBounds = () => {
-    updateScale()
-    updateX()
-    updateY()
-    state.program.uniforms.uPlaneSizes.value = [state.plane.scale.x, state.plane.scale.y]
-  }
+    updateScale();
+    updateX();
+    updateY();
+    state.program.uniforms.uPlaneSizes.value = [
+      state.plane.scale.x,
+      state.plane.scale.y,
+    ];
+  };
 
   const update = (scroll, direction) => {
     updateScale();
     updateX();
     updateY(scroll.current);
-  
+
     // Calculate base strength
     const baseStrength = ((scroll.current - scroll.last) / screen.width) * 10;
-    
+
     // Reverse the strength based on direction
-    state.program.uniforms.uStrength.value = 
-      direction === 'down' ? -Math.abs(baseStrength) : Math.abs(baseStrength);
-  }
+    state.program.uniforms.uStrength.value =
+      direction === "down" ? -Math.abs(baseStrength) : Math.abs(baseStrength);
+  };
 
   image.onload = () => {
-    texture.image = image
-    state.program.uniforms.uImageSizes.value = [image.naturalWidth, image.naturalHeight]
-  }
+    texture.image = image;
+    state.program.uniforms.uImageSizes.value = [
+      image.naturalWidth,
+      image.naturalHeight,
+    ];
+  };
 
-  createMesh()
-  updateBounds()
+  createMesh();
+  updateBounds();
 
   return {
     update,
     onResize,
     get plane() {
-      return state.plane
+      return state.plane;
     },
-  }
+  };
 }
 
-const lerp = (a, b, t) => a + (b - a) * t
+const lerp = (a, b, t) => a + (b - a) * t;
 
 const images = [
   "/images/background_min.png",
@@ -1433,5 +1691,4 @@ const images = [
   "/images/glassflower.jpeg",
   "/images/glassflower.jpeg",
   "/images/image6.jpg",
-
 ];

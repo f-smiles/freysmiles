@@ -1588,7 +1588,7 @@ export default function WhyChooseUs() {
 
   return (
     <>
-      <div className="relative">
+      <div className="relative bg-white">
         <FluidSimulation />
 
         <div className="overflow-x-hidden w-full">
@@ -1970,29 +1970,29 @@ const TechSection = () => {
 
         <section ref={sectionRef} className="px-6 py-12 md:px-12">
           <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
-            <span ref={(el) => (headingRefs.current[0] = el)}>All.</span>
-            <span ref={(el) => (headingRefs.current[1] = el)}>
-              — Invisalign <sup className="text-xs align-super">(10k)</sup>
+            <span>All.</span>
+            <span >
+              — Invisalign. <sup className="text-xs align-super">(10k)</sup>
             </span>
-            <span ref={(el) => (headingRefs.current[2] = el)}>
+            <span >
               — Accelerated Treatment.{" "}
             </span>
-            <span ref={(el) => (headingRefs.current[3] = el)}>
-              — Low-Dose Digital 3D Radiographs{" "}
+            <span >
+              — Low-Dose Digital 3D Radiographs.{" "}
             </span>
-            <span ref={(el) => (headingRefs.current[4] = el)}>
+            <span >
               — Damon Braces. <sup className="text-xs align-super">(15k)</sup>
             </span>
-            <span ref={(el) => (headingRefs.current[5] = el)}>
+            <span >
               — iTero Lumina.
             </span>
-            <span ref={(el) => (headingRefs.current[6] = el)}>
+            <span >
               — 3D Printing.
             </span>
-            <span ref={(el) => (headingRefs.current[7] = el)}>
+            <span >
               — Laser Therapy.
             </span>
-            <span ref={(el) => (headingRefs.current[8] = el)}>
+            <span>
               — Live Text Support.{" "}
               <sup className="text-xs align-super">(8)</sup>
             </span>
@@ -2032,7 +2032,7 @@ const TechSection = () => {
               <div className="w-1/2">
                 <div className="img-container relative overflow-hidden">
                   <img
-                    src="/images/iteroluminamockup.png"
+                    src="/images/iterolumina1.png"
                     alt="placeholder"
                     className="object-contain w-full h-full"
                     style={{
@@ -2329,10 +2329,12 @@ const VideoAnimation = () => {
       scrollTrigger: {
         trigger: videoWrapperRef.current,
         start: "center center",
-        end: "+=1000",
+        end: "+=1200",
         pin: true,
         scrub: true,
+        anticipatePin: 1,
       },
+      
     });
 
     videoPinTl.fromTo(
@@ -3113,12 +3115,12 @@ const CardStack = () => {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: container,
-        start: "top 200px",
-        end: `+=${listChilds.length * 200}`,
+        start: "top+=100 center", 
+        end: "+=800",       
         scrub: true,
         pin: true,
       },
-    });
+          });
 
     tl.add("animate");
     listChilds.forEach((el, i) => {
@@ -3421,8 +3423,6 @@ function StackCards() {
     const pt = svg.createSVGPoint();
     pt.x = e.clientX;
     pt.y = e.clientY;
-
-    // Convert screen coordinates to SVG coordinates
     const svgPt = pt.matrixTransform(svg.getScreenCTM().inverse());
     setMPos({ x: svgPt.x, y: svgPt.y });
   };
@@ -3432,8 +3432,8 @@ function StackCards() {
   };
   return (
     <>
-      <section className="bg-[#F9F9F9]" ref={containerRef}>
-        <section className="-mt-20 w-full flex flex-col items-center">
+      <section className="-mt-[10vh] bg-[#F9F9F9]" ref={containerRef}>
+        <section className=" w-full flex flex-col items-center">
           <div className="flex flex-row gap-x-12">
             <div className=" flex flex-col justify-center">
               <div
@@ -3536,10 +3536,10 @@ function StackCards() {
           </p>
         </div> */}
         </section>
-        <div className="mt-20">
+        <div className="mt-[20vh]">
           <div
             ref={textRef}
-            className="mx-auto font-neuehaas35 mb-40 text-[1.5vw] max-w-[800px] leading-[1.3]"
+            className="mx-auto font-neuehaas35 mb-40 text-[20px] max-w-[700px] leading-[1.3]"
           >
             Our doctors aren’t just orthodontists — they’re in the top 1%. Dr.
             Gregg Frey is board certified for life. Dr. Daniel Frey is locking
@@ -3553,98 +3553,45 @@ function StackCards() {
           </div>
         </div>
         <div className="mt-20 font-khteka min-h-screen text-[11px] leading-[1.1] uppercase px-2">
-          {/* Block 1 */}
-          <div className="w-full border-t border-black">
-            <div
-              className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
-              style={{ "--br": "0px" }}
-            >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-
-              <div className="relative z-10 text-[11px] text-[#ff007f] ">
-                ABO Treatment Standards
-              </div>
-
-              <div className="relative z-10 leading-relaxed max-w-4xl text-black">
-                <div>
-                  We strive to attain finished results consistent with the
-                  American Board of Orthodontics (ABO) qualitative standards.
-                  Our doctors place great priority on the certification and
-                  recertification process, ensuring that all diagnostic records
-                  adhere to ABO standards.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Block 2 */}
-          <div className="w-full border-t border-black">
-            <div
-              className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
-              style={{ "--br": "0px" }}
-            >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-
-              <div className="relative z-10 text-[11px] text-[#ff007f] ">
-                Board Certification Process
-              </div>
-
-              <div className="relative z-10  leading-relaxed max-w-4xl text-black">
-                <div>
-                  Currently, Dr. Gregg is a certified orthodontist and is
-                  preparing cases for recertification. Dr. Daniel is in the
-                  final stages of obtaining his initial certification.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Block 3 */}
-          <div className="w-full border-t border-black">
-            <div
-              className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
-              style={{ "--br": "0px" }}
-            >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-
-              <div className="relative z-10 text-[11px] text-[#ff007f] ">
-                Diagnostic Record Accuracy
-              </div>
-
-              <div className="relative z-10 leading-relaxed max-w-4xl text-black">
-                <div>
-                  To complement our use of cutting-edge diagnostic technology,
-                  we uphold the highest standards for our records, ensuring
-                  accuracy and precision throughout the treatment process.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Block 4 */}
-          <div className="w-full border-t border-black">
-            <div
-              className="relative flex items-start justify-between w-full px-20 py-16 overflow-hidden bg-black card-block"
-              style={{ "--br": "0px" }}
-            >
-              <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-
-              <div className="relative z-10 text-[11px] text-[#ff007f] ">
-                Trusted Expertise
-              </div>
-
-              <div className="relative z-10 leading-relaxed max-w-4xl">
-                <div>
-                  Our office holds the distinction of being the
-                  longest-standing, active board-certified orthodontic office in
-                  the area. With four offices in the Lehigh Valley, we have been
-                  providing unparalleled orthodontic care for over four decades.
-                </div>
-              </div>
-            </div>
-            <div className="w-full border-b border-black" />
-          </div>
+  {[
+    {
+      title: "ABO Treatment Standards",
+      content:
+        "We strive to attain finished results consistent with the American Board of Orthodontics (ABO) qualitative standards. Our doctors place great priority on the certification and recertification process, ensuring that all diagnostic records adhere to ABO standards.",
+    },
+    {
+      title: "Board Certification Process",
+      content:
+        "Currently, Dr. Gregg Frey is a certified orthodontist and is preparing cases for recertification. Dr. Daniel Frey is in the final stages of obtaining his initial certification.",
+    },
+    {
+      title: "Diagnostic Record Accuracy",
+      content:
+        "To complement our use of cutting-edge diagnostic technology, we uphold the highest standards for our records, ensuring accuracy and precision throughout the treatment process.",
+    },
+    {
+      title: "Trusted Expertise",
+      content:
+        "Our office holds the distinction of being the longest-standing, active board-certified orthodontic office in the area. With four offices in the Lehigh Valley, we have been providing unparalleled orthodontic care for over four decades.",
+    },
+  ].map((block, i) => (
+    <div key={i} className="w-full border-t border-black">
+      <div
+        className="relative grid grid-cols-4 gap-x-10 px-10 py-16 overflow-hidden bg-black card-block"
+        style={{ "--br": "0px" }}
+      >
+        <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
+        <div className="relative z-10 flex items-center justify-center col-span-1 text-[#ff007f]">
+          {block.title}
         </div>
+        <div className="relative z-10 col-span-3 max-w-4xl text-black leading-relaxed">
+          <div>{block.content}</div>
+        </div>
+      </div>
+    </div>
+     ))}
+     <div className="w-full border-b border-black" />
+   </div>
       </section>
     </>
   );
@@ -4394,7 +4341,7 @@ function MoreThanSmiles() {
       gsap.killTweensOf([path, text]);
     };
   }, []);
-  
+
   return (
     <>
       <div className="bg-[#F9F9F9] relative min-h-screen w-full">

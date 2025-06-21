@@ -46,7 +46,6 @@ module.exports = withUt({
   		didot: 'Didot',
   		didotmodern: 'NNDidotModernTrial-LightItalic',
   		didotmodernlight: 'NNDidotModernTrial-Light',
-
   		'editorial-new': 'Editorial New',
   		'editorial-new-italic': 'PPEditorialNew-ThinItalic',
   		grandslang: 'GrandSlang-Roman',

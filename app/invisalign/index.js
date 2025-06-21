@@ -1349,8 +1349,8 @@ const Invisalign = () => {
                 <span className="font-light">have treated</span>{" "}
                 <span className="font-saolitalic">thousands</span>{" "}
                 <span className="font-medium">of patients</span> <br />
-                <span className="font-normal">with this </span>{" "}
-                <span className="font-light font-saolitalic">leading edge</span>{" "}
+                <span className="font-normal">with the </span>{" "}
+                <span className="font-light font-saolitalic">industry's leading</span>{" "}
                 <span className="font-light ">appliance</span>{" "}
                 <span className="font-normal">system.</span>{" "}
               </div>
