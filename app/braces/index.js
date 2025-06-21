@@ -54,23 +54,65 @@ gsap.registerPlugin(ScrollTrigger);
 const Braces = () => {
   return (
     <>
-      <div
-        className="bg-[#E7E7E7] relative min-h-screen overflow-hidden"
-      >
-        <div>
-        <img src = "/images/ajomockupchair.png" />
+      <div className="bg-[#E7E7E7] relative">
+        <div className="min-h-screen flex flex-col items-center space-y-16 px-4">
+          <div className="h-[33vh]" />
+
+          <div className="text-[12px] uppercase max-w-[500px] font-neuehaas45 leading-snug">
+            We love our patients so much we only use braces when we have to. Not
+            because it’s cheaper. Not because it’s easier. Just because it’s
+            what’s best. And when braces are needed? We're using the best
+            ones—and getting them off as fast as humanly possible when there's no longer a need for braces which could cause staining and cavities.
+          </div>
+          <div className="h-[20vh]" />
+          <img
+            src="/images/ajomockupchair.png"
+            className="w-2/3 object-contain"
+            alt="AJO Mockup"
+          />
         </div>
 
- <div className="flex justify-center items-center h-screen">
-    <div className="text-[12px] uppercase max-w-[500px] font-neuehaas45">
-      We love our patients so much we only use braces when we have to. Not
-      because it’s cheaper. Not because it’s easier. Just because it’s what’s
-      best. And when braces are needed? We're using the best ones—and getting them off as fast as humanly possible.
-    </div>
-  </div>
-          <FluidSimulation />
-          {/* <WebGLGalleryApp /> */}
+        <div className="flex flex-col justify-center items-center min-h-screen space-y-24 text-[12px] font-neuehaas45 px-4">
 
+<div className="max-w-[500px] font-neuehaas45">
+  <h2 className="mb-2">What Makes Damon Different?</h2>
+  <p className="font-neuehaas45">You may experience some or all of the many benefits, cleaner braces, less discomfort, less time in treatment, fewer office visits, less frequent office visits, wider arches than other braces, fewer extractions of permanent teeth.</p>
+</div>
+
+<div className="max-w-[500px]">
+  <h2 className="mb-2">Smarter Mechanics</h2>
+  <p className="font-neuehaas45">Damon braces uses a sliding door mechanism reducing the amount of friction during tooth movement therefore faster initial alignment. Not only is this faster movement completely healthy and safe, it will help you achieve the results in half the time.</p>
+</div>
+
+<div className="max-w-[500px]">
+  <h2 className="mb-2">Cleaner by Design</h2>
+  <p className="font-neuehaas45">Bc there's a door we don't have to use porous elastic thread. Less material on the teeth/in the mouth. Less uncomfortable. Less friction. Type of wire is a memory based smart wire made of special metal alloys.</p>
+</div>
+
+<div className="max-w-[500px]">
+  <h2 className="mb-2">Vivre sa vie</h2>
+  <p className="font-neuehaas45">Faster initial alignment of teeth than a traditional system with lots friction.</p>
+</div>
+
+<div className="max-w-[500px]">
+  <h2 className="mb-2">Fewer Appointments. More time for your nonsense.</h2>
+  <p className="font-neuehaas45">Traditional braces (aka twin brackets) often require monthly visits just to replace rubber bands that lose elasticity fast—and don’t even hold the wire that well. In some cases, the rubber’s so weak that doctors resort to metal twist ties. Yes. think—barbed wire, but in your mouth.</p>
+</div>
+
+<div className="max-w-[500px]">
+  <h2 className="mb-2">No Rubber Required</h2>
+  <p className="font-neuehaas45">With Damon archwires rubber ties are not a mandatory component. With the Damon system, the sliding door keeps the wire secure until we choose to move it. No metal twist ties pretending to be high-tech.</p>
+</div>
+
+</div>
+
+        <div className="flex justify-center items-center h-screen">
+          <div className="text-[12px] uppercase max-w-[500px] font-neuehaas45">
+Very difficult to avoid staining and damage to the enamel. With braces, we're gluing the brackets permanently to the teeth. You really have to be diligent to clean the teeth.
+          </div>
+      </div>
+        <FluidSimulation />
+        {/* <WebGLGalleryApp /> */}
       </div>
 
       {/* <TextEffect 
