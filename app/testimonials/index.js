@@ -996,7 +996,7 @@ const Testimonials = () => {
           Join the smile club
         </h2>
 
-        <div className="font-khteka text-[12px] leading-[1.2] uppercase relative">
+        <div className="font-khteka text-[12px] leading-[1.2] uppercase tracking-wider relative">
           <ScrambleBlock
             lines={[
               "We are committed to setting the standard for exceptional service.",

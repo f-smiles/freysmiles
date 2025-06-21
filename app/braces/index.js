@@ -51,6 +51,11 @@ if (typeof window !== "undefined") {
 }
 
 gsap.registerPlugin(ScrollTrigger);
+
+
+
+
+
 const Braces = () => {
   return (
     <>
@@ -58,11 +63,12 @@ const Braces = () => {
         <div className="min-h-screen flex flex-col items-center space-y-16 px-4">
           <div className="h-[33vh]" />
 
-          <div className="text-[12px] uppercase max-w-[500px] font-neuehaas45 leading-snug">
+          <div className="text-[12px] uppercase max-w-[500px] font-neuehaas45 leading-snug tracking-wider">
             We love our patients so much we only use braces when we have to. Not
             because it’s cheaper. Not because it’s easier. Just because it’s
             what’s best. And when braces are needed? We're using the best
-            ones—and getting them off as fast as humanly possible when there's no longer a need for braces which could cause staining and cavities.
+            ones—and getting them off as fast as humanly possible when there's
+            no longer a need for braces which could cause staining and cavities.
           </div>
           <div className="h-[20vh]" />
           <img
@@ -72,45 +78,122 @@ const Braces = () => {
           />
         </div>
 
-        <div className="flex flex-col justify-center items-center min-h-screen space-y-24 text-[12px] font-neuehaas45 px-4">
 
-<div className="max-w-[500px] font-neuehaas45">
-  <h2 className="mb-2">What Makes Damon Different?</h2>
-  <p className="font-neuehaas45">You may experience some or all of the many benefits, cleaner braces, less discomfort, less time in treatment, fewer office visits, less frequent office visits, wider arches than other braces, fewer extractions of permanent teeth.</p>
+        <div className="grid grid-cols-2 w-screen">
+  <div className="flex justify-center">
+    <div className="w-full max-w-2xl mx-auto">
+      <section className="px-8 py-24 font-neuehaas45 text-sm tracking-tight">
+        <div className="flex items-center gap-8 mb-16">
+          <div className="flex flex-col leading-none">
+            <h1 className="text-[36px] tracking-wide font-neuehaas45">Not Your</h1>
+            <h2 className="font-saolitalic tracking-wide text-[30px] italic -mt-[4px]">
+              Average Braces
+            </h2>
+          </div>
+
+          <p className="tracking-wide font-neuehaas45 text-[14px] max-w-sm">
+            You may experience some OR all of the many benefits
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          {[
+            "Cleaner braces",
+            "Less discomfort",
+            "Less time in treatment",
+            "Fewer office visits",
+            "Less frequent office visits",
+            "Wider arches than other braces",
+            "Fewer extractions of permanent teeth",
+          ].map((item) => (
+            <div
+              key={item}
+              className="tracking-wider font-khteka uppercase text-[11px] pt-4 border-t border-[#cdccc9]"
+            >
+              <li>{item}</li>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div className="flex justify-center items-center">
+
+  <img
+    src="/images/luckynumber7.png"
+    className="max-w-full max-h-[60vh] object-contain"
+    alt="Braces Patient"
+  />
 </div>
 
-<div className="max-w-[500px]">
-  <h2 className="mb-2">Smarter Mechanics</h2>
-  <p className="font-neuehaas45">Damon braces uses a sliding door mechanism reducing the amount of friction during tooth movement therefore faster initial alignment. Not only is this faster movement completely healthy and safe, it will help you achieve the results in half the time.</p>
 </div>
 
-<div className="max-w-[500px]">
-  <h2 className="mb-2">Cleaner by Design</h2>
-  <p className="font-neuehaas45">Bc there's a door we don't have to use porous elastic thread. Less material on the teeth/in the mouth. Less uncomfortable. Less friction. Type of wire is a memory based smart wire made of special metal alloys.</p>
-</div>
+   
 
-<div className="max-w-[500px]">
-  <h2 className="mb-2">Vivre sa vie</h2>
-  <p className="font-neuehaas45">Faster initial alignment of teeth than a traditional system with lots friction.</p>
-</div>
+        <div className="flex flex-col justify-center items-center min-h-screen space-y-24 font-neuehaas45 px-4">
+          <div className="flex flex-col md:flex-row justify-center items-start gap-12 px-4">
+          <div className="max-w-[500px]">
+              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
+                Cleaner by Design
+              </h2>
+              <p className="font-neuehaas45 text-[15px]">
+  The self-closing door means no need for elastic ties — fewer materials in your mouth and less friction. The wire itself is a shape-memory alloy engineered to move teeth smoothly and efficiently.
+</p>
 
-<div className="max-w-[500px]">
-  <h2 className="mb-2">Fewer Appointments. More time for your nonsense.</h2>
-  <p className="font-neuehaas45">Traditional braces (aka twin brackets) often require monthly visits just to replace rubber bands that lose elasticity fast—and don’t even hold the wire that well. In some cases, the rubber’s so weak that doctors resort to metal twist ties. Yes. think—barbed wire, but in your mouth.</p>
-</div>
+            </div>
+            <div className="w-full md:w-1/2 max-w-[500px]">
+              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
+                Less frequent office visits
+              </h2>
+              <p className="font-neuehaas45 text-[15px] leading-snug">
+                With Damon archwires, rubber ties are not a mandatory component.
+                The sliding door keeps the wire secure until we choose to move
+                it. No metal twist ties pretending to be high-tech.
+              </p>
+            </div>
+  
+     
+          </div>
+          <h2 className="mb-2 text-[64px] font-saolitalic">
+            Vivre sa vie
+          </h2>
 
-<div className="max-w-[500px]">
-  <h2 className="mb-2">No Rubber Required</h2>
-  <p className="font-neuehaas45">With Damon archwires rubber ties are not a mandatory component. With the Damon system, the sliding door keeps the wire secure until we choose to move it. No metal twist ties pretending to be high-tech.</p>
-</div>
+          <div className="flex flex-wrap justify-between gap-8">
+          <div className="max-w-[500px]">
+              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
+                Smarter Mechanics
+              </h2>
+              <p className="font-neuehaas45 text-[15px]">
+                Damon braces uses a sliding door mechanism that reduces the amount
+                of friction during tooth movement. This allows for more efficient initial tooth alignment. Not only is this faster movement completely healthy
+                and safe, it will help you achieve the results in half the time.
+              </p>
+            </div>
 
-</div>
+            <div className="w-full md:w-1/2 max-w-[500px]">
+              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
+                Fewer Appointments. More time for personal nonsense.
+              </h2>
+              <p className="font-neuehaas45 text-[15px] leading-snug">
+                Traditional braces (aka twin brackets) often require monthly
+                visits just to replace rubber bands that lose elasticity
+                fast—and don’t even hold the wire that well. In some cases, the
+                rubber’s so weak that doctors resort to metal twist ties. Yes.
+                Think—barbed wire, but in your mouth.
+              </p>
+            </div>
+  
+          </div>
+        </div>
 
         <div className="flex justify-center items-center h-screen">
           <div className="text-[12px] uppercase max-w-[500px] font-neuehaas45">
-Very difficult to avoid staining and damage to the enamel. With braces, we're gluing the brackets permanently to the teeth. You really have to be diligent to clean the teeth.
+            Very difficult to avoid staining and damage to the enamel. With
+            braces, we're gluing the brackets permanently to the teeth. You
+            really have to be diligent to clean the teeth.
           </div>
-      </div>
+        </div>
         <FluidSimulation />
         {/* <WebGLGalleryApp /> */}
       </div>
