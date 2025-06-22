@@ -166,7 +166,7 @@ const HoverReveal = ({ imgSrc, hoverSrc, container }) => {
 
   const [hover, setHover] = useState(false)
 
-  const { size } = useThree()
+  const { size, viewport } = useThree()
 
   const uniforms = useMemo(() => (
     {
@@ -197,7 +197,7 @@ const HoverReveal = ({ imgSrc, hoverSrc, container }) => {
 
   return (
     <mesh ref={meshRef} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}>
-      <planeGeometry args={[container.current.offsetWidth / 100 ?? 2, container.current.offsetHeight / 100 ?? 2, 1, 1]} />
+      <planeGeometry args={[viewport.width ?? 2, viewport.height ?? 2, 1, 1]} />
       <shaderMaterial
         uniforms={uniforms}
         vertexShader={vertexShader}
