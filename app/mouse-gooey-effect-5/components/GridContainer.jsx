@@ -1,37 +1,47 @@
 'use client'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { TextureLoader, Vector2 } from 'three'
 import gsap from 'gsap'
 
 const items = [
   {
-    src: '/images/members/edit/adriana-blurry-distortion-effect-1920px-1.jpg',
-    hoverSrc: '/images/members/orig/adriana.png',
+    // src: '/images/members/edit/adriana-blurry-distortion-effect-1920px-1.jpg',
+    // hoverSrc: '/images/members/orig/adriana.png',
+    src: '/images/images/base.jpg',
+    hoverSrc: '/images/images/hover.jpg',
     role: 'Insurance Coordinator',
     name: 'Adriana',
   },
   {
-    src: '/images/members/edit/alyssa-blurry-distortion-effect.jpg',
-    hoverSrc: '/images/members/orig/alyssa.png',
+    // src: '/images/members/edit/alyssa-blurry-distortion-effect.jpg',
+    // hoverSrc: '/images/members/orig/alyssa.png',
+    src: '/images/images/base.jpg',
+    hoverSrc: '/images/images/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Alyssa',
   },
   {
-    src: '/images/members/edit/elizabeth-blurry-distortion-effect-1.jpg',
-    hoverSrc: '/images/members/orig/elizabeth.png',
+    // src: '/images/members/edit/elizabeth-blurry-distortion-effect-1.jpg',
+    // hoverSrc: '/images/members/orig/elizabeth.png',
+    src: '/images/images/base.jpg',
+    hoverSrc: '/images/images/hover.jpg',
     role: 'Patient Services',
     name: 'Elizabeth',
   },
   {
-    src: '/images/members/edit/lexi-blurry-distortion-effect.jpg',
-    hoverSrc: '/images/members/orig/lexi.png',
+    // src: '/images/members/edit/lexi-blurry-distortion-effect.jpg',
+    // hoverSrc: '/images/members/orig/lexi.png',
+    src: '/images/images/base.jpg',
+    hoverSrc: '/images/images/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Lexi',
   },
   {
-    src: '/images/members/edit/nicole-blurry-distortion-effect.jpg',
-    hoverSrc: '/images/members/orig/nicolle.png',
+    // src: '/images/members/edit/nicole-blurry-distortion-effect.jpg',
+    // hoverSrc: '/images/members/orig/nicolle.png',
+    src: '/images/images/base.jpg',
+    hoverSrc: '/images/images/hover.jpg',
     role: 'Specialized Orthodontic Assistant',
     name: 'Nicole',
   },
@@ -162,11 +172,10 @@ const fragmentShader = `
 
 const HoverReveal = ({ imgSrc, hoverSrc, container }) => {
   const meshRef = useRef(null)
-  const mouse = useRef(new Vector2())
-
+  const mouse = useRef(new Vector2(0, 0))
   const [hover, setHover] = useState(false)
 
-  const { size, viewport } = useThree()
+  const { pointer, size, viewport } = useThree()
 
   const uniforms = useMemo(() => (
     {
@@ -177,10 +186,10 @@ const HoverReveal = ({ imgSrc, hoverSrc, container }) => {
       u_res: { value: new Vector2(size.width, size.height) },
     }
   ), [size])
-
+  
   useEffect(() => {
-    if (!imgSrc || !hoverSrc) return
-
+    if (!imgSrc || !hoverSrc || !container.current) return
+    
     const loader = new TextureLoader()
     loader.load(imgSrc, (texture) => {
       uniforms.u_image.value = texture
@@ -189,11 +198,29 @@ const HoverReveal = ({ imgSrc, hoverSrc, container }) => {
       uniforms.u_imagehover.value = texture
     })
   }, [imgSrc, hoverSrc, uniforms])
-
+  
   useFrame(() => {
-    if (!imgSrc || !hoverSrc) return
-    uniforms.u_time.value += 0.01
+    if (!imgSrc || !hoverSrc || !container?.current) return
+    
+    if (hover === true) {
+      if (meshRef.current) {
+        uniforms.u_time.value += 0.01
+        const onMouseMove = () => {
+          uniforms.u_mouse.value = new Vector2(pointer.x, pointer.y)
+        }
+    
+        container.current.addEventListener('mousemove', onMouseMove)
+        
+        return () => {
+          container.current.removeEventListener('mousemove', onMouseMove)
+        }
+      }
+    } else {
+      uniforms.u_mouse.value.set(999, 999, 0)
+    }
   })
+
+  console.log(container)
 
   return (
     <mesh ref={meshRef} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}>
@@ -210,28 +237,40 @@ const HoverReveal = ({ imgSrc, hoverSrc, container }) => {
 }
 
 export default function GridContainer() {
-  const containerRef = useRef(null)
+  const containerRefs = useRef([])
   return (
     <div className='grid-container'>
-      {items.map((item, i) => (
-        <div key={item.src} className={`item-${i + 1}-container`}>
-          <div className={`inversion-lens item-${i + 1}`}>
-            <img src={item.src} data-hover={item.hoverSrc} alt="" />
-            {/* canvas */}
-            <div ref={containerRef} className="canvas-container">
-              <Canvas gl={{ alpha: true }}>
-                <ambientLight intensity={1} />
-                <directionalLight position={[0, 0, 5]} />
-                <HoverReveal imgSrc={item.src} hoverSrc={item.hoverSrc} container={containerRef} />
-              </Canvas>
+      {items.map((item, i) => {
+        if (!containerRefs.current[i]) {
+          containerRefs.current[i] = React.createRef()
+        }
+        return (
+          <div key={item.src} className={`item-${i + 1}-container`}>
+            <div className={`inversion-lens item-${i + 1}`}>
+              <img src={item.src} data-hover={item.hoverSrc} alt="" />
+              {/* canvas */}
+              <div
+                ref={containerRefs.current[i]}
+                className="canvas-container"
+              >
+                <Canvas gl={{ alpha: true }}>
+                  <ambientLight intensity={1} />
+                  <directionalLight position={[0, 0, 5]} />
+                  <HoverReveal
+                    imgSrc={item.src}
+                    hoverSrc={item.hoverSrc}
+                    container={containerRefs.current[i]}
+                  />
+                </Canvas>
+              </div>
+            </div>
+            <div className="member-info text-primary-foreground dark:text-primary">
+              <div className="member-role">{item.role}</div>
+              <div className="member-name">{item.name}</div>
             </div>
           </div>
-          <div className="member-info text-primary-foreground dark:text-primary">
-            <div className="member-role">{item.role}</div>
-            <div className="member-name">{item.name}</div>
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
