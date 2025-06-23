@@ -116,48 +116,55 @@ body {
 /* Editorial grid layout with increased row spacing */
 .item-1-container {
   grid-column: 2 / span 5;
-  grid-row: 2 / span 2;
+  /* grid-row: 2 / span 2; */
 }
 
 .item-1 {
-  height: 700px;
+  aspect-ratio: 1 / 1;
+  /* height: 700px; */
 }
 
 .item-2-container {
   grid-column: 8 / span 4;
-  grid-row: 2;
+  /* grid-row: 2; */
 }
 
 .item-2 {
-  height: 550px;
+  aspect-ratio: 1 / 1;
 }
 
 .item-3-container {
   grid-column: 3 / span 4;
-  grid-row: 4 / span 2;
+  /* grid-row: 4 / span 2; */
   margin-top: var(--row-spacing); /* Added extra spacing */
 }
 
 .item-3 {
-  height: 500px;
+  aspect-ratio: 1 / 1;
+  /* width: auto; */
+  /* height: 500px; */
 }
 
 .item-4-container {
   grid-column: 8 / span 4;
-  grid-row: 3;
+  /* grid-row: 3; */
   margin-top: var(--row-spacing); /* Added extra spacing */
 }
 
 .item-4 {
-  height: 500px;
+  aspect-ratio: 1 / 1;
+  /* width: auto; */
+  /* height: 500px; */
 }
 
 .item-5-container {
-  grid-column: 8 / span 4;
-  grid-row: 4;
+  grid-column: 8 / span 3;
+  /* grid-row: 4; */
   margin-top: var(--row-spacing); /* Added extra spacing */
 }
 
 .item-5 {
-  height: 700px;
+  aspect-ratio: 1 / 1;
+  /* width: auto; */
+  /* height: 700px; */
 }
