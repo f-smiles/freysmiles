@@ -1244,8 +1244,9 @@ const Invisalign = () => {
 
   const addToLineRefs = (el) => el && lineRefs.current.push(el);
   const addToTextRefs = (el) => el && textRefs.current.push(el);
-  const addToSectionLineRefs = (el) => el && sectionLineRefs.current.push(el);
-
+  const addToSectionLineRefs = (el) => el && sectionLineRefs.current.push(el); 
+  
+ 
   useEffect(() => {
     gsap.set([...lineRefs.current, ...sectionLineRefs.current], {
       scaleX: 0,
@@ -1601,14 +1602,59 @@ const Invisalign = () => {
               </div>
             </div>
             <div className="flex justify-center gap-6 p-6">
-              <img
+              {/* <img
                 src="/images/manholdinglaptop.png"
                 className="max-w-[45%] h-auto rounded-md"
-              />
-              <img
-                src="/images/adobetest.png"
-                className="max-w-[45%] h-auto rounded-md"
-              />
+              /> */}
+              {/* <img
+                src="/images/ipadoutline.png"
+                className="max-w-[85%] h-auto rounded-md"
+              /> */}
+
+
+<div
+  style={{
+    position: "relative",
+    width:  "100%",   
+    maxWidth: "900px",
+    height:     "420px",
+    margin:  "0 auto",
+    overflow: "hidden",
+  }}
+>
+  <svg
+    viewBox="0 0 1800 840"
+    preserveAspectRatio="xMidYMid meet"
+    width="100%"
+    height="100%"
+    style={{ display: "block" }}
+  >
+    <path
+      fill="red"
+      d="M1800,60V420c0,33.14-26.86,60-60,60h-360c-33.14,0-60,26.86-60,60h0c0,33.14-26.86,60-60,60h-240c-33.14,0-60,26.86-60,60h0c0,33.14,26.86,60,60,60h120c33.14,0,60,26.86,60,60h0c0,33.14-26.86,60-60,60H180c-33.14,0-60-26.86-60-60h0c0-33.14-26.86-60-60-60h0c-33.14,0-60-26.86-60-60V180c0-33.14,26.86-60,60-60H1140c33.14,0,60-26.86,60-60h0c0-33.14,26.86-60,60-60h480c33.14,0,60,26.86,60,60Z"
+    />
+  </svg>
+
+  <video
+    src="/images/swirlymarblevideo.mp4"
+    autoPlay
+    loop
+    muted
+    playsInline
+    style={{
+      position:   "absolute",
+      top:        0,
+      left:       0,
+      width:      "100%",
+      height:     "100%",
+      objectFit:  "cover",
+      mask:       "url(#video-mask)",
+      WebkitMask: "url(#video-mask)",
+      maskSize:   "100% 100%",
+      WebkitMaskSize: "100% 100%",
+    }}
+  />
+</div>
             </div>
 
             <div className="font-neuehaas45 flex justify-center items-center mx-auto max-w-[650px] relative min-h-screen">

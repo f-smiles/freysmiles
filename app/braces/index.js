@@ -53,6 +53,53 @@ if (typeof window !== "undefined") {
 gsap.registerPlugin(ScrollTrigger);
 
 const Braces = () => {
+  const sectionRef = useRef(null);
+  const lineRefs = useRef([]);
+  const textRefs = useRef([]);
+
+  useEffect(() => {
+    gsap.set(lineRefs.current, { scaleX: 0, transformOrigin: "left" });
+    gsap.set(textRefs.current, { y: 20, opacity: 0 });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+  start: "top center-=100",
+        end: "bottom bottom",
+        toggleActions: "play none none none",
+      },
+    });
+
+    lineRefs.current.forEach((line, i) => {
+      tl.to(line, {
+        scaleX: 1,
+        duration: 1,
+        ease: "power3.out",
+      }, i * 0.2);
+    });
+
+    textRefs.current.forEach((text, i) => {
+      tl.to(text, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out",
+      }, i * 0.2 + 0.1);
+    });
+
+    return () => ScrollTrigger.getAll().forEach(t => t.kill());
+  }, []);
+
+  const items = [
+    "Cleaner braces",
+    "Less discomfort",
+    "Less time in treatment",
+    "Fewer office visits",
+    "Less frequent office visits",
+    "Wider arches than other braces",
+    "Fewer extractions of permanent teeth",
+  ];
+  
   return (
     <>
       <div className="bg-[#E7E7E7] relative">
@@ -83,7 +130,7 @@ const Braces = () => {
                   <h1 className="text-[42px] font-neuehaas45 tracking-wide flex items-center gap-2">
                     <span className="w-[1px] h-[42px] bg-black opacity-30"></span>
                     <span>Not Your</span>
-                    <span className="w-[1px] h-[42px] bg-black opacity-30"></span>
+                    {/* <span className="w-[1px] h-[42px] bg-black opacity-30"></span> */}
                     <span>Average Braces</span>
                   </h1>
                   <p className="mt-4 text-[12px] tracking-wider max-w-xs leading-snug font-neuehaas45 uppercase">
@@ -91,25 +138,22 @@ const Braces = () => {
                     benefits
                   </p>
                 </div>
-
-                <div className="space-y-4">
-                  {[
-                    "Cleaner braces",
-                    "Less discomfort",
-                    "Less time in treatment",
-                    "Fewer office visits",
-                    "Less frequent office visits",
-                    "Wider arches than other braces",
-                    "Fewer extractions of permanent teeth",
-                  ].map((item) => (
-                    <div
-                      key={item}
-                      className="tracking-wide font-neueroman uppercase text-[11px] pt-4 border-t border-[#cdccc9]"
-                    >
-                      <li>{item}</li>
-                    </div>
-                  ))}
-                </div>
+                <div ref={sectionRef}  className="space-y-4">
+      {items.map((item, i) => (
+        <div key={item} className="space-y-4">
+          <div
+            ref={el => lineRefs.current[i] = el}
+            className="h-[1px] bg-[#cdccc9] w-full origin-left scale-x-0"
+          />
+          <div
+            ref={el => textRefs.current[i] = el}
+            className="tracking-wide font-neueroman uppercase text-[11px]"
+          >
+            <li>{item}</li>
+          </div>
+        </div>
+      ))}
+    </div>
               </section>
             </div>
           </div>
@@ -127,7 +171,7 @@ const Braces = () => {
           <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
             <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                \ Cleaner by Design
+              Cleaner by Design
               </h2>
               <p className="text-[15px] leading-snug font-neuehaas45">
                 The self-closing door means no need for elastic ties — fewer
@@ -139,7 +183,7 @@ const Braces = () => {
 
             <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                \ Less Frequent Office Visits
+               Less Frequent Office Visits
               </h2>
               <p className="text-[15px] leading-snug font-neuehaas45">
                 With Damon archwires, rubber ties are not a mandatory component.
@@ -156,7 +200,7 @@ const Braces = () => {
           <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
             <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                \ Smarter Mechanics
+               Smarter Mechanics
               </h2>
               <p className="text-[15px] leading-snug font-neuehaas45">
                 Damon braces uses a sliding door mechanism that reduces the
@@ -169,7 +213,7 @@ const Braces = () => {
 
             <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                \ Fewer Appointments. More Time for Personal Nonsense
+              Fewer Appointments. More Time for Personal Nonsense
               </h2>
               <p className="text-[15px] leading-snug font-neuehaas45">
                 Traditional braces (aka twin brackets) often require monthly
@@ -219,14 +263,14 @@ const Braces = () => {
         </div>
 
         <div className="flex justify-center items-start py-24 px-4">
-          <div className="w-full max-w-3xl text-center pt-12">
-            <p className="text-[14px] font-neuehaas35 uppercase tracking-wide opacity-60 mb-2">
-              One more thing
-            </p>
-            <h3 className="text-[32px] font-neuehaas45 leading-snug mb-4">
-              We’ll be honest — we still prefer finishing cases with aligners.
-            </h3>
-            <p className="text-[15px] leading-relaxed font-neuehaas45 max-w-xl mx-auto">
+          <div className="w-full max-w-3xl pt-12">
+          <p className="text-center text-[14px] font-neuehaas35 uppercase tracking-wide opacity-60 mb-2">
+  A final note on treatment philosophy
+</p>
+<h3 className="text-center text-[32px] font-neuehaas45 leading-snug mb-4">
+  In most cases, we still prefer finishing with clear aligners.
+</h3>
+            <p className="text-[15px] leading-[1.2] font-neuehaas45 max-w-xl mx-auto">
               Our breadth of clinical experience with fixed appliances —
               including Damon Braces — has shaped our current methodology: we
               begin with braces when they offer a mechanical advantage, then
@@ -250,318 +294,6 @@ const Braces = () => {
     fontWeight="normal" 
   /> */}
     </>
-  );
-};
-
-const TextEffect = ({
-  text = "braces",
-  font = "NeueHaasDisplay35",
-  color = "#ffffff",
-  fontWeight = "100",
-}) => {
-  const containerRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const rendererRef = useRef(null);
-  const planeMeshRef = useRef(null);
-  const mousePositionRef = useRef({ x: 0.5, y: 0.5 });
-  const targetMousePositionRef = useRef({ x: 0.5, y: 0.5 });
-  const prevPositionRef = useRef({ x: 0.5, y: 0.5 });
-  const easeFactorRef = useRef(0.02);
-  const animationRef = useRef(null);
-  const textureRef = useRef(null);
-
-  const vertexShader = `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `;
-
-  const fragmentShader = `
-    varying vec2 vUv;
-    uniform sampler2D u_texture;
-    uniform vec2 u_mouse;
-    uniform vec2 u_prevMouse;
-
-    void main() {
-      vec2 gridUV = floor(vUv * vec2(40.0, 40.0)) / vec2(40.0, 40.0);
-      vec2 centerOfPixel = gridUV + vec2(1.0/40.0, 1.0/40.0);
-
-      vec2 mouseDirection = u_mouse - u_prevMouse;
-
-      vec2 pixelToMouseDirection = centerOfPixel - u_mouse;
-      float pixelDistanceToMouse = length(pixelToMouseDirection);
-      float strength = smoothstep(0.3, 0.0, pixelDistanceToMouse);
-
-      vec2 uvOffset = strength * -mouseDirection * 0.4;
-      vec2 uv = vUv - uvOffset;
-
-      vec4 color = texture2D(u_texture, uv);
-      gl_FragColor = color;
-    }
-  `;
-
-  const createTextTexture = (text, font, size, color, fontWeight = "100") => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    const canvasWidth = window.innerWidth * 2;
-    const canvasHeight = window.innerHeight * 2;
-
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-
-    ctx.fillStyle = color || "#ffffff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const fontSize = size || Math.floor(canvasWidth * 2);
-
-    ctx.fillStyle = "#1a1a1a";
-    ctx.font = `${fontWeight} ${fontSize}px "${font || "NeueHaasRoman"}"`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-
-    const textMetrics = ctx.measureText(text);
-    const textWidth = textMetrics.width;
-
-    const scaleFactor = Math.min(1, (canvasWidth * 1) / textWidth);
-    const aspectCorrection = canvasWidth / canvasHeight;
-
-    ctx.setTransform(
-      scaleFactor,
-      0,
-      0,
-      scaleFactor / aspectCorrection,
-      canvasWidth / 2,
-      canvasHeight / 2
-    );
-
-    ctx.strokeStyle = "#1a1a1a";
-    ctx.lineWidth = fontSize * 0.005;
-    for (let i = 0; i < 3; i++) {
-      ctx.strokeText(text, 0, 0);
-    }
-    ctx.fillText(text, 0, 0);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    textureRef.current = texture;
-    return texture;
-  };
-
-  const initializeScene = (texture) => {
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    const camera = new THREE.OrthographicCamera(
-      -1,
-      1,
-      1 / aspectRatio,
-      -1 / aspectRatio,
-      0.1,
-      1000
-    );
-    camera.position.z = 1;
-    cameraRef.current = camera;
-
-    const shaderUniforms = {
-      u_mouse: { type: "v2", value: new THREE.Vector2() },
-      u_prevMouse: { type: "v2", value: new THREE.Vector2() },
-      u_texture: { type: "t", value: texture },
-    };
-
-    const planeMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(2, 2),
-      new THREE.ShaderMaterial({
-        uniforms: shaderUniforms,
-        vertexShader,
-        fragmentShader,
-      })
-    );
-    planeMeshRef.current = planeMesh;
-
-    scene.add(planeMesh);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setClearColor(0xffffff, 1);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    rendererRef.current = renderer;
-
-    containerRef.current.appendChild(renderer.domElement);
-  };
-
-  const reloadTexture = () => {
-    const newTexture = createTextTexture(text, font, null, color, fontWeight);
-    planeMeshRef.current.material.uniforms.u_texture.value = newTexture;
-    if (textureRef.current) {
-      textureRef.current.dispose();
-    }
-    textureRef.current = newTexture;
-  };
-
-  const animateScene = () => {
-    if (
-      !planeMeshRef.current ||
-      !rendererRef.current ||
-      !sceneRef.current ||
-      !cameraRef.current
-    ) {
-      return;
-    }
-
-    const { x: mouseX, y: mouseY } = mousePositionRef.current;
-    const { x: targetX, y: targetY } = targetMousePositionRef.current;
-    const { x: prevX, y: prevY } = prevPositionRef.current;
-    const easeFactor = easeFactorRef.current;
-
-    mousePositionRef.current.x += (targetX - mouseX) * easeFactor;
-    mousePositionRef.current.y += (targetY - mouseY) * easeFactor;
-
-    planeMeshRef.current.material.uniforms.u_mouse.value.set(
-      mousePositionRef.current.x,
-      1.0 - mousePositionRef.current.y
-    );
-
-    planeMeshRef.current.material.uniforms.u_prevMouse.value.set(
-      prevX,
-      1.0 - prevY
-    );
-
-    rendererRef.current.render(sceneRef.current, cameraRef.current);
-    animationRef.current = requestAnimationFrame(animateScene);
-  };
-
-  const handleMouseMove = (event) => {
-    if (!containerRef.current) return;
-
-    easeFactorRef.current = 0.035;
-    const rect = containerRef.current.getBoundingClientRect();
-    prevPositionRef.current = {
-      x: targetMousePositionRef.current.x,
-      y: targetMousePositionRef.current.y,
-    };
-
-    targetMousePositionRef.current.x = (event.clientX - rect.left) / rect.width;
-    targetMousePositionRef.current.y = (event.clientY - rect.top) / rect.height;
-  };
-
-  const handleMouseEnter = (event) => {
-    if (!containerRef.current) return;
-
-    easeFactorRef.current = 0.01;
-    const rect = containerRef.current.getBoundingClientRect();
-
-    mousePositionRef.current.x = targetMousePositionRef.current.x =
-      (event.clientX - rect.left) / rect.width;
-    mousePositionRef.current.y = targetMousePositionRef.current.y =
-      (event.clientY - rect.top) / rect.height;
-  };
-
-  const handleMouseLeave = () => {
-    easeFactorRef.current = 0.01;
-    targetMousePositionRef.current = {
-      x: prevPositionRef.current.x,
-      y: prevPositionRef.current.y,
-    };
-  };
-
-  const onWindowResize = () => {
-    if (!cameraRef.current || !rendererRef.current) return;
-
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    cameraRef.current.left = -1;
-    cameraRef.current.right = 1;
-    cameraRef.current.top = 1 / aspectRatio;
-    cameraRef.current.bottom = -1 / aspectRatio;
-    cameraRef.current.updateProjectionMatrix();
-
-    rendererRef.current.setSize(window.innerWidth, window.innerHeight);
-    reloadTexture();
-  };
-  useEffect(() => {
-    let mounted = true;
-    const currentContainer = containerRef.current;
-
-    const init = async () => {
-      try {
-        const fontSize = Math.floor(window.innerWidth * 2);
-        await document.fonts.load(`${fontWeight} ${fontSize}px "${font}"`);
-        await document.fonts.ready;
-
-        if (!mounted) return;
-
-        const texture = createTextTexture(text, font, null, color, fontWeight);
-        initializeScene(texture);
-        animationRef.current = requestAnimationFrame(animateScene);
-
-        if (currentContainer) {
-          currentContainer.addEventListener("mousemove", handleMouseMove);
-          currentContainer.addEventListener("mouseenter", handleMouseEnter);
-          currentContainer.addEventListener("mouseleave", handleMouseLeave);
-        }
-        window.addEventListener("resize", onWindowResize);
-      } catch (error) {
-        console.error("Font loading error:", error);
-
-        if (!mounted) return;
-
-        const texture = createTextTexture(text, font, null, color, fontWeight);
-        initializeScene(texture);
-        animationRef.current = requestAnimationFrame(animateScene);
-
-        if (currentContainer) {
-          currentContainer.addEventListener("mousemove", handleMouseMove);
-          currentContainer.addEventListener("mouseenter", handleMouseEnter);
-          currentContainer.addEventListener("mouseleave", handleMouseLeave);
-        }
-        window.addEventListener("resize", onWindowResize);
-      }
-    };
-
-    init();
-
-    return () => {
-      mounted = false;
-      cancelAnimationFrame(animationRef.current);
-
-      if (currentContainer) {
-        currentContainer.removeEventListener("mousemove", handleMouseMove);
-        currentContainer.removeEventListener("mouseenter", handleMouseEnter);
-        currentContainer.removeEventListener("mouseleave", handleMouseLeave);
-      }
-      window.removeEventListener("resize", onWindowResize);
-
-      if (rendererRef.current) {
-        rendererRef.current.dispose();
-        rendererRef.current.domElement?.remove();
-      }
-      if (planeMeshRef.current) {
-        planeMeshRef.current.material?.dispose();
-        planeMeshRef.current.geometry?.dispose();
-      }
-      if (textureRef.current) {
-        textureRef.current.dispose();
-      }
-      if (sceneRef.current) {
-        sceneRef.current.traverse((child) => {
-          child.material?.dispose();
-          child.geometry?.dispose();
-        });
-      }
-    };
-  }, [text, font, color, fontWeight]);
-
-  return (
-    <div
-      ref={containerRef}
-      style={{ width: "100%", height: "100vh", cursor: "none" }}
-    />
   );
 };
 
@@ -1546,6 +1278,320 @@ void main() {
     />
   );
 };
+
+
+const TextEffect = ({
+  text = "braces",
+  font = "NeueHaasDisplay35",
+  color = "#ffffff",
+  fontWeight = "100",
+}) => {
+  const containerRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const rendererRef = useRef(null);
+  const planeMeshRef = useRef(null);
+  const mousePositionRef = useRef({ x: 0.5, y: 0.5 });
+  const targetMousePositionRef = useRef({ x: 0.5, y: 0.5 });
+  const prevPositionRef = useRef({ x: 0.5, y: 0.5 });
+  const easeFactorRef = useRef(0.02);
+  const animationRef = useRef(null);
+  const textureRef = useRef(null);
+
+  const vertexShader = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+
+  const fragmentShader = `
+    varying vec2 vUv;
+    uniform sampler2D u_texture;
+    uniform vec2 u_mouse;
+    uniform vec2 u_prevMouse;
+
+    void main() {
+      vec2 gridUV = floor(vUv * vec2(40.0, 40.0)) / vec2(40.0, 40.0);
+      vec2 centerOfPixel = gridUV + vec2(1.0/40.0, 1.0/40.0);
+
+      vec2 mouseDirection = u_mouse - u_prevMouse;
+
+      vec2 pixelToMouseDirection = centerOfPixel - u_mouse;
+      float pixelDistanceToMouse = length(pixelToMouseDirection);
+      float strength = smoothstep(0.3, 0.0, pixelDistanceToMouse);
+
+      vec2 uvOffset = strength * -mouseDirection * 0.4;
+      vec2 uv = vUv - uvOffset;
+
+      vec4 color = texture2D(u_texture, uv);
+      gl_FragColor = color;
+    }
+  `;
+
+  const createTextTexture = (text, font, size, color, fontWeight = "100") => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const canvasWidth = window.innerWidth * 2;
+    const canvasHeight = window.innerHeight * 2;
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
+    ctx.fillStyle = color || "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const fontSize = size || Math.floor(canvasWidth * 2);
+
+    ctx.fillStyle = "#1a1a1a";
+    ctx.font = `${fontWeight} ${fontSize}px "${font || "NeueHaasRoman"}"`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
+    const textMetrics = ctx.measureText(text);
+    const textWidth = textMetrics.width;
+
+    const scaleFactor = Math.min(1, (canvasWidth * 1) / textWidth);
+    const aspectCorrection = canvasWidth / canvasHeight;
+
+    ctx.setTransform(
+      scaleFactor,
+      0,
+      0,
+      scaleFactor / aspectCorrection,
+      canvasWidth / 2,
+      canvasHeight / 2
+    );
+
+    ctx.strokeStyle = "#1a1a1a";
+    ctx.lineWidth = fontSize * 0.005;
+    for (let i = 0; i < 3; i++) {
+      ctx.strokeText(text, 0, 0);
+    }
+    ctx.fillText(text, 0, 0);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    textureRef.current = texture;
+    return texture;
+  };
+
+  const initializeScene = (texture) => {
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const camera = new THREE.OrthographicCamera(
+      -1,
+      1,
+      1 / aspectRatio,
+      -1 / aspectRatio,
+      0.1,
+      1000
+    );
+    camera.position.z = 1;
+    cameraRef.current = camera;
+
+    const shaderUniforms = {
+      u_mouse: { type: "v2", value: new THREE.Vector2() },
+      u_prevMouse: { type: "v2", value: new THREE.Vector2() },
+      u_texture: { type: "t", value: texture },
+    };
+
+    const planeMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(2, 2),
+      new THREE.ShaderMaterial({
+        uniforms: shaderUniforms,
+        vertexShader,
+        fragmentShader,
+      })
+    );
+    planeMeshRef.current = planeMesh;
+
+    scene.add(planeMesh);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setClearColor(0xffffff, 1);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    rendererRef.current = renderer;
+
+    containerRef.current.appendChild(renderer.domElement);
+  };
+
+  const reloadTexture = () => {
+    const newTexture = createTextTexture(text, font, null, color, fontWeight);
+    planeMeshRef.current.material.uniforms.u_texture.value = newTexture;
+    if (textureRef.current) {
+      textureRef.current.dispose();
+    }
+    textureRef.current = newTexture;
+  };
+
+  const animateScene = () => {
+    if (
+      !planeMeshRef.current ||
+      !rendererRef.current ||
+      !sceneRef.current ||
+      !cameraRef.current
+    ) {
+      return;
+    }
+
+    const { x: mouseX, y: mouseY } = mousePositionRef.current;
+    const { x: targetX, y: targetY } = targetMousePositionRef.current;
+    const { x: prevX, y: prevY } = prevPositionRef.current;
+    const easeFactor = easeFactorRef.current;
+
+    mousePositionRef.current.x += (targetX - mouseX) * easeFactor;
+    mousePositionRef.current.y += (targetY - mouseY) * easeFactor;
+
+    planeMeshRef.current.material.uniforms.u_mouse.value.set(
+      mousePositionRef.current.x,
+      1.0 - mousePositionRef.current.y
+    );
+
+    planeMeshRef.current.material.uniforms.u_prevMouse.value.set(
+      prevX,
+      1.0 - prevY
+    );
+
+    rendererRef.current.render(sceneRef.current, cameraRef.current);
+    animationRef.current = requestAnimationFrame(animateScene);
+  };
+
+  const handleMouseMove = (event) => {
+    if (!containerRef.current) return;
+
+    easeFactorRef.current = 0.035;
+    const rect = containerRef.current.getBoundingClientRect();
+    prevPositionRef.current = {
+      x: targetMousePositionRef.current.x,
+      y: targetMousePositionRef.current.y,
+    };
+
+    targetMousePositionRef.current.x = (event.clientX - rect.left) / rect.width;
+    targetMousePositionRef.current.y = (event.clientY - rect.top) / rect.height;
+  };
+
+  const handleMouseEnter = (event) => {
+    if (!containerRef.current) return;
+
+    easeFactorRef.current = 0.01;
+    const rect = containerRef.current.getBoundingClientRect();
+
+    mousePositionRef.current.x = targetMousePositionRef.current.x =
+      (event.clientX - rect.left) / rect.width;
+    mousePositionRef.current.y = targetMousePositionRef.current.y =
+      (event.clientY - rect.top) / rect.height;
+  };
+
+  const handleMouseLeave = () => {
+    easeFactorRef.current = 0.01;
+    targetMousePositionRef.current = {
+      x: prevPositionRef.current.x,
+      y: prevPositionRef.current.y,
+    };
+  };
+
+  const onWindowResize = () => {
+    if (!cameraRef.current || !rendererRef.current) return;
+
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    cameraRef.current.left = -1;
+    cameraRef.current.right = 1;
+    cameraRef.current.top = 1 / aspectRatio;
+    cameraRef.current.bottom = -1 / aspectRatio;
+    cameraRef.current.updateProjectionMatrix();
+
+    rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+    reloadTexture();
+  };
+  useEffect(() => {
+    let mounted = true;
+    const currentContainer = containerRef.current;
+
+    const init = async () => {
+      try {
+        const fontSize = Math.floor(window.innerWidth * 2);
+        await document.fonts.load(`${fontWeight} ${fontSize}px "${font}"`);
+        await document.fonts.ready;
+
+        if (!mounted) return;
+
+        const texture = createTextTexture(text, font, null, color, fontWeight);
+        initializeScene(texture);
+        animationRef.current = requestAnimationFrame(animateScene);
+
+        if (currentContainer) {
+          currentContainer.addEventListener("mousemove", handleMouseMove);
+          currentContainer.addEventListener("mouseenter", handleMouseEnter);
+          currentContainer.addEventListener("mouseleave", handleMouseLeave);
+        }
+        window.addEventListener("resize", onWindowResize);
+      } catch (error) {
+        console.error("Font loading error:", error);
+
+        if (!mounted) return;
+
+        const texture = createTextTexture(text, font, null, color, fontWeight);
+        initializeScene(texture);
+        animationRef.current = requestAnimationFrame(animateScene);
+
+        if (currentContainer) {
+          currentContainer.addEventListener("mousemove", handleMouseMove);
+          currentContainer.addEventListener("mouseenter", handleMouseEnter);
+          currentContainer.addEventListener("mouseleave", handleMouseLeave);
+        }
+        window.addEventListener("resize", onWindowResize);
+      }
+    };
+
+    init();
+
+    return () => {
+      mounted = false;
+      cancelAnimationFrame(animationRef.current);
+
+      if (currentContainer) {
+        currentContainer.removeEventListener("mousemove", handleMouseMove);
+        currentContainer.removeEventListener("mouseenter", handleMouseEnter);
+        currentContainer.removeEventListener("mouseleave", handleMouseLeave);
+      }
+      window.removeEventListener("resize", onWindowResize);
+
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+        rendererRef.current.domElement?.remove();
+      }
+      if (planeMeshRef.current) {
+        planeMeshRef.current.material?.dispose();
+        planeMeshRef.current.geometry?.dispose();
+      }
+      if (textureRef.current) {
+        textureRef.current.dispose();
+      }
+      if (sceneRef.current) {
+        sceneRef.current.traverse((child) => {
+          child.material?.dispose();
+          child.geometry?.dispose();
+        });
+      }
+    };
+  }, [text, font, color, fontWeight]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100vh", cursor: "none" }}
+    />
+  );
+};
+
 
 const fragment = `precision highp float;
 
