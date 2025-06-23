@@ -64,6 +64,7 @@ module.exports = withUt({
   		Lato: 'Lato',
   		LatoThin: 'Lato-Thin',
   		LatoLight: 'Lato-Light',
+		'mantranaga':'Mantranaga',
   		monument: 'MonumentExtended-Regular',
   		nautica: 'Nautica',
 		neuehaasdisplay15light:  'NeueHaasGroteskDisplayPro15UltraLight',

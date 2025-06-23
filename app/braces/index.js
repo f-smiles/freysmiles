@@ -50,7 +50,7 @@ if (typeof window !== "undefined") {
   );
 }
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const Braces = () => {
   const sectionRef = useRef(null);
@@ -99,10 +99,31 @@ const Braces = () => {
     "Wider arches than other braces",
     "Fewer extractions of permanent teeth",
   ];
-  
+    const ELLIPSE_COUNT = 7;
+      const ellipsesRef = useRef([]);
+
+  useEffect(() => {
+    ellipsesRef.current.forEach((el, i) => {
+      gsap.to(el, {
+        yPercent: i * 60,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#scroll-down",
+          start: "top bottom",
+          end: "bottom bottom",
+          scrub: true,
+        },
+      });
+    });
+  }, []);
+
+
+
   return (
     <>
+   
       <div className="bg-[#E7E7E7] relative">
+
         <div className="min-h-screen flex flex-col items-center space-y-16 px-4">
           <div className="h-[33vh]" />
 
@@ -147,7 +168,7 @@ const Braces = () => {
           />
           <div
             ref={el => textRefs.current[i] = el}
-            className="tracking-wide font-neueroman uppercase text-[11px]"
+            className="tracking-wide font-neuehaas45 text-[13px]"
           >
             <li>{item}</li>
           </div>
@@ -286,7 +307,45 @@ const Braces = () => {
         <FluidSimulation />
         {/* <WebGLGalleryApp /> */}
       </div>
-
+      <footer id="scroll-down" className=" relative overflow-hidden h-[100vh]">
+  <div className="relative w-full h-full">
+    <div
+      style={{
+        transformStyle: "preserve-3d",
+        transform: "rotateX(70deg) translateZ(1px) scaleY(.6)",
+        height: "100%",
+        width: "100%",
+        position: "relative",
+        transformOrigin: "center",
+        perspective: "2000px",
+        backfaceVisibility: "hidden",
+      }}
+      className="w__oval-animations relative w-full h-full"
+    >
+      {[...Array(ELLIPSE_COUNT)].map((_, i) => (
+        <div
+          key={i}
+          ref={(el) => (ellipsesRef.current[i] = el)}
+          className="absolute w-[60vw] h-[24vw] rounded-full"
+          style={{
+            left: "50%",
+            marginLeft: "-45vw",
+            border: "3px solid #f7f5f7",
+            boxSizing: "border-box",
+            // willChange: "transform",
+            transformStyle: "preserve-3d",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            transformOrigin: "center",
+            filter: "contrast(1.1)",
+          
+          }}
+        />
+      ))}
+    </div>
+    <div className="w__scroll-down__trigger" />
+  </div>
+</footer>
       {/* <TextEffect 
     text="Braces" 
     font="NeueHaasRoman" 

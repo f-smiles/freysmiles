@@ -19,6 +19,11 @@
       format("svg");
 }
 @font-face {
+  font-family: "Mantranaga";
+  src: url("/fonts/Mantranaga36Daysoftype2023.ttf") format("truetype");
+}
+
+@font-face {
   font-family: "ChivoMono";
   src: url("/fonts/ChivoMono-ExtraLight.ttf") format("truetype");
 }
@@ -256,6 +261,9 @@
 @font-face {
   font-family: "PPEditorialNew-ThinItalic";
   src: url("/fonts/PPEditorialNew-ThinItalic.ttf") format("truetype");
+}
+body {
+  overscroll-behavior-y: none;
 }
 
 @layer base {
@@ -6474,7 +6482,7 @@ main {
   position: relative;
   filter: contrast(25000%);
   overflow: hidden;
-  transform: translateZ(0); /* force a HW accelerated layer */
+  transform: translateZ(0);
 }
 
 .halftone > * {
@@ -6523,3 +6531,4 @@ main {
       filter: brightness(0.5) blur(4px);
   }
 }
+

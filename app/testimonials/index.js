@@ -818,7 +818,7 @@ const Testimonials = () => {
       name: "JAMES PICA",
       text: "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!",
       color: "bg-[#9482A3]",
-      image: "/images/_mesh_gradients/background_min.png",
+      image: "/images/_mesh_gradients/lightblue.png",
 
       height: "h-[320px]",
       width: "w-[320px]",
@@ -827,7 +827,7 @@ const Testimonials = () => {
       name: "Thomas StPierre",
       text: "I had a pretty extreme case and it took some time, but FreySmiles gave me the smile I had always hoped for. Thank you!",
       color: "bg-[#EB7104]",
-      image: "/images/_mesh_gradients/sherbert.svg",
+      image: "/images/_mesh_gradients/purplegrey.png",
       height: "h-[240px]",
       width: "w-[240px]",
     },
@@ -835,63 +835,67 @@ const Testimonials = () => {
       name: "FEI ZHAO",
       text: "Our whole experience for the past 10 years of being under Dr. Gregg Frey’s care and his wonderful staff has been amazing. My son and my daughter have most beautiful smiles, and they received so many compliments on their teeth. It has made a dramatic and positive change in their lives. Dr. Frey is a perfectionist, and his treatment is second to none. I recommend Dr. Frey highly and without any reservation.",
       color: "bg-[#80A192]",
-      image: "/images/_mesh_gradients/purplepeach.jpg",
+      image: "/images/_mesh_gradients/pantonepinkblue.png",
       height: "h-[320px]",
       width: "w-[320px]",
-    },
-    {
-      name: "Diana Gomez",
-      text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don’t have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
-      color: "bg-[#F3B700]",
-      image: "/images/_mesh_gradients/HarvestGold.jpg",
-      height: "h-[320px]",
-      width: "w-[320px]",
-    },
-    {
-      name: "Brandi Moyer",
-      text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
-      color: "bg-[#4C90B3]",
-      image: "/images/_mesh_gradients/LightSkyBlue.jpg",
-    },
-    {
-      name: "Tracee Benton",
-      text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
-      color: "bg-[#036523]",
-      image: "/images/_mesh_gradients/Milkyway.jpg",
-    },
-
-    {
-      name: "Sara Moyer",
-      text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
-
-      image: "/images/_mesh_gradients/blueorange.png",
-      height: "h-[320px]",
-      width: "w-[320px]",
-    },
-    {
-      name: "Vicki Weaver",
-      text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
-      color: "bg-[#EA9CBE]",
-      image: "/images/_mesh_gradients/Watusi.jpg",
-    },
-    {
-      name: "Andrew Cornell",
-      text: "Over 20 years ago, I went to Dr. Frey to fix my cross bite and get braces. Since then, my smile looks substantially nicer. My entire mouth feels better as well. The benefits of orthodontics under Dr. Frey continue paying dividends.",
-      color: "bg-[#56A0FC]",
-      image: "/images/_mesh_gradients/Tumbleweed.jpg",
     },
     {
       name: "Shelby Loucks",
       text: "THEY ARE AMAZING!! Great staff and wonderful building. HIGHLY recommend to anyone looking for an orthodontist.",
       color: "bg-[#A81919]",
-      image: "/images/_mesh_gradients/purplegrey.png",
+      image: "/images/_mesh_gradients/redorange.png",
 
       height: "h-[240px]",
       width: "w-[240px]",
     },
     {
+      name: "Diana Gomez",
+      text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don’t have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
+      color: "bg-[#F3B700]",
+      image: "/images/_mesh_gradients/pinkwhite.png",
+      height: "h-[320px]",
+      width: "w-[320px]",
+    },
+    {
+      name: "Tracee Benton",
+      text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
+      color: "bg-[#036523]",
+      image: "/images/_mesh_gradients/purpledred.png",
+    },
+    {
+      name: "Brandi Moyer",
+      text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
+      color: "bg-[#4C90B3]",
+      image: "/images/_mesh_gradients/purpleyellow.png",
+    },
+
+    {
+      name: "Andrew Cornell",
+      text: "Over 20 years ago, I went to Dr. Frey to fix my cross bite and get braces. Since then, my smile looks substantially nicer. My entire mouth feels better as well. The benefits of orthodontics under Dr. Frey continue paying dividends.",
+      color: "bg-[#56A0FC]",
+      image: "/images/_mesh_gradients/greenwhite.png",
+    },
+
+
+    {
+      name: "Vicki Weaver",
+      text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
+      color: "bg-[#EA9CBE]",
+      image: "/images/_mesh_gradients/blueyellowgradient.png",
+    },
+
+    {
+      name: "Sara Moyer",
+      text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
+      image: "/images/_mesh_gradients/turquoisegradient.png",
+      height: "h-[320px]",
+      width: "w-[320px]",
+    },
+ 
+
+    {
       name: "Mandee Kaur",
-      image: "/images/_mesh_gradients/Sunset.jpg",
+      image: "/images/_mesh_gradients/pinkparty.png",
       text: "I would highly recommend FreySmiles! Excellent orthodontic care, whether it’s braces or Invisalign, Dr. Frey and his team pay attention to detail in making sure your smile is flawless! I would not trust anyone else for my daughter’s care other than FreySmiles.",
       color: "bg-[#49ABA3]",
     },
@@ -992,11 +996,11 @@ const Testimonials = () => {
 
     <div className="w-full md:w-1/2 flex items-center justify-center min-h-[100vh]">
       <div className="max-w-[500px] w-full">
-        <h2 className="mb-6 text-[40px] uppercase font-neuehaas45 text-center md:text-left md:text-[40px]">
-          Join the smile club
+        <h2 className="mb-6 text-[40px] font-neuehaas45 text-center md:text-left md:text-[40px]">
+          Join the Smile Club
         </h2>
 
-        <div className="font-khteka text-[12px] leading-[1.2] uppercase tracking-wider relative">
+        <div className="font-neuehaas45 text-[12px] leading-[1.2] uppercase tracking-wider relative">
           <ScrambleBlock
             lines={[
               "We are committed to setting the standard for exceptional service.",
@@ -1013,7 +1017,7 @@ const Testimonials = () => {
 
 
   <div ref={navBarRef} className="absolute bottom-0 left-0 w-full pb-2">
-    <div className="flex items-center justify-center text-[14px] uppercase font-khteka gap-4">
+    <div className="flex items-center justify-center text-[13px] tracking-wider uppercase font-neuehaas45 gap-4">
       <span className={isPatientSectionInView ? "opacity-100" : "opacity-30"}>
         ●
       </span>
@@ -1072,9 +1076,9 @@ const Testimonials = () => {
             whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
             dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
             dragMomentum={false}
-            className="relative bg-[#F3F2F6]/70 text-black backdrop-blur-md
+            className="relative bg-[#F8F8F8]/70 text-black backdrop-blur-md
             w-[320px] min-h-[450px] flex flex-col justify-start
-            border border-gray-300 cursor-grab active:cursor-grabbing
+            border border-gray-100 cursor-grab active:cursor-grabbing
             will-change-transform"
             style={{ zIndex: i }}
           >
@@ -1091,7 +1095,7 @@ const Testimonials = () => {
               <h3 className="text-xl leading-tight uppercase font-neuehaas45">
                 {t.name}
               </h3>
-              <p className="font-khteka uppercase text-[11px] leading-snug tracking-tight">
+              <p className="font-neuehaas45 text-[12px] leading-snug tracking-wide">
                 {t.text}
               </p>
             </div>

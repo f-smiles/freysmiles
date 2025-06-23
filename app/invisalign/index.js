@@ -1448,14 +1448,158 @@ const Invisalign = () => {
               />
             </div>
 
-            <div className="flex justify-center items-center px-4 sm:px-8 lg:px-12 py-10">
-              <img
+
+            <div className="py-20 relative flex flex-col items-center w-full">
+<div className="relative w-[75%]">
+    <img
+      src="/images/ipadoutline.png"
+      className="w-full h-auto rounded-md"
+      alt="iPad outline"
+    />
+<div
+  style={{
+    position: "absolute",
+    top: "10%",
+    left: "50%",
+    transform: "translateX(-57%)",
+    fontFamily: "Mantranaga",
+    textAlign: "center",
+    pointerEvents: "none",
+    display: "flex",
+    gap: "0.4em"
+  }}
+  className="text-black uppercase text-[clamp(50px,5vw,72px)]"
+>
+      <span>Form</span>
+      <span>In</span>
+      <img
+        src="/images/brutalistshape.png"
+        alt="symbol"
+        style={{
+          height: "1.3em",
+          verticalAlign: "-0.15em",
+          transform: "scale(0.85)",
+          display: "inline-block"
+        }}
+      />
+      <span>Motion</span>
+    </div>
+</div>
+  <div
+    style={{
+      position: "absolute",
+      width: "65%",
+      maxWidth: "700px",
+      height: "50%",
+      top: "60%",
+      left: "55%",
+      transform: "translate(-70%, -50%)",
+      backgroundColor: "transparent",
+      pointerEvents: "none"
+    }}
+  >
+    <svg
+      viewBox="0 0 1800 840"
+      preserveAspectRatio="xMidYMid meet"
+      width="100%"
+      height="100%"
+      style={{ display: "block" }}
+    >
+      <defs>
+        <mask id="ipad-mask">
+          <rect width="100%" height="100%" fill="black" />
+          <path
+            fill="white"
+            d="M1800,60V420c0,33.14-26.86,60-60,60h-360c-33.14,0-60,26.86-60,60h0c0,33.14-26.86,60-60,60h-240c-33.14,0-60,26.86-60,60h0c0,33.14,26.86,60,60,60h120c33.14,0,60,26.86,60,60h0c0,33.14-26.86,60-60,60H180c-33.14,0-60-26.86-60-60h0c0-33.14-26.86-60-60-60h0c-33.14,0-60-26.86-60-60V180c0-33.14,26.86-60,60-60H1140c33.14,0,60-26.86,60-60h0c0-33.14,26.86-60,60-60h480c33.14,0,60,26.86,60,60Z"
+          />
+        </mask>
+      </defs>
+
+      <foreignObject
+        width="100%"
+        height="100%"
+        style={{
+          mask: "url(#ipad-mask)",
+          WebkitMask: "url(#ipad-mask)"
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "relative"
+          }}
+        >
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover"
+            }}
+            src="/videos/swirlymarblevideosaturated.mp4"
+          />
+        </div>
+      </foreignObject>
+    </svg>
+  </div>
+  <div
+  style={{
+    position: "absolute",
+    top: "50%",
+    left: "80%",
+    transform: "translate(-50%, -50%) rotate(7deg)",
+    width: "140px",
+    height: "auto",
+    pointerEvents: "none",
+    zIndex: 10,
+  }}
+>
+  <img
+    src="/images/brutalistarrow.png"
+    alt="arrowshape"
+    style={{
+      width: "100%",
+      height: "auto",
+      display: "block"
+    }}
+  />
+</div>
+  <div
+    style={{
+      position: "absolute",
+      width: "25%",
+      maxWidth: "260px",
+      height: "50%",
+      top: "72%",
+      left: "70%",
+      transform: "translate(-50%, -50%)",
+      pointerEvents: "none"
+    }}
+  >
+    <img
+      src="/images/capsuleshapetext.png"
+      alt="Capsule"
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "contain"
+      }}
+    />
+  </div>
+</div>
+
+              {/* <img
                 ref={imageRef}
                 src="/images/ipadmockup.png"
                 className="max-w-[90%] sm:max-w-[90%] lg:max-w-[90%] h-auto"
                 alt="Man holding laptop"
-              />
-            </div>
+              /> */}
+
      
           <div className="relative min-h-screen">
             <div className="flex flex-col items-center justify-center">
@@ -1606,55 +1750,7 @@ const Invisalign = () => {
                 src="/images/manholdinglaptop.png"
                 className="max-w-[45%] h-auto rounded-md"
               /> */}
-              {/* <img
-                src="/images/ipadoutline.png"
-                className="max-w-[85%] h-auto rounded-md"
-              /> */}
 
-
-<div
-  style={{
-    position: "relative",
-    width:  "100%",   
-    maxWidth: "900px",
-    height:     "420px",
-    margin:  "0 auto",
-    overflow: "hidden",
-  }}
->
-  <svg
-    viewBox="0 0 1800 840"
-    preserveAspectRatio="xMidYMid meet"
-    width="100%"
-    height="100%"
-    style={{ display: "block" }}
-  >
-    <path
-      fill="red"
-      d="M1800,60V420c0,33.14-26.86,60-60,60h-360c-33.14,0-60,26.86-60,60h0c0,33.14-26.86,60-60,60h-240c-33.14,0-60,26.86-60,60h0c0,33.14,26.86,60,60,60h120c33.14,0,60,26.86,60,60h0c0,33.14-26.86,60-60,60H180c-33.14,0-60-26.86-60-60h0c0-33.14-26.86-60-60-60h0c-33.14,0-60-26.86-60-60V180c0-33.14,26.86-60,60-60H1140c33.14,0,60-26.86,60-60h0c0-33.14,26.86-60,60-60h480c33.14,0,60,26.86,60,60Z"
-    />
-  </svg>
-
-  <video
-    src="/images/swirlymarblevideo.mp4"
-    autoPlay
-    loop
-    muted
-    playsInline
-    style={{
-      position:   "absolute",
-      top:        0,
-      left:       0,
-      width:      "100%",
-      height:     "100%",
-      objectFit:  "cover",
-      mask:       "url(#video-mask)",
-      WebkitMask: "url(#video-mask)",
-      maskSize:   "100% 100%",
-      WebkitMaskSize: "100% 100%",
-    }}
-  />
-</div>
             </div>
 
             <div className="font-neuehaas45 flex justify-center items-center mx-auto max-w-[650px] relative min-h-screen">
