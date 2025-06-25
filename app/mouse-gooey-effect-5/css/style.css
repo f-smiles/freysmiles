@@ -79,16 +79,6 @@ body {
   display: none;
 }
 
-.inversion-lens .canvas-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  border: 1px solid white;
-}
-
 .member-info {
   font-size: 1rem;
   margin-top: 1rem;
@@ -106,11 +96,6 @@ body {
   font-size: 2rem;
   margin-top: 0.125rem;
   text-transform: uppercase;
-}
-
-.project-subtitle {
-  margin-top: 0.125rem;
-  font-size: 1rem;
 }
 
 /* Editorial grid layout with increased row spacing */
