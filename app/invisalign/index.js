@@ -1470,8 +1470,8 @@ const Invisalign = () => {
   }}
   className="text-black uppercase text-[clamp(50px,5vw,72px)]"
 >
-      <span>Form</span>
-      <span>In</span>
+      <span>Smile</span>
+      <span></span>
       <img
         src="/images/brutalistshape.png"
         alt="symbol"
@@ -1482,8 +1482,22 @@ const Invisalign = () => {
           display: "inline-block"
         }}
       />
-      <span>Motion</span>
+      <span>Club</span>
     </div>
+</div>
+<div
+  style={{
+    position: "absolute",
+    top: "33%",
+    left: "25%",
+    transform: "translate(-20%, -10%)", 
+    pointerEvents: "none",
+    display: "flex",
+    gap: "0.4em"
+  }}
+  className="font-neuehaas45 text-black text-[14px] max-w-[400px]"
+>
+With over 40 years of combined experience, our doctors were the first in the region to offer Invisalign—setting the benchmark well before it became the industry standard.
 </div>
   <div
     style={{

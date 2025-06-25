@@ -6532,3 +6532,12 @@ main {
   }
 }
 
+
+.canvas-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.inversion-lens {
+  position: relative;
+}

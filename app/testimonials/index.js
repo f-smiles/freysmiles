@@ -982,8 +982,40 @@ const Testimonials = () => {
   }, []);
 
   const dragCardRef = useRef(null);
+
+
+  
   return (
     <>
+      <MouseTrail
+    images={[
+      "../images/mousetrail/flame.png",
+      "../images/mousetrail/cat.png",
+      "../images/mousetrail/pixelstar.png",
+      "../images/mousetrail/avocado.png",
+      "../images/mousetrail/ghost.png",
+      "../images/mousetrail/pacman.png",
+      "../images/mousetrail/evilrobot.png",
+      "../images/mousetrail/thirdeye.png",
+      "../images/mousetrail/alientcat.png",
+      "../images/mousetrail/gotcha.png",
+      "../images/mousetrail/karaokekawaii.png",
+      "../images/mousetrail/mushroom.png",
+      "../images/mousetrail/pixelcloud.png",
+      "../images/mousetrail/pineapple.png",
+      "../images/mousetrail/pixelsun.png",
+      "../images/mousetrail/cherries.png",
+      "../images/mousetrail/watermelon.png",
+      "../images/mousetrail/dolphins.png",
+      "../images/mousetrail/jellyfish.png",
+      "../images/mousetrail/nyancat.png",
+      "../images/mousetrail/donut.png",
+      "../images/mousetrail/controller.png",
+      "../images/mousetrail/dinosaur.png",
+      "../images/mousetrail/headphones.png",
+      "../images/mousetrail/porsche.png",
+    ]}
+  />
       <Background />
       <section
   ref={sectionOneRef}
@@ -1016,7 +1048,7 @@ const Testimonials = () => {
   </div>
 
 
-  <div ref={navBarRef} className="absolute bottom-0 left-0 w-full pb-2">
+  <div ref={navBarRef} className="z-10 absolute bottom-0 left-0 w-full pb-2">
     <div className="flex items-center justify-center text-[13px] tracking-wider uppercase font-neuehaas45 gap-4">
       <span className={isPatientSectionInView ? "opacity-100" : "opacity-30"}>
         ●
@@ -1027,42 +1059,14 @@ const Testimonials = () => {
       </span>
       <span>Read the reviews</span>
     </div>
-    <div className="mt-1 w-full border-b border-[#D3D3D3]"></div>
+    <div className="z-10 mt-1 w-full border-b border-[#D3D3D3]" />
   </div>
 
 
-  <MouseTrail
-    images={[
-      "../images/mousetrail/flame.png",
-      "../images/mousetrail/cat.png",
-      "../images/mousetrail/pixelstar.png",
-      "../images/mousetrail/avocado.png",
-      "../images/mousetrail/ghost.png",
-      "../images/mousetrail/pacman.png",
-      "../images/mousetrail/evilrobot.png",
-      "../images/mousetrail/thirdeye.png",
-      "../images/mousetrail/alientcat.png",
-      "../images/mousetrail/gotcha.png",
-      "../images/mousetrail/karaokekawaii.png",
-      "../images/mousetrail/mushroom.png",
-      "../images/mousetrail/pixelcloud.png",
-      "../images/mousetrail/pineapple.png",
-      "../images/mousetrail/pixelsun.png",
-      "../images/mousetrail/cherries.png",
-      "../images/mousetrail/watermelon.png",
-      "../images/mousetrail/dolphins.png",
-      "../images/mousetrail/jellyfish.png",
-      "../images/mousetrail/nyancat.png",
-      "../images/mousetrail/donut.png",
-      "../images/mousetrail/controller.png",
-      "../images/mousetrail/dinosaur.png",
-      "../images/mousetrail/headphones.png",
-      "../images/mousetrail/porsche.png",
-    ]}
-  />
-</section>
 
-      <Testimonial />
+</section>
+<div className="z-1 overflow-hidden">      <Testimonial /></div>
+
       <section
         ref={dragCardRef}
         className="relative flex flex-wrap items-center justify-center min-h-screen gap-4 p-8 overflow-hidden"
@@ -1078,7 +1082,7 @@ const Testimonials = () => {
             dragMomentum={false}
             className="relative bg-[#F8F8F8]/70 text-black backdrop-blur-md
             w-[320px] min-h-[450px] flex flex-col justify-start
-            border border-gray-100 cursor-grab active:cursor-grabbing
+            border border-white cursor-grab active:cursor-grabbing
             will-change-transform"
             style={{ zIndex: i }}
           >
@@ -1092,7 +1096,7 @@ const Testimonials = () => {
             </div>
 
             <div className="flex flex-col gap-2 p-4">
-              <h3 className="text-xl leading-tight uppercase font-neuehaas45">
+              <h3 className="text-[16px] leading-tight tracking-wider uppercase font-neuehaas45">
                 {t.name}
               </h3>
               <p className="font-neuehaas45 text-[12px] leading-snug tracking-wide">
@@ -1198,25 +1202,6 @@ const Testimonials = () => {
 
 
 
-      {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
-          <div className="w-[64px] h-auto">
-    
-            <img src="../images/whitedots.svg" />
-          </div>
-          <nav className="flex space-x-6 text-sm">
-            <h1 class="text-2xl font-bold">
-              <span className="inline-flex items-center text-black font-agrandir-bold">
-                TESTI
-                <img
-                  src="../images/mo.svg"
-                  alt="MO"
-                  className="h-[1em] mx-1 inline-flex"
-                />
-                NIALS
-              </span>
-            </h1>
-          </nav>
-        </header> */}
 
 
       {/* <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>

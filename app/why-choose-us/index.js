@@ -2032,7 +2032,7 @@ const TechSection = () => {
               <div className="w-1/2">
                 <div className="img-container relative overflow-hidden">
                   <img
-                    src="/images/iterolumina1.png"
+                    src="/images/iterolumina2.png"
                     alt="placeholder"
                     className="object-contain w-full h-full"
                     style={{
