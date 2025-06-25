@@ -211,6 +211,8 @@ const fragmentShader = `
 `
 
 const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
+  const containerRef = useRef(null)
+
   let frameCount = 0
   let lastTime = 0
   const activeContainers = new Set()
@@ -244,7 +246,10 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
     requestAnimationFrame(globalAnimate)
   }, [])
 
+  
   useEffect(() => {
+    if (!containerRef.current) return
+
     const initHoverEffect = (container) => {
       container.scene = null
       container.camera = null
@@ -257,7 +262,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
       container.radiusTween = null
       
       activeContainers.add(container)
-
+  
       const loader = new TextureLoader()
       Promise.all([
         loader.loadAsync(imgSrc),
@@ -266,7 +271,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         setupScene(baseTexture, hoverTexture)
         setupEventListeners()
       })
-
+  
       const setupScene = (texture, hoverTexture) => {
         texture.minFilter = LinearFilter
         texture.magFilter = LinearFilter
@@ -303,7 +308,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         container.renderer.setPixelRatio(1)
         container.renderer.setSize(container.clientWidth, container.clientHeight)
         container.appendChild(container.renderer.domElement)
-
+  
         let resizeTimeout
         const resizeObserver = new ResizeObserver(
           () => {
@@ -318,12 +323,12 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         resizeObserver.observe(container)
         container.renderer.render(container.scene, container.camera)
       }
-
+  
       const setupEventListeners = () => {
         let lastMouseX = 0
         let lastMouseY = 0
         let mouseMoveTimeout = null
-
+  
         const handleMouseMove = (event) => {
           lastMouseX = event.clientX
           lastMouseY = event.clientY
@@ -334,7 +339,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
             }, 16) // ~60fps
           }
         }
-
+  
         document.addEventListener('mousemove', handleMouseMove, { passive: true })
         
         const intersectionObserver = new IntersectionObserver(
@@ -382,14 +387,12 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         }
       }
     }
-
-    document.querySelectorAll(".inversion-lens").forEach((container) => {
-      initHoverEffect(container)
-    })
+    
+    initHoverEffect(containerRef.current)
   }, [imgSrc, hoverSrc])
 
   return (
-    <div className={`inversion-lens ${className}`}>
+    <div ref={containerRef} className={`inversion-lens ${className}`}>
       <img src={imgSrc} data-hover={hoverSrc} alt={member} />
     </div>
   )
