@@ -1,8 +1,7 @@
 'use client'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { TextureLoader, Vector2 } from 'three'
+import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
+import { LinearFilter, Mesh, OrthographicCamera, PlaneGeometry, Scene, ShaderMaterial, TextureLoader, Vector2, WebGLRenderer } from 'three'
 
 const items = [
   {
@@ -47,230 +46,367 @@ const items = [
   },
 ]
 
+const config = {
+  maskRadius: 0.35,
+  maskSpeed: 0.75,
+  animationSpeed: 1.0,
+  appearDuration: 0.4,
+  disappearDuration: 0.3,
+  turbulenceIntensity: 0.225,
+  frameSkip: 0,
+}
+
 const vertexShader = `
   varying vec2 v_uv;
   void main() {
     v_uv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    gl_Position = vec4(position, 1.0);
   }
-`;
+`
 
 const fragmentShader = `
+  precision highp float;
+
+  uniform sampler2D u_texture;
+  uniform sampler2D u_hovertexture;
   uniform vec2 u_mouse;
-  uniform vec2 u_res;
-  uniform sampler2D u_image;
-  uniform sampler2D u_imagehover;
   uniform float u_time;
+  uniform vec2 u_resolution;
+  uniform float u_radius;
+  uniform float u_speed;
+  uniform float u_imageAspect;
+  uniform float u_turbulenceIntensity;
+
   varying vec2 v_uv;
 
-  float circle(in vec2 _st, in float _radius, in float blurriness){
-      vec2 dist = _st;
-      return 1.-smoothstep(_radius-(_radius*blurriness), _radius+(_radius*blurriness), dot(dist,dist)*4.0);
+  // Improved hash function for better randomness
+  vec3 hash33(vec3 p) {
+    p = fract(p * vec3(443.8975, 397.2973, 491.1871));
+    p += dot(p.zxy, p.yxz + 19.27);
+    return fract(vec3(p.x * p.y, p.z * p.x, p.y * p.z));
   }
 
-  vec3 mod289(vec3 x) {
-    return x - floor(x * (1.0 / 289.0)) * 289.0;
+  // 2D hash function
+  vec2 hash22(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * vec3(443.897, 441.423, 437.195));
+    p3 += dot(p3, p3.yzx + 19.19);
+    return fract(vec2((p3.x + p3.y) * p3.z, (p3.x + p3.z) * p3.y));
   }
 
-  vec4 mod289(vec4 x) {
-    return x - floor(x * (1.0 / 289.0)) * 289.0;
+  // Simplex noise - smoother than Perlin, better for organic patterns
+  float simplex_noise(vec3 p) {
+    const float K1 = 0.333333333;
+    const float K2 = 0.166666667;
+    
+    vec3 i = floor(p + (p.x + p.y + p.z) * K1);
+    vec3 d0 = p - (i - (i.x + i.y + i.z) * K2);
+    
+    // Determine which simplex we're in and the coordinates
+    vec3 e = step(vec3(0.0), d0 - d0.yzx);
+    vec3 i1 = e * (1.0 - e.zxy);
+    vec3 i2 = 1.0 - e.zxy * (1.0 - e);
+    
+    vec3 d1 = d0 - (i1 - K2);
+    vec3 d2 = d0 - (i2 - K2 * 2.0);
+    vec3 d3 = d0 - (1.0 - 3.0 * K2);
+    
+    // Calculate gradients and dot products
+    vec3 x0 = d0;
+    vec3 x1 = d1;
+    vec3 x2 = d2;
+    vec3 x3 = d3;
+    
+    vec4 h = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
+    vec4 n = h * h * h * h * vec4(
+      dot(x0, hash33(i) * 2.0 - 1.0),
+      dot(x1, hash33(i + i1) * 2.0 - 1.0),
+      dot(x2, hash33(i + i2) * 2.0 - 1.0),
+      dot(x3, hash33(i + 1.0) * 2.0 - 1.0)
+    );
+    
+    // Sum the contributions
+    return 0.5 + 0.5 * 31.0 * dot(n, vec4(1.0));
   }
 
-  vec4 permute(vec4 x) {
-      return mod289(((x*34.0)+1.0)*x);
+  // Curl noise for more fluid motion
+  vec2 curl(vec2 p, float time) {
+    const float epsilon = 0.001;
+    
+    float n1 = simplex_noise(vec3(p.x, p.y + epsilon, time));
+    float n2 = simplex_noise(vec3(p.x, p.y - epsilon, time));
+    float n3 = simplex_noise(vec3(p.x + epsilon, p.y, time));
+    float n4 = simplex_noise(vec3(p.x - epsilon, p.y, time));
+    
+    float x = (n2 - n1) / (2.0 * epsilon);
+    float y = (n4 - n3) / (2.0 * epsilon);
+    
+    return vec2(x, y);
   }
 
-  vec4 taylorInvSqrt(vec4 r) {
-    return 1.79284291400159 - 0.85373472095314 * r;
-  }
-
-  float snoise3(vec3 v) {
-    const vec2  C = vec2(1.0/6.0, 1.0/3.0);
-    const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-
-
-    vec3 i  = floor(v + dot(v, C.yyy));
-    vec3 x0 =   v - i + dot(i, C.xxx);
-
-    vec3 g = step(x0.yzx, x0.xyz);
-    vec3 l = 1.0 - g;
-    vec3 i1 = min(g.xyz, l.zxy);
-    vec3 i2 = max(g.xyz, l.zxy);
-
-    vec3 x1 = x0 - i1 + C.xxx;
-    vec3 x2 = x0 - i2 + C.yyy;
-    vec3 x3 = x0 - D.yyy;
-
-    i = mod289(i);
-    vec4 p = permute(permute(permute(
-              i.z + vec4(0.0, i1.z, i2.z, 1.0))
-            + i.y + vec4(0.0, i1.y, i2.y, 1.0))
-            + i.x + vec4(0.0, i1.x, i2.x, 1.0));
-
-    float n_ = 0.142857142857;
-    vec3  ns = n_ * D.wyz - D.xzx;
-
-    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
-
-    vec4 x_ = floor(j * ns.z);
-    vec4 y_ = floor(j - 7.0 * x_);
-
-    vec4 x = x_ *ns.x + ns.yyyy;
-    vec4 y = y_ *ns.x + ns.yyyy;
-    vec4 h = 1.0 - abs(x) - abs(y);
-
-    vec4 b0 = vec4(x.xy, y.xy);
-    vec4 b1 = vec4(x.zw, y.zw);
-
-    vec4 s0 = floor(b0)*2.0 + 1.0;
-    vec4 s1 = floor(b1)*2.0 + 1.0;
-    vec4 sh = -step(h, vec4(0.0));
-
-    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
-    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
-
-    vec3 p0 = vec3(a0.xy,h.x);
-    vec3 p1 = vec3(a0.zw,h.y);
-    vec3 p2 = vec3(a1.xy,h.z);
-    vec3 p3 = vec3(a1.zw,h.w);
-
-
-    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
-    p0 *= norm.x;
-    p1 *= norm.y;
-    p2 *= norm.z;
-    p3 *= norm.w;
-
-
-    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
-    m = m * m;
-    return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+  // Improved ink marbling function for more organic and fluid patterns
+  float inkMarbling(vec2 p, float time, float intensity) {
+    // Create multiple layers of fluid motion
+    float result = 0.0;
+    
+    // Base layer - large fluid movements
+    vec2 flow = curl(p * 1.5, time * 0.1) * intensity * 2.0;
+    vec2 p1 = p + flow * 0.3;
+    result += simplex_noise(vec3(p1 * 2.0, time * 0.15)) * 0.5;
+    
+    // Medium details - swirls and eddies
+    vec2 flow2 = curl(p * 3.0 + vec2(sin(time * 0.2), cos(time * 0.15)), time * 0.2) * intensity;
+    vec2 p2 = p + flow2 * 0.2;
+    result += simplex_noise(vec3(p2 * 4.0, time * 0.25)) * 0.3;
+    
+    // Fine details - small ripples and textures
+    vec2 flow3 = curl(p * 6.0 + vec2(cos(time * 0.3), sin(time * 0.25)), time * 0.3) * intensity * 0.5;
+    vec2 p3 = p + flow3 * 0.1;
+    result += simplex_noise(vec3(p3 * 8.0, time * 0.4)) * 0.2;
+    
+    // Add some spiral patterns for more interesting visuals
+    float dist = length(p - vec2(0.5));
+    float angle = atan(p.y - 0.5, p.x - 0.5);
+    float spiral = sin(dist * 15.0 - angle * 2.0 + time * 0.3) * 0.5 + 0.5;
+    
+    // Blend everything together
+    result = mix(result, spiral, 0.3);
+    
+    // Normalize to 0-1 range
+    result = result * 0.5 + 0.5;
+    
+    return result;
   }
 
   void main() {
-    float aspect = u_res.x / u_res.y;
-    vec2 st = v_uv - vec2(0.5);
-    st.x *= aspect;
+    vec2 uv = v_uv;
+    float screenAspect = u_resolution.x / u_resolution.y;
+    float ratio = u_imageAspect / screenAspect;
 
-    // get mouse position in same coordinate space
-    vec2 mouse = u_mouse * vec2(aspect, 1.0);
+    vec2 texCoord = vec2(
+      mix(0.5 - 0.5 / ratio, 0.5 + 0.5 / ratio, uv.x),
+      uv.y
+    );
 
-    //circle's position relative to mouse
-    vec2 circlePos = st - mouse;
+    vec4 tex1 = texture2D(u_texture, texCoord);
+    vec4 tex2 = texture2D(u_hovertexture, texCoord);
+    
+    // Calculate ink marbling effect
+    vec2 correctedUV = uv;
+    correctedUV.x *= screenAspect;
+    vec2 correctedMouse = u_mouse;
+    correctedMouse.x *= screenAspect;
 
-    float c = circle(circlePos, 0.3, 2.0) * 2.5;
-    float offx = v_uv.x + sin(v_uv.y + u_time * 0.1);
-    float offy = v_uv.y - u_time * 0.1 - cos(u_time * 0.001) * 0.01;
-    float n = snoise3(vec3(offx, offy, u_time * 0.1) * 8.0) - 1.0;
-    float finalMask = smoothstep(0.4, 0.5, n + pow(c, 2.0));
-    vec4 image = texture2D(u_image, v_uv);
-    vec4 hover = texture2D(u_imagehover, v_uv);
-    vec4 finalImage = mix(image, hover, finalMask);
+    float dist = distance(correctedUV, correctedMouse);
+    
+    // Use improved ink marbling
+    float marbleEffect = inkMarbling(uv * 2.0 + u_time * u_speed * 0.1, u_time, u_turbulenceIntensity * 2.0);
+    float jaggedDist = dist + (marbleEffect - 0.5) * u_turbulenceIntensity * 2.0;
+    
+    float mask = u_radius > 0.001 ? step(jaggedDist, u_radius) : 0.0;
+
+    vec4 finalImage = mix(tex1, tex2, mask);
+
     gl_FragColor = finalImage;
   }
-`;
+`
 
-const HoverReveal = ({ imgSrc, hoverSrc, container }) => {
-  const meshRef = useRef(null)
-  const mouse = useRef(new Vector2(0, 0))
-  const [hover, setHover] = useState(false)
+const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
+  let frameCount = 0
+  let lastTime = 0
+  const activeContainers = new Set()
 
-  const { pointer, size, viewport } = useThree()
-
-  const uniforms = useMemo(() => (
-    {
-      u_image: { value: null },
-      u_imagehover: { value: null },
-      u_mouse: { value: mouse.current },
-      u_time: { value: 0 },
-      u_res: { value: new Vector2(size.width, size.height) },
-    }
-  ), [size])
-  
   useEffect(() => {
-    if (!imgSrc || !hoverSrc || !container.current) return
-    
-    const loader = new TextureLoader()
-    loader.load(imgSrc, (texture) => {
-      uniforms.u_image.value = texture
-    })
-    loader.load(hoverSrc, (texture) => {
-      uniforms.u_imagehover.value = texture
-    })
-  }, [imgSrc, hoverSrc, uniforms])
-  
-  useFrame(() => {
-    if (!imgSrc || !hoverSrc || !container?.current) return
-    
-    if (hover === true) {
-      if (meshRef.current) {
-        uniforms.u_time.value += 0.01
-        const onMouseMove = () => {
-          uniforms.u_mouse.value = new Vector2(pointer.x, pointer.y)
+    const updateContainer = (container, deltaTime) => {
+      if (!container.uniforms) return
+      container.lerpedMouse.lerp(container.targetMouse, 0.1)
+      container.uniforms.u_mouse.value.copy(container.lerpedMouse)
+      if (container.isMouseInsideContainer) {
+        container.uniforms.u_time.value += 0.01 * config.animationSpeed * (deltaTime / 16.67)
+      }
+      if (container.renderer && container.scene && container.camera) {
+        container.renderer.render(container.scene, container.camera)
+      }
+    }
+
+    const globalAnimate = (timestamp) => {
+      requestAnimationFrame(globalAnimate)
+      const deltaTime = timestamp - lastTime
+      lastTime = timestamp
+      frameCount++
+      if (config.frameSkip > 0 && frameCount % (config.frameSkip + 1) !== 0) return
+      activeContainers.forEach((container) => {
+        if (container.isInView) {
+          updateContainer(container, deltaTime)
         }
+      })
+    }
     
-        container.current.addEventListener('mousemove', onMouseMove)
+    requestAnimationFrame(globalAnimate)
+  }, [])
+
+  useEffect(() => {
+    const initHoverEffect = (container) => {
+      container.scene = null
+      container.camera = null
+      container.renderer = null
+      container.uniforms = null
+      container.isInView = null
+      container.isMouseInsideContainer = null
+      container.targetMouse = new Vector2(0.5, 0.5)
+      container.lerpedMouse = new Vector2(0.5, 0.5)
+      container.radiusTween = null
+      
+      activeContainers.add(container)
+
+      const loader = new TextureLoader()
+      Promise.all([
+        loader.loadAsync(imgSrc),
+        loader.loadAsync(hoverSrc),
+      ]).then(([baseTexture, hoverTexture]) => {
+        setupScene(baseTexture, hoverTexture)
+        setupEventListeners()
+      })
+
+      const setupScene = (texture, hoverTexture) => {
+        texture.minFilter = LinearFilter
+        texture.magFilter = LinearFilter
+        texture.anisotropy = 8
+        texture.generateMipmaps = false
+        container.scene = new Scene()
+        container.camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1)
+        container.uniforms = {
+          u_texture: { value: texture },
+          u_hovertexture: { value: hoverTexture },
+          u_mouse: { value: new Vector2(0.5, 0.5) },
+          u_time: { value: 0.0 },
+          u_resolution: { value: new Vector2(container.clientWidth, container.clientHeight) },
+          u_radius: { value: 0.0 },
+          u_speed: { value: config.maskSpeed },
+          u_imageAspect: { value: texture.image.width / texture.image.height },
+          u_turbulenceIntensity: { value: config.turbulenceIntensity },
+        }
+        const geometry = new PlaneGeometry(2, 2)
+        const material = new ShaderMaterial({
+          uniforms: container.uniforms,
+          vertexShader,
+          fragmentShader,
+          depthTest: false,
+          depthWrite: false,
+        })
+        const mesh = new Mesh(geometry, material)
+        container.scene.add(mesh)
+        container.renderer = new WebGLRenderer({
+          antialias: false,
+          powerPreference: 'high-performance',
+          alpha: true,
+        })
+        container.renderer.setPixelRatio(1)
+        container.renderer.setSize(container.clientWidth, container.clientHeight)
+        container.appendChild(container.renderer.domElement)
+
+        let resizeTimeout
+        const resizeObserver = new ResizeObserver(
+          () => {
+            if (resizeTimeout) return
+            resizeTimeout = setTimeout(() => {
+              if (container.renderer) container.renderer.setSize(container.clientWidth, container.clientHeight)
+              if (container.uniforms) container.uniforms.u_resolution.value.set(container.clientWidth, container.clientHeight)
+              resizeTimeout = null
+            }, 200)
+          }
+        )
+        resizeObserver.observe(container)
+        container.renderer.render(container.scene, container.camera)
+      }
+
+      const setupEventListeners = () => {
+        let lastMouseX = 0
+        let lastMouseY = 0
+        let mouseMoveTimeout = null
+
+        const handleMouseMove = (event) => {
+          lastMouseX = event.clientX
+          lastMouseY = event.clientY
+          if (!mouseMoveTimeout) {
+            mouseMoveTimeout = setTimeout(() => {
+              updateCursorState(lastMouseX, lastMouseY)
+              mouseMoveTimeout = null
+            }, 16) // ~60fps
+          }
+        }
+
+        document.addEventListener('mousemove', handleMouseMove, { passive: true })
         
-        return () => {
-          container.current.removeEventListener('mousemove', onMouseMove)
+        const intersectionObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              container.isInView = entry.isIntersecting
+              if (!container.isInView && container.radiusTween) {
+                container.radiusTween.kill()
+                container.uniforms.u_radius.value = 0.0
+              }
+            })
+          },
+          { threshold: 0.1 }
+        )
+        intersectionObserver.observe(container)
+      }
+      
+      const updateCursorState = (x, y) => {
+        const rect = container.getBoundingClientRect()
+        const inside = x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+        if (container.isMouseInsideContainer !== inside) {
+          container.isMouseInsideContainer = inside
+          if (container.radiusTween) {
+            container.radiusTween.kill()
+          }
+          if (inside) {
+            container.targetMouse.x = (x - rect.left) / rect.width
+            container.targetMouse.y = 1.0 - (y - rect.top) / rect.height
+            container.radiusTween = gsap.to(container.uniforms.u_radius, {
+              value: config.maskRadius,
+              duration: config.appearDuration,
+              ease: 'power2.out',
+            })
+          } else {
+            container.radiusTween = gsap.to(container.uniforms.u_radius, {
+              value: 0,
+              duration: config.disappearDuration,
+              ease: 'power2.in',
+            })
+          }
+        }
+        if (inside) {
+          container.targetMouse.x = (x - rect.left) / rect.width
+          container.targetMouse.y = 1.0 - (y - rect.top) / rect.height
         }
       }
-    } else {
-      uniforms.u_mouse.value.set(999, 999, 0)
     }
-  })
 
-  console.log(container)
+    document.querySelectorAll(".inversion-lens").forEach((container) => {
+      initHoverEffect(container)
+    })
+  }, [imgSrc, hoverSrc])
 
   return (
-    <mesh ref={meshRef} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}>
-      <planeGeometry args={[viewport.width ?? 2, viewport.height ?? 2, 1, 1]} />
-      <shaderMaterial
-        uniforms={uniforms}
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        defines={{ PR: window.devicePixelRatio.toFixed(1) }}
-        transparent
-      />
-    </mesh>
+    <div className={`inversion-lens ${className}`}>
+      <img src={imgSrc} data-hover={hoverSrc} alt={member} />
+    </div>
   )
 }
 
 export default function GridContainer() {
-  const containerRefs = useRef([])
   return (
-    <div className='grid-container'>
-      {items.map((item, i) => {
-        if (!containerRefs.current[i]) {
-          containerRefs.current[i] = React.createRef()
-        }
-        return (
-          <div key={item.src} className={`item-${i + 1}-container`}>
-            <div className={`inversion-lens item-${i + 1}`}>
-              <img src={item.src} data-hover={item.hoverSrc} alt="" />
-              {/* canvas */}
-              <div
-                ref={containerRefs.current[i]}
-                className="canvas-container"
-              >
-                <Canvas gl={{ alpha: true }}>
-                  <ambientLight intensity={1} />
-                  <directionalLight position={[0, 0, 5]} />
-                  <HoverReveal
-                    imgSrc={item.src}
-                    hoverSrc={item.hoverSrc}
-                    container={containerRefs.current[i]}
-                  />
-                </Canvas>
-              </div>
-            </div>
-            <div className="member-info text-primary-foreground dark:text-primary">
-              <div className="member-role">{item.role}</div>
-              <div className="member-name">{item.name}</div>
-            </div>
+    <div className="grid-container">
+      {items.map((item, i) => (
+        <div key={item.name} className={`item-${i + 1}-container`}>
+          <ImageCanvas className={`item-${i + 1}`} member={item.name} imgSrc={item.src} hoverSrc={item.hoverSrc} />
+          <div className="member-info">
+            <div className="member-date">{item.role}</div>
+            <div className="member-title">{item.name}</div>
           </div>
-        )
-      })}
+        </div>
+      ))}
     </div>
   )
 }
