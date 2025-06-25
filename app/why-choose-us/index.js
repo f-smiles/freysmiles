@@ -1971,27 +1971,17 @@ const TechSection = () => {
         <section ref={sectionRef} className="px-6 py-12 md:px-12">
           <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
             <span>All.</span>
-            <span >
+            <span>
               — Invisalign. <sup className="text-xs align-super">(10k)</sup>
             </span>
-            <span >
-              — Accelerated Treatment.{" "}
-            </span>
-            <span >
-              — Low-Dose Digital 3D Radiographs.{" "}
-            </span>
-            <span >
+            <span>— Accelerated Treatment. </span>
+            <span>— Low-Dose Digital 3D Radiographs. </span>
+            <span>
               — Damon Braces. <sup className="text-xs align-super">(15k)</sup>
             </span>
-            <span >
-              — iTero Lumina.
-            </span>
-            <span >
-              — 3D Printing.
-            </span>
-            <span >
-              — Laser Therapy.
-            </span>
+            <span>— iTero Lumina.</span>
+            <span>— 3D Printing.</span>
+            <span>— Laser Therapy.</span>
             <span>
               — Live Text Support.{" "}
               <sup className="text-xs align-super">(8)</sup>
@@ -2334,7 +2324,6 @@ const VideoAnimation = () => {
         scrub: true,
         anticipatePin: 1,
       },
-      
     });
 
     videoPinTl.fromTo(
@@ -3115,12 +3104,12 @@ const CardStack = () => {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: container,
-        start: "top+=100 center", 
-        end: "+=800",       
+        start: "top+=100 center",
+        end: "+=800",
         scrub: true,
         pin: true,
       },
-          });
+    });
 
     tl.add("animate");
     listChilds.forEach((el, i) => {
@@ -3553,45 +3542,45 @@ function StackCards() {
           </div>
         </div>
         <div className="mt-20 font-khteka min-h-screen text-[11px] leading-[1.1] uppercase px-2">
-  {[
-    {
-      title: "ABO Treatment Standards",
-      content:
-        "We strive to attain finished results consistent with the American Board of Orthodontics (ABO) qualitative standards. Our doctors place great priority on the certification and recertification process, ensuring that all diagnostic records adhere to ABO standards.",
-    },
-    {
-      title: "Board Certification Process",
-      content:
-        "Currently, Dr. Gregg Frey is a certified orthodontist and is preparing cases for recertification. Dr. Daniel Frey is in the final stages of obtaining his initial certification.",
-    },
-    {
-      title: "Diagnostic Record Accuracy",
-      content:
-        "To complement our use of cutting-edge diagnostic technology, we uphold the highest standards for our records, ensuring accuracy and precision throughout the treatment process.",
-    },
-    {
-      title: "Trusted Expertise",
-      content:
-        "Our office holds the distinction of being the longest-standing, active board-certified orthodontic office in the area. With four offices in the Lehigh Valley, we have been providing unparalleled orthodontic care for over four decades.",
-    },
-  ].map((block, i) => (
-    <div key={i} className="w-full border-t border-black">
-      <div
-        className="relative grid grid-cols-4 gap-x-10 px-10 py-16 overflow-hidden bg-black card-block"
-        style={{ "--br": "0px" }}
-      >
-        <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-        <div className="relative z-10 flex items-center justify-center col-span-1 text-[#ff007f]">
-          {block.title}
+          {[
+            {
+              title: "ABO Treatment Standards",
+              content:
+                "We strive to attain finished results consistent with the American Board of Orthodontics (ABO) qualitative standards. Our doctors place great priority on the certification and recertification process, ensuring that all diagnostic records adhere to ABO standards.",
+            },
+            {
+              title: "Board Certification Process",
+              content:
+                "Currently, Dr. Gregg Frey is a certified orthodontist and is preparing cases for recertification. Dr. Daniel Frey is in the final stages of obtaining his initial certification.",
+            },
+            {
+              title: "Diagnostic Record Accuracy",
+              content:
+                "To complement our use of cutting-edge diagnostic technology, we uphold the highest standards for our records, ensuring accuracy and precision throughout the treatment process.",
+            },
+            {
+              title: "Trusted Expertise",
+              content:
+                "Our office holds the distinction of being the longest-standing, active board-certified orthodontic office in the area. With four offices in the Lehigh Valley, we have been providing unparalleled orthodontic care for over four decades.",
+            },
+          ].map((block, i) => (
+            <div key={i} className="w-full border-t border-black">
+              <div
+                className="relative grid grid-cols-4 gap-x-10 px-10 py-16 overflow-hidden bg-black card-block"
+                style={{ "--br": "0px" }}
+              >
+                <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
+                <div className="relative z-10 flex items-center justify-center col-span-1 text-[#ff007f]">
+                  {block.title}
+                </div>
+                <div className="relative z-10 col-span-3 max-w-4xl text-black leading-relaxed">
+                  <div>{block.content}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+          <div className="w-full border-b border-black" />
         </div>
-        <div className="relative z-10 col-span-3 max-w-4xl text-black leading-relaxed">
-          <div>{block.content}</div>
-        </div>
-      </div>
-    </div>
-     ))}
-     <div className="w-full border-b border-black" />
-   </div>
       </section>
     </>
   );
@@ -4266,153 +4255,82 @@ function MoreThanSmiles() {
   };
   const rotations = [-12, 10, -5, 5, -5, -2];
 
-  const pathRef = useRef(null);
-  const cardsectionRef = useRef(null);
-  const textContainerRef = useRef(null);
-  useEffect(() => {
-    const path = pathRef.current;
-    const text = textContainerRef.current;
-    const pathLength = path.getTotalLength();
-  
-    gsap.set(path, {
-      strokeDasharray: pathLength,
-      strokeDashoffset: 0
-    });
-    
-    gsap.set(text, {
-      opacity: 0,
-      y: 30,
-      filter: "blur(2px)"
-    });
-  
-    const trigger = ScrollTrigger.create({
-      trigger: cardsectionRef.current,
-      start: "top top",
-      end: "bottom top",
-      scrub: 1,
-      pin: true,
-      pinSpacing: true,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        
-        gsap.to(path, {
-          strokeDashoffset: progress * pathLength,
-          ease: "none",
-          overwrite: true
-        });
-  
-        const textFadeStart = 0.66;
-        const textFadeDuration = 0.33;
-        
-        if (progress >= textFadeStart) {
-          const textProgress = (progress - textFadeStart) / textFadeDuration;
-          const easedProgress = gsap.parseEase("sine.out")(Math.min(1, textProgress));
-          
-          gsap.to(text, {
-            opacity: easedProgress,
-            y: 30 * (1 - easedProgress),
-            filter: `blur(${2 * (1 - easedProgress)}px)`,
-            ease: "none",
-            overwrite: true
-          });
-        } else {
-          gsap.to(text, {
-            opacity: 0,
-            y: 30,
-            filter: "blur(2px)",
-            overwrite: true,
-            duration: 0.2
-          });
-        }
-      },
-      onLeave: () => {
-        gsap.to(text, {
-          opacity: 1,
-          y: 0,
-          filter: "blur(0px)",
-          overwrite: true,
-          duration: 0.3
-        });
-      }
-    });
-  
-    return () => {
-      if (trigger) trigger.kill();
-      gsap.killTweensOf([path, text]);
-    };
-  }, []);
-
   return (
     <>
       <div className="bg-[#F9F9F9] relative min-h-screen w-full">
-        <section
-          ref={cardsectionRef}
-          className="h-[100vh] relative z-10 flex items-center justify-center"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 951 367"
-            fill="none"
-            className="w-full h-auto max-w-5xl pt-40 mx-auto"
-          >
-            <path
-              ref={pathRef}
-              d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
-              stroke="#0C0EFE"
-              strokeWidth="40"
-              strokeMiterlimit="10"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </section>
-        <section className="sticky-cards" style={stickyStyle}>
-          <div
-            style={{
-              ...centerTextStyle,
-              fontSize: "2rem",
-              paddingBottom: "2em",
-            }}
-          >
-            <div
-              ref={textContainerRef}
-              className="flex flex-col items-center justify-center h-full"
-            >
-              <p className="font-neuehaas45 max-w-[600px] text-[16px] leading-snug">
-                We’re committed to making world-class orthodontic care
-                accessible to all. In 2011, we launched More Than Smiles to
-                provide treatment and promote community education around dental
-                and orthodontic health. Nominate someone who deserves a
-                confident smile through our non-profit More Than Smiles.
-              </p>
-              <div className="z-10 absolute right-[3vw]">
-                <a
-                  href="https://morethansmiles.org/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <svg
-                    className="w-full cursor-pointer"
-                    viewBox="-50 -50 100 100"
+        <div className="min-h-screen w-full bg-white font-sans text-black grid grid-cols-12 gap-4 p-8">
+          <div className="col-span-5 flex flex-col gap-8">
+            <div>
+              <div className="text-[12px] mb-8 font-neueroman uppercase">
+                Non-Profit
+              </div>
+              <h1 className="text-[4rem] leading-[4rem] font-neuehaas45">
+                <span className="text-[#F8FC00] font-saolitalic">More</span>
+                <div className="flex gap-4">
+                  <span className="text-[3.5rem]">Than</span>{" "}
+                  <span className="text-[3.5rem]">Smiles</span>
+                </div>
+              </h1>
+            </div>
+
+            <div className="border-t border-black mt-8 pt-4">
+              <div className="flex items-start gap-6">
+                <div className="w-24 h-24 bg-[#E9FF1D] rounded-full shrink-0" />
+
+                <p className="text-[13px] font-neueroman leading-snug max-w-[400px]">
+                  We’re committed to making world-class orthodontic care
+                  accessible to all. In 2011, we launched More Than Smiles to
+                  provide treatment and promote community education around
+                  dental and orthodontic health. Nominate someone who deserves a
+                  confident smile through our non-profit More Than Smiles.
+                </p>
+                <div className="z-10 absolute right-[3vw]">
+                  <a
+                    href="https://morethansmiles.org/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <circle
-                      r="22.4"
-                      fill="none"
-                      stroke="#DFDFDF"
-                      stroke-width=".5"
-                    />
-                    <text
-                      className="txt fill-black text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
-                      x="0"
-                      y="2"
-                      textAnchor="middle"
+                    <svg
+                      className="w-full cursor-pointer"
+                      viewBox="-50 -50 100 100"
                     >
-                      Nominate
-                    </text>
-                  </svg>
-                </a>
+                      <circle
+                        r="22.4"
+                        fill="none"
+                        stroke="#DFDFDF"
+                        stroke-width=".5"
+                      />
+                      <text
+                        className="txt fill-black text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
+                        x="0"
+                        y="2"
+                        textAnchor="middle"
+                      >
+                        Nominate
+                      </text>
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
+
+          <div className="col-span-7 grid grid-cols-3 gap-4 relative">
+            {Array(6)
+              .fill()
+              .map((_, i) => (
+                <div>
+                  <img
+                    src="/images/mtscard.png"
+                    alt="Card back"
+                    className="h-full"
+                  />
+                  {i === 2 && <div className="absolute pointer-events-none" />}
+                </div>
+              ))}
+          </div>
+        </div>
+        <section className="sticky-cards" style={stickyStyle}>
           {images.map((src, i) => (
             <div
               key={i}
