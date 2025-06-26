@@ -4265,53 +4265,57 @@ function MoreThanSmiles() {
                 Non-Profit
               </div>
               <h1 className="text-[4rem] leading-[4rem] font-neuehaas45">
-                <span className="text-[#F8FC00] font-saolitalic">More</span>
+                <span className="text-[#FFBE8D] font-saolitalic">More</span>
                 <div className="flex gap-4">
                   <span className="text-[3.5rem]">Than</span>{" "}
                   <span className="text-[3.5rem]">Smiles</span>
                 </div>
               </h1>
+                            {/* <a
+  href="https://morethansmiles.org/"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="relative w-32 h-32 flex items-center justify-center"
+>
+
+  <svg
+    className="absolute inset-0 w-full h-full"
+    viewBox="0 0 100 100"
+  >
+    <circle
+      cx="50"
+      cy="50"
+      r="48"
+      fill="none"
+      stroke="black"
+      strokeWidth=".5"
+    />
+  </svg>
+
+
+  <div className="w-24 h-24 bg-[#F8FC00] rounded-full flex items-center justify-center">
+    <span className="text-black text-sm font-neuehaas45">
+      NOMINATE
+    </span>
+  </div>
+</a> */}
             </div>
 
             <div className="border-t border-black mt-8 pt-4">
               <div className="flex items-start gap-6">
-                <div className="w-24 h-24 bg-[#E9FF1D] rounded-full shrink-0" />
 
-                <p className="text-[13px] font-neueroman leading-snug max-w-[400px]">
+                <p className="text-[15px] tracking-wide font-neuehaas45 leading-snug max-w-[500px]">
                   We’re committed to making world-class orthodontic care
                   accessible to all. In 2011, we launched More Than Smiles to
                   provide treatment and promote community education around
-                  dental and orthodontic health. Nominate someone who deserves a
-                  confident smile through our non-profit More Than Smiles.
+                  dental and orthodontic health. 
                 </p>
-                <div className="z-10 absolute right-[3vw]">
-                  <a
-                    href="https://morethansmiles.org/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <svg
-                      className="w-full cursor-pointer"
-                      viewBox="-50 -50 100 100"
-                    >
-                      <circle
-                        r="22.4"
-                        fill="none"
-                        stroke="#DFDFDF"
-                        stroke-width=".5"
-                      />
-                      <text
-                        className="txt fill-black text-[5.5px] tracking-[0.2px] text-center font-neue-montreal"
-                        x="0"
-                        y="2"
-                        textAnchor="middle"
-                      >
-                        Nominate
-                      </text>
-                    </svg>
-                  </a>
-                </div>
+           
               </div>
+              <p className="text-[13px] uppercase tracking-wide font-neueroman leading-snug max-w-[500px]">
+                Nominate someone who deserves a
+                  confident smile here
+               </p>
             </div>
           </div>
 
@@ -4321,7 +4325,7 @@ function MoreThanSmiles() {
               .map((_, i) => (
                 <div>
                   <img
-                    src="/images/mtscard.png"
+                    src="/images/mtscard1.png"
                     alt="Card back"
                     className="h-full"
                   />

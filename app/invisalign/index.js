@@ -31,6 +31,7 @@ import {
   useSpring,
   useAnimation,
   useTransform,
+  useInView
 } from "framer-motion";
 import gsap from "gsap";
 
@@ -1082,7 +1083,7 @@ const MorphingSphere = () => {
 
   return (
     <>
-      <canvas ref={canvasRef} className="webgl w-full h-full" />
+      <canvas ref={canvasRef} />
     </>
   );
 };
@@ -1301,7 +1302,26 @@ const Invisalign = () => {
 
     return () => ScrollTrigger.getAll().forEach((t) => t.kill());
   }, []);
+  
+  const sectionRef = useRef(null);
+  const sphereRef = useRef(null);
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.to(sphereRef.current, {
+        yPercent: 100,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top center',
+          end: 'bottom center',
+          scrub: true,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
   return (
     <>
 
@@ -1338,10 +1358,6 @@ const Invisalign = () => {
      
       </div> */}
       <div className="relative">
-      <div className="fixed top-[20vh] transform  z-0 w-[300px] h-[300px]">
-  <MorphingSphere />
-</div>
-
         <section className="mt-[20vh] z-10 relative min-h-screen">
 
             <Copy>
@@ -1449,7 +1465,7 @@ const Invisalign = () => {
             </div>
 
 
-            <div className="py-20 relative flex flex-col items-center w-full">
+            {/* <div className="py-20 relative flex flex-col items-center w-full">
 <div className="relative w-[75%]">
     <img
       src="/images/ipadoutline.png"
@@ -1605,7 +1621,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
       }}
     />
   </div>
-</div>
+</div> */}
 
               {/* <img
                 ref={imageRef}
@@ -1614,9 +1630,16 @@ With over 40 years of combined experience, our doctors were the first in the reg
                 alt="Man holding laptop"
               /> */}
 
-     
-          <div className="relative min-h-screen">
-            <div className="flex flex-col items-center justify-center">
+ 
+<section ref={sectionRef} className="relative w-full overflow-hidden">
+<div ref={sphereRef} className="absolute top-0 left-0 w-full h-[600px] pointer-events-none z-0">
+        <MorphingSphere />
+      </div>
+
+
+<div className="z-10">
+<div className="relative flex flex-col items-center justify-center">
+
               <h4 className=" text-sm mb-6 font-neuehaas35">Synopsis</h4>
               <Copy>
                 <p className="font-neuehaas45 text-[18px] leading-[1.2] max-w-[650px] mb-20">
@@ -1759,6 +1782,8 @@ With over 40 years of combined experience, our doctors were the first in the reg
                 </p>
               </div>
             </div>
+            </div>
+      </section>
             <div className="flex justify-center gap-6 p-6">
               {/* <img
                 src="/images/manholdinglaptop.png"
@@ -1851,7 +1876,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
                 </div>
               </div>
             </div>
-          </div>
+   
         </section>
 
         <section className="relative w-full flex flex-col min-h-screen ">
