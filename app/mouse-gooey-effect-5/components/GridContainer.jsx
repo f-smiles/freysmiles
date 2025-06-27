@@ -7,54 +7,44 @@ const items = [
   {
     // src: '/images/members/edit/adriana-blurry-distortion-effect-1920px-1.jpg',
     // hoverSrc: '/images/members/orig/adriana.png',
-    src: '/images/images/base.jpg',
-    hoverSrc: '/images/images/hover.jpg',
+    src: '/images/test/base.jpg',
+    hoverSrc: '/images/test/hover.jpg',
     role: 'Insurance Coordinator',
     name: 'Adriana',
   },
   {
     // src: '/images/members/edit/alyssa-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/alyssa.png',
-    src: '/images/images/base.jpg',
-    hoverSrc: '/images/images/hover.jpg',
+    src: '/images/test/base.jpg',
+    hoverSrc: '/images/test/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Alyssa',
   },
   {
     // src: '/images/members/edit/elizabeth-blurry-distortion-effect-1.jpg',
     // hoverSrc: '/images/members/orig/elizabeth.png',
-    src: '/images/images/base.jpg',
-    hoverSrc: '/images/images/hover.jpg',
+    src: '/images/test/base.jpg',
+    hoverSrc: '/images/test/hover.jpg',
     role: 'Patient Services',
     name: 'Elizabeth',
   },
   {
     // src: '/images/members/edit/lexi-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/lexi.png',
-    src: '/images/images/base.jpg',
-    hoverSrc: '/images/images/hover.jpg',
+    src: '/images/test/base.jpg',
+    hoverSrc: '/images/test/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Lexi',
   },
   {
     // src: '/images/members/edit/nicole-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/nicolle.png',
-    src: '/images/images/base.jpg',
-    hoverSrc: '/images/images/hover.jpg',
+    src: '/images/test/base.jpg',
+    hoverSrc: '/images/test/hover.jpg',
     role: 'Specialized Orthodontic Assistant',
     name: 'Nicole',
   },
 ]
-
-const config = {
-  maskRadius: 0.35,
-  maskSpeed: 0.75,
-  animationSpeed: 1.0,
-  appearDuration: 0.4,
-  disappearDuration: 0.3,
-  turbulenceIntensity: 0.225,
-  frameSkip: 0,
-}
 
 const vertexShader = `
   varying vec2 v_uv;
@@ -97,25 +87,25 @@ const fragmentShader = `
   float simplex_noise(vec3 p) {
     const float K1 = 0.333333333;
     const float K2 = 0.166666667;
-    
+
     vec3 i = floor(p + (p.x + p.y + p.z) * K1);
     vec3 d0 = p - (i - (i.x + i.y + i.z) * K2);
-    
+
     // Determine which simplex we're in and the coordinates
     vec3 e = step(vec3(0.0), d0 - d0.yzx);
     vec3 i1 = e * (1.0 - e.zxy);
     vec3 i2 = 1.0 - e.zxy * (1.0 - e);
-    
+
     vec3 d1 = d0 - (i1 - K2);
     vec3 d2 = d0 - (i2 - K2 * 2.0);
     vec3 d3 = d0 - (1.0 - 3.0 * K2);
-    
+
     // Calculate gradients and dot products
     vec3 x0 = d0;
     vec3 x1 = d1;
     vec3 x2 = d2;
     vec3 x3 = d3;
-    
+
     vec4 h = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
     vec4 n = h * h * h * h * vec4(
       dot(x0, hash33(i) * 2.0 - 1.0),
@@ -123,7 +113,7 @@ const fragmentShader = `
       dot(x2, hash33(i + i2) * 2.0 - 1.0),
       dot(x3, hash33(i + 1.0) * 2.0 - 1.0)
     );
-    
+
     // Sum the contributions
     return 0.5 + 0.5 * 31.0 * dot(n, vec4(1.0));
   }
@@ -131,15 +121,15 @@ const fragmentShader = `
   // Curl noise for more fluid motion
   vec2 curl(vec2 p, float time) {
     const float epsilon = 0.001;
-    
+
     float n1 = simplex_noise(vec3(p.x, p.y + epsilon, time));
     float n2 = simplex_noise(vec3(p.x, p.y - epsilon, time));
     float n3 = simplex_noise(vec3(p.x + epsilon, p.y, time));
     float n4 = simplex_noise(vec3(p.x - epsilon, p.y, time));
-    
+
     float x = (n2 - n1) / (2.0 * epsilon);
     float y = (n4 - n3) / (2.0 * epsilon);
-    
+
     return vec2(x, y);
   }
 
@@ -147,33 +137,33 @@ const fragmentShader = `
   float inkMarbling(vec2 p, float time, float intensity) {
     // Create multiple layers of fluid motion
     float result = 0.0;
-    
+
     // Base layer - large fluid movements
     vec2 flow = curl(p * 1.5, time * 0.1) * intensity * 2.0;
     vec2 p1 = p + flow * 0.3;
     result += simplex_noise(vec3(p1 * 2.0, time * 0.15)) * 0.5;
-    
+
     // Medium details - swirls and eddies
     vec2 flow2 = curl(p * 3.0 + vec2(sin(time * 0.2), cos(time * 0.15)), time * 0.2) * intensity;
     vec2 p2 = p + flow2 * 0.2;
     result += simplex_noise(vec3(p2 * 4.0, time * 0.25)) * 0.3;
-    
+
     // Fine details - small ripples and textures
     vec2 flow3 = curl(p * 6.0 + vec2(cos(time * 0.3), sin(time * 0.25)), time * 0.3) * intensity * 0.5;
     vec2 p3 = p + flow3 * 0.1;
     result += simplex_noise(vec3(p3 * 8.0, time * 0.4)) * 0.2;
-    
+
     // Add some spiral patterns for more interesting visuals
     float dist = length(p - vec2(0.5));
     float angle = atan(p.y - 0.5, p.x - 0.5);
     float spiral = sin(dist * 15.0 - angle * 2.0 + time * 0.3) * 0.5 + 0.5;
-    
+
     // Blend everything together
     result = mix(result, spiral, 0.3);
-    
+
     // Normalize to 0-1 range
     result = result * 0.5 + 0.5;
-    
+
     return result;
   }
 
@@ -189,7 +179,7 @@ const fragmentShader = `
 
     vec4 tex1 = texture2D(u_texture, texCoord);
     vec4 tex2 = texture2D(u_hovertexture, texCoord);
-    
+
     // Calculate ink marbling effect
     vec2 correctedUV = uv;
     correctedUV.x *= screenAspect;
@@ -197,11 +187,11 @@ const fragmentShader = `
     correctedMouse.x *= screenAspect;
 
     float dist = distance(correctedUV, correctedMouse);
-    
+
     // Use improved ink marbling
     float marbleEffect = inkMarbling(uv * 2.0 + u_time * u_speed * 0.1, u_time, u_turbulenceIntensity * 2.0);
     float jaggedDist = dist + (marbleEffect - 0.5) * u_turbulenceIntensity * 2.0;
-    
+
     float mask = u_radius > 0.001 ? step(jaggedDist, u_radius) : 0.0;
 
     vec4 finalImage = mix(tex1, tex2, mask);
@@ -212,6 +202,16 @@ const fragmentShader = `
 
 const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
   const containerRef = useRef(null)
+
+  const config = {
+    maskRadius: 0.35,
+    maskSpeed: 0.75,
+    animationSpeed: 1.0,
+    appearDuration: 0.4,
+    disappearDuration: 0.3,
+    turbulenceIntensity: 0.225,
+    frameSkip: 0,
+  }
 
   let frameCount = 0
   let lastTime = 0
@@ -242,11 +242,10 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         }
       })
     }
-    
+
     requestAnimationFrame(globalAnimate)
   }, [])
 
-  
   useEffect(() => {
     if (!containerRef.current) return
 
@@ -260,9 +259,9 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
       container.targetMouse = new Vector2(0.5, 0.5)
       container.lerpedMouse = new Vector2(0.5, 0.5)
       container.radiusTween = null
-      
+
       activeContainers.add(container)
-  
+
       const loader = new TextureLoader()
       Promise.all([
         loader.loadAsync(imgSrc),
@@ -271,7 +270,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         setupScene(baseTexture, hoverTexture)
         setupEventListeners()
       })
-  
+
       const setupScene = (texture, hoverTexture) => {
         texture.minFilter = LinearFilter
         texture.magFilter = LinearFilter
@@ -308,7 +307,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         container.renderer.setPixelRatio(1)
         container.renderer.setSize(container.clientWidth, container.clientHeight)
         container.appendChild(container.renderer.domElement)
-  
+
         let resizeTimeout
         const resizeObserver = new ResizeObserver(
           () => {
@@ -323,12 +322,12 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         resizeObserver.observe(container)
         container.renderer.render(container.scene, container.camera)
       }
-  
+
       const setupEventListeners = () => {
         let lastMouseX = 0
         let lastMouseY = 0
         let mouseMoveTimeout = null
-  
+
         const handleMouseMove = (event) => {
           lastMouseX = event.clientX
           lastMouseY = event.clientY
@@ -339,9 +338,9 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
             }, 16) // ~60fps
           }
         }
-  
+
         document.addEventListener('mousemove', handleMouseMove, { passive: true })
-        
+
         const intersectionObserver = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
@@ -356,7 +355,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         )
         intersectionObserver.observe(container)
       }
-      
+
       const updateCursorState = (x, y) => {
         const rect = container.getBoundingClientRect()
         const inside = x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
@@ -387,7 +386,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         }
       }
     }
-    
+
     initHoverEffect(containerRef.current)
   }, [imgSrc, hoverSrc])
 
