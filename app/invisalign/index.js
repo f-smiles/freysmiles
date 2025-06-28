@@ -1325,7 +1325,7 @@ const Invisalign = () => {
   return (
     <>
 
-      {/* <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
+      <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
 
 
         <Canvas
@@ -1356,7 +1356,7 @@ const Invisalign = () => {
           </Suspense>
         </Canvas>
      
-      </div> */}
+      </div>
       <div className="relative">
         <section className="mt-[20vh] z-10 relative min-h-screen">
 

@@ -1,4 +1,5 @@
 "use client";
+import Lenis from "@studio-freight/lenis";
 import { Item } from "../../utils/Item";
 import Copy from "@/utils/Copy.jsx";
 import * as PIXI from "pixi.js";
@@ -1589,7 +1590,7 @@ export default function WhyChooseUs() {
   return (
     <>
       <div className="relative bg-white">
-        <FluidSimulation />
+        {/* <FluidSimulation /> */}
 
         <div className="overflow-x-hidden w-full">
           <div className="relative w-full h-screen">
@@ -1988,6 +1989,7 @@ const TechSection = () => {
             </span>
           </div>
           <VideoAnimation />
+          
           <div className="mt-12 w-full flex flex-col gap-4">
             <div className="mb-16">
               <p className="uppercase tracking-wide text-[12px] font-neuehaas35 mb-4">
@@ -2295,82 +2297,105 @@ const ImageGrid = () => {
     </div>
   );
 };
-const VideoAnimation = () => {
+function VideoAnimation() {
   const videoRef = useRef(null);
-  const videoWrapperRef = useRef(null);
+  const wrapper = useRef(null);
   const inset = useRef({ x: 0, y: 0, r: 50 });
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    let videoWidth = video.offsetWidth;
-    let videoHeight = video.offsetHeight;
+    if (!wrapper.current || !videoRef.current) return;
+  
 
-    const handleResize = () => {
-      videoWidth = video.offsetWidth;
-      videoHeight = video.offsetHeight;
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    const snap = gsap.utils.snap(2);
-
-    const videoPinTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: videoWrapperRef.current,
-        start: "center center",
-        end: "+=1200",
-        pin: true,
-        scrub: true,
-        anticipatePin: 1,
-      },
+    const lenis = new Lenis({
+      duration: 0.5,
+      easing: t => t,
+      smooth: true,
+      wheelMultiplier: 0.8,
     });
+    let rafId;
+    const onRaf = (t) => {
+      lenis.raf(t);
+      ScrollTrigger.update();
+      rafId = requestAnimationFrame(onRaf);
+    };
+    rafId = requestAnimationFrame(onRaf);
+    ScrollTrigger.scrollerProxy(document.body, {
+      scrollTop(v) {
+        return arguments.length
+          ? lenis.scrollTo(v, { immediate: true })
+          : lenis.scroll;
+      },
+      getBoundingClientRect: () => ({
+        top: 0, left: 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      }),
+    });
+  
 
-    videoPinTl.fromTo(
+    const video = videoRef.current;
+    const snap = gsap.utils.snap(2);
+    let w = video.offsetWidth,
+        h = video.offsetHeight;
+    const onResize = () => { w = video.offsetWidth; h = video.offsetHeight; };
+    window.addEventListener("resize", onResize);
+  
+  
+    const extra = wrapper.current.offsetHeight * 0.2;  
+  
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: wrapper.current,
+        start: "top top",
+        end: () => `+=${wrapper.current.offsetHeight + extra}`,
+        pin: true,
+        pinSpacing: true,
+        scrub: 0.6,
+        anticipatePin: 2,   
+        ease: "none",
+        invalidateOnRefresh: true,
+       
+      }
+    });
+  
+    tl.fromTo(
       inset.current,
       { x: 0, y: 0, r: 50 },
       {
-        x: 25,
-        y: 18,
-        r: 80,
+        x: 25, y: 18, r: 80,
         onUpdate() {
-          video.style.clipPath = `inset(${Math.round(
-            (inset.current.x * videoWidth) / 200
-          )}px ${Math.round(
-            (inset.current.y * videoHeight) / 200
-          )}px round ${snap(inset.current.r)}px)`;
+          video.style.clipPath = `inset(${Math.round((inset.current.x * w)/200)}px ${
+                                  Math.round((inset.current.y * h)/200)}px round ${
+                                  snap(inset.current.r)}px)`;
         },
       }
     );
-
+  
     return () => {
-      window.removeEventListener("resize", handleResize);
-      ScrollTrigger.getAll().forEach((instance) => instance.kill());
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", onResize);
+      lenis.destroy();
+      ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, []);
 
   return (
-    <div className="bg-[#F9F9F9]" style={{ margin: "5vh 0" }}>
-      <div style={{ maxWidth: "98%", margin: "0 auto" }}>
-        <div ref={videoWrapperRef} style={{ height: "100vh" }}>
-          <video
-            ref={videoRef}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-            src="/videos/cbctscan.mp4"
-            muted
-            autoPlay
-            loop
-          />
-        </div>
-      </div>
+    <div
+      ref={wrapper}
+      className="bg-[#F9F9F9]"
+      style={{ margin: "5vh 0", height: "100vh" }}
+    >
+      <video
+        ref={videoRef}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        src="/videos/cbctscan.mp4"
+        muted
+        autoPlay
+        loop
+      />
     </div>
   );
-};
-
+}
 const globalClock = new THREE.Clock(true);
 function GooeyMesh({ imageRef }) {
   const vertexShader = `varying vec2 v_uv;
@@ -3528,7 +3553,7 @@ function StackCards() {
         <div className="mt-[20vh]">
           <div
             ref={textRef}
-            className="mx-auto font-neuehaas35 mb-40 text-[20px] max-w-[700px] leading-[1.3]"
+            className="mx-auto font-neuehaas45 mb-40 text-[18px] max-w-[700px] leading-[1.3]"
           >
             Our doctors aren’t just orthodontists — they’re in the top 1%. Dr.
             Gregg Frey is board certified for life. Dr. Daniel Frey is locking
@@ -3541,7 +3566,7 @@ function StackCards() {
             <span> TL;DR: You’re in elite company.</span>
           </div>
         </div>
-        <div className="mt-20 font-khteka min-h-screen text-[11px] leading-[1.1] uppercase px-2">
+        <div className="mt-20 font-neuehaas45 min-h-screen text-[13px] tracking-wide leading-none  px-2">
           {[
             {
               title: "ABO Treatment Standards",

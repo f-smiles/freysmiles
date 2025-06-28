@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-
+import Lenis from "@studio-freight/lenis";
 gsap.registerPlugin(ScrollTrigger);
 
 const CaringForYourBraces = () => {
@@ -10,6 +10,22 @@ const CaringForYourBraces = () => {
 
   useEffect(() => {
     let tl;
+    let lenis;
+
+    const initLenis = () => {
+      lenis = new Lenis({
+        lerp: 0.1, // adjust for smoothness (lower = smoother)
+        smoothWheel: true,
+      });
+
+      lenis.on("scroll", ScrollTrigger.update);
+
+      gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+      });
+
+      gsap.ticker.lagSmoothing(0);
+    };
 
     const updateGSAPValues = () => {
       const containerWidth = window.innerWidth;
@@ -23,11 +39,11 @@ const CaringForYourBraces = () => {
       const blackOffset = -containerWidth * 3.84;
       const imageWidth = containerWidth * 0.33333;
       const yellowImageOffset =
-        yellowOffset + containerWidth * 0.77777 - imageWidth - containerWidth * 0.00;
-      
-      
+        yellowOffset +
+        containerWidth * 0.77777 -
+        imageWidth -
+        containerWidth * 0.0;
 
-      
       if (tl) {
         tl.kill();
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
@@ -47,12 +63,22 @@ const CaringForYourBraces = () => {
       gsap.set(".orangeSection", { x: "100vw" });
       gsap.set(".redSection", { x: "100vw" });
       gsap.set(".blackSection", { x: "100vw" });
-      gsap.set(".yellowImageWrapper .image-inner", { scale: 0.6, transformOrigin: "center center" });
-      gsap.set(".whiteImageWrapper .image-inner", { scale: 0.4, transformOrigin: "center center" });
-      gsap.set(".orangeImageWrapper .image-inner", { scale: 0.4, transformOrigin: "center center" });
-      gsap.set(".redImageWrapper .image-inner", { scale: 0.4, transformOrigin: "center center" });
-      
-
+      gsap.set(".yellowImageWrapper .imageInnerWrapper", {
+        scale: 0.6,
+        transformOrigin: "center center",
+      });
+      gsap.set(".whiteImageWrapper .imageInnerWrapper", {
+        scale: 0.4,
+        transformOrigin: "center center",
+      });
+      gsap.set(".orangeImageWrapper .imageInnerWrapper", {
+        scale: 0.4,
+        transformOrigin: "center center",
+      });
+      gsap.set(".redImageWrapper .imageInnerWrapper", {
+        scale: 0.4,
+        transformOrigin: "center center",
+      });
 
       tl = gsap.timeline({
         scrollTrigger: {
@@ -65,7 +91,7 @@ const CaringForYourBraces = () => {
       });
 
       // Slide each section using translateX
-      tl.to(".yellowSection", { x: "0vw", duration: .8, ease: "none" }, 0);
+      tl.to(".yellowSection", { x: "0vw", duration: 0.8, ease: "none" }, 0);
       tl.to(".whiteSection", { x: "80vw", duration: 1, ease: "none" }, 0);
       tl.to(".orangeSection", { x: "95vw", duration: 1, ease: "none" }, 0);
       tl.to(".redSection", { x: "100vw", duration: 1, ease: "none" }, 0);
@@ -86,7 +112,11 @@ const CaringForYourBraces = () => {
       tl.to(".blackSection", { x: "0vw", duration: 1, ease: "none" }, 4);
 
       // Reveal content text
-      tl.to(".yellowContentText", { x: "0%", duration: 0.64, ease: "none" }, 0.16);
+      tl.to(
+        ".yellowContentText",
+        { x: "0%", duration: 0.64, ease: "none" },
+        0.16
+      );
       tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 0.2);
       tl.to(
         ".orangeContentText",
@@ -95,38 +125,45 @@ const CaringForYourBraces = () => {
       );
       tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 0.2);
       tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 0.2);
-      tl.to(".yellowImageWrapper .image-inner", {
-        scale: 1,
-        duration: 1,
-        ease: "none"
-      }, 0);
-      
-    tl.to(".whiteImageWrapper .image-inner", {
-  scale: 1,
-  duration: 1,
-  ease: "none"
-}, 0); 
+      tl.to(
+        ".yellowImageWrapper .image-inner",
+        {
+          scale: 1,
+          duration: 1,
+          ease: "none",
+        },
+        0
+      );
 
-      tl.to(".orangeImageWrapper .image-inner", {
-        scale: 1,
-        duration: 1.5,
-        ease: "none"
-}, 3);
-tl.to(".redImageWrapper .image-inner", {
-  scale: 1,
-  duration: 1.5,
-  ease: "none"
-}, 4);
+      tl.to(
+        ".whiteImageWrapper .image-inner",
+        {
+          scale: 1,
+          duration: 1,
+          ease: "none",
+        },
+        0
+      );
 
-      // tl.to(
-      //   ".purpleImageInnerContainer",
-      //   {
-      //     scale: 1.2,
-      //     ease: "none",
-      //     duration: 2,
-      //   },
-      //   0
-      // );
+      tl.to(
+        ".orangeImageWrapper .image-inner",
+        {
+          scale: 1,
+          duration: 1.5,
+          ease: "none",
+        },
+        3
+      );
+
+      tl.to(
+        ".redImageWrapper .image-inner",
+        {
+          scale: 1,
+          duration: 1.5,
+          ease: "none",
+        },
+        4
+      );
 
       setTimeout(() => {
         ScrollTrigger.refresh();
@@ -134,6 +171,7 @@ tl.to(".redImageWrapper .image-inner", {
     };
 
     const ctx = gsap.context(() => {
+      initLenis();
       updateGSAPValues();
     }, containerRef);
 
@@ -142,9 +180,12 @@ tl.to(".redImageWrapper .image-inner", {
 
     return () => {
       window.removeEventListener("resize", updateGSAPValues);
+      if (lenis) {
+        lenis.destroy();
+      }
       ctx.revert();
     };
-}, []);
+  }, []);
 
   useEffect(() => {
     gsap.to(".fixedNav", {
@@ -222,12 +263,12 @@ tl.to(".redImageWrapper .image-inner", {
                     }}
                   >
                     <div className="flex flex-row gap-4">
-                      <button className="font-neueroman flex items-center justify-between text-[12px] uppercase">
+                      <button className="font-neueroman uppercase flex items-center justify-between text-[12px]">
                         <span className="mr-4 w-1.5 h-1.5 bg-black rounded-full"></span>
                         Treatment Duration
                       </button>
                     </div>{" "}
-                    <p className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                    <p className="font-neueroman mt-10 text-[13px] leading-[1.3]">
                       Your treatment time will depend on your customized plan
                       and how closely you follow our team’s instructions. Most
                       Frey Smiles patients see their ideal smile in just 12 to
@@ -236,38 +277,9 @@ tl.to(".redImageWrapper .image-inner", {
                       handle the rest.
                     </p>
                   </div>
-                  <div className="purpleImageWrapper">
-                    <div
-              className="purpleImageInnerContainer"
-              // style={{
-              //   marginTop: "18.25rem",
-              // }}
-                    >
-                      {/* <img
-                        src="../images/stayontrack.png"
-                        alt="portal"
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                          objectFit: "contain",
-                        }}
-                      /> */}
-
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "70%",
-                          left: "50%",
-                          transform: "translate(-50%, -50%)",
-                          textAlign: "center",
-                          pointerEvents: "none",
-                          display: "flex",
-                          gap: "20px",
-                          fontFamily: "NeueHaasRoman",
-                        }}
-                      >
-                        <h1 id="effect">STAY ON TRACK</h1>
-                      </div>
+                  <div className="imageWrapper">
+                    <div className="imageInnerWrapper">
+                      <img src="/images/stayontrackblue.png" alt="portal" />
                     </div>
                   </div>
                 </div>
@@ -308,7 +320,7 @@ tl.to(".redImageWrapper .image-inner", {
                       Brushing & Flossing
                     </button>
                   </div>{" "}
-                  <p className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                  <p className="font-neueroman mt-10 text-[13px] leading-[1.3]">
                     Brushing and flossing during orthodontic treatment is as
                     important as ever. all orthodontic appliances like clear
                     aligners, brackets, and wires interfere with the mouth's
@@ -321,20 +333,19 @@ tl.to(".redImageWrapper .image-inner", {
                   </p>
                   <div className="flex items-center space-x-2"></div>
                 </div>
-                <div className="yellowImageWrapper">
-  <div className="image-inner">
-    <img
-      src="../images/handholdingtoothbrush.jpg"
-      alt="brushing"
-      style={{
-        width: "100%",
-        height: "auto",
-        objectFit: "cover",
-      }}
-    />
-  </div>
-</div>
-
+                <div className="imageWrapper">
+                  <div className="imageInnerWrapper">
+                    <img
+                      src="/images/handholdingtoothbrush.jpg"
+                      alt="brushing"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -372,7 +383,7 @@ tl.to(".redImageWrapper .image-inner", {
                       General Soreness
                     </button>
                   </div>
-                  <div className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                  <div className="font-neueroman mt-10 text-[13px] leading-[1.3]">
                     When you first get braces, your mouth might feel sore, and
                     your teeth may be tender for 3–5 days—kind of like a dull
                     headache. Taking Tylenol or your usual pain reliever can
@@ -382,20 +393,19 @@ tl.to(".redImageWrapper .image-inner", {
                     and irritation. Hang in there—it gets easier!
                   </div>
                 </div>
-                <div className="whiteImageWrapper">
-  <div className="image-inner">
-    <img
-      src="../images/dentalwax3.png"
-      alt="dental wax"
-      style={{
-        width: "100%",
-        height: "auto",
-        objectFit: "contain",
-      }}
-    />
-  </div>
-</div>
-
+                <div className="imageWrapper">
+                  <div className="imageInnerWrapper">
+                    <img
+                      src="/images/dentalwax3.png"
+                      alt="dental wax"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
             <div
@@ -431,7 +441,7 @@ tl.to(".redImageWrapper .image-inner", {
                       Eating with braces
                     </button>
                   </div>
-                  <div className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                  <div className="font-neueroman mt-10 text-[13px] leading-[1.3]">
                     Traditionally, patients have been advised to avoid certain
                     foods during braces treatment, as aggressive or rapid
                     chewing can break brackets. Crunchy, chewy, sugary, and
@@ -441,24 +451,19 @@ tl.to(".redImageWrapper .image-inner", {
                     and corn on the cob may require careful navigation.
                   </div>
                 </div>
-                <div className="orangeImageWrapper">
-                   <div
-              className="orangeImageInnerContainer"
-              // style={{
-              //   marginTop: "18.25rem",
-              // }}
-                    >
-                  {/* <img
-                    src="../images/soda3.png"
-                    alt="portal"
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      objectFit: "contain",
-                    }}
-                  /> */}
+                <div className="imageWrapper">
+                  <div className="imageInnerWrapper">
+                    <img
+                      src="/images/soda3.png"
+                      alt="portal"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
                 </div>
-</div>
               </div>
             </div>
             <div
@@ -494,7 +499,7 @@ tl.to(".redImageWrapper .image-inner", {
                       Rubberband wear
                     </button>
                   </div>
-                  <div className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                  <div className="font-neueroman mt-10 text-[13px] leading-[1.3]">
                     If your doctor has prescribed rubber bands, it’s essential
                     to follow the prescription for the best results. Not wearing
                     them as directed or frequently breaking brackets can affect
@@ -505,14 +510,15 @@ tl.to(".redImageWrapper .image-inner", {
                     configuration.
                   </div>
                 </div>
-                <div className="redImageWrapper">
-                <div
-              className="redImageInnerContainer"
-         
-                    >
-               
+                <div className="imageWrapper">
+                  <div
+                    className="imageInnerWrapper"
+                    style={{
+                      background:
+                        "url(/images/rubberbands2.png) no-repeat center center",
+                    }}
+                  ></div>
                 </div>
-</div>
               </div>
             </div>
             <div
@@ -548,7 +554,7 @@ tl.to(".redImageWrapper .image-inner", {
                       Final Considerations
                     </button>
                   </div>
-                  <div className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
+                  <div className="font-neueroman mt-10 text-[13px] leading-[1.3]">
                     Teeth will become loose, and some more than others. The
                     teeth will settle into the bone and soft tissue, and
                     mobility will return to physiologic norms at the end of
@@ -565,24 +571,18 @@ tl.to(".redImageWrapper .image-inner", {
                     process—we're here to guide you.
                   </div>
                 </div>
-                <div className="blackSectionImage">
-                <div
-              // className="imageInnerContainer"
-              // style={{
-              //   marginTop: "18.25rem",
-              // }}
-              >
-                  <video
-                    src="https://video.wixstatic.com/video/11062b_163d7539f7824eb895994a6460f0995b/720p/mp4/file.mp4"
-                    className="object-cover w-full h-full"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  >
-                    
-                  </video>
-                </div>
+                <div className="imageWrapper">
+                  <div className="imageInnerWrapper">
+                    <img
+                      src="/images/mockupwater.png"
+                      alt="dental wax"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

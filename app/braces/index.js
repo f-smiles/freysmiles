@@ -256,8 +256,8 @@ const Braces = () => {
 
           <div className="flex justify-center items-center">
             <img
-              src="/images/luckynumber7.png"
-              className="max-w-full max-h-[60vh] object-contain"
+              src="/images/7number.png"
+              className="max-w-full max-h-[100vh] object-contain"
               alt="7graphic"
             />
           </div>
