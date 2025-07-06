@@ -202,7 +202,7 @@ const Braces = () => {
         <div className="min-h-screen flex flex-col items-center space-y-16 px-4">
           <div className="h-[33vh]" />
 
-          <div className="text-[12px] uppercase max-w-[500px] font-neuehaas45 leading-snug tracking-wider">
+          <div className="text-[11px] uppercase max-w-[500px] font-neuehaas45 leading-snug tracking-wider">
             We love our patients so much we only use braces when we have to. Not
             because it’s cheaper. Not because it’s easier. Just because it’s
             what’s best. And when braces are needed? We're using the best

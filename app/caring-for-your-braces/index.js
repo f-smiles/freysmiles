@@ -14,7 +14,7 @@ const CaringForYourBraces = () => {
 
     const initLenis = () => {
       lenis = new Lenis({
-        lerp: 0.1, // adjust for smoothness (lower = smoother)
+        lerp: 0.1, 
         smoothWheel: true,
       });
 
@@ -31,55 +31,39 @@ const CaringForYourBraces = () => {
       const containerWidth = window.innerWidth;
       const numSections = document.querySelectorAll(".allsections").length;
       const totalScrollDistance = (numSections - 1) * containerWidth;
-
+    
       const yellowOffset = -containerWidth * 0.64;
       const whiteOffset = -containerWidth * 1.44;
       const orangeOffset = -containerWidth * 2.24;
       const redOffset = -containerWidth * 3.04;
       const blackOffset = -containerWidth * 3.84;
-      const imageWidth = containerWidth * 0.33333;
-      const yellowImageOffset =
-        yellowOffset +
-        containerWidth * 0.77777 -
-        imageWidth -
-        containerWidth * 0.0;
-
+    
       if (tl) {
         tl.kill();
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       }
-
-      // Set initial text content X offsets
+    
+ 
       gsap.set(".yellowContentText", { x: yellowOffset });
       gsap.set(".whiteContentText", { x: whiteOffset });
       gsap.set(".orangeContentText", { x: orangeOffset });
       gsap.set(".redContentText", { x: redOffset });
       gsap.set(".blackContentText", { x: blackOffset });
+    
 
-      // Set initial translateX for sections
       gsap.set(".purpleSection", { x: "0vw" });
       gsap.set(".yellowSection", { x: "80vw" });
       gsap.set(".whiteSection", { x: "95vw" });
       gsap.set(".orangeSection", { x: "100vw" });
       gsap.set(".redSection", { x: "100vw" });
       gsap.set(".blackSection", { x: "100vw" });
-      gsap.set(".yellowImageWrapper .imageInnerWrapper", {
-        scale: 0.6,
-        transformOrigin: "center center",
-      });
-      gsap.set(".whiteImageWrapper .imageInnerWrapper", {
-        scale: 0.4,
-        transformOrigin: "center center",
-      });
-      gsap.set(".orangeImageWrapper .imageInnerWrapper", {
-        scale: 0.4,
-        transformOrigin: "center center",
-      });
-      gsap.set(".redImageWrapper .imageInnerWrapper", {
-        scale: 0.4,
-        transformOrigin: "center center",
-      });
 
+      gsap.set(".yellowImageWrapper", { x: "80vw" });
+      gsap.set(".whiteImageWrapper .imageInnerWrapper", { scale: 0.4 });
+      gsap.set(".orangeImageWrapper .imageInnerWrapper", { scale: 0.4 });
+      gsap.set(".redImageWrapper .imageInnerWrapper", { scale: 0.4 });
+    
+   
       tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
@@ -89,82 +73,43 @@ const CaringForYourBraces = () => {
           pin: true,
         },
       });
+    
 
-      // Slide each section using translateX
       tl.to(".yellowSection", { x: "0vw", duration: 0.8, ease: "none" }, 0);
       tl.to(".whiteSection", { x: "80vw", duration: 1, ease: "none" }, 0);
       tl.to(".orangeSection", { x: "95vw", duration: 1, ease: "none" }, 0);
       tl.to(".redSection", { x: "100vw", duration: 1, ease: "none" }, 0);
       tl.to(".blackSection", { x: "100vw", duration: 1, ease: "none" }, 0);
-
+    
       tl.to(".whiteSection", { x: "0vw", duration: 1, ease: "none" }, 1);
       tl.to(".orangeSection", { x: "80vw", duration: 1, ease: "none" }, 1);
       tl.to(".redSection", { x: "95vw", duration: 1, ease: "none" }, 1);
       tl.to(".blackSection", { x: "100vw", duration: 1, ease: "none" }, 1);
-
+    
       tl.to(".orangeSection", { x: "0vw", duration: 1, ease: "none" }, 2);
       tl.to(".redSection", { x: "80vw", duration: 1, ease: "none" }, 2);
       tl.to(".blackSection", { x: "95vw", duration: 1, ease: "none" }, 2);
-
+    
       tl.to(".redSection", { x: "0vw", duration: 1, ease: "none" }, 3);
       tl.to(".blackSection", { x: "80vw", duration: 1, ease: "none" }, 3);
-
+    
       tl.to(".blackSection", { x: "0vw", duration: 1, ease: "none" }, 4);
+    
 
-      // Reveal content text
-      tl.to(
-        ".yellowContentText",
-        { x: "0%", duration: 0.64, ease: "none" },
-        0.16
-      );
+      tl.to(".yellowContentText", { x: "0%", duration: 0.64, ease: "none" }, 0.16);
       tl.to(".whiteContentText", { x: "0%", duration: 1.8, ease: "none" }, 0.2);
-      tl.to(
-        ".orangeContentText",
-        { x: "0%", duration: 2.8, ease: "none" },
-        0.2
-      );
+      tl.to(".orangeContentText", { x: "0%", duration: 2.8, ease: "none" }, 0.2);
       tl.to(".redContentText", { x: "0%", duration: 3.8, ease: "none" }, 0.2);
       tl.to(".blackContentText", { x: "0%", duration: 4.8, ease: "none" }, 0.2);
-      tl.to(
-        ".yellowImageWrapper .image-inner",
-        {
-          scale: 1,
-          duration: 1,
-          ease: "none",
-        },
-        0
-      );
+    
+      tl.to(".yellowImageWrapper", { x: "0vw", scale: 1, ease: "none" }, 0); 
+      tl.to(".yellowImageWrapper", { x: "-100vw", scale: 1.45, ease: "none" }, 1);
+    
 
-      tl.to(
-        ".whiteImageWrapper .image-inner",
-        {
-          scale: 1,
-          duration: 1,
-          ease: "none",
-        },
-        0
-      );
-
-      tl.to(
-        ".orangeImageWrapper .image-inner",
-        {
-          scale: 1,
-          duration: 1.5,
-          ease: "none",
-        },
-        3
-      );
-
-      tl.to(
-        ".redImageWrapper .image-inner",
-        {
-          scale: 1,
-          duration: 1.5,
-          ease: "none",
-        },
-        4
-      );
-
+      tl.to(".orangeImageWrapper .imageInnerWrapper", { scale: 1 }, 3);
+      tl.to(".redImageWrapper .imageInnerWrapper", { scale: 1 }, 4);
+      tl.to(".blackImageWrapper .imageInnerWrapper", { scale: 1 }, 5);
+    
       setTimeout(() => {
         ScrollTrigger.refresh();
       }, 100);
@@ -187,15 +132,15 @@ const CaringForYourBraces = () => {
     };
   }, []);
 
-  useEffect(() => {
-    gsap.to(".fixedNav", {
-      duration: 0.5,
-      scrollTrigger: {
-        trigger: "body",
-        start: "top top",
-      },
-    });
-  }, []);
+  // useEffect(() => {
+  //   gsap.to(".fixedNav", {
+  //     duration: 0.5,
+  //     scrollTrigger: {
+  //       trigger: "body",
+  //       start: "top top",
+  //     },
+  //   });
+  // }, []);
 
   return (
     <div ref={containerRef} className="min-h-screen ">
@@ -333,19 +278,15 @@ const CaringForYourBraces = () => {
                   </p>
                   <div className="flex items-center space-x-2"></div>
                 </div>
-                <div className="imageWrapper">
-                  <div className="imageInnerWrapper">
-                    <img
-                      src="/images/handholdingtoothbrush.jpg"
-                      alt="brushing"
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                </div>
+                <div className="yellowImageWrapper imageWrapper">
+  <div className="imageInnerWrapper">
+    <img
+      src="/images/handholdingtoothbrush.jpg"
+      alt="brushing"
+      style={{ width: "100%", height: "auto", objectFit: "cover" }}
+    />
+  </div>
+</div>
               </div>
             </div>
 
@@ -393,19 +334,15 @@ const CaringForYourBraces = () => {
                     and irritation. Hang in there—it gets easier!
                   </div>
                 </div>
-                <div className="imageWrapper">
-                  <div className="imageInnerWrapper">
-                    <img
-                      src="/images/dentalwax3.png"
-                      alt="dental wax"
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </div>
-                </div>
+                <div className="whiteImageWrapper imageWrapper">
+  <div className="imageInnerWrapper">
+    <img
+      src="/images/dentalwax3.png"
+      alt="dental wax"
+      style={{ width: "100%", height: "auto", objectFit: "contain" }}
+    />
+  </div>
+</div>
               </div>
             </div>
             <div
@@ -451,19 +388,15 @@ const CaringForYourBraces = () => {
                     and corn on the cob may require careful navigation.
                   </div>
                 </div>
-                <div className="imageWrapper">
-                  <div className="imageInnerWrapper">
-                    <img
-                      src="/images/soda3.png"
-                      alt="portal"
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </div>
-                </div>
+                <div className="orangeImageWrapper imageWrapper">
+  <div className="imageInnerWrapper">
+    <img
+      src="/images/soda3.png"
+      alt="soda"
+      style={{ width: "100%", height: "auto", objectFit: "contain" }}
+    />
+  </div>
+</div>
               </div>
             </div>
             <div
@@ -510,15 +443,17 @@ const CaringForYourBraces = () => {
                     configuration.
                   </div>
                 </div>
-                <div className="imageWrapper">
-                  <div
-                    className="imageInnerWrapper"
-                    style={{
-                      background:
-                        "url(/images/rubberbands2.png) no-repeat center center",
-                    }}
-                  ></div>
-                </div>
+                <div className="redImageWrapper imageWrapper">
+  <div
+    className="imageInnerWrapper"
+    style={{
+      background: "url(/images/rubberbands2.png) no-repeat center center",
+      backgroundSize: "cover",
+      width: "100%",
+      height: "100%",
+    }}
+  ></div>
+</div>
               </div>
             </div>
             <div
@@ -571,19 +506,15 @@ const CaringForYourBraces = () => {
                     process—we're here to guide you.
                   </div>
                 </div>
-                <div className="imageWrapper">
-                  <div className="imageInnerWrapper">
-                    <img
-                      src="/images/mockupwater.png"
-                      alt="dental wax"
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </div>
-                </div>
+                <div className="blackImageWrapper imageWrapper">
+  <div className="imageInnerWrapper">
+    <img
+      src="/images/mockupwater.png"
+      alt="mockup"
+      style={{ width: "100%", height: "auto", objectFit: "contain" }}
+    />
+  </div>
+</div>
               </div>
             </div>
           </div>

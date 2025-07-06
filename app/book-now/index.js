@@ -376,8 +376,8 @@ export default function BookNow() {
     <>
 
 
-<section  className="border border-red-500 relative w-full h-[100vh]">
-  <div style={{ 
+<section  className="relative w-full">
+  {/* <div style={{ 
     position: 'fixed', 
     top: 0, 
     left: 0, 
@@ -388,7 +388,7 @@ export default function BookNow() {
     <Canvas>
       <RaymarchingShader />
     </Canvas>
-  </div>
+  </div> */}
 
         <div className="relative z-10 pt-10 pl-10">
           

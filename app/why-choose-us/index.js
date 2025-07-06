@@ -166,6 +166,8 @@ const FluidSimulation = () => {
       return;
     }
 
+    
+
     canvas.addEventListener("mousedown", () => {});
 
     const baseVertexShaderSource = `
@@ -1435,32 +1437,41 @@ const FluidSimulation = () => {
       let dy = 30 * (Math.random() - 0.5);
       splat(pointer.texcoordX, pointer.texcoordY, dx, dy, color);
     }
+    
 
     const handleMouseDown = (e) => {
       const canvas = canvasRef.current;
+      if (!canvas || !gl) return;
+    
       const rect = canvas.getBoundingClientRect();
       const posX = scaleByPixelRatio(e.clientX - rect.left);
       const posY = scaleByPixelRatio(e.clientY - rect.top);
-      const pointer = pointers[0];
-
-      updatePointerDownData(pointer, -1, posX, posY);
-
-      pointer.down = true;
-
-      clickSplat(pointer);
+    
+      pointers[0].down = true;
+      updatePointerDownData(pointers[0], -1, posX, posY);
+      clickSplat(pointers[0]);
     };
-
+    
     const handleMouseMove = (e) => {
-      const posX = scaleByPixelRatio(
-        e.clientX - canvas.getBoundingClientRect().left
-      );
-      const posY = scaleByPixelRatio(
-        e.clientY - canvas.getBoundingClientRect().top
-      );
+      const canvas = canvasRef.current;
+      if (!canvas || !gl) return;
+    
+      const rect = canvas.getBoundingClientRect();
+      const posX = scaleByPixelRatio(e.clientX - rect.left);
+      const posY = scaleByPixelRatio(e.clientY - rect.top);
+    
       updatePointerMoveData(pointers[0], posX, posY, pointers[0].color);
-      if (pointers[0].down) splatPointer(pointers[0]);
-    };
 
+      if (pointers[0].down) {
+        splatPointer(pointers[0]);
+      }
+    };
+    const handleMouseUp = () => {
+      if (pointers[0]) {
+        pointers[0].down = false;
+      }
+    };
+    
     const handleTouchStart = (e) => {
       e.preventDefault();
       const touches = e.targetTouches;
@@ -1500,6 +1511,7 @@ const FluidSimulation = () => {
       canvas.addEventListener("touchstart", handleTouchStart);
       canvas.addEventListener("touchmove", handleTouchMove);
       canvas.addEventListener("touchend", handleTouchEnd);
+      window.addEventListener('mouseup', handleMouseUp); 
       console.log("Event listeners attached");
     }
 
@@ -1509,6 +1521,7 @@ const FluidSimulation = () => {
       canvas.removeEventListener("touchstart", handleTouchStart);
       canvas.removeEventListener("touchmove", handleTouchMove);
       canvas.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener('mouseup', handleMouseUp);
     }
 
     function waitForCanvasReady(cb) {
@@ -1546,18 +1559,7 @@ const FluidSimulation = () => {
 
   return (
     <div
-      className="fluid-container"
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        margin: 0,
-        padding: 0,
-        pointerEvents: "none",
-        zIndex: 99,
-      }}
+
     >
       <canvas
         ref={canvasRef}
@@ -1590,7 +1592,7 @@ export default function WhyChooseUs() {
   return (
     <>
       <div className="relative bg-white">
-        {/* <FluidSimulation /> */}
+        <FluidSimulation />
 
         <div className="overflow-x-hidden w-full">
           <div className="relative w-full h-screen">
@@ -2298,100 +2300,80 @@ const ImageGrid = () => {
   );
 };
 function VideoAnimation() {
-  const videoRef = useRef(null);
-  const wrapper = useRef(null);
-  const inset = useRef({ x: 0, y: 0, r: 50 });
+  const videoRef   = useRef(null);
+  const wrapperRef = useRef(null);
+  const inset      = useRef({ x: 0, y: 0, r: 50 });
 
   useEffect(() => {
-    if (!wrapper.current || !videoRef.current) return;
-  
-
-    const lenis = new Lenis({
-      duration: 0.5,
-      easing: t => t,
-      smooth: true,
-      wheelMultiplier: 0.8,
-    });
-    let rafId;
-    const onRaf = (t) => {
-      lenis.raf(t);
-      ScrollTrigger.update();
-      rafId = requestAnimationFrame(onRaf);
-    };
-    rafId = requestAnimationFrame(onRaf);
-    ScrollTrigger.scrollerProxy(document.body, {
-      scrollTop(v) {
-        return arguments.length
-          ? lenis.scrollTo(v, { immediate: true })
-          : lenis.scroll;
-      },
-      getBoundingClientRect: () => ({
-        top: 0, left: 0,
-        width: window.innerWidth,
-        height: window.innerHeight,
-      }),
-    });
-  
+    if (!wrapperRef.current || !videoRef.current) return;
 
     const video = videoRef.current;
-    const snap = gsap.utils.snap(2);
-    let w = video.offsetWidth,
-        h = video.offsetHeight;
-    const onResize = () => { w = video.offsetWidth; h = video.offsetHeight; };
-    window.addEventListener("resize", onResize);
-  
-  
-    const extra = wrapper.current.offsetHeight * 0.2;  
-  
+    const snap  = gsap.utils.snap(2);
+
+    let w = video.offsetWidth;
+    let h = video.offsetHeight;
+
+    const handleResize = () => {
+      w = video.offsetWidth;
+      h = video.offsetHeight;
+      ScrollTrigger.refresh();   
+    };
+    window.addEventListener("resize", handleResize);
+
+
+    const extra = wrapperRef.current.offsetHeight * 0.2; 
+
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: wrapper.current,
+        trigger: wrapperRef.current,
         start: "top top",
-        end: () => `+=${wrapper.current.offsetHeight + extra}`,
+        end: "bottom top",   
+        scrub: 0.6,
         pin: true,
         pinSpacing: true,
-        scrub: 0.6,
-        anticipatePin: 2,   
+        anticipatePin: 0,   
         ease: "none",
         invalidateOnRefresh: true,
-       
+        // markers: true,
       }
     });
-  
+
     tl.fromTo(
       inset.current,
       { x: 0, y: 0, r: 50 },
       {
-        x: 25, y: 18, r: 80,
+        x: 25,
+        y: 18,
+        r: 80,
         onUpdate() {
-          video.style.clipPath = `inset(${Math.round((inset.current.x * w)/200)}px ${
-                                  Math.round((inset.current.y * h)/200)}px round ${
-                                  snap(inset.current.r)}px)`;
+          video.style.clipPath = `inset(${
+            Math.round((inset.current.x * w) / 200)
+          }px ${
+            Math.round((inset.current.y * h) / 200)
+          }px round ${snap(inset.current.r)}px)`;
         },
       }
     );
-  
+
     return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", onResize);
-      lenis.destroy();
+      window.removeEventListener("resize", handleResize);
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, []);
 
   return (
     <div
-      ref={wrapper}
+      ref={wrapperRef}
       className="bg-[#F9F9F9]"
       style={{ margin: "5vh 0", height: "100vh" }}
     >
       <video
         ref={videoRef}
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
         src="/videos/cbctscan.mp4"
-        muted
         autoPlay
         loop
+        muted
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
     </div>
   );

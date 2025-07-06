@@ -119,7 +119,7 @@ const TextAnimator = forwardRef(({ children, className }, ref) => {
     });
 
     charsRef.current = chars;
-    originalText.current = chars.map((span) => span.textContent); 
+    originalText.current = chars.map((span) => span.textContent);
   }, [children]);
 
   useImperativeHandle(ref, () => ({
@@ -195,7 +195,6 @@ const Testimonial = () => {
   const nameRef = useRef([]);
   const durationRefs = useRef([]);
   const listRefs = useRef([]);
-  
 
   useEffect(() => {
     listRefs.current.forEach((el) => {
@@ -217,7 +216,6 @@ const Testimonial = () => {
     });
   }, []);
 
-  
   return (
     <main className="demo-4">
       <section
@@ -248,30 +246,29 @@ const Testimonial = () => {
             counterReset: "item 0",
           }}
         >
-{patients.map((item, index) => (
-  <li
-    key={index}
-    ref={(el) => (listRefs.current[index] = el)}
-    className="list__item"
-    onMouseEnter={() => {
-      nameRef.current[index]?.animate?.();
-      durationRefs.current[index]?.animate?.();
-    }}
-  >
-    <span className="list__item-col" aria-hidden="true" />
-    <span className="list__item-col">
-      <TextAnimator ref={(el) => (nameRef.current[index] = el)}>
-        {item.name}
-      </TextAnimator>
-    </span>
-    <span className="list__item-col list__item-col--last">
-      <TextAnimator ref={(el) => (durationRefs.current[index] = el)}>
-        {item.duration || "—"}
-      </TextAnimator>
-    </span>
-  </li>
-))}
-
+          {patients.map((item, index) => (
+            <li
+              key={index}
+              ref={(el) => (listRefs.current[index] = el)}
+              className="list__item"
+              onMouseEnter={() => {
+                nameRef.current[index]?.animate?.();
+                durationRefs.current[index]?.animate?.();
+              }}
+            >
+              <span className="list__item-col" aria-hidden="true" />
+              <span className="list__item-col">
+                <TextAnimator ref={(el) => (nameRef.current[index] = el)}>
+                  {item.name}
+                </TextAnimator>
+              </span>
+              <span className="list__item-col list__item-col--last">
+                <TextAnimator ref={(el) => (durationRefs.current[index] = el)}>
+                  {item.duration || "—"}
+                </TextAnimator>
+              </span>
+            </li>
+          ))}
         </ul>
       </section>
     </main>
@@ -509,14 +506,11 @@ const ScrambleBlock = ({
           text={line}
           scrambleOnLoad={scrambleOnLoad}
           charsType={charsType}
-          
         />
       ))}
     </div>
   );
 };
-
-
 
 const Testimonials = () => {
   // const { scene } = useGLTF("/images/SVOX1F.glb");
@@ -876,7 +870,6 @@ const Testimonials = () => {
       image: "/images/_mesh_gradients/greenwhite.png",
     },
 
-
     {
       name: "Vicki Weaver",
       text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
@@ -891,7 +884,6 @@ const Testimonials = () => {
       height: "h-[320px]",
       width: "w-[320px]",
     },
- 
 
     {
       name: "Mandee Kaur",
@@ -983,89 +975,91 @@ const Testimonials = () => {
 
   const dragCardRef = useRef(null);
 
-
-  
   return (
     <>
       <MouseTrail
-    images={[
-      "../images/mousetrail/flame.png",
-      "../images/mousetrail/cat.png",
-      "../images/mousetrail/pixelstar.png",
-      "../images/mousetrail/avocado.png",
-      "../images/mousetrail/ghost.png",
-      "../images/mousetrail/pacman.png",
-      "../images/mousetrail/evilrobot.png",
-      "../images/mousetrail/thirdeye.png",
-      "../images/mousetrail/alientcat.png",
-      "../images/mousetrail/gotcha.png",
-      "../images/mousetrail/karaokekawaii.png",
-      "../images/mousetrail/mushroom.png",
-      "../images/mousetrail/pixelcloud.png",
-      "../images/mousetrail/pineapple.png",
-      "../images/mousetrail/pixelsun.png",
-      "../images/mousetrail/cherries.png",
-      "../images/mousetrail/watermelon.png",
-      "../images/mousetrail/dolphins.png",
-      "../images/mousetrail/jellyfish.png",
-      "../images/mousetrail/nyancat.png",
-      "../images/mousetrail/donut.png",
-      "../images/mousetrail/controller.png",
-      "../images/mousetrail/dinosaur.png",
-      "../images/mousetrail/headphones.png",
-      "../images/mousetrail/porsche.png",
-    ]}
-  />
+        images={[
+          "../images/mousetrail/flame.png",
+          "../images/mousetrail/cat.png",
+          "../images/mousetrail/pixelstar.png",
+          "../images/mousetrail/avocado.png",
+          "../images/mousetrail/ghost.png",
+          "../images/mousetrail/pacman.png",
+          "../images/mousetrail/evilrobot.png",
+          "../images/mousetrail/thirdeye.png",
+          "../images/mousetrail/alientcat.png",
+          "../images/mousetrail/gotcha.png",
+          "../images/mousetrail/karaokekawaii.png",
+          "../images/mousetrail/mushroom.png",
+          "../images/mousetrail/pixelcloud.png",
+          "../images/mousetrail/pineapple.png",
+          "../images/mousetrail/pixelsun.png",
+          "../images/mousetrail/cherries.png",
+          "../images/mousetrail/watermelon.png",
+          "../images/mousetrail/dolphins.png",
+          "../images/mousetrail/jellyfish.png",
+          "../images/mousetrail/nyancat.png",
+          "../images/mousetrail/donut.png",
+          "../images/mousetrail/controller.png",
+          "../images/mousetrail/dinosaur.png",
+          "../images/mousetrail/headphones.png",
+          "../images/mousetrail/porsche.png",
+        ]}
+      />
       <Background />
       <section
-  ref={sectionOneRef}
-  className="z-10 relative w-full min-h-[110vh] px-6 md:px-12"
->
-  <div className="z-10 max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-0">
+        ref={sectionOneRef}
+        className="z-10 relative w-full min-h-[110vh] px-6 md:px-12"
+      >
+        <div className="z-10 max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-0">
+          <div className="w-full md:w-1/2 min-h-[100vh]"></div>
 
-    <div className="w-full md:w-1/2 min-h-[100vh]"></div>
+          <div className="w-full md:w-1/2 flex items-center justify-center min-h-[100vh]">
+            <div className="max-w-[500px] w-full">
+              <h2 className="mb-6 text-[40px] font-neuehaas45 text-center md:text-left md:text-[40px]">
+                Join the Smile Club
+              </h2>
 
-
-    <div className="w-full md:w-1/2 flex items-center justify-center min-h-[100vh]">
-      <div className="max-w-[500px] w-full">
-        <h2 className="mb-6 text-[40px] font-neuehaas45 text-center md:text-left md:text-[40px]">
-          Join the Smile Club
-        </h2>
-
-        <div className="font-neuehaas45 text-[12px] leading-[1.2] uppercase tracking-wider relative">
-          <ScrambleBlock
-            lines={[
-              "We are committed to setting the standard for exceptional service.",
-              "Our communication is always open—every question and every concern",
-              "is met with care and professionalism is welcome.",
-            ]}
-            scrambleOnLoad={true}
-            charsType="letters"
-          />
+              <div className="font-neuehaas45 text-[12px] leading-[1.2] uppercase tracking-wider relative">
+                <ScrambleBlock
+                  lines={[
+                    "We are committed to setting the standard for exceptional service.",
+                    "Our communication is always open—every question and every concern",
+                    "is met with care and professionalism is welcome.",
+                  ]}
+                  scrambleOnLoad={true}
+                  charsType="letters"
+                />
+              </div>
+            </div>
+          </div>
         </div>
+
+        <div
+          ref={navBarRef}
+          className="z-10 absolute bottom-0 left-0 w-full pb-2"
+        >
+          <div className="flex items-center justify-center text-[13px] tracking-wider uppercase font-neuehaas45 gap-4">
+            <span
+              className={isPatientSectionInView ? "opacity-100" : "opacity-30"}
+            >
+              ●
+            </span>
+            <span>Our patient results</span>
+            <span
+              className={!isPatientSectionInView ? "opacity-100" : "opacity-30"}
+            >
+              ●
+            </span>
+            <span>Read the reviews</span>
+          </div>
+          <div className="z-10 mt-1 w-full border-b border-[#D3D3D3]" />
+        </div>
+      </section>
+      <div className="z-1 overflow-hidden">
+
+        <Testimonial />
       </div>
-    </div>
-  </div>
-
-
-  <div ref={navBarRef} className="z-10 absolute bottom-0 left-0 w-full pb-2">
-    <div className="flex items-center justify-center text-[13px] tracking-wider uppercase font-neuehaas45 gap-4">
-      <span className={isPatientSectionInView ? "opacity-100" : "opacity-30"}>
-        ●
-      </span>
-      <span>Our patient results</span>
-      <span className={!isPatientSectionInView ? "opacity-100" : "opacity-30"}>
-        ●
-      </span>
-      <span>Read the reviews</span>
-    </div>
-    <div className="z-10 mt-1 w-full border-b border-[#D3D3D3]" />
-  </div>
-
-
-
-</section>
-<div className="z-1 overflow-hidden">      <Testimonial /></div>
 
       <section
         ref={dragCardRef}
@@ -1080,7 +1074,7 @@ const Testimonials = () => {
             whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
             dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
             dragMomentum={false}
-            className="relative bg-[#F8F8F8]/70 text-black backdrop-blur-md
+            className="relative bg-[#F2F2F2]/50 text-black backdrop-blur-md
             w-[320px] min-h-[450px] flex flex-col justify-start
             border border-white cursor-grab active:cursor-grabbing
             will-change-transform"
@@ -1106,7 +1100,7 @@ const Testimonials = () => {
           </motion.div>
         ))}
       </section>
-{/* <Contents /> */}
+      {/* <Contents /> */}
       {/* <section
         ref={patientSectionRef}
         className="relative w-full min-h-screen px-6 overflow-hidden "
@@ -1200,10 +1194,6 @@ const Testimonials = () => {
         </AnimatePresence>
       </section> */}
 
-
-
-
-
       {/* <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
 
           <div id="right-column" className="relative w-1/2">
@@ -1254,22 +1244,24 @@ class MousePointer {
     this.y = window.innerHeight * 0.5;
     this.normal = { x: 0, y: 0 };
     this.isDown = false;
-    
+
     this._setupListeners();
   }
 
   _setupListeners() {
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const target = document.querySelector('.l-canvas') || window;
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    const target = document.querySelector(".l-canvas") || window;
 
     if (isTouch) {
-      target.addEventListener('touchstart', (e) => this._handleStart(e));
-      target.addEventListener('touchend', () => this._handleEnd());
-      target.addEventListener('touchmove', (e) => this._handleMove(e), { passive: false });
+      target.addEventListener("touchstart", (e) => this._handleStart(e));
+      target.addEventListener("touchend", () => this._handleEnd());
+      target.addEventListener("touchmove", (e) => this._handleMove(e), {
+        passive: false,
+      });
     } else {
-      window.addEventListener('mousedown', (e) => this._handleStart(e));
-      window.addEventListener('mouseup', () => this._handleEnd());
-      window.addEventListener('mousemove', (e) => this._handleMove(e));
+      window.addEventListener("mousedown", (e) => this._handleStart(e));
+      window.addEventListener("mouseup", () => this._handleEnd());
+      window.addEventListener("mousemove", (e) => this._handleMove(e));
     }
   }
 
@@ -1290,7 +1282,6 @@ class MousePointer {
     const pos = this._getEventPosition(e);
     this.x = pos.x;
     this.y = pos.y;
-    
 
     this.normal.x = this.x / window.innerWidth;
     this.normal.y = this.y / window.innerHeight;
@@ -1300,19 +1291,17 @@ class MousePointer {
     if (e.touches) {
       return {
         x: e.touches[0].clientX,
-        y: e.touches[0].clientY
+        y: e.touches[0].clientY,
       };
     }
     return {
       x: e.clientX,
-      y: e.clientY
+      y: e.clientY,
     };
   }
 }
 
-
 const mousePointer = new MousePointer();
-
 
 const map = (num, toMin, toMax, fromMin, fromMax) => {
   if (num <= fromMin) return toMin;
@@ -1324,19 +1313,19 @@ const map = (num, toMin, toMax, fromMin, fromMax) => {
 const useWindowSize = () => {
   const [size, setSize] = useState({
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
   });
 
   useEffect(() => {
     const handleResize = () => {
       setSize({
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
       });
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return size;
@@ -1353,31 +1342,31 @@ const Contents = () => {
 
   const useGPU = (el) => {
     gsap.set(el, {
-      willChange: 'transform, opacity'
+      willChange: "transform, opacity",
     });
   };
 
   useEffect(() => {
     if (!photoRef.current || !blocksRef.current) return;
 
-    const img = photoRef.current.querySelector('img');
+    const img = photoRef.current.querySelector("img");
     const block = blocksRef.current;
     const num = line * line;
     const newBlocks = [];
 
     for (let i = 0; i < num; i++) {
-      const b = document.createElement('div');
+      const b = document.createElement("div");
       block.append(b);
       b.append(img.cloneNode(false));
 
       gsap.set(b, {
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         left: 0,
-        overflow: 'hidden',
+        overflow: "hidden",
       });
 
-      const imgEl = b.querySelector('img');
+      const imgEl = b.querySelector("img");
       useGPU(imgEl);
       useGPU(b);
 
@@ -1393,7 +1382,7 @@ const Contents = () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
-      gsap.killTweensOf('*');
+      gsap.killTweensOf("*");
     };
   }, []);
 
@@ -1462,6 +1451,3 @@ const Contents = () => {
     </div>
   );
 };
-
-
-
