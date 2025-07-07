@@ -49,6 +49,7 @@ import {
   Text,
   OrbitControls,
   useGLTF,
+  shaderMaterial,
   useFBO,
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
@@ -204,6 +205,7 @@ function PortalScene() {
 }
 
 const OceanScene = () => {
+  
   const scroll = useThreeScroll();
   const { scene, gl, camera } = useThree();
   const waterRef = useRef();
@@ -304,6 +306,10 @@ const OceanScene = () => {
   return (
     <>
       <DoorModel />
+      <LiquidPortalPlane
+  position={[-.5, 1.35, -4.99]}
+  scale={[7.5, 13, 1]} 
+/>
       {/* <Tunnel /> */}
       <PortalScene
         active={enteredPortal}
@@ -325,6 +331,70 @@ const ScrollTracker = ({ onScrollChange }) => {
 
   return null;
 };
+
+
+
+const vertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const fragmentShader = `
+  uniform float iTime;
+  uniform vec2 iResolution;
+  varying vec2 vUv;
+
+  void main() {
+    float mr = min(iResolution.x, iResolution.y);
+    vec2 uv = (vUv * 2.0 - 1.0) * iResolution / mr;
+
+    float d = -iTime * 0.5;
+    float a = 0.0;
+    for (float i = 0.0; i < 8.0; ++i) {
+      a += cos(i - d - a * uv.x);
+      d += sin(uv.y * i + a);
+    }
+
+    d += iTime * 0.5;
+    vec3 col = vec3(cos(uv * vec2(d, a)) * 0.6 + 0.4, cos(a + d) * 0.5 + 0.5);
+    col = cos(col * cos(vec3(d, a, 2.5)) * 0.5 + 0.5);
+    gl_FragColor = vec4(col, 1.0);
+  }
+`;
+
+
+const LiquidPortalMaterial = shaderMaterial(
+  {
+    iTime: 0,
+    iResolution: new THREE.Vector2(),
+  },
+  vertexShader,
+  fragmentShader
+);
+
+extend({ LiquidPortalMaterial });
+
+
+function LiquidPortalPlane({ position, scale }) {
+  const materialRef = useRef();
+
+  useFrame(({ clock, size }) => {
+    if (materialRef.current) {
+      materialRef.current.iTime = clock.getElapsedTime();
+      materialRef.current.iResolution.set(size.width, size.height);
+    }
+  });
+
+  return (
+    <mesh position={position} scale={scale}>
+      <planeGeometry args={[1, 2]} />
+      <liquidPortalMaterial ref={materialRef} />
+    </mesh>
+  );
+}
 
 export default function LandingComponent() {
   const [scrollOffset, setScrollOffset] = useState(0);
@@ -358,7 +428,7 @@ export default function LandingComponent() {
 
   <ScrollControls pages={5} damping={0.1}>
     <ScrollTracker onScrollChange={setScrollOffset} />
-    
+
 
     <OceanScene />
     <Tunnel />
