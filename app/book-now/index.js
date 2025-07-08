@@ -390,11 +390,11 @@ export default function BookNow() {
     </Canvas>
   </div> */}
 
-        <div className="relative z-10 pt-10 pl-10">
+        <div className="relative z-10 ">
           
           <div
  
-            className="flex justify-between w-full p-10 border shadow-md backdrop-blur-md bg-white/60 border-white/20 lg:p-20"
+            className="flex justify-between w-full p-10 lg:p-20"
           >
             <div className="w-1/2 relative h-screen">
               <Canvas

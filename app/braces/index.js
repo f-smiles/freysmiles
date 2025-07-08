@@ -1,4 +1,6 @@
 "use client";
+
+
 import NormalizeWheel from "normalize-wheel";
 import * as THREE from "three";
 import { MeshDistortMaterial } from "@react-three/drei";
@@ -53,6 +55,103 @@ if (typeof window !== "undefined") {
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const Braces = () => {
+    useEffect(() => {
+    const canvas = document.getElementById("shader-bg");
+    if (!canvas) return;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.Camera();
+
+    const uniforms = {
+      u_time: { value: 0 },
+      u_resolution: {
+        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+      },
+      u_mouse: { value: new THREE.Vector2() },
+    };
+
+    const vertexShader = `
+      varying vec2 v_uv;
+      void main() {
+        v_uv = uv;
+        gl_Position = vec4(position, 1.0);
+      }
+    `;
+
+    const fragmentShader = `
+   precision mediump float;
+
+uniform vec2 u_resolution;
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / u_resolution;
+
+  // Adjust for non-square screens
+  vec2 centeredUV = (uv - 0.5) * vec2(u_resolution.x / u_resolution.y, 1.0);
+
+  // Base: clean stone background
+  vec3 stone = vec3(0.94, 0.93, 0.91);
+
+  // Orb center (subtle yellow glow)
+  vec2 orbCenter = vec2(-0.15, -0.05); // slightly left of center
+  float orbDist = length(centeredUV - orbCenter);
+
+float orb = smoothstep(0.8, 0.0, orbDist); 
+
+  // Orb color — soft warm yellow
+  vec3 glow = vec3(1.0, 0.93, 0.72); // like ambient sunrise
+
+  // Mix glow with background
+  vec3 color = mix(stone, glow, orb * 0.8); // blend softly
+
+  gl_FragColor = vec4(color, 1.0);
+}
+    
+        `;
+
+    const material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms,
+    });
+
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    const clock = new THREE.Clock();
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      uniforms.u_time.value = clock.getElapsedTime();
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    const handleResize = () => {
+      const { innerWidth: w, innerHeight: h } = window;
+      renderer.setSize(w, h);
+      uniforms.u_resolution.value.set(w, h);
+    };
+
+    const handleMouseMove = (e) => {
+      uniforms.u_mouse.value.set(e.clientX, window.innerHeight - e.clientY);
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      renderer.dispose();
+    };
+  }, []);
+
   const sectionRef = useRef(null);
   const lineRefs = useRef([]);
   const textRefs = useRef([]);
@@ -196,8 +295,11 @@ const Braces = () => {
 
   return (
     <>
-   
-      <div className="bg-[#E7E7E7] relative">
+      <canvas
+          id="shader-bg"
+          className="fixed top-0 left-0 w-full min-h-screen z-[-1] pointer-events-none"
+        />
+      <div className="relative">
 
         <div className="min-h-screen flex flex-col items-center space-y-16 px-4">
           <div className="h-[33vh]" />

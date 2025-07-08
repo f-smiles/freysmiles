@@ -2188,7 +2188,7 @@ function ScrollPanels() {
               </div>
               <div className="w-full lg:w-[50vw]">
                 <img
-                  src="/images/tablemockup.png"
+                  src="/images/table_mockup.jpg"
                   alt="table"
                   className="w-full h-auto"
                 />

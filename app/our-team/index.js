@@ -841,10 +841,10 @@ void main() {
       <div className="relative overflow-x-clip">
 
         <div ref={wrapperRef} className="flex w-full">
-          <div className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-[#DBDBDB] w-3/5 bg-[#FCF9F8] rounded-[24px]">
+          <div className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-[#DBDBDB] w-3/5 bg-[#FCFFFE] rounded-[24px]">
           <div className="max-w-[400px] ml-10 my-10 flex flex-col overflow-hidden">
           <div className="inline-block overflow-hidden">
-          <div className="text-[13px] leading-[1.1] font-neuehaas45 tracking-wider text-black">
+          <div className="text-[12px] leading-[1.1] font-neuehaas45 tracking-wider text-black">
       {lines.map((line, index) => (
         <div key={index} className="overflow-hidden">
           <motion.span
@@ -960,7 +960,7 @@ void main() {
           </div>
 
 <div ref={scrollRef} className="relative w-2/5">
-            <div className="rounded-[24px] border-b border-b bg-[#FCF9F8]  py-[10em] sm:py-[10em] h-screen lg:px-8 ">
+            <div className="rounded-[24px] border-b border-b bg-[#FCFFFE]  py-[10em] sm:py-[10em] h-screen lg:px-8 ">
           
             <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
                 <div className="lg:col-span-6">
@@ -1024,7 +1024,7 @@ void main() {
                     {switchDoctor ? (
                       <p
                         ref={doctorBioRef}
-                        className="leading-[1.5] font-neuehaas45 text-[14px] text-black"
+                        className="leading-[1.5] font-neuehaas45 text-[14px] text-black tracking-wide"
                       >
                         Dr. Daniel Frey pursued his pre-dental requisites at the
                         University of Pittsburgh, majoring in Biology. Dr. Frey
@@ -1048,7 +1048,7 @@ void main() {
                       <p
                         style={{ visibility: "hidden" }}
                         ref={doctorBioRef}
-                          className="leading-[1.5] font-neuehaas45 text-[14px] text-black"
+                          className="leading-[1.5] font-neuehaas45 text-[14px] text-black tracking-wide"
                       >
                         Dr. Gregg Frey is an orthodontist based in Pennsylvania,
                         who graduated from Temple University School of Dentistry
@@ -1074,7 +1074,7 @@ void main() {
             <div className="relative h-full">
             <section
   ref={lastSectionRef}
-  className="relative flex-col bg-cover h-screen flex justify-center items-center rounded-[24px] bg-[#FCF9F8] overflow-hidden"
+  className="relative flex-col bg-cover h-screen flex justify-center items-center rounded-[24px] bg-[#FCFFFE] overflow-hidden"
 >
 <div className="halftone">
   <img src ="../../images/team_members/DanFrey.png" />
@@ -1101,13 +1101,13 @@ void main() {
             because we have all experienced treatment and can help guide you through it.
           </p>
         </div>
-        <div className="border-l  bg-[#FCF9F8] rounded-[24px] p-8 border-b border-[#DBDBDB] border-r h-[33.33vh]">
+        <div className="border-l  bg-[#FCFFFE] rounded-[24px] p-8 border-b border-[#DBDBDB] border-r h-[33.33vh]">
         <div className="ballcontainer">
       <div id="ballone" />
       <div id="balltwo" />
     </div>
         </div>
-        <div className="border-l bg-[#FCF9F8] rounded-[24px] p-8 border-b border-[#DBDBDB] border-r h-[66.66vh]"></div>
+        <div className="border-l bg-[#FCFFFE] rounded-[24px] p-8 border-b border-[#DBDBDB] border-r h-[66.66vh]"></div>
 
       </div>
     </div>
@@ -1115,7 +1115,7 @@ void main() {
     {/* Col 2 */}
     <div className="overflow-hidden">
       <div ref={col2Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
           <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
             <p className="font-neueroman text-[13px] leading-[1.1]">
               Our members have received the designation of Specialized Orthodontic Assistant. 
@@ -1124,8 +1124,8 @@ void main() {
             </p>
           </a>
         </div>
-        <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]"></div>
-        <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#FCF9F8] rounded-[20px] p-8 border-b border-r border-[#DBDBDB] h-[33.33vh]">
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]"></div>
+        <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#FCFFFE] rounded-[20px] p-8 border-b border-r border-[#DBDBDB] h-[33.33vh]">
           <p className="leading-[1.1] font-neueroman text-[13px]">
             This office is on 🔥! The orthodontists as well as every single staff member.
           </p>
@@ -1136,7 +1136,7 @@ void main() {
     {/* Col 3 */}
     <div className="overflow-hidden">
       <div ref={col3Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
           <p className="font-neueroman text-[13px]">Trained in CPR and first aid</p>
         </div>
         <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center  bg-[#F8F6F0] rounded-[20px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]">
@@ -1145,7 +1145,7 @@ void main() {
             polite, timely. Would highly recommend! — TK
           </p>
         </a>
-        <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
           <p className="leading-[1.1] font-neueroman text-[13px]">
             We've invested in in-office trainings with leading clinical consultants 
             that have helped us develop systems and protocols streamlining our processes.

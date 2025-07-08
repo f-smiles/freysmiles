@@ -1,4 +1,5 @@
 "use client";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
@@ -145,9 +146,11 @@ const bgRef = useRef(null);
 //   if (buttons[activeIndex]) buttons[activeIndex].appendChild(bg);
 // }, [activeIndex]);
 
-
+  const [hovered, setHovered] = useState(false);
+const menuText = "Menu";
   return (
     <>
+
       <motion.nav
         id="desktop-nav"
         className={`${styles.header} ${
@@ -161,37 +164,130 @@ const bgRef = useRef(null);
           variants={opacity}
           animate={!isActive ? "open" : "closed"}
         >
-<motion.div variants={opacity} animate={!isActive ? "open" : "closed"}>
-  <motion.div
-    ref={wrapperRef}
-    className="relative flex items-center py-4"
-  >
-    <div className="flex gap-1">
-      {links.slice(0, 4).map((link, i) => (
-        <motion.div
-          key={`${i}-${link.title}`}
-          data-flip-button="button"
-          className="text-black  px-6 py-3 flex items-center relative border border-gray-300 transition-colors duration-200 hover:border-gray-500"
-          onClick={() => {
-            setSelectedLink(link.title);
-            setIsActive(!isActive);
-            setActiveIndex(i);
-          }}
-        >
-          <motion.p
-            className="text-gray-500 font-neuehaas35 tracking-wider text-[11px] cursor-pointer"
-            variants={opacity}
-            animate={!isActive ? "open" : "closed"}
-          >
-            {link.title}
-          </motion.p>
-        </motion.div>
-      ))}
-    </div>
-  </motion.div>
+
+<div
+  className="flex items-center relative"
+  onMouseEnter={() => setHovered(true)}
+  onMouseLeave={() => setHovered(false)}
+>
+
+<motion.div
+  className="w-12 h-12 rounded-full bg-white flex items-center justify-center z-10"
+  style={{
+    position: 'absolute',
+    left: 0,
+    transformOrigin: hovered ? 'right center' : 'left right'
+  }}
+  initial={{ scale: 0, opacity: 0 }}
+  animate={{
+    scale: hovered ? 1 : 0,
+    opacity: hovered ? 1 : 0,
+    x: hovered ? 0 : -6
+  }}
+  transition={{
+    duration: 0.3,
+    ease: [0.16, 0.3, 0.3, 1],
+    scale: { 
+      duration: 0.3,
+      ease: [0.16, 0.3, 0.3, 1] 
+    }
+  }}
+>
+  <ArrowRight size={20} />
 </motion.div>
 
+<motion.div
+  className={`relative flex items-center bg-white rounded-full h-12 overflow-hidden ml-12
+    transition-all duration-300 ease-[cubic-bezier(0.16,0.3,0.3,1)]
+    ${hovered ? 'w-[280px] px-6' : 'w-[80px] px-6'}`}
+>
 
+<motion.span
+  className="absolute left-6 text-black text-[12px] font-neuehaas45 whitespace-nowrap flex"
+  initial="show"
+  animate={hovered ? "hide" : "show"}
+  variants={{
+    show: { transition: { staggerChildren: 0.03 } },
+    hide: { transition: { staggerChildren: 0.03 } }
+  }}
+>
+  {menuText.split("").map((char, i) => (
+    <motion.span
+      key={i}
+      className="inline-block"
+      variants={{
+        show: { opacity: 1, y: 0 },
+        hide: { opacity: 0, y: 20 }
+      }}
+      transition={{ duration: 0.3, ease: [0.16, 0.3, 0.3, 1] }}
+    >
+      {char}
+    </motion.span>
+  ))}
+</motion.span>
+  
+<motion.div
+  className="absolute left-6 flex items-center gap-1"
+  initial="hide"
+  animate={hovered ? "show" : "hide"}
+  variants={{
+    show: { transition: { staggerChildren: 0.05 } },
+    hide: { transition: { staggerChildren: 0.03 } }
+  }}
+>
+  {[...links.slice(0, 4)].reverse().map((link, i) => (
+    <motion.div
+      key={i}
+      className="text-black px-2 py-2 flex items-center cursor-pointer"
+      variants={{
+        show: { opacity: 1, y: 0 },
+        hide: { opacity: 0, y: -10 }
+      }}
+      transition={{ duration: 0.35, ease: [0.16, 0.3, 0.3, 1] }}
+      onClick={() => {
+        setSelectedLink(link.title);
+        setIsActive(!isActive);
+        setActiveIndex(i);
+      }}
+    >
+
+      <div className="flex gap-[1px]">
+        {link.title.split("").map((char, j) => (
+          <motion.span
+            key={j}
+            className="text-[11px] text-black font-neuehaas35 inline-block"
+            variants={{
+              show: { opacity: 1, y: 0 },
+              hide: { opacity: 0, y: -10 }
+            }}
+            transition={{ duration: 0.3, ease: [0.16, 0.3, 0.3, 1] }}
+          >
+            {char}
+          </motion.span>
+        ))}
+      </div>
+    </motion.div>
+  ))}
+</motion.div>
+</motion.div>
+
+  {/* Right*/}
+  <motion.div
+    className="w-12 h-12 rounded-full bg-white flex items-center justify-center z-10"
+    initial={{ scaleY: 1, opacity: 1 }}
+    animate={{
+      scaleY: hovered ? 0 : 1,
+      opacity: hovered ? 0 : 1
+    }}
+    transition={{ 
+      duration: 0.5,
+      ease: [0.16, 0.3, 0.3, 1],
+      scaleY: { duration: 0.5 }
+    }}
+  >
+    <ArrowLeft size={20} />
+  </motion.div>
+</div>
 
           <Link href="/">
             <motion.div
