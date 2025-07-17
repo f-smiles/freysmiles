@@ -1,4 +1,5 @@
-import './css/style.css'
+// import './css/style.css'
+import './css/test.css'
 import Main from './components/main.jsx'
 
 export default function Page() {
