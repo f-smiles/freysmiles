@@ -1,189 +1,47 @@
 'use client'
 import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(useGSAP, ScrollTrigger)
 
 export default function Main() {
-  const containerRef = useRef(null)
-  
-  useGSAP(() => {
-    let panels = gsap.utils.toArray('.panel')
-    
-    let scrollTween = gsap.to(panels, {
-      xPercent: -100 * (panels.length - 1),
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".container",
-        pin: true,
-        scrub: 0.1,
-        //snap: directionalSnap(1 / (sections.length - 1)),
-        end: "+= 3000",
-      }
-    })
+  const Ref = useRef(null)
 
-    gsap.set(".box-1, .box-2", { y: 100 })
-    
-    // red section
-    gsap.to(".box-1", {
-      y: -130,
-      duration: 2,
-      ease: "elastic",
-      scrollTrigger: {
-        trigger: ".box-1",
-        containerAnimation: scrollTween,
-        start: "left center",
-        toggleActions: "play none none reset",
-        id: "1",
-      }
-    })
+  useEffect(() => {
+    if (!Ref.current) return
 
-    // gray section
-    gsap.to(".box-2", {
-      y: -120,
-      backgroundColor: "#1e90ff",
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".box-2",
-        containerAnimation: scrollTween,
-        start: "center 80%",
-        end: "center 20%",
-        scrub: true,
-        id: "2"
-      }
-    })
+    let ctx = gsap.context(() => {
+      const panels = gsap.utils.toArray('.panel')
 
-    // purple section
-    ScrollTrigger.create({
-      trigger: ".box-3",
-      containerAnimation: scrollTween,
-      toggleClass: "active",
-      start: "center 60%",
-      id: "3"
-    })
+      panels.forEach((panel, i) => {
+        ScrollTrigger.create({
+          trigger: panel,
+          start: () => panel.offsetHeight < window.innerHeight ? 'top top' : 'bottom bottom',
+          pin: true,
+          pinSpacing: false,
+        })
+      })
+    }, Ref)
 
-    // green section
-    ScrollTrigger.create({
-      trigger: ".green",
-      containerAnimation: scrollTween,
-      start: "center 65%",
-      end: "center 51%",
-      onEnter: () => console.log("enter"),
-      onLeave: () => console.log("leave"),
-      onEnterBack: () => console.log("enterBack"),
-      onLeaveBack: () => console.log("leaveBack"),
-      onToggle: self => console.log("active", self.isActive),
-      id: "4"
-    })
-    
-    gsap.set(".gsap-marker-start, .gsap-marker-end, .gsap-marker-scroller-start, .gsap-marker-scroller-end", { autoAlpha: 0 })
-    ScrollTrigger.defaults({ markers: { startColor: "white", endColor: "white" } })
-
-  }, { scope: containerRef })
+    return () => { ctx.revert() }
+  }, [])
 
   return (
-    <section className="section">
-      <div className="description">
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Non sunt dicta recusandae quia, et doloribus aut saepe voluptate nisi voluptatem, quisquam illum veritatis ratione pariatur officiis porro! Doloribus eos quod est quae voluptatum sed placeat. Sed quos, nulla saepe beatae in, voluptate quas, omnis a consequatur voluptas reprehenderit ipsa animi!</p>
-      </div>
-
-      <div ref={containerRef} className="scroll-container">
-        <div className="panel blue">
-          <div className="text-content">Scroll down to animate horizontally &gt;</div>
-        </div>
-  
-        <section className="panel red">
-          <div>
-            <pre className="code-block prettyprint lang-js linenums">
-              {`gsap.to(".box-1", {
-                y: -130,
-                duration: 2,
-                ease: "elastic",
-                scrollTrigger: {
-                  trigger: ".box-1",
-                  containerAnimation: scrollTween,
-                  start: "left center",
-                  toggleActions: "play none none reset"
-                }
-              });`}
-            </pre>
-            Fire an animation at a particular spot...
-          </div>
-          <div className="box-1 box">box-1</div>
-        </section>
-  
-        <section className="panel gray">
-          <div>
-            <pre className="code-block prettyprint lang-js linenums">
-              {`gsap.to(".box-2", {
-                y: -120,
-                backgroundColor: "#1e90ff",
-                ease: "none",
-                scrollTrigger: {
-                  trigger: ".box-2",
-                  containerAnimation: scrollTween,
-                  start: "center 80%",
-                  end: "center 20%",
-                  scrub: true
-                }
-              });`}
-            </pre>
-            ...or scrub it back &amp; forth with the scrollbar
-          </div>
-          <div className="box-2 box">box-2</div>
-        </section>
-
-        <section className="panel purple">
-          <div>
-            <pre className="code-block prettyprint lang-js linenums">
-              {`ScrollTrigger.create({
-                trigger: ".box-3",
-                containerAnimation: scrollTween,
-                toggleClass: "active",
-                start: "center 60%"
-              });`}
-            </pre>
-            Toggle a CSS class
-          </div>
-          <div className="box-3 box">box-3</div>
-        </section>
-
-        <section className="panel green">
-          <div>
-            <pre className="code-block prettyprint lang-js linenums">
-              {`ScrollTrigger.create({
-                trigger: ".green",
-                containerAnimation: scrollTween,
-                start: "center 65%",
-                end: "center 51%",
-                onEnter: () => console.log("enter"),
-                onLeave: () => console.log("leave"),
-                onEnterBack: () => console.log("enterBack"),
-                onLeaveBack: () => console.log("leaveBack"),
-                onToggle: self => console.log("active", self.isActive)
-              });`}
-            </pre>
-            Use the rich callback system
-          </div>
-        </section>
-      </div>
-
-      <div className="final">
+    <div ref={Ref}>
+      <div class="description panel blue">
         <div>
-          <h1>Wasn't that fun?</h1>
-          <p>Here are a few caveats to keep in mind:</p>
-          <ul>
-            <li>The fake-scrolling animation (just the part that's moving the container horizontally) must have no easing (<code>ease: "none"</code>).</li>
-            <li>Pinning and snapping won't work on ScrollTriggers with a <code>containerAnimation</code>.</li>
-            <li>The mapping of scroll position trigger points are based on the trigger element itself not being animated horizontally (inside the container). If you need to animate the trigger, you can either wrap it in a &lt;div&gt; and use that as the trigger instead or just factor the trigger's movement into your end position. For example, if you animate it left 100px, make the <code>end</code> 100px further to the left.</li>
-            <li>Requires ScrollTrigger 3.8.0 or later</li>
-          </ul>
+          <h1>Variable height stacked pinning</h1>
+          <p>Use pinning to layer panels on top of each other as you scroll.</p>
         </div>
       </div>
 
-    </section>
+      <section className="panel red">ONE</section>
+      <section className="panel orange" style={{ height: '220vh' }}>TWO</section>
+      <section className="panel purple" style={{ height: '50vh' }}>THREE</section>
+      <section className="panel green">FOUR</section>
+    </div>
   )
 }
 

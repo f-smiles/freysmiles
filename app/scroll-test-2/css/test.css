@@ -1,54 +1,46 @@
-.section {
-  /* overflow-x: clip; */
+body {
+  margin: 0;
+  height: 100%;
   overflow-x: hidden;
   overflow-y: scroll;
-  border: 4px dashed cyan;
-}
-
-.description,
-.final {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 80vh;
-  height: 100%;
-  padding: 10px;
-  border: 2px solid magenta;
-}
-
-.scroll-container {
-  display: flex;
-  flex-wrap: nowrap;
-  width: 500%;
-  height: 100vh;
 }
 
 .panel {
-  position: relative;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  width: 100%;
-  height: 100%;
+  position: relative;
+  box-sizing: border-box;
   padding: 10px;
-  border: 2px dashed lime;
+  color: #fffce1;
+  background-color: #0e100f;
 }
 
-.box {
-  width: 100px;
-  height: 80px;
-  text-align: center;
-  line-height: 80px;
-  background-color: white;
-  border-radius: 8px;
-  color: #222;
-  font-weight: 700;
-  margin-left: 20px;
-  will-change: transform;
+.blue {
+  background-color: #BFCCD8;
 }
 
-.box.active {
-  background-color: orange;
-  border: 2px solid white;
+.red {
+  background-color: #B692A1;
 }
+
+.orange {
+  background-color: #798E7B;
+}
+
+.purple {
+background-color: #F1EFEB;
+}
+
+.green {
+  background-color: #E49366;
+}
+
+/* bg-[#BFCCD8]
+bg-[#B692A1]
+bg-[#798E7B]
+bg-[#F1EFEB]
+bg-[#E49366] */
