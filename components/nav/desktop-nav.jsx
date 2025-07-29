@@ -235,7 +235,7 @@ const menuText = "Menu";
     hide: { transition: { staggerChildren: 0.03 } }
   }}
 >
-  {[...links.slice(0, 4)].reverse().map((link, i) => (
+  {[...links.slice(0, 4)].map((link, i) => (
     <motion.div
       key={i}
       className="text-black px-2 py-2 flex items-center cursor-pointer"
