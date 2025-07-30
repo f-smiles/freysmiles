@@ -491,21 +491,21 @@ const FluidSimulation = () => {
       }
   `;
 
-    const config = {
-      SIM_RESOLUTION: 128,
-      DYE_RESOLUTION: 1440,
-      CAPTURE_RESOLUTION: 512,
-      DENSITY_DISSIPATION: 2.5,
-      VELOCITY_DISSIPATION: 2,
-      PRESSURE: 0.1,
-      PRESSURE_ITERATIONS: 20,
-      CURL: 2,
-      SPLAT_RADIUS: 0.5,
-      SPLAT_FORCE: 6000,
-      SHADING: true,
-      COLOR_UPDATE_SPEED: 6,
-      BACK_COLOR: { r: 0, g: 0, b: 0 },
-    };
+  const config = {
+    SIM_RESOLUTION: 128,
+    DYE_RESOLUTION: 1440, // Increased for higher quality, matching second component
+    CAPTURE_RESOLUTION: 512,
+    DENSITY_DISSIPATION: 2.5,
+    VELOCITY_DISSIPATION: 2,
+    PRESSURE: 0.1,
+    PRESSURE_ITERATIONS: 20,
+    CURL: 2,
+    SPLAT_RADIUS: 0.25, // Reduced for creamier effect
+    SPLAT_FORCE: 3000, // Reduced for slower, smoother movement
+    SHADING: true,
+    COLOR_UPDATE_SPEED: 6,
+    BACK_COLOR: { r: 0, g: 0, b: 0 },
+  };
 
     function PointerPrototype() {
       this.id = -1;
@@ -1342,7 +1342,7 @@ function initFluid() {
     blit(target);
   }
 
-
+  // Initialize shaders and programs
   const baseVertexShader = compileShader(gl.VERTEX_SHADER, baseVertexShaderSource);
   const blurVertexShader = compileShader(gl.VERTEX_SHADER, blurVertexShaderSource);
   const blurShader = compileShader(gl.FRAGMENT_SHADER, blurShaderSource);
@@ -1424,6 +1424,7 @@ function initFluid() {
       updatePointerDownData(pointers[0], -1, posX, posY);
       clickSplat(pointers[0]);
     };
+    
     
     const handleMouseMove = (e) => {
       const canvas = canvasRef.current;
@@ -1564,13 +1565,13 @@ export default function WhyChooseUs() {
 
   return (
     <>
-      <div className="relative bg-white">
-        <FluidSimulation />
+   <FluidSimulation />
 
+      <div className="relative">
         <div className="overflow-x-hidden w-full">
-          <div className="relative w-full h-screen">
+          {/* <div className="relative w-full h-screen" style={{ zIndex: 1 }}>
             <Canvas
-              className="absolute inset-0 z-10"
+              className="absolute inset-0"
               camera={{ position: [0, 6, 12], fov: 45 }}
               style={{ pointerEvents: "none" }}
             >
@@ -1583,91 +1584,21 @@ export default function WhyChooseUs() {
               />
               <RibbonAroundSphere />
             </Canvas>
-
-            {/* <div className="absolute inset-0 z-20 flex items-center justify-center"></div> */}
-          </div>
-          <div
-          // style={{ position: "relative", height: "400vh", overflow: "hidden" }}
-          >
-            {/* <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-          <StringScene />
-        </div> */}
-
-            <div style={{ position: "relative", zIndex: 1 }}>
+          </div> */}
+          <div>
+            <div>
               <ScrollPanels />
             </div>
           </div>
 
-          {/* <div className="w-full flex justify-center items-center py-12 px-6">
-          <div className="rounded-2xl overflow-hidden bg-[#0e0e14] w-full max-w-[960px] aspect-[16/9]">
-            <Scene />
-          </div>
-        </div> */}
-
           <ImageGrid />
-
           <CardStack />
           <StackCards />
           <TechSection />
-
-          {/* <section
-          style={{
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            height: "100vh",
-            overflow: "hidden",
-          }}
-        >
-          <article style={{ width: "100vmin", flex: "0 0 auto" }}>
-            <figure style={{ margin: 0, padding: 0, width: "100%" }}>
-              <img
-                ref={imageRef}
-                src="/images/testdisplay.png"
-                data-hover="/images/1.jpg"
-                alt=""
-                style={{
-                  pointerEvents: "none",
-                  maxWidth: "100%",
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "center",
-                  display: "block",
-                }}
-              />
-            </figure>
-          </article>
-
-          <div
-            id="stage"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              zIndex: 2,
-              pointerEvents: "none",
-            }}
-          >
-            <HoverScene imageRef={imageRef} />
-          </div>
-        </section> */}
-
-          {/* <RepeatText /> */}
           <MoreThanSmiles />
           <About />
           <VennDiagram />
           <Marquee />
-          {/* <div className="h-[100vh] w-auto">
-          <Curtains pixelRatio={Math.min(1.5, window.devicePixelRatio)}>
-            <SimplePlane />
-          </Curtains>
-        </div> */}
-          {/* <Rays /> */}
         </div>
       </div>
     </>
