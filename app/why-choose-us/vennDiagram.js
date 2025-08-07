@@ -157,51 +157,218 @@ render.context.mozImageSmoothingEnabled = false
     let runner = Runner.create()
     Runner.run(runner, engine)
 
-    const resizeLeftSphereCanvas = async () => {
-      if (!leftSphereCanvas.current) return
+const resizeLeftSphereCanvas = async () => {
+  if (!leftSphereCanvas.current) return;
 
-      await Composite.clear(engine.world, stack)
+  // Store current positions and velocities
+  const bodyStates = stack.map(body => ({
+    position: Matter.Vector.clone(body.position),
+    velocity: Matter.Vector.clone(body.velocity),
+    angularVelocity: body.angularVelocity
+  }));
 
-      sW = leftSphereCanvas.current.offsetWidth
-      halfsW = sW / 2
-      circleW = sW / 10
-      let sH = leftSphereCanvas.current.offsetHeight
-      render.bounds.max.x = sW
-      render.bounds.max.y = sH
-      render.options.pixelRatio = 2
-      render.canvas.width = sW * 2
-      render.canvas.height = sH * 2
-      render.canvas.style.width = `${sW}px`
-      render.canvas.style.height = `${sH}px`
-      
+  // Update dimensions
+  sW = leftSphereCanvas.current.offsetWidth;
+  let sH = leftSphereCanvas.current.offsetHeight;
+  halfsW = sW / 2;
+  circleW = sW / 10;
 
-      let newStack = []
-      for (let i = 0; i < 5; i++) {
-        newStack.push(
-          Bodies.circle(halfsW, halfsW, circleW, {
-            density: 0.00001,
-            restitution: 0.5,
-            density: 0.05,
-            collisionFilter: {
-              category: 0x0003,
-              mask: 0x0003 | 0x0001,
-            },
-            render: {
-              fillStyle: "#9dbb81",
-              strokeStyle: '#222222',
-              sprite: {
-                texture: freysmilesTexturePaths[i % freysmilesTexturePaths.length].path,
-                xScale: 0.3,
-                yScale: 0.3,
-              }
-            },
-          })
-        )
+  // Update renderer
+  render.bounds.max.x = sW;
+  render.bounds.max.y = sH;
+  render.options.width = sW;
+  render.options.height = sH;
+  render.canvas.width = sW * window.devicePixelRatio;
+  render.canvas.height = sH * window.devicePixelRatio;
+  render.canvas.style.width = `${sW}px`;
+  render.canvas.style.height = `${sH}px`;
+
+  // Clear and recreate world
+  Composite.clear(engine.world, false);
+
+  // Recreate boundary walls
+  let r = sW / 2;
+  parts = [];
+  for (let i = 0; i < pegCount; i++) {
+    let segment = TAU / pegCount;
+    let angle2 = (i / pegCount) * TAU + segment / 2;
+    let cx2 = Math.cos(angle2) * r + sW / 2;
+    let cy2 = Math.sin(angle2) * r + sW / 2;
+    let rect = Bodies.rectangle(cx2, cy2, 10 / 1000 * sW, 400 / 1000 * sW, {
+      angle: angle2,
+      isStatic: true,
+      density: 1,
+      render: {
+        fillStyle: 'transparent',
+        strokeStyle: 'transparent',
+        lineWidth: 0,
+      },
+    });
+    parts.push(rect);
+  }
+  Composite.add(engine.world, parts);
+
+  // Recreate stack with previous states
+  stack = [];
+  for (let i = 0; i < 5; i++) {
+    const body = Bodies.circle(
+      bodyStates[i]?.position.x || halfsW,
+      bodyStates[i]?.position.y || halfsW,
+      circleW,
+      {
+        density: 0.00001,
+        restitution: 0.5,
+        collisionFilter: {
+          category: 0x0003,
+          mask: 0x0003 | 0x0001,
+        },
+        render: {
+          fillStyle: "#9dbb81",
+          strokeStyle: '#222222',
+          sprite: {
+            texture: freysmilesTexturePaths[i % freysmilesTexturePaths.length].path,
+            xScale: 0.2,
+            yScale: 0.2,
+          }
+        }
       }
-      Composite.add(engine.world, newStack)
-      Composite.add(engine.world, mouseConstraint)
+    );
+    
+    if (bodyStates[i]) {
+      Matter.Body.setVelocity(body, bodyStates[i].velocity);
+      body.angularVelocity = bodyStates[i].angularVelocity;
     }
-    window.addEventListener('resize', resizeLeftSphereCanvas)
+    
+    stack.push(body);
+  }
+  Composite.add(engine.world, stack);
+
+  // Reinitialize mouse constraint
+  if (mouseConstraint) {
+    World.remove(engine.world, mouseConstraint);
+  }
+  
+  mouse = Mouse.create(render.canvas);
+  mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: {
+      stiffness: 0.2,
+      render: { visible: false },
+    },
+  });
+  mouseConstraint.mouse.element.removeEventListener("mousewheel", mouseConstraint.mouse.mousewheel);
+  mouseConstraint.mouse.element.removeEventListener("DOMMouseScroll", mouseConstraint.mouse.mousewheel);
+  Composite.add(engine.world, mouseConstraint);
+
+  Matter.Events.on(mouseConstraint, 'mousemove', (event) => {
+    const foundBodies = Matter.Query.point(stack, event.mouse.position);
+    shakeScene(engine, foundBodies);
+  });
+};
+    const resizeRightSphereCanvas = async () => {
+  if (!rightSphereCanvas.current) return;
+
+  // Store current positions and velocities
+  const bodyStates = stack.map(body => ({
+    position: Matter.Vector.clone(body.position),
+    velocity: Matter.Vector.clone(body.velocity),
+    angularVelocity: body.angularVelocity
+  }));
+
+  // Update dimensions
+  sW = rightSphereCanvas.current.offsetWidth;
+  let sH = rightSphereCanvas.current.offsetHeight;
+  halfsW = sW / 2;
+  circleW = sW / 10;
+
+  // Update renderer
+  render.bounds.max.x = sW;
+  render.bounds.max.y = sH;
+  render.options.width = sW;
+  render.options.height = sH;
+  render.canvas.width = sW * window.devicePixelRatio;
+  render.canvas.height = sH * window.devicePixelRatio;
+  render.canvas.style.width = `${sW}px`;
+  render.canvas.style.height = `${sH}px`;
+
+  // Clear and recreate world
+  Composite.clear(engine.world, false);
+
+  // Recreate boundary walls
+  let r = sW / 2;
+  parts = [];
+  for (let i = 0; i < pegCount; i++) {
+    let segment = TAU / pegCount;
+    let angle2 = (i / pegCount) * TAU + segment / 2;
+    let cx2 = Math.cos(angle2) * r + sW / 2;
+    let cy2 = Math.sin(angle2) * r + sW / 2;
+    let rect = Bodies.rectangle(cx2, cy2, 10 / 1000 * sW, 400 / 1000 * sW, {
+      angle: angle2,
+      isStatic: true,
+      density: 1,
+      render: {
+        fillStyle: 'transparent',
+        strokeStyle: 'transparent',
+        lineWidth: 0,
+      },
+    });
+    parts.push(rect);
+  }
+  Composite.add(engine.world, parts);
+
+  // Recreate stack with previous states
+  stack = [];
+  for (let i = 0; i < 1; i++) {
+    const body = Bodies.circle(
+      bodyStates[i]?.position.x || halfsW,
+      bodyStates[i]?.position.y || halfsW,
+      circleW,
+      {
+        density: 0.00001,
+        restitution: 0.5,
+        collisionFilter: {
+          category: 0x0003,
+          mask: 0x0003 | 0x0001,
+        },
+        render: {
+          fillStyle: "#f2f2f2",
+          strokeStyle: 'white',
+          sprite: {
+            texture: othersTexturePaths[i % othersTexturePaths.length].path,
+            xScale: 0.15,
+            yScale: 0.15,
+          }
+        }
+      }
+    );
+    
+    if (bodyStates[i]) {
+      Matter.Body.setVelocity(body, bodyStates[i].velocity);
+      body.angularVelocity = bodyStates[i].angularVelocity;
+    }
+    
+    stack.push(body);
+  }
+  Composite.add(engine.world, stack);
+
+  // Reinitialize mouse constraint
+  if (mouseConstraint) {
+    World.remove(engine.world, mouseConstraint);
+  }
+  
+  mouse = Mouse.create(render.canvas);
+  mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: {
+      stiffness: 0.2,
+      render: { visible: false },
+    },
+  });
+  mouseConstraint.mouse.element.removeEventListener("mousewheel", mouseConstraint.mouse.mousewheel);
+  mouseConstraint.mouse.element.removeEventListener("DOMMouseScroll", mouseConstraint.mouse.mousewheel);
+  Composite.add(engine.world, mouseConstraint);
+};
+    window.addEventListener('resize', resizeLeftSphereCanvas, resizeRightSphereCanvas)
   }
 
   const createRightSphereCanvas = () => {
@@ -318,51 +485,109 @@ render.context.mozImageSmoothingEnabled = false
     let runner = Runner.create()
     Runner.run(runner, engine)
 
-    const resizeRightSphereCanvas = async () => {
-      if (!rightSphereCanvas.current) return
+const resizeRightSphereCanvas = async () => {
+  if (!rightSphereCanvas.current) return;
 
-      await Composite.clear(engine.world, stack)
+  // Store current positions and velocities
+  const bodyStates = stack.map(body => ({
+    position: Matter.Vector.clone(body.position),
+    velocity: Matter.Vector.clone(body.velocity),
+    angularVelocity: body.angularVelocity
+  }));
 
-      sW = rightSphereCanvas.current.offsetWidth
-      let sH = rightSphereCanvas.current.offsetHeight
-      let halfsW = sW / 2
-      let circleW = sW / 10
-      render.bounds.max.x = sW
-      render.bounds.max.y = sH
-      render.options.pixelRatio = 2;
-      render.canvas.width = sW * 2;
-      render.canvas.height = sH * 2;
-      render.canvas.style.width = `${sW}px`;
-      render.canvas.style.height = `${sH}px`;
-      
+  // Update dimensions
+  sW = rightSphereCanvas.current.offsetWidth;
+  let sH = rightSphereCanvas.current.offsetHeight;
+  halfsW = sW / 2;
+  circleW = sW / 10;
 
-      let newStack = []
-      for (let i = 0; i < 1; i++) {
-        newStack.push(
-          Bodies.circle(halfsW, halfsW, circleW, {
-            density: 0.00001,
-            restitution: 0.5,
-            density: 0.05,
-            collisionFilter: {
-              category: 0x0003,
-              mask: 0x0003 | 0x0001,
-            },
-            render: {
-              fillStyle: "#555555",
-              strokeStyle: "white",
-              lineWidth: 2,
-              sprite: {
-                texture: othersTexturePaths[i % othersTexturePaths.length].path,
-                xScale: 0.3,
-                yScale: 0.3,
-              }
-            },
-          })
-        )
+  // Update renderer
+  render.bounds.max.x = sW;
+  render.bounds.max.y = sH;
+  render.options.width = sW;
+  render.options.height = sH;
+  render.canvas.width = sW * window.devicePixelRatio;
+  render.canvas.height = sH * window.devicePixelRatio;
+  render.canvas.style.width = `${sW}px`;
+  render.canvas.style.height = `${sH}px`;
+
+  // Clear and recreate world
+  Composite.clear(engine.world, false);
+
+  // Recreate boundary walls
+  let r = sW / 2;
+  parts = [];
+  for (let i = 0; i < pegCount; i++) {
+    let segment = TAU / pegCount;
+    let angle2 = (i / pegCount) * TAU + segment / 2;
+    let cx2 = Math.cos(angle2) * r + sW / 2;
+    let cy2 = Math.sin(angle2) * r + sW / 2;
+    let rect = Bodies.rectangle(cx2, cy2, 10 / 1000 * sW, 400 / 1000 * sW, {
+      angle: angle2,
+      isStatic: true,
+      density: 1,
+      render: {
+        fillStyle: 'transparent',
+        strokeStyle: 'transparent',
+        lineWidth: 0,
+      },
+    });
+    parts.push(rect);
+  }
+  Composite.add(engine.world, parts);
+
+  // Recreate stack with previous states
+  stack = [];
+  for (let i = 0; i < 1; i++) {
+    const body = Bodies.circle(
+      bodyStates[i]?.position.x || halfsW,
+      bodyStates[i]?.position.y || halfsW,
+      circleW,
+      {
+        density: 0.00001,
+        restitution: 0.5,
+        collisionFilter: {
+          category: 0x0003,
+          mask: 0x0003 | 0x0001,
+        },
+        render: {
+          fillStyle: "#f2f2f2",
+          strokeStyle: 'white',
+          sprite: {
+            texture: othersTexturePaths[i % othersTexturePaths.length].path,
+            xScale: 0.15,
+            yScale: 0.15,
+          }
+        }
       }
-      Composite.add(engine.world, newStack)
-      Composite.add(engine.world, mouseConstraint)
+    );
+    
+    if (bodyStates[i]) {
+      Matter.Body.setVelocity(body, bodyStates[i].velocity);
+      body.angularVelocity = bodyStates[i].angularVelocity;
     }
+    
+    stack.push(body);
+  }
+  Composite.add(engine.world, stack);
+
+  // Reinitialize mouse constraint
+  if (mouseConstraint) {
+    World.remove(engine.world, mouseConstraint);
+  }
+  
+  mouse = Mouse.create(render.canvas);
+  mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: {
+      stiffness: 0.2,
+      render: { visible: false },
+    },
+  });
+  mouseConstraint.mouse.element.removeEventListener("mousewheel", mouseConstraint.mouse.mousewheel);
+  mouseConstraint.mouse.element.removeEventListener("DOMMouseScroll", mouseConstraint.mouse.mousewheel);
+  Composite.add(engine.world, mouseConstraint);
+};
     window.addEventListener('resize', resizeRightSphereCanvas)
   }
 

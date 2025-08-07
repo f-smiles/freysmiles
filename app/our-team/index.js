@@ -10,7 +10,7 @@ import React, {
   useMemo,
   useLayoutEffect,
 } from "react";
-import { SplitText } from "gsap/all";
+import { SplitText } from "gsap/SplitText";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -311,15 +311,16 @@ export default function OurTeam() {
         "+=0.2"
       );
     }
-
+console.log(panelRefs.current);
     tl.fromTo(
+
       panelRefs.current,
       { y: "0%" },
       {
         y: "-100%",
         duration: 1.2,
         stagger: 0.08,
-        ease: [0.65, 0, 0.35, 1],
+        ease: "none"
       },
       "+=0.1"
     );
@@ -818,7 +819,7 @@ void main() {
     id="shader-bg"
     className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"
   />
-      {/* <div
+      <div
         className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
           isRevealing ? "translate-y-0" : "-translate-y-full"
         }`}
@@ -836,7 +837,7 @@ void main() {
             <span style={{ lineHeight: "1.2" }}>Meet Our Team</span>
           </h2>
         </div>
-      </div> */}
+      </div>
 
       <div className="relative overflow-x-clip">
 

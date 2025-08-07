@@ -344,100 +344,37 @@ const vertexShader = `
 `;
 
 const fragmentShader = `
- uniform float iTime;
+precision mediump float;
+
+uniform float iTime;
 uniform vec2 iResolution;
 varying vec2 vUv;
 
-const float OPACITY = 0.2;
-const vec3 HALO_COL = vec3(0.2, 0.6, 1.0);
-const vec3 EDGE1_COL = vec3(1.0, 0.68, 0.66);
-const vec3 EDGE2_COL = vec3(1.0, 0.3, 0.2);
-const vec3 BACKGROUND_COL = vec3(0.2);
-
-float mod289(float x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-vec4 perm(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
-
-float noise(vec3 p) {
-  vec3 a = floor(p);
-  vec3 d = p - a;
-  d = d * d * (3.0 - 2.0 * d);
-  vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
-  vec4 k1 = perm(b.xyxy);
-  vec4 k2 = perm(k1.xyxy + b.zzww);
-  vec4 c = k2 + a.zzzz;
-  vec4 k3 = perm(c);
-  vec4 k4 = perm(c + 1.0);
-  vec4 o1 = fract(k3 * (1.0 / 41.0));
-  vec4 o2 = fract(k4 * (1.0 / 41.0));
-  vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
-  vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
-  return o4.y * d.y + o4.x * (1.0 - d.y);
-}
-
-float rand1d(float n) {
-  return fract(sin(n) * 43758.5453123);
-}
-
-vec3 hueShift(vec3 col, float hue) {
-  const vec3 k = vec3(0.57735, 0.57735, 0.57735);
-  float cosa = cos(hue);
-  return col * cosa + cross(k, col) * sin(hue) + k * dot(k, col) * (1.0 - cosa);
-}
-
-vec2 rot(vec2 v, float a) {
-  float s = sin(a);
-  float c = cos(a);
-  return mat2(c, s, -s, c) * v;
-}
-
-vec3 circle(vec2 uv, float off) {
-  vec3 col = HALO_COL;
-  float t = iTime * 0.5 + off;
-  float f = 0.0001;
-  uv = rot(uv, 6.2831853 * rand1d(off));
-  float n = noise(vec3(uv * 1.2, t)) * 0.2 +
-            noise(vec3(-uv * 1.7, t)) * 0.15 +
-            noise(vec3(uv * 2.2, t)) * 0.1;
-
-  float l = length(uv) * 5.0 - iTime;
-  float d = distance(uv, vec2(sin(l), cos(l)));
-
-  float hd = d + n;
-  float shd = smoothstep(1.0, 1.0 - f, hd);
-  col = pow(vec3(hd), vec3(3.5, 3.5, 2.0)) * HALO_COL * shd;
-  float cd = d * hd * hd * shd * 1.25;
-  col += cd * cd * mix(EDGE1_COL, EDGE2_COL, pow(hd, 8.0)) - (cd * cd * cd) * col;
-
-  vec3 color = BACKGROUND_COL * 0.5 + col * shd;
-  float glow = smoothstep(1.5, 1.0, hd) * (1.0 - shd * 1.25);
-  col = color + color * glow;
-  col += EDGE2_COL * pow(glow, 7.0) * 0.5;
-
-  return col;
+float gold_noise(in vec2 xy, in float seed) {
+  return fract(sin(dot(xy + seed, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 void main() {
-  float min_res = min(iResolution.x, iResolution.y);
-  vec2 uv = (vUv * 2.0 - 1.0) * iResolution / min_res * 1.1;
 
-  vec3 col = mix(
-    mix(
-      mix(
-        mix(
-          circle(uv, 0.0),
-          circle(uv, 1000.0), OPACITY),
-        circle(uv, 2000.0), OPACITY),
-      circle(uv, 3000.0), OPACITY),
-    circle(uv, 4000.0), OPACITY
+vec2 jitter = vec2(
+  sin(dot(vUv, vec2(12.9898, 78.233)) + iTime * 0.005),
+  cos(dot(vUv, vec2(93.9898, 67.345)) + iTime * 0.005)
+) * 0.2;
+
+  vec2 xy = (vUv * iResolution) + jitter;
+
+  float seed = fract(iTime);
+
+  vec4 color = vec4(
+    gold_noise(xy, seed + 0.1),
+    gold_noise(xy, seed + 0.2),
+    gold_noise(xy, seed + 0.3),
+    gold_noise(xy, seed + 0.4)
   );
 
-  col = 1.0 - col;
-  col = hueShift(col, 3.1415);
-  gl_FragColor = vec4(col, 1.0);
+  gl_FragColor = color;
 }
 `;
-
 const LiquidPortalMaterial = shaderMaterial(
   {
     iTime: 0,
