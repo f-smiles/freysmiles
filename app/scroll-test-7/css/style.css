@@ -202,3 +202,22 @@
   top: 0;
   width: 100%;
 }
+
+
+
+.custom-marker {
+  position: fixed;
+  height: 100vh;
+  width: 1px;
+  z-index: 999999;
+}
+
+.custom-marker.left {
+  background-color: green;
+  top: 0;
+}
+
+.custom-marker.right {
+  background-color: red;
+  top: 0;
+}
