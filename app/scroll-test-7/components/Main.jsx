@@ -24,7 +24,7 @@ export function Main() {
           start: 'top top',
           end: () => `+=${items.length * 100}%`,
           pin: true,
-          scrub: true,
+          scrub: 1,
           invalidateOnRefresh: true,
           markers: true,
         }
@@ -37,22 +37,33 @@ export function Main() {
       gsap.set(imageContainersInner[0], { xPercent: 0, transformOrigin: '50% 50% 0px' })
       gsap.set(images[0], { aspectRatio: 1.3793103448275863 })
 
-      tl.to(items[0], { translateX: -100 }, '<')
-      tl.to(innerItems[0], { translateX: 100 }, '<')
-      tl.to(imageContainers[0], { translateX: -150, scale: 0.8 }, '<')
-      tl.to(imageContainersInner[0], { translateX: 0, scale: 1.2 }, '<')
-      
+      tl.to(items[0], { translateX: '-100%', duration: 2 }, '<')
+      tl.to(innerItems[0], { translateX: '100%', duration: 2 }, '<')
+      tl.to(imageContainers[0], { translateX: '-60%', scale: 0.8, duration: 2 }, '<') // translateX: '-150%'
+      tl.to(imageContainersInner[0], { translateX: '0%', scale: 1.2, duration: 2 }, '<')
+
       gsap.set(items[1], { xPercent: 80 })
       gsap.set(innerItems[1], { xPercent: -80 })
       gsap.set(imageContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' })
       gsap.set(imageContainersInner[1], { xPercent: 0, scale: 1.55, transformOrigin: '50% 50% 0px' })
       gsap.set(images[1], { aspectRatio: 1.3793103448275863 })
-
+      
+      tl.to(items[1], { translateX: '-100%', duration: 2 }, '<')
+      tl.to(innerItems[1], { translateX: '100%', duration: 2 }, '<')
+      tl.to(imageContainers[1], { translateX: '-150%', scale: 0.8, duration: 2 }, '<')
+      tl.to(imageContainersInner[1], { translateX: '0%', scale: 1.2, duration: 2 }, '<')
+      
       gsap.set(items[2], { xPercent: 95 })
       gsap.set(innerItems[2], { xPercent: -95, transformOrigin: '100% 100% 0px' })
       gsap.set(imageContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' })
       gsap.set(imageContainersInner[2], { xPercent: 0, scale: 1.85, transformOrigin: '50% 50% 0px' })
-      
+      gsap.set(images[2], { aspectRatio: 1.3793103448275863 })
+
+      tl.to(items[2], { translateX: '-100%', duration: 4 }, '<')
+      tl.to(innerItems[2], { translateX: '100%', duration: 4 }, '<')
+      tl.to(imageContainers[2], { translateX: '-150%', scale: 0.8, duration: 4 }, '<')
+      tl.to(imageContainersInner[2], { translateX: '0%', scale: 1.2, duration: 4 }, '<')
+
       gsap.set(items[3], { xPercent: 100 })
       gsap.set(items[4], { xPercent: 100 })
       
