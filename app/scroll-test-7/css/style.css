@@ -59,12 +59,14 @@
   margin-bottom: 1rem;
   max-width: 30%;
   width: 100%;
+  color: var(--black);
 }
 
 .MainSectionItem-contentText {
   overflow: hidden;
   max-width: 30%;
   width: 100%;
+  color: var(--black);
 }
 
 .MainSectionItem-imageContainer {
