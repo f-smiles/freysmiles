@@ -24,8 +24,10 @@
   },
   {
     id: 3,
-    heading: "Nature's Masterpieces: Landscapes That Take Your Breath Away",
-    description: "Discover stunning views of majestic mountains, endless oceans, and golden sunsets that remind us of nature's artistic brilliance.",
+    heading: "Wildlife in Action: A Glimpse into Nature's Daily Drama",
+    description: "Explore the untouched beauty of forests, mountains, and rivers as we uncover the hidden secrets of nature's most breathtaking landscapes.",
+    // heading: "Nature's Masterpieces: Landscapes That Take Your Breath Away",
+    // description: "Discover stunning views of majestic mountains, endless oceans, and golden sunsets that remind us of nature's artistic brilliance.",
     media: "https://videos.pexels.com/video-files/15708462/15708462-uhd_2560_1440_24fps.mp4",
     backgroundColor: "#798e7b",
   },
