@@ -4,8 +4,8 @@ import gsap from 'gsap'
 
 export function Main() {
   const mainSection = useRef(null)
-  const markerLeft = useRef(null)
-  const markerRight = useRef(null)
+  // const markerLeft = useRef(null)
+  // const markerRight = useRef(null)
 
   useEffect(() => {
     const items = document.querySelectorAll('.MainSectionItem')
@@ -25,7 +25,7 @@ export function Main() {
           invalidateOnRefresh: true,
           markers: true,
         },
-        defaults: { ease: 'power1.inOut' },
+        defaults: { ease: 'none' },
       })
 
       // blue
@@ -88,8 +88,8 @@ export function Main() {
       tl.to(imageContainers[4], { translateX: '-80%', scale: 0.8, duration: 24 }, '<')
       tl.to(imageContainersInner[4], { translateX: '0%', scale: 1.2,  duration: 24 }, '<')
 
-      gsap.set(markerLeft.current, { left: mainSection.current.clientWidth * 0.33 })
-      gsap.set(markerRight.current, { right: mainSection.current.clientWidth * 0.2 })
+      // gsap.set(markerLeft.current, { left: mainSection.current.clientWidth * 0.33 })
+      // gsap.set(markerRight.current, { right: mainSection.current.clientWidth * 0.2 })
 
     }, mainSection.current)
 
