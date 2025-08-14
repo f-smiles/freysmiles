@@ -23,6 +23,7 @@ import React, {
   useMemo,
   forwardRef,
   useImperativeHandle,
+  useLayoutEffect
 } from "react";
 import {
   EffectComposer,
@@ -511,6 +512,119 @@ const ScrambleBlock = ({
     </div>
   );
 };
+const TerminalPreloader = () => {
+  const containerRef = useRef();
+const specialChars = "⬝";
+  const lines = [
+  { id: 1, faded: "We are committed to setting the highest standard through", highlight: "Exceptional Service", top: 0 },
+  { id: 2, faded: "That commitment is supported by our use of", highlight: "State-of-the-Art Technology", top: 20 },
+  { id: 3, faded: "And strengthened by the expertise that comes from", highlight: "Unmatched Experience", top: 40 },
+  ];
+
+  useEffect(() => {
+    const terminalLines = containerRef.current.querySelectorAll('.terminal-line');
+    
+
+    gsap.set(terminalLines, { opacity: 0 });
+
+    const tl = gsap.timeline({
+      defaults: { ease: "none" }
+    });
+
+    lines.forEach((line, index) => {
+      const lineEl = terminalLines[index];
+      if (!lineEl) return;
+
+
+      const appearTime = index * 0.3;
+
+      tl.to(
+        lineEl,
+        { opacity: 1, duration: 0.3 },
+        appearTime
+      );
+
+
+      if (line.faded) {
+        const fadedSpan = lineEl.querySelector('.faded');
+        tl.to(
+          fadedSpan,
+          {
+            duration: 0.8,
+            scrambleText: {
+              text: line.faded,
+              chars: specialChars,
+              revealDelay: 0,
+              speed: 0.3
+            }
+          },
+          appearTime + 0.1
+        );
+      }
+
+
+      if (line.highlight) {
+        const highlightSpan = lineEl.querySelector('.highlight');
+        tl.to(
+          highlightSpan,
+          {
+            duration: 0.8,
+            scrambleText: {
+              text: line.highlight,
+              chars: specialChars,
+              revealDelay: 0,
+              speed: 0.3
+            }
+          },
+          appearTime + (line.faded ? 0.5 : 0.1) 
+        );
+      }
+
+
+      if (index % 3 === 0 && index > 0) {
+        tl.add(() => {
+          const spans = lineEl.querySelectorAll('span');
+          spans.forEach(span => {
+            const text = span.textContent;
+            gsap.to(span, {
+              duration: 0.2,
+              scrambleText: {
+                text: text,
+                chars: specialChars,
+                speed: 0.1
+              },
+              repeat: 1,
+              yoyo: true
+            });
+          });
+        }, `+=${Math.random() * 0.5}`);
+      }
+    });
+
+    return () => tl.kill(); 
+  }, []);
+
+  return (
+    <div className="terminal-preloader">
+    
+
+      <div className="terminal-container" ref={containerRef}>
+        {lines.map((line) => (
+          <div 
+            key={line.id}
+            className="terminal-line"
+            style={{ top: `${line.top}px` }}
+          >
+            {line.faded && <span className="faded"></span>}
+            {line.highlight && <span className="highlight"></span>}
+          </div>
+        ))}
+      </div>
+
+    
+    </div>
+  );
+};
 
 const Testimonials = () => {
   // const { scene } = useGLTF("/images/SVOX1F.glb");
@@ -977,6 +1091,7 @@ const Testimonials = () => {
 
   return (
     <>
+
       <MouseTrail
         images={[
           "../images/mousetrail/flame.png",
@@ -1015,21 +1130,14 @@ const Testimonials = () => {
           <div className="w-full md:w-1/2 min-h-[100vh]"></div>
 
           <div className="w-full md:w-1/2 flex items-center justify-center min-h-[100vh]">
-            <div className="max-w-[500px] w-full">
-              <h2 className="mb-6 text-[40px] font-neuehaas45 text-center md:text-left md:text-[40px]">
+            <div className="max-w-[1200px] w-full">
+            
+              {/* <h2 className="mb-6 text-[30px] font-neuehaas45 text-center md:text-left md:text-[30px]">
                 Join the Smile Club
-              </h2>
+              </h2> */}
 
-              <div className="font-neuehaas45 text-[12px] leading-[1.2] uppercase tracking-wider relative">
-                <ScrambleBlock
-                  lines={[
-                    "We are committed to setting the standard for exceptional service.",
-                    "Our communication is always open—every question and every concern",
-                    "is met with care and professionalism is welcome.",
-                  ]}
-                  scrambleOnLoad={true}
-                  charsType="letters"
-                />
+              <div className="font-neuehaas45 leading-[1.2] relative">
+                 <TerminalPreloader />
               </div>
             </div>
           </div>

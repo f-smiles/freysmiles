@@ -4,6 +4,346 @@ import { useRef, useEffect, useMemo } from "react";
 import { useFrame, extend, useThree } from "@react-three/fiber";
 import FlutedGlassEffect from "../../../utils/glass";
 
+function RepellingLines({
+  text = "SHOP",
+  orientation = "horizontal",
+  nLines = 60,
+  nPoints = 160,
+  paddingPct = 10,    
+  radius = 120,
+  maxSpeed = 28,
+  strokeColor = "#d6c4ad",
+  lineWidth = .5,
+  showPoints = false,
+  fontPx = 420,
+  fontFamily = "KHTekaTrial-Light, sans-serif",
+  textMargin = 0.10,  // margin around the word in mask (fraction of min(W,H))
+  blurPx = 4,
+  amplitude = 10,     // raise height inside letters
+  terraces = 10,      // 1 = off; higher = more contour steps
+  threshold = 0.04,
+  softness = 0.2,
+  invert = false,
+  strokeMask = false,
+}) {
+  const canvasRef = useRef(null);
+
+
+  const rafRef = useRef(null);
+  const WRef = useRef(0);
+  const HRef = useRef(0);
+  const mouseRef = useRef({ x: 0, y: 0 });
+
+  const linesRef = useRef([]);   // array of lines; each line is array of {x,y}
+  const homesLineRef = useRef([]); // home coordinate for the line (y if horizontal, x if vertical)
+  const homesPointRef = useRef([]); // home coord for each point along the line (x if horizontal, y if vertical)
+
+
+  const maskCanvasRef = useRef(null);
+  const maskDataRef = useRef(null);
+  const maskWRef = useRef(0);
+  const maskHRef = useRef(0);
+
+  const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
+  const mid = (...vals) => {
+    if (vals.length < 3) return vals[0] ?? 0;
+    const s = vals.slice().sort((a, b) => a - b);
+    return s[Math.round((s.length - 1) / 2)];
+  };
+  const hypotAbs = (dx, dy) => Math.hypot(Math.abs(dx), Math.abs(dy));
+  const smoothstep = (e0, e1, x) => {
+    const t = clamp((x - e0) / (e1 - e0 || 1e-6), 0, 1);
+    return t * t * (3 - 2 * t);
+  };
+  const pt = (x, y) => ({ x, y });
+
+
+  const buildMask = (W, H) => {
+    let off = maskCanvasRef.current;
+    if (!off) {
+      off = document.createElement("canvas");
+      maskCanvasRef.current = off;
+    }
+    off.width = W;
+    off.height = H;
+    const g = off.getContext("2d");
+    g.clearRect(0, 0, W, H);
+
+    // fit text width with margin
+    const pad = Math.min(W, H) * textMargin;
+    g.font = `700 ${fontPx}px ${fontFamily}`;
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    const width = g.measureText(text).width;
+    const target = W - pad * 2;
+    const scale = Math.min(1, target / Math.max(1, width));
+    const px = Math.max(10, Math.round(fontPx * scale));
+    g.font = `700 ${px}px ${fontFamily}`;
+
+    g.save();
+    g.filter = `blur(${blurPx}px)`;
+    g.fillStyle = "#fff";
+    g.strokeStyle = "#fff";
+    const cx = W * 0.5;
+    const cy = H * 0.55;
+    if (strokeMask) {
+      g.lineWidth = Math.max(1, px * 0.08);
+      g.strokeText(text, cx, cy);
+    } else {
+      g.fillText(text, cx, cy);
+    }
+    g.restore();
+
+    const img = g.getImageData(0, 0, W, H);
+    maskDataRef.current = img.data;
+    maskWRef.current = W;
+    maskHRef.current = H;
+  };
+
+  const sampleAlpha = (x, y) => {
+    const W = maskWRef.current;
+    const H = maskHRef.current;
+    const data = maskDataRef.current;
+    if (!data) return 0;
+    const ix = clamp(x | 0, 0, W - 1);
+    const iy = clamp(y | 0, 0, H - 1);
+    const a = data[(iy * W + ix) * 4 + 3];
+    return a / 255;
+  };
+
+ 
+  const layout = (W, H) => {
+    const lines = [];
+    const homesLine = [];  
+    const homesPoint = [];
+    const pad = (orientation === "horizontal" ? H : W) * (paddingPct / 100);
+
+    if (orientation === "horizontal") {
+      const yStart = pad;
+      const yEnd = H - pad;
+      for (let i = 0; i <= nLines; i++) {
+        const y = Math.round(yStart + (i / nLines) * (yEnd - yStart));
+        homesLine.push(y);
+        const line = [];
+        if (i === 0) homesPoint.length = 0;
+        for (let j = 0; j <= nPoints; j++) {
+          const x = Math.round((j / nPoints) * W);
+          line.push(pt(x, y));
+          if (i === 0) homesPoint.push(x);
+        }
+        lines.push(line);
+      }
+    } else {
+      // VERTICAL mode (for streamline vibe)
+      const xStart = pad;
+      const xEnd = W - pad;
+      for (let i = 0; i <= nLines; i++) {
+        const x = Math.round(xStart + (i / nLines) * (xEnd - xStart));
+        homesLine.push(x);
+        const line = [];
+        if (i === 0) homesPoint.length = 0;
+        for (let j = 0; j <= nPoints; j++) {
+          const y = Math.round((j / nPoints) * H);
+          line.push(pt(x, y));
+          if (i === 0) homesPoint.push(y);
+        }
+        lines.push(line);
+      }
+    }
+
+    linesRef.current = lines;
+    homesLineRef.current = homesLine;
+    homesPointRef.current = homesPoint;
+  };
+
+
+  const updateLine = (line, lineHome) => {
+    const mx = mouseRef.current.x;
+    const my = mouseRef.current.y;
+
+    if (orientation === "horizontal") {
+      // home for line = y; points move in y, fixed home x per point index
+      for (let j = line.length - 1; j >= 0; j--) {
+        const p = line[j];
+        const homeX = homesPointRef.current[j];
+        const baseHomeY = lineHome;
+
+        // displacement from text mask at (homeX, baseHomeY)
+        const a = sampleAlpha(homeX, baseHomeY);
+        const terr = terraces > 1 ? Math.round(a * terraces) / terraces : a;
+        const s = smoothstep(threshold, threshold + softness, terr);
+        const dir = invert ? -1 : 1;
+        const dispY = dir * amplitude * s;
+        const homeY = baseHomeY - dispY;
+
+        // force toward (homeX, homeY)
+        let hvx = 0,
+          hvy = 0;
+        if (p.x !== homeX || p.y !== homeY) {
+          const dx = homeX - p.x;
+          const dy = homeY - p.y;
+          const d = hypotAbs(dx, dy);
+          const f = Math.max(d * 0.2, 1);
+          const ang = Math.atan2(dy, dx);
+          hvx = f * Math.cos(ang);
+          hvy = f * Math.sin(ang);
+        }
+
+        // mouse repulsion
+        let mvx = 0,
+          mvy = 0;
+        const mdx = p.x - mx;
+        const mdy = p.y - my;
+        if (!(mdx > radius || mdy > radius || mdy < -radius || mdx < -radius)) {
+          const ang = Math.atan2(mdy, mdx);
+          const d = hypotAbs(mdx, mdy);
+          const f = Math.max(0, Math.min(radius - d, radius));
+          mvx = f * Math.cos(ang);
+          mvy = f * Math.sin(ang);
+        }
+
+        const vx = Math.round(mid((mvx + hvx) * 0.9, maxSpeed, -maxSpeed));
+        const vy = Math.round(mid((mvy + hvy) * 0.9, maxSpeed, -maxSpeed));
+        if (vx) p.x += vx;
+        if (vy) p.y += vy;
+        line[j] = p;
+      }
+    } 
+    return line;
+  };
+
+  const draw = (ctx, W, H) => {
+ctx.clearRect(0, 0, W, H);
+
+ctx.save();
+ctx.globalCompositeOperation = "lighter";   // or "screen"
+ctx.strokeStyle = strokeColor;     
+ctx.lineWidth = lineWidth;                 // 0.5
+ctx.lineCap = "round";
+ctx.lineJoin = "round";
+ctx.shadowColor = "transparent"; 
+
+    const lines = linesRef.current;
+    const homesLine = homesLineRef.current;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = updateLine(lines[i], homesLine[i]);
+      lines[i] = line;
+
+      ctx.beginPath();
+
+      if (orientation === "horizontal") {
+        ctx.moveTo(line[0].x, line[0].y);
+        for (let j = 1; j < line.length - 1; j++) {
+          const cur = line[j];
+          const next = line[j + 1];
+          const xc = (cur.x + next.x) / 2;
+          const yc = (cur.y + next.y) / 2;
+          ctx.quadraticCurveTo(cur.x, cur.y, xc, yc);
+        }
+        ctx.lineTo(line[line.length - 1].x, line[line.length - 1].y);
+      } else {
+        ctx.moveTo(line[line.length - 1].x, line[line.length - 1].y);
+        for (let j = line.length - 2; j > 0; j--) {
+          const cur = line[j];
+          const prev = line[j - 1];
+          const xc = (cur.x + prev.x) / 2;
+          const yc = (cur.y + prev.y) / 2;
+          ctx.quadraticCurveTo(cur.x, cur.y, xc, yc);
+        }
+        ctx.lineTo(line[0].x, line[0].y);
+      }
+
+      ctx.stroke();
+
+      if (showPoints) {
+        for (let j = 0; j < line.length; j++) {
+          const d = line[j];
+          ctx.beginPath();
+          ctx.fillStyle = "red";
+          ctx.arc(d.x, d.y, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+const setSize = () => {
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+
+  const Wcss = canvas.clientWidth || window.innerWidth;
+  const Hcss = canvas.clientHeight || window.innerHeight;
+
+  WRef.current = Wcss;
+  HRef.current = Hcss;
+
+  canvas.width  = Math.round(Wcss * dpr);
+  canvas.height = Math.round(Hcss * dpr);
+
+  canvas.style.width  = `${Wcss}px`;
+  canvas.style.height = `${Hcss}px`;
+
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); 
+
+  buildMask(Wcss, Hcss);
+  layout(Wcss, Hcss);
+};
+
+    const onMouse = (e) => {
+      mouseRef.current.x = e.clientX;
+      mouseRef.current.y = e.clientY;
+    };
+    const onResize = () => setSize();
+
+    setSize();
+    window.addEventListener("mousemove", onMouse);
+    window.addEventListener("resize", onResize);
+
+    const loop = () => {
+      draw(ctx, WRef.current, HRef.current);
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    loop();
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("mousemove", onMouse);
+      window.removeEventListener("resize", onResize);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    text,
+    orientation,
+    nLines,
+    nPoints,
+    paddingPct,
+    radius,
+    maxSpeed,
+    fontPx,
+    fontFamily,
+    textMargin,
+    blurPx,
+    amplitude,
+    terraces,
+    threshold,
+    softness,
+    invert,
+    strokeMask,
+    strokeColor,
+    lineWidth,
+    showPoints,
+  ]);
+
+  return (
+    <div className="flex justify-center items-center" style={{ width: "60vw", height: "60vh", background: "#0b0b0b" }}>
+      <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
+    </div>
+  );
+}
 const Marquee = () => {
   const items = [
     { word: "Click here to shop gift cards" },
@@ -79,8 +419,27 @@ const Hero: React.FC = () => {
   //   };
   // }, []);
   return (
-    <section className="w-full min-h-screen bg-[#E3B66F] text-white py-40">
-      <div className="max-w-7xl justify-center items-center mx-auto flex flex-wrap md:flex-nowrap gap-16">
+    <section >
+
+  <RepellingLines
+    text="SHOP"
+    nLines={60}
+    nPoints={200}
+    amplitude={40}
+    terraces={15}
+    blurPx={5}
+    paddingPct={12}
+    strokeColor="#90D5FF"
+    lineWidth={0.5}
+    threshold={0.04}
+    softness={0.2}
+
+  />
+
+      <div className="w-1/2 mx-auto">
+
+      </div>
+      {/* <div className="max-w-7xl justify-center items-center mx-auto flex flex-wrap md:flex-nowrap gap-16">
         <div className="w-full md:w-1/2">
           <div className="bg-white text-black overflow-hidden">
             <div className="relative">
@@ -174,7 +533,7 @@ const Hero: React.FC = () => {
             </span>
           </div>
         </div>
-      </div>
+      </div> */}
     </section>
   );
 };

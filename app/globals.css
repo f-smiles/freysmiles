@@ -6424,3 +6424,53 @@ body,
 .inversion-lens {
   position: relative;
 }
+
+
+.terminal-preloader {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 100px;
+  margin: 0 auto;
+  color: #000;
+  font-family: "KHTekaTrial-Light";
+  overflow: hidden;
+}
+
+.terminal-container {
+  position: relative;
+  height: 350px;
+  margin-top: 30px;
+  padding: 10px;
+}
+
+.terminal-line {
+  position: absolute;
+  font-size: .75em;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  width: 100%;
+
+
+}
+
+.terminal-line span {
+  display: inline-block;
+}
+
+.highlight {
+  color: #000;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-left: 10px;
+}
+
+.faded {
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+

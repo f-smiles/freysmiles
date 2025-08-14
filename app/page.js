@@ -350,6 +350,7 @@ uniform float iTime;
 uniform vec2 iResolution;
 varying vec2 vUv;
 
+
 float gold_noise(in vec2 xy, in float seed) {
   return fract(sin(dot(xy + seed, vec2(12.9898, 78.233))) * 43758.5453);
 }
