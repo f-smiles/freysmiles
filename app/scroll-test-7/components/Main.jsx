@@ -4,8 +4,8 @@ import gsap from 'gsap'
 
 export function Main() {
   const mainSection = useRef(null)
-  // const markerLeft = useRef(null)
-  // const markerRight = useRef(null)
+  const markerLeft = useRef(null)
+  const markerRight = useRef(null)
 
   useEffect(() => {
     const items = document.querySelectorAll('.MainSectionItem')
@@ -21,11 +21,11 @@ export function Main() {
           start: 'top top',
           end: () => `+=${items.length * 100}%`,
           pin: true,
-          scrub: true, // 1
+          scrub: 1, // true
           invalidateOnRefresh: true,
           markers: true,
         },
-        defaults: { ease: 'none' },
+        defaults: { ease: 'linear' },
       })
 
       // blue
@@ -59,10 +59,10 @@ export function Main() {
       gsap.set(imageContainersInner[2], { xPercent: 0, scale: 1.85, transformOrigin: '50% 50% 0px' })
       gsap.set(images[2], { aspectRatio: 1.3793103448275863 })
 
-      tl.to(items[2], { translateX: '-100%', duration: 8 }, '<')
-      tl.to(innerItems[2], { translateX: '100%', duration: 8 }, '<')
-      tl.to(imageContainers[2], { translateX: '-80%', scale: 0.8, duration: 6 }, '<')
-      tl.to(imageContainersInner[2], { translateX: '0%', scale: 1.2, duration: 6 }, '<')
+      tl.to(items[2], { translateX: '-100%', duration: 12 }, '<')
+      tl.to(innerItems[2], { translateX: '100%', duration: 12 }, '<')
+      tl.to(imageContainers[2], { translateX: '-80%', scale: 0.8, duration: 8 }, '<')
+      tl.to(imageContainersInner[2], { translateX: '0%', scale: 1.2, duration: 8 }, '<')
 
       // beige
       gsap.set(items[3], { xPercent: 100 })
@@ -88,8 +88,8 @@ export function Main() {
       tl.to(imageContainers[4], { translateX: '-80%', scale: 0.8, duration: 24 }, '<')
       tl.to(imageContainersInner[4], { translateX: '0%', scale: 1.2,  duration: 24 }, '<')
 
-      // gsap.set(markerLeft.current, { left: mainSection.current.clientWidth * 0.33 })
-      // gsap.set(markerRight.current, { right: mainSection.current.clientWidth * 0.2 })
+      gsap.set(markerLeft.current, { left: mainSection.current.clientWidth * 0.33 })
+      gsap.set(markerRight.current, { right: mainSection.current.clientWidth * 0.2 })
 
     }, mainSection.current)
 
@@ -99,7 +99,7 @@ export function Main() {
   return (
     <>
       <div ref={mainSection} className="MainSection` --dark --in-view" style={{ backgroundColor: 'var(--blue)', '--91c5acce': 5, }}>
-        <div className="MainSection-wrap" style={{ position: 'sticky' }}>
+        <div className="MainSection-wrap">
           <div className="MainSection-items">
             <div className="MainSectionItem MainSection-item">
               <div className="--index-first MainSectionItem-inner">
@@ -224,8 +224,8 @@ export function Main() {
           </div>
         </div>
       </div>
-      {/* <div ref={markerLeft} className="custom-marker left"></div> */}
-      {/* <div ref={markerRight} className="custom-marker right"></div> */}
+      <div ref={markerLeft} className="custom-marker left"></div>
+      <div ref={markerRight} className="custom-marker right"></div>
     </>
   )
 }
