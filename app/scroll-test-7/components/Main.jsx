@@ -1,6 +1,9 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export function Main() {
   const mainSection = useRef(null)
@@ -11,6 +14,7 @@ export function Main() {
   useEffect(() => {
     const items = document.querySelectorAll('.MainSectionItem')
     const innerItems = document.querySelectorAll('.MainSectionItem-inner')
+    const innerStickies = document.querySelectorAll('.MainSectionItem-innerSticky')
     const imageContainers = document.querySelectorAll('.MainSectionItem-imageContainer')
     const imageContainersInner = document.querySelectorAll('.MainSectionItem-imageContainerInner')
     const images = document.querySelectorAll('.MainSectionItem-image')
@@ -20,93 +24,104 @@ export function Main() {
     // scrolltrigger vertical
     // animate split text head chars
 
-    // mm.add('(max-width: 1079px)', () => {
-    //   }, mainSection.current)
-    //   return () => mobile.revert()
-    // })
+    mm.add('(max-width: 1079px)', () => {
+      const mobile = gsap.context(() => {
+        innerStickies.forEach((item, i) => {
+          ScrollTrigger.create({
+            trigger: item,
+            start: () => item.offsetHeight < window.innerHeight ? 'top top' : 'bottom bottom',
+            pin: true,
+            pinSpacing: false,
+            invalidateOnRefresh: true,
+            markers: true,
+          })
+        })
+      }, itemsContainer.current)
+      return () => mobile.revert()
+    })
+    
+    mm.add('(min-width: 1080px)', () => {
+      const desktop = gsap.context(() => {
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: mainSection.current,
+            start: 'top top',
+            end: () => `+=${items.length * 100}%`,
+            pin: true,
+            scrub: 1, // true
+            invalidateOnRefresh: true,
+            markers: true,
+          },
+          defaults: { ease: 'linear' },
+        })
 
-    // mm.add('(min-width: 1080px)', () => {
-    //   const desktop = gsap.context(() => {
-    //     const tl = gsap.timeline({
-    //       scrollTrigger: {
-    //         trigger: mainSection.current,
-    //         start: 'top top',
-    //         end: () => `+=${items.length * 100}%`,
-    //         pin: true,
-    //         scrub: 1, // true
-    //         invalidateOnRefresh: true,
-    //         markers: true,
-    //       },
-    //       defaults: { ease: 'linear' },
-    //     })
+        // blue
+        gsap.set(items[0], { xPercent: 0 })
+        gsap.set(innerItems[0], { xPercent: 0 })
+        gsap.set(imageContainers[0], { xPercent: -60, transformOrigin: '100% 100% 0px' })
+        gsap.set(imageContainersInner[0], { xPercent: 0, transformOrigin: '50% 50% 0px' })
+        gsap.set(images[0], { aspectRatio: 1.3793103448275863 })
 
-    //     // blue
-    //     gsap.set(items[0], { xPercent: 0 })
-    //     gsap.set(innerItems[0], { xPercent: 0 })
-    //     gsap.set(imageContainers[0], { xPercent: -60, transformOrigin: '100% 100% 0px' })
-    //     gsap.set(imageContainersInner[0], { xPercent: 0, transformOrigin: '50% 50% 0px' })
-    //     gsap.set(images[0], { aspectRatio: 1.3793103448275863 })
+        tl.to(items[0], { translateX: '-100%', duration: 4 }, '<')
+        tl.to(innerItems[0], { translateX: '100%', duration: 4 }, '<')
+        tl.to(imageContainers[0], { translateX: '-50%', scale: 0.8, duration: 2 }, '<') // translateX: '-150%'
+        tl.to(imageContainersInner[0], { translateX: '0%', scale: 1.2, duration: 2 }, '<')
 
-    //     tl.to(items[0], { translateX: '-100%', duration: 4 }, '<')
-    //     tl.to(innerItems[0], { translateX: '100%', duration: 4 }, '<')
-    //     tl.to(imageContainers[0], { translateX: '-50%', scale: 0.8, duration: 2 }, '<') // translateX: '-150%'
-    //     tl.to(imageContainersInner[0], { translateX: '0%', scale: 1.2, duration: 2 }, '<')
-
-    //     // pink
-    //     gsap.set(items[1], { xPercent: 80 })
-    //     gsap.set(innerItems[1], { xPercent: -80 })
-    //     gsap.set(imageContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' })
-    //     gsap.set(imageContainersInner[1], { xPercent: 0, scale: 1.55, transformOrigin: '50% 50% 0px' })
-    //     gsap.set(images[1], { aspectRatio: 1.3793103448275863 })
+        // pink
+        gsap.set(items[1], { xPercent: 80 })
+        gsap.set(innerItems[1], { xPercent: -80 })
+        gsap.set(imageContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' })
+        gsap.set(imageContainersInner[1], { xPercent: 0, scale: 1.55, transformOrigin: '50% 50% 0px' })
+        gsap.set(images[1], { aspectRatio: 1.3793103448275863 })
         
-    //     tl.to(items[1], { translateX: '-100%', duration: 4 }, '<')
-    //     tl.to(innerItems[1], { translateX: '100%', duration: 4 }, '<')
-    //     tl.to(imageContainers[1], { translateX: '-80%', scale: 0.8, duration: 2 }, '<')
-    //     tl.to(imageContainersInner[1], { translateX: '0%', scale: 1.2, duration: 2 }, '<')
+        tl.to(items[1], { translateX: '-100%', duration: 4 }, '<')
+        tl.to(innerItems[1], { translateX: '100%', duration: 4 }, '<')
+        tl.to(imageContainers[1], { translateX: '-80%', scale: 0.8, duration: 2 }, '<')
+        tl.to(imageContainersInner[1], { translateX: '0%', scale: 1.2, duration: 2 }, '<')
         
-    //     // green
-    //     gsap.set(items[2], { xPercent: 95 })
-    //     gsap.set(innerItems[2], { xPercent: -95, transformOrigin: '100% 100% 0px' })
-    //     gsap.set(imageContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' })
-    //     gsap.set(imageContainersInner[2], { xPercent: 0, scale: 1.85, transformOrigin: '50% 50% 0px' })
-    //     gsap.set(images[2], { aspectRatio: 1.3793103448275863 })
+        // green
+        gsap.set(items[2], { xPercent: 95 })
+        gsap.set(innerItems[2], { xPercent: -95, transformOrigin: '100% 100% 0px' })
+        gsap.set(imageContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' })
+        gsap.set(imageContainersInner[2], { xPercent: 0, scale: 1.85, transformOrigin: '50% 50% 0px' })
+        gsap.set(images[2], { aspectRatio: 1.3793103448275863 })
 
-    //     tl.to(items[2], { translateX: '-100%', duration: 12 }, '<')
-    //     tl.to(innerItems[2], { translateX: '100%', duration: 12 }, '<')
-    //     tl.to(imageContainers[2], { translateX: '-80%', scale: 0.8, duration: 8 }, '<')
-    //     tl.to(imageContainersInner[2], { translateX: '0%', scale: 1.2, duration: 8 }, '<')
+        tl.to(items[2], { translateX: '-100%', duration: 12 }, '<')
+        tl.to(innerItems[2], { translateX: '100%', duration: 12 }, '<')
+        tl.to(imageContainers[2], { translateX: '-80%', scale: 0.8, duration: 8 }, '<')
+        tl.to(imageContainersInner[2], { translateX: '0%', scale: 1.2, duration: 8 }, '<')
 
-    //     // beige
-    //     gsap.set(items[3], { xPercent: 100 })
-    //     gsap.set(innerItems[3], { xPercent: -100 })
-    //     gsap.set(imageContainers[3], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' })
-    //     gsap.set(imageContainersInner[3], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' })
-    //     gsap.set(images[3], { aspectRatio: 1.3793103448275863 })
+        // beige
+        gsap.set(items[3], { xPercent: 100 })
+        gsap.set(innerItems[3], { xPercent: -100 })
+        gsap.set(imageContainers[3], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' })
+        gsap.set(imageContainersInner[3], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' })
+        gsap.set(images[3], { aspectRatio: 1.3793103448275863 })
         
-    //     tl.to(items[3], { translateX: '-100%', duration: 16 }, '<')
-    //     tl.to(innerItems[3], { translateX: '100%', duration: 16 }, '<')
-    //     tl.to(imageContainers[3], { translateX: '-80%', scale: 0.8, duration: 12 }, '<')
-    //     tl.to(imageContainersInner[3], { translateX: '0%', scale: 1.2, duration: 12 }, '<')
+        tl.to(items[3], { translateX: '-100%', duration: 16 }, '<')
+        tl.to(innerItems[3], { translateX: '100%', duration: 16 }, '<')
+        tl.to(imageContainers[3], { translateX: '-80%', scale: 0.8, duration: 12 }, '<')
+        tl.to(imageContainersInner[3], { translateX: '0%', scale: 1.2, duration: 12 }, '<')
         
-    //     // terra
-    //     gsap.set(items[4], { xPercent: 100 })
-    //     gsap.set(innerItems[4], { xPercent: -100 })
-    //     gsap.set(imageContainers[4], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' })
-    //     gsap.set(imageContainersInner[4], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' })
-    //     gsap.set(images[4], { aspectRatio: 1.3793103448275863 })
+        // terra
+        gsap.set(items[4], { xPercent: 100 })
+        gsap.set(innerItems[4], { xPercent: -100 })
+        gsap.set(imageContainers[4], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' })
+        gsap.set(imageContainersInner[4], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' })
+        gsap.set(images[4], { aspectRatio: 1.3793103448275863 })
 
-    //     tl.to(items[4], { translateX: '-100%', duration: 32 }, '<')
-    //     tl.to(innerItems[4], { translateX: '100%', duration: 32 }, '<')
-    //     tl.to(imageContainers[4], { translateX: '-80%', scale: 0.8, duration: 24 }, '<')
-    //     tl.to(imageContainersInner[4], { translateX: '0%', scale: 1.2,  duration: 24 }, '<')
+        tl.to(items[4], { translateX: '-100%', duration: 32 }, '<')
+        tl.to(innerItems[4], { translateX: '100%', duration: 32 }, '<')
+        tl.to(imageContainers[4], { translateX: '-80%', scale: 0.8, duration: 24 }, '<')
+        tl.to(imageContainersInner[4], { translateX: '0%', scale: 1.2,  duration: 24 }, '<')
 
-    //     gsap.set(markerLeft.current, { left: mainSection.current.clientWidth * 0.33 })
-    //     gsap.set(markerRight.current, { right: mainSection.current.clientWidth * 0.2 })
+        gsap.set(markerLeft.current, { left: mainSection.current.clientWidth * 0.33 })
+        gsap.set(markerRight.current, { right: mainSection.current.clientWidth * 0.2 })
 
-    //   }, mainSection.current)
+      }, mainSection.current)
 
-    //   return () => desktop.revert()
-    // })
+      return () => desktop.revert()
+    })
     
     return () => mm.revert()
   }, [])
