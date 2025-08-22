@@ -9,36 +9,38 @@ function RepellingLines({
   orientation = "horizontal",
   nLines = 60,
   nPoints = 160,
-  paddingPct = 10,    
-  radius = 120,
+  paddingPct = 10,
+  radius = 80,
   maxSpeed = 28,
   strokeColor = "#d6c4ad",
-  lineWidth = .5,
+  lineWidth = 0.5,
   showPoints = false,
   fontPx = 420,
-  fontFamily = "KHTekaTrial-Light, sans-serif",
-  textMargin = 0.10,  // margin around the word in mask (fraction of min(W,H))
+  fontFamily = "'NeueHaasGroteskDisplayPro45Light', sans-serif",
+  textMargin = 0.10,      // fraction of min(W,H)
   blurPx = 4,
-  amplitude = 10,     // raise height inside letters
-  terraces = 10,      // 1 = off; higher = more contour steps
+  amplitude = 10,         // raise height inside letters
+  terraces = 25,          // 1 = off; higher = more contour steps
   threshold = 0.04,
   softness = 0.2,
   invert = false,
   strokeMask = false,
+  maskScaleX = 1.3,   
+maskBaseline = 0.5,
 }) {
   const canvasRef = useRef(null);
 
-
+ 
   const rafRef = useRef(null);
   const WRef = useRef(0);
   const HRef = useRef(0);
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const mouseRef = useRef({ x: -9999, y: -9999 });
 
-  const linesRef = useRef([]);   // array of lines; each line is array of {x,y}
-  const homesLineRef = useRef([]); // home coordinate for the line (y if horizontal, x if vertical)
-  const homesPointRef = useRef([]); // home coord for each point along the line (x if horizontal, y if vertical)
+  const linesRef = useRef([]);        // array of lines; each line is array of {x,y}
+  const homesLineRef = useRef([]);    // home coordinate for the line (y if horizontal, x if vertical)
+  const homesPointRef = useRef([]);   // home coord for each point along the line (x if horizontal, y if vertical)
 
-
+  // offscreen mask
   const maskCanvasRef = useRef(null);
   const maskDataRef = useRef(null);
   const maskWRef = useRef(0);
@@ -57,7 +59,6 @@ function RepellingLines({
   };
   const pt = (x, y) => ({ x, y });
 
-
   const buildMask = (W, H) => {
     let off = maskCanvasRef.current;
     if (!off) {
@@ -69,30 +70,36 @@ function RepellingLines({
     const g = off.getContext("2d");
     g.clearRect(0, 0, W, H);
 
-    // fit text width with margin
-    const pad = Math.min(W, H) * textMargin;
-    g.font = `700 ${fontPx}px ${fontFamily}`;
-    g.textAlign = "center";
-    g.textBaseline = "middle";
-    const width = g.measureText(text).width;
-    const target = W - pad * 2;
-    const scale = Math.min(1, target / Math.max(1, width));
-    const px = Math.max(10, Math.round(fontPx * scale));
-    g.font = `700 ${px}px ${fontFamily}`;
 
-    g.save();
-    g.filter = `blur(${blurPx}px)`;
-    g.fillStyle = "#fff";
-    g.strokeStyle = "#fff";
-    const cx = W * 0.5;
-    const cy = H * 0.55;
-    if (strokeMask) {
-      g.lineWidth = Math.max(1, px * 0.08);
-      g.strokeText(text, cx, cy);
-    } else {
-      g.fillText(text, cx, cy);
-    }
-    g.restore();
+const pad = Math.min(W, H) * textMargin;
+const targetW = (W - pad * 2) / Math.max(0.0001, maskScaleX);
+
+g.font = `700 ${fontPx}px ${fontFamily}`;
+g.textAlign = "center";
+g.textBaseline = "middle";
+
+const rawWidth = Math.max(1, g.measureText(text).width);
+const scaleByWidth = Math.min(1, targetW / rawWidth);
+const px = Math.max(10, Math.round(fontPx * scaleByWidth));
+g.font = `700 ${px}px ${fontFamily}`;
+
+g.save();
+g.filter = `blur(${blurPx}px)`;
+g.fillStyle = "#fff";
+g.strokeStyle = "#fff";
+
+const cx = W * 0.5;
+const cy = H * maskBaseline;
+g.translate(cx, cy);
+g.scale(maskScaleX, 1);  
+
+if (strokeMask) {
+  g.lineWidth = Math.max(1, px * 0.08);
+  g.strokeText(text, 0, 0);
+} else {
+  g.fillText(text, 0, 0);
+}
+g.restore();
 
     const img = g.getImageData(0, 0, W, H);
     maskDataRef.current = img.data;
@@ -111,10 +118,9 @@ function RepellingLines({
     return a / 255;
   };
 
- 
   const layout = (W, H) => {
     const lines = [];
-    const homesLine = [];  
+    const homesLine = [];
     const homesPoint = [];
     const pad = (orientation === "horizontal" ? H : W) * (paddingPct / 100);
 
@@ -134,7 +140,6 @@ function RepellingLines({
         lines.push(line);
       }
     } else {
-      // VERTICAL mode (for streamline vibe)
       const xStart = pad;
       const xEnd = W - pad;
       for (let i = 0; i <= nLines; i++) {
@@ -156,13 +161,11 @@ function RepellingLines({
     homesPointRef.current = homesPoint;
   };
 
-
   const updateLine = (line, lineHome) => {
     const mx = mouseRef.current.x;
     const my = mouseRef.current.y;
 
     if (orientation === "horizontal") {
-      // home for line = y; points move in y, fixed home x per point index
       for (let j = line.length - 1; j >= 0; j--) {
         const p = line[j];
         const homeX = homesPointRef.current[j];
@@ -177,8 +180,7 @@ function RepellingLines({
         const homeY = baseHomeY - dispY;
 
         // force toward (homeX, homeY)
-        let hvx = 0,
-          hvy = 0;
+        let hvx = 0, hvy = 0;
         if (p.x !== homeX || p.y !== homeY) {
           const dx = homeX - p.x;
           const dy = homeY - p.y;
@@ -189,9 +191,8 @@ function RepellingLines({
           hvy = f * Math.sin(ang);
         }
 
-        // mouse repulsion
-        let mvx = 0,
-          mvy = 0;
+
+        let mvx = 0, mvy = 0;
         const mdx = p.x - mx;
         const mdy = p.y - my;
         if (!(mdx > radius || mdy > radius || mdy < -radius || mdx < -radius)) {
@@ -208,20 +209,20 @@ function RepellingLines({
         if (vy) p.y += vy;
         line[j] = p;
       }
-    } 
+    }
     return line;
   };
 
   const draw = (ctx, W, H) => {
-ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0, 0, W, H);
 
-ctx.save();
-ctx.globalCompositeOperation = "lighter";   // or "screen"
-ctx.strokeStyle = strokeColor;     
-ctx.lineWidth = lineWidth;                 // 0.5
-ctx.lineCap = "round";
-ctx.lineJoin = "round";
-ctx.shadowColor = "transparent"; 
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";   // or "screen"
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.shadowColor = "transparent";
 
     const lines = linesRef.current;
     const homesLine = homesLineRef.current;
@@ -266,42 +267,47 @@ ctx.shadowColor = "transparent";
         }
       }
     }
+    ctx.restore();
   };
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-const setSize = () => {
-  const dpr = Math.max(1, window.devicePixelRatio || 1);
 
-  const Wcss = canvas.clientWidth || window.innerWidth;
-  const Hcss = canvas.clientHeight || window.innerHeight;
+    const setSize = () => {
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      // use the actual CSS size of the canvas
+      const Wcss = canvas.clientWidth;
+      const Hcss = canvas.clientHeight;
 
-  WRef.current = Wcss;
-  HRef.current = Hcss;
+      WRef.current = Wcss;
+      HRef.current = Hcss;
 
-  canvas.width  = Math.round(Wcss * dpr);
-  canvas.height = Math.round(Hcss * dpr);
+      canvas.width  = Math.round(Wcss * dpr);
+      canvas.height = Math.round(Hcss * dpr);
 
-  canvas.style.width  = `${Wcss}px`;
-  canvas.style.height = `${Hcss}px`;
 
-  const ctx = canvas.getContext("2d");
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); 
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  buildMask(Wcss, Hcss);
-  layout(Wcss, Hcss);
-};
-
-    const onMouse = (e) => {
-      mouseRef.current.x = e.clientX;
-      mouseRef.current.y = e.clientY;
+      buildMask(Wcss, Hcss);
+      layout(Wcss, Hcss);
     };
-    const onResize = () => setSize();
+
+    const updateMouse = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseRef.current.x = e.clientX - rect.left;
+      mouseRef.current.y = e.clientY - rect.top;
+    };
+
+    const leaveMouse = () => {
+      mouseRef.current.x = -9999;
+      mouseRef.current.y = -9999;
+    };
 
     setSize();
-    window.addEventListener("mousemove", onMouse);
-    window.addEventListener("resize", onResize);
+    canvas.addEventListener("pointermove", updateMouse);
+    canvas.addEventListener("pointerleave", leaveMouse);
+    window.addEventListener("resize", setSize);
 
     const loop = () => {
       draw(ctx, WRef.current, HRef.current);
@@ -311,8 +317,9 @@ const setSize = () => {
 
     return () => {
       cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("mousemove", onMouse);
-      window.removeEventListener("resize", onResize);
+      canvas.removeEventListener("pointermove", updateMouse);
+      canvas.removeEventListener("pointerleave", leaveMouse);
+      window.removeEventListener("resize", setSize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -338,9 +345,13 @@ const setSize = () => {
     showPoints,
   ]);
 
+
   return (
-    <div className="flex justify-center items-center" style={{ width: "60vw", height: "60vh", background: "#0b0b0b" }}>
-      <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
+    <div className="bg-[#070707] flex items-center justify-center">
+      <canvas
+        ref={canvasRef}
+        style={{ width: "800px", height: "600px", display: "block" }}
+      />
     </div>
   );
 }
@@ -421,24 +432,22 @@ const Hero: React.FC = () => {
   return (
     <section >
 
-  <RepellingLines
+
+<section className="flex items-center justify-center py-20 bg-black">
+<RepellingLines
     text="SHOP"
     nLines={60}
     nPoints={200}
-    amplitude={40}
-    terraces={15}
+    amplitude={10}
+    terraces={25}
     blurPx={5}
     paddingPct={12}
-    strokeColor="#90D5FF"
+    strokeColor="#FFF"
     lineWidth={0.5}
-    threshold={0.04}
-    softness={0.2}
-
+    threshold={0.08}
+    softness={0.15}
   />
-
-      <div className="w-1/2 mx-auto">
-
-      </div>
+</section>
       {/* <div className="max-w-7xl justify-center items-center mx-auto flex flex-wrap md:flex-nowrap gap-16">
         <div className="w-full md:w-1/2">
           <div className="bg-white text-black overflow-hidden">
