@@ -123,7 +123,7 @@
 }
 
 @media screen and (max-width: 768px) {
-  .MainSection { height: calc(var(--91c5acce) * 130vh); }
+  /* .MainSection { height: calc(var(--91c5acce) * 130vh); } */
   .MainSection-head {
     padding: 4rem 2rem 2rem;
     position: relative;

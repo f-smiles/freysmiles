@@ -2,8 +2,9 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { SplitText } from 'gsap/SplitText'
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger, SplitText)
 
 export function Main() {
   const mainSection = useRef(null)
@@ -18,14 +19,29 @@ export function Main() {
     const imageContainers = document.querySelectorAll('.MainSectionItem-imageContainer')
     const imageContainersInner = document.querySelectorAll('.MainSectionItem-imageContainerInner')
     const images = document.querySelectorAll('.MainSectionItem-image')
+    const headTitle = document.querySelector('.MainSection-headTitle')
 
     let mm = gsap.matchMedia()
 
-    // scrolltrigger vertical
-    // animate split text head chars
-
     mm.add('(max-width: 1079px)', () => {
       const mobile = gsap.context(() => {
+
+        gsap.set(headTitle, { opacity: 1 })
+        let splitheadTitle = SplitText.create(headTitle, { type: 'chars, words', charsClass: 'chars' })
+        let chars = splitheadTitle.chars
+        gsap.from(chars, {
+          duration: 3,
+          opacity: 0,
+          y: 50,
+          transformOrigin: "0% 50% -50",
+          ease: 'back',
+          stagger: 0.05,
+          onComplete: () => {
+            splitheadTitle.revert()
+            headTitle.removeAttribute("aria-hidden")
+          }
+        })
+
         innerStickies.forEach((item, i) => {
           ScrollTrigger.create({
             trigger: item,
@@ -42,6 +58,22 @@ export function Main() {
     
     mm.add('(min-width: 1080px)', () => {
       const desktop = gsap.context(() => {
+        gsap.set(headTitle, { opacity: 1 })
+        let splitheadTitle = SplitText.create(headTitle, { type: 'chars, words', charsClass: 'chars' })
+        let chars = splitheadTitle.chars
+        gsap.from(chars, {
+          duration: 3,
+          opacity: 0,
+          y: 50,
+          transformOrigin: "0% 50% -50",
+          ease: 'back',
+          stagger: 0.05,
+          onComplete: () => {
+            splitheadTitle.revert()
+            headTitle.removeAttribute("aria-hidden")
+          }
+        })
+
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: mainSection.current,
