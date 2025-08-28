@@ -17,28 +17,27 @@ function RepellingLines({
   showPoints = false,
   fontPx = 420,
   fontFamily = "'NeueHaasGroteskDisplayPro45Light', sans-serif",
-  textMargin = 0.10,      // fraction of min(W,H)
+  textMargin = 0.1, // fraction of min(W,H)
   blurPx = 4,
-  amplitude = 10,         // raise height inside letters
-  terraces = 25,          // 1 = off; higher = more contour steps
+  amplitude = 10, // raise height inside letters
+  terraces = 25, // 1 = off; higher = more contour steps
   threshold = 0.04,
   softness = 0.2,
   invert = false,
   strokeMask = false,
-  maskScaleX = 1.3,   
-maskBaseline = 0.5,
+  maskScaleX = 1.3,
+  maskBaseline = 0.5,
 }) {
   const canvasRef = useRef(null);
 
- 
   const rafRef = useRef(null);
   const WRef = useRef(0);
   const HRef = useRef(0);
   const mouseRef = useRef({ x: -9999, y: -9999 });
 
-  const linesRef = useRef([]);        // array of lines; each line is array of {x,y}
-  const homesLineRef = useRef([]);    // home coordinate for the line (y if horizontal, x if vertical)
-  const homesPointRef = useRef([]);   // home coord for each point along the line (x if horizontal, y if vertical)
+  const linesRef = useRef([]); // array of lines; each line is array of {x,y}
+  const homesLineRef = useRef([]); // home coordinate for the line (y if horizontal, x if vertical)
+  const homesPointRef = useRef([]); // home coord for each point along the line (x if horizontal, y if vertical)
 
   // offscreen mask
   const maskCanvasRef = useRef(null);
@@ -70,36 +69,35 @@ maskBaseline = 0.5,
     const g = off.getContext("2d");
     g.clearRect(0, 0, W, H);
 
+    const pad = Math.min(W, H) * textMargin;
+    const targetW = (W - pad * 2) / Math.max(0.0001, maskScaleX);
 
-const pad = Math.min(W, H) * textMargin;
-const targetW = (W - pad * 2) / Math.max(0.0001, maskScaleX);
+    g.font = `700 ${fontPx}px ${fontFamily}`;
+    g.textAlign = "center";
+    g.textBaseline = "middle";
 
-g.font = `700 ${fontPx}px ${fontFamily}`;
-g.textAlign = "center";
-g.textBaseline = "middle";
+    const rawWidth = Math.max(1, g.measureText(text).width);
+    const scaleByWidth = Math.min(1, targetW / rawWidth);
+    const px = Math.max(10, Math.round(fontPx * scaleByWidth));
+    g.font = `700 ${px}px ${fontFamily}`;
 
-const rawWidth = Math.max(1, g.measureText(text).width);
-const scaleByWidth = Math.min(1, targetW / rawWidth);
-const px = Math.max(10, Math.round(fontPx * scaleByWidth));
-g.font = `700 ${px}px ${fontFamily}`;
+    g.save();
+    g.filter = `blur(${blurPx}px)`;
+    g.fillStyle = "#fff";
+    g.strokeStyle = "#fff";
 
-g.save();
-g.filter = `blur(${blurPx}px)`;
-g.fillStyle = "#fff";
-g.strokeStyle = "#fff";
+    const cx = W * 0.5;
+    const cy = H * maskBaseline;
+    g.translate(cx, cy);
+    g.scale(maskScaleX, 1);
 
-const cx = W * 0.5;
-const cy = H * maskBaseline;
-g.translate(cx, cy);
-g.scale(maskScaleX, 1);  
-
-if (strokeMask) {
-  g.lineWidth = Math.max(1, px * 0.08);
-  g.strokeText(text, 0, 0);
-} else {
-  g.fillText(text, 0, 0);
-}
-g.restore();
+    if (strokeMask) {
+      g.lineWidth = Math.max(1, px * 0.08);
+      g.strokeText(text, 0, 0);
+    } else {
+      g.fillText(text, 0, 0);
+    }
+    g.restore();
 
     const img = g.getImageData(0, 0, W, H);
     maskDataRef.current = img.data;
@@ -180,7 +178,8 @@ g.restore();
         const homeY = baseHomeY - dispY;
 
         // force toward (homeX, homeY)
-        let hvx = 0, hvy = 0;
+        let hvx = 0,
+          hvy = 0;
         if (p.x !== homeX || p.y !== homeY) {
           const dx = homeX - p.x;
           const dy = homeY - p.y;
@@ -191,8 +190,8 @@ g.restore();
           hvy = f * Math.sin(ang);
         }
 
-
-        let mvx = 0, mvy = 0;
+        let mvx = 0,
+          mvy = 0;
         const mdx = p.x - mx;
         const mdy = p.y - my;
         if (!(mdx > radius || mdy > radius || mdy < -radius || mdx < -radius)) {
@@ -217,7 +216,7 @@ g.restore();
     ctx.clearRect(0, 0, W, H);
 
     ctx.save();
-    ctx.globalCompositeOperation = "lighter";   // or "screen"
+    ctx.globalCompositeOperation = "lighter"; // or "screen"
     ctx.strokeStyle = strokeColor;
     ctx.lineWidth = lineWidth;
     ctx.lineCap = "round";
@@ -283,9 +282,8 @@ g.restore();
       WRef.current = Wcss;
       HRef.current = Hcss;
 
-      canvas.width  = Math.round(Wcss * dpr);
+      canvas.width = Math.round(Wcss * dpr);
       canvas.height = Math.round(Hcss * dpr);
-
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -345,12 +343,11 @@ g.restore();
     showPoints,
   ]);
 
-
   return (
-    <div className="bg-[#070707] flex items-center justify-center">
+    <div className="flex items-center justify-center">
       <canvas
         ref={canvasRef}
-        style={{ width: "800px", height: "600px", display: "block" }}
+        style={{ width: "880px", height: "600px", display: "block" }}
       />
     </div>
   );
@@ -430,121 +427,76 @@ const Hero: React.FC = () => {
   //   };
   // }, []);
   return (
-    <section >
-
-
-<section className="flex items-center justify-center py-20 bg-black">
-<RepellingLines
-    text="SHOP"
-    nLines={60}
-    nPoints={200}
-    amplitude={10}
-    terraces={25}
-    blurPx={5}
-    paddingPct={12}
-    strokeColor="#FFF"
-    lineWidth={0.5}
-    threshold={0.08}
-    softness={0.15}
-  />
-</section>
-      {/* <div className="max-w-7xl justify-center items-center mx-auto flex flex-wrap md:flex-nowrap gap-16">
-        <div className="w-full md:w-1/2">
-          <div className="bg-white text-black overflow-hidden">
-            <div className="relative">
-              <img
-                src="/images/cardtest.png"
-                alt="Featured"
-                className="w-full h-auto object-cover"
-              />
-              <span className="absolute top-4 left-4 font-neuehaas45 bg-gray-100 text-black px-3 py-1 text-xs rounded-full">
-                NEW
-              </span>
-            </div>
-
-            <div className="p-6">
-              <p className="text-[18px] leading-[1.2] font-neuehaas45 text-gray-700 mb-4">
-                Frey Smiles gift cards can be used toward any part of
-                treatment—and they never expire.
-              </p>
-              <p className="text-[14px] leading-[1.5] font-neuehaas45 text-gray-700 mb-4">
-                Send one digitally or choose a physical card.
-              </p>
-              <button className="font-neuehaas45 mt-4 inline-block bg-[#B7CFFF] text-[#363636] px-6 py-2 text-sm uppercase tracking-wide hover:bg-neutral-800 transition">
-                Send A Card
-              </button>
-            </div>
-          </div>
+    <section>
+      <FrameBox>
+        <div className="w-[78%] max-w-[900px] aspect-[16/9]">
+          <RepellingLines
+            text="SHOP"
+            orientation="horizontal"
+            nLines={60}
+            nPoints={200}
+            amplitude={10}
+            terraces={25}
+            blurPx={5}
+            paddingPct={12}
+            strokeColor="#EEDCC7"
+            lineWidth={0.5}
+            threshold={0.08}
+            softness={0.15}
+          />
         </div>
-
-        <div className="w-full md:w-1/2 flex flex-col justify-between">
-          <div className="text-center mb-8">
-            <div className="text-center">
-              <h2 className="text-[48px] font-neuehaas45 uppercase">THE</h2>
-              <h2 className="text-[46px] font-sinistre mt-2">ESSENTIALS</h2>
-              <h2 className="text-[48px] font-neuehaas45 uppercase mt-[6px]">
-                EDIT
-              </h2>
-            </div>
-
-            <div className="max-w-[400px] mx-auto mt-8">
-              <p className="text-[11px] leading-[1.3] text-white font-khteka">
-                We’ve curated a handful of products to elevate your routine—from
-                effective whitening solutions to a few practical additions.
-                Nothing extra.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-row justify-center gap-6">
-            <div className="w-1/2 min-w-0 flex flex-col bg-white text-black overflow-hidden">
-              <img
-                src="/images/shoptest1.png"
-                alt="Card 1"
-                className="w-full h-auto object-cover max-w-full"
-              />
-              <div className="p-4">
-                <h4 className="font-neuehaas45 text-[14px] mb-2">
-                  Ember Light Therapy
-                </h4>
-                <div className="flex justify-between text-[12px] text-gray-600 font-neuehaas45">
-                  <a href="#" className="underline">
-                    Learn more
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div className="w-1/2 min-w-0 flex flex-col bg-white text-black overflow-hidden">
-              <img
-                src="/images/cutout.jpg"
-                alt="Card 2"
-                className="w-full h-auto object-cover max-w-full"
-              />
-              <div className="p-4">
-                <h4 className="font-neuehaas45 text-[14px] mb-2">
-                  How Whitening Works
-                </h4>
-                <div className="font-neuehaas45 flex justify-between text-[12px] text-gray-600">
-                  <span>Date</span>
-                  <a href="#" className="underline">
-                    Read more
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center mt-10">
-            <div className="w-10 h-10 flex items-center justify-center rounded-full border border-white" />
-            <span className="font-neuehaas45 text-xs mt-2 underline">
-              SCROLL
-            </span>
-          </div>
-        </div>
-      </div> */}
+      </FrameBox>
+     
     </section>
   );
 };
 
+function FrameBox({ children }) {
+  return (
+    <section className="relative w-full h-[100svh] bg-black text-[#d6c4ad]">
+      <span className="pointer-events-none absolute left-0 right-0 top-[23%] border-t border-[#6c5f4d]/80" />
+      <span className="pointer-events-none absolute left-0 right-0 bottom-[20%] border-t border-[#6c5f4d]/80" />
+
+      <div
+        className="
+          grid w-full h-full border border-[#3a342c]
+          grid-cols-[minmax(220px,0.9fr)_minmax(0,2.6fr)_minmax(220px,0.9fr)]
+          grid-rows-[minmax(120px,1fr)_1fr_minmax(120px,1fr)]
+          divide-x divide-[#3a342c] 
+        "
+      >
+
+        <div />
+        <div />
+        <div />
+
+
+        <div className="uppercase font-khteka p-6 text-[11px] leading-4 tracking-wider text-[#b7a992]/70 flex items-center">
+          <div>
+            <div>Our gift cards can be used toward any part of treatment—and they never expire.</div>
+            <div>Send one digitally</div>
+            <div>or choose a physical card</div>
+          </div>
+        </div>
+
+        {/* RepellingLines */}
+        <div className="relative flex items-center justify-center overflow-visible">
+          <div className="relative z-[1] w-[calc(100%-1rem)] h-[calc(100%-3rem)] flex items-center justify-center">
+            {children}
+          </div>
+        </div>
+
+
+        <div className="font-khteka uppercase p-6 text-[11px] leading-4 tracking-wider text-[#b7a992]/70 flex items-center text-left">
+          <div>We’ve curated a handful of products to elevate your routine—nothing extra.</div>
+        </div>
+
+
+        <div />
+        <div />
+        <div />
+      </div>
+    </section>
+  );
+}
 export default Hero;
