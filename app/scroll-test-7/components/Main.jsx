@@ -8,9 +8,9 @@ gsap.registerPlugin(ScrollTrigger, SplitText)
 
 export function Main() {
   const mainSection = useRef(null)
-  const itemsContainer = useRef(null)
-  const markerLeft = useRef(null)
-  const markerRight = useRef(null)
+  // const itemsContainer = useRef(null)
+  // const markerLeft = useRef(null)
+  // const markerRight = useRef(null)
 
   useEffect(() => {
     const items = document.querySelectorAll('.MainSectionItem')
@@ -23,57 +23,8 @@ export function Main() {
 
     let mm = gsap.matchMedia()
 
-    mm.add('(max-width: 1079px)', () => {
-      const mobile = gsap.context(() => {
-
-        gsap.set(headTitle, { opacity: 1 })
-        let splitheadTitle = SplitText.create(headTitle, { type: 'chars, words', charsClass: 'chars' })
-        let chars = splitheadTitle.chars
-        gsap.from(chars, {
-          duration: 3,
-          opacity: 0,
-          y: 50,
-          transformOrigin: "0% 50% -50",
-          ease: 'back',
-          stagger: 0.05,
-          onComplete: () => {
-            splitheadTitle.revert()
-            headTitle.removeAttribute("aria-hidden")
-          }
-        })
-
-        innerStickies.forEach((item, i) => {
-          ScrollTrigger.create({
-            trigger: item,
-            start: () => item.offsetHeight < window.innerHeight ? 'top top' : 'bottom bottom',
-            pin: true,
-            pinSpacing: false,
-            invalidateOnRefresh: true,
-            markers: true,
-          })
-        })
-      }, itemsContainer.current)
-      return () => mobile.revert()
-    })
-    
     mm.add('(min-width: 1080px)', () => {
       const desktop = gsap.context(() => {
-        gsap.set(headTitle, { opacity: 1 })
-        let splitheadTitle = SplitText.create(headTitle, { type: 'chars, words', charsClass: 'chars' })
-        let chars = splitheadTitle.chars
-        gsap.from(chars, {
-          duration: 3,
-          opacity: 0,
-          y: 50,
-          transformOrigin: "0% 50% -50",
-          ease: 'back',
-          stagger: 0.05,
-          onComplete: () => {
-            splitheadTitle.revert()
-            headTitle.removeAttribute("aria-hidden")
-          }
-        })
-
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: mainSection.current,
@@ -84,74 +35,17 @@ export function Main() {
             invalidateOnRefresh: true,
             markers: true,
           },
-          defaults: { ease: 'linear' },
+          defaults: { ease: 'none' },
         })
 
-        // blue
-        gsap.set(items[0], { xPercent: 0 })
-        gsap.set(innerItems[0], { xPercent: 0 })
-        gsap.set(imageContainers[0], { xPercent: -60, transformOrigin: '100% 100% 0px' })
-        gsap.set(imageContainersInner[0], { xPercent: 0, transformOrigin: '50% 50% 0px' })
-        gsap.set(images[0], { aspectRatio: 1.3793103448275863 })
-
-        tl.to(items[0], { translateX: '-100%', duration: 4 }, '<')
-        tl.to(innerItems[0], { translateX: '100%', duration: 4 }, '<')
-        tl.to(imageContainers[0], { translateX: '-50%', scale: 0.8, duration: 2 }, '<') // translateX: '-150%'
-        tl.to(imageContainersInner[0], { translateX: '0%', scale: 1.2, duration: 2 }, '<')
-
-        // pink
-        gsap.set(items[1], { xPercent: 80 })
-        gsap.set(innerItems[1], { xPercent: -80 })
-        gsap.set(imageContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' })
-        gsap.set(imageContainersInner[1], { xPercent: 0, scale: 1.55, transformOrigin: '50% 50% 0px' })
-        gsap.set(images[1], { aspectRatio: 1.3793103448275863 })
-        
-        tl.to(items[1], { translateX: '-100%', duration: 4 }, '<')
-        tl.to(innerItems[1], { translateX: '100%', duration: 4 }, '<')
-        tl.to(imageContainers[1], { translateX: '-80%', scale: 0.8, duration: 2 }, '<')
-        tl.to(imageContainersInner[1], { translateX: '0%', scale: 1.2, duration: 2 }, '<')
-        
-        // green
-        gsap.set(items[2], { xPercent: 95 })
-        gsap.set(innerItems[2], { xPercent: -95, transformOrigin: '100% 100% 0px' })
-        gsap.set(imageContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' })
-        gsap.set(imageContainersInner[2], { xPercent: 0, scale: 1.85, transformOrigin: '50% 50% 0px' })
-        gsap.set(images[2], { aspectRatio: 1.3793103448275863 })
-
-        tl.to(items[2], { translateX: '-100%', duration: 12 }, '<')
-        tl.to(innerItems[2], { translateX: '100%', duration: 12 }, '<')
-        tl.to(imageContainers[2], { translateX: '-80%', scale: 0.8, duration: 8 }, '<')
-        tl.to(imageContainersInner[2], { translateX: '0%', scale: 1.2, duration: 8 }, '<')
-
-        // beige
-        gsap.set(items[3], { xPercent: 100 })
-        gsap.set(innerItems[3], { xPercent: -100 })
-        gsap.set(imageContainers[3], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' })
-        gsap.set(imageContainersInner[3], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' })
-        gsap.set(images[3], { aspectRatio: 1.3793103448275863 })
-        
-        tl.to(items[3], { translateX: '-100%', duration: 16 }, '<')
-        tl.to(innerItems[3], { translateX: '100%', duration: 16 }, '<')
-        tl.to(imageContainers[3], { translateX: '-80%', scale: 0.8, duration: 12 }, '<')
-        tl.to(imageContainersInner[3], { translateX: '0%', scale: 1.2, duration: 12 }, '<')
-        
-        // terra
-        gsap.set(items[4], { xPercent: 100 })
-        gsap.set(innerItems[4], { xPercent: -100 })
-        gsap.set(imageContainers[4], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' })
-        gsap.set(imageContainersInner[4], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' })
-        gsap.set(images[4], { aspectRatio: 1.3793103448275863 })
-
-        tl.to(items[4], { translateX: '-100%', duration: 32 }, '<')
-        tl.to(innerItems[4], { translateX: '100%', duration: 32 }, '<')
-        tl.to(imageContainers[4], { translateX: '-80%', scale: 0.8, duration: 24 }, '<')
-        tl.to(imageContainersInner[4], { translateX: '0%', scale: 1.2,  duration: 24 }, '<')
-
-        gsap.set(markerLeft.current, { left: mainSection.current.clientWidth * 0.33 })
-        gsap.set(markerRight.current, { right: mainSection.current.clientWidth * 0.2 })
-
+        tl.fromTo(items[0], { xPercent: 0 }, { xPercent: -100 }, '<')
+        tl.fromTo(items[1], { xPercent: 80 }, { xPercent: -100 }, '<')
+        tl.fromTo(items[2], { xPercent: 95 }, { xPercent: -100 }, '<')
+        tl.fromTo(items[3], { xPercent: 100 }, { xPercent: -100 }, '<')
+        tl.fromTo(items[4], { xPercent: 100 }, { xPercent: -100 }, '<')
+        // gsap.set(markerLeft.current, { left: mainSection.current.clientWidth * 0.33 })
+        // gsap.set(markerRight.current, { right: mainSection.current.clientWidth * 0.2 })
       }, mainSection.current)
-
       return () => desktop.revert()
     })
     
@@ -162,196 +56,7 @@ export function Main() {
     <>
       <div ref={mainSection} className="MainSection` --dark --in-view" style={{ backgroundColor: 'var(--blue)', '--91c5acce': 5, }}>
         <div className="MainSection-wrap">
-          <div className="MainSection-head">
-            <h2 className="SplitText AnimatedSplitText --anim-title MainSection-headTitle AppTitle-1 --in-view" style={{ opacity: 1, visibility: "inherit" }}>
-              <span>
-                <div style={{ display: "block", textAlign: "start", position: "relative" }} className="head-lines head-lines1">
-                  <div className="chars-wrapper">
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        translate: "none",
-                        rotate: "none",
-                        scale: "none",
-                        transformOrigin: "50% 100% 0px",
-                        opacity: 1,
-                        visibility: "inherit",
-                        transform: "translate3d(0px, 0px, 0px)"
-                      }}
-                      className="chars chars1"
-                    >
-                      H
-                    </div>
-                  </div>
-                  <div className="chars-wrapper">
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        translate: "none",
-                        rotate: "none",
-                        scale: "none",
-                        transformOrigin: "50% 100% 0px",
-                        opacity: 1,
-                        visibility: "inherit",
-                        transform: "translate3d(0px, 0px, 0px)"
-                      }}
-                      className="chars chars2"
-                    >
-                      e
-                    </div>
-                  </div>
-                  <div className="chars-wrapper">
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        translate: "none",
-                        rotate: "none",
-                        scale: "none",
-                        transformOrigin: "50% 100% 0px",
-                        opacity: 1,
-                        visibility: "inherit",
-                        transform: "translate3d(0px, 0px, 0px)"
-                      }}
-                      className="chars chars3"
-                    >
-                      a
-                    </div>
-                  </div>
-                  <div className="chars-wrapper">
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        translate: "none",
-                        rotate: "none",
-                        scale: "none",
-                        transformOrigin: "50% 100% 0px",
-                        opacity: 1,
-                        visibility: "inherit",
-                        transform: "translate3d(0px, 0px, 0px)"
-                      }}
-                      className="chars chars4"
-                    >
-                      d
-                    </div>
-                  </div>
-                  <div className="chars-wrapper">
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        translate: "none",
-                        rotate: "none",
-                        scale: "none",
-                        transformOrigin: "50% 100% 0px",
-                        opacity: 1,
-                        visibility: "inherit",
-                        transform: "translate3d(0px, 0px, 0px)"
-                      }}
-                      className="chars chars5"
-                    >
-                      i
-                    </div>
-                  </div>
-                  <div className="chars-wrapper">
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        translate: "none",
-                        rotate: "none",
-                        scale: "none",
-                        transformOrigin: "50% 100% 0px",
-                        opacity: 1,
-                        visibility: "inherit",
-                        transform: "translate3d(0px, 0px, 0px)"
-                      }}
-                      className="chars chars6"
-                    >
-                      n
-                    </div>
-                  </div>
-                  <div className="chars-wrapper">
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        translate: "none",
-                        rotate: "none",
-                        scale: "none",
-                        transformOrigin: "50% 100% 0px",
-                        opacity: 1,
-                        visibility: "inherit",
-                        transform: "translate3d(0px, 0px, 0px)"
-                      }}
-                      className="chars chars7"
-                    >
-                      g
-                    </div>
-                  </div>
-                  <div className="chars-wrapper">
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        translate: "none",
-                        rotate: "none",
-                        scale: "none",
-                        transformOrigin: "50% 100% 0px",
-                        opacity: 1,
-                        visibility: "inherit",
-                        transform: "translate3d(0px, 0px, 0px)"
-                      }}
-                      className="chars chars8"
-                    >
-                      O
-                    </div>
-                  </div>
-                  <div className="chars-wrapper">
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        translate: "none",
-                        rotate: "none",
-                        scale: "none",
-                        transformOrigin: "50% 100% 0px",
-                        opacity: 1,
-                        visibility: "inherit",
-                        transform: "translate3d(0px, 0px, 0px)"
-                      }}
-                      className="chars chars9"
-                    >
-                      n
-                    </div>
-                  </div>
-                  <div className="chars-wrapper">
-                    <div
-                      style={{
-                        position: "relative",
-                        display: "inline-block",
-                        translate: "none",
-                        rotate: "none",
-                        scale: "none",
-                        transformOrigin: "50% 100% 0px",
-                        opacity: 1,
-                        visibility: "inherit",
-                        transform: "translate3d(0px, 0px, 0px)"
-                      }}
-                      className="chars chars10"
-                    >
-                      e
-                    </div>
-                  </div>
-                </div>
-              </span>
-            </h2>
-          </div>
-
-          <div ref={itemsContainer} className="MainSection-items">
+          <div className="MainSection-items">
             <div className="MainSectionItem MainSection-item">
               <div className="--index-first MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
@@ -475,8 +180,285 @@ export function Main() {
           </div>
         </div>
       </div>
-      <div ref={markerLeft} className="custom-marker left"></div>
-      <div ref={markerRight} className="custom-marker right"></div>
+      {/* <div ref={markerLeft} className="custom-marker left"></div> */}
+      {/* <div ref={markerRight} className="custom-marker right"></div> */}
     </>
   )
 }
+
+// let splitheadTitle = SplitText.create(headTitle, { type: 'chars, words', charsClass: 'chars' })
+// gsap.from(splitheadTitle.chars, {
+//   y: 50,
+//   transformOrigin: "0% 50% -50",
+//   duration: 3,
+//   ease: 'back',
+//   stagger: 0.05,
+//   onComplete: () => {
+//     splitheadTitle.revert()
+//     headTitle.removeAttribute("aria-hidden")
+//   }
+// })
+
+{/* <div className="MainSection-head">
+  <h2 className="SplitText AnimatedSplitText --anim-title MainSection-headTitle AppTitle-1 --in-view" style={{ opacity: 1, visibility: "inherit" }}>
+    <div style={{ display: "block", textAlign: "start", position: "relative" }} className="head-lines head-lines1">
+      <div className="chars-wrapper">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            translate: "none",
+            rotate: "none",
+            scale: "none",
+            transformOrigin: "50% 100% 0px",
+            opacity: 1,
+            visibility: "inherit",
+            transform: "translate3d(0px, 0px, 0px)"
+          }}
+          className="chars chars1"
+        >
+          H
+        </div>
+      </div>
+      <div className="chars-wrapper">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            translate: "none",
+            rotate: "none",
+            scale: "none",
+            transformOrigin: "50% 100% 0px",
+            opacity: 1,
+            visibility: "inherit",
+            transform: "translate3d(0px, 0px, 0px)"
+          }}
+          className="chars chars2"
+        >
+          e
+        </div>
+      </div>
+      <div className="chars-wrapper">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            translate: "none",
+            rotate: "none",
+            scale: "none",
+            transformOrigin: "50% 100% 0px",
+            opacity: 1,
+            visibility: "inherit",
+            transform: "translate3d(0px, 0px, 0px)"
+          }}
+          className="chars chars3"
+        >
+          a
+        </div>
+      </div>
+      <div className="chars-wrapper">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            translate: "none",
+            rotate: "none",
+            scale: "none",
+            transformOrigin: "50% 100% 0px",
+            opacity: 1,
+            visibility: "inherit",
+            transform: "translate3d(0px, 0px, 0px)"
+          }}
+          className="chars chars4"
+        >
+          d
+        </div>
+      </div>
+      <div className="chars-wrapper">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            translate: "none",
+            rotate: "none",
+            scale: "none",
+            transformOrigin: "50% 100% 0px",
+            opacity: 1,
+            visibility: "inherit",
+            transform: "translate3d(0px, 0px, 0px)"
+          }}
+          className="chars chars5"
+        >
+          i
+        </div>
+      </div>
+      <div className="chars-wrapper">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            translate: "none",
+            rotate: "none",
+            scale: "none",
+            transformOrigin: "50% 100% 0px",
+            opacity: 1,
+            visibility: "inherit",
+            transform: "translate3d(0px, 0px, 0px)"
+          }}
+          className="chars chars6"
+        >
+          n
+        </div>
+      </div>
+      <div className="chars-wrapper">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            translate: "none",
+            rotate: "none",
+            scale: "none",
+            transformOrigin: "50% 100% 0px",
+            opacity: 1,
+            visibility: "inherit",
+            transform: "translate3d(0px, 0px, 0px)"
+          }}
+          className="chars chars7"
+        >
+          g
+        </div>
+      </div>
+      <div className="chars-wrapper">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            translate: "none",
+            rotate: "none",
+            scale: "none",
+            transformOrigin: "50% 100% 0px",
+            opacity: 1,
+            visibility: "inherit",
+            transform: "translate3d(0px, 0px, 0px)"
+          }}
+          className="chars chars8"
+        >
+          O
+        </div>
+      </div>
+      <div className="chars-wrapper">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            translate: "none",
+            rotate: "none",
+            scale: "none",
+            transformOrigin: "50% 100% 0px",
+            opacity: 1,
+            visibility: "inherit",
+            transform: "translate3d(0px, 0px, 0px)"
+          }}
+          className="chars chars9"
+        >
+          n
+        </div>
+      </div>
+      <div className="chars-wrapper">
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            translate: "none",
+            rotate: "none",
+            scale: "none",
+            transformOrigin: "50% 100% 0px",
+            opacity: 1,
+            visibility: "inherit",
+            transform: "translate3d(0px, 0px, 0px)"
+          }}
+          className="chars chars10"
+        >
+          e
+        </div>
+      </div>
+    </div>
+  </h2>
+</div> */}
+
+// blue
+// gsap.set(items[0], { xPercent: 0 })
+// gsap.set(innerItems[0], { xPercent: 0 })
+// gsap.set(imageContainers[0], { xPercent: -60, transformOrigin: '100% 100% 0px' })
+// gsap.set(imageContainersInner[0], { xPercent: 0, transformOrigin: '50% 50% 0px' })
+// gsap.set(images[0], { aspectRatio: 1.3793103448275863 })
+
+// tl.to(items[0], { translateX: '-100%', duration: 4 }, '<')
+// tl.to(innerItems[0], { translateX: '100%', duration: 4 }, '<')
+// tl.to(imageContainers[0], { translateX: '-50%', scale: 0.8, duration: 2 }, '<') // translateX: '-150%'
+// tl.to(imageContainersInner[0], { translateX: '0%', scale: 1.2, duration: 2 }, '<')
+
+// pink
+// gsap.set(items[1], { xPercent: 80 })
+// gsap.set(innerItems[1], { xPercent: -80 })
+// gsap.set(imageContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' })
+// gsap.set(imageContainersInner[1], { xPercent: 0, scale: 1.55, transformOrigin: '50% 50% 0px' })
+// gsap.set(images[1], { aspectRatio: 1.3793103448275863 })
+
+// tl.to(items[1], { translateX: '-100%', duration: 4 }, '<')
+// tl.to(innerItems[1], { translateX: '100%', duration: 4 }, '<')
+// tl.to(imageContainers[1], { translateX: '-80%', scale: 0.8, duration: 2 }, '<')
+// tl.to(imageContainersInner[1], { translateX: '0%', scale: 1.2, duration: 2 }, '<')
+
+// green
+// gsap.set(items[2], { xPercent: 95 })
+// gsap.set(innerItems[2], { xPercent: -95, transformOrigin: '100% 100% 0px' })
+// gsap.set(imageContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' })
+// gsap.set(imageContainersInner[2], { xPercent: 0, scale: 1.85, transformOrigin: '50% 50% 0px' })
+// gsap.set(images[2], { aspectRatio: 1.3793103448275863 })
+
+// tl.to(items[2], { translateX: '-100%', duration: 12 }, '<')
+// tl.to(innerItems[2], { translateX: '100%', duration: 12 }, '<')
+// tl.to(imageContainers[2], { translateX: '-80%', scale: 0.8, duration: 8 }, '<')
+// tl.to(imageContainersInner[2], { translateX: '0%', scale: 1.2, duration: 8 }, '<')
+
+// beige
+// gsap.set(items[3], { xPercent: 100 })
+// gsap.set(innerItems[3], { xPercent: -100 })
+// gsap.set(imageContainers[3], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' })
+// gsap.set(imageContainersInner[3], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' })
+// gsap.set(images[3], { aspectRatio: 1.3793103448275863 })
+
+// tl.to(items[3], { translateX: '-100%', duration: 16 }, '<')
+// tl.to(innerItems[3], { translateX: '100%', duration: 16 }, '<')
+// tl.to(imageContainers[3], { translateX: '-80%', scale: 0.8, duration: 12 }, '<')
+// tl.to(imageContainersInner[3], { translateX: '0%', scale: 1.2, duration: 12 }, '<')
+
+// terra
+// gsap.set(items[4], { xPercent: 100 })
+// gsap.set(innerItems[4], { xPercent: -100 })
+// gsap.set(imageContainers[4], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' })
+// gsap.set(imageContainersInner[4], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' })
+// gsap.set(images[4], { aspectRatio: 1.3793103448275863 })
+
+// tl.to(items[4], { translateX: '-100%', duration: 32 }, '<')
+// tl.to(innerItems[4], { translateX: '100%', duration: 32 }, '<')
+// tl.to(imageContainers[4], { translateX: '-80%', scale: 0.8, duration: 24 }, '<')
+// tl.to(imageContainersInner[4], { translateX: '0%', scale: 1.2,  duration: 24 }, '<')
+
+
+// mm.add('(max-width: 1079px)', () => {
+//   const mobile = gsap.context(() => {
+//     innerStickies.forEach((item, i) => {
+//       ScrollTrigger.create({
+//         trigger: item,
+//         start: () => item.offsetHeight < window.innerHeight ? 'top top' : 'bottom bottom',
+//         pin: true,
+//         pinSpacing: false,
+//         invalidateOnRefresh: true,
+//         markers: true,
+//       })
+//     })
+//   }, itemsContainer.current)
+//   return () => mobile.revert()
+// })
