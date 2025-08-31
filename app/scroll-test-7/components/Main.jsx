@@ -18,8 +18,14 @@ export function Main() {
     const imageContainersInner = document.querySelectorAll('.MainSectionItem-imageContainerInner')
     // const images = document.querySelectorAll('.MainSectionItem-image')
     // const headTitle = document.querySelector('.MainSection-headTitle')
+    const navItemTitles = document.querySelectorAll('.MainSection-navItemTitle')
+    const navProgressBar = document.querySelectorAll('.MainSection-navProgressBar')
 
     let mm = gsap.matchMedia()
+
+    navItemTitles.forEach((item, i) => {
+      gsap.set(item, { translate: "none", rotate: "none", scale: "none", transform: "translate3d(0px, 5rem, 0px)" })
+    })
 
     mm.add('(max-width: 1079px)', () => {
       const mobile = gsap.context(() => {
@@ -76,6 +82,8 @@ export function Main() {
         tl.fromTo(innerItems[4], { xPercent: -100 }, { xPercent: 0 }, '<')
         tl.fromTo(imageContainers[4], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
         tl.fromTo(imageContainersInner[4], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, '<')
+
+        tl.fromTo(navProgressBar, { xPercent: -80 }, { xPercent: 0 }, '<')
       }, mainSection.current)
       return () => desktop.revert()
     })
@@ -215,22 +223,22 @@ export function Main() {
           </div>
           <div className="MainSection-navItem AppSmallText-1">
             <span>02</span>
-            <span className="MainSection-navItemTitle" style={{ translate: "none", rotate: "none", scale: "none", transform: "translate3d(0px, 5rem, 0px)" }}>Section Two</span>
+            <span className="MainSection-navItemTitle">Section Two</span>
           </div>
           <div className="MainSection-navItem AppSmallText-1">
             <span>03</span>
-            <span className="MainSection-navItemTitle" style={{ translate: "none", rotate: "none", scale: "none", transform: "translate3d(0px, 5rem, 0px)" }}>Section Three</span>
+            <span className="MainSection-navItemTitle">Section Three</span>
           </div>
           <div className="MainSection-navItem AppSmallText-1">
             <span>04</span>
-            <span className="MainSection-navItemTitle" style={{ translate: "none", rotate: "none", scale: "none", transform: "translate3d(0px, 5rem, 0px)" }}>Section Four</span>
+            <span className="MainSection-navItemTitle">Section Four</span>
           </div>
           <div className="MainSection-navItem AppSmallText-1">
             <span>05</span>
             <span className="MainSection-navItemTitle">Section Five</span>
           </div>
           <div className="MainSection-navProgress">
-            <span className="MainSection-navProgressBar" style={{ translate: "none", rotate: "none", scale: "none", transform: "translate3d(-80%, 0px, 0px)" }}></span>
+            <span className="MainSection-navProgressBar"></span>
           </div>
         </div>
       </div>
