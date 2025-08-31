@@ -52,30 +52,30 @@ export function Main() {
           defaults: { ease: 'none' },
         })
 
-        tl.fromTo(items[0], { xPercent: 0 }, { xPercent: -100 }, 0)
-        tl.fromTo(innerItems[0], { xPercent: 0 }, { xPercent: 100 }, 0)
-        tl.fromTo(imageContainers[0], { xPercent: -60, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, 0)
-        tl.fromTo(imageContainersInner[0], { xPercent: 0, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, 0)
+        tl.fromTo(items[0], { xPercent: 0 }, { xPercent: -100 }, '<')
+        tl.fromTo(innerItems[0], { xPercent: 0 }, { xPercent: 100 }, '<')
+        tl.fromTo(imageContainers[0], { xPercent: -60, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(imageContainersInner[0], { xPercent: 0, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, '<')
 
-        tl.fromTo(items[1], { xPercent: 80 }, { xPercent: -100 }, 0)
-        tl.fromTo(innerItems[1], { xPercent: -80 }, { xPercent: 100}, 0)
-        tl.fromTo(imageContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, 0)
-        tl.fromTo(imageContainersInner[1], { xPercent: 0, scale: 1.55, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, 0)
+        tl.fromTo(items[1], { xPercent: 80 }, { xPercent: -100 }, '<')
+        tl.fromTo(innerItems[1], { xPercent: -80 }, { xPercent: 100}, '<')
+        tl.fromTo(imageContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(imageContainersInner[1], { xPercent: 0, scale: 1.55, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, '<')
 
-        tl.fromTo(items[2], { xPercent: 95 }, { xPercent: -100 }, 0)
-        tl.fromTo(innerItems[2], { xPercent: -95 }, { xPercent: 100 }, 0)
-        tl.fromTo(imageContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, 0)
-        tl.fromTo(imageContainersInner[2], { xPercent: 0, scale: 1.85, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, 0)
+        tl.fromTo(items[2], { xPercent: 95 }, { xPercent: -100 }, '<')
+        tl.fromTo(innerItems[2], { xPercent: -95 }, { xPercent: 100 }, '<')
+        tl.fromTo(imageContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(imageContainersInner[2], { xPercent: 0, scale: 1.85, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, '<')
 
-        tl.fromTo(items[3], { xPercent: 100 }, { xPercent: -100 }, 0)
-        tl.fromTo(innerItems[3], { xPercent: -100 }, { xPercent: 100 }, 0)
-        tl.fromTo(imageContainers[3], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, 0)
-        tl.fromTo(imageContainersInner[3], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, 0)
+        tl.fromTo(items[3], { xPercent: 100 }, { xPercent: -100 }, '<')
+        tl.fromTo(innerItems[3], { xPercent: -100 }, { xPercent: 100 }, '<')
+        tl.fromTo(imageContainers[3], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(imageContainersInner[3], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, '<')
 
-        tl.fromTo(items[4], { xPercent: 100 }, { xPercent: 0 }, 0)
-        tl.fromTo(innerItems[4], { xPercent: -100 }, { xPercent: 0 }, 0)
-        tl.fromTo(imageContainers[4], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, 0)
-        tl.fromTo(imageContainersInner[4], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, 0)
+        tl.fromTo(items[4], { xPercent: 100 }, { xPercent: 0 }, '<')
+        tl.fromTo(innerItems[4], { xPercent: -100 }, { xPercent: 0 }, '<')
+        tl.fromTo(imageContainers[4], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(imageContainersInner[4], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, '<')
       }, mainSection.current)
       return () => desktop.revert()
     })
@@ -206,6 +206,31 @@ export function Main() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div className="MainSection-nav">
+          <div className="MainSection-navItem AppSmallText-1">
+            <span>01</span>
+            <span className="MainSection-navItemTitle">Section One</span>
+          </div>
+          <div className="MainSection-navItem AppSmallText-1">
+            <span>02</span>
+            <span className="MainSection-navItemTitle" style={{ translate: "none", rotate: "none", scale: "none", transform: "translate3d(0px, 5rem, 0px)" }}>Section Two</span>
+          </div>
+          <div className="MainSection-navItem AppSmallText-1">
+            <span>03</span>
+            <span className="MainSection-navItemTitle" style={{ translate: "none", rotate: "none", scale: "none", transform: "translate3d(0px, 5rem, 0px)" }}>Section Three</span>
+          </div>
+          <div className="MainSection-navItem AppSmallText-1">
+            <span>04</span>
+            <span className="MainSection-navItemTitle" style={{ translate: "none", rotate: "none", scale: "none", transform: "translate3d(0px, 5rem, 0px)" }}>Section Four</span>
+          </div>
+          <div className="MainSection-navItem AppSmallText-1">
+            <span>05</span>
+            <span className="MainSection-navItemTitle">Section Five</span>
+          </div>
+          <div className="MainSection-navProgress">
+            <span className="MainSection-navProgressBar" style={{ translate: "none", rotate: "none", scale: "none", transform: "translate3d(-80%, 0px, 0px)" }}></span>
           </div>
         </div>
       </div>
