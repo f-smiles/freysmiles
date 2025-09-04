@@ -45,6 +45,7 @@ export function Main() {
 
     mm.add('(min-width: 1080px)', () => {
       const desktop = gsap.context(() => {
+
         let tl = gsap.timeline({
           scrollTrigger: {
             trigger: mainSection.current,
@@ -58,44 +59,75 @@ export function Main() {
           defaults: { ease: 'none' },
         })
 
-        // tl.addLabel('progress-bar')
-        // tl.fromTo(navProgressBar, { xPercent: -80 }, { xPercent: 0, duration: 16.5 }, '<')
-
-        tl.addLabel('item-1-blue')
-        tl.fromTo(items[0], { xPercent: 0 }, { xPercent: -100 }, '<')
+        tl.add(() => {
+          tl.addLabel('progress-bar')
+          tl.fromTo(navProgressBar, { xPercent: -80 }, { xPercent: 0, duration: tl.duration(), ease: 'none' }, 0)
+        })
+        
+        // --- Phase 1 ---        
+        tl.addLabel('phase-1')
+        tl.fromTo(items[0], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[0], { xPercent: 0 }, { xPercent: 100 }, '<')
         tl.fromTo(imageContainers[0], { xPercent: -60, scale: 1, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(imageContainersInner[0], { xPercent: 0, scale: 1, transformOrigin: '50% 50% 0px' }, { xPercent: -100, scale: 1.2 }, '<')
-        
-        tl.addLabel('item-2-pink')
+        tl.fromTo(imageContainersInner[0], { xPercent: 0, scale: 1, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, '<')
         tl.fromTo(items[1], { xPercent: 80 }, { xPercent: 0 }, '<')
-        // tl.fromTo(items[1], { xPercent: 0 }, { xPercent: -100 }, '<')
         tl.fromTo(innerItems[1], { xPercent: -80 }, { xPercent: 0 }, '<')
-        // tl.fromTo(innerItems[1], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(imageContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(imageContainersInner[1], { xPercent: 0, scale: 1.55, transformOrigin: '50% 50% 0px' }, { xPercent: -100, scale: 1.2 }, '<')
-         
-        tl.addLabel('item-3-green')
+        tl.fromTo(imageContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
+        tl.fromTo(imageContainersInner[1], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
         tl.fromTo(items[2], { xPercent: 95 }, { xPercent: 80 }, '<')
-        // tl.fromTo(items[2], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[2], { xPercent: -95 }, { xPercent: -80 }, '<')
-        // tl.fromTo(innerItems[2], { xPercent: -80 }, { xPercent: 0 }, '<')
-        tl.fromTo(imageContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(imageContainersInner[2], { xPercent: 0, scale: 1.85, transformOrigin: '50% 50% 0px' }, { xPercent: -100, scale: 1.2 }, '<')
-
+        tl.fromTo(imageContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' }, { xPercent: -15, scale: 0.45 }, '<')
+        tl.fromTo(imageContainersInner[2], { scale: 1.85, transformOrigin: '50% 50% 0px' }, { scale: 1.55 }, '<')
+        tl.fromTo(items[3], { xPercent: 100 }, { xPercent: 95 }, '<')
+        tl.fromTo(innerItems[3], { xPercent: -100 }, { xPercent: -95 }, '<')
+        tl.fromTo(imageContainers[3], { scale: 0, transformOrigin: '100% 100% 0px' }, { scale: 0.15 }, '<')
+        tl.fromTo(imageContainersInner[3], { scale: 2, transformOrigin: '50% 50% 0px' }, { scale: 1.85 }, '<')
         
-        tl.addLabel('item-4-beige')
-        tl.fromTo(items[3], { xPercent: 100 }, { xPercent: 95 }, '<') // -100
-        tl.fromTo(innerItems[3], { xPercent: -100 }, { xPercent: -95 }, '<') // 100
-        tl.fromTo(imageContainers[3], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(imageContainersInner[3], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' }, { xPercent: -100, scale: 1.2 }, '<')
+        // --- Phase 2 (starts AFTER phase 1 finishes) ---
+        tl.addLabel('phase-2', '>')
+        tl.fromTo(items[1], { xPercent: 0 }, { xPercent: -100 })
+        tl.fromTo(innerItems[1], { xPercent: 0 }, { xPercent: 100 }, '<')
+        tl.fromTo(imageContainers[1], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(imageContainersInner[1], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(items[2], { xPercent: 80 }, { xPercent: 0 }, '<')
+        tl.fromTo(innerItems[2], { xPercent: -80 }, { xPercent: 0 }, '<')
+        tl.fromTo(imageContainers[2], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
+        tl.fromTo(imageContainersInner[2], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
+        tl.fromTo(items[3], { xPercent: 95 }, { xPercent: 80 }, '<')
+        tl.fromTo(innerItems[3], { xPercent: -95 }, { xPercent: -80 }, '<')
+        tl.fromTo(imageContainers[3], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' }, { xPercent: -15, scale: 0.45 }, '<')
+        tl.fromTo(imageContainersInner[3], { scale: 1.85, transformOrigin: '50% 50% 0px' }, { scale: 1.55 }, '<')
+        tl.fromTo(items[4], { xPercent: 100 }, { xPercent: 95 }, '<')
+        tl.fromTo(innerItems[4], { xPercent: -100 }, { xPercent: -95 }, '<')
+        tl.fromTo(imageContainers[4], { scale: 0, transformOrigin: '100% 100% 0px' }, { scale: 0.15 }, '<')
+        tl.fromTo(imageContainersInner[4], { scale: 2, transformOrigin: '50% 50% 0px' }, { scale: 1.85 }, '<')
         
-        // tl.addLabel('item-5-terra')
-        // tl.fromTo(items[4], { xPercent: 100 }, { xPercent: 0 }, '<')
-        // tl.fromTo(innerItems[4], { xPercent: -100 }, { xPercent: 0 }, '<')
-        // tl.fromTo(imageContainers[4], { xPercent: 0, scale: 0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        // tl.fromTo(imageContainersInner[4], { xPercent: 0, scale: 2, transformOrigin: '50% 50% 0px' }, { xPercent: -100, scale: 1.2 }, '<')
-
+        // --- Phase 3 (starts AFTER phase 2 finishes) ---
+        tl.addLabel('phase-3', '>')
+        tl.fromTo(items[2], { xPercent: 0 }, { xPercent: -100 })
+        tl.fromTo(innerItems[2], { xPercent: 0 }, { xPercent: 100 }, '<')
+        tl.fromTo(imageContainers[2], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(imageContainersInner[2], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(items[3], { xPercent: 80 }, { xPercent: 0 }, '<')
+        tl.fromTo(innerItems[3], { xPercent: -80 }, { xPercent: 0 }, '<')
+        tl.fromTo(imageContainers[3], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
+        tl.fromTo(imageContainersInner[3], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
+        tl.fromTo(items[4], { xPercent: 95 }, { xPercent: 80 }, '<')
+        tl.fromTo(innerItems[4], { xPercent: -95 }, { xPercent: -80 }, '<')
+        tl.fromTo(imageContainers[4], { scale: 0.15, transformOrigin: '100% 100% 0px' }, { scale: 0.6 }, '<')
+        tl.fromTo(imageContainersInner[4], { scale: 1.85, transformOrigin: '50% 50% 0px' }, { scale: 1.55 }, '<')
+        
+        // --- Phase 4 (starts AFTER phase 3 finishes) ---
+        tl.addLabel('phase-4', '>')
+        tl.fromTo(items[3], { xPercent: 0 }, { xPercent: -100 })
+        tl.fromTo(innerItems[3], { xPercent: 0 }, { xPercent: 100 }, '<')
+        tl.fromTo(imageContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(imageContainersInner[3], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(items[4], { xPercent: 80 }, { xPercent: 0 }, '<')
+        tl.fromTo(innerItems[4], { xPercent: -80 }, { xPercent: 0 }, '<')
+        tl.fromTo(imageContainers[4], { xPercent: 0, scale: 0.6, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
+        tl.fromTo(imageContainersInner[4], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
+        
       }, mainSection.current)
       return () => desktop.revert()
     })
@@ -203,7 +235,7 @@ export function Main() {
               </div>
             </div>
           </div>
-          {/* <div className="MainSectionItem --bg-terra MainSection-item">
+          <div className="MainSectionItem --bg-terra MainSection-item">
             <div className="--index-last MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
                 <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--terra)', }} />
@@ -226,9 +258,9 @@ export function Main() {
                 </div>
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
-        {/* <div className="MainSection-nav">
+        <div className="MainSection-nav">
           <div className="MainSection-navItem AppSmallText-1">
             <span>01</span>
             <span className="MainSection-navItemTitle">Section One</span>
@@ -252,7 +284,7 @@ export function Main() {
           <div className="MainSection-navProgress">
             <span className="MainSection-navProgressBar"></span>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   )
