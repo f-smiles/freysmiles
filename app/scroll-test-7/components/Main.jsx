@@ -55,7 +55,7 @@ export function Main() {
             pin: true,
             pinSpacing: false,
             invalidateOnRefresh: true,
-            markers: true,
+            markers: false,
           })
         })
       }, itemsContainer.current)
@@ -73,7 +73,7 @@ export function Main() {
             pin: true,
             scrub: 1, // true
             invalidateOnRefresh: true,
-            markers: true,
+            markers: false,
           },
           defaults: { ease: 'none' },
         })
