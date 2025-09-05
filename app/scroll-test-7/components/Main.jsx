@@ -16,23 +16,42 @@ export function Main() {
     const innerStickies = document.querySelectorAll('.MainSectionItem-innerSticky')
     const imageContainers = document.querySelectorAll('.MainSectionItem-imageContainer')
     const imageContainersInner = document.querySelectorAll('.MainSectionItem-imageContainerInner')
-    // const images = document.querySelectorAll('.MainSectionItem-image')
-    // const headTitle = document.querySelector('.MainSection-headTitle')
+    const images = document.querySelectorAll('.MainSectionItem-image')
+    const headTitle = document.querySelector('.MainSection-headTitle')
     const navItemTitles = document.querySelectorAll('.MainSection-navItemTitle')
     const navProgressBar = document.querySelectorAll('.MainSection-navProgressBar')
-
-    let mm = gsap.matchMedia()
 
     navItemTitles.forEach((item, i) => {
       gsap.set(item, { translate: "none", rotate: "none", scale: "none", transform: "translate3d(0px, 5rem, 0px)" })
     })
+
+    images.forEach((image, i) => {
+      gsap.set(image, { aspectRatio: 1.3793103448275863 })
+    })
+
+    let splitheadTitle = SplitText.create(headTitle, { type: 'chars, words', charsClass: 'chars' })
+    gsap.from(splitheadTitle.chars, {
+      y: 50,
+      opacity: 0,
+      transformOrigin: '0% 50% -50',
+      stagger: 0.05,
+      duration: 2,
+      ease: 'none',
+      onComplete: () => {
+        headTitle.removeAttribute('aria-hidden')
+      }
+    })
+
+    let mm = gsap.matchMedia()
 
     mm.add('(max-width: 1079px)', () => {
       const mobile = gsap.context(() => {
         innerStickies.forEach((item, i) => {
           ScrollTrigger.create({
             trigger: item,
-            start: () => item.offsetHeight < window.innerHeight ? 'top top' : 'bottom bottom',
+            start: item.offsetHeight < window.innerHeight ? 'top top' : 'bottom bottom',
+            endTrigger: innerStickies[i + 1],
+            end: 'top top',
             pin: true,
             pinSpacing: false,
             invalidateOnRefresh: true,
@@ -138,6 +157,192 @@ export function Main() {
   return (
     <div ref={mainSection} className="MainSection` --dark --in-view" style={{ backgroundColor: 'var(--blue)', '--91c5acce': 5, }}>
       <div className="MainSection-wrap">
+        <div className="MainSection-head">
+          <h2 className="SplitText AnimatedSplitText --anim-title MainSection-headTitle AppTitle-1 --in-view" style={{ opacity: 1, visibility: "inherit" }}>
+            <div style={{ display: "block", textAlign: "start", position: "relative" }} className="head-lines head-lines1">
+              <div className="chars-wrapper">
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    translate: "none",
+                    rotate: "none",
+                    scale: "none",
+                    transformOrigin: "50% 100% 0px",
+                    opacity: 1,
+                    visibility: "inherit",
+                    transform: "translate3d(0px, 0px, 0px)"
+                  }}
+                  className="chars chars1"
+                >
+                  H
+                </div>
+              </div>
+              <div className="chars-wrapper">
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    translate: "none",
+                    rotate: "none",
+                    scale: "none",
+                    transformOrigin: "50% 100% 0px",
+                    opacity: 1,
+                    visibility: "inherit",
+                    transform: "translate3d(0px, 0px, 0px)"
+                  }}
+                  className="chars chars2"
+                >
+                  e
+                </div>
+              </div>
+              <div className="chars-wrapper">
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    translate: "none",
+                    rotate: "none",
+                    scale: "none",
+                    transformOrigin: "50% 100% 0px",
+                    opacity: 1,
+                    visibility: "inherit",
+                    transform: "translate3d(0px, 0px, 0px)"
+                  }}
+                  className="chars chars3"
+                >
+                  a
+                </div>
+              </div>
+              <div className="chars-wrapper">
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    translate: "none",
+                    rotate: "none",
+                    scale: "none",
+                    transformOrigin: "50% 100% 0px",
+                    opacity: 1,
+                    visibility: "inherit",
+                    transform: "translate3d(0px, 0px, 0px)"
+                  }}
+                  className="chars chars4"
+                >
+                  d
+                </div>
+              </div>
+              <div className="chars-wrapper">
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    translate: "none",
+                    rotate: "none",
+                    scale: "none",
+                    transformOrigin: "50% 100% 0px",
+                    opacity: 1,
+                    visibility: "inherit",
+                    transform: "translate3d(0px, 0px, 0px)"
+                  }}
+                  className="chars chars5"
+                >
+                  i
+                </div>
+              </div>
+              <div className="chars-wrapper">
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    translate: "none",
+                    rotate: "none",
+                    scale: "none",
+                    transformOrigin: "50% 100% 0px",
+                    opacity: 1,
+                    visibility: "inherit",
+                    transform: "translate3d(0px, 0px, 0px)"
+                  }}
+                  className="chars chars6"
+                >
+                  n
+                </div>
+              </div>
+              <div className="chars-wrapper">
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    translate: "none",
+                    rotate: "none",
+                    scale: "none",
+                    transformOrigin: "50% 100% 0px",
+                    opacity: 1,
+                    visibility: "inherit",
+                    transform: "translate3d(0px, 0px, 0px)"
+                  }}
+                  className="chars chars7"
+                >
+                  g
+                </div>
+              </div>
+              <div className="chars-wrapper">
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    translate: "none",
+                    rotate: "none",
+                    scale: "none",
+                    transformOrigin: "50% 100% 0px",
+                    opacity: 1,
+                    visibility: "inherit",
+                    transform: "translate3d(0px, 0px, 0px)"
+                  }}
+                  className="chars chars8"
+                >
+                  O
+                </div>
+              </div>
+              <div className="chars-wrapper">
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    translate: "none",
+                    rotate: "none",
+                    scale: "none",
+                    transformOrigin: "50% 100% 0px",
+                    opacity: 1,
+                    visibility: "inherit",
+                    transform: "translate3d(0px, 0px, 0px)"
+                  }}
+                  className="chars chars9"
+                >
+                  n
+                </div>
+              </div>
+              <div className="chars-wrapper">
+                <div
+                  style={{
+                    position: "relative",
+                    display: "inline-block",
+                    translate: "none",
+                    rotate: "none",
+                    scale: "none",
+                    transformOrigin: "50% 100% 0px",
+                    opacity: 1,
+                    visibility: "inherit",
+                    transform: "translate3d(0px, 0px, 0px)"
+                  }}
+                  className="chars chars10"
+                >
+                  e
+                </div>
+              </div>
+            </div>
+          </h2>
+        </div>
         <div ref={itemsContainer} className="MainSection-items">
           <div className="MainSectionItem MainSection-item">
             <div className="--index-first MainSectionItem-inner">
@@ -289,203 +494,3 @@ export function Main() {
     </div>
   )
 }
-
-// let splitheadTitle = SplitText.create(headTitle, { type: 'chars, words', charsClass: 'chars' })
-// gsap.from(splitheadTitle.chars, {
-//   y: 50,
-//   transformOrigin: "0% 50% -50",
-//   duration: 3,
-//   ease: 'back',
-//   stagger: 0.05,
-//   onComplete: () => {
-//     splitheadTitle.revert()
-//     headTitle.removeAttribute("aria-hidden")
-//   }
-// })
-
-{/* <div className="MainSection-head">
-  <h2 className="SplitText AnimatedSplitText --anim-title MainSection-headTitle AppTitle-1 --in-view" style={{ opacity: 1, visibility: "inherit" }}>
-    <div style={{ display: "block", textAlign: "start", position: "relative" }} className="head-lines head-lines1">
-      <div className="chars-wrapper">
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-            translate: "none",
-            rotate: "none",
-            scale: "none",
-            transformOrigin: "50% 100% 0px",
-            opacity: 1,
-            visibility: "inherit",
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
-          className="chars chars1"
-        >
-          H
-        </div>
-      </div>
-      <div className="chars-wrapper">
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-            translate: "none",
-            rotate: "none",
-            scale: "none",
-            transformOrigin: "50% 100% 0px",
-            opacity: 1,
-            visibility: "inherit",
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
-          className="chars chars2"
-        >
-          e
-        </div>
-      </div>
-      <div className="chars-wrapper">
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-            translate: "none",
-            rotate: "none",
-            scale: "none",
-            transformOrigin: "50% 100% 0px",
-            opacity: 1,
-            visibility: "inherit",
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
-          className="chars chars3"
-        >
-          a
-        </div>
-      </div>
-      <div className="chars-wrapper">
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-            translate: "none",
-            rotate: "none",
-            scale: "none",
-            transformOrigin: "50% 100% 0px",
-            opacity: 1,
-            visibility: "inherit",
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
-          className="chars chars4"
-        >
-          d
-        </div>
-      </div>
-      <div className="chars-wrapper">
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-            translate: "none",
-            rotate: "none",
-            scale: "none",
-            transformOrigin: "50% 100% 0px",
-            opacity: 1,
-            visibility: "inherit",
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
-          className="chars chars5"
-        >
-          i
-        </div>
-      </div>
-      <div className="chars-wrapper">
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-            translate: "none",
-            rotate: "none",
-            scale: "none",
-            transformOrigin: "50% 100% 0px",
-            opacity: 1,
-            visibility: "inherit",
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
-          className="chars chars6"
-        >
-          n
-        </div>
-      </div>
-      <div className="chars-wrapper">
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-            translate: "none",
-            rotate: "none",
-            scale: "none",
-            transformOrigin: "50% 100% 0px",
-            opacity: 1,
-            visibility: "inherit",
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
-          className="chars chars7"
-        >
-          g
-        </div>
-      </div>
-      <div className="chars-wrapper">
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-            translate: "none",
-            rotate: "none",
-            scale: "none",
-            transformOrigin: "50% 100% 0px",
-            opacity: 1,
-            visibility: "inherit",
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
-          className="chars chars8"
-        >
-          O
-        </div>
-      </div>
-      <div className="chars-wrapper">
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-            translate: "none",
-            rotate: "none",
-            scale: "none",
-            transformOrigin: "50% 100% 0px",
-            opacity: 1,
-            visibility: "inherit",
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
-          className="chars chars9"
-        >
-          n
-        </div>
-      </div>
-      <div className="chars-wrapper">
-        <div
-          style={{
-            position: "relative",
-            display: "inline-block",
-            translate: "none",
-            rotate: "none",
-            scale: "none",
-            transformOrigin: "50% 100% 0px",
-            opacity: 1,
-            visibility: "inherit",
-            transform: "translate3d(0px, 0px, 0px)"
-          }}
-          className="chars chars10"
-        >
-          e
-        </div>
-      </div>
-    </div>
-  </h2>
-</div> */}

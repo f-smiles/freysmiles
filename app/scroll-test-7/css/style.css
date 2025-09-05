@@ -283,6 +283,24 @@
   pointer-events: auto;
 }
 
+.SplitText {
+  word-break: break-word;
+}
+
+.AnimatedSplitText .head-lines {
+  will-change: transform;
+}
+.AnimatedSplitText .chars-wrapper {
+  display: inline-block;
+}
+.AnimatedSplitText .chars {
+  will-change: transform;
+}
+.AnimatedSplitText.--anim-title .head-lines {
+  overflow: hidden;
+}
+
+
 @media screen and (max-width:768px) {
   .MainSection-head {
     padding: 4rem 2rem 2rem;
