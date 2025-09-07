@@ -205,6 +205,7 @@
   pointer-events: auto;
   position: relative;
   width: 100%;
+  color: var(--black);
 }
 
 .MainSectionItem-contentTitle {
@@ -300,6 +301,7 @@
 
 .AnimatedSplitText .head-lines {
   will-change: transform;
+  color: var(--black);
 }
 .AnimatedSplitText .chars-wrapper {
   display: inline-block;
@@ -391,6 +393,7 @@
   margin-bottom: 2rem;
   overflow: hidden;
   width: 100%;
+  color: var(--black);
 }
 
 .MainSection-navItem span {
