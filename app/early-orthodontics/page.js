@@ -81,7 +81,7 @@ export default function Page() {
 
         tl.add(() => {
           tl.addLabel('progress-bar')
-          tl.fromTo(navProgressBar, { xPercent: -80 }, { xPercent: 0, duration: tl.duration(), ease: 'none' }, 0)
+          tl.fromTo(navProgressBar, { xPercent: -85 }, { xPercent: 0, duration: tl.duration(), ease: 'none' }, 0)
         })
         
         // --- Phase 1 ---        
@@ -134,8 +134,12 @@ export default function Page() {
         tl.fromTo(imageContainersInner[3], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
         tl.fromTo(items[4], { xPercent: 95 }, { xPercent: 80 }, '<')
         tl.fromTo(innerItems[4], { xPercent: -95 }, { xPercent: -80 }, '<')
-        tl.fromTo(imageContainers[4], { scale: 0.15, transformOrigin: '100% 100% 0px' }, { scale: 0.6 }, '<')
+        tl.fromTo(imageContainers[4], { xPercent: 0, scale: 0.15, transformOrigin: '100% 100% 0px' }, { xPercent: -15, scale: 0.45 }, '<')
         tl.fromTo(imageContainersInner[4], { scale: 1.85, transformOrigin: '50% 50% 0px' }, { scale: 1.55 }, '<')
+        tl.fromTo(items[5], { xPercent: 100 }, { xPercent: 95 }, '<')
+        tl.fromTo(innerItems[5], { xPercent: -100 }, { xPercent: -95 }, '<')
+        tl.fromTo(imageContainers[5], { scale: 0, transformOrigin: '100% 100% 0px' }, { scale: 0.15 }, '<')
+        tl.fromTo(imageContainersInner[5], { scale: 2, transformOrigin: '50% 50% 0px' }, { scale: 1.85 }, '<')
         
         // --- Phase 4 (starts AFTER phase 3 finishes) ---
         tl.addLabel('phase-4', '>')
@@ -145,8 +149,24 @@ export default function Page() {
         tl.fromTo(imageContainersInner[3], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
         tl.fromTo(items[4], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[4], { xPercent: -80 }, { xPercent: 0 }, '<')
-        tl.fromTo(imageContainers[4], { xPercent: 0, scale: 0.6, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
+        tl.fromTo(imageContainers[4], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
         tl.fromTo(imageContainersInner[4], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
+        tl.fromTo(items[5], { xPercent: 95 }, { xPercent: 80 }, '<')
+        tl.fromTo(innerItems[5], { xPercent: -95 }, { xPercent: -80 }, '<')
+        tl.fromTo(imageContainers[5], { scale: 0.15, transformOrigin: '100% 100% 0px' }, { scale: 0.6 }, '<')
+        tl.fromTo(imageContainersInner[5], { scale: 1.85, transformOrigin: '50% 50% 0px' }, { scale: 1.55 }, '<')
+
+        // --- Phase 5 (starts AFTER phase 4 finishes) ---
+        tl.addLabel('phase-5', '>')
+        tl.fromTo(items[4], { xPercent: 0 }, { xPercent: -100 })
+        tl.fromTo(innerItems[4], { xPercent: 0 }, { xPercent: 100 }, '<')
+        tl.fromTo(imageContainers[4], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(imageContainersInner[4], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(items[5], { xPercent: 80 }, { xPercent: 0 }, '<')
+        tl.fromTo(innerItems[5], { xPercent: -80 }, { xPercent: 0 }, '<')
+        tl.fromTo(imageContainers[5], { xPercent: 0, scale: 0.6, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
+        tl.fromTo(imageContainersInner[5], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
+
         
       }, mainSection.current)
       return () => desktop.revert()
@@ -196,10 +216,10 @@ export default function Page() {
                 <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--blue)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">01</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Wildlife in Action: A Glimpse into Nature's Daily Drama</h3>
+                  <h3 className="MainSectionItem-contentTitle AppTitle-3">What age do orthodontists recommend a screening?</h3>
                   <div className="MainSectionItem-contentText">
-                    <div className="AppText-12 ">
-                      <p>Explore the untouched beauty of forests, mountains, and rivers as we uncover the hidden secrets of nature's most breathtaking landscapes.</p>
+                    <div className="AppText-12">
+                      <p>Our doctors—as well as the American Association of Orthodontists—recommend an initial orthodontic screening at around age 7. At this stage, 3D imaging is used to evaluate the developing bite and predict the trajectory of permanent teeth. It also helps identify issues such as supernumerary (extra) or missing teeth, assess airway development (including risk factors for sleep apnea), and detect jaw growth discrepancies. Obstructive habits like thumb sucking, tongue thrusting, or early malocclusion can be addressed early to support optimal jaw and airway development.</p>
                     </div>
                   </div>
                 </div>
@@ -220,10 +240,10 @@ export default function Page() {
                 <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--pink)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">02</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Nature's Symphony: The Sounds That Heal the Soul</h3>
+                  <h3 className="MainSectionItem-contentTitle AppTitle-3">What makes age 7 the key stage for identifying dental issues?</h3>
                   <div className="MainSectionItem-contentText">
-                    <div className="AppText-12 ">
-                      <p>Immerse yourself in the soothing sounds of chirping birds, rustling leaves, and flowing streams - nature's music for peace and tranquility.</p>
+                    <div className="AppText-12">
+                      <p>Key dental landmarks are typically in place: the permanent first molars are positioned in the dental arches, and all four upper and lower (eight total) permanent incisors are either fully erupted or close to erupting. These markers allow our doctors to accurately assess the width of the arches, the front-to-back (anterior-posterior) relationship of the jaws, and identify any crossbites—whether in the front or back of the mouth. This is also the stage when significant arch length deficiencies can be detected, giving us the chance to intervene early to provide room for all permanent teeth. and guide proper development before more complex problems arise.</p>
                     </div>
                   </div>
                 </div>
@@ -244,10 +264,10 @@ export default function Page() {
                 <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--green)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">03</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Wildlife in Action: A Glimpse into Nature's Daily Drama</h3>
+                  <h3 className="MainSectionItem-contentTitle AppTitle-3">How does airway evaluation factor into early orthodontic care?</h3>
                   <div className="MainSectionItem-contentText">
-                    <div className="AppText-12 ">
-                      <p>Explore the untouched beauty of forests, mountains, and rivers as we uncover the hidden secrets of nature's most breathtaking landscapes.</p>
+                    <div className="AppText-12">
+                      <p>We also assess the airway and surrounding structures, including the tonsils and adenoids. Enlarged tonsils (tonsillar hypertrophy) and adenoids can restrict airflow, disrupt breathing during sleep, and negatively impact how the jaws and arches grow—often contributing to a condition known as adenoid facies, characterized by long, narrow facial development and mouth breathing.</p>
                     </div>
                   </div>
                 </div>
@@ -268,10 +288,34 @@ export default function Page() {
                 <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--beige)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">04</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">The Power of Nature: How It Shapes Our World</h3>
+                  <h3 className="MainSectionItem-contentTitle AppTitle-3">What advantages does timely intervention provide for treatment options?</h3>
                   <div className="MainSectionItem-contentText">
-                    <div className="AppText-12 ">
-                      <p>Dive into the incredible forces of nature - from roaring waterfalls to mighty hurricanes - and see how they sculpt the earth we live on.</p>
+                    <div className="AppText-12">
+                      <p>Timely intervention makes it possible to manage many cases more comfortably with clear aligners. which gently guide growth while also functioning as protective mouth guards during sports or severe dental protrustion. Through proactive, individualized treatment we're able to minimize disruption, improve oral hygiene, reduce enamel damage, and help children avoid the physical and emotional burden of bulky appliances later on.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="MainSectionItem-imageContainer">
+                  <div className="MainSectionItem-imageContainerInner">
+                    <div className="AppImage MainSectionItem-image">
+                      <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/test/base.jpg')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
+                      <img src="/images/test/base.jpg" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="MainSectionItem MainSection-item">
+            <div className="--index-between MainSectionItem-inner">
+              <div className="MainSectionItem-innerSticky">
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--grey)', }} />
+                <div className="MainSectionItem-content">
+                  <span className="MainSectionItem-index">04</span>
+                  <h3 className="MainSectionItem-contentTitle AppTitle-3">What happens if no treatment is needed right away?</h3>
+                  <div className="MainSectionItem-contentText">
+                    <div className="AppText-12">
+                      <p>Once you visit us, we take care of the rest. If no treatment is needed right away, we'll place your child on a customized Growth & Guidance schedule (Frey Smiles Club) —our way of keeping an eye on how things are progressing until treatment is indicated. </p>
                     </div>
                   </div>
                 </div>
@@ -292,10 +336,10 @@ export default function Page() {
                 <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--terra)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">05</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Nature's Symphony: The Sounds That Heal the Soul</h3>
+                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Why visit the orthodontist if treatment is not necessary at this time?</h3>
                   <div className="MainSectionItem-contentText">
-                    <div className="AppText-12 ">
-                      <p>Immerse yourself in the soothing sounds of chirping birds, rustling leaves, and flowing streams - nature's music for peace and tranquility.</p>
+                    <div className="AppText-12">
+                      <p>Early visits build familiarity with our doctors and team and often leads to better compliance and the best treatment experience. Even if no treatment is needed right away, that first screening sets the stage for better results later. Think of it as laying the groundwork—not just for a great smile, but for a positive experience along the way.</p>
                     </div>
                   </div>
                 </div>
@@ -331,6 +375,10 @@ export default function Page() {
           <div className="MainSection-navItem AppSmallText-1">
             <span>05</span>
             <span className="MainSection-navItemTitle">Section Five</span>
+          </div>
+          <div className="MainSection-navItem AppSmallText-1">
+            <span>06</span>
+            <span className="MainSection-navItemTitle">Section Six</span>
           </div>
           <div className="MainSection-navProgress">
             <span className="MainSection-navProgressBar"></span>
