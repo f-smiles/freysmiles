@@ -81,7 +81,7 @@ export default function Page() {
 
         tl.add(() => {
           tl.addLabel('progress-bar')
-          tl.fromTo(navProgressBar, { xPercent: -85 }, { xPercent: 0, duration: tl.duration(), ease: 'none' }, 0)
+          tl.fromTo(navProgressBar, { xPercent: -80 }, { xPercent: 0, duration: tl.duration(), ease: 'none' }, 0)
         })
         
         // --- Phase 1 ---        
