@@ -290,7 +290,7 @@ function Background() {
     });
 
     const { gl } = renderer;
-    gl.clearColor(1, 1, 1, 1);
+gl.clearColor(0.93, 0.94, 0.96, 1.0); 
 
     const geometry = new Triangle(gl);
 
@@ -307,72 +307,87 @@ function Background() {
     `;
 
     const fragment = `
-      precision highp float;
+ precision highp float;
 
-      uniform vec3 uColor1;
-      uniform vec3 uColor2;
-      uniform float uTime;
-      uniform float uScroll;
+uniform vec3 uColor1;   // peach highlight (#F9D7AB)
+uniform vec3 uColor2;   // lavender grey (#C9CEDD)
+uniform vec3 uColor3;   // deeper lavender slate (#A9B0C2)
+uniform float uTime;
+uniform float uScroll;
 
-      varying vec2 vUv;
+varying vec2 vUv;
 
+vec4 permute(vec4 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+vec2 fade(vec2 t) { return t*t*t*(t*(t*6.0-15.0)+10.0); }
 
-      vec4 permute(vec4 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
-      vec2 fade(vec2 t) { return t*t*t*(t*(t*6.0-15.0)+10.0); }
+float cnoise(vec2 P) {
+  vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
+  vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
+  Pi = mod(Pi, 289.0); 
+  vec4 ix = Pi.xzxz;
+  vec4 iy = Pi.yyww;
+  vec4 fx = Pf.xzxz;
+  vec4 fy = Pf.yyww;
+  vec4 i = permute(permute(ix) + iy);
+  vec4 gx = 2.0 * fract(i * 0.0243902439) - 1.0; // 1/41
+  vec4 gy = abs(gx) - 0.5;
+  vec4 tx = floor(gx + 0.5);
+  gx = gx - tx;
+  vec2 g00 = vec2(gx.x,gy.x);
+  vec2 g10 = vec2(gx.y,gy.y);
+  vec2 g01 = vec2(gx.z,gy.z);
+  vec2 g11 = vec2(gx.w,gy.w);
+  vec4 norm = 1.79284291400159 - 0.85373472095314 *
+    vec4(dot(g00,g00), dot(g01,g01), dot(g10,g10), dot(g11,g11));
+  g00 *= norm.x; g01 *= norm.y; g10 *= norm.z; g11 *= norm.w;
+  float n00 = dot(g00, vec2(fx.x, fy.x));
+  float n10 = dot(g10, vec2(fx.y, fy.y));
+  float n01 = dot(g01, vec2(fx.z, fy.z));
+  float n11 = dot(g11, vec2(fx.w, fy.w));
+  vec2 fade_xy = fade(Pf.xy);
+  vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
+  float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
+  return 2.3 * n_xy;
+}
 
-      float cnoise(vec2 P) {
-        vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
-        vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
-        Pi = mod(Pi, 289.0); 
-        vec4 ix = Pi.xzxz;
-        vec4 iy = Pi.yyww;
-        vec4 fx = Pf.xzxz;
-        vec4 fy = Pf.yyww;
-        vec4 i = permute(permute(ix) + iy);
-        vec4 gx = 2.0 * fract(i * 0.0243902439) - 1.0; // 1/41 = 0.024...
-        vec4 gy = abs(gx) - 0.5;
-        vec4 tx = floor(gx + 0.5);
-        gx = gx - tx;
-        vec2 g00 = vec2(gx.x,gy.x);
-        vec2 g10 = vec2(gx.y,gy.y);
-        vec2 g01 = vec2(gx.z,gy.z);
-        vec2 g11 = vec2(gx.w,gy.w);
-        vec4 norm = 1.79284291400159 - 0.85373472095314 * 
-          vec4(dot(g00, g00), dot(g01, g01), dot(g10, g10), dot(g11, g11));
-        g00 *= norm.x;
-        g01 *= norm.y;
-        g10 *= norm.z;
-        g11 *= norm.w;
-        float n00 = dot(g00, vec2(fx.x, fy.x));
-        float n10 = dot(g10, vec2(fx.y, fy.y));
-        float n01 = dot(g01, vec2(fx.z, fy.z));
-        float n11 = dot(g11, vec2(fx.w, fy.w));
-        vec2 fade_xy = fade(Pf.xy);
-        vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
-        float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
-        return 2.3 * n_xy;
-      }
+void main() {
+  // moving noise
+  float n = cnoise(vUv * 1.0 + uScroll + sin(uTime * 0.1));
 
-      void main() {
-        float noise = cnoise(vUv * 1.0 + uScroll + sin(uTime * 0.1));
-        vec3 color = mix(uColor1, uColor2, noise);
+  // normalize to 0..1
+  float t = 0.5 + 0.5 * n;
 
-        gl_FragColor = vec4(color, 1.0);
-      }
+  // ↓ reduce peach dominance more (lower exponent => more lavender)
+  t = pow(t, 0.35);
+
+  // base moving band (peach -> lavender)
+  vec3 color = mix(uColor1, uColor2, t);
+
+  // --- use uColor3 as deeper slate ---
+
+  // 1) vignette: pull corners slightly toward slate
+  float vign = smoothstep(0.68, 1.10, distance(vUv, vec2(0.5)));
+  color = mix(color, uColor3, vign * 0.12);  // strength
+
+  // 2) valley shadow: only darken the low parts of the band
+  float valley = smoothstep(0.50, 0.28, t);  // lower t => more slate
+  color = mix(color, uColor3, valley * 0.10);
+
+  gl_FragColor = vec4(color, 1.0);
+}
     `;
 
     const program = new Program(gl, {
       vertex,
       fragment,
-      uniforms: {
-        uTime: { value: 0 },
-        uScroll: { value: 0 },
-        uColor1: { value: new Color("#fdfaee") },
-        uColor2: { value: new Color("#d6abb4") },
-        uResolution: {
-          value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight),
-        },
-      },
+     uniforms: {
+  uTime: { value: 0 },
+  uScroll: { value: 0 },
+uColor1: { value: new Color("#E8C3A4") }, 
+uColor2: { value: new Color("#A7ACC1") },
+uColor3: { value: new Color("#E6E5E5") }, 
+  uResolution: { value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight) },
+}
     });
 
     const mesh = new Mesh(gl, { geometry, program });
