@@ -1,4 +1,5 @@
 "use client";
+import '../mouse-gooey-effect-5/css/style.css'
 import { Item } from "../../utils/Item";
 import Image from "next/image";
 import Lenis from "@studio-freight/lenis";
@@ -25,6 +26,8 @@ import {
   LinearMipmapLinearFilter,
   RGBFormat,
 } from "three";
+import GridContainer from "../mouse-gooey-effect-5/components/GridContainer";
+
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
@@ -1193,6 +1196,8 @@ export default function OurTeam() {
           </div>
         </section> */}
       </div>
+
+      <GridContainer />
 
       {/* <div className="bg-[#F7F7F7]">
           
