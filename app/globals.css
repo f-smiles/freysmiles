@@ -5979,7 +5979,7 @@ a {
 }
 
 .text-heading h1 {
-  font-family: sans-serif;
+  font-family: "NeueHaasGroteskDisplayPro45Light";
   font-weight: 400;
   font-size: 100px;
   text-transform: uppercase;
@@ -6043,10 +6043,11 @@ a {
 
 
 .demo-4 {
+  letter-spacing: 1.3px; 
 	position: relative;
 	margin: 0;
 	color:  #000;
-	font-family: "KHTekaTrial-Light", monospace;
+	font-family: "NeueHaasGroteskDisplayPro45Light", monospace;
 	font-optical-sizing: auto;
 	text-transform: uppercase;
 	-webkit-font-smoothing: antialiased;
@@ -6460,16 +6461,16 @@ body,
 }
 
 .highlight {
-  color: #FFF;
-  font-weight: 800;
+  color: #000;
+  /* font-weight: 800; */
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-left: 10px;
 }
 
 .faded {
-    color: #F5F5F5;
-      font-weight: 400;
+    color: #000;
+
 
   text-transform: uppercase;
   letter-spacing: 0.08em;

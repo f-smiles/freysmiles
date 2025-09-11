@@ -7,6 +7,8 @@ import {
   AnimatePresence,
   useMotionValue,
   useSpring,
+  useMotionValueEvent,
+  useScroll
 } from "framer-motion";
 import {
   Canvas,
@@ -166,7 +168,7 @@ const TextAnimator = forwardRef(({ children, className }, ref) => {
   );
 });
 
-const Testimonial = () => {
+const Testimonial = ({ borderRef }) => {
   const patients = [
     { name: "Lainie", duration: "20 months" },
     { name: "Ron L.", duration: "INVISALIGN" },
@@ -196,7 +198,8 @@ const Testimonial = () => {
   const nameRef = useRef([]);
   const durationRefs = useRef([]);
   const listRefs = useRef([]);
-
+  const [opacities, setOpacities] = useState(patients.map(() => 1));
+  
   useEffect(() => {
     listRefs.current.forEach((el) => {
       gsap.fromTo(
@@ -217,7 +220,42 @@ const Testimonial = () => {
     });
   }, []);
 
-  return (
+useEffect(() => {
+  if (!borderRef?.current) return;
+
+  const limit = 3; 
+  let ticking = false;
+
+  const update = () => {
+    ticking = false;
+    const borderTop = borderRef.current.getBoundingClientRect().top;
+
+    const next = listRefs.current.map((el) => {
+      if (!el) return 1;
+      const { top: lineTop } = el.getBoundingClientRect();
+      return lineTop <= borderTop - limit ? 0 : 1;
+    });
+
+    setOpacities(next);
+  };
+
+  const onScrollOrResize = () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  };
+
+  update();
+  window.addEventListener("scroll", onScrollOrResize, { passive: true });
+  window.addEventListener("resize", onScrollOrResize);
+  return () => {
+    window.removeEventListener("scroll", onScrollOrResize);
+    window.removeEventListener("resize", onScrollOrResize);
+  };
+}, [borderRef]);
+
+ return (
     <main className="demo-4">
       <section
         style={{
@@ -227,14 +265,6 @@ const Testimonial = () => {
           justifyContent: "center",
         }}
       >
-        <h2
-          style={{
-            fontSize: "12px",
-            color: "black",
-          }}
-        >
-          Patient Cases
-        </h2>
 
         <ul
           style={{
@@ -247,29 +277,37 @@ const Testimonial = () => {
             counterReset: "item 0",
           }}
         >
-          {patients.map((item, index) => (
-            <li
-              key={index}
-              ref={(el) => (listRefs.current[index] = el)}
-              className="list__item"
-              onMouseEnter={() => {
-                nameRef.current[index]?.animate?.();
-                durationRefs.current[index]?.animate?.();
-              }}
-            >
-              <span className="list__item-col" aria-hidden="true" />
-              <span className="list__item-col">
-                <TextAnimator ref={(el) => (nameRef.current[index] = el)}>
-                  {item.name}
-                </TextAnimator>
-              </span>
-              <span className="list__item-col list__item-col--last">
-                <TextAnimator ref={(el) => (durationRefs.current[index] = el)}>
-                  {item.duration || "—"}
-                </TextAnimator>
-              </span>
-            </li>
-          ))}
+          {patients.map((item, index) => {
+            const hidden = (opacities[index] ?? 1) === 0;
+            return (
+              <li
+                key={index}
+                ref={(el) => (listRefs.current[index] = el)}
+                className="list__item"
+                style={{
+                  opacity: hidden ? 0 : 1,
+                  transition: hidden ? "opacity 0ms linear" : "opacity 160ms linear",
+                  willChange: "opacity",
+                }}
+                onMouseEnter={() => {
+                  nameRef.current[index]?.animate?.();
+                  durationRefs.current[index]?.animate?.();
+                }}
+              >
+                <span className="list__item-col" aria-hidden="true" />
+                <span className="list__item-col">
+                  <TextAnimator ref={(el) => (nameRef.current[index] = el)}>
+                    {item.name}
+                  </TextAnimator>
+                </span>
+                <span className="list__item-col list__item-col--last">
+                  <TextAnimator ref={(el) => (durationRefs.current[index] = el)}>
+                    {item.duration || "—"}
+                  </TextAnimator>
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </main>
@@ -307,85 +345,99 @@ gl.clearColor(0.93, 0.94, 0.96, 1.0);
     `;
 
     const fragment = `
- precision highp float;
+precision highp float;
 
-uniform vec3 uColor1;   // peach highlight (#F9D7AB)
-uniform vec3 uColor2;   // lavender grey (#C9CEDD)
-uniform vec3 uColor3;   // deeper lavender slate (#A9B0C2)
+uniform vec3 uColor1;   // peach glow
+uniform vec3 uColor2;   // powder lavender
+uniform vec3 uColor3;   // slate lavender
 uniform float uTime;
 uniform float uScroll;
 
 varying vec2 vUv;
 
-vec4 permute(vec4 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
-vec2 fade(vec2 t) { return t*t*t*(t*(t*6.0-15.0)+10.0); }
+vec4 permute(vec4 x){ return mod(((x*34.0)+1.0)*x,289.0); }
+vec2 fade(vec2 t){ return t*t*t*(t*(t*6.0-15.0)+10.0); }
 
-float cnoise(vec2 P) {
-  vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
-  vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
-  Pi = mod(Pi, 289.0); 
-  vec4 ix = Pi.xzxz;
-  vec4 iy = Pi.yyww;
-  vec4 fx = Pf.xzxz;
-  vec4 fy = Pf.yyww;
-  vec4 i = permute(permute(ix) + iy);
-  vec4 gx = 2.0 * fract(i * 0.0243902439) - 1.0; // 1/41
-  vec4 gy = abs(gx) - 0.5;
-  vec4 tx = floor(gx + 0.5);
-  gx = gx - tx;
-  vec2 g00 = vec2(gx.x,gy.x);
-  vec2 g10 = vec2(gx.y,gy.y);
-  vec2 g01 = vec2(gx.z,gy.z);
-  vec2 g11 = vec2(gx.w,gy.w);
-  vec4 norm = 1.79284291400159 - 0.85373472095314 *
-    vec4(dot(g00,g00), dot(g01,g01), dot(g10,g10), dot(g11,g11));
-  g00 *= norm.x; g01 *= norm.y; g10 *= norm.z; g11 *= norm.w;
-  float n00 = dot(g00, vec2(fx.x, fy.x));
-  float n10 = dot(g10, vec2(fx.y, fy.y));
-  float n01 = dot(g01, vec2(fx.z, fy.z));
-  float n11 = dot(g11, vec2(fx.w, fy.w));
-  vec2 fade_xy = fade(Pf.xy);
-  vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
-  float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
-  return 2.3 * n_xy;
+float cnoise(vec2 P){
+  vec4 Pi=floor(P.xyxy)+vec4(0.0,0.0,1.0,1.0);
+  vec4 Pf=fract(P.xyxy)-vec4(0.0,0.0,1.0,1.0);
+  Pi=mod(Pi,289.0);
+  vec4 ix=Pi.xzxz, iy=Pi.yyww, fx=Pf.xzxz, fy=Pf.yyww;
+  vec4 i=permute(permute(ix)+iy);
+  vec4 gx=2.0*fract(i*0.0243902439)-1.0;
+  vec4 gy=abs(gx)-0.5;
+  vec4 tx=floor(gx+0.5);
+  gx=gx-tx;
+  vec2 g00=vec2(gx.x,gy.x), g10=vec2(gx.y,gy.y);
+  vec2 g01=vec2(gx.z,gy.z), g11=vec2(gx.w,gy.w);
+  vec4 norm=1.79284291400159-0.85373472095314*
+    vec4(dot(g00,g00),dot(g01,g01),dot(g10,g10),dot(g11,g11));
+  g00*=norm.x; g01*=norm.y; g10*=norm.z; g11*=norm.w;
+  float n00=dot(g00,vec2(fx.x,fy.x));
+  float n10=dot(g10,vec2(fx.y,fy.y));
+  float n01=dot(g01,vec2(fx.z,fy.z));
+  float n11=dot(g11,vec2(fx.w,fy.w));
+  vec2 fade_xy=fade(Pf.xy);
+  vec2 n_x=mix(vec2(n00,n01),vec2(n10,n11),fade_xy.x);
+  float n_xy=mix(n_x.x,n_x.y,fade_xy.y);
+  return 2.3*n_xy;
 }
 
-void main() {
-  // moving noise
-  float n = cnoise(vUv * 1.0 + uScroll + sin(uTime * 0.1));
+// fbm for cloud coat
+float fbm(vec2 p){
+  float a = 0.0;
+  float w = 0.55;
+  a += w * cnoise(p*0.6);  w *= 0.55;
+  a += w * cnoise(p*1.1);  w *= 0.55;
+  a += w * cnoise(p*2.0);
+  return a;
+}
 
-  // normalize to 0..1
-  float t = 0.5 + 0.5 * n;
+void main(){
+  // moving band
+  float n = cnoise(vUv + uScroll + sin(uTime*0.1));
+  float t = 0.5 + 0.5*n;
+  t = pow(t, 0.25);
 
-  // ↓ reduce peach dominance more (lower exponent => more lavender)
-  t = pow(t, 0.35);
-
-  // base moving band (peach -> lavender)
   vec3 color = mix(uColor1, uColor2, t);
 
-  // --- use uColor3 as deeper slate ---
-
-  // 1) vignette: pull corners slightly toward slate
+  // vignette / depth
   float vign = smoothstep(0.68, 1.10, distance(vUv, vec2(0.5)));
-  color = mix(color, uColor3, vign * 0.12);  // strength
+  color = mix(color, uColor3, vign * 0.10);
 
-  // 2) valley shadow: only darken the low parts of the band
-  float valley = smoothstep(0.50, 0.28, t);  // lower t => more slate
-  color = mix(color, uColor3, valley * 0.10);
+  float valley = smoothstep(0.50, 0.28, t);
+  color = mix(color, uColor3, valley * 0.08);
 
+  // cloud coat
+  float clouds = fbm(vUv*0.9 + vec2(uScroll*0.2, 0.0) + uTime*0.015);
+  float cMask  = smoothstep(0.35, 0.85, 0.5 + 0.5*clouds);
+  vec3 coat    = mix(uColor2, vec3(0.96, 0.97, 1.0), 0.65);
+  color = mix(color, coat, cMask * 0.55);
+
+
+  vec2 center = vec2(0.92, 0.06);
+  float r = distance(vUv, center);
+  float lift = 1.0 - smoothstep(0.25, 0.95, r);
+  color = mix(color, vec3(0.98, 0.985, 1.0), lift * 0.35);
+
+
+  vec2 glowCenter = vec2(0.08, 0.92);
+  float glow = 1.0 - smoothstep(0.0, 0.8, distance(vUv, glowCenter));
+  color += uColor1 * glow * 0.12;
+
+  // final output
   gl_FragColor = vec4(color, 1.0);
 }
     `;
-
     const program = new Program(gl, {
       vertex,
       fragment,
      uniforms: {
   uTime: { value: 0 },
   uScroll: { value: 0 },
-uColor1: { value: new Color("#E8C3A4") }, 
-uColor2: { value: new Color("#A7ACC1") },
-uColor3: { value: new Color("#E6E5E5") }, 
+uColor1: { value: new Color("#F3D2B3") }, 
+uColor2: { value: new Color("#C7CBD9") }, 
+uColor3: { value: new Color("#9FA8BC") }, 
   uResolution: { value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight) },
 }
     });
@@ -528,6 +580,7 @@ const ScrambleBlock = ({
   );
 };
 const TerminalPreloader = () => {
+  
   const containerRef = useRef();
 const specialChars = "⬝";
   const lines = [
@@ -620,6 +673,7 @@ const specialChars = "⬝";
   }, []);
 
   return (
+    
     <div className="terminal-preloader">
     
 
@@ -1075,11 +1129,43 @@ const Testimonials = () => {
 
     return () => ScrollTrigger.getAll().forEach((t) => t.kill());
   }, []);
+const testimonialsRef = useRef(null); 
+const reviewsRef = useRef(null);   
 
-  const isPatientSectionInView = useInView(patientSectionRef, {
-    margin: "-25% 0px -25% 0px",
-  });
+const [activeDot, setActiveDot] = useState("results");
+useEffect(() => {
+  const centerBias = 0.55; 
+  const distToCenter = (el) => {
+    if (!el) return Infinity;
+    const r = el.getBoundingClientRect();
+    const sectionCenter = (r.top + r.bottom) / 2;
+    const viewportCenter = window.innerHeight * centerBias;
+    return Math.abs(sectionCenter - viewportCenter);
+  };
 
+  let raf = 0;
+  const update = () => {
+    raf = 0;
+    if (!testimonialsRef.current || !reviewsRef.current) return;
+    const a = distToCenter(testimonialsRef.current);
+    const b = distToCenter(reviewsRef.current);
+    setActiveDot(a <= b ? "results" : "reviews");
+  };
+
+  const onScrollOrResize = () => {
+    if (!raf) raf = requestAnimationFrame(update);
+  };
+
+
+  update();
+  window.addEventListener("scroll", onScrollOrResize, { passive: true });
+  window.addEventListener("resize", onScrollOrResize, { passive: true });
+  return () => {
+    window.removeEventListener("scroll", onScrollOrResize);
+    window.removeEventListener("resize", onScrollOrResize);
+    if (raf) cancelAnimationFrame(raf);
+  };
+}, []);
   const textRefs = useRef([]);
 
   useEffect(() => {
@@ -1102,7 +1188,58 @@ const Testimonials = () => {
     });
   }, []);
 
-  const dragCardRef = useRef(null);
+const borderRef = useRef(null);
+const containerVariants = {
+  initial: {},
+  show: { transition: { staggerChildren: 0.12, delayChildren: 0.08 } },
+};
+
+const makeCardVariants = (i) => ({
+  hidden: { x: 120, opacity: 0, rotate: 2, filter: "blur(4px)" },
+  visible: {
+    x: 0,
+    opacity: 1,
+    rotate: 0,
+    filter: "blur(0px)",
+    transition: { type: "spring", stiffness: 140, damping: 18, mass: 0.6, delay: i * 0.05 },
+  },
+});
+  const sectionRef = useRef(null);    
+  const viewportRef = useRef(null);   
+  const [viewportW, setViewportW] = useState(0);
+
+
+  const VISIBLE = 4;
+
+
+  const maxPage = Math.max(0, Math.ceil(testimonials.length / VISIBLE) - 1);
+
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"], 
+  });
+
+  const [page, setPage] = useState(0);
+
+
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const snapped = Math.round(v * maxPage);
+    const clamped = Math.max(0, Math.min(maxPage, snapped));
+    setPage(clamped);
+  });
+
+
+  useEffect(() => {
+    const measure = () => setViewportW(viewportRef.current?.clientWidth ?? 0);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const xOffset = useMemo(() => -(page * viewportW), [page, viewportW]);
+
+
 
   return (
     <>
@@ -1137,92 +1274,94 @@ const Testimonials = () => {
         ]}
       />
       <Background />
-      <section
-        ref={sectionOneRef}
-        className="z-10 relative w-full min-h-[110vh] px-6 md:px-12"
-      >
-        <div className="z-10 max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-0">
-          <div className="w-full md:w-1/2 min-h-[100vh]"></div>
-
-          <div className="w-full md:w-1/2 flex items-center justify-center min-h-[100vh]">
-            <div className="max-w-[1200px] w-full">
-            
-              {/* <h2 className="mb-6 text-[30px] font-neuehaas45 text-center md:text-left md:text-[30px]">
-                Join the Smile Club
-              </h2> */}
-
-              <div className="font-neuehaas45 leading-[1.2] relative">
-                 <TerminalPreloader />
-              </div>
-            </div>
-          </div>
+<section
+  ref={sectionOneRef}
+  className="z-10 relative w-full min-h-[110vh] px-6 md:px-12"
+>
+  <div className="z-10 max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-0">
+    <div className="w-full md:w-1/2 min-h-[100vh]"></div>
+    <div className="w-full md:w-1/2 flex items-center justify-center min-h-[100vh]">
+      <div className="max-w-[1200px] w-full">
+        <div className="font-neuehaas45 leading-[1.2] relative">
+          <TerminalPreloader />
         </div>
-
-        <div
-          ref={navBarRef}
-          className="z-10 absolute bottom-0 left-0 w-full pb-2"
-        >
-          <div className="flex items-center justify-center text-[13px] tracking-wider uppercase font-neuehaas45 gap-4">
-            <span
-              className={isPatientSectionInView ? "opacity-100" : "opacity-30"}
-            >
-              ●
-            </span>
-            <span>Our patient results</span>
-            <span
-              className={!isPatientSectionInView ? "opacity-100" : "opacity-30"}
-            >
-              ●
-            </span>
-            <span>Read the reviews</span>
-          </div>
-          <div className="z-10 mt-1 w-full border-b border-[#D3D3D3]" />
-        </div>
-      </section>
-      <div className="z-1 overflow-hidden">
-
-        <Testimonial />
       </div>
+    </div>
+  </div>
 
-      <section
-        ref={dragCardRef}
-        className="relative flex flex-wrap items-center justify-center min-h-screen gap-4 p-8 overflow-hidden"
-      >
-        {testimonials.map((t, i) => (
-          <motion.div
-            key={i}
-            drag
-            dragConstraints={dragCardRef}
-            dragElastic={0.05}
-            whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
-            dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
-            dragMomentum={false}
-            className="relative bg-[#F2F2F2]/50 text-black backdrop-blur-md
-            w-[320px] min-h-[450px] flex flex-col justify-start
-            border border-white cursor-grab active:cursor-grabbing
-            will-change-transform"
-            style={{ zIndex: i }}
-          >
-            <div className="relative w-full h-[240px] p-2">
-              <div
-                className="w-full h-full bg-cover bg-center rounded-[8px] overflow-hidden relative"
-                style={{ backgroundImage: `url(${t.image})` }}
-              >
-                <div className="absolute inset-0 z-10 pointer-events-none tile-overlay" />
-              </div>
-            </div>
+  <div
+    ref={navBarRef}
+    className="z-10 absolute bottom-0 left-0 w-full pb-2"
+  >
+    <div className="flex items-center justify-center text-[13px] tracking-wider uppercase font-neuehaas45 gap-4">
+      <span className={activeDot === "results" ? "opacity-100" : "opacity-30"}>●</span>
+      <span>Our patient results</span>
+      <span className={activeDot === "reviews" ? "opacity-100" : "opacity-30"}>●</span>
+      <span>Read the reviews</span>
+    </div>
 
-            <div className="flex flex-col gap-2 p-4">
-              <h3 className="text-[16px] leading-tight tracking-wider uppercase font-neuehaas45">
-                {t.name}
-              </h3>
-              <p className="font-neuehaas45 text-[12px] leading-snug tracking-wide">
-                {t.text}
-              </p>
+<div
+  ref={borderRef}
+  className="z-10 mt-1 mx-auto max-w-[90%] border-b border-white"
+>
+  
+</div>
+  </div>
+</section>
+<div className="z-1 overflow-hidden" ref={testimonialsRef}>
+  <Testimonial borderRef={borderRef} />
+</div>
+
+
+
+  <motion.section
+      ref={reviewsRef}
+      className="relative flex flex-wrap items-center justify-center min-h-screen gap-4 p-8 overflow-hidden"
+      variants={containerVariants}
+      initial="initial"
+      whileInView="show"
+      viewport={{ amount: 0.2, once: false }} 
+    >
+      {testimonials.map((t, i) => (
+        <motion.div
+          key={i}
+          drag
+          dragConstraints={reviewsRef}
+          dragElastic={0.05}
+          whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
+          dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
+          dragMomentum={false}
+          className="relative bg-[#F2F2F2]/20 backdrop-blur-lg
+                     w-[320px] min-h-[450px] flex flex-col justify-start
+                     border border-white cursor-grab active:cursor-grabbing
+                     will-change-transform"
+          style={{ zIndex: i }}
+          variants={makeCardVariants(i)}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ amount: 0.3, once: false }} 
+          whileHover={{ y: -4, boxShadow: "0 8px 24px rgba(0,0,0,0.12)" }}
+        >
+          <div className="relative w-full h-[240px] p-2">
+            <div
+              className="w-full h-full bg-cover bg-center rounded-[8px] overflow-hidden relative"
+              style={{ backgroundImage: `url(${t.image})` }}
+            >
+              <div className="absolute inset-0 z-10 pointer-events-none tile-overlay" />
             </div>
-          </motion.div>
-        ))}
-      </section>
+          </div>
+
+          <div className="flex flex-col gap-2 p-4">
+            <h3 className="text-[16px] leading-tight tracking-wider uppercase font-neuehaas45">
+              {t.name}
+            </h3>
+            <p className="font-neuehaas45 text-[12px] leading-snug tracking-wider">
+              {t.text}
+            </p>
+          </div>
+        </motion.div>
+      ))}
+    </motion.section>
       {/* <Contents /> */}
       {/* <section
         ref={patientSectionRef}
