@@ -19,10 +19,9 @@ export default function CartComponent({ isScrolled }: CartComponentProps) {
   const { cart, checkoutProgress, cartOpen, setCartOpen } = useCartStore()
 
   return (
-    <Sheet
-     open={cartOpen} onOpenChange={setCartOpen}>
+    <Sheet open={cartOpen} onOpenChange={setCartOpen}>
       <SheetTrigger>
-      <div className="relative mx-4">
+        <div className="relative mx-4">
           <AnimatePresence>
             {cart.length > 0 && (
               <motion.span
@@ -34,33 +33,28 @@ export default function CartComponent({ isScrolled }: CartComponentProps) {
                 {cart.length}
               </motion.span>
             )}
-      <motion.div 
-  className="transition-colors duration-300"
-  animate={{ color: isScrolled ? "#000" : "#fff" }}
-  // transition={{ duration: 1 }}
->
-  <ShoppingBagIcon
-    className="w-6 h-6"
-    strokeWidth={1.5}
-  />
-</motion.div>
-
+            <motion.div
+              className="transition-colors duration-300"
+              animate={{ color: isScrolled ? "#000" : "#fff" }}
+              // transition={{ duration: 1 }}
+            >
+              <ShoppingBagIcon className="w-6 h-6" strokeWidth={1.5} />
+            </motion.div>
           </AnimatePresence>
         </div>
       </SheetTrigger>
 
       <SheetContent
-    className={`w-[400px] sm:w-[640px] md:w-[768px] bg-white flex flex-col transition-all duration-1000 ${
-      isScrolled ? "text-black" : "text-white"
-    }`}
-  >
+        className={`w-[400px] sm:w-[640px] md:w-[768px] bg-white flex flex-col transition-all duration-1000 ${
+          isScrolled ? "text-black" : "text-white"
+        }`}
+      >
         <SheetHeader>
           <CartHeader />
         </SheetHeader>
 
-        {cart.length > 0 && (
-          <CartProgress />
-        )}
+        {cart.length > 0 && <CartProgress />}
+
         <ScrollArea>
           {checkoutProgress === "cart-page" && <CartItems />}
           {checkoutProgress === "pickup-location" && <PickupLocation />}

@@ -136,159 +136,159 @@ const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
   );
 };
 
-const SmileyFace = ({ position = [0, 0, 0] }) => {
-  const groupRef = useRef();
+// const SmileyFace = ({ position = [0, 0, 0] }) => {
+//   const groupRef = useRef();
 
-  useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += 0.003;
-    }
-  });
+//   useFrame(() => {
+//     if (groupRef.current) {
+//       groupRef.current.rotation.y += 0.003;
+//     }
+//   });
 
-  const texture = useLoader(
-    THREE.TextureLoader,
-    "https://cdn.zajno.com/dev/codepen/cicada/texture.png"
-  );
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+//   const texture = useLoader(
+//     THREE.TextureLoader,
+//     "https://cdn.zajno.com/dev/codepen/cicada/texture.png"
+//   );
+//   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
-  const generateNoiseTexture = (size = 512) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d");
-    const imageData = ctx.getImageData(0, 0, size, size);
-    const data = imageData.data;
+//   const generateNoiseTexture = (size = 512) => {
+//     const canvas = document.createElement("canvas");
+//     canvas.width = size;
+//     canvas.height = size;
+//     const ctx = canvas.getContext("2d");
+//     const imageData = ctx.getImageData(0, 0, size, size);
+//     const data = imageData.data;
 
-    for (let i = 0; i < data.length; i += 4) {
-      const value = Math.random() * 255;
-      data[i] = value;
-      data[i + 1] = value;
-      data[i + 2] = value;
-      data[i + 3] = 255;
-    }
+//     for (let i = 0; i < data.length; i += 4) {
+//       const value = Math.random() * 255;
+//       data[i] = value;
+//       data[i + 1] = value;
+//       data[i + 2] = value;
+//       data[i + 3] = 255;
+//     }
 
-    ctx.putImageData(imageData, 0, 0);
+//     ctx.putImageData(imageData, 0, 0);
 
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.repeat.set(5, 5);
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.anisotropy = 16;
+//     const tex = new THREE.CanvasTexture(canvas);
+//     tex.repeat.set(5, 5);
+//     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+//     tex.anisotropy = 16;
 
-    return tex;
-  };
+//     return tex;
+//   };
 
-  const noiseTexture = useMemo(() => generateNoiseTexture(), []);
+//   const noiseTexture = useMemo(() => generateNoiseTexture(), []);
 
-  // const material = useMemo(() => new THREE.MeshPhysicalMaterial({
-  //   color: new THREE.Color('#fdf6ec'),
-  //   map: noiseTexture,
-  //   metalness: 0.3,
-  //   roughness: 0.1,
-  //   transmission: 1,
-  //   thickness: 1.5,
-  //   transparent: true,
-  //   clearcoat: 1,
-  //   clearcoatRoughness: 0.05,
-  //   iridescence: 1,
-  //   iridescenceIOR: 1.6,
-  //   iridescenceThicknessRange: [100, 300],
-  //   sheen: 1,
-  //   sheenRoughness: 0.05,
-  // }), [noiseTexture]);
-  const material = useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color("#fdf6ec"),
-        metalness: 0.3,
-        roughness: 0.1,
-        transmission: 1,
-        thickness: 1.5,
-        transparent: true,
-        clearcoat: 1,
-        clearcoatRoughness: 0.05,
-        iridescence: 1,
-        iridescenceIOR: 1.6,
-        iridescenceThicknessRange: [100, 300],
-        sheen: 1,
-        sheenRoughness: 0.05,
-        roughnessMap: noiseTexture,
-        bumpMap: noiseTexture,
-        bumpScale: 0.05,
-      }),
-    [noiseTexture]
-  );
+//   // const material = useMemo(() => new THREE.MeshPhysicalMaterial({
+//   //   color: new THREE.Color('#fdf6ec'),
+//   //   map: noiseTexture,
+//   //   metalness: 0.3,
+//   //   roughness: 0.1,
+//   //   transmission: 1,
+//   //   thickness: 1.5,
+//   //   transparent: true,
+//   //   clearcoat: 1,
+//   //   clearcoatRoughness: 0.05,
+//   //   iridescence: 1,
+//   //   iridescenceIOR: 1.6,
+//   //   iridescenceThicknessRange: [100, 300],
+//   //   sheen: 1,
+//   //   sheenRoughness: 0.05,
+//   // }), [noiseTexture]);
+//   const material = useMemo(
+//     () =>
+//       new THREE.MeshPhysicalMaterial({
+//         color: new THREE.Color("#fdf6ec"),
+//         metalness: 0.3,
+//         roughness: 0.1,
+//         transmission: 1,
+//         thickness: 1.5,
+//         transparent: true,
+//         clearcoat: 1,
+//         clearcoatRoughness: 0.05,
+//         iridescence: 1,
+//         iridescenceIOR: 1.6,
+//         iridescenceThicknessRange: [100, 300],
+//         sheen: 1,
+//         sheenRoughness: 0.05,
+//         roughnessMap: noiseTexture,
+//         bumpMap: noiseTexture,
+//         bumpScale: 0.05,
+//       }),
+//     [noiseTexture]
+//   );
 
-  const { ring, smile, leftEye, rightEye } = useMemo(() => {
-    const arcSegments = 100;
+//   const { ring, smile, leftEye, rightEye } = useMemo(() => {
+//     const arcSegments = 100;
 
-    const ringCurve = new THREE.ArcCurve(0, 0, 5.6, 0, Math.PI * 2, false);
-    const ringPoints = ringCurve
-      .getPoints(arcSegments)
-      .map((p) => new THREE.Vector3(p.x, p.y, 0));
-    const ringPath = new THREE.CatmullRomCurve3(ringPoints, true);
+//     const ringCurve = new THREE.ArcCurve(0, 0, 5.6, 0, Math.PI * 2, false);
+//     const ringPoints = ringCurve
+//       .getPoints(arcSegments)
+//       .map((p) => new THREE.Vector3(p.x, p.y, 0));
+//     const ringPath = new THREE.CatmullRomCurve3(ringPoints, true);
 
-    const ringRect = new THREE.Shape();
-    const rw = 0.4;
-    const rh = 0.6;
-    ringRect.moveTo(-rw / 2, -rh / 2);
-    ringRect.lineTo(rw / 2, -rh / 2);
-    ringRect.lineTo(rw / 2, rh / 2);
-    ringRect.lineTo(-rw / 2, rh / 2);
-    ringRect.lineTo(-rw / 2, -rh / 2);
+//     const ringRect = new THREE.Shape();
+//     const rw = 0.4;
+//     const rh = 0.6;
+//     ringRect.moveTo(-rw / 2, -rh / 2);
+//     ringRect.lineTo(rw / 2, -rh / 2);
+//     ringRect.lineTo(rw / 2, rh / 2);
+//     ringRect.lineTo(-rw / 2, rh / 2);
+//     ringRect.lineTo(-rw / 2, -rh / 2);
 
-    const ringGeo = new THREE.ExtrudeGeometry(ringRect, {
-      steps: arcSegments,
-      bevelEnabled: false,
-      extrudePath: ringPath,
-    });
+//     const ringGeo = new THREE.ExtrudeGeometry(ringRect, {
+//       steps: arcSegments,
+//       bevelEnabled: false,
+//       extrudePath: ringPath,
+//     });
 
-    const smilePath = new THREE.CurvePath();
-    const smileCurve = new THREE.ArcCurve(0, -1.5, 2.4, Math.PI, 0, false);
+//     const smilePath = new THREE.CurvePath();
+//     const smileCurve = new THREE.ArcCurve(0, -1.5, 2.4, Math.PI, 0, false);
 
-    const smilePoints = smileCurve
-      .getPoints(50)
-      .map((p) => new THREE.Vector3(p.x, p.y, 0));
-    const smileCatmull = new THREE.CatmullRomCurve3(smilePoints);
+//     const smilePoints = smileCurve
+//       .getPoints(50)
+//       .map((p) => new THREE.Vector3(p.x, p.y, 0));
+//     const smileCatmull = new THREE.CatmullRomCurve3(smilePoints);
 
-    const rectShape = new THREE.Shape();
-    const w = 0.4;
-    const h = 0.6;
-    rectShape.moveTo(-w / 2, -h / 2);
-    rectShape.lineTo(w / 2, -h / 2);
-    rectShape.lineTo(w / 2, h / 2);
-    rectShape.lineTo(-w / 2, h / 2);
-    rectShape.lineTo(-w / 2, -h / 2);
+//     const rectShape = new THREE.Shape();
+//     const w = 0.4;
+//     const h = 0.6;
+//     rectShape.moveTo(-w / 2, -h / 2);
+//     rectShape.lineTo(w / 2, -h / 2);
+//     rectShape.lineTo(w / 2, h / 2);
+//     rectShape.lineTo(-w / 2, h / 2);
+//     rectShape.lineTo(-w / 2, -h / 2);
 
-    const smileGeo = new THREE.ExtrudeGeometry(rectShape, {
-      steps: 50,
-      bevelEnabled: false,
-      extrudePath: smileCatmull,
-    });
+//     const smileGeo = new THREE.ExtrudeGeometry(rectShape, {
+//       steps: 50,
+//       bevelEnabled: false,
+//       extrudePath: smileCatmull,
+//     });
 
-    const makeEye = (x, y) => {
-      const geo = new THREE.CylinderGeometry(0.5, 0.5, 0.6, 32);
-      geo.rotateX(Math.PI / 2);
-      geo.translate(x, y, 0);
-      return geo;
-    };
+//     const makeEye = (x, y) => {
+//       const geo = new THREE.CylinderGeometry(0.5, 0.5, 0.6, 32);
+//       geo.rotateX(Math.PI / 2);
+//       geo.translate(x, y, 0);
+//       return geo;
+//     };
 
-    return {
-      ring: ringGeo,
-      smile: smileGeo,
-      leftEye: makeEye(-2, 1),
-      rightEye: makeEye(2, 1),
-    };
-  }, []);
+//     return {
+//       ring: ringGeo,
+//       smile: smileGeo,
+//       leftEye: makeEye(-2, 1),
+//       rightEye: makeEye(2, 1),
+//     };
+//   }, []);
 
-  return (
-    <group ref={groupRef} position={position} scale={[0.3, 0.3, 0.3]}>
-      <mesh geometry={ring} material={material} />
-      <mesh geometry={smile} material={material} />
-      <mesh geometry={leftEye} material={material} />
-      <mesh geometry={rightEye} material={material} />
-    </group>
-  );
-};
+//   return (
+//     <group ref={groupRef} position={position} scale={[0.3, 0.3, 0.3]}>
+//       <mesh geometry={ring} material={material} />
+//       <mesh geometry={smile} material={material} />
+//       <mesh geometry={leftEye} material={material} />
+//       <mesh geometry={rightEye} material={material} />
+//     </group>
+//   );
+// };
 
 const WavePlane = forwardRef(({ uniformsRef }, ref) => {
   const texture = useTexture("/images/mockup_c.png");
@@ -299,60 +299,60 @@ const WavePlane = forwardRef(({ uniformsRef }, ref) => {
     texture.needsUpdate = true;
   }, [texture, gl]);
 
-  const image = useRef();
-  const meshRef = ref || useRef();
-  // const { amplitude, waveLength } = useControls({
-  //   amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
-  //   waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
-  // });
+//   const image = useRef();
+//   const meshRef = ref || useRef();
+//   // const { amplitude, waveLength } = useControls({
+//   //   amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
+//   //   waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
+//   // });
 
-  const amplitude = 0.2;
-  const waveLength = 5;
+//   const amplitude = 0.2;
+//   const waveLength = 5;
 
-  const uniforms = useRef({
-    uTime: { value: 0 },
-    uAmplitude: { value: amplitude },
-    uWaveLength: { value: waveLength },
-    uTexture: { value: texture },
-  });
+//   const uniforms = useRef({
+//     uTime: { value: 0 },
+//     uAmplitude: { value: amplitude },
+//     uWaveLength: { value: waveLength },
+//     uTexture: { value: texture },
+//   });
 
-  useFrame(() => {
-    uniforms.current.uTime.value += 0.04;
-    // uniforms.current.uAmplitude.value = amplitude;
-    uniforms.current.uWaveLength.value = waveLength;
-  });
+//   useFrame(() => {
+//     uniforms.current.uTime.value += 0.04;
+//     // uniforms.current.uAmplitude.value = amplitude;
+//     uniforms.current.uWaveLength.value = waveLength;
+//   });
 
-  const vertexShader = `
-uniform float uTime;
-uniform float uAmplitude;
-uniform float uWaveLength;
-varying vec2 vUv;
-void main() {
-    vUv = uv;
-    vec3 newPosition = position;
+//   const vertexShader = `
+// uniform float uTime;
+// uniform float uAmplitude;
+// uniform float uWaveLength;
+// varying vec2 vUv;
+// void main() {
+//     vUv = uv;
+//     vec3 newPosition = position;
 
-float wave   = uAmplitude * sin(position.y * uWaveLength + uTime);
-float ripple = uAmplitude * 0.01 * sin((position.y + position.x) * 10.0 + uTime * 2.0);
-float bulge  = uAmplitude * 0.05 * sin(position.y * 5.0 + uTime) *
-                                      cos(position.x * 5.0 + uTime * 1.5);
-newPosition.z += wave + ripple + bulge;
+// float wave   = uAmplitude * sin(position.y * uWaveLength + uTime);
+// float ripple = uAmplitude * 0.01 * sin((position.y + position.x) * 10.0 + uTime * 2.0);
+// float bulge  = uAmplitude * 0.05 * sin(position.y * 5.0 + uTime) *
+//                                       cos(position.x * 5.0 + uTime * 1.5);
+// newPosition.z += wave + ripple + bulge;
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-}
-  `;
+//     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+// }
+//   `;
 
-  const fragmentShader = `
-  uniform sampler2D uTexture; 
-  varying vec2 vUv; 
-    void main() {
-  gl_FragColor = texture2D(uTexture, vUv);
-    }
-  `;
-  useEffect(() => {
-    if (uniformsRef) {
-      uniformsRef.current = uniforms.current;
-    }
-  }, [uniformsRef]);
+//   const fragmentShader = `
+//   uniform sampler2D uTexture; 
+//   varying vec2 vUv; 
+//     void main() {
+//   gl_FragColor = texture2D(uTexture, vUv);
+//     }
+//   `;
+//   useEffect(() => {
+//     if (uniformsRef) {
+//       uniformsRef.current = uniforms.current;
+//     }
+//   }, [uniformsRef]);
 
   return (
     <mesh

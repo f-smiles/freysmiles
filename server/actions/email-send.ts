@@ -33,7 +33,7 @@ export const sendTwoFactorTokenByEmail = async (email: string, token: string) =>
 }
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
-  const resetLink = `${domain}/auth/reset-password?token=${token}`
+  const resetLink = `${domain}/auth/new-password?token=${token}`
 
   const { data, error } = await resend.emails.send({
     from: "onboarding@resend.dev",

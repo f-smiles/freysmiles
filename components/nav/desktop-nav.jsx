@@ -19,7 +19,7 @@ import { useCartStore } from "@/lib/cart-store";
 gsap.registerPlugin(ScrollTrigger, Flip);
 
 export default function DesktopNav({ user }) {
-  
+
   const pathname = usePathname();
   const [isActive, setIsActive] = useState(false);
   const [selectedLink, setSelectedLink] = useState(null);
@@ -127,7 +127,7 @@ const bgRef = useRef(null);
 
 //   const moveBg = (target) => {
 //     const state = Flip.getState(bg);
-//     target.appendChild(bg);         
+//     target.appendChild(bg);
 //     Flip.from(state, {
 //       duration: 0.4,
 //       ease: "power2.out",
@@ -160,7 +160,7 @@ const menuText = "Menu";
         } fixed top-0 w-full z-50 transition-all duration-300 ease-in-out`}
       >
         <motion.div
-          className="pt-[16px] flex items-center justify-between uppercase m-auto transition-[width] duration-1000 ease-in-out scroll-nav"
+          className="relative pt-[16px] flex items-center justify-between uppercase m-auto transition-[width] duration-1000 ease-in-out scroll-nav"
           variants={opacity}
           animate={!isActive ? "open" : "closed"}
         >
@@ -295,18 +295,18 @@ const menuText = "Menu";
                 isActive ? "hidden" : "block"
               }    text-black flex justify-center items-center  p-3`}
             >
-                    <div
+              <div
                 style={{
                   width: "1.5em",
                   height: "1.5em",
-                  borderRadius: "50%", 
-                  overflow: "hidden", 
+                  borderRadius: "50%",
+                  overflow: "hidden",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-                {/* <video
+                <video
                   id="holovideo"
                   loop
                   muted
@@ -326,34 +326,32 @@ const menuText = "Menu";
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.
-                </video> */}
+                </video>
               </div>
               <svg width="14" height="17" viewBox="0 0 28 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="glassGradient" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#A3A8F0" stop-opacity="0.4" />
-      <stop offset="50%" stop-color="#C6B5F7" stop-opacity="0.3" />
-      <stop offset="100%" stop-color="#A0EACF" stop-opacity="0.2" />
-    </linearGradient>
-    <filter id="glassBlur" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="0.6" />
-    </filter>
-  </defs>
-   <g fill="url(#glassGradient)">
-    <path d="M0 8H8V34H0V24H8V16H0V8Z" />
-    <rect x="8" width="20" height="8" />
-    <rect x="8" y="16" width="16" height="8" />
-  </g>
-</svg>
-
-            </motion.div>
+                <defs>
+                  <linearGradient id="glassGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#A3A8F0" stop-opacity="0.4" />
+                    <stop offset="50%" stop-color="#C6B5F7" stop-opacity="0.3" />
+                    <stop offset="100%" stop-color="#A0EACF" stop-opacity="0.2" />
+                  </linearGradient>
+                  <filter id="glassBlur" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="0.6" />
+                  </filter>
+                </defs>
+                <g fill="url(#glassGradient)">
+                  <path d="M0 8H8V34H0V24H8V16H0V8Z" />
+                  <rect x="8" width="20" height="8" />
+                  <rect x="8" y="16" width="16" height="8" />
+                </g>
+              </svg>
+            </motion.div> */}
           </Link>
 
           <motion.div
             variants={opacity}
             animate={!isActive ? "open" : "closed"}
           >
-            {" "}
             {/* styles.el */}
             <motion.div className="flex items-center ">
 
@@ -396,6 +394,7 @@ const menuText = "Menu";
 
           </motion.div>
         </motion.div>
+
         <motion.div
           onClick={() => setIsActive(false)}
           variants={background}
@@ -442,7 +441,7 @@ const menuText = "Menu";
               initial="initial"
               animate="open"
               exit="closed"
-              custom={j} 
+              custom={j}
               whileHover="hover"
               className="relative flex flex-col py-2 overflow-hidden cursor-pointer"
             >

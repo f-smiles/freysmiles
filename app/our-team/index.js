@@ -1,4 +1,5 @@
 "use client";
+import '../mouse-gooey-effect-5/css/style.css'
 import { Item } from "../../utils/Item";
 import Image from "next/image";
 import Lenis from "@studio-freight/lenis";
@@ -25,6 +26,8 @@ import {
   LinearMipmapLinearFilter,
   RGBFormat,
 } from "three";
+import GridContainer from "../mouse-gooey-effect-5/components/GridContainer";
+
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
@@ -138,7 +141,112 @@ const ShaderPlane = ({ imageUrl, mouse }) => {
     </mesh>
   );
 };
+const Intro = ({ texts = [], onFinished }) => {
+  const wrapperRef = useRef(null);
+  const circleTextRefs = useRef([]);
 
+  useEffect(() => {
+    const circleEls = circleTextRefs.current;
+    gsap.set(circleEls, { transformOrigin: "50% 50%" });
+
+    const introTL = gsap
+      .timeline()
+      .addLabel("start", 0)
+      .to(
+        circleEls,
+        {
+          duration: 30,
+          ease: "linear",
+          rotation: (i) => (i % 2 ? 360 : -360),
+          repeat: -1,
+          transformOrigin: "50% 50%",
+        },
+        "start"
+      );
+
+    return () => {
+      introTL.kill();
+    };
+  }, [onFinished]);
+
+  return (
+    <main ref={wrapperRef}>
+      <svg className="w-full h-full circles" viewBox="0 0 1400 1400">
+        <defs>
+          <path
+            id="circle-0"
+            d="M150,700.5A550.5,550.5 0 1 11251,700.5A550.5,550.5 0 1 1150,700.5"
+          />
+          <path
+            id="circle-1"
+            d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
+          />
+          <path
+            id="circle-2"
+            d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
+          />
+          <path
+            id="circle-3"
+            d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
+          />
+        </defs>
+
+        <path
+          d="M100,700.5A600,600 0 1 11301,700.5A600,600 0 1 1100,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M250,700.5A450.5,450.5 0 1 11151,700.5A450.5,450.5 0 1 1250,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M382,700.5A318.5,318.5 0 1 11019,700.5A318.5,318.5 0 1 1382,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <path
+          d="M487,700.5A213.5,213.5 0 1 1914,700.5A213.5,213.5 0 1 1487,700.5"
+          fill="none"
+          stroke="black"
+          strokeWidth="1"
+        />
+
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[1] = el)}
+          className="circles__text circles__text--1"
+        >
+          <textPath xlinkHref="#circle-1" textLength="2830">
+            Low dose 3d digital radiographs&nbsp;
+          </textPath>
+        </text>
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[2] = el)}
+          className="circles__text circles__text--2"
+        >
+          <textPath xlinkHref="#circle-2" textLength="2001">
+            Accelerated Treatment&nbsp;
+          </textPath>
+        </text>
+        <text
+          dy="-20"
+          ref={(el) => (circleTextRefs.current[3] = el)}
+          className="circles__text circles__text--3"
+        >
+          <textPath xlinkHref="#circle-3" textLength="1341">
+            Invisalign&nbsp; Invisalign&nbsp; Invisalign&nbsp;
+          </textPath>
+        </text>
+      </svg>
+    </main>
+  );
+};
 const images = [
   "../images/team_members/Adriana-Photoroom.jpg",
   "../images/team_members/Nicollewaving.png",
@@ -500,7 +608,6 @@ console.log(panelRefs.current);
     });
   }, []);
 
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -565,13 +672,12 @@ console.log(panelRefs.current);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedMember = teamMembers[selectedIndex];
 
-
   const lines = [
     "Our experience spans over 50 years—a testament to the ",
     "precision, accuracy, and relevance of our vision, demonstrating",
-    "our ability to adapt to the ever-changing nature of our industry."
+    "our ability to adapt to the ever-changing nature of our industry.",
   ];
-  
+
   const fadeUpMasked = (delay = 0) => ({
     hidden: { y: "100%", opacity: 0 },
     visible: {
@@ -584,24 +690,29 @@ console.log(panelRefs.current);
       },
     },
   });
-  
+
   const wrapperRef = useRef(null);
   const scrollRef = useRef(null);
   const lastSectionRef = useRef(null);
-  const newSectionRef = useRef(null)
-  const col1Ref = useRef(null)
-  const col2Ref = useRef(null)
-  const col3Ref = useRef(null)
+  const newSectionRef = useRef(null);
+  const col1Ref = useRef(null);
+  const col2Ref = useRef(null);
+  const col3Ref = useRef(null);
 
   useLayoutEffect(() => {
-    if (!wrapperRef.current || !lastSectionRef.current || !newSectionRef.current) return;
-  
-    ScrollTrigger.getAll().forEach(t => t.kill());
-  
+    if (
+      !wrapperRef.current ||
+      !lastSectionRef.current ||
+      !newSectionRef.current
+    )
+      return;
+
+    ScrollTrigger.getAll().forEach((t) => t.kill());
+
     const horizontalScrollDistance = window.innerWidth;
     const columnStartDelay = 0.5;
     const staggerAmount = 0.05;
-  
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: lastSectionRef.current,
@@ -611,23 +722,27 @@ console.log(panelRefs.current);
         pin: wrapperRef.current,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-      }
+      },
     });
-  
+
     tl.to(wrapperRef.current, { x: "-100%", ease: "none" }, 0);
 
     gsap.utils.toArray([col1Ref, col2Ref, col3Ref]).forEach((colRef, index) => {
-      tl.to(colRef.current, {
-        yPercent: index % 2 === 0 ? -100 : 100,
-        ease: "none",
-      }, columnStartDelay + (index * staggerAmount)); 
+      tl.to(
+        colRef.current,
+        {
+          yPercent: index % 2 === 0 ? -100 : 100,
+          ease: "none",
+        },
+        columnStartDelay + index * staggerAmount
+      );
     });
-  
+
     setTimeout(() => {
       ScrollTrigger.refresh();
     }, 100);
-  
-    return () => ScrollTrigger.getAll().forEach(t => t.kill());
+
+    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
   }, []);
   useEffect(() => {
     const canvas = document.getElementById('shader-bg');
@@ -885,7 +1000,7 @@ void main() {
                     {line}
                   </motion.div>
                 ))} */}
-              </div>
+            </div>
             <section>
               <div className="flex justify-center gap-6 overflow-hidden ">
                 <div className="w-[275px] mr-10">
@@ -1158,10 +1273,7 @@ void main() {
 </div>
      </div>
           </div>
-      
         </div>
-
-
 
         <div style={greenCursorStyle}>
           {isFocused && (
@@ -1177,7 +1289,6 @@ void main() {
             </span>
           )}
         </div>
-
 
         {/* <section className="overflow-x-auto overflow-y-hidden lg:overflow-hidden">
           <div
@@ -1259,11 +1370,9 @@ void main() {
             </div>
           </div>
         </section> */}
-
       </div>
-    
 
-
+      <GridContainer />
 
       {/* <div className="bg-[#F7F7F7]">
           

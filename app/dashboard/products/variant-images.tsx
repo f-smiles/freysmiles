@@ -13,7 +13,8 @@ import { Table, TableCell, TableHead, TableHeader, TableRow } from "@/components
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { TrashIcon } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { utapiDeleteFiles } from "@/server/actions/uploadthing"
+import { deleteVariantImage } from "@/server/actions/delete-variant-image"
 
 
 export default function VariantImages() {
@@ -126,9 +127,11 @@ export default function VariantImages() {
                   <TableCell>
                     <Button
                       variant="ghost"
-                      onClick={((e) => {
+                      onClick={(async (e) => {
                         e.preventDefault()
                         remove(index)
+                        deleteVariantImage({ url: field.url })
+                        await utapiDeleteFiles(field.url.split('/f/')[1])
                       })}
                     >
                       <TrashIcon className="w-4 h-4" />

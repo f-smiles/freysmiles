@@ -10,7 +10,7 @@ import { toast } from "sonner"
 import { VariantSchema } from "@/types/variant-schema"
 import { createVariant } from "@/server/actions/create-variant"
 import { VariantsWithImagesTags } from "@/lib/infer-type"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTrigger } from "@/components/ui/sheet"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -95,16 +95,11 @@ export const ProductVariant = forwardRef<HTMLDivElement, VariantProps>(({ childr
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>{children}</DialogTrigger>
-      {/* <DialogContent className="lg:max-w-screen-lg overflow-y-scroll max-h-[860px]"> */}
-      <DialogContent className="lg:max-w-screen-lg overflow-y-auto max-h-[860px]">
-        <DialogHeader>
-          <DialogTitle>{editMode ? "Edit" : "Create"} Variant</DialogTitle>
-          <DialogDescription>
-            Manage your product variants here. Add tags, images, and more to your products.
-          </DialogDescription>
-        </DialogHeader>
+    <Sheet>
+      <SheetTrigger asChild>{children}</SheetTrigger>
+      <SheetContent className="w-full sm:max-w-3xl max-h-screen overflow-y-scroll">
+        <SheetHeader>{editMode ? "Edit" : "Create"} Variant</SheetHeader>
+        <SheetDescription>Manage your product variants here. Add tags, images, and more to your products.</SheetDescription>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 overflow-x-auto">
@@ -180,8 +175,8 @@ export const ProductVariant = forwardRef<HTMLDivElement, VariantProps>(({ childr
 
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   )
 })
 

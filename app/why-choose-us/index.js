@@ -2669,7 +2669,7 @@ const PixelImage = ({ imgSrc, containerRef }) => {
 
   useEffect(() => {
     new THREE.TextureLoader().load(imgSrc, (tex) => {
-      tex.encoding = THREE.sRGBEncoding;
+      tex.colorSpace = THREE.SRGBColorSpace;
       textureRef.current = tex;
       setTextureReady(true);
     });
