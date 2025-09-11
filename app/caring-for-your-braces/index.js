@@ -311,12 +311,12 @@ tl.to(".redImageWrapper .image-inner", {
                   <p className="font-neueroman uppercase mt-10 text-[13px] leading-[1.5]">
                     Brushing and flossing during orthodontic treatment is as
                     important as ever. all orthodontic appliances like clear
-                    aligners, brackets, and wires interfere with the mouth's
+                    aligners, brackets, and wires interfere with the mouth&apos;s
                     normal self-cleansing mechanisms. Research shows only 10% of
                     patients brush and floss consistently during active
                     treatment. We recommend three cleanings a year for braces
                     patients; check if your insurance covers the third. When you
-                    begin treatment, we'll equip you with tools such as spare
+                    begin treatment, we&apos;ll equip you with tools such as spare
                     toothbrushes and dental floss to help with cleaning.
                   </p>
                   <div className="flex items-center space-x-2"></div>
@@ -558,11 +558,11 @@ tl.to(".redImageWrapper .image-inner", {
                     your treatment, you may encounter dental professionals,
                     hygienists, or specialists with different perspectives on
                     care. Our office uses advanced techniques that some may not
-                    fully understand. While we're always open to discussing our
+                    fully understand. While we&apos;re always open to discussing our
                     approach with other professionals, patient care remains our
-                    priority. If you're ever unsure, you can always circle back
+                    priority. If you&apos;re ever unsure, you can always circle back
                     with the doctor who planned your treatment. Trust the
-                    process—we're here to guide you.
+                    process—we&apos;re here to guide you.
                   </div>
                 </div>
                 <div className="blackSectionImage">

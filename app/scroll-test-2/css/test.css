@@ -1,0 +1,46 @@
+body {
+  margin: 0;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.panel {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  box-sizing: border-box;
+  padding: 10px;
+  color: #fffce1;
+  background-color: #0e100f;
+}
+
+.blue {
+  background-color: #BFCCD8;
+}
+
+.red {
+  background-color: #B692A1;
+}
+
+.orange {
+  background-color: #798E7B;
+}
+
+.purple {
+background-color: #F1EFEB;
+}
+
+.green {
+  background-color: #E49366;
+}
+
+/* bg-[#BFCCD8]
+bg-[#B692A1]
+bg-[#798E7B]
+bg-[#F1EFEB]
+bg-[#E49366] */

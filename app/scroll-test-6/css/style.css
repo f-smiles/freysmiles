@@ -1,0 +1,341 @@
+:root {
+  --color-just-black: #0e100f;
+  --color-surface-white: #fffce1;
+  --color-blue: #00bae2;
+  --color-grey: #201F1F;
+  --color-lt-green: #abff84;
+  --color-orangey: #ff8709;
+  --color-pink: #fec5fb;
+  --color-scroll-gradient: linear-gradient(
+    317.42deg,
+    #ffe9fe 10.4%,
+    #ff96f9 83.03%
+    );
+    --color-shockingly-green: #0ae448;
+    --color-surface75: #bbbaa6;
+    --color-ui-gradient: radial-gradient(
+      78.77% 78.77% at 71.71% 30.77%,
+    #f0fcff 0%,
+    #9bedff 67.21%,
+    #98ecff 76.04%,
+    #5be1ff 84.9%,
+    #00bae2 94.79%
+    );
+  --gradient-emerald-city: linear-gradient(
+    166.9deg,
+    var(--color-shockingly-green) 53.19%,
+    #0085d0 107.69%
+    );
+  --gradient-lipstick: linear-gradient(
+    165.72deg,
+    #f7bdf8 21.15%,
+    #cd237f 81.93%
+  );
+  --gradient-macha: linear-gradient(
+    114.41deg,
+    var(--color-shockingly-green) 20.74%,
+    var(--color-lt-green) 65.5%
+  );
+  --gradient-orange-crush: linear-gradient(
+    111.45deg,
+    var(--color-orangey) 19.42%,
+    #f7bdf8 73.08%
+  );
+  --gradient-purple-haze: linear-gradient(
+    153.58deg,
+    #f7bdf8 32.25%,
+    #2f3cc0 92.68%
+  );
+  --gradient-skyfall: linear-gradient(
+    131.77deg,
+    #0a157a 30.82%,
+    #15bfe4 81.82%
+  );
+  --gradient-summer-fair: linear-gradient(
+    144.02deg,
+    var(--color-blue) 4.56%,
+    var(--color-pink) 72.98%
+  );
+}
+:root {
+  --dark: var(--color-just-black);
+  --grey: var(--color-grey);
+  --gray: var(--color-grey);
+}
+:root {
+  --fluid-min-width: 320;
+  --fluid-max-width: 1140;
+  --fluid-screen: 100vw;
+  --fluid-bp: calc((var(--fluid-screen) - var(--fluid-min-width) / 16 * 1rem) / (var(--fluid-max-width) - var(--fluid-min-width)));
+}
+:root {
+  --f-0-min: 16;
+  --f-0-max: 18;
+  --step-0: calc(((var(--f-0-min) / 16) * 1rem) + (var(--f-0-max) - var(--f-0-min)) * var(--fluid-bp));
+}
+
+body {
+  color: var(--color-surface75);
+  background-color: var(--dark);
+  font-family: Mori, sans-serif;
+  font-weight: 400;
+  margin: 0;
+  font-size: var(--step-0);
+  line-height: 1.45;
+}
+
+.panel_container {
+  width: 500%;
+  height: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  --gradient: #777;
+  background-color: var(--dark);
+  box-sizing: border-box;
+  z-index: 1;
+  /* color: #fff000; */
+}
+
+.panel:before {
+  content: "";
+  position: absolute;
+  border-radius: 20px;
+  top: 1rem;
+  left: 1rem;
+  width: calc(100% - 2rem);
+  height: calc(100% - 2rem);
+  background: linear-gradient(var(--color-just-black), var(--color-just-black))
+      padding-box,
+    var(--gradient) border-box;
+  border: 3px solid transparent;
+  pointer-events: none;
+}
+
+.panel p {
+  max-width: 75ch;
+}
+
+.panel * {
+  z-index: 1;
+}
+
+.panel p strong,
+.panel li strong {
+  font-weight: 400;
+}
+.panel p code,
+.panel li code {
+  background-color: #1d1e22bd;
+  color: var(--color-surface-white);
+  padding: 2px 4px;
+  border-radius: 5px;
+}
+.panel li {
+  margin: 0;
+}
+
+pre.prettyprint {
+  max-width: 100%;
+  overflow: auto;
+}
+
+ul pre.prettyprint {
+  margin-left: -0.5rem;
+}
+
+.gray,
+.grey {
+  background-color: var(--grey);
+}
+.panel.blue {
+  --gradient: var(--color-ui-gradient);
+}
+.panel.orange {
+  --gradient: var(--gradient-orange-crush);
+}
+.panel.red {
+  --gradient: var(--gradient-lipstick);
+}
+.panel.purple {
+  --gradient: var(--gradient-purple-haze);
+}
+.panel.green {
+  --gradient: var(--gradient-emerald-city);
+}
+
+.box {
+  width: 75px;
+  height: 75px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--dark);
+  background: var(--gradient-macha),
+    url("https://assets.codepen.io/16327/noise-e82662fe.png"); /* Replace with the path to your noise texture image */
+  background-blend-mode: color-dodge; /* Blend the noise texture with the gradient */
+  font-weight: 600;
+  line-height: 1.2;
+  will-change: transform;
+}
+
+.box.active {
+  background: var(--gradient-orange-crush), url('https://assets.codepen.io/16327/noise.png');
+  background-blend-mode: color-dodge;
+}
+
+.box.green,
+.gradient-green {
+  color: var(--dark);
+  background: var(--gradient-macha),
+    url("https://assets.codepen.io/16327/noise-e82662fe.png"); /* Replace with the path to your noise texture image */
+  background-blend-mode: color-dodge; /* Blend the noise texture with the gradient */
+}
+
+.box.green-lt,
+.gradient-green-2 {
+  color: var(--dark);
+  background: var(--gradient-emerald-city),
+    url("https://assets.codepen.io/16327/noise-e82662fe.png"); /* Replace with the path to your noise texture image */
+  background-blend-mode: color-dodge; /* Blend the noise texture with the gradient */
+}
+
+.box.orange,
+.gradient-orange {
+  color: var(--dark);
+  background: var(--gradient-orange-crush),
+    url("https://assets.codepen.io/16327/noise.png"); /* Replace with the path to your noise texture image */
+  background-blend-mode: color-dodge; /* Blend the noise texture with the gradient */
+}
+
+.box.purple,
+.gradient-purple {
+  color: var(--dark);
+  background: var(--gradient-purple-haze),
+    url("https://assets.codepen.io/16327/noise.png"); /* Replace with the path to your noise texture image */
+  background-blend-mode: color-dodge; /* Blend the noise texture with the gradient */
+}
+
+.box.blue-lt .gradient-blue-2 {
+  color: var(--dark);
+  background: var(--gradient-summer-fair),
+    url("https://assets.codepen.io/16327/noise.png"); /* Replace with the path to your noise texture image */
+  background-blend-mode: color-dodge; /* Blend the noise texture with the gradient */
+}
+
+.box.blue,
+.gradient-blue {
+  color: var(--dark);
+  background: var(--color-ui-gradient),
+    url("https://assets.codepen.io/16327/noise-e82662fe.png"); /* Replace with the path to your noise texture image */
+  background-blend-mode: color-dodge; /* Blend the noise texture with the gradient */
+}
+
+.box.red,
+.gradient-red {
+  color: var(--dark);
+  background: var(--gradient-lipstick),
+    url("https://assets.codepen.io/16327/noise.png"); /* Replace with the path to your noise texture image */
+  background-blend-mode: color-dodge; /* Blend the noise texture with the gradient */
+}
+
+.box.pink,
+.gradient-pink {
+  color: var(--dark);
+  background: var(--color-scroll-gradient),
+    url("https://assets.codepen.io/16327/noise.png"); /* Replace with the path to your noise texture image */
+  background-blend-mode: color-dodge; /* Blend the noise texture with the gradient */
+}
+
+
+
+
+/* ========== ========== ========== ========== ========== */
+
+.section { overflow: hidden; }
+
+.section-wrapper { height: 100vh; }
+
+.list {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  padding: 0.25rem;
+}
+
+.item {
+  position: absolute;
+  inset: 0%;
+  display: flex;
+  width: 100vw;
+  height: 100%;
+  overflow: hidden;
+}
+
+.item_background {
+  position: absolute;
+  inset: 0%;
+  z-index: -100;
+}
+
+.item_content {
+  position: relative;
+  /* width: 50%; */
+  width: 50%;
+  display: flex;
+  flex-flow: column;
+  /* justify-content: center; */
+  align-items: flex-start;
+  margin-top: 23.25rem;
+  padding: 3rem;
+  color: #292929;
+  z-index: 0;
+}
+
+.item_number {}
+.item_h2 {}
+.item_p {}
+
+.item_media {
+  object-fit: cover;
+  width: 50%;
+  height: 30%;
+  margin-top: 23.25rem;
+  z-index: 0;
+}
+
+/* @media (max-width: 575.98px) { */
+@media (max-width: 640px) {
+  .item {
+    flex-direction: column;
+  }
+
+  .item_content,
+  .item_media {
+    height: 50vh;
+    width: 100%;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .item_number {
+    font-size: .5rem;
+    top: 1.5rem;
+  }
+}

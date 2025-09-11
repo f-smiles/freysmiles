@@ -44,7 +44,7 @@ import { TextureLoader } from "three";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
-const Section = ({ children, onHoverStart, onHoverEnd }) => (
+const SectionOne = ({ children, onHoverStart, onHoverEnd }) => (
   <motion.div
     onHoverStart={onHoverStart}
     onHoverEnd={onHoverEnd}
@@ -97,390 +97,390 @@ const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
   );
 };
 
-const BulgeGallery = ({ slides }) => {
-  const canvasWrapperRef = useRef();
+// const BulgeGallery = ({ slides }) => {
+//   const canvasWrapperRef = useRef();
 
-  const vertexShader = `
-varying vec2 vUv;
-uniform float uScrollIntensity;
+//   const vertexShader = `
+// varying vec2 vUv;
+// uniform float uScrollIntensity;
 
-void main() {
-  vUv = uv;
-  vec3 pos = position;
-
-
-  float wave = sin(uv.y * 3.1416); // 0 at top & bottom, 1 in center
-  float zOffset = wave * uScrollIntensity * 1.0; 
-  pos.z += zOffset;
-
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-}
+// void main() {
+//   vUv = uv;
+//   vec3 pos = position;
 
 
-  `;
+//   float wave = sin(uv.y * 3.1416); // 0 at top & bottom, 1 in center
+//   float zOffset = wave * uScrollIntensity * 1.0; 
+//   pos.z += zOffset;
 
-  const fragmentShader = `
-    varying vec2 vUv;
-    uniform sampler2D uTexture;
+//   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+// }
 
-    void main() {
-      gl_FragColor = texture2D(uTexture, vUv);
-    }
-  `;
 
-  useEffect(() => {
-    if (!canvasWrapperRef.current || !slides.length) return;
+//   `;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 10;
+//   const fragmentShader = `
+//     varying vec2 vUv;
+//     uniform sampler2D uTexture;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    canvasWrapperRef.current.appendChild(renderer.domElement);
+//     void main() {
+//       gl_FragColor = texture2D(uTexture, vUv);
+//     }
+//   `;
 
-    const calculatePlaneDimensions = () => {
-      const fov = (camera.fov * Math.PI) / 180;
-      const viewHeight = 2 * Math.tan(fov / 2) * camera.position.z;
-      const height = viewHeight * 0.7;
-      const width = height * (8 / 11);
-      return { width, height };
-    };
+//   useEffect(() => {
+//     if (!canvasWrapperRef.current || !slides.length) return;
 
-    const dimensions = calculatePlaneDimensions();
-    const loader = new THREE.TextureLoader();
-    const planes = [];
-    const textures = [];
+//     const scene = new THREE.Scene();
+//     const camera = new THREE.PerspectiveCamera(
+//       45,
+//       window.innerWidth / window.innerHeight,
+//       0.1,
+//       1000
+//     );
+//     camera.position.z = 10;
 
-    slides.forEach((slide, index) => {
-      const texture = loader.load(slide.image);
-      texture.minFilter = THREE.LinearFilter;
-      textures.push(texture);
+//     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+//     renderer.setSize(window.innerWidth, window.innerHeight);
+//     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+//     canvasWrapperRef.current.appendChild(renderer.domElement);
 
-      const material = new THREE.ShaderMaterial({
-        vertexShader,
-        fragmentShader,
-        uniforms: {
-          uScrollIntensity: { value: 0 },
-          uTexture: { value: texture },
-        },
-        side: THREE.DoubleSide,
-        transparent: true,
-      });
+//     const calculatePlaneDimensions = () => {
+//       const fov = (camera.fov * Math.PI) / 180;
+//       const viewHeight = 2 * Math.tan(fov / 2) * camera.position.z;
+//       const height = viewHeight * 0.7;
+//       const width = height * (8 / 11);
+//       return { width, height };
+//     };
 
-      const geometry = new THREE.PlaneGeometry(
-        dimensions.width,
-        dimensions.height,
-        32,
-        32
-      );
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.y = -index * (dimensions.height + 1); // space out
-      scene.add(mesh);
-      planes.push(mesh);
-    });
+//     const dimensions = calculatePlaneDimensions();
+//     const loader = new THREE.TextureLoader();
+//     const planes = [];
+//     const textures = [];
 
-    let scrollY = 0;
-    let lastScroll = 0;
-    let scrollIntensity = 0;
-    let animationId;
+//     slides.forEach((slide, index) => {
+//       const texture = loader.load(slide.image);
+//       texture.minFilter = THREE.LinearFilter;
+//       textures.push(texture);
 
-    const handleScroll = () => {
-      scrollY = (window.scrollY / window.innerHeight) * (dimensions.height + 1);
-    };
+//       const material = new THREE.ShaderMaterial({
+//         vertexShader,
+//         fragmentShader,
+//         uniforms: {
+//           uScrollIntensity: { value: 0 },
+//           uTexture: { value: texture },
+//         },
+//         side: THREE.DoubleSide,
+//         transparent: true,
+//       });
 
-    const animate = () => {
-      animationId = requestAnimationFrame(animate);
+//       const geometry = new THREE.PlaneGeometry(
+//         dimensions.width,
+//         dimensions.height,
+//         32,
+//         32
+//       );
+//       const mesh = new THREE.Mesh(geometry, material);
+//       mesh.position.y = -index * (dimensions.height + 1); // space out
+//       scene.add(mesh);
+//       planes.push(mesh);
+//     });
 
-      const delta = scrollY - lastScroll;
-      lastScroll = THREE.MathUtils.lerp(lastScroll, scrollY, 0.1);
-      scrollIntensity = THREE.MathUtils.lerp(
-        scrollIntensity,
-        Math.abs(delta) * 0.25,
-        0.2
-      );
+//     let scrollY = 0;
+//     let lastScroll = 0;
+//     let scrollIntensity = 0;
+//     let animationId;
 
-      camera.position.y = -lastScroll;
+//     const handleScroll = () => {
+//       scrollY = (window.scrollY / window.innerHeight) * (dimensions.height + 1);
+//     };
 
-      planes.forEach((plane) => {
-        plane.material.uniforms.uScrollIntensity.value = scrollIntensity;
-      });
+//     const animate = () => {
+//       animationId = requestAnimationFrame(animate);
 
-      renderer.render(scene, camera);
-    };
+//       const delta = scrollY - lastScroll;
+//       lastScroll = THREE.MathUtils.lerp(lastScroll, scrollY, 0.1);
+//       scrollIntensity = THREE.MathUtils.lerp(
+//         scrollIntensity,
+//         Math.abs(delta) * 0.25,
+//         0.2
+//       );
 
-    handleScroll();
-    animate();
-    window.addEventListener("scroll", handleScroll);
+//       camera.position.y = -lastScroll;
 
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener("scroll", handleScroll);
-      renderer.dispose();
-      planes.forEach((p) => {
-        p.geometry.dispose();
-        p.material.dispose();
-      });
-      textures.forEach((t) => t.dispose());
-      canvasWrapperRef.current?.removeChild(renderer.domElement);
-    };
-  }, [slides]);
+//       planes.forEach((plane) => {
+//         plane.material.uniforms.uScrollIntensity.value = scrollIntensity;
+//       });
 
-  return (
-    <div className="relative w-full">
-      {slides.map((_, i) => (
-        <div key={i} className="h-screen w-full" />
-      ))}
+//       renderer.render(scene, camera);
+//     };
 
-      <div
-        ref={canvasWrapperRef}
-        className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none"
-      />
-    </div>
-  );
-};
+//     handleScroll();
+//     animate();
+//     window.addEventListener("scroll", handleScroll);
 
-const SmileyFace = ({ position = [0, 0, 0] }) => {
-  const groupRef = useRef();
+//     return () => {
+//       cancelAnimationFrame(animationId);
+//       window.removeEventListener("scroll", handleScroll);
+//       renderer.dispose();
+//       planes.forEach((p) => {
+//         p.geometry.dispose();
+//         p.material.dispose();
+//       });
+//       textures.forEach((t) => t.dispose());
+//       canvasWrapperRef.current?.removeChild(renderer.domElement);
+//     };
+//   }, [slides]);
 
-  useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += 0.003;
-    }
-  });
+//   return (
+//     <div className="relative w-full">
+//       {slides.map((_, i) => (
+//         <div key={i} className="h-screen w-full" />
+//       ))}
 
-  const texture = useLoader(
-    THREE.TextureLoader,
-    "https://cdn.zajno.com/dev/codepen/cicada/texture.png"
-  );
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+//       <div
+//         ref={canvasWrapperRef}
+//         className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none"
+//       />
+//     </div>
+//   );
+// };
 
-  const generateNoiseTexture = (size = 512) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d");
-    const imageData = ctx.getImageData(0, 0, size, size);
-    const data = imageData.data;
+// const SmileyFace = ({ position = [0, 0, 0] }) => {
+//   const groupRef = useRef();
 
-    for (let i = 0; i < data.length; i += 4) {
-      const value = Math.random() * 255;
-      data[i] = value;
-      data[i + 1] = value;
-      data[i + 2] = value;
-      data[i + 3] = 255;
-    }
+//   useFrame(() => {
+//     if (groupRef.current) {
+//       groupRef.current.rotation.y += 0.003;
+//     }
+//   });
 
-    ctx.putImageData(imageData, 0, 0);
+//   const texture = useLoader(
+//     THREE.TextureLoader,
+//     "https://cdn.zajno.com/dev/codepen/cicada/texture.png"
+//   );
+//   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.repeat.set(5, 5);
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.anisotropy = 16;
+//   const generateNoiseTexture = (size = 512) => {
+//     const canvas = document.createElement("canvas");
+//     canvas.width = size;
+//     canvas.height = size;
+//     const ctx = canvas.getContext("2d");
+//     const imageData = ctx.getImageData(0, 0, size, size);
+//     const data = imageData.data;
 
-    return tex;
-  };
+//     for (let i = 0; i < data.length; i += 4) {
+//       const value = Math.random() * 255;
+//       data[i] = value;
+//       data[i + 1] = value;
+//       data[i + 2] = value;
+//       data[i + 3] = 255;
+//     }
 
-  const noiseTexture = useMemo(() => generateNoiseTexture(), []);
+//     ctx.putImageData(imageData, 0, 0);
 
-  // const material = useMemo(() => new THREE.MeshPhysicalMaterial({
-  //   color: new THREE.Color('#fdf6ec'),
-  //   map: noiseTexture,
-  //   metalness: 0.3,
-  //   roughness: 0.1,
-  //   transmission: 1,
-  //   thickness: 1.5,
-  //   transparent: true,
-  //   clearcoat: 1,
-  //   clearcoatRoughness: 0.05,
-  //   iridescence: 1,
-  //   iridescenceIOR: 1.6,
-  //   iridescenceThicknessRange: [100, 300],
-  //   sheen: 1,
-  //   sheenRoughness: 0.05,
-  // }), [noiseTexture]);
-  const material = useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color("#fdf6ec"),
-        metalness: 0.3,
-        roughness: 0.1,
-        transmission: 1,
-        thickness: 1.5,
-        transparent: true,
-        clearcoat: 1,
-        clearcoatRoughness: 0.05,
-        iridescence: 1,
-        iridescenceIOR: 1.6,
-        iridescenceThicknessRange: [100, 300],
-        sheen: 1,
-        sheenRoughness: 0.05,
-        roughnessMap: noiseTexture,
-        bumpMap: noiseTexture,
-        bumpScale: 0.05,
-      }),
-    [noiseTexture]
-  );
+//     const tex = new THREE.CanvasTexture(canvas);
+//     tex.repeat.set(5, 5);
+//     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+//     tex.anisotropy = 16;
 
-  const { ring, smile, leftEye, rightEye } = useMemo(() => {
-    const arcSegments = 100;
+//     return tex;
+//   };
 
-    const ringCurve = new THREE.ArcCurve(0, 0, 5.6, 0, Math.PI * 2, false);
-    const ringPoints = ringCurve
-      .getPoints(arcSegments)
-      .map((p) => new THREE.Vector3(p.x, p.y, 0));
-    const ringPath = new THREE.CatmullRomCurve3(ringPoints, true);
+//   const noiseTexture = useMemo(() => generateNoiseTexture(), []);
 
-    const ringRect = new THREE.Shape();
-    const rw = 0.4;
-    const rh = 0.6;
-    ringRect.moveTo(-rw / 2, -rh / 2);
-    ringRect.lineTo(rw / 2, -rh / 2);
-    ringRect.lineTo(rw / 2, rh / 2);
-    ringRect.lineTo(-rw / 2, rh / 2);
-    ringRect.lineTo(-rw / 2, -rh / 2);
+//   // const material = useMemo(() => new THREE.MeshPhysicalMaterial({
+//   //   color: new THREE.Color('#fdf6ec'),
+//   //   map: noiseTexture,
+//   //   metalness: 0.3,
+//   //   roughness: 0.1,
+//   //   transmission: 1,
+//   //   thickness: 1.5,
+//   //   transparent: true,
+//   //   clearcoat: 1,
+//   //   clearcoatRoughness: 0.05,
+//   //   iridescence: 1,
+//   //   iridescenceIOR: 1.6,
+//   //   iridescenceThicknessRange: [100, 300],
+//   //   sheen: 1,
+//   //   sheenRoughness: 0.05,
+//   // }), [noiseTexture]);
+//   const material = useMemo(
+//     () =>
+//       new THREE.MeshPhysicalMaterial({
+//         color: new THREE.Color("#fdf6ec"),
+//         metalness: 0.3,
+//         roughness: 0.1,
+//         transmission: 1,
+//         thickness: 1.5,
+//         transparent: true,
+//         clearcoat: 1,
+//         clearcoatRoughness: 0.05,
+//         iridescence: 1,
+//         iridescenceIOR: 1.6,
+//         iridescenceThicknessRange: [100, 300],
+//         sheen: 1,
+//         sheenRoughness: 0.05,
+//         roughnessMap: noiseTexture,
+//         bumpMap: noiseTexture,
+//         bumpScale: 0.05,
+//       }),
+//     [noiseTexture]
+//   );
 
-    const ringGeo = new THREE.ExtrudeGeometry(ringRect, {
-      steps: arcSegments,
-      bevelEnabled: false,
-      extrudePath: ringPath,
-    });
+//   const { ring, smile, leftEye, rightEye } = useMemo(() => {
+//     const arcSegments = 100;
 
-    const smilePath = new THREE.CurvePath();
-    const smileCurve = new THREE.ArcCurve(0, -1.5, 2.4, Math.PI, 0, false);
+//     const ringCurve = new THREE.ArcCurve(0, 0, 5.6, 0, Math.PI * 2, false);
+//     const ringPoints = ringCurve
+//       .getPoints(arcSegments)
+//       .map((p) => new THREE.Vector3(p.x, p.y, 0));
+//     const ringPath = new THREE.CatmullRomCurve3(ringPoints, true);
 
-    const smilePoints = smileCurve
-      .getPoints(50)
-      .map((p) => new THREE.Vector3(p.x, p.y, 0));
-    const smileCatmull = new THREE.CatmullRomCurve3(smilePoints);
+//     const ringRect = new THREE.Shape();
+//     const rw = 0.4;
+//     const rh = 0.6;
+//     ringRect.moveTo(-rw / 2, -rh / 2);
+//     ringRect.lineTo(rw / 2, -rh / 2);
+//     ringRect.lineTo(rw / 2, rh / 2);
+//     ringRect.lineTo(-rw / 2, rh / 2);
+//     ringRect.lineTo(-rw / 2, -rh / 2);
 
-    const rectShape = new THREE.Shape();
-    const w = 0.4;
-    const h = 0.6;
-    rectShape.moveTo(-w / 2, -h / 2);
-    rectShape.lineTo(w / 2, -h / 2);
-    rectShape.lineTo(w / 2, h / 2);
-    rectShape.lineTo(-w / 2, h / 2);
-    rectShape.lineTo(-w / 2, -h / 2);
+//     const ringGeo = new THREE.ExtrudeGeometry(ringRect, {
+//       steps: arcSegments,
+//       bevelEnabled: false,
+//       extrudePath: ringPath,
+//     });
 
-    const smileGeo = new THREE.ExtrudeGeometry(rectShape, {
-      steps: 50,
-      bevelEnabled: false,
-      extrudePath: smileCatmull,
-    });
+//     const smilePath = new THREE.CurvePath();
+//     const smileCurve = new THREE.ArcCurve(0, -1.5, 2.4, Math.PI, 0, false);
 
-    const makeEye = (x, y) => {
-      const geo = new THREE.CylinderGeometry(0.5, 0.5, 0.6, 32);
-      geo.rotateX(Math.PI / 2);
-      geo.translate(x, y, 0);
-      return geo;
-    };
+//     const smilePoints = smileCurve
+//       .getPoints(50)
+//       .map((p) => new THREE.Vector3(p.x, p.y, 0));
+//     const smileCatmull = new THREE.CatmullRomCurve3(smilePoints);
 
-    return {
-      ring: ringGeo,
-      smile: smileGeo,
-      leftEye: makeEye(-2, 1),
-      rightEye: makeEye(2, 1),
-    };
-  }, []);
+//     const rectShape = new THREE.Shape();
+//     const w = 0.4;
+//     const h = 0.6;
+//     rectShape.moveTo(-w / 2, -h / 2);
+//     rectShape.lineTo(w / 2, -h / 2);
+//     rectShape.lineTo(w / 2, h / 2);
+//     rectShape.lineTo(-w / 2, h / 2);
+//     rectShape.lineTo(-w / 2, -h / 2);
 
-  return (
-    <group ref={groupRef} position={position} scale={[0.3, 0.3, 0.3]}>
-      <mesh geometry={ring} material={material} />
-      <mesh geometry={smile} material={material} />
-      <mesh geometry={leftEye} material={material} />
-      <mesh geometry={rightEye} material={material} />
-    </group>
-  );
-};
+//     const smileGeo = new THREE.ExtrudeGeometry(rectShape, {
+//       steps: 50,
+//       bevelEnabled: false,
+//       extrudePath: smileCatmull,
+//     });
 
-const WavePlane = forwardRef(({ uniformsRef }, ref) => {
-  const texture = useTexture("/images/mockup_c.png");
-  const gl = useThree((state) => state.gl);
-  useMemo(() => {
-    texture.encoding = THREE.sRGBEncoding;
-    texture.anisotropy = Math.min(16, gl.capabilities.getMaxAnisotropy());
-    texture.needsUpdate = true;
-  }, [texture, gl]);
+//     const makeEye = (x, y) => {
+//       const geo = new THREE.CylinderGeometry(0.5, 0.5, 0.6, 32);
+//       geo.rotateX(Math.PI / 2);
+//       geo.translate(x, y, 0);
+//       return geo;
+//     };
 
-  const image = useRef();
-  const meshRef = ref || useRef();
-  // const { amplitude, waveLength } = useControls({
-  //   amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
-  //   waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
-  // });
+//     return {
+//       ring: ringGeo,
+//       smile: smileGeo,
+//       leftEye: makeEye(-2, 1),
+//       rightEye: makeEye(2, 1),
+//     };
+//   }, []);
 
-  const amplitude = 0.2;
-  const waveLength = 5;
+//   return (
+//     <group ref={groupRef} position={position} scale={[0.3, 0.3, 0.3]}>
+//       <mesh geometry={ring} material={material} />
+//       <mesh geometry={smile} material={material} />
+//       <mesh geometry={leftEye} material={material} />
+//       <mesh geometry={rightEye} material={material} />
+//     </group>
+//   );
+// };
 
-  const uniforms = useRef({
-    uTime: { value: 0 },
-    uAmplitude: { value: amplitude },
-    uWaveLength: { value: waveLength },
-    uTexture: { value: texture },
-  });
+// const WavePlane = forwardRef(({ uniformsRef }, ref) => {
+//   const texture = useTexture("/images/mockup_c.png");
+//   const gl = useThree((state) => state.gl);
+//   useMemo(() => {
+//     texture.colorSpace = THREE.SRGBColorSpace;
+//     texture.anisotropy = Math.min(16, gl.capabilities.getMaxAnisotropy());
+//     texture.needsUpdate = true;
+//   }, [texture, gl]);
 
-  useFrame(() => {
-    uniforms.current.uTime.value += 0.04;
-    // uniforms.current.uAmplitude.value = amplitude;
-    uniforms.current.uWaveLength.value = waveLength;
-  });
+//   const image = useRef();
+//   const meshRef = ref || useRef();
+//   // const { amplitude, waveLength } = useControls({
+//   //   amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
+//   //   waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
+//   // });
 
-  const vertexShader = `
-uniform float uTime;
-uniform float uAmplitude;
-uniform float uWaveLength;
-varying vec2 vUv;
-void main() {
-    vUv = uv;
-    vec3 newPosition = position;
+//   const amplitude = 0.2;
+//   const waveLength = 5;
 
-float wave   = uAmplitude * sin(position.y * uWaveLength + uTime);
-float ripple = uAmplitude * 0.01 * sin((position.y + position.x) * 10.0 + uTime * 2.0);
-float bulge  = uAmplitude * 0.05 * sin(position.y * 5.0 + uTime) *
-                                      cos(position.x * 5.0 + uTime * 1.5);
-newPosition.z += wave + ripple + bulge;
+//   const uniforms = useRef({
+//     uTime: { value: 0 },
+//     uAmplitude: { value: amplitude },
+//     uWaveLength: { value: waveLength },
+//     uTexture: { value: texture },
+//   });
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-}
-  `;
+//   useFrame(() => {
+//     uniforms.current.uTime.value += 0.04;
+//     // uniforms.current.uAmplitude.value = amplitude;
+//     uniforms.current.uWaveLength.value = waveLength;
+//   });
 
-  const fragmentShader = `
-  uniform sampler2D uTexture; 
-  varying vec2 vUv; 
-    void main() {
-  gl_FragColor = texture2D(uTexture, vUv);
-    }
-  `;
-  useEffect(() => {
-    if (uniformsRef) {
-      uniformsRef.current = uniforms.current;
-    }
-  }, [uniformsRef]);
+//   const vertexShader = `
+// uniform float uTime;
+// uniform float uAmplitude;
+// uniform float uWaveLength;
+// varying vec2 vUv;
+// void main() {
+//     vUv = uv;
+//     vec3 newPosition = position;
 
-  return (
-    <mesh
-      ref={meshRef}
-      position={[0, 0, 1]}
-      scale={[2, 2, 1]}
-      rotation={[-Math.PI * 0.4, 0.3, Math.PI / 2]}
-    >
-      <planeGeometry args={[1.5, 2, 100, 200]} />
-      <shaderMaterial
-        wireframe={false}
-        fragmentShader={fragmentShader}
-        vertexShader={vertexShader}
-        uniforms={uniforms.current}
-      />
-    </mesh>
-  );
-});
+// float wave   = uAmplitude * sin(position.y * uWaveLength + uTime);
+// float ripple = uAmplitude * 0.01 * sin((position.y + position.x) * 10.0 + uTime * 2.0);
+// float bulge  = uAmplitude * 0.05 * sin(position.y * 5.0 + uTime) *
+//                                       cos(position.x * 5.0 + uTime * 1.5);
+// newPosition.z += wave + ripple + bulge;
+
+//     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+// }
+//   `;
+
+//   const fragmentShader = `
+//   uniform sampler2D uTexture; 
+//   varying vec2 vUv; 
+//     void main() {
+//   gl_FragColor = texture2D(uTexture, vUv);
+//     }
+//   `;
+//   useEffect(() => {
+//     if (uniformsRef) {
+//       uniformsRef.current = uniforms.current;
+//     }
+//   }, [uniformsRef]);
+
+//   return (
+//     <mesh
+//       ref={meshRef}
+//       position={[0, 0, 1]}
+//       scale={[2, 2, 1]}
+//       rotation={[-Math.PI * 0.4, 0.3, Math.PI / 2]}
+//     >
+//       <planeGeometry args={[1.5, 2, 100, 200]} />
+//       <shaderMaterial
+//         wireframe={false}
+//         fragmentShader={fragmentShader}
+//         vertexShader={vertexShader}
+//         uniforms={uniforms.current}
+//       />
+//     </mesh>
+//   );
+// });
 // function Invisalign() {
 //   const sectionRef = useRef()
 //   const { scrollYProgress } = useScroll({
@@ -508,7 +508,7 @@ newPosition.z += wave + ripple + bulge;
 //   )
 // }
 
-const Section = ({ children, onHoverStart, onHoverEnd }) => (
+const SectionTwo = ({ children, onHoverStart, onHoverEnd }) => (
   <motion.div
     onHoverStart={onHoverStart}
     onHoverEnd={onHoverEnd}
@@ -805,14 +805,14 @@ const Invisalign = () => {
   return (
     <>
       <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
-        <Suspense fallback={null}>
+        {/* <Suspense fallback={null}>
           <BulgeGallery
             slides={[
               { image: "/images/invisalignphonemockup.png" },
               { image: "/images/totebag2.jpg" },
             ]}
           />
-        </Suspense>
+        </Suspense> */}
         <Canvas
           gl={{ alpha: true }}
           style={{
@@ -902,7 +902,7 @@ const Invisalign = () => {
           <h4 className="text-sm mb-6">Synopsis</h4>
           <p className="font-neuehaas35 text-[24px] leading-[1.2] max-w-[650px] mb-20">
             Trusted by millions around the world, Invisalign is a clear,
-            comfortable, and confident choice for straightening smiles. We've
+            comfortable, and confident choice for straightening smiles. We&apos;ve
             proudly ranked among the top 1% of certified Invisalign providers
             nationwide — every year since 2000.
           </p>
@@ -926,7 +926,7 @@ const Invisalign = () => {
                       5x Winner Best Orthodontist
                     </div>
                     <div className="flex-1 text-black">
-                      Readers' Choice The Morning Call
+                      Readers&apos; Choice The Morning Call
                     </div>
                   </div>
                   <div className="flex border-b border-gray-300 py-3">
@@ -974,9 +974,9 @@ const Invisalign = () => {
 
           <div className="flex items-center gap-24">
             <div className="font-neuehaas35 text-md whitespace-nowrap relative">
-              What's Invisalign
+              What&apos;s Invisalign
               <div
-                ref={squigglyTextRef}
+                // ref={squigglyTextRef}
                 className="absolute left-0 bottom-[-5px] w-full"
               >
                 <svg className="w-full" height="9" viewBox="0 0 101 9">
