@@ -345,7 +345,7 @@ const menuText = "Menu";
                   <rect x="8" y="16" width="16" height="8" />
                 </g>
               </svg>
-            </motion.div> */}
+            </motion.div> 
           </Link>
 
           <motion.div
