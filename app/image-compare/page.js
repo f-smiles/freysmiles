@@ -70,10 +70,49 @@ const TestComponent = () => {
   )
 }
 
+const MainComponent = () => {
+  
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.ImageComparison-container',
+          start: 'top top',
+          end: '+=100%',
+          pin: true,
+          scrub: 1,
+          markers: true,
+        },
+        defaults: { ease: 'none' },
+      })
+      // tl.fromTo('.ImageComparison-before', { xPercent: 0, x: 0 }, { xPercent: 100 }, 0)
+        // .fromTo('.ImageComparison-before img', { xPercent: 0, x: 0 }, { xPercent: -100 }, 0)
+      tl.fromTo('.ImageComparison-after', { xPercent: 100, x: 0 }, { xPercent: 0 }, 0)
+        .fromTo('.ImageComparison-after img', { xPercent: -100, x: 0 }, { xPercent: 0 }, 0)
+    })
+    
+    return () => {
+      ctx.revert()
+    }
+  }, [])
+
+  return (
+    <div className='ImageComparison-container'>
+      <div className='ImageComparison-before'>
+        <img src='/images/test/base.jpg' alt='Before stage' />
+      </div>
+      <div className='ImageComparison-after'>
+        <img src='/images/test/base.jpg' alt='After stage' />
+      </div>
+    </div>
+  )
+}
+
 export default function Page() {
   return (
     <>
-      <TestComponent />
+      {/* <TestComponent /> */}
+      <MainComponent />
     </>
   )
 }
