@@ -1,6 +1,5 @@
 "use client";
 
-
 import NormalizeWheel from "normalize-wheel";
 import * as THREE from "three";
 import { MeshDistortMaterial } from "@react-three/drei";
@@ -55,7 +54,7 @@ if (typeof window !== "undefined") {
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const Braces = () => {
-    useEffect(() => {
+  useEffect(() => {
     const canvas = document.getElementById("shader-bg");
     if (!canvas) return;
 
@@ -89,29 +88,16 @@ uniform vec2 u_resolution;
 
 void main() {
   vec2 uv = gl_FragCoord.xy / u_resolution;
-
-  // Adjust for non-square screens
   vec2 centeredUV = (uv - 0.5) * vec2(u_resolution.x / u_resolution.y, 1.0);
-
-  // Base: clean stone background
   vec3 stone = vec3(0.94, 0.93, 0.91);
-
-  // Orb center (subtle yellow glow)
   vec2 orbCenter = vec2(-0.15, -0.05); // slightly left of center
   float orbDist = length(centeredUV - orbCenter);
-
-float orb = smoothstep(0.8, 0.0, orbDist); 
-
-  // Orb color — soft warm yellow
-  vec3 glow = vec3(1.0, 0.93, 0.72); // like ambient sunrise
-
-  // Mix glow with background
-  vec3 color = mix(stone, glow, orb * 0.8); // blend softly
-
+  float orb = smoothstep(0.8, 0.0, orbDist); 
+  vec3 glow = vec3(1.0, 0.93, 0.72); 
+  vec3 color = mix(stone, glow, orb * 0.8); 
   gl_FragColor = vec4(color, 1.0);
 }
-    
-        `;
+ `;
 
     const material = new THREE.ShaderMaterial({
       vertexShader,
@@ -163,30 +149,38 @@ float orb = smoothstep(0.8, 0.0, orbDist);
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
-  start: "top center-=100",
+        start: "top center-=100",
         end: "bottom bottom",
         toggleActions: "play none none none",
       },
     });
 
     lineRefs.current.forEach((line, i) => {
-      tl.to(line, {
-        scaleX: 1,
-        duration: 1,
-        ease: "power3.out",
-      }, i * 0.2);
+      tl.to(
+        line,
+        {
+          scaleX: 1,
+          duration: 1,
+          ease: "power3.out",
+        },
+        i * 0.2
+      );
     });
 
     textRefs.current.forEach((text, i) => {
-      tl.to(text, {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power2.out",
-      }, i * 0.2 + 0.1);
+      tl.to(
+        text,
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+        },
+        i * 0.2 + 0.1
+      );
     });
 
-    return () => ScrollTrigger.getAll().forEach(t => t.kill());
+    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
   }, []);
 
   const items = [
@@ -198,8 +192,8 @@ float orb = smoothstep(0.8, 0.0, orbDist);
     "Wider arches than other braces",
     "Fewer extractions of permanent teeth",
   ];
-    const ELLIPSE_COUNT = 7;
-      const ellipsesRef = useRef([]);
+  const ELLIPSE_COUNT = 7;
+  const ellipsesRef = useRef([]);
 
   useEffect(() => {
     ellipsesRef.current.forEach((el, i) => {
@@ -216,95 +210,95 @@ float orb = smoothstep(0.8, 0.0, orbDist);
     });
   }, []);
 
-    const pathRef = useRef(null);
-    const cardsectionRef = useRef(null);
-    const textContainerRef = useRef(null);
-    useEffect(() => {
-      const path = pathRef.current;
-      const text = textContainerRef.current;
-      const pathLength = path.getTotalLength();
-    
-      gsap.set(path, {
-        strokeDasharray: pathLength,
-        strokeDashoffset: 0
-      });
-      
-      gsap.set(text, {
-        opacity: 0,
-        y: 30,
-        filter: "blur(2px)"
-      });
-    
-      const trigger = ScrollTrigger.create({
-        trigger: cardsectionRef.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: 1,
-        pin: true,
-        pinSpacing: true,
-        onUpdate: (self) => {
-          const progress = self.progress;
-          
-          gsap.to(path, {
-            strokeDashoffset: progress * pathLength,
-            ease: "none",
-            overwrite: true
-          });
-    
-          const textFadeStart = 0.66;
-          const textFadeDuration = 0.33;
-          
-          if (progress >= textFadeStart) {
-            const textProgress = (progress - textFadeStart) / textFadeDuration;
-            const easedProgress = gsap.parseEase("sine.out")(Math.min(1, textProgress));
-            
-            gsap.to(text, {
-              opacity: easedProgress,
-              y: 30 * (1 - easedProgress),
-              filter: `blur(${2 * (1 - easedProgress)}px)`,
-              ease: "none",
-              overwrite: true
-            });
-          } else {
-            gsap.to(text, {
-              opacity: 0,
-              y: 30,
-              filter: "blur(2px)",
-              overwrite: true,
-              duration: 0.2
-            });
-          }
-        },
-        onLeave: () => {
+  const pathRef = useRef(null);
+  const cardsectionRef = useRef(null);
+  const textContainerRef = useRef(null);
+  useEffect(() => {
+    const path = pathRef.current;
+    const text = textContainerRef.current;
+    const pathLength = path.getTotalLength();
+
+    gsap.set(path, {
+      strokeDasharray: pathLength,
+      strokeDashoffset: 0,
+    });
+
+    gsap.set(text, {
+      opacity: 0,
+      y: 30,
+      filter: "blur(2px)",
+    });
+
+    const trigger = ScrollTrigger.create({
+      trigger: cardsectionRef.current,
+      start: "top top",
+      end: "bottom top",
+      scrub: 1,
+      pin: true,
+      pinSpacing: true,
+      onUpdate: (self) => {
+        const progress = self.progress;
+
+        gsap.to(path, {
+          strokeDashoffset: progress * pathLength,
+          ease: "none",
+          overwrite: true,
+        });
+
+        const textFadeStart = 0.66;
+        const textFadeDuration = 0.33;
+
+        if (progress >= textFadeStart) {
+          const textProgress = (progress - textFadeStart) / textFadeDuration;
+          const easedProgress = gsap.parseEase("sine.out")(
+            Math.min(1, textProgress)
+          );
+
           gsap.to(text, {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
+            opacity: easedProgress,
+            y: 30 * (1 - easedProgress),
+            filter: `blur(${2 * (1 - easedProgress)}px)`,
+            ease: "none",
             overwrite: true,
-            duration: 0.3
+          });
+        } else {
+          gsap.to(text, {
+            opacity: 0,
+            y: 30,
+            filter: "blur(2px)",
+            overwrite: true,
+            duration: 0.2,
           });
         }
-      });
-    
-      return () => {
-        if (trigger) trigger.kill();
-        gsap.killTweensOf([path, text]);
-      };
-    }, []);
+      },
+      onLeave: () => {
+        gsap.to(text, {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          overwrite: true,
+          duration: 0.3,
+        });
+      },
+    });
 
+    return () => {
+      if (trigger) trigger.kill();
+      gsap.killTweensOf([path, text]);
+    };
+  }, []);
 
   return (
     <>
       <canvas
-          id="shader-bg"
-          className="fixed top-0 left-0 w-full min-h-screen z-[-1] pointer-events-none"
-        />
+        id="shader-bg"
+        className="fixed top-0 left-0 w-full min-h-screen z-[-1] pointer-events-none"
+      />
       <div className="relative">
-
         <div className="min-h-screen flex flex-col items-center space-y-16 px-4">
           <div className="h-[33vh]" />
 
-          <div className="text-[11px] uppercase max-w-[500px] font-neuehaas45 leading-snug tracking-wider">
+          <div className="text-[13px] max-w-[500px] font-neuehaas45 leading-snug tracking-wider">
             We love our patients so much we only use braces when we have to. Not
             because it’s cheaper. Not because it’s easier. Just because it’s
             what’s best. And when braces are needed? We're using the best
@@ -336,22 +330,22 @@ float orb = smoothstep(0.8, 0.0, orbDist);
                     benefits
                   </p>
                 </div>
-                <div ref={sectionRef}  className="space-y-4">
-      {items.map((item, i) => (
-        <div key={item} className="space-y-4">
-          <div
-            ref={el => lineRefs.current[i] = el}
-            className="h-[1px] bg-[#cdccc9] w-full origin-left scale-x-0"
-          />
-          <div
-            ref={el => textRefs.current[i] = el}
-            className="tracking-wide font-neuehaas45 text-[13px]"
-          >
-            <li>{item}</li>
-          </div>
-        </div>
-      ))}
-    </div>
+                <div ref={sectionRef} className="space-y-4">
+                  {items.map((item, i) => (
+                    <div key={item} className="space-y-4">
+                      <div
+                        ref={(el) => (lineRefs.current[i] = el)}
+                        className="h-[1px] bg-[#cdccc9] w-full origin-left scale-x-0"
+                      />
+                      <div
+                        ref={(el) => (textRefs.current[i] = el)}
+                        className="tracking-wide font-neuehaas45 text-[13px]"
+                      >
+                        <li>{item}</li>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </section>
             </div>
           </div>
@@ -388,7 +382,7 @@ float orb = smoothstep(0.8, 0.0, orbDist);
           <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
             <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-              Cleaner by Design
+                Cleaner by Design
               </h2>
               <p className="text-[15px] leading-snug font-neuehaas45">
                 The self-closing door means no need for elastic ties — fewer
@@ -400,7 +394,7 @@ float orb = smoothstep(0.8, 0.0, orbDist);
 
             <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-               Less Frequent Office Visits
+                Less Frequent Office Visits
               </h2>
               <p className="text-[15px] leading-snug font-neuehaas45">
                 With Damon archwires, rubber ties are not a mandatory component.
@@ -417,7 +411,7 @@ float orb = smoothstep(0.8, 0.0, orbDist);
           <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
             <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-               Smarter Mechanics
+                Smarter Mechanics
               </h2>
               <p className="text-[15px] leading-snug font-neuehaas45">
                 Damon braces uses a sliding door mechanism that reduces the
@@ -430,7 +424,7 @@ float orb = smoothstep(0.8, 0.0, orbDist);
 
             <div className="max-w-[450px]">
               <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-              Fewer Appointments. More Time for Personal Nonsense
+                Fewer Appointments. More Time for Personal Nonsense
               </h2>
               <p className="text-[15px] leading-snug font-neuehaas45">
                 Traditional braces (aka twin brackets) often require monthly
@@ -481,12 +475,12 @@ float orb = smoothstep(0.8, 0.0, orbDist);
 
         <div className="flex justify-center items-start py-24 px-4">
           <div className="w-full max-w-3xl pt-12">
-          <p className="text-center text-[14px] font-neuehaas35 uppercase tracking-wide opacity-60 mb-2">
-  A final note on treatment philosophy
-</p>
-<h3 className="text-center text-[32px] font-neuehaas45 leading-snug mb-4">
-  In most cases, we still prefer finishing with clear aligners.
-</h3>
+            <p className="text-center text-[14px] font-neuehaas35 uppercase tracking-wide opacity-60 mb-2">
+              A final note on treatment philosophy
+            </p>
+            <h3 className="text-center text-[32px] font-neuehaas45 leading-snug mb-4">
+              In most cases, we still prefer finishing with clear aligners.
+            </h3>
             <p className="text-[15px] leading-[1.2] font-neuehaas45 max-w-xl mx-auto">
               Our breadth of clinical experience with fixed appliances —
               including Damon Braces — has shaped our current methodology: we
@@ -504,44 +498,43 @@ float orb = smoothstep(0.8, 0.0, orbDist);
         {/* <WebGLGalleryApp /> */}
       </div>
       <footer id="scroll-down" className=" relative overflow-hidden h-[100vh]">
-  <div className="relative w-full h-full">
-    <div
-      style={{
-        transformStyle: "preserve-3d",
-        transform: "rotateX(70deg) translateZ(1px) scaleY(.6)",
-        height: "100%",
-        width: "100%",
-        position: "relative",
-        transformOrigin: "center",
-        perspective: "2000px",
-        backfaceVisibility: "hidden",
-      }}
-      className="w__oval-animations relative w-full h-full"
-    >
-      {[...Array(ELLIPSE_COUNT)].map((_, i) => (
-        <div
-          key={i}
-          ref={(el) => (ellipsesRef.current[i] = el)}
-          className="absolute w-[60vw] h-[24vw] rounded-full"
-          style={{
-            left: "50%",
-            marginLeft: "-45vw",
-            border: "3px solid #f7f5f7",
-            boxSizing: "border-box",
-            // willChange: "transform",
-            transformStyle: "preserve-3d",
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-            transformOrigin: "center",
-            filter: "contrast(1.1)",
-          
-          }}
-        />
-      ))}
-    </div>
-    <div className="w__scroll-down__trigger" />
-  </div>
-</footer>
+        <div className="relative w-full h-full">
+          <div
+            style={{
+              transformStyle: "preserve-3d",
+              transform: "rotateX(70deg) translateZ(1px) scaleY(.6)",
+              height: "100%",
+              width: "100%",
+              position: "relative",
+              transformOrigin: "center",
+              perspective: "2000px",
+              backfaceVisibility: "hidden",
+            }}
+            className="w__oval-animations relative w-full h-full"
+          >
+            {[...Array(ELLIPSE_COUNT)].map((_, i) => (
+              <div
+                key={i}
+                ref={(el) => (ellipsesRef.current[i] = el)}
+                className="absolute w-[60vw] h-[24vw] rounded-full"
+                style={{
+                  left: "50%",
+                  marginLeft: "-45vw",
+                  border: "3px solid #f7f5f7",
+                  boxSizing: "border-box",
+                  // willChange: "transform",
+                  transformStyle: "preserve-3d",
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
+                  transformOrigin: "center",
+                  filter: "contrast(1.1)",
+                }}
+              />
+            ))}
+          </div>
+          <div className="w__scroll-down__trigger" />
+        </div>
+      </footer>
       {/* <TextEffect 
     text="Braces" 
     font="NeueHaasRoman" 
@@ -1534,7 +1527,6 @@ void main() {
   );
 };
 
-
 const TextEffect = ({
   text = "braces",
   font = "NeueHaasDisplay35",
@@ -1846,7 +1838,6 @@ const TextEffect = ({
     />
   );
 };
-
 
 const fragment = `precision highp float;
 

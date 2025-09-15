@@ -455,7 +455,7 @@ export default function LandingComponent() {
             color: "white",
             maxWidth: "400px",
             textAlign: "left",
-            textTransform: "uppercase",
+            // textTransform: "uppercase",
             pointerEvents: "none",
             transition:
               "opacity 0.2s linear, transform 0.2s linear, filter 0.2s linear",
@@ -463,18 +463,55 @@ export default function LandingComponent() {
         >
           <p
             style={{
-              fontSize: "12px",
+              fontSize: "15px",
               lineHeight: "1.4",
               marginBottom: "20px",
-              fontFamily: "KHTekaTrial-Light",
+              fontFamily: "NeueHaasGroteskDisplayPro45Light",
             }}
           >
-            Behind every smile lies a story in progress. At our office, we guide
+            Every smile is a story. At our office, we guide
             you through every step of your orthodontic journey — with advanced
             treatment, personalized care, and results that go beyond the
             ordinary.
           </p>
-          <div className="font-khteka">Scroll To Discover</div>
+<div className="flex items-center gap-3">
+  <div className="text-[17px] font-neuehaas45">
+    Scroll To Discover
+  </div>
+  <div
+    style={{
+      width: "1.5em",
+      height: "1.5em",
+      borderRadius: "50%",
+      overflow: "hidden",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <video
+      id="holovideo"
+      loop
+      muted
+      autoPlay
+      playsInline
+      preload="metadata"
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        transform: "scale(1.25)",
+        boxShadow: "0 0 50px #ebe6ff80",
+      }}
+    >
+      <source
+        src="https://cdn.refokus.com/ttr/speaking-ball.mp4"
+        type="video/mp4"
+      />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
         </div>
 
         <div

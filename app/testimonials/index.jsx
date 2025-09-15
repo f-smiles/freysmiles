@@ -429,6 +429,7 @@ void main(){
   gl_FragColor = vec4(color, 1.0);
 }
     `;
+    
     const program = new Program(gl, {
       vertex,
       fragment,

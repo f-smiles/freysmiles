@@ -780,111 +780,118 @@ uniform vec2 u_resolution;
 varying vec2 v_uv;
 
 #define PI 3.14159265359
+#define TWO_PI 6.28318530718
 
-// Noise functions
-float hash(vec2 p) {
-    p = fract(p * vec2(123.34, 456.21));
-    p += dot(p, p + 45.32);
-    return fract(p.x * p.y);
+// Hash function for randomness
+float hash(float n) {
+    return fract(sin(n) * 43758.5453123);
 }
 
+// 2D noise function
 float noise(vec2 p) {
     vec2 i = floor(p);
     vec2 f = fract(p);
     f = f * f * (3.0 - 2.0 * f);
-    
-    float a = hash(i);
-    float b = hash(i + vec2(1.0, 0.0));
-    float c = hash(i + vec2(0.0, 1.0));
-    float d = hash(i + vec2(1.0, 1.0));
-    
+    float n = i.x + i.y * 57.0;
+    float a = hash(n);
+    float b = hash(n + 1.0);
+    float c = hash(n + 57.0);
+    float d = hash(n + 58.0);
     return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
+// FBM (Fractal Brownian Motion)
 float fbm(vec2 p) {
-    float sum = 0.0;
+    float f = 0.0;
     float amp = 0.5;
     float freq = 1.0;
-    
     for(int i = 0; i < 6; i++) {
-        sum += amp * noise(p * freq);
+        f += amp * noise(p * freq);
         amp *= 0.5;
         freq *= 2.0;
     }
-    
-    return sum;
+    return f;
 }
 
-// Vibrant color generation
-vec3 vibrantColor(float t) {
-    vec3 a = vec3(0.8, 0.1, 0.5);  // Magenta
-    vec3 b = vec3(1.0, 0.2, 0.0);  // Orange-red
-    vec3 c = vec3(0.1, 0.5, 1.0);  // Bright blue
-    vec3 d = vec3(0.0, 0.8, 0.4);  // Turquoise
+// Star field
+float stars(vec2 p, float threshold) {
+    float n = hash(p.x * 100.0 + p.y * 10000.0);
+    return (n > threshold) ? n : 0.0;
+}
+
+// Nebula cloud
+vec3 nebula(vec2 p, vec3 color1, vec3 color2, vec3 color3) {
+    // Mouse influence on nebula position
+    vec2 mouseOffset = (u_mouse - 0.5) * 0.2;
+    p += mouseOffset;
     
-    return a + b * cos(2.0 * PI * (c * t + d));
+    // Base noise layers
+    float n1 = fbm(p * 1.0 + u_time * 0.05);
+    float n2 = fbm(p * 2.0 - u_time * 0.03);
+    float n3 = fbm(p * 4.0 + u_time * 0.02);
+    
+    // Combine noise layers
+    float finalNoise = n1 * 0.5 + n2 * 0.3 + n3 * 0.2;
+    
+    // Create color gradient based on noise
+    vec3 col = mix(color1, color2, smoothstep(0.2, 0.6, finalNoise));
+    col = mix(col, color3, smoothstep(0.5, 0.8, finalNoise));
+    
+    // Add some brightness variation
+    float brightness = fbm(p * 3.0 + vec2(u_time * 0.1, u_time * 0.05));
+    col *= 0.8 + brightness * 0.5;
+    
+    // Mouse proximity effect - brighten areas near mouse
+    float mouseDist = length(p - (u_mouse - 0.5) * 2.0);
+    float mouseGlow = 0.1 / (0.1 + mouseDist * 2.0);
+    col += color3 * mouseGlow * 2.0;
+    
+    return col * smoothstep(0.2, 0.3, finalNoise);
 }
 
 void main() {
-    // Adjust for aspect ratio
+    // Correct aspect ratio
     vec2 uv = v_uv;
     float aspect = u_resolution.x / u_resolution.y;
     uv.x *= aspect;
+    uv = uv * 2.0 - vec2(aspect, 1.0);
     
-    // Mouse influence (normalized to UV space)
-    vec2 mousePos = u_mouse;
-    mousePos.x *= aspect;
-    float mouseDist = length(uv - mousePos);
-    float mouseInfluence = 1.0 - smoothstep(0.0, 0.8, mouseDist);
+    // Deep space background colors
+    vec3 bgColor = vec3(0.02, 0.01, 0.05);
+    vec3 nebulaColor1 = vec3(0.2, 0.0, 0.4);  // Deep purple
+    vec3 nebulaColor2 = vec3(0.0, 0.2, 0.5);  // Deep blue
+    vec3 nebulaColor3 = vec3(0.7, 0.3, 0.9);  // Bright purple
     
-    // Time variables for animation
-    float time = u_time * 0.3;
+    // Create the nebula
+    vec3 color = bgColor;
     
-    // Base organic patterns with multiple layers
-    float noise1 = fbm(uv * 3.0 + time * vec2(0.5, 0.2));
-    float noise2 = fbm(uv * 2.0 - time * vec2(0.3, 0.4) + noise1 * 0.5);
-    float noise3 = fbm(uv * 1.5 + time * vec2(0.1, -0.3) + noise2 * 0.4);
+    // Add stars
+    float starIntensity = stars(uv, 0.98);
+    float twinkling = 0.5 + 0.5 * sin(u_time * 5.0 + uv.x * 10.0 + uv.y * 5.0);
+    vec3 starColor = vec3(0.9, 0.9, 1.0) * starIntensity * twinkling;
     
-    // Add mouse displacement
-    float displacement = mouseInfluence * 0.2;
-    noise2 += displacement * sin(time * 2.0);
-    noise3 *= 1.0 + mouseInfluence * 0.5;
+
+    float distantStars = stars(uv * 2.0, 0.97) * 0.3;
+    starColor += vec3(0.8, 0.8, 1.0) * distantStars;
     
-    // Create dynamic organic waves
-    float organicShape = noise1 * 0.3 + noise2 * 0.4 + noise3 * 0.3;
+
+    vec3 nebulaLayer1 = nebula(uv * 0.5, nebulaColor1, nebulaColor2, nebulaColor3);
+    vec3 nebulaLayer2 = nebula(uv * 0.3 + vec2(0.1, 0.2), nebulaColor2, nebulaColor3, nebulaColor1) * 0.7;
     
-    // Add pulsation based on time
-    float pulse = 0.5 + 0.5 * sin(time * 2.0);
-    organicShape = organicShape * (0.8 + 0.2 * pulse);
+
+    color += nebulaLayer1 + nebulaLayer2;
+    color += starColor;
     
-    // Enhance edges with another noise layer
-    float edgeNoise = fbm(uv * 5.0 + time * vec2(-0.2, 0.3));
-    float edge = smoothstep(0.4, 0.6, organicShape);
-    edge = mix(edge, edgeNoise, 0.3);
+
+    float centerGlow = 0.1 / (0.1 + length(uv) * 0.8);
+    color += nebulaColor3 * centerGlow * 0.5;
     
-    // Generate vibrant colors
-    vec3 color1 = vibrantColor(organicShape * 2.0 + time * 0.1);
-    vec3 color2 = vibrantColor(organicShape * 1.5 - time * 0.15 + 0.4);
-    vec3 color3 = vibrantColor(edge * 3.0 + time * 0.2 + 0.8);
+    // Mouse interaction - add a subtle glow around mouse position
+    float mouseGlow = 0.05 / (0.05 + length(uv - (u_mouse - 0.5) * 2.0) * 1.5);
+    color += vec3(0.5, 0.3, 0.9) * mouseGlow;
     
-    // Background color - deep purple
-    vec3 bgColor = vec3(0.1, 0.0, 0.2);
-    
-    // Combine all colors for final vibrant look
-    vec3 finalColor = mix(bgColor, color1, organicShape);
-    finalColor = mix(finalColor, color2, edge * 0.7);
-    finalColor = mix(finalColor, color3, edgeNoise * edge * 0.5);
-    
-    // Add glow effect enhanced by mouse
-    float glow = smoothstep(0.3, 0.7, organicShape);
-    glow = glow * (1.0 + mouseInfluence * 2.0);
-    finalColor += glow * color2 * 0.3;
-    
-    // Apply brightness boost based on mouse
-    finalColor *= 1.0 + mouseInfluence * 0.5;
-    
-    // Final output
-    gl_FragColor = vec4(finalColor, 1.0);
+    // Final color
+    gl_FragColor = vec4(color, 1.0);
     
     #include <colorspace_fragment>
 }

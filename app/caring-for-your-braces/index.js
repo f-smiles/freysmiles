@@ -377,7 +377,7 @@ export default function Page() {
       <div className="MainSection-wrap">
         <div className="MainSection-head">
           <h2
-            className="font-neuehaas45 SplitText AnimatedSplitText --anim-title MainSection-headTitle AppTitle-1 --in-view"
+            className="SplitText AnimatedSplitText --anim-title MainSection-headTitle AppTitle-1 --in-view"
             style={{ opacity: 1, visibility: "inherit" }}
           >
             {"Early Orthodontics".split(" ").map((word, i) => (

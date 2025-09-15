@@ -1,6 +1,8 @@
 import DesktopNav from '@/components/nav/desktop-nav'
-import MobileNav from '@/components/nav/mobile-nav'
+import dynamic from 'next/dynamic'
 import ThemeButtons from '@/components/nav/theme-buttons'
+
+const MobileNav = dynamic(() => import('@/components/nav/mobile-nav'), { ssr: false })
 
 export default function Navbar({ user }) {
   return (

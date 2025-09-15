@@ -166,130 +166,149 @@ const menuText = "Menu";
         >
 
 <div
-  className="flex items-center relative"
+  className="relative flex items-center"
   onMouseEnter={() => setHovered(true)}
   onMouseLeave={() => setHovered(false)}
 >
 
 <motion.div
-  className="w-12 h-12 rounded-full bg-white flex items-center justify-center z-10"
-  style={{
-    position: 'absolute',
-    left: 0,
-    transformOrigin: hovered ? 'right center' : 'left right'
-  }}
-  initial={{ scale: 0, opacity: 0 }}
+  className="w-12 h-12 rounded-full backdrop-blur-lg bg-white/40 border border-[#808080]/10 flex items-center justify-center z-10"
+  style={{ position: "absolute", left: 0, transformOrigin: "right center" }}
+  initial={{ scaleX: 0, scaleY: 0.3, opacity: 0 }}
   animate={{
-    scale: hovered ? 1 : 0,
-    opacity: hovered ? 1 : 0,
-    x: hovered ? 0 : -6
+    scaleX: hovered ? 1 : 0,
+    scaleY: hovered ? 1 : 0.3,
+    opacity: hovered ? 1 : 0
   }}
   transition={{
-    duration: 0.3,
-    ease: [0.16, 0.3, 0.3, 1],
-    scale: { 
-      duration: 0.3,
-      ease: [0.16, 0.3, 0.3, 1] 
-    }
+    scaleX: { duration: 0.3, ease: [0.65, 0, 0.35, 1] }, 
+    scaleY: { duration: 0.3, ease: [0.65, 0, 0.35, 1], delay: 0.08 },
+    opacity: { duration: 0.3 }
   }}
+  aria-hidden="true"
 >
-  <ArrowRight size={20} />
+<svg
+  fill="#000000"
+  viewBox="0 0 256 256"
+  id="Flat"
+  xmlns="http://www.w3.org/2000/svg"
+  style={{ width: "50%", height: "50%" }}
+>
+  <path d="M218.82812,130.82812l-72,72a3.99957,3.99957,0,0,1-5.65625-5.65625L206.34326,132H40a4,4,0,0,1,0-8H206.34326L141.17187,58.82812a3.99957,3.99957,0,0,1,5.65625-5.65625l72,72A3.99854,3.99854,0,0,1,218.82812,130.82812Z" />
+</svg>
 </motion.div>
-
-<motion.div
-  className={`relative flex items-center bg-white rounded-full h-12 overflow-hidden ml-12
-    transition-all duration-300 ease-[cubic-bezier(0.16,0.3,0.3,1)]
-    ${hovered ? 'w-[280px] px-6' : 'w-[80px] px-6'}`}
+<motion.div className={`relative ml-12 flex items-center  backdrop-blur-lg bg-white/40  border border-[#808080]/10 rounded-full h-14 overflow-hidden
+              transition-all duration-300 ease-[cubic-bezier(0.16,0.3,0.3,1)]
+              ${hovered ? "w-[380px] md:w-[400px] px-6" : "w-[86px] px-6"}`}
 >
-
-<motion.span
-  className="absolute left-6 text-black text-[12px] font-neuehaas45 whitespace-nowrap flex"
-  initial="show"
-  animate={hovered ? "hide" : "show"}
-  variants={{
-    show: { transition: { staggerChildren: 0.03 } },
-    hide: { transition: { staggerChildren: 0.03 } }
-  }}
->
-  {menuText.split("").map((char, i) => (
     <motion.span
-      key={i}
-      className="inline-block"
+      className="absolute left-6 tracking-[0.06em] text-black text-[12px] font-neuehaas45 whitespace-nowrap flex"
+      initial="show"
+      animate={hovered ? "hide" : "show"}
       variants={{
-        show: { opacity: 1, y: 0 },
-        hide: { opacity: 0, y: 20 }
+        show: { transition: { staggerChildren: 0.03 } },
+        hide: { transition: { staggerChildren: 0.03 } },
       }}
-      transition={{ duration: 0.3, ease: [0.16, 0.3, 0.3, 1] }}
     >
-      {char}
+      {(typeof menuText === "string" ? menuText : "Menu").split("").map((char, i) => (
+        <motion.span
+          key={i}
+          className="inline-block"
+          variants={{ show: { opacity: 1, y: 0 }, hide: { opacity: 0, y: 20 } }}
+          transition={{ duration: 0.3, ease: [0.16, 0.3, 0.3, 1] }}
+        >
+          {char}
+        </motion.span>
+      ))}
     </motion.span>
-  ))}
-</motion.span>
-  
-<motion.div
-  className="absolute left-6 flex items-center gap-1"
-  initial="hide"
-  animate={hovered ? "show" : "hide"}
-  variants={{
-    show: { transition: { staggerChildren: 0.05 } },
-    hide: { transition: { staggerChildren: 0.03 } }
-  }}
->
-  {[...links.slice(0, 4)].map((link, i) => (
+
+
     <motion.div
-      key={i}
-      className="text-black px-2 py-2 flex items-center cursor-pointer"
+      className="absolute left-6 flex items-center gap-3"
+      initial="hide"
+      animate={hovered ? "show" : "hide"}
       variants={{
-        show: { opacity: 1, y: 0 },
-        hide: { opacity: 0, y: -10 }
-      }}
-      transition={{ duration: 0.35, ease: [0.16, 0.3, 0.3, 1] }}
-      onClick={() => {
-        setSelectedLink(link.title);
-        setIsActive(!isActive);
-        setActiveIndex(i);
+        show: { transition: { staggerChildren: 0.05 } },
+        hide: { transition: { staggerChildren: 0.03 } },
       }}
     >
+      {links.slice(0, 5).map((link, i) => {
+        const isDirect = !link.sublinks || link.sublinks.length === 0;
+        const href = isDirect && link.hrefs && link.hrefs[0];
 
-      <div className="flex gap-[1px]">
-        {link.title.split("").map((char, j) => (
-          <motion.span
-            key={j}
-            className="text-[11px] text-black font-neuehaas35 inline-block"
-            variants={{
-              show: { opacity: 1, y: 0 },
-              hide: { opacity: 0, y: -10 }
-            }}
-            transition={{ duration: 0.3, ease: [0.16, 0.3, 0.3, 1] }}
+        const activate = () => {
+          if (isDirect && href) {
+            setIsActive(false);
+            window.location.href = href;
+          } else {
+            setSelectedLink(link.title);
+            setIsActive(true);
+            setActiveIndex(i);
+          }
+        };
+
+        return (
+          <motion.button
+            key={link.title}
+            type="button"
+            className="text-black tracking-[0.06em] px-2 py-2 flex items-center cursor-pointer outline-none "
+            variants={{ show: { opacity: 1, y: 0 }, hide: { opacity: 0, y: -10 } }}
+            transition={{ duration: 0.35, ease: [0.16, 0.3, 0.3, 1] }}
+            onClick={activate}
+            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && activate()}
           >
-            {char}
-          </motion.span>
-        ))}
-      </div>
+            <span className="text-[11px] text-black font-neuehaas35">{link.title}</span>
+          </motion.button>
+        );
+      })}
     </motion.div>
-  ))}
-</motion.div>
-</motion.div>
+  </motion.div>
 
-  {/* Right*/}
   <motion.div
-    className="w-12 h-12 rounded-full bg-white flex items-center justify-center z-10"
+    className="w-12 h-12 rounded-full backdrop-blur-lg bg-white/40  border border-[#808080]/10 flex items-center justify-center z-10"
     initial={{ scaleY: 1, opacity: 1 }}
-    animate={{
-      scaleY: hovered ? 0 : 1,
-      opacity: hovered ? 0 : 1
-    }}
-    transition={{ 
-      duration: 0.5,
-      ease: [0.16, 0.3, 0.3, 1],
-      scaleY: { duration: 0.5 }
-    }}
+    animate={{ scaleY: hovered ? 0 : 1, opacity: hovered ? 0 : 1 }}
+    transition={{ duration: 0.5, ease: [0.16, 0.3, 0.3, 1] }}
+    aria-hidden={hovered}
   >
-    <ArrowLeft size={20} />
+<svg
+  fill="#000000"
+  viewBox="0 0 256 256"
+  id="Flat"
+  xmlns="http://www.w3.org/2000/svg"
+  style={{ width: "50%", height: "50%", transform: "scaleX(-1)" }}
+>
+  <path d="M218.82812,130.82812l-72,72a3.99957,3.99957,0,0,1-5.65625-5.65625L206.34326,132H40a4,4,0,0,1,0-8H206.34326L141.17187,58.82812a3.99957,3.99957,0,0,1,5.65625-5.65625l72,72A3.99854,3.99854,0,0,1,218.82812,130.82812Z" />
+</svg>
   </motion.div>
 </div>
 
-          <Link href="/">
+
+
+          <motion.div
+            variants={opacity}
+            animate={!isActive ? "open" : "closed"}
+          >
+            {/* styles.el */}
+            <motion.div className="flex items-center ">
+
+  {/* <Link href="/book-now">
+    <motion.div
+      className="bg-black text-[white] rounded-full px-6 py-5 font-helvetica-neue-light tracking-wider text-[11px]"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      Book
+    </motion.div>
+  </Link> */}
+
+  <Link href="/">
+<motion.div
+  className="sun" aria-hidden
+  whileHover={{ scale: 1.2 }}
+  transition={{ duration: 0.6, ease: "easeOut" }}
+>
+          {/* <Link href="/">
             <motion.div
               className={`${
                 isActive ? "hidden" : "block"
@@ -346,40 +365,11 @@ const menuText = "Menu";
                 </g>
               </svg>
             </motion.div> 
-          </Link>
-
-          <motion.div
-            variants={opacity}
-            animate={!isActive ? "open" : "closed"}
-          >
-            {/* styles.el */}
-            <motion.div className="flex items-center ">
-
-  <Link href="/book-now">
-    <motion.div
-      className="bg-black text-[white] rounded-full px-6 py-5 font-helvetica-neue-light tracking-wider text-[11px]"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-    >
-      Book
-    </motion.div>
-  </Link>
-
-  <Link href="/">
-  <motion.div
-    className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center overflow-hidden"
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    <img
-      src="/images/fstest.png"
-      alt="icon"
-      className="w-8 h-8 object-contain"
-    />
+          </Link> */}
   </motion.div>
 </Link>
 
-  <Link href="/shop/products">
+  {/* <Link href="/shop/products">
     <motion.div
       className="flex items-center justify-center w-10 h-16 transition-all bg-black rounded-full shadow-lg cursor-pointer"
       whileHover={{ scale: 1.05 }}
@@ -389,7 +379,7 @@ const menuText = "Menu";
         Shop
       </span>
     </motion.div>
-  </Link>
+  </Link> */}
 </motion.div>
 
           </motion.div>
@@ -455,7 +445,7 @@ const menuText = "Menu";
                     <p className="text-sm font-saolitalic opacity-60">
                       ({j + 1})
                     </p>
-                    <h2 className="text-[24px] font-light uppercase font-neueroman">
+                    <h2 className="text-[20px] font-neuehaas45">
                       {sublink}
                     </h2>
                   </div>
@@ -483,37 +473,33 @@ const menuText = "Menu";
   )}
 </div>
               {/* RIGHT */}
-              <div className="flex flex-col justify-center w-1/2 gap-8 text-sm text-center font-neuehaas35">
-                <div>
-                  <p className="mb-2 text-xs uppercase font-neuehaas35 opacity-70">
-                    E:
-                  </p>
-                  <div className="flex flex-col gap-1 underline underline-offset-2">
-                    <a href="mailto:info@email.com">info@freysmiles.com</a>
-                  </div>
-                </div>
+         <div className="flex flex-col justify-center w-1/2 gap-8 text-[14px] text-center font-neuehaas35">
+  <div>
+    <p className="mb-2 text-[14px] font-neuehaas35 opacity-70">
+      Email:
+    </p>
+    <div className="flex flex-col gap-1 underline underline-offset-2">
+      <a href="mailto:info@email.com">info@freysmiles.com</a>
+    </div>
+  </div>
 
-                <div>
-                  <p className="mb-2 text-xs uppercase font-neuehaas35 opacity-70">
-                    T:
-                  </p>
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xs font-neuehaas35">
-                      (610) 437-4748
-                    </p>
-                  </div>
-                </div>
+  <div>
+    <p className="mb-2 text-[14px] font-neuehaas35 opacity-70">
+      Telephone:
+    </p>
+    <div className="flex flex-col gap-1">
+      <p className="text-[14px] font-neuehaas35">(610) 437-4748</p>
+    </div>
+  </div>
 
-                <div>
-                  <p className="mb-2 text-xs font-neuehaas35 opacity-70">
-                    Social
-                  </p>
-                  <div className="flex flex-col gap-1 underline underline-offset-2">
-                    <a href="#">Instagram</a>
-                    <a href="#">Facebook</a>
-                  </div>
-                </div>
-              </div>
+  <div>
+    <p className="mb-2 text-[14px] font-neuehaas35 opacity-70">Social</p>
+    <div className="flex flex-col gap-1 underline underline-offset-2">
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+    </div>
+  </div>
+</div>
             </div>
           </motion.div>
         )}

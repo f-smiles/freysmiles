@@ -1,8 +1,11 @@
 "use client";
 import { gsap } from "gsap";
 import { useRef, useEffect, useMemo } from "react";
-import { useFrame, extend, useThree } from "@react-three/fiber";
+import { useFrame, extend, useThree, Canvas } from "@react-three/fiber";
 import FlutedGlassEffect from "../../../utils/glass";
+
+import { shaderMaterial } from "@react-three/drei";
+import * as THREE from "three";
 
 function RepellingLines({
   text = "SHOP",
@@ -12,7 +15,7 @@ function RepellingLines({
   paddingPct = 10,
   radius = 80,
   maxSpeed = 28,
-  strokeColor = "#d6c4ad",
+  strokeColor = "#C4C3D0",
   lineWidth = 0.5,
   showPoints = false,
   fontPx = 420,
@@ -275,7 +278,7 @@ function RepellingLines({
 
     const setSize = () => {
       const dpr = Math.max(1, window.devicePixelRatio || 1);
-      // use the actual CSS size of the canvas
+
       const Wcss = canvas.clientWidth;
       const Hcss = canvas.clientHeight;
 
@@ -439,7 +442,7 @@ const Hero: React.FC = () => {
             terraces={25}
             blurPx={5}
             paddingPct={12}
-            strokeColor="#EEDCC7"
+            strokeColor="	#93FAAF"
             lineWidth={0.5}
             threshold={0.08}
             softness={0.15}
@@ -453,16 +456,16 @@ const Hero: React.FC = () => {
 
 function FrameBox({ children }) {
   return (
-    <section className="relative w-full h-[100svh] bg-black text-[#d6c4ad]">
-      <span className="pointer-events-none absolute left-0 right-0 top-[23%] border-t border-[#6c5f4d]/80" />
-      <span className="pointer-events-none absolute left-0 right-0 bottom-[20%] border-t border-[#6c5f4d]/80" />
+    <section className="relative w-full h-[100svh] bg-[#BBBBBB] text-[#d6c4ad]">
+      <span className="pointer-events-none absolute left-0 right-0 top-[23%] border-t border-[#C4C3D0]" />
+      <span className="pointer-events-none absolute left-0 right-0 bottom-[20%] border-t border-[#C4C3D0]" />
 
       <div
         className="
-          grid w-full h-full border border-[#3a342c]
+          grid w-full h-full border border-[#C4C3D0]
           grid-cols-[minmax(220px,0.9fr)_minmax(0,2.6fr)_minmax(220px,0.9fr)]
           grid-rows-[minmax(120px,1fr)_1fr_minmax(120px,1fr)]
-          divide-x divide-[#3a342c] 
+          divide-x divide-[#C4C3D0]
         "
       >
 
@@ -471,11 +474,11 @@ function FrameBox({ children }) {
         <div />
 
 
-        <div className="uppercase font-khteka p-6 text-[11px] leading-4 tracking-wider text-[#b7a992]/70 flex items-center">
+        <div className="font-neuehaas45 p-6 text-[13px] leading-4 tracking-wider text-white flex items-center">
           <div>
             <div>Our gift cards can be used toward any part of treatment—and they never expire.</div>
-            <div>Send one digitally</div>
-            <div>or choose a physical card</div>
+            <div>Send one digitally OR</div>
+            <div>choose a physical card</div>
           </div>
         </div>
 
@@ -487,7 +490,7 @@ function FrameBox({ children }) {
         </div>
 
 
-        <div className="font-khteka uppercase p-6 text-[11px] leading-4 tracking-wider text-[#b7a992]/70 flex items-center text-left">
+        <div className="font-neuehaas45 p-6 text-[13px] leading-4 tracking-wider text-white flex items-center text-left">
           <div>We’ve curated a handful of products to elevate your routine—nothing extra.</div>
         </div>
 

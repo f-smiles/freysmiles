@@ -1,3 +1,4 @@
+
 import FinancingTreatment from "."
 
 export const metadata = {

@@ -1381,11 +1381,11 @@ const Invisalign = () => {
                 className="absolute top-0 left-0 right-0 h-[1px] bg-gray-300 origin-left"
               />
 
-              <div className="font-khteka flex border-b border-gray-300">
+              <div className="font-neuehaas45 flex border-b border-gray-300">
                 <div className="w-1/3 p-5">
-                  <p className="uppercase font-khteka text-[13px]">Accolades</p>
+                  <p className="uppercase font-neuehaas45 text-[13px]">Accolades</p>
                 </div>
-                <div className="uppercase flex-1 flex flex-col justify-center">
+                <div className="flex-1 flex flex-col justify-center text-[1.2em]">
                   {[
                     ["6x Winner Best Orthodontist", "Best of the Valley"],
                     [
@@ -1421,13 +1421,13 @@ const Invisalign = () => {
                 </div>
               </div>
 
-              <div className="font-khteka flex">
+              <div className="font-neuehaas45 flex">
                 <div className="w-1/3 p-5">
-                  <p className="uppercase font-khteka text-[13px]">Expertise</p>
+                  <p className="uppercase font-neuehaas45 text-[13px]">Expertise</p>
                 </div>
-                <div className="uppercase flex-1 flex flex-col justify-center">
+                <div className="flex-1 flex flex-col justify-center text-[1.2em]">
                   {[
-                    ["INVISALIGN", "25+ Years of Experience"],
+                    ["Invisalign", "25+ Years of Experience"],
                     ["Invisalign Teen", "5000+ Cases Treated"],
                     ["Diamond Plus", "Top 1% of All Providers"],
                   ].map(([left, right], i) => (
