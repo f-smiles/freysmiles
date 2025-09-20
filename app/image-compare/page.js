@@ -8,7 +8,7 @@ import { Draggable } from 'gsap/Draggable'
 gsap.registerPlugin(ScrollTrigger, Draggable)
 
 const MainComponent = () => {
-  const after = useRef(null)
+  const afterDiv = useRef(null)
   const afterImg = useRef(null)
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const MainComponent = () => {
       {/* <div className='ImageComparison-before'>
         <img src='/images/test/base.jpg' alt='Before stage' />
       </div> */}
-      <div ref={after} className='ImageComparison-after'>
+      <div ref={afterDiv} className='ImageComparison-after'>
         <img ref={afterImg} src='/images/test/base.jpg' alt='After stage' />
       </div>
     </div>
