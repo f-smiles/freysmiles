@@ -1,60 +1,55 @@
-.bar {
-  background: #f7f8f8;
-  padding: 20px 0;
+.ImageComparison-container {}
+
+.ImageComparison-after {
   position: fixed;
-  top: 15%;
+  top: 0;
   left: 0;
   right: 0;
 }
 
-.bar::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  transform: translateY(-50%);
-  background: #ddd;
-  height: 5px;
-}
-
-#handler {
-  width: 20px;
-  height: 20px;
-  background: red;
-  border-radius: 50%;
+.ImageComparison-after img {
   position: relative;
-  z-index: 1;
+  width: 500px;
+  height: 500px;
 }
 
-.ImageComparison-container {
+/* .ImageComparison-container {
   position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-}
+} */
 
-.ImageComparison-before {
-  position: absolute;
-  overflow: hidden;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  transform: translate(0%, 0px);
-  filter: grayscale(100%);
-}
-.ImageComparison-before img {
-  transform: translate(-0%, 0px);
-}
-
+/* .ImageComparison-before,
 .ImageComparison-after {
   position: absolute;
-  overflow: hidden;
   top: 0;
   width: 100%;
   height: 100%;
-  transform: translate(100%, 0px);
-}
-.ImageComparison-after img {
-  transform: translate(-100%, 0px);
-}
+  overflow: hidden;
+} */
+
+/* .ImageComparison-before {
+  transform: translate(0%, 0px);
+  filter: grayscale(100%);
+} */
+/* .ImageComparison-before img {
+  transform: translate(-0%, 0px);
+} */
+
+/* .ImageComparison-after {
+  transform: translate(0%, 0px);
+} */
+/* .ImageComparison-after img {
+  transform: translate(0%, 0px);
+} */
+
+/* .ImageComparison-slider {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 8px;
+  height: 100%;
+  background-color: #f4f4f5;
+  transform: translate(-50%, 0px);
+} */
