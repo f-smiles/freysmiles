@@ -19,7 +19,7 @@ const MainComponent = () => {
     const onResize = () => {
       if (trigger) {
         maxScroll = ScrollTrigger.maxScroll(window)
-        barLength = after.current.offsetWidth - afterImg.current.offsetWidth
+        barLength = afterDiv.current.offsetWidth - afterImg.current.offsetWidth
         updateHandler()
       }
     }
@@ -37,7 +37,7 @@ const MainComponent = () => {
 
       draggable = Draggable.create(afterImg.current, {
         type: 'x',
-        bounds: after.current,
+        bounds: afterDiv.current,
         onDrag: function() {
           trigger.scroll(this.x / barLength * maxScroll)
         }
