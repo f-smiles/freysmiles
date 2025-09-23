@@ -698,52 +698,48 @@ console.log(panelRefs.current);
   const col1Ref = useRef(null);
   const col2Ref = useRef(null);
   const col3Ref = useRef(null);
+const leftColumnRef = useRef(null)
+useLayoutEffect(() => {
+  if (!wrapperRef.current || !scrollRef.current || !lastSectionRef.current) return;
+  ScrollTrigger.getAll().forEach((t) => t.kill());
+  const targetY = scrollRef.current.offsetHeight - lastSectionRef.current.offsetHeight;
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: wrapperRef.current,
+      start: "top top",
+      end: "+=" + (window.innerHeight * 3), 
+      scrub: true,
+      pin: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+    },
+  });
 
-  useLayoutEffect(() => {
-    if (
-      !wrapperRef.current ||
-      !lastSectionRef.current ||
-      !newSectionRef.current
-    )
-      return;
+  tl.to(scrollRef.current, {
+    y: -targetY,
+    ease: "none",
+    duration: 1,
+  }, 0);
 
-    ScrollTrigger.getAll().forEach((t) => t.kill());
 
-    const horizontalScrollDistance = window.innerWidth;
-    const columnStartDelay = 0.5;
-    const staggerAmount = 0.05;
+  tl.to(wrapperRef.current, {
+    xPercent: -100,
+    ease: "none",
+    duration: 1,
+  }, "+=0.5");
+tl.to([col1Ref.current, col2Ref.current, col3Ref.current], {
+  yPercent: (i) => (i % 2 === 0 ? -100 : 100),
+  ease: "none",
+  duration: 2,
+  stagger: {
+    each: 0.5,   
+  }
+}, "+=0.2");
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: lastSectionRef.current,
-        start: "top top",
-        end: `+=${horizontalScrollDistance}`,
-        scrub: 1,
-        pin: wrapperRef.current,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-      },
-    });
+  ScrollTrigger.refresh();
 
-    tl.to(wrapperRef.current, { x: "-100%", ease: "none" }, 0);
-
-    gsap.utils.toArray([col1Ref, col2Ref, col3Ref]).forEach((colRef, index) => {
-      tl.to(
-        colRef.current,
-        {
-          yPercent: index % 2 === 0 ? -100 : 100,
-          ease: "none",
-        },
-        columnStartDelay + index * staggerAmount
-      );
-    });
-
-    setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 100);
-
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-  }, []);
+  return () => ScrollTrigger.getAll().forEach((t) => t.kill());
+}, []);
   useEffect(() => {
     const canvas = document.getElementById('shader-bg');
     if (!canvas) return;
@@ -870,19 +866,19 @@ void main() {
     float twinkling = 0.5 + 0.5 * sin(u_time * 5.0 + uv.x * 10.0 + uv.y * 5.0);
     vec3 starColor = vec3(0.9, 0.9, 1.0) * starIntensity * twinkling;
     
-
+    // Add distant stars (smaller and more numerous)
     float distantStars = stars(uv * 2.0, 0.97) * 0.3;
     starColor += vec3(0.8, 0.8, 1.0) * distantStars;
     
-
+    // Add nebula layers
     vec3 nebulaLayer1 = nebula(uv * 0.5, nebulaColor1, nebulaColor2, nebulaColor3);
     vec3 nebulaLayer2 = nebula(uv * 0.3 + vec2(0.1, 0.2), nebulaColor2, nebulaColor3, nebulaColor1) * 0.7;
     
-
+    // Combine everything
     color += nebulaLayer1 + nebulaLayer2;
     color += starColor;
     
-
+    // Add a subtle glow at the center
     float centerGlow = 0.1 / (0.1 + length(uv) * 0.8);
     color += nebulaColor3 * centerGlow * 0.5;
     
@@ -941,7 +937,7 @@ void main() {
     id="shader-bg"
     className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"
   />
-      <div
+      {/* <div
         className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
           isRevealing ? "translate-y-0" : "-translate-y-full"
         }`}
@@ -959,12 +955,12 @@ void main() {
             <span style={{ lineHeight: "1.2" }}>Meet Our Team</span>
           </h2>
         </div>
-      </div>
+      </div> */}
 
       <div className="relative overflow-x-clip">
 
         <div ref={wrapperRef} className="flex w-full">
-          <div className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-[#DBDBDB] w-3/5 bg-[#FCFFFE] rounded-[24px]">
+          <div ref={leftColumnRef} className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-[#DBDBDB] w-3/5 bg-[#FCFFFE] rounded-[24px]">
           <div className="max-w-[400px] ml-10 my-10 flex flex-col overflow-hidden">
           <div className="inline-block overflow-hidden">
           <div className="text-[12px] leading-[1.1] font-neuehaas45 tracking-wider text-black">
@@ -1173,7 +1169,7 @@ void main() {
                         ref={doctorBioRef}
                           className="leading-[1.5] font-neuehaas45 text-[14px] text-black tracking-wide"
                       >
-                        Dr. Gregg Frey is an orthodontist based in Pennsylvania,
+                         Dr. Gregg Frey is an orthodontist based in Pennsylvania,
                         who graduated from Temple University School of Dentistry
                         with honors and served in the U.S. Navy Dental Corps
                         before establishing his practice in the Lehigh Valley.
