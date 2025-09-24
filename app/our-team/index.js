@@ -537,21 +537,26 @@ console.log(panelRefs.current);
     }
   }, []);
 
-  const greenCursorStyle = {
-    position: "fixed",
-    left: `${cursorPosition.x}px`,
-    top: `${cursorPosition.y}px`,
-    width: isFocused ? "100px" : "10px",
-    height: isFocused ? "100px" : "10px",
-    borderRadius: "50%",
-    backgroundColor: isFocused ? "rgb(12, 14, 254)" : "#FFFFFF",
-    pointerEvents: "none",
-    transform: "translate(-50%, -50%)",
-    transition: "width 0.5s, height 0.5s, background-color 0.25s",
-    zIndex: 9999,
-    color: "#FFF",
-    fontFamily: "NeueMontrealBook",
-  };
+const greenCursorStyle = {
+  position: "fixed",
+  left: `${cursorPosition.x}px`,
+  top: `${cursorPosition.y}px`,
+  width: isFocused ? "100px" : "10px",
+  height: isFocused ? "100px" : "10px",
+  borderRadius: "50%",
+  background: isFocused
+    ? "rgba(196, 209, 51, 0.3)"   
+    : "rgba(255,255,255, 1)",
+  backdropFilter: isFocused ? "blur(10px) saturate(180%)" : "none", 
+  WebkitBackdropFilter: isFocused ? "blur(10px) saturate(180%)" : "none", 
+  // border: isFocused ? "1px solid rgba(255, 255, 255, 0.4)" : "none",
+  pointerEvents: "none",
+  transform: "translate(-50%, -50%)",
+  transition: "width 0.5s, height 0.5s, background 0.25s, border 0.25s",
+  zIndex: 9999,
+  color: "#FFF",
+  fontFamily: "NeueHaasGroteskDisplayPro45Light",
+};
 
   useEffect(() => {
     const lines = document.querySelectorAll(".stagger-line");
@@ -960,7 +965,8 @@ void main() {
       <div className="relative overflow-x-clip">
 
         <div ref={wrapperRef} className="flex w-full">
-          <div ref={leftColumnRef} className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-[#DBDBDB] w-3/5 bg-[#FCFFFE] rounded-[24px]">
+
+          <div ref={leftColumnRef} className="z-10 h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-[#DBDBDB] w-3/5 bg-[#FCFFFE] rounded-[24px]">
           <div className="max-w-[400px] ml-10 my-10 flex flex-col overflow-hidden">
           <div className="inline-block overflow-hidden">
           <div className="text-[12px] leading-[1.1] font-neuehaas45 tracking-wider text-black">
@@ -1078,7 +1084,8 @@ void main() {
             </section>
           </div>
 
-<div ref={scrollRef} className="relative w-2/5">
+<div ref={scrollRef} className="z-10 relative w-2/5">
+
             <div className="rounded-[24px] border-b border-b bg-[#FCFFFE]  py-[10em] sm:py-[10em] h-screen lg:px-8 ">
           
             <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
@@ -1105,7 +1112,7 @@ void main() {
                         <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
                       </svg>
                     </button>
-                    <span className="font-neueroman text-[12px] text-black">
+                    <span className="font-neuehaas45 text-[12px] text-black">
                       0{!switchDoctor ? index : index + 1} / 02
                     </span>
                     <button className="z-3" onClick={toggleSwitchDoctor}>
@@ -1143,9 +1150,9 @@ void main() {
                     {switchDoctor ? (
                       <p
                         ref={doctorBioRef}
-                        className="leading-[1.5] font-neuehaas45 text-[14px] text-black tracking-wide"
+                        className="leading-[1.3] font-neuehaas45 text-[13px] tracking-wider text-black"
                       >
-                        Dr. Daniel Frey pursued his pre-dental requisites at the
+     Dr. Daniel Frey pursued his pre-dental requisites at the
                         University of Pittsburgh, majoring in Biology. Dr. Frey
                         excelled in his studies and was admitted to Temple
                         University&apos;s dental school, graduating at the top
@@ -1167,9 +1174,9 @@ void main() {
                       <p
                         style={{ visibility: "hidden" }}
                         ref={doctorBioRef}
-                          className="leading-[1.5] font-neuehaas45 text-[14px] text-black tracking-wide"
+                      className="leading-[1.3] font-neuehaas45 text-[13px] tracking-wider text-black"
                       >
-                         Dr. Gregg Frey is an orthodontist based in Pennsylvania,
+                            Dr. Gregg Frey is an orthodontist based in Pennsylvania,
                         who graduated from Temple University School of Dentistry
                         with honors and served in the U.S. Navy Dental Corps
                         before establishing his practice in the Lehigh Valley.
@@ -1205,6 +1212,16 @@ void main() {
   ref={newSectionRef}
   className="absolute top-0 w-full h-full left-full"
 >
+<section
+  className="absolute top-0 left-0 w-screen h-screen z-[-1] flex flex-col items-center justify-center"
+>
+  <div>
+    <p className="font-neuehaas45 text-[14px] tracking-wider text-[#333]">
+ From national certs to hands-on trainings, we’re always leveling up. The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
+    </p>
+  </div>
+</section>
+
   <div
     onMouseEnter={() => setIsFocused(true)}
     onMouseLeave={() => setIsFocused(false)}
@@ -1213,9 +1230,9 @@ void main() {
     {/* Col 1 */}
     <div className="overflow-hidden">
       <div ref={col1Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#FAFAF8] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] border-l h-[33.33vh] "></div>
-        <div className="border-l bg-[#FAFAF8] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
-          <p className="font-neueroman text-[13px] leading-[1.1]">
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] border-l h-[33.33vh] "></div>
+        <div className="border-l bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+          <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">
             Fun fact — our team is made up of former FreySmiles patients, something we think is important, 
             because we have all experienced treatment and can help guide you through it.
           </p>
@@ -1236,7 +1253,7 @@ void main() {
       <div ref={col2Ref} className="flex flex-col will-change-transform">
         <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
           <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
-            <p className="font-neueroman text-[13px] leading-[1.1]">
+     <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">
               Our members have received the designation of Specialized Orthodontic Assistant. 
               This is a voluntary certification program started by the American Association of Orthodontists 
               to recognize those in the profession for their knowledge and experience.
@@ -1245,7 +1262,7 @@ void main() {
         </div>
         <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]"></div>
         <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#FCFFFE] rounded-[20px] p-8 border-b border-r border-[#DBDBDB] h-[33.33vh]">
-          <p className="leading-[1.1] font-neueroman text-[13px]">
+          <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">
             This office is on 🔥! The orthodontists as well as every single staff member.
           </p>
         </a>
@@ -1256,16 +1273,16 @@ void main() {
     <div className="overflow-hidden">
       <div ref={col3Ref} className="flex flex-col will-change-transform">
         <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
-          <p className="font-neueroman text-[13px]">Trained in CPR and first aid</p>
+          <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">Trained in CPR and first aid</p>
         </div>
-        <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center  bg-[#F8F6F0] rounded-[20px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]">
-          <p className="leading-[1.1] font-neueroman text-[13px]">
+        <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center  bg-[#FCFFFE] rounded-[20px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]">
+          <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">
             Had a wonderful experience at FreySmiles. Everyone is extremely professional, 
             polite, timely. Would highly recommend! — TK
           </p>
         </a>
         <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
-          <p className="leading-[1.1] font-neueroman text-[13px]">
+      <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">
             We've invested in in-office trainings with leading clinical consultants 
             that have helped us develop systems and protocols streamlining our processes.
           </p>
@@ -1274,8 +1291,10 @@ void main() {
     </div>
   </div>
 </div>
+
      </div>
           </div>
+
         </div>
 
         <div style={greenCursorStyle}>
@@ -1293,6 +1312,7 @@ void main() {
           )}
         </div>
 
+      <GridContainer />
         {/* <section className="overflow-x-auto overflow-y-hidden lg:overflow-hidden">
           <div
          
@@ -1375,7 +1395,7 @@ void main() {
         </section> */}
       </div>
 
-      <GridContainer />
+
 
       {/* <div className="bg-[#F7F7F7]">
           
