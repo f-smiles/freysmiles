@@ -1,4 +1,7 @@
-.ImageComparison-container {}
+.ImageComparison-before {
+  width: 100dvw;
+  height: 200dvh;
+}
 
 .ImageComparison-after {
   position: fixed;
@@ -7,10 +10,10 @@
   right: 0;
 }
 
-.ImageComparison-after img {
+.ImageComparison-handler {
   position: relative;
-  width: 500px;
-  height: 500px;
+  width: 100%;
+  height: 100%;
 }
 
 /* .ImageComparison-container {

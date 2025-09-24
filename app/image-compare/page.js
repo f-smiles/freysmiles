@@ -8,58 +8,65 @@ import { Draggable } from 'gsap/Draggable'
 gsap.registerPlugin(ScrollTrigger, Draggable)
 
 const MainComponent = () => {
-  const after = useRef(null)
-  const afterImg = useRef(null)
-
   useEffect(() => {
-    let barLength = 0
-    let maxScroll = 0
-    let trigger, draggable
-
-    const onResize = () => {
-      if (trigger) {
-        maxScroll = ScrollTrigger.maxScroll(window)
-        barLength = after.current.offsetWidth - afterImg.current.offsetWidth
-        updateHandler()
-      }
-    }
-    const updateHandler = () => {
-      gsap.set(afterImg.current, {
-        x: barLength * trigger.scroll() / maxScroll
-      })
-    }
-
     const ctx = gsap.context(() => {
-      trigger = ScrollTrigger.create({
-        onRefresh: onResize,
-        onUpdate: updateHandler,
-      })
-
-      draggable = Draggable.create(afterImg.current, {
-        type: 'x',
-        bounds: after.current,
-        onDrag: function() {
-          trigger.scroll(this.x / barLength * maxScroll)
+      const distObj = { x: 0, maxY: 0 }
+      let tween, ST, drag
+      const updateHandler = () => {
+        distObj.x = innerWidth - gsap.getProperty('.ImageComparison-handler', 'width')
+        distObj.maxY = ScrollTrigger.maxScroll(window)
+    
+        let progress = 0
+        if (tween) {
+          progress = tween.progress()
+          ST.kill()
+          drag.applyBounds({ minX: 0, maxX: innerWidth })
         }
-      })[0]
+    
+        tween = gsap.fromTo('.ImageComparison-handler', { x: 0 }, {
+          x: distObj.x,
+          ease: 'none',
+          paused: true,
+          overwrite: 'auto'
+        }).progress(progress)
+    
+        ST = ScrollTrigger.create({
+          animation: tween,
+          trigger: '.ImageComparison-container',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: true,
+        })
+    
+        drag = Draggable.create('.ImageComparison-handler', {
+          trigger: '.ImageComparison-handler',
+          type: 'x',
+          bounds: { minX: 0, maxX: innerWidth },
+          onDrag: function() {
+            const progress = this.x / distObj.x
+            tween.progress(progress)
+            ST.scroll(progress * distObj.maxY)
+          }
+        })[0]
+      }
+      updateHandler()  
+      ScrollTrigger.addEventListener('refreshInit', updateHandler)
     })
 
     return () => ctx.revert()
   }, [])
 
   return (
-    <>
-    <div className='h-screen w-full' />
     <div className='ImageComparison-container'>
-      {/* <div className='ImageComparison-before'>
-        <img src='/images/test/base.jpg' alt='Before stage' />
-      </div> */}
-      <div ref={after} className='ImageComparison-after'>
-        <img ref={afterImg} src='/images/test/base.jpg' alt='After stage' />
+      <div className='ImageComparison-after'>
+        <div className='ImageComparison-handler'>
+          <img src='/images/test/base.jpg' alt='after image' />
+        </div>
+      </div>
+      <div className='ImageComparison-before'>
+        <img src='/images/test/hover.jpg' alt='before image' />
       </div>
     </div>
-    <div className='h-screen w-full' />
-    </>
   )
 }
 
