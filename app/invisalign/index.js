@@ -371,7 +371,7 @@ const WavePlane = forwardRef(({ uniformsRef }, ref) => {
     </mesh>
   );
 });
-const MorphingSphere = () => {
+const MorphingSphere = ({sectionRef}) => {
   const canvasRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
@@ -916,15 +916,16 @@ const MorphingSphere = () => {
     scrollProgressRef.current = 0;
     updateForScrollProgress(0);
 
-    ScrollTrigger.create({
-      trigger: "section",
-      start: "top top",
-      end: "bottom top",
-      onUpdate: (self) => {
-        scrollProgressRef.current = self.progress;
-        updateForScrollProgress(self.progress);
-      },
-    });
+ScrollTrigger.create({
+  trigger: sectionRef.current,
+  start: "top top",
+  end: "bottom bottom",
+  scrub: true,
+  onUpdate: (self) => {
+    scrollProgressRef.current = self.progress;
+    updateForScrollProgress(self.progress);
+  },
+});
   };
 
   const animate = () => {
@@ -1322,6 +1323,33 @@ const Invisalign = () => {
 
     return () => ctx.revert();
   }, []);
+
+  const sectionsRef = useRef([]);
+useEffect(() => {
+  let ctx = gsap.context(() => {
+    sectionsRef.current.forEach((section) => {
+      const numberEl = section.querySelector(".big-number");
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom top",
+     scrub: 0.5, 
+          pin: true,
+          pinSpacing: true,
+        }
+      })
+      .fromTo(
+        numberEl,
+        { fontSize: "170px", y: 0},
+        { fontSize: "30px", y: -20, ease: "none" }
+      );
+    });
+  });
+
+  return () => ctx.revert();
+}, []);
   return (
     <>
 
@@ -1633,7 +1661,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
  
 <section ref={sectionRef} className="relative w-full overflow-hidden">
 <div ref={sphereRef} className="absolute top-0 left-0 w-full h-[600px] pointer-events-none z-0">
-        <MorphingSphere />
+        <MorphingSphere sectionRef={sectionRef} />
       </div>
 
 
@@ -1650,64 +1678,86 @@ With over 40 years of combined experience, our doctors were the first in the reg
                 </p>
               </Copy>
             </div>
-            <div className="relative py-12">
-              <div className="relative z-10 px-10">
-                <div className="flex items-center justify-start">
-                  <div className="text-[#999] text-sm font-neuehaas45 mr-4">
-                    01
-                  </div>
-                  <div className="flex-1 h-px bg-gray-300" />
-                </div>
-              </div>
-              <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
-                <h2 className="md:w-1/2 text-[20px] font-neuehaas45 text-black text-center md:text-left">
-                  Teeth Remain Completely Visible
-                </h2>
-                <p className="md:w-1/2 text-[16px] max-w-[400px] font-neuehaas45 leading-[1.4] text-center md:text-left">
-                  Unlike braces, Invisalign doesn’t obscure your smile with
-                  wires or brackets. That means early progress is easier to see
-                  and appreciate.
-                </p>
-              </div>
-            </div>
-            <div className="relative py-12">
-              <div className="relative z-10 px-10">
-                <div className="flex items-center justify-start">
-                  <div className="text-[#999] text-sm font-neuehaas45 mr-4">
-                    02
-                  </div>
-                  <div className="flex-1 h-px bg-gray-300" />
-                </div>
-              </div>
-              <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
-                <h2 className="md:w-1/2 text-[20px] font-neuehaas45 text-black text-center md:text-left">
-                  Designed for Comfort
-                </h2>
-                <p className="md:w-1/2 text-[16px] max-w-[400px] font-neuehaas45 leading-[1.4] text-center md:text-left">
-                  Invisalign aligners are crafted using one of the most advanced
-                  and researched fabrication processes in the world. Each
-                  aligner is engineered to fit complex tooth arrangements with
-                  precision and is continuously updated to maintain accuracy
-                  throughout the course of treatment.
-                </p>
-              </div>
-            </div>
-            <div className="relative py-12">
-              <div className="relative z-10 px-10">
-                <div className="flex items-center justify-start">
-                  <div className="text-[#999] text-sm font-neuehaas45 mr-4">
-                    03
-                  </div>
-                  <div className="flex-1 h-px bg-gray-300" />
-                </div>
-              </div>
+<div         ref={(el) => (sectionsRef.current[0] = el)} className="relative border-t border-gray-300">
+  <div className="relative py-8 md:py-10">
 
-              <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
-                <h2 className="md:w-1/2 text-[20px] font-neuehaas45 text-black text-center md:text-left">
-                  Tailored to You
-                </h2>
-                <p className="md:w-1/2 text-[16px] max-w-[400px] font-neuehaas45 leading-[1.4] text-center md:text-left">
-                  While our team has extensive expertise in placing braces,
+    <div
+      aria-hidden
+      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
+                 text-[90px] md:text-[140px] lg:text-[170px]
+                 leading-none font-neuehaas45 text-black select-none z-0">
+      1
+    </div>
+
+
+    <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
+
+      <div className="hidden md:block md:col-span-6 lg:col-span-7" />
+      
+      <div className="col-span-12 md:col-span-6 lg:col-span-5 justify-self-end max-w-[760px]">
+        <h2 className="text-[20px] md:text-[20px] font-neuehaas45 text-black mb-4 text-left">
+          Teeth Remain Completely Visible
+        </h2>
+        <p className="text-[13px] md:text-[15px] font-neuehaas45 leading-relaxed text-gray-800 text-left">
+          Unlike braces, Invisalign doesn’t obscure your smile with wires or brackets.
+          That means early progress is easier to see and appreciate.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+ <div ref={(el) => (sectionsRef.current[1] = el)}  className="relative border-t border-gray-300">
+  <div className="relative py-8 md:py-10">
+
+    <div
+      aria-hidden
+      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
+                 text-[90px] md:text-[140px] lg:text-[170px]
+                 leading-none font-neuehaas45 text-black select-none z-0"
+    >
+      2
+    </div>
+
+ 
+    <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
+      <div className="hidden md:block md:col-span-6 lg:col-span-7" /> 
+      
+      <div className="col-span-12 md:col-span-6 lg:col-span-5 justify-self-end max-w-[760px]">
+        <h2 className="text-[20px] md:text-[20px] font-neuehaas45 text-black mb-4 text-left">
+          Designed for Comfort
+        </h2>
+        <p className="text-[13px] md:text-[15px] font-neuehaas45 leading-relaxed text-gray-800 text-left">
+          Invisalign aligners are crafted using one of the most advanced
+          and researched fabrication processes in the world. Each aligner is
+          engineered to fit complex tooth arrangements with precision and is
+          continuously updated to maintain accuracy throughout the course of treatment.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+      <div ref={(el) => (sectionsRef.current[2] = el)}  className="relative border-t border-gray-300">
+  <div className="relative py-8 md:py-10">
+
+    <div
+      aria-hidden
+      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
+                 text-[90px] md:text-[140px] lg:text-[170px]
+                 leading-none font-neuehaas45 text-black select-none z-0"
+    >
+      3
+    </div>
+
+ 
+    <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
+      <div className="hidden md:block md:col-span-6 lg:col-span-7" /> 
+      
+      <div className="col-span-12 md:col-span-6 lg:col-span-5 justify-self-end max-w-[760px]">
+        <h2 className="text-[20px] md:text-[20px] font-neuehaas45 text-black mb-4 text-left">
+    Tailored to You
+        </h2>
+        <p className="text-[13px] md:text-[15px] font-neuehaas45 leading-relaxed text-gray-800 text-left">
+ While our team has extensive expertise in placing braces,
                   traditional brackets are ultimately prefabricated based on
                   average tooth morphology. With Invisalign, your treatment
                   begins in our office using advanced 3D scanning technology to
@@ -1715,73 +1765,101 @@ With over 40 years of combined experience, our doctors were the first in the reg
                   our doctors develop a fully customized plan, guiding a
                   sequence of aligners engineered to move your teeth into
                   alignment with exacting precision.
-                </p>
-              </div>
-            </div>
-            <div className="relative py-12">
-              <div className="relative z-10 px-10">
-                <div className="flex items-center justify-start">
-                  <div className="text-[#999] text-sm font-neuehaas45 mr-4">
-                    04
-                  </div>
-                  <div className="flex-1 h-px bg-gray-300" />
-                </div>
-              </div>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+      <div ref={(el) => (sectionsRef.current[3] = el)}   className="relative border-t border-gray-300">
+  <div className="relative py-8 md:py-10">
 
-              <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
-                <h2 className="md:w-1/2 text-[20px] font-neuehaas45 text-black text-center md:text-left">
-                  Ease of Cleaning
-                </h2>
-                <p className="md:w-1/2 text-[16px] max-w-[400px] font-neuehaas45 leading-[1.4] text-center md:text-left">
-                  Traditional braces complicate even the most basic oral
+    <div
+      aria-hidden
+      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
+                 text-[90px] md:text-[140px] lg:text-[170px]
+                 leading-none font-neuehaas45 text-black select-none z-0"
+    >
+      4
+    </div>
+
+ 
+    <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
+      <div className="hidden md:block md:col-span-6 lg:col-span-7" /> 
+      
+      <div className="col-span-12 md:col-span-6 lg:col-span-5 justify-self-end max-w-[760px]">
+        <h2 className="text-[20px] md:text-[20px] font-neuehaas45 text-black mb-4 text-left">
+    Ease of Cleaning
+        </h2>
+        <p className="text-[13px] md:text-[15px] font-neuehaas45 leading-relaxed text-gray-800 text-left">
+                 Traditional braces complicate even the most basic oral
                   hygiene. With Invisalign, your aligners come off
                   completely—allowing unrestricted access for brushing and
                   flossing around every surface of every tooth.
-                </p>
-              </div>
-            </div>
-            <div className="relative py-12">
-              <div className="relative z-10 px-10">
-                <div className="flex items-center justify-start">
-                  <div className="text-[#999] text-sm font-neuehaas45 mr-4">
-                    05
-                  </div>
-                  <div className="flex-1 h-px bg-gray-300" />
-                </div>
-              </div>
-              <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
-                <h2 className="md:w-1/2 text-[20px] font-neuehaas45 text-black text-center md:text-left">
-                  Removable & Flexible
-                </h2>
-                <p className="md:w-1/2 text-[16px] max-w-[400px] font-neuehaas45 leading-[1.4] text-center md:text-left">
+
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+      <div ref={(el) => (sectionsRef.current[4] = el)} className="relative border-t border-gray-300">
+  <div className="relative py-8 md:py-10">
+
+    <div
+      aria-hidden
+      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
+                 text-[90px] md:text-[140px] lg:text-[170px]
+                 leading-none font-neuehaas45 text-black select-none z-0"
+    >
+      5
+    </div>
+
+ 
+    <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
+      <div className="hidden md:block md:col-span-6 lg:col-span-7" /> 
+      
+      <div className="col-span-12 md:col-span-6 lg:col-span-5 justify-self-end max-w-[760px]">
+        <h2 className="text-[20px] md:text-[20px] font-neuehaas45 text-black mb-4 text-left">
+ Removable and Flexible
+        </h2>
+        <p className="text-[13px] md:text-[15px] font-neuehaas45 leading-relaxed text-gray-800 text-left">
                   No wires or brackets. No dietary limitations. No
                   interruptions. Just a treatment that fits your life.
-                </p>
-              </div>
-            </div>
-            <div className="relative py-12">
-              <div className="relative z-10 px-10">
-                <div className="flex items-center justify-start">
-                  <div className="text-[#999] text-sm font-neuehaas45 mr-4">
-                    06
-                  </div>
-                  <div className="flex-1 h-px bg-gray-300" />
-                </div>
-              </div>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+                <div ref={(el) => (sectionsRef.current[5] = el)} className="relative border-t border-gray-300">
+  <div className="relative py-8 md:py-10">
 
-              <div className="flex flex-col md:flex-row justify-between items-center px-10 mt-8 gap-6">
-                <h2 className="md:w-1/2 text-[20px] font-neuehaas45 text-black text-center md:text-left">
-                  Treatment Duration
-                </h2>
-                <p className="md:w-1/2 text-[16px] max-w-[400px] font-neuehaas45 leading-[1.4] text-center md:text-left">
-                  Because Invisalign is precisely engineered to your exact tooth
+    <div
+      aria-hidden
+      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
+                 text-[90px] md:text-[140px] lg:text-[170px]
+                 leading-none font-neuehaas45 text-black select-none z-0"
+    >
+      6
+    </div>
+
+ 
+    <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
+      <div className="hidden md:block md:col-span-6 lg:col-span-7" /> 
+      
+      <div className="col-span-12 md:col-span-6 lg:col-span-5 justify-self-end max-w-[760px]">
+        <h2 className="text-[20px] md:text-[20px] font-neuehaas45 text-black mb-4 text-left">
+Treatment Duration
+        </h2>
+        <p className="text-[13px] md:text-[15px] font-neuehaas45 leading-relaxed text-gray-800 text-left">
+               Because Invisalign is precisely engineered to your exact tooth
                   morphology, movement in all three dimensions can begin as
                   early as the first week. This level of control allows for
                   greater efficiency—and in many cases, a shorter overall
                   treatment time compared to braces.
-                </p>
-              </div>
-            </div>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
             </div>
       </section>
             <div className="flex justify-center gap-6 p-6">

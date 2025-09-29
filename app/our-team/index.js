@@ -1216,7 +1216,7 @@ void main() {
   className="absolute top-0 left-0 w-screen h-screen z-[-1] flex flex-col items-center justify-center"
 >
   <div>
-    <p className="font-neuehaas45 text-[14px] tracking-wider text-[#333]">
+    <p className="font-neuehaas45 text-[20px] text-white max-w-[600px] tracking-wider">
  From national certs to hands-on trainings, we’re always leveling up. The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
     </p>
   </div>

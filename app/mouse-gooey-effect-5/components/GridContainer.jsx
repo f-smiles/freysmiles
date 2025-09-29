@@ -7,7 +7,7 @@ const items = [
   {
     // src: '/images/members/edit/adriana-blurry-distortion-effect-1920px-1.jpg',
     // hoverSrc: '/images/members/orig/adriana.png',
-    src: '/images/test/base.jpg',
+    src: '../images/team_members/Adriana-Photoroom.jpg',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Insurance Coordinator',
     name: 'Adriana',
