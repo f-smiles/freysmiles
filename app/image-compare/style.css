@@ -1,58 +1,54 @@
-.ImageComparison-before {
+.ImageComparison-container {
+  position: relative;
   width: 100dvw;
-  height: 200dvh;
+  height: 100dvh;
+  /* padding-bottom: 56.25%; */
 }
 
-.ImageComparison-after {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-}
-
-.ImageComparison-handler {
-  position: relative;
+.ImageComparisonItem {
   width: 100%;
   height: 100%;
 }
 
-/* .ImageComparison-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-} */
-
-/* .ImageComparison-before,
-.ImageComparison-after {
+.ImageComparisonItem-after {
   position: absolute;
+  overflow: hidden;
   top: 0;
+  transform: translate(100%, 0px);
+}
+
+.ImageComparisonItem-after img {
+  transform: translate(-100%, 0px);
+}
+
+.ImageComparisonItem img {
+  position: absolute;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-} */
-
-/* .ImageComparison-before {
-  transform: translate(0%, 0px);
-  filter: grayscale(100%);
-} */
-/* .ImageComparison-before img {
-  transform: translate(-0%, 0px);
-} */
-
-/* .ImageComparison-after {
-  transform: translate(0%, 0px);
-} */
-/* .ImageComparison-after img {
-  transform: translate(0%, 0px);
-} */
-
-/* .ImageComparison-slider {
-  position: absolute;
   top: 0;
+}
+
+.ImageComparison-slider,
+.ImageComparisonSlider-dot,
+.ImageComparisonSlider-line {
+  position: absolute;
+  top: 50%;
   left: 50%;
-  width: 8px;
-  height: 100%;
-  background-color: #f4f4f5;
-  transform: translate(-50%, 0px);
-} */
+  transform: translate(-50%, -50%);
+}
+.ImageComparisonSlider-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 100%;
+  background-color: #fafafa;
+}
+.ImageComparisonSlider-line {
+  width: 2px;
+  height: 100dvh;
+  background-color: #fafafa;
+}
+.ImageComparison-slider:hover,
+.ImageComparisonSlider-dot:hover,
+.ImageComparisonSlider-line:hover {
+  cursor: grab;
+}

@@ -8,74 +8,67 @@ import { Draggable } from 'gsap/Draggable'
 gsap.registerPlugin(ScrollTrigger, Draggable)
 
 const MainComponent = () => {
+  const container = useRef(null)
+  const after = useRef(null)
+  const afterImg = useRef(null)
+  const slider = useRef(null)
+
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const distObj = { x: 0, maxY: 0 }
-      let tween, ST, drag
-      const updateHandler = () => {
-        distObj.x = innerWidth - gsap.getProperty('.ImageComparison-handler', 'width')
-        distObj.maxY = ScrollTrigger.maxScroll(window)
-    
-        let progress = 0
-        if (tween) {
-          progress = tween.progress()
-          ST.kill()
-          drag.applyBounds({ minX: 0, maxX: innerWidth })
-        }
-    
-        tween = gsap.fromTo('.ImageComparison-handler', { x: 0 }, {
-          x: distObj.x,
-          ease: 'none',
-          paused: true,
-          overwrite: 'auto'
-        }).progress(progress)
-    
-        ST = ScrollTrigger.create({
-          animation: tween,
-          trigger: '.ImageComparison-container',
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container.current,
           start: 'top top',
-          end: 'bottom bottom',
+          end: () => `+=${container.current.offsetHeight}`,
           scrub: true,
-        })
-    
-        drag = Draggable.create('.ImageComparison-handler', {
-          trigger: '.ImageComparison-handler',
-          type: 'x',
-          bounds: { minX: 0, maxX: innerWidth },
-          onDrag: function() {
-            const progress = this.x / distObj.x
-            tween.progress(progress)
-            ST.scroll(progress * distObj.maxY)
-          }
-        })[0]
-      }
-      updateHandler()  
-      ScrollTrigger.addEventListener('refreshInit', updateHandler)
-    })
+          pin: true,
+          anticipatePin: 1,
+          markers: true,
+        },
+        defaults: { ease: 'none' },
+      })
 
+      Draggable.create(slider.current, {
+        type: 'x',
+        bounds: container.current,
+        inertia: true,
+        onDrag: function() {
+          const progress = gsap.utils.clamp(0, 1, this.x / this.maxX)
+          tl.progress(progress)
+        },
+      })
+
+      tl.fromTo(after.current, { xPercent: 0, x: 0 }, { xPercent: 50 }, 0)
+      tl.fromTo(afterImg.current, { xPercent: 0, x: 0 }, { xPercent: -50 }, 0)
+      tl.fromTo(after.current, { xPercent: 50, x: 0 }, { xPercent: 100 }, 1)
+      tl.fromTo(afterImg.current, { xPercent: -50, x: 0 }, { xPercent: -100 }, 1)
+    })
+    
     return () => ctx.revert()
   }, [])
 
   return (
-    <div className='ImageComparison-container'>
-      <div className='ImageComparison-after'>
-        <div className='ImageComparison-handler'>
-          <img src='/images/test/base.jpg' alt='after image' />
-        </div>
+    <>
+    <div className='h-screen w-full bg-zinc-300' />
+    <div ref={container} className='ImageComparison-container'>
+      <div className='ImageComparisonItem ImageComparisonItem-before'>
+        <img src='/images/test/base.jpg' alt='before image' />
       </div>
-      <div className='ImageComparison-before'>
-        <img src='/images/test/hover.jpg' alt='before image' />
+      <div ref={after} className='ImageComparisonItem ImageComparisonItem-after'>
+        <img ref={afterImg} src='/images/test/hover.jpg' alt='after image' />
+      </div>
+      <div ref={slider} className='ImageComparison-slider'>
+        <div className='ImageComparisonSlider-dot' />
+        <div className='ImageComparisonSlider-line' />
       </div>
     </div>
+    </>
   )
 }
 
 export default function Page() {
   return (
-    <>
-      {/* <TestComponent /> */}
-      <MainComponent />
-    </>
+    <MainComponent />
   )
 }
 
