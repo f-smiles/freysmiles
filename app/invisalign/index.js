@@ -1,4 +1,5 @@
 "use client";
+import { RGBELoader } from "three-stdlib";
 import Copy from "@/utils/Copy.jsx";
 import normalizeWheel from "normalize-wheel";
 import {
@@ -11,13 +12,14 @@ import {
   Plane,
 } from "ogl";
 import { Fluid } from "/utils/FluidCursorTemp.js";
-import { EffectComposer } from "@react-three/postprocessing";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import Splitting from "splitting";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import React, {
   useState,
+  useLayoutEffect,
   useEffect,
   useRef,
   forwardRef,
@@ -39,10 +41,10 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/all";
 import * as THREE from "three";
-import { Canvas, useLoader, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useLoader, useFrame, useThree, extend } from "@react-three/fiber";
 import { useMemo } from "react";
-import { Environment, OrbitControls, useTexture } from "@react-three/drei";
-import { TextureLoader } from "three";
+import { Environment, OrbitControls, useTexture, shaderMaterial } from "@react-three/drei";
+import { TextureLoader, CubeTextureLoader } from "three";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
@@ -1089,6 +1091,289 @@ ScrollTrigger.create({
   );
 };
 
+const vertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = vec4(position, 1.0);
+  }
+`;
+
+const fragmentShader = `
+  precision highp float;
+
+  uniform float u_time;
+  uniform vec3 u_resolution;
+  uniform sampler2D u_channel1;
+
+  varying vec2 vUv;
+
+  highp float Time;
+  const highp float PI = 3.1415926;
+  const highp float INV_PI = 1.0/PI;
+  const highp float PI_2 = PI * 2.0;
+  const highp float MARCH_EPS = 0.065;
+  const highp float GRAD_EPS = 0.005;
+
+  struct sdv
+  {
+      highp float d;
+      highp int idx;
+  };
+
+  struct rayHit
+  {
+      highp vec3 p;
+      highp int idx;
+  };
+
+  sdv combine(sdv a, sdv b)
+  {
+      if(a.d < b.d)
+      {
+          return a;
+      }
+      return b;
+  }
+
+  const int IDX_ROOM = 1;
+  const int IDX_ROOM_BOTTOM = 2;
+  const int IDX_SPHERE = 3;
+
+  sdv scene(highp vec3 p)
+  {
+      sdv sphere;
+      sphere.idx = IDX_SPHERE;
+      vec3 c = vec3(0.0,0.0,0.0);
+      float r = 24.0;
+      sphere.d = length(p-c) - r;
+      return sphere;
+  }
+
+  highp vec3 sceneGrad(highp vec3 p)
+  {
+      const highp float h = GRAD_EPS;
+      highp vec3 g;
+      g.x = scene(p+vec3(h,0.0,0.0)).d - scene(p-vec3(h,0.0,0.0)).d;
+      g.y = scene(p+vec3(0.0,h,0.0)).d - scene(p-vec3(0.0,h,0.0)).d;
+      g.z = scene(p+vec3(0.0,0.0,h)).d - scene(p-vec3(0.0,0.0,h)).d;
+      return g / (2.0*h);
+  }
+
+  rayHit rayQuery(highp vec3 start, highp vec3 dir)
+  {
+      highp float d = 0.0;
+      const highp float eps = MARCH_EPS;
+      const int numIter = 76;
+     
+      for(int i = 0; i < numIter; ++i)
+      {
+          highp vec3 p = start + dir * d;
+          sdv v = scene(p);
+          if(v.d < eps)
+          {
+              rayHit ret;
+              ret.idx = v.idx;
+              ret.p = p;
+              return ret;
+          }
+         
+          d += v.d;
+      }
+     
+      rayHit ret;
+      ret.idx = -1;
+      ret.p = vec3(0.0);
+      return ret;
+  }
+
+  highp mat4 lookAtInv(highp vec3 eyePos, highp vec3 targetPos, highp vec3 upVector)
+  {
+      highp vec3 forward = normalize(targetPos - eyePos);
+      highp vec3 right = normalize(cross(forward,upVector));
+      upVector = normalize(cross(right,forward));
+     
+      highp mat4 r;
+      r[0] = vec4(right,0.0);
+      r[1] = vec4(upVector,0.0);
+      r[2] = vec4(-forward,0.0);
+      r[3] = vec4(eyePos,1.0);
+      return r;
+  }
+
+  // COLORING THE OBJECT
+  vec2 noise( in vec3 x )
+  {
+      vec3 ip = floor(x);
+      vec3 fp = fract(x);
+      fp = fp*fp*(3.0-2.0*fp);
+      vec2 tap = (ip.xy+vec2(37.0,17.0)*ip.z) + fp.xy;
+      vec4 rz = textureLod( u_channel1, (tap+0.5)/256.0, 0.0 );
+      return mix( rz.yw, rz.xz, fp.z );
+  }
+
+  highp vec4 computeColor(highp vec3 camPos, highp vec3 camDir)
+  {
+      rayHit q = rayQuery(camPos,camDir);
+      if(q.idx >= 0)
+      {
+          highp vec3 normal = normalize(sceneGrad(q.p));
+          float t = u_time;
+          vec3 n = normal;
+         
+          /////BASE COLOR (darker for visibility)
+         
+          vec3 colorPick = mix(
+            vec3(0.35, 0.45, 0.75),   // subtle blue hint in icy
+            vec3(0.55, 0.45, 0.85),    // subtle blue hint in lavender
+            0.5 + 0.5*sin(u_time * 0.15) // slow shifting blend
+          );
+         
+          // Simplified procedural color
+          vec3 c = colorPick * (0.4 + 0.6 * sin(n.x * 3.0 + t * 0.5) * sin(n.y * 3.0 + t * 0.3) * sin(n.z * 3.0 + t * 0.4));
+          c = max(c, 0.1 * colorPick); // Minimum glow
+         
+          // Add diffuse lighting
+          vec3 lightDir = normalize(vec3(1.0, 0.5, 1.0));
+          float diff = max(0.0, dot(n, lightDir));
+          c *= (0.5 + 0.5 * diff);
+         
+          // WHITE RIM LIGHT (toned down for contrast)
+          float rim = pow(1.0 - max(0.0, dot(n, camDir)), 3.0); // Softer power
+          vec3 rimLight = vec3(1.0) * rim * 0.8; // Reduced intensity
+          c += rimLight;
+         
+          // Subtle blue ambient hint for grayer areas
+          c += 0.05 * vec3(0.0, 0.1, 0.3); // Cool blue bias
+          c = clamp(c, 0.0, 1.0);
+         
+          ///////GLINTS/GLITTER COMPUTATION
+         
+          #define PRIMARY_INTENSITY 0.3
+          #define PRIMARY_CONCENTRATION 6.
+          #define SECONDARY_INTENSITY 5.
+          #define SECONDARY_CONCENTRATION 0.9
+          // HOW BIG THE GLITTER SPECKS ARE ; BIGGER -> SMALLER SPECKS
+          // (7 is probably the smallest I would go)
+         
+          float scale = 10.;
+          q.p = floor(q.p*scale)/scale;
+         
+          vec3 ligt = vec3(1.);
+          vec3 h = normalize(ligt-camDir);
+          float nl = dot(n,ligt);
+         
+          vec3 coord = q.p * 0.5;
+          coord.xy = coord.xy*0.7071 + coord.yx*0.7071*vec2(1,-1);
+          coord.xz = coord.xz*0.7071 + coord.zx*0.7071*vec2(1,-1);
+
+          // Add time to "scroll" the glitter texture
+          coord += 0.05 * u_time;
+
+          // Second coord for layer two
+          vec3 coord2 = coord + vec3(0.1 * u_time, 0.07 * u_time, 0.0);
+         
+          //first layer (inner glints)
+          float pw = .5*((u_resolution.x));
+          vec3 aniso = vec3( noise((coord*pw)), noise((coord.yzx*pw)) )*2.0-1.0;
+          aniso -= n*dot(aniso,n);
+          float anisotropy = min(1.,length(aniso));
+          aniso /= anisotropy;
+          anisotropy = .55;
+          float ah = abs(dot(h,aniso));
+          float nh = abs(dot(n,h));
+          float qa = exp2((1.1-anisotropy)*3.5);
+          nh = pow( nh, qa*PRIMARY_CONCENTRATION );
+          nh *= pow( 1.-ah*anisotropy, 10.0 );
+          vec3 glints = c*nh*exp2((1.2-anisotropy)*PRIMARY_INTENSITY);
+          //second layer (outer glints)
+          pw = .145*((u_resolution.x));
+          vec3 aniso2 = vec3( noise(coord2*pw), noise(coord2.yzx*pw).x )*2.0-1.0;
+          anisotropy = .6;
+          float ah2 = abs(dot(h,aniso2));
+          float nh2 = abs(dot(n,h));
+          float q2 = exp2((.1-anisotropy)*3.5);
+          nh2 = pow( nh, q2*SECONDARY_CONCENTRATION );
+          nh2 *= pow( 1.-ah2*anisotropy, 150.0 );
+          vec3 glints2 = c*nh2*((1.-anisotropy)*SECONDARY_INTENSITY);
+            
+
+float brightness = dot(c, vec3(0.299, 0.587, 0.114));
+
+if (brightness < 0.4) {
+  // Add a subtle metallic silver shift
+  vec3 silverTint = vec3(0.85, 0.85, 0.9); // bright neutral silver
+  vec3 coolReflect = vec3(0.7, 0.75, 0.95); // bluish reflection
+  
+  // Blend toward silver with a soft shimmer modulation
+  float shimmer = 0.5 + 0.5 * sin(u_time * 0.6 + q.p.x * 2.0);
+  c = mix(c, mix(silverTint, coolReflect, shimmer * 0.3), 0.4);
+}
+          
+          vec3 col = c;
+          col += (glints + glints2) * 0.8;
+          col = clamp(col, 0.0, 1.0);
+          return vec4(col, 1.0);
+      }
+      return vec4(0.0, 0.0, 0.0, 0.0);
+  }
+
+  void mainImage( out vec4 fragColor, in vec2 fragCoord )
+  {
+      Time = u_time;
+      highp vec2 uv = fragCoord.xy / vec2(u_resolution.x,u_resolution.y);
+         
+      //RAYMARCHING STUFF
+      float r = 120.0;
+      float s = 0.;
+      float a = 1.2;
+      highp mat4 m = lookAtInv(vec3(r*cos(Time*s + a),sin(Time*s + a)*50.0,r*sin(Time*s+a)),vec3(0.0,0.0,0.0),vec3(0.0,1.0,0.0));
+      highp float sw = 0.0;
+      highp float aspect = u_resolution.x / u_resolution.y;
+      highp vec3 camPos = vec3((uv.x-0.5)*aspect,uv.y-0.5,-30.);
+      highp vec3 camDir = normalize(vec3(aspect*(uv.x-0.5),uv.y-0.5,-1.5-sw));
+      camPos = ( m * vec4(camPos,1.0) ).xyz;
+      camDir = ( m * vec4(camDir,0.0) ).xyz;
+         
+      //RESULTING COLOR
+         
+      vec4 col = computeColor(camPos,camDir);
+      fragColor = col;
+  }
+
+  void main() {
+    mainImage(gl_FragColor, gl_FragCoord.xy);
+  }
+`;
+
+function ShaderScene({ uniforms }) {
+  const meshRef = useRef();
+
+  useFrame((state) => {
+    if (meshRef.current && meshRef.current.material && meshRef.current.material.uniforms) {
+      meshRef.current.material.uniforms.u_time.value = state.clock.elapsedTime;
+      meshRef.current.material.uniforms.u_resolution.value.set(
+        state.size.width,
+        state.size.height,
+        1
+      );
+    }
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <planeGeometry args={[2, 2]} />
+   <shaderMaterial
+  vertexShader={vertexShader}
+  fragmentShader={fragmentShader}
+  uniforms={uniforms}
+  transparent={true}      
+  depthWrite={false}     
+  blending={THREE.AdditiveBlending} 
+/>
+    </mesh>
+  );
+}
 const Invisalign = () => {
   const headingRef = useRef(null);
 
@@ -1335,28 +1620,698 @@ useEffect(() => {
           trigger: section,
           start: "top top",
           end: "bottom top",
-     scrub: 0.5, 
-          pin: true,
-          pinSpacing: true,
+          scrub: 0.5,
+          pin: true,       
+          pinSpacing: true, 
         }
       })
       .fromTo(
         numberEl,
-        { fontSize: "170px", y: 0},
-        { fontSize: "30px", y: -20, ease: "none" }
+        { fontSize: "170px", y: 0 },
+        { fontSize: "30px", y: -20, ease: "power2.out" }
       );
     });
   });
 
   return () => ctx.revert();
 }, []);
+
+
+const noiseTex = useMemo(() => {
+    const size = 256;
+    const data = new Uint8Array(size * size * 4);
+    for (let i = 0; i < size * size; i++) {
+      const stride = i * 4;
+      data[stride] = (Math.random() * 256) | 0; // R
+      data[stride + 1] = (Math.random() * 256) | 0; // G (used in .y)
+      data[stride + 2] = (Math.random() * 256) | 0; // B (used in .z)
+      data[stride + 3] = 255; // A (used in .w)
+    }
+    const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+    texture.needsUpdate = true;
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    return texture;
+  }, []);
+
+  const uniforms = useMemo(
+    () => ({
+      u_time: { value: 0 },
+      u_resolution: { value: new THREE.Vector3(1, 1, 1) },
+      u_channel1: { value: noiseTex },
+    }),
+    [noiseTex]
+  );
   return (
     <>
 
-      <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black ">
+      {/* <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black "> */}
 
+
+<section className="relative min-h-screen flex flex-col text-neutral-900 font-sans overflow-hidden">
+        <div className="w-full h-screen">
 
         <Canvas
+      camera={{ position: [0, 0, 1] }}
+    
+    >
+      <ShaderScene uniforms={uniforms} />
+    </Canvas>
+      </div>
+
+  <div className="absolute inset-0 -z-10">
+<div
+  className="absolute inset-0"
+  style={{
+    background: `radial-gradient(ellipse at center, #D8D8D8 0%, #D8DBDC 60%, #C9CCCE 100%)`,
+  }}
+/>
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div className="w-[500px] h-[500px] rounded-full bg-[#fbe8dc] opacity-90 blur-[100px]" />
+    </div>
+  </div>
+
+
+
+  <div className="flex flex-col md:flex-row justify-between items-start px-8 md:px-16 py-16 md:py-28 gap-12">
+    {/* Left */}
+        <div className="relative pt-[33vh]">
+
+
+          
+          <h2 className="text-5xl md:text-6xl leading-tight text-[#0f172a]">
+            <Copy>
+              <div className="relative ml-10 text-[26px] sm:text-[26px] leading-tight text-black font-neuehaasdisplaythin">
+                <span className="font-normal">Our doctors </span>{" "}
+                <span className="font-light">have treated</span>{" "}
+                <span className="font-saolitalic">thousands</span>{" "}
+                <span className="font-medium">of patients</span> <br />
+                <span className="font-normal">with the </span>{" "}
+                <span className="font-light font-saolitalic">industry's leading</span>{" "}
+                <span className="font-light ">appliance</span>{" "}
+                <span className="font-normal">system.</span>{" "}
+              </div>
+            </Copy>
+          </h2>
+        </div>
+
+    {/* Right */}
+    <div className="flex-1 space-y-6 max-w-md">
+     <div className="pt-[33vh] flex flex-col space-y-6">
+          <p className="leading-[1.2] font-neuehaas35 text-[15px] md:text-[15px] text-[#0f172a] max-w-md">
+  The science of Invisalign is not in the clear aligners, but in overall design and prescription for tooth movement by our doctors based on the full facial evaluation to craft the smile that is perfect for you. Our experienced doctors are top experts and providers in clear aligner treatment.
+          </p>
+          <div>
+            <a
+              href="#"
+              className="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-medium"
+            >
+              Read On
+            </a>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
+      {/* <div className="fixed inset-0 bg-black/10 -z-10"></div> */}
+
+
+      <div className="max-w-7xl mx-auto h-full grid grid-cols-1 md:grid-cols-2 gap-12 px-6 md:px-12">
+        
+
+
+{/* <style>{`
+        :root {
+          --foreground: #7fff00;
+
+          --speed: 4.5s;
+          --ease-out: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+          --ease-in: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+          --v0: 3%;
+          --v1: 4%;
+          --v2: 5%;
+          --v3: 6%;
+          --v4: 7%;
+          --v5: 8%;
+          --v6: 9%;
+          --v7: 10%;
+          --vmax: 10%;
+          --h0: 3%;
+          --h1: 4%;
+          --h2: 5%;
+          --h3: 6%;
+          --h4: 7%;
+          --h5: 8%;
+          --h6: 9%;
+          --h7: 10%;
+          --hmax: 6.66%;
+        }
+
+
+        #checkered {
+          position: relative;
+        }
+
+        #checkered::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 10;
+          background: var(--foreground);
+          mix-blend-mode: screen;
+        }
+
+        #fill {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 100;
+ 
+          mix-blend-mode: multiply;
+        }
+
+        .layer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          justify-content: center;
+          align-content: center;
+          align-items: center;
+        }
+
+        .layer > div {
+          width: 10%;
+          height: 100%;
+          background: white;
+          position: relative;
+          display: block;
+          backface-visibility: hidden;
+        }
+
+        .layer > div:nth-of-type(odd) {
+          background: black;
+        }
+
+        #vert {
+          flex-wrap: nowrap;
+          text-align: center;
+        }
+
+        #horz {
+          flex-wrap: wrap;
+          mix-blend-mode: difference;
+        }
+
+        #horz > div {
+          height: 6.66%;
+          flex-basis: 100%;
+        }
+
+        @keyframes center0 {
+          0% {
+            width: var(--v0);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            width: var(--v0);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            width: var(--v0);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes center1 {
+          0% {
+            width: var(--v1);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            width: var(--v1);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            width: var(--v1);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes center2 {
+          0% {
+            width: var(--v2);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            width: var(--v2);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            width: var(--v2);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes center3 {
+          0% {
+            width: var(--v3);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            width: var(--v3);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            width: var(--v3);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes center4 {
+          0% {
+            width: var(--v4);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            width: var(--v4);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            width: var(--v4);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes center5 {
+          0% {
+            width: var(--v5);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            width: var(--v5);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            width: var(--v5);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes center6 {
+          0% {
+            width: var(--v6);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            width: var(--v6);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            width: var(--v6);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes center7 {
+          0% {
+            width: var(--v7);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            width: var(--v7);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            width: var(--vmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            width: var(--v7);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes centerH0 {
+          0% {
+            height: var(--h0);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            height: var(--h0);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            height: var(--h0);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes centerH1 {
+          0% {
+            height: var(--h1);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            height: var(--h1);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            height: var(--h1);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes centerH2 {
+          0% {
+            height: var(--h2);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            height: var(--h2);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            height: var(--h2);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes centerH3 {
+          0% {
+            height: var(--h3);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            height: var(--h3);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            height: var(--h3);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes centerH4 {
+          0% {
+            height: var(--h4);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            height: var(--h4);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            height: var(--h4);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes centerH5 {
+          0% {
+            height: var(--h5);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            height: var(--h5);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            height: var(--h5);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes centerH6 {
+          0% {
+            height: var(--h6);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            height: var(--h6);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            height: var(--h6);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        @keyframes centerH7 {
+          0% {
+            height: var(--h7);
+            animation-timing-function: var(--ease-out);
+          }
+          20% {
+            height: var(--h7);
+            animation-timing-function: var(--ease-out);
+          }
+          50% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          70% {
+            height: var(--hmax);
+            animation-timing-function: var(--ease-in);
+          }
+          100% {
+            height: var(--h7);
+            animation-timing-function: var(--ease-out);
+          }
+        }
+
+        .center-0 {
+          animation: center0 var(--speed) infinite;
+        }
+
+        .center-1 {
+          animation: center1 var(--speed) infinite 0.1s;
+        }
+
+        .center-2 {
+          animation: center2 var(--speed) infinite 0.2s;
+        }
+
+        .center-3 {
+          animation: center3 var(--speed) infinite 0.3s;
+        }
+
+        .center-4 {
+          animation: center4 var(--speed) infinite 0.4s;
+        }
+
+        .center-5 {
+          animation: center5 var(--speed) infinite 0.5s;
+        }
+
+        .center-6 {
+          animation: center6 var(--speed) infinite 0.6s;
+        }
+
+        .center-7 {
+          animation: center7 var(--speed) infinite 0.7s;
+        }
+
+        #horz .center-0 {
+          animation-name: centerH0;
+        }
+
+        #horz .center-1 {
+          animation-name: centerH1;
+        }
+
+        #horz .center-2 {
+          animation-name: centerH2;
+        }
+
+        #horz .center-3 {
+          animation-name: centerH3;
+        }
+
+        #horz .center-4 {
+          animation-name: centerH4;
+        }
+
+        #horz .center-5 {
+          animation-name: centerH5;
+        }
+
+        #horz .center-6 {
+          animation-name: centerH6;
+        }
+
+        #horz .center-7 {
+          animation-name: centerH7;
+        }
+      `}</style>
+      <div
+        id="checkered"
+        className="absolute z-[10000] top-1/2 left-1/2 w-[75vmin] h-[75vmin] -translate-x-1/2 -translate-y-1/2 overflow-hidden"
+      >
+        <div id="vert" className="layer flex-nowrap items-center justify-center">
+          <div className="center-7"></div>
+          <div className="center-6"></div>
+          <div className="center-5"></div>
+          <div className="center-4"></div>
+          <div className="center-3"></div>
+          <div className="center-2"></div>
+          <div className="center-1"></div>
+          <div className="center-0"></div>
+          <div className="center-1"></div>
+          <div className="center-2"></div>
+          <div className="center-3"></div>
+          <div className="center-4"></div>
+          <div className="center-5"></div>
+          <div className="center-6"></div>
+          <div className="center-7"></div>
+        </div>
+        <div id="horz" className="layer flex-wrap items-center justify-center mix-blend-difference">
+          <div className="center-7 h-[6.66%] flex-basis-full"></div>
+          <div className="center-6 h-[6.66%] flex-basis-full"></div>
+          <div className="center-5 h-[6.66%] flex-basis-full"></div>
+          <div className="center-4 h-[6.66%] flex-basis-full"></div>
+          <div className="center-3 h-[6.66%] flex-basis-full"></div>
+          <div className="center-2 h-[6.66%] flex-basis-full"></div>
+          <div className="center-1 h-[6.66%] flex-basis-full"></div>
+          <div className="center-0 h-[6.66%] flex-basis-full"></div>
+          <div className="center-1 h-[6.66%] flex-basis-full"></div>
+          <div className="center-2 h-[6.66%] flex-basis-full"></div>
+          <div className="center-3 h-[6.66%] flex-basis-full"></div>
+          <div className="center-4 h-[6.66%] flex-basis-full"></div>
+          <div className="center-5 h-[6.66%] flex-basis-full"></div>
+          <div className="center-6 h-[6.66%] flex-basis-full"></div>
+          <div className="center-7 h-[6.66%] flex-basis-full"></div>
+        </div>
+        <div id="fill"></div>
+      </div> */}
+   
+      </div>
+
+
+        {/* <Canvas
           className="pointer-events-none"
           style={{
             position: "fixed",
@@ -1382,24 +2337,13 @@ useEffect(() => {
               <Fluid backgroundColor="#FFF" />
             </EffectComposer>
           </Suspense>
-        </Canvas>
+        </Canvas> */}
      
-      </div>
+      {/* </div> */}
       <div className="relative">
         <section className="mt-[20vh] z-10 relative min-h-screen">
 
-            <Copy>
-              <div className="relative ml-10 text-[26px] sm:text-[26px] leading-tight text-black font-neuehaasdisplaythin">
-                <span className="font-normal">Our doctors </span>{" "}
-                <span className="font-light">have treated</span>{" "}
-                <span className="font-saolitalic">thousands</span>{" "}
-                <span className="font-medium">of patients</span> <br />
-                <span className="font-normal">with the </span>{" "}
-                <span className="font-light font-saolitalic">industry's leading</span>{" "}
-                <span className="font-light ">appliance</span>{" "}
-                <span className="font-normal">system.</span>{" "}
-              </div>
-            </Copy>
+
             <div
               ref={containerRef}
               className="mt-[10vh] w-full max-w-7xl mx-auto text-[11px] relative"
@@ -1679,28 +2623,18 @@ With over 40 years of combined experience, our doctors were the first in the reg
               </Copy>
             </div>
 <div         ref={(el) => (sectionsRef.current[0] = el)} className="relative border-t border-gray-300">
-  <div className="relative py-8 md:py-10">
-
-    <div
-      aria-hidden
-      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
-                 text-[90px] md:text-[140px] lg:text-[170px]
-                 leading-none font-neuehaas45 text-black select-none z-0">
+<div className="relative py-8 md:py-10">
+    <div aria-hidden className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12 text-[90px] md:text-[140px] lg:text-[170px] leading-none font-neuehaas45 text-black select-none z-0">
       1
     </div>
-
-
     <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
-
       <div className="hidden md:block md:col-span-6 lg:col-span-7" />
-      
-      <div className="col-span-12 md:col-span-6 lg:col-span-5 justify-self-end max-w-[760px]">
+      <div className="col-span-12 md:col-span-6 lg:col-span-5 justify-self-end max-w-[760px] pt-8 md:pt-10">
         <h2 className="text-[20px] md:text-[20px] font-neuehaas45 text-black mb-4 text-left">
           Teeth Remain Completely Visible
         </h2>
         <p className="text-[13px] md:text-[15px] font-neuehaas45 leading-relaxed text-gray-800 text-left">
-          Unlike braces, Invisalign doesn’t obscure your smile with wires or brackets.
-          That means early progress is easier to see and appreciate.
+          Unlike braces, Invisalign doesn’t obscure your smile with wires or brackets. That means early progress is easier to see and appreciate.
         </p>
       </div>
     </div>
