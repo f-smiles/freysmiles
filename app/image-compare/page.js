@@ -11,7 +11,7 @@ const MainComponent = () => {
   const container = useRef(null)
   const after = useRef(null)
   const afterImg = useRef(null)
-  const slider = useRef(null)
+  // const slider = useRef(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -28,20 +28,18 @@ const MainComponent = () => {
         defaults: { ease: 'none' },
       })
 
-      Draggable.create(slider.current, {
-        type: 'x',
-        bounds: container.current,
-        inertia: true,
-        onDrag: function() {
-          const progress = gsap.utils.clamp(0, 1, this.x / this.maxX)
-          tl.progress(progress)
-        },
-      })
+      // Draggable.create(slider.current, {
+      //   type: 'x',
+      //   bounds: container.current,
+      //   inertia: true,
+      //   onDrag: function() {
+      //     const progress = gsap.utils.clamp(0, 1, this.x / this.maxX)
+      //     tl.progress(progress)
+      //   },
+      // })
 
-      tl.fromTo(after.current, { xPercent: 0, x: 0 }, { xPercent: 50 }, 0)
-      tl.fromTo(afterImg.current, { xPercent: 0, x: 0 }, { xPercent: -50 }, 0)
-      tl.fromTo(after.current, { xPercent: 50, x: 0 }, { xPercent: 100 }, 1)
-      tl.fromTo(afterImg.current, { xPercent: -50, x: 0 }, { xPercent: -100 }, 1)
+      tl.fromTo(after.current, { xPercent: 50, x: 0 }, { xPercent: 100 }, 0)
+      tl.fromTo(afterImg.current, { xPercent: -50, x: 0 }, { xPercent: -100 }, 0)
     })
     
     return () => ctx.revert()
@@ -57,10 +55,10 @@ const MainComponent = () => {
       <div ref={after} className='ImageComparisonItem ImageComparisonItem-after'>
         <img ref={afterImg} src='/images/test/hover.jpg' alt='after image' />
       </div>
-      <div ref={slider} className='ImageComparison-slider'>
+      {/* <div ref={slider} className='ImageComparison-slider'>
         <div className='ImageComparisonSlider-dot' />
         <div className='ImageComparisonSlider-line' />
-      </div>
+      </div> */}
     </div>
     </>
   )
