@@ -1090,288 +1090,137 @@ ScrollTrigger.create({
     </>
   );
 };
+function ShaderBeam({ width = 4, height = 8, position = [0, 0, -1] }) {
+  const meshRef = useRef();
+  const uniforms = useRef({
+    iResolution: { value: new THREE.Vector3() },
+    iTime: { value: 0 },
+  }).current;
 
-const vertexShader = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = vec4(position, 1.0);
-  }
-`;
+  useFrame(({ clock, size }) => {
+    uniforms.iResolution.value.set(size.width, size.height, 1);
+    uniforms.iTime.value = clock.getElapsedTime();
+  });
 
-const fragmentShader = `
-  precision highp float;
-
-  uniform float u_time;
-  uniform vec3 u_resolution;
-  uniform sampler2D u_channel1;
-
-  varying vec2 vUv;
-
-  highp float Time;
-  const highp float PI = 3.1415926;
-  const highp float INV_PI = 1.0/PI;
-  const highp float PI_2 = PI * 2.0;
-  const highp float MARCH_EPS = 0.065;
-  const highp float GRAD_EPS = 0.005;
-
-  struct sdv
-  {
-      highp float d;
-      highp int idx;
-  };
-
-  struct rayHit
-  {
-      highp vec3 p;
-      highp int idx;
-  };
-
-  sdv combine(sdv a, sdv b)
-  {
-      if(a.d < b.d)
-      {
-          return a;
-      }
-      return b;
-  }
-
-  const int IDX_ROOM = 1;
-  const int IDX_ROOM_BOTTOM = 2;
-  const int IDX_SPHERE = 3;
-
-  sdv scene(highp vec3 p)
-  {
-      sdv sphere;
-      sphere.idx = IDX_SPHERE;
-      vec3 c = vec3(0.0,0.0,0.0);
-      float r = 24.0;
-      sphere.d = length(p-c) - r;
-      return sphere;
-  }
-
-  highp vec3 sceneGrad(highp vec3 p)
-  {
-      const highp float h = GRAD_EPS;
-      highp vec3 g;
-      g.x = scene(p+vec3(h,0.0,0.0)).d - scene(p-vec3(h,0.0,0.0)).d;
-      g.y = scene(p+vec3(0.0,h,0.0)).d - scene(p-vec3(0.0,h,0.0)).d;
-      g.z = scene(p+vec3(0.0,0.0,h)).d - scene(p-vec3(0.0,0.0,h)).d;
-      return g / (2.0*h);
-  }
-
-  rayHit rayQuery(highp vec3 start, highp vec3 dir)
-  {
-      highp float d = 0.0;
-      const highp float eps = MARCH_EPS;
-      const int numIter = 76;
-     
-      for(int i = 0; i < numIter; ++i)
-      {
-          highp vec3 p = start + dir * d;
-          sdv v = scene(p);
-          if(v.d < eps)
-          {
-              rayHit ret;
-              ret.idx = v.idx;
-              ret.p = p;
-              return ret;
+  return (
+    <mesh ref={meshRef} position={position}>
+      <planeGeometry args={[width, height]} />
+      <shaderMaterial
+        uniforms={uniforms}
+        transparent
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+        vertexShader={`
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
           }
-         
-          d += v.d;
-      }
-     
-      rayHit ret;
-      ret.idx = -1;
-      ret.p = vec3(0.0);
-      return ret;
-  }
+        `}
+        fragmentShader={`
+          uniform vec3 iResolution;
+          uniform float iTime;
+          varying vec2 vUv;
 
-  highp mat4 lookAtInv(highp vec3 eyePos, highp vec3 targetPos, highp vec3 upVector)
-  {
-      highp vec3 forward = normalize(targetPos - eyePos);
-      highp vec3 right = normalize(cross(forward,upVector));
-      upVector = normalize(cross(right,forward));
-     
-      highp mat4 r;
-      r[0] = vec4(right,0.0);
-      r[1] = vec4(upVector,0.0);
-      r[2] = vec4(-forward,0.0);
-      r[3] = vec4(eyePos,1.0);
-      return r;
-  }
-
-  // COLORING THE OBJECT
-  vec2 noise( in vec3 x )
-  {
-      vec3 ip = floor(x);
-      vec3 fp = fract(x);
-      fp = fp*fp*(3.0-2.0*fp);
-      vec2 tap = (ip.xy+vec2(37.0,17.0)*ip.z) + fp.xy;
-      vec4 rz = textureLod( u_channel1, (tap+0.5)/256.0, 0.0 );
-      return mix( rz.yw, rz.xz, fp.z );
-  }
-
-  highp vec4 computeColor(highp vec3 camPos, highp vec3 camDir)
-  {
-      rayHit q = rayQuery(camPos,camDir);
-      if(q.idx >= 0)
-      {
-          highp vec3 normal = normalize(sceneGrad(q.p));
-          float t = u_time;
-          vec3 n = normal;
-         
-          /////BASE COLOR (darker for visibility)
-         
-          vec3 colorPick = mix(
-            vec3(0.35, 0.45, 0.75),   // subtle blue hint in icy
-            vec3(0.55, 0.45, 0.85),    // subtle blue hint in lavender
-            0.5 + 0.5*sin(u_time * 0.15) // slow shifting blend
-          );
-         
-          // Simplified procedural color
-          vec3 c = colorPick * (0.4 + 0.6 * sin(n.x * 3.0 + t * 0.5) * sin(n.y * 3.0 + t * 0.3) * sin(n.z * 3.0 + t * 0.4));
-          c = max(c, 0.1 * colorPick); // Minimum glow
-         
-          // Add diffuse lighting
-          vec3 lightDir = normalize(vec3(1.0, 0.5, 1.0));
-          float diff = max(0.0, dot(n, lightDir));
-          c *= (0.5 + 0.5 * diff);
-         
-          // WHITE RIM LIGHT (toned down for contrast)
-          float rim = pow(1.0 - max(0.0, dot(n, camDir)), 3.0); // Softer power
-          vec3 rimLight = vec3(1.0) * rim * 0.8; // Reduced intensity
-          c += rimLight;
-         
-          // Subtle blue ambient hint for grayer areas
-          c += 0.05 * vec3(0.0, 0.1, 0.3); // Cool blue bias
-          c = clamp(c, 0.0, 1.0);
-         
-          ///////GLINTS/GLITTER COMPUTATION
-         
-          #define PRIMARY_INTENSITY 0.3
-          #define PRIMARY_CONCENTRATION 6.
-          #define SECONDARY_INTENSITY 5.
-          #define SECONDARY_CONCENTRATION 0.9
-          // HOW BIG THE GLITTER SPECKS ARE ; BIGGER -> SMALLER SPECKS
-          // (7 is probably the smallest I would go)
-         
-          float scale = 10.;
-          q.p = floor(q.p*scale)/scale;
-         
-          vec3 ligt = vec3(1.);
-          vec3 h = normalize(ligt-camDir);
-          float nl = dot(n,ligt);
-         
-          vec3 coord = q.p * 0.5;
-          coord.xy = coord.xy*0.7071 + coord.yx*0.7071*vec2(1,-1);
-          coord.xz = coord.xz*0.7071 + coord.zx*0.7071*vec2(1,-1);
-
-          // Add time to "scroll" the glitter texture
-          coord += 0.05 * u_time;
-
-          // Second coord for layer two
-          vec3 coord2 = coord + vec3(0.1 * u_time, 0.07 * u_time, 0.0);
-         
-          //first layer (inner glints)
-          float pw = .5*((u_resolution.x));
-          vec3 aniso = vec3( noise((coord*pw)), noise((coord.yzx*pw)) )*2.0-1.0;
-          aniso -= n*dot(aniso,n);
-          float anisotropy = min(1.,length(aniso));
-          aniso /= anisotropy;
-          anisotropy = .55;
-          float ah = abs(dot(h,aniso));
-          float nh = abs(dot(n,h));
-          float qa = exp2((1.1-anisotropy)*3.5);
-          nh = pow( nh, qa*PRIMARY_CONCENTRATION );
-          nh *= pow( 1.-ah*anisotropy, 10.0 );
-          vec3 glints = c*nh*exp2((1.2-anisotropy)*PRIMARY_INTENSITY);
-          //second layer (outer glints)
-          pw = .145*((u_resolution.x));
-          vec3 aniso2 = vec3( noise(coord2*pw), noise(coord2.yzx*pw).x )*2.0-1.0;
-          anisotropy = .6;
-          float ah2 = abs(dot(h,aniso2));
-          float nh2 = abs(dot(n,h));
-          float q2 = exp2((.1-anisotropy)*3.5);
-          nh2 = pow( nh, q2*SECONDARY_CONCENTRATION );
-          nh2 *= pow( 1.-ah2*anisotropy, 150.0 );
-          vec3 glints2 = c*nh2*((1.-anisotropy)*SECONDARY_INTENSITY);
+          void main() {
+            vec2 uv = vUv * 2.0 - 1.0;
             
+            // Wider beam with smooth edges (unchanged for width maintenance)
+            float distX = abs(uv.x);
+            float core = smoothstep(0.5, 0.0, distX);  // solid-ish core
+            float outer = smoothstep(1.0, 0.4, distX); // soft edges
 
-float brightness = dot(c, vec3(0.299, 0.587, 0.114));
+            // Static vertical variation (no time-based travel; subtle shimmer without the blob)
+            float shimmer = 0.9 + 0.1 * sin(uv.y * 6.0);
 
-if (brightness < 0.4) {
-  // Add a subtle metallic silver shift
-  vec3 silverTint = vec3(0.85, 0.85, 0.9); // bright neutral silver
-  vec3 coolReflect = vec3(0.7, 0.75, 0.95); // bluish reflection
-  
-  // Blend toward silver with a soft shimmer modulation
-  float shimmer = 0.5 + 0.5 * sin(u_time * 0.6 + q.p.x * 2.0);
-  c = mix(c, mix(silverTint, coolReflect, shimmer * 0.3), 0.4);
+            // Purply blue energy tone with a touch more white in the core
+            vec3 colorTop = vec3(0.6, 0.7, 1.0); // Cooler purple-blue top
+            vec3 colorMid = vec3(0.95, 0.92, 1.0); // Subtle white tint in mid for glow
+            vec3 colorBot = vec3(0.5, 0.4, 0.9); // Deeper purple base
+            vec3 color = mix(colorTop, colorBot, uv.y * 0.5 + 0.5);
+            color = mix(color, colorMid, 0.4 * shimmer); // Less white dominance, static blend
+
+            // Beam brightness and alpha control (toned down for subtlety)
+            vec3 beamGlow = color * (core * 1.2 + outer * 0.3) * shimmer;
+            float alpha = clamp(core * 0.6 + outer * 0.2, 0.0, 1.0);
+
+            gl_FragColor = vec4(beamGlow * 0.7, alpha * 0.8); // Further reduced for cleaner look
+          }
+        `}
+      />
+    </mesh>
+  );
 }
-          
-          vec3 col = c;
-          col += (glints + glints2) * 0.8;
-          col = clamp(col, 0.0, 1.0);
-          return vec4(col, 1.0);
-      }
-      return vec4(0.0, 0.0, 0.0, 0.0);
-  }
 
-  void mainImage( out vec4 fragColor, in vec2 fragCoord )
-  {
-      Time = u_time;
-      highp vec2 uv = fragCoord.xy / vec2(u_resolution.x,u_resolution.y);
-         
-      //RAYMARCHING STUFF
-      float r = 120.0;
-      float s = 0.;
-      float a = 1.2;
-      highp mat4 m = lookAtInv(vec3(r*cos(Time*s + a),sin(Time*s + a)*50.0,r*sin(Time*s+a)),vec3(0.0,0.0,0.0),vec3(0.0,1.0,0.0));
-      highp float sw = 0.0;
-      highp float aspect = u_resolution.x / u_resolution.y;
-      highp vec3 camPos = vec3((uv.x-0.5)*aspect,uv.y-0.5,-30.);
-      highp vec3 camDir = normalize(vec3(aspect*(uv.x-0.5),uv.y-0.5,-1.5-sw));
-      camPos = ( m * vec4(camPos,1.0) ).xyz;
-      camDir = ( m * vec4(camDir,0.0) ).xyz;
-         
-      //RESULTING COLOR
-         
-      vec4 col = computeColor(camPos,camDir);
-      fragColor = col;
-  }
-
-  void main() {
-    mainImage(gl_FragColor, gl_FragCoord.xy);
-  }
-`;
-
-function ShaderScene({ uniforms }) {
+function FrostedGlassSphere({ position = [0, 0, 0] }) {
   const meshRef = useRef();
 
-  useFrame((state) => {
-    if (meshRef.current && meshRef.current.material && meshRef.current.material.uniforms) {
-      meshRef.current.material.uniforms.u_time.value = state.clock.elapsedTime;
-      meshRef.current.material.uniforms.u_resolution.value.set(
-        state.size.width,
-        state.size.height,
-        1
-      );
+  const baseColor = useLoader(THREE.TextureLoader, "/images/Glass_Frosted_001_basecolor.jpg");
+  const normalMap = useLoader(THREE.TextureLoader, "/images/Glass_Frosted_001_normal.jpg");
+  const roughnessMap = useLoader(THREE.TextureLoader, "/images/Glass_Frosted_001_roughness.jpg");
+  const aoMap = useLoader(THREE.TextureLoader, "/images/Glass_Frosted_001_ambientOcclusion.jpg");
+  const heightMap = useLoader(THREE.TextureLoader, "/images/Glass_Frosted_001_height.png");
+
+  [baseColor, normalMap, roughnessMap, aoMap, heightMap].forEach((tex) => {
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(4, 4);
+    tex.anisotropy = 8;
+    tex.encoding = THREE.sRGBEncoding;
+  });
+
+  const geometry = useMemo(() => {
+    const geo = new THREE.SphereGeometry(1, 128, 128);
+    geo.attributes.uv2 = geo.attributes.uv;
+    return geo;
+  }, []);
+
+  useFrame((state, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y += delta * 0.15;
+      meshRef.current.rotation.x += delta * 0.05;
     }
   });
 
   return (
-    <mesh ref={meshRef}>
-      <planeGeometry args={[2, 2]} />
-   <shaderMaterial
-  vertexShader={vertexShader}
-  fragmentShader={fragmentShader}
-  uniforms={uniforms}
-  transparent={true}      
-  depthWrite={false}     
-  blending={THREE.AdditiveBlending} 
-/>
-    </mesh>
+    <group position={position}>
+      <mesh ref={meshRef} geometry={geometry} castShadow receiveShadow>
+        <meshPhysicalMaterial
+          map={baseColor}
+          normalMap={normalMap}
+          normalScale={new THREE.Vector2(1.2, 1.2)}
+          roughnessMap={roughnessMap}
+          aoMap={aoMap}
+          aoMapIntensity={0.1}
+          displacementMap={heightMap}
+          displacementScale={0.004}
+          metalness={0.55}
+          roughness={0.85}
+          transmission={0.9}
+          ior={1.45}
+          thickness={1.5}
+          attenuationColor="#e6f3ff"
+          attenuationDistance={3.0}
+          clearcoat={0.5}
+          envMapIntensity={0.3}
+          color="#e0e7ff"
+          transparent
+          opacity={1.0}
+          toneMapped
+          iridescence={1.0}
+          iridescenceIOR={1.3}
+          iridescenceThicknessMap={roughnessMap}
+          iridescenceThicknessMax={500}
+           sheen={1.0}        
+             sheenColor="#eaf2ff"
+  sheenRoughness={0.9}
+        />
+      </mesh>
+
+      <mesh scale={0.97}>
+        <sphereGeometry args={[1, 64, 64]} />
+        <meshBasicMaterial color="#e6f3ff" transparent opacity={0.4} />
+      </mesh>
+    </group>
   );
 }
 const Invisalign = () => {
@@ -1670,13 +1519,44 @@ const noiseTex = useMemo(() => {
 
 <section className="relative min-h-screen flex flex-col text-neutral-900 font-sans overflow-hidden">
         <div className="w-full h-screen">
+<Canvas
+  camera={{ position: [0, 0, 4], fov: 45 }}
+  gl={{
+    toneMapping: THREE.ACESFilmicToneMapping,
+    toneMappingExposure: 1.0,
+    outputEncoding: THREE.sRGBEncoding,
+    antialias: true,
+  }}
+>
+  <Environment
+    files="/images/qwantani_night_puresky_4k.hdr"
+    background={false}
+    blur={2.5}
+  />
 
-        <Canvas
-      camera={{ position: [0, 0, 1] }}
-    
-    >
-      <ShaderScene uniforms={uniforms} />
-    </Canvas>
+  <ambientLight intensity={0.4} color="#f0f8ff" />
+  <directionalLight position={[1.5, 2.5, 1.5]} intensity={1.5} color="#b0c4de" />
+  <pointLight position={[0, -1, 2]} intensity={1.2} color="#e6f3ff" />
+  <pointLight position={[0, 0, -3]} intensity={1.8} color="#d1e8ff" />
+
+
+<mesh position={[1.5, 0, -1]} rotation={[0, 0, Math.PI / 8]}>
+  <cylinderGeometry args={[0.002, 0.002, 10, 64]} />
+  <meshStandardMaterial
+    emissive="#ffffff"
+    emissiveIntensity={2.5}
+    color="#ffffff"
+    toneMapped={false}
+  />
+</mesh>
+<EffectComposer>
+  <Bloom intensity={0.6} luminanceThreshold={0.5} luminanceSmoothing={0.6} />
+</EffectComposer>
+
+<group scale={0.5}>
+  <FrostedGlassSphere position={[0, 0, 0]} />
+</group>
+</Canvas>
       </div>
 
   <div className="absolute inset-0 -z-10">
