@@ -8,12 +8,28 @@ import { Draggable } from 'gsap/Draggable'
 gsap.registerPlugin(ScrollTrigger, Draggable)
 
 const MainComponent = () => {
-  const container = useRef(null)
-  const after = useRef(null)
+  const afterDiv = useRef(null)
   const afterImg = useRef(null)
   // const slider = useRef(null)
 
   useEffect(() => {
+    let barLength = 0
+    let maxScroll = 0
+    let trigger, draggable
+
+    const onResize = () => {
+      if (trigger) {
+        maxScroll = ScrollTrigger.maxScroll(window)
+        barLength = afterDiv.current.offsetWidth - afterImg.current.offsetWidth
+        updateHandler()
+      }
+    }
+    const updateHandler = () => {
+      gsap.set(afterImg.current, {
+        x: barLength * trigger.scroll() / maxScroll
+      })
+    }
+
     const ctx = gsap.context(() => {
       let tl = gsap.timeline({
         scrollTrigger: {
@@ -28,18 +44,13 @@ const MainComponent = () => {
         defaults: { ease: 'none' },
       })
 
-      // Draggable.create(slider.current, {
-      //   type: 'x',
-      //   bounds: container.current,
-      //   inertia: true,
-      //   onDrag: function() {
-      //     const progress = gsap.utils.clamp(0, 1, this.x / this.maxX)
-      //     tl.progress(progress)
-      //   },
-      // })
-
-      tl.fromTo(after.current, { xPercent: 50, x: 0 }, { xPercent: 100 }, 0)
-      tl.fromTo(afterImg.current, { xPercent: -50, x: 0 }, { xPercent: -100 }, 0)
+      draggable = Draggable.create(afterImg.current, {
+        type: 'x',
+        bounds: afterDiv.current,
+        onDrag: function() {
+          trigger.scroll(this.x / barLength * maxScroll)
+        }
+      })[0]
     })
     
     return () => ctx.revert()
@@ -59,6 +70,9 @@ const MainComponent = () => {
         <div className='ImageComparisonSlider-dot' />
         <div className='ImageComparisonSlider-line' />
       </div> */}
+      <div ref={afterDiv} className='ImageComparison-after'>
+        <img ref={afterImg} src='/images/test/base.jpg' alt='After stage' />
+      </div>
     </div>
     </>
   )
