@@ -7,7 +7,6 @@ import {
   Environment,
   shaderMaterial,
 } from "@react-three/drei";
-
 import { Media } from "/utils/Media.js";
 import { EffectComposer } from "@react-three/postprocessing";
 import { useControls } from "leva";
@@ -34,6 +33,1276 @@ gsap.registerPlugin(
   MorphSVGPlugin
 );
 
+
+
+
+
+
+
+
+
+
+const CardScanner = () => {
+  const controlsRef = useRef(null);
+  const speedIndicatorRef = useRef(null);
+  const containerRef = useRef(null);
+  const particleCanvasRef = useRef(null);
+  const scannerCanvasRef = useRef(null);
+  const scannerRef = useRef(null);
+  const cardStreamRef = useRef(null);
+  const cardLineRef = useRef(null);
+  const speedValueRef = useRef(null);
+  const inspirationCreditRef = useRef(null);
+
+  useEffect(() => {
+    // Expose globals for button onclicks if needed, but we'll handle in React
+    window.toggleAnimation = toggleAnimation;
+    window.resetPosition = resetPosition;
+    window.changeDirection = changeDirection;
+
+    // Initialize after refs are set
+    const init = () => {
+      console.log('Initializing controllers...');
+      if (cardStreamRef.current && cardLineRef.current && speedValueRef.current) {
+        cardStream = new CardStreamController();
+      }
+
+      window.setScannerScanning = (active) => {
+       
+      };
+    };
+
+    // Delay init to ensure DOM is ready
+    const timeoutId = setTimeout(init, 0);
+    return () => {
+      clearTimeout(timeoutId);
+      // Cleanup
+      if (particleSystem) particleSystem.destroy();
+      if (particleScanner) particleScanner.destroy();
+    };
+  }, []);
+
+  // Global vars for controllers (in real app, use state or context)
+  let cardStream;
+  let particleSystem;
+  let particleScanner;
+
+  const toggleAnimation = () => {
+    if (cardStream) cardStream.toggleAnimation();
+  };
+
+  const resetPosition = () => {
+    if (cardStream) cardStream.resetPosition();
+  };
+
+  const changeDirection = () => {
+    if (cardStream) cardStream.changeDirection();
+  };
+
+  // CardStreamController class (adapted for refs, with fixed clipping logic)
+  class CardStreamController {
+    constructor() {
+      this.container = cardStreamRef.current;
+      this.cardLine = cardLineRef.current;
+      this.speedIndicator = speedValueRef.current;
+
+      this.position = -200; // Offset slightly left so first cards enter from right immediately
+      this.velocity = 120;
+      this.direction = -1;
+      this.isAnimating = true;
+      this.isDragging = false;
+
+      this.lastTime = 0;
+      this.lastMouseX = 0;
+      this.mouseVelocity = 0;
+      this.friction = 0.95;
+      this.minVelocity = 30;
+
+      this.containerWidth = 0;
+      this.cardLineWidth = 0;
+
+      this.init();
+    }
+
+    init() {
+      this.populateCardLine();
+      this.calculateDimensions();
+      this.bindScroll();
+      // this.setupEventListeners();
+      // this.updateCardPosition();
+
+  this.bindScroll();
+      // this.animate();
+      // this.startPeriodicUpdates();
+    }
+bindScroll() {
+  window.addEventListener("scroll", () => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+    // Scroll progress (0 → 1)
+    const progress = Math.min(scrollTop / scrollHeight, 1);
+
+    // Update clipping directly
+    const wrapper = this.cardLine.querySelector(".scanner-card-wrapper");
+    const normalCard = wrapper.querySelector(".scanner-card-normal");
+    const asciiCard = wrapper.querySelector(".scanner-card-ascii");
+
+    normalCard.style.setProperty("--clip-left", `${progress * 100}%`);
+    asciiCard.style.setProperty("--clip-right", `${100 - progress * 100}%`);
+  });
+}
+    calculateDimensions() {
+      this.containerWidth = this.container.offsetWidth;
+      const cardWidth = 400;
+      const cardGap = 60;
+      const cardCount = this.cardLine.children.length;
+      this.cardLineWidth = (cardWidth + cardGap) * cardCount;
+      console.log('Dimensions calculated:', { containerWidth: this.containerWidth, cardLineWidth: this.cardLineWidth, cardCount });
+    }
+
+    setupEventListeners() {
+      this.cardLine.addEventListener("mousedown", (e) => this.startDrag(e));
+      document.addEventListener("mousemove", (e) => this.onDrag(e));
+      document.addEventListener("mouseup", () => this.endDrag());
+
+      this.cardLine.addEventListener(
+        "touchstart",
+        (e) => this.startDrag(e.touches[0]),
+        { passive: false }
+      );
+      document.addEventListener("touchmove", (e) => this.onDrag(e.touches[0]), {
+        passive: false,
+      });
+      document.addEventListener("touchend", () => this.endDrag());
+
+      this.cardLine.addEventListener("wheel", (e) => this.onWheel(e));
+      this.cardLine.addEventListener("selectstart", (e) => e.preventDefault());
+      this.cardLine.addEventListener("dragstart", (e) => e.preventDefault());
+
+      window.addEventListener("resize", () => this.calculateDimensions());
+    }
+
+    startDrag(e) {
+      e.preventDefault();
+
+      this.isDragging = true;
+      this.isAnimating = false;
+      this.lastMouseX = e.clientX;
+      this.mouseVelocity = 0;
+
+      const transform = window.getComputedStyle(this.cardLine).transform;
+      if (transform !== "none") {
+        const matrix = new DOMMatrix(transform);
+        this.position = matrix.m41;
+      }
+
+      this.cardLine.style.animation = "none";
+      this.cardLine.classList.add("scanner-dragging");
+
+      document.body.style.userSelect = "none";
+      document.body.style.cursor = "grabbing";
+    }
+
+    onDrag(e) {
+      if (!this.isDragging) return;
+      e.preventDefault();
+
+      const deltaX = e.clientX - this.lastMouseX;
+      this.position += deltaX;
+      this.mouseVelocity = deltaX * 60;
+      this.lastMouseX = e.clientX;
+
+      this.cardLine.style.transform = `translateX(${this.position}px)`;
+      this.updateCardClipping();
+    }
+
+    endDrag() {
+      if (!this.isDragging) return;
+
+      this.isDragging = false;
+      this.cardLine.classList.remove("scanner-dragging");
+
+      if (Math.abs(this.mouseVelocity) > this.minVelocity) {
+        this.velocity = Math.abs(this.mouseVelocity);
+        this.direction = this.mouseVelocity > 0 ? 1 : -1;
+      } else {
+        this.velocity = 120;
+      }
+
+      this.isAnimating = true;
+      this.updateSpeedIndicator();
+
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
+    }
+
+    animate() {
+      const currentTime = performance.now();
+      const deltaTime = (currentTime - this.lastTime) / 1000;
+      this.lastTime = currentTime;
+
+      if (this.isAnimating && !this.isDragging) {
+        if (this.velocity > this.minVelocity) {
+          this.velocity *= this.friction;
+        } else {
+          this.velocity = Math.max(this.minVelocity, this.velocity);
+        }
+
+        this.position += this.velocity * this.direction * deltaTime;
+        this.updateCardPosition();
+        this.updateSpeedIndicator();
+      }
+
+      requestAnimationFrame(() => this.animate());
+    }
+
+    updateCardPosition() {
+      const containerWidth = this.containerWidth;
+      const cardLineWidth = this.cardLineWidth;
+
+      if (this.position < -cardLineWidth) {
+        this.position = containerWidth;
+      } else if (this.position > containerWidth) {
+        this.position = -cardLineWidth;
+      }
+
+      this.cardLine.style.transform = `translateX(${this.position}px)`;
+      this.updateCardClipping();
+    }
+
+    updateSpeedIndicator() {
+      this.speedIndicator.textContent = Math.round(this.velocity);
+    }
+
+    toggleAnimation() {
+      this.isAnimating = !this.isAnimating;
+      const btn = controlsRef.current.querySelector(".scanner-control-btn");
+      if (btn) {
+        btn.innerHTML = this.isAnimating ? "⏸️ Pause" : "▶️ Play";
+      }
+
+      if (this.isAnimating) {
+        this.cardLine.style.animation = "none";
+      }
+    }
+
+    resetPosition() {
+      this.position = -200; // Ensure first cards visible on reset
+      this.velocity = 120;
+      this.direction = -1;
+      this.isAnimating = true;
+      this.isDragging = false;
+
+      this.cardLine.style.animation = "none";
+      this.cardLine.style.transform = `translateX(${this.position}px)`;
+      this.cardLine.classList.remove("scanner-dragging");
+
+      this.updateSpeedIndicator();
+
+      const btn = controlsRef.current.querySelector(".scanner-control-btn");
+      if (btn) btn.innerHTML = "⏸️ Pause";
+      console.log('Reset position:', this.position);
+    }
+
+    changeDirection() {
+      this.direction *= -1;
+      this.updateSpeedIndicator();
+    }
+
+    onWheel(e) {
+      e.preventDefault();
+
+      const scrollSpeed = 20;
+      const delta = e.deltaY > 0 ? scrollSpeed : -scrollSpeed;
+
+      this.position += delta;
+      this.updateCardPosition();
+      this.updateCardClipping();
+    }
+
+    generateCode(width, height) {
+      const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+      const pick = (arr) => arr[randInt(0, arr.length - 1)];
+
+      const header = [
+        "// compiled preview • scanner demo",
+        "/* generated for visual effect – not executed */",
+        "const SCAN_WIDTH = 8;",
+        "const FADE_ZONE = 35;",
+        "const MAX_PARTICLES = 2500;",
+        "const TRANSITION = 0.05;",
+      ];
+
+      const helpers = [
+        "function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }",
+        "function lerp(a, b, t) { return a + (b - a) * t; }",
+        "const now = () => performance.now();",
+        "function rng(min, max) { return Math.random() * (max - min) + min; }",
+      ];
+
+      const particleBlock = (idx) => [
+        `class Particle${idx} {`,
+        "  constructor(x, y, vx, vy, r, a) {",
+        "    this.x = x; this.y = y;",
+        "    this.vx = vx; this.vy = vy;",
+        "    this.r = r; this.a = a;",
+        "  }",
+        "  step(dt) { this.x += this.vx * dt; this.y += this.vy * dt; }",
+        "}",
+      ];
+
+      const scannerBlock = [
+        "const scanner = {",
+        "  x: Math.floor(window.innerWidth / 2),",
+        "  width: SCAN_WIDTH,",
+        "  glow: 3.5,",
+        "};",
+        "",
+        "function drawParticle(ctx, p) {",
+        "  ctx.globalAlpha = clamp(p.a, 0, 1);",
+        "  ctx.drawImage(gradient, p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);",
+        "}",
+      ];
+
+      const loopBlock = [
+        "function tick(t) {",
+        "  // requestAnimationFrame(tick);",
+        "  const dt = 0.016;",
+        "  // update & render",
+        "}",
+      ];
+
+      const misc = [
+        "const state = { intensity: 1.2, particles: MAX_PARTICLES };",
+        "const bounds = { w: window.innerWidth, h: 300 };",
+        "const gradient = document.createElement('canvas');",
+        "const ctx = gradient.getContext('2d');",
+        "ctx.globalCompositeOperation = 'lighter';",
+        "// ascii overlay is masked with a 3-phase gradient",
+      ];
+
+      const library = [];
+      header.forEach((l) => library.push(l));
+      helpers.forEach((l) => library.push(l));
+      for (let b = 0; b < 3; b++) particleBlock(b).forEach((l) => library.push(l));
+      scannerBlock.forEach((l) => library.push(l));
+      loopBlock.forEach((l) => library.push(l));
+      misc.forEach((l) => library.push(l));
+
+      for (let i = 0; i < 40; i++) {
+        const n1 = randInt(1, 9);
+        const n2 = randInt(10, 99);
+        library.push(`const v${i} = (${n1} + ${n2}) * 0.${randInt(1, 9)};`);
+      }
+      for (let i = 0; i < 20; i++) {
+        library.push(`if (state.intensity > ${1 + (i % 3)}) { scanner.glow += 0.01; }`);
+      }
+
+      let flow = library.join(" ");
+      flow = flow.replace(/\s+/g, " ").trim();
+      const totalChars = width * height;
+      while (flow.length < totalChars + width) {
+        const extra = pick(library).replace(/\s+/g, " ").trim();
+        flow += " " + extra;
+      }
+
+      let out = "";
+      let offset = 0;
+      for (let row = 0; row < height; row++) {
+        let line = flow.slice(offset, offset + width);
+        if (line.length < width) line = line + " ".repeat(width - line.length);
+        out += line + (row < height - 1 ? "\n" : "");
+        offset += width;
+      }
+      return out;
+    }
+
+    calculateCodeDimensions(cardWidth, cardHeight) {
+      const fontSize = 11;
+      const lineHeight = 13;
+      const charWidth = 6;
+      const width = Math.floor(cardWidth / charWidth);
+      const height = Math.floor(cardHeight / lineHeight);
+      return { width, height, fontSize, lineHeight };
+    }
+
+    createCardWrapper(index) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "scanner-card-wrapper";
+
+      const normalCard = document.createElement("div");
+      normalCard.className = "scanner-card scanner-card-normal";
+
+      const cardImages = [
+        "https://cdn.prod.website-files.com/68789c86c8bc802d61932544/689f20b55e654d1341fb06f8_4.1.png",
+        "https://cdn.prod.website-files.com/68789c86c8bc802d61932544/689f20b5a080a31ee7154b19_1.png",
+        "https://cdn.prod.website-files.com/68789c86c8bc802d61932544/689f20b5c1e4919fd69672b8_3.png",
+        "https://cdn.prod.website-files.com/68789c86c8bc802d61932544/689f20b5f6a5e232e7beb4be_2.png",
+        "https://cdn.prod.website-files.com/68789c86c8bc802d61932544/689f20b5bea2f1b07392d936_4.png",
+      ];
+
+      const cardImage = document.createElement("img");
+      cardImage.className = "scanner-card-image";
+      cardImage.src = cardImages[index % cardImages.length];
+      cardImage.alt = "Credit Card";
+
+      cardImage.onerror = () => {
+        console.log(`Image failed for card ${index}, using fallback`);
+        const canvas = document.createElement("canvas");
+        canvas.width = 400;
+        canvas.height = 250;
+        const ctx = canvas.getContext("2d");
+
+        const gradient = ctx.createLinearGradient(0, 0, 400, 250);
+        gradient.addColorStop(0, "#667eea");
+        gradient.addColorStop(1, "#764ba2");
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 400, 250);
+
+        cardImage.src = canvas.toDataURL();
+      };
+
+      normalCard.appendChild(cardImage);
+
+      const asciiCard = document.createElement("div");
+      asciiCard.className = "scanner-card scanner-card-ascii";
+
+      const asciiContent = document.createElement("div");
+      asciiContent.className = "scanner-ascii-content";
+
+      const { width, height, fontSize, lineHeight } = this.calculateCodeDimensions(400, 250);
+      asciiContent.style.fontSize = fontSize + "px";
+      asciiContent.style.lineHeight = lineHeight + "px";
+      asciiContent.textContent = this.generateCode(width, height);
+
+      asciiCard.appendChild(asciiContent);
+      wrapper.appendChild(normalCard);
+      wrapper.appendChild(asciiCard);
+
+      return wrapper;
+    }
+updateCardClipping() {
+  const scannerX = window.innerWidth / 2;
+  const scannerWidth = 8;
+  const scannerLeft = scannerX - scannerWidth / 2;
+  const scannerRight = scannerX + scannerWidth / 2;
+  let anyScanningActive = false;
+
+  document.querySelectorAll(".scanner-card-wrapper").forEach((wrapper) => {
+    const rect = wrapper.getBoundingClientRect();
+    const cardLeft = rect.left;
+    const cardRight = rect.right;
+    const cardWidth = rect.width;
+
+    const normalCard = wrapper.querySelector(".scanner-card-normal");
+    const asciiCard = wrapper.querySelector(".scanner-card-ascii");
+
+    // Beam intersects card
+    if (cardLeft < scannerRight && cardRight > scannerLeft) {
+      anyScanningActive = true;
+
+      // distance of the beam across the card
+      const intersectLeft = Math.max(scannerLeft - cardLeft, 0);
+      const intersectRight = Math.min(scannerRight - cardLeft, cardWidth);
+
+      // Percent progress through the card
+      const progress = intersectRight / cardWidth;
+
+      // Hide image from left → right
+      normalCard.style.setProperty("--clip-left", `${progress * 100}%`);
+
+      // Reveal ASCII from left → right — only clip the *right* side
+      const remaining = 100 - progress * 100;
+      asciiCard.style.setProperty("--clip-right", `${remaining}%`);
+
+      if (!wrapper.hasAttribute("data-scanned") && intersectLeft > 0) {
+        wrapper.setAttribute("data-scanned", "true");
+        const scanEffect = document.createElement("div");
+        scanEffect.className = "scanner-scan-effect";
+        wrapper.appendChild(scanEffect);
+        setTimeout(() => scanEffect.remove(), 600);
+      }
+    } else {
+      // Reset visibility
+      if (cardRight < scannerLeft) {
+        // Left side (beam passed): fully ASCII
+        normalCard.style.setProperty("--clip-left", "100%");
+        asciiCard.style.setProperty("--clip-right", "0%");
+      } else if (cardLeft > scannerRight) {
+    
+        normalCard.style.setProperty("--clip-left", "0%");
+        asciiCard.style.setProperty("--clip-right", "100%");
+      }
+      wrapper.removeAttribute("data-scanned");
+    }
+  });
+
+  if (window.setScannerScanning) {
+    window.setScannerScanning(anyScanningActive);
+  }
+}
+
+    updateAsciiContent() {
+      document.querySelectorAll(".scanner-ascii-content").forEach((content) => {
+        if (Math.random() < 0.15) {
+          const { width, height } = this.calculateCodeDimensions(400, 250);
+          content.textContent = this.generateCode(width, height);
+        }
+      });
+    }
+
+populateCardLine() {
+  this.cardLine.innerHTML = "";
+  const cardWrapper = this.createCardWrapper(0);
+  this.cardLine.appendChild(cardWrapper);
+  this.cardLine.style.justifyContent = "center";
+}
+    startPeriodicUpdates() {
+      setInterval(() => {
+        this.updateAsciiContent();
+      }, 200);
+
+      const updateClipping = () => {
+        this.updateCardClipping();
+        requestAnimationFrame(updateClipping);
+      };
+      updateClipping();
+    }
+  }
+
+
+
+  return (
+    <>
+      <div className="min-h-screen bg-black text-white overflow-hidden">
+        <div ref={controlsRef} className="scanner-controls">
+          <button
+            className="scanner-control-btn"
+            onClick={toggleAnimation}
+          >
+            ⏸️ Pause
+          </button>
+          <button
+            className="scanner-control-btn"
+            onClick={resetPosition}
+          >
+            🔄 Reset
+          </button>
+          <button
+            className="scanner-control-btn"
+            onClick={changeDirection}
+          >
+            ↔️ Direction
+          </button>
+        </div>
+
+        <div ref={speedIndicatorRef} className="scanner-speed-indicator">
+          Speed: <span ref={speedValueRef} id="speedValue">120</span> px/s
+        </div>
+<div style={{ height: "300vh" }} />
+        <div ref={containerRef} className="scanner-container">
+
+          <canvas ref={scannerCanvasRef} id="scannerCanvas" />
+          <div ref={scannerRef} className="scanner-scanner" />
+
+          <div ref={cardStreamRef} className="scanner-card-stream">
+            <div ref={cardLineRef} id="cardLine" className="scanner-card-line" />
+          </div>
+        </div>
+
+        <div className="scanner-inspiration-credit" ref={inspirationCreditRef}>
+          Inspired by{' '}
+          <a href="https://evervault.com/" target="_blank" rel="noopener noreferrer">
+            @evervault.com
+          </a>
+        </div>
+      </div>
+
+      {/* Updated CSS with prefix */}
+      <style jsx global>{`
+        @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap");
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+body {
+  background: #000000;
+  min-height: 100vh;
+  overflow: auto; /* ✅ allow scrolling */
+  font-family: "Arial", sans-serif;
+}
+
+        .scanner-controls {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          display: flex;
+          gap: 10px;
+          z-index: 100;
+        }
+
+        .scanner-control-btn {
+          padding: 10px 20px;
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          border-radius: 25px;
+          color: white;
+          font-weight: bold;
+          cursor: pointer;
+          backdrop-filter: blur(5px);
+          transition: all 0.3s ease;
+          font-size: 14px;
+        }
+
+        .scanner-control-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .scanner-speed-indicator {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          color: white;
+          font-size: 16px;
+          background: rgba(0, 0, 0, 0.3);
+          padding: 8px 16px;
+          border-radius: 20px;
+          backdrop-filter: blur(5px);
+          z-index: 100;
+        }
+
+        .scanner-info {
+          position: absolute;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          color: rgba(255, 255, 255, 0.9);
+          text-align: center;
+          font-size: 14px;
+          background: rgba(0, 0, 0, 0.3);
+          padding: 15px 25px;
+          border-radius: 20px;
+          backdrop-filter: blur(5px);
+          z-index: 100;
+          line-height: 1.4;
+        }
+
+.scanner-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.scanner-card-stream {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  pointer-events: none;
+}
+        .scanner-card-line {
+          display: flex;
+          align-items: center;
+          gap: 60px;
+          white-space: nowrap;
+          cursor: grab;
+          user-select: none;
+          will-change: transform;
+        }
+
+        .scanner-card-line:active {
+          cursor: grabbing;
+        }
+
+        .scanner-card-line.scanner-dragging {
+          cursor: grabbing;
+        }
+
+        .scanner-card-line.scanner-css-animated {
+          animation: scanner-scrollCards 40s linear infinite;
+        }
+
+        @keyframes scanner-scrollCards {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100vw);
+          }
+        }
+
+        .scanner-card-wrapper {
+          position: relative;
+          width: 400px;
+          height: 250px;
+          flex-shrink: 0;
+        }
+
+        .scanner-card {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 400px;
+          height: 250px;
+          border-radius: 15px;
+          overflow: hidden;
+        }
+
+        .scanner-card-normal {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 0;
+          color: white;
+          z-index: 2;
+          position: relative;
+          overflow: hidden;
+  clip-path: inset(0 0 0 var(--clip-left, 0%));
+        }
+
+        .scanner-card-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 15px;
+          transition: all 0.3s ease;
+          filter: brightness(1.1) contrast(1.1);
+          box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .scanner-card-image:hover {
+          filter: brightness(1.2) contrast(1.2);
+        }
+
+        .scanner-card-ascii {
+          background: transparent;
+          z-index: 1;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 400px;
+          height: 250px;
+          border-radius: 15px;
+          overflow: hidden;
+  clip-path: inset(0 var(--clip-right, 100%) 0 0);
+  
+        }
+
+        .scanner-card-chip {
+          width: 40px;
+          height: 30px;
+          background: linear-gradient(45deg, #ffd700, #ffed4e);
+          border-radius: 5px;
+          position: relative;
+          margin-bottom: 20px;
+        }
+
+        .scanner-card-chip::before {
+          content: "";
+          position: absolute;
+          top: 3px;
+          left: 3px;
+          right: 3px;
+          bottom: 3px;
+          background: linear-gradient(45deg, #e6c200, #f4d03f);
+          border-radius: 2px;
+        }
+
+        .scanner-contactless {
+          position: absolute;
+          top: 60px;
+          left: 20px;
+          width: 25px;
+          height: 25px;
+          border: 2px solid rgba(255, 255, 255, 0.8);
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        .scanner-contactless::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 15px;
+          height: 15px;
+          border: 1px solid rgba(255, 255, 255, 0.6);
+          border-radius: 50%;
+        }
+
+        .scanner-card-number {
+          font-size: 22px;
+          font-weight: bold;
+          letter-spacing: 3px;
+          margin-bottom: 15px;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .scanner-card-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+        }
+
+        .scanner-card-holder {
+          color: white;
+          font-size: 14px;
+          text-transform: uppercase;
+        }
+
+        .scanner-card-expiry {
+          color: white;
+          font-size: 14px;
+        }
+
+        .scanner-card-logo {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          font-size: 18px;
+          font-weight: bold;
+          color: white;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .scanner-ascii-content {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          color: rgba(220, 210, 255, 0.6);
+          font-family: "Courier New", monospace;
+          font-size: 11px;
+          line-height: 13px;
+          overflow: hidden;
+          white-space: pre;
+          animation: scanner-glitch 0.1s infinite linear alternate-reverse;
+          margin: 0;
+          padding: 0;
+          text-align: left;
+          vertical-align: top;
+          box-sizing: border-box;
+          -webkit-mask-image: linear-gradient(
+            to right,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 0.8) 30%,
+            rgba(0, 0, 0, 0.6) 50%,
+            rgba(0, 0, 0, 0.4) 80%,
+            rgba(0, 0, 0, 0.2) 100%
+          );
+          mask-image: linear-gradient(
+            to right,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 0.8) 30%,
+            rgba(0, 0, 0, 0.6) 50%,
+            rgba(0, 0, 0, 0.4) 80%,
+            rgba(0, 0, 0, 0.2) 100%
+          );
+        }
+
+        @keyframes scanner-glitch {
+          0% {
+            opacity: 1;
+          }
+          15% {
+            opacity: 0.9;
+          }
+          16% {
+            opacity: 1;
+          }
+          49% {
+            opacity: 0.8;
+          }
+          50% {
+            opacity: 1;
+          }
+          99% {
+            opacity: 0.9;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+
+        .scanner-scanner {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 4px;
+          height: 300px;
+          border-radius: 30px;
+          background: linear-gradient(
+            to bottom,
+            transparent,
+            rgba(0, 255, 255, 0.8),
+            rgba(0, 255, 255, 1),
+            rgba(0, 255, 255, 0.8),
+            transparent
+          );
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.4);
+          animation: scanner-scanPulse 2s ease-in-out infinite alternate;
+          z-index: 10;
+        }
+
+        @keyframes scanner-scanPulse {
+          0% {
+            opacity: 0.8;
+            transform: translate(-50%, -50%) scaleY(1);
+          }
+          100% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scaleY(1.1);
+          }
+        }
+
+        .scanner-scanner-label {
+          position: absolute;
+          bottom: -40px;
+          left: 50%;
+          transform: translateX(-50%);
+          color: rgba(0, 255, 255, 0.9);
+          font-size: 12px;
+          font-weight: bold;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .scanner-scan-effect {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(0, 255, 255, 0.4),
+            transparent
+          );
+          animation: scanner-scanEffect 0.6s ease-out;
+          pointer-events: none;
+          z-index: 5;
+        }
+
+        @keyframes scanner-scanEffect {
+          0% {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          100% {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+        }
+
+        .scanner-instructions {
+          position: absolute;
+          top: 50%;
+          right: 30px;
+          transform: translateY(-50%);
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 14px;
+          max-width: 200px;
+          text-align: right;
+          z-index: 5;
+        }
+
+        #particleCanvas {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          transform: translateY(-50%);
+          width: 100vw;
+          height: 250px;
+          z-index: 0;
+          pointer-events: none;
+        }
+
+        #scannerCanvas {
+          position: absolute;
+          top: 50%;
+          left: -3px;
+          transform: translateY(-50%);
+          width: 100vw;
+          height: 300px;
+          z-index: 15;
+          pointer-events: none;
+        }
+
+        .scanner-inspiration-credit {
+          position: fixed;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-family: "Roboto Mono", monospace;
+          font-size: 12px;
+          font-weight: 900;
+          color: #ff9a9c;
+          z-index: 1000;
+          text-align: center;
+        }
+
+        .scanner-inspiration-credit a {
+          color: #ff9a9c;
+          text-decoration: none;
+          transition: color 0.3s ease;
+        }
+
+        .scanner-inspiration-credit a:hover {
+          color: #ff7a7c;
+        }
+      `}</style>
+    </>
+  );
+};
+
+function CircleReveal() {
+  useEffect(() => {
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".circle-section",
+        start: "top top",
+        end: "+=3000", 
+        scrub: 1,
+        pin: true,
+      },
+    });
+
+
+tl.to(".circle.red", {
+  clipPath: "inset(0% 0% 0% 0%)",
+  ease: "none",
+  duration: 0.3, 
+});
+
+
+tl.to(".circle.blue", {
+  clipPath: "inset(0% 0% 0% 0%)",
+  ease: "none",
+  duration: 0.3,
+});
+
+
+    const panels = gsap.utils.toArray(".panel");
+    const panelTrack = document.querySelector(".panel-track");
+    const numPanels = panels.length;
+
+tl.to(
+  panelTrack,
+  {
+    xPercent: -100 * (numPanels - 1),
+    ease: "none",
+  },
+  0 
+);
+
+    return () => ScrollTrigger.killAll();
+  }, []);
+
+  return (
+    <section className="circle-section">
+
+      <nav className="navbar">
+        <div className="logo">COST OF</div>
+     
+      </nav>
+
+
+      <div className="left-text">
+        <h3>
+          YOUR TREATMENT
+          <br />
+         YOUR PACE
+       
+        </h3>
+      </div>
+
+
+      <div className="circle-wrapper">
+        <div className="circle yellow" />
+        <div className="circle red" />
+        <div className="circle blue" />
+      </div>
+
+
+      <div className="panel-track">
+        <div className="panel">
+          <h2>Total Flexibility</h2>
+          <p>
+          Payment plans typically span 12–24 months.
+          </p>
+        </div>
+        <div className="panel">
+          <h2>Transparency</h2>
+          <p>
+            All inclusive pricing —
+            no hidden fees or unexpected add-ons.
+          </p>
+        </div>
+        <div className="panel">
+          <h2>Complimentary Consultation</h2>
+          <p>
+          Initial consultations are always free of charge.
+          </p>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .circle-section {
+          position: relative;
+          height: 300vh;
+          background: linear-gradient(to bottom, #f6f6f6 0%, #e5e5e5 100%);
+          overflow: hidden;
+        }
+
+  
+        .navbar {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 70px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 2rem;
+          background: rgba(255, 255, 255, 0.9);
+          border-bottom: 1px solid #ddd;
+          z-index: 10;
+        }
+
+        .logo {
+          font-family: "NeueHaasGroteskDisplayPro45Light";
+          font-size: 1rem;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          color: #111;
+          border: 1px solid #111;
+          padding: 6px 10px;
+        }
+
+
+        .left-text {
+          position: absolute;
+          left: 5%;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 5;
+          width: 20vw;
+        }
+
+        .left-text h3 {
+          font-family: "NeueHaasGroteskDisplayPro45Light";
+          font-size: 1.8rem;
+          line-height: 1.2;
+          color: #666;
+          text-transform: uppercase;
+          font-weight: 300;
+        }
+
+        .left-text span {
+          color: #111;
+          font-weight: 500;
+        }
+
+        /* === CENTER CIRCLE === */
+        .circle-wrapper {
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .circle {
+          position: absolute;
+          width: 300px;
+          height: 300px;
+          border-radius: 50%;
+          clip-path: inset(0% 0% 0% 100%);
+        }
+
+        .circle.yellow {
+          background: #f5ff7d;
+          z-index: 1;
+          clip-path: inset(0% 0% 0% 0%);
+        }
+
+        .circle.red {
+          background: #ff4d4d;
+          z-index: 2;
+        }
+
+        .circle.blue {
+          background: #4d7dff;
+          z-index: 3;
+        }
+
+    
+        .panel-track {
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: 100vh;
+          display: flex;
+          flex-direction: row;
+          z-index: 5;
+          transform: translateX(100%);
+          will-change: transform;
+        }
+
+        .panel {
+          width: 40vw;
+          height: 100vh;
+          padding: 3rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          border-left: 1px solid rgba(0, 0, 0, 0.15);
+          flex-shrink: 0;
+          background: rgba(255, 255, 255, 0.3);
+        }
+
+        .panel h2 {
+          font-size: 1.4rem;
+          font-family: "NeueHaasGroteskDisplayPro45Light";
+          margin-bottom: 0.5rem;
+          color: #111;
+        }
+
+        .panel p {
+          font-size: 1rem;
+          font-family: "NeueHaasGroteskDisplayPro45Light";
+          line-height: 1.5;
+          color: #333;
+        }
+      `}</style>
+    </section>
+  );
+}
 
 const ScrollAnimation = () => {
   const stickySectionRef = useRef(null);
@@ -160,7 +1429,6 @@ const ScrollAnimation = () => {
   return (
     <div className="relative">
   
-
       <section 
         className="movingcard-sticky-section h-screen w-full relative" 
         ref={stickySectionRef}
@@ -942,6 +2210,8 @@ const FinancingTreatment = () => {
   return (
     <>
       <div>
+        <CircleReveal />
+        {/* <CardScanner /> */}
         <ScrollAnimation />
         <canvas
           id="shader-bg"

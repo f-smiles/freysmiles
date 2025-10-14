@@ -1550,7 +1550,7 @@ const noiseTex = useMemo(() => {
   />
 </mesh>
 <EffectComposer>
-  <Bloom intensity={0.6} luminanceThreshold={0.5} luminanceSmoothing={0.6} />
+<Bloom intensity={0.3} luminanceThreshold={0.8} />
 </EffectComposer>
 
 <group scale={0.5}>
