@@ -180,7 +180,7 @@ export default function Page() {
                   </div>
                 ))}
 
-                {i < "Early Orthodontics".split(" ").length - 1 && (
+                {i < "Adult Orthodontics".split(" ").length - 1 && (
                   <div className="chars-wrapper">
                     <div className="chars">&nbsp;</div>
                   </div>
