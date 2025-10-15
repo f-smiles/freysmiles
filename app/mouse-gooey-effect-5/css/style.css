@@ -163,7 +163,6 @@ body {
   /* height: 700px; */
 }
 
-/* TODO: media queries and try video in gooey effect */
 @media screen and (max-width: 768px) {  
   .grid-container {
     grid-template-columns: repeat(6, 1fr);
