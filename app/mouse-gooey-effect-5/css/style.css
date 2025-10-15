@@ -162,3 +162,50 @@ body {
   /* width: auto; */
   /* height: 700px; */
 }
+
+/* TODO: media queries and try video in gooey effect */
+@media screen and (max-width: 768px) {  
+  .grid-container {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .grid-overlay-inner {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .item-1-container {
+    grid-column: 1 / span 3;
+    grid-row: 1;
+  }
+  .item-2-container {
+    grid-column: 4 / span 3;
+    grid-row: 1;
+  }
+  .item-3-container {
+    grid-column: 1 / span 3;
+    grid-row: 2;
+  }
+  .item-4-container {
+    grid-column: 4 / span 3;
+    grid-row: 2;
+  }
+  .item-5-container {
+    grid-column: 1 / span 3;
+    grid-row: 3;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+  .grid-overlay-inner {
+    grid-template-columns: 1fr;
+  }
+  .item-1-container,
+  .item-2-container,
+  .item-3-container,
+  .item-4-container,
+  .item-5-container {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
