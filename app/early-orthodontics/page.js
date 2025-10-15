@@ -213,7 +213,7 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-first MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--blue)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--mint)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">01</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">What age do orthodontists recommend a screening?</h3>
@@ -237,7 +237,7 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-between MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--pink)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--beige)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">02</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">What makes age 7 the key stage for identifying dental issues?</h3>
@@ -261,7 +261,7 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-between MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--green)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--orange)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">03</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">How does airway evaluation factor into early orthodontic care?</h3>
@@ -285,7 +285,7 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-between MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--beige)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--peach)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">04</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">What advantages does timely intervention provide for treatment options?</h3>
@@ -309,7 +309,7 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-between MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--grey)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--terra)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">04</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">What happens if no treatment is needed right away?</h3>
@@ -333,7 +333,7 @@ export default function Page() {
           <div className="MainSectionItem --bg-terra MainSection-item">
             <div className="--index-last MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--terra)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--teal)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">05</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">Why visit the orthodontist if treatment is not necessary at this time?</h3>
