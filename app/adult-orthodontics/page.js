@@ -193,7 +193,7 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-first MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--blue)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--teal)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">01</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">Who do we treat?</h3>
@@ -217,7 +217,7 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-between MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--pink)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--blue)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">02</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">What is accelerated adult orthodontics, and how does it work?</h3>
@@ -241,7 +241,7 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-between MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--green)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--beige)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">03</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">How do we collaborate with surgeons for jaw surgery cases?</h3>
@@ -265,7 +265,7 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-between MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--beige)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--green)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">04</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">Why is facial esthetics an important part of orthodontics?</h3>
