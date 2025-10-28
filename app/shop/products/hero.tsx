@@ -7,499 +7,248 @@ import FlutedGlassEffect from "../../../utils/glass";
 import { shaderMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
-function RepellingLines({
-  text = "SHOP",
-  orientation = "horizontal",
-  nLines = 60,
-  nPoints = 160,
-  paddingPct = 10,
-  radius = 80,
-  maxSpeed = 28,
-  strokeColor = "#C4C3D0",
-  lineWidth = 0.5,
-  showPoints = false,
-  fontPx = 420,
-  fontFamily = "'NeueHaasGroteskDisplayPro45Light', sans-serif",
-  textMargin = 0.1, // fraction of min(W,H)
-  blurPx = 4,
-  amplitude = 10, // raise height inside letters
-  terraces = 25, // 1 = off; higher = more contour steps
-  threshold = 0.04,
-  softness = 0.2,
-  invert = false,
-  strokeMask = false,
-  maskScaleX = 1.3,
-  maskBaseline = 0.5,
-}) {
+
+
+
+const Hero: React.FC = () => {
+  return (
+    <section>
+      <AnimatedBackground />
+      <div className="relative min-h-screen overflow-hidden">
+        <div className="relative flex items-center justify-center h-screen">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full border border-white/60" />
+            <div className="relative text-center w-full h-full flex items-center justify-center">
+       
+        <div className="font-neuehaas45 p-6 text-[13px] leading-4 tracking-wider text-white flex items-center">
+            <div>
+              <div>Our gift cards can be used toward any part of treatment—and they never expire.</div>
+              <div>Send one digitally OR</div>
+              <div>choose a physical card</div>
+            </div>
+          </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const AnimatedBackground = () => {
   const canvasRef = useRef(null);
-
-  const rafRef = useRef(null);
-  const WRef = useRef(0);
-  const HRef = useRef(0);
-  const mouseRef = useRef({ x: -9999, y: -9999 });
-
-  const linesRef = useRef([]); // array of lines; each line is array of {x,y}
-  const homesLineRef = useRef([]); // home coordinate for the line (y if horizontal, x if vertical)
-  const homesPointRef = useRef([]); // home coord for each point along the line (x if horizontal, y if vertical)
-
-  // offscreen mask
-  const maskCanvasRef = useRef(null);
-  const maskDataRef = useRef(null);
-  const maskWRef = useRef(0);
-  const maskHRef = useRef(0);
-
-  const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
-  const mid = (...vals) => {
-    if (vals.length < 3) return vals[0] ?? 0;
-    const s = vals.slice().sort((a, b) => a - b);
-    return s[Math.round((s.length - 1) / 2)];
-  };
-  const hypotAbs = (dx, dy) => Math.hypot(Math.abs(dx), Math.abs(dy));
-  const smoothstep = (e0, e1, x) => {
-    const t = clamp((x - e0) / (e1 - e0 || 1e-6), 0, 1);
-    return t * t * (3 - 2 * t);
-  };
-  const pt = (x, y) => ({ x, y });
-
-  const buildMask = (W, H) => {
-    let off = maskCanvasRef.current;
-    if (!off) {
-      off = document.createElement("canvas");
-      maskCanvasRef.current = off;
-    }
-    off.width = W;
-    off.height = H;
-    const g = off.getContext("2d");
-    g.clearRect(0, 0, W, H);
-
-    const pad = Math.min(W, H) * textMargin;
-    const targetW = (W - pad * 2) / Math.max(0.0001, maskScaleX);
-
-    g.font = `700 ${fontPx}px ${fontFamily}`;
-    g.textAlign = "center";
-    g.textBaseline = "middle";
-
-    const rawWidth = Math.max(1, g.measureText(text).width);
-    const scaleByWidth = Math.min(1, targetW / rawWidth);
-    const px = Math.max(10, Math.round(fontPx * scaleByWidth));
-    g.font = `700 ${px}px ${fontFamily}`;
-
-    g.save();
-    g.filter = `blur(${blurPx}px)`;
-    g.fillStyle = "#fff";
-    g.strokeStyle = "#fff";
-
-    const cx = W * 0.5;
-    const cy = H * maskBaseline;
-    g.translate(cx, cy);
-    g.scale(maskScaleX, 1);
-
-    if (strokeMask) {
-      g.lineWidth = Math.max(1, px * 0.08);
-      g.strokeText(text, 0, 0);
-    } else {
-      g.fillText(text, 0, 0);
-    }
-    g.restore();
-
-    const img = g.getImageData(0, 0, W, H);
-    maskDataRef.current = img.data;
-    maskWRef.current = W;
-    maskHRef.current = H;
-  };
-
-  const sampleAlpha = (x, y) => {
-    const W = maskWRef.current;
-    const H = maskHRef.current;
-    const data = maskDataRef.current;
-    if (!data) return 0;
-    const ix = clamp(x | 0, 0, W - 1);
-    const iy = clamp(y | 0, 0, H - 1);
-    const a = data[(iy * W + ix) * 4 + 3];
-    return a / 255;
-  };
-
-  const layout = (W, H) => {
-    const lines = [];
-    const homesLine = [];
-    const homesPoint = [];
-    const pad = (orientation === "horizontal" ? H : W) * (paddingPct / 100);
-
-    if (orientation === "horizontal") {
-      const yStart = pad;
-      const yEnd = H - pad;
-      for (let i = 0; i <= nLines; i++) {
-        const y = Math.round(yStart + (i / nLines) * (yEnd - yStart));
-        homesLine.push(y);
-        const line = [];
-        if (i === 0) homesPoint.length = 0;
-        for (let j = 0; j <= nPoints; j++) {
-          const x = Math.round((j / nPoints) * W);
-          line.push(pt(x, y));
-          if (i === 0) homesPoint.push(x);
-        }
-        lines.push(line);
-      }
-    } else {
-      const xStart = pad;
-      const xEnd = W - pad;
-      for (let i = 0; i <= nLines; i++) {
-        const x = Math.round(xStart + (i / nLines) * (xEnd - xStart));
-        homesLine.push(x);
-        const line = [];
-        if (i === 0) homesPoint.length = 0;
-        for (let j = 0; j <= nPoints; j++) {
-          const y = Math.round((j / nPoints) * H);
-          line.push(pt(x, y));
-          if (i === 0) homesPoint.push(y);
-        }
-        lines.push(line);
-      }
-    }
-
-    linesRef.current = lines;
-    homesLineRef.current = homesLine;
-    homesPointRef.current = homesPoint;
-  };
-
-  const updateLine = (line, lineHome) => {
-    const mx = mouseRef.current.x;
-    const my = mouseRef.current.y;
-
-    if (orientation === "horizontal") {
-      for (let j = line.length - 1; j >= 0; j--) {
-        const p = line[j];
-        const homeX = homesPointRef.current[j];
-        const baseHomeY = lineHome;
-
-        // displacement from text mask at (homeX, baseHomeY)
-        const a = sampleAlpha(homeX, baseHomeY);
-        const terr = terraces > 1 ? Math.round(a * terraces) / terraces : a;
-        const s = smoothstep(threshold, threshold + softness, terr);
-        const dir = invert ? -1 : 1;
-        const dispY = dir * amplitude * s;
-        const homeY = baseHomeY - dispY;
-
-        // force toward (homeX, homeY)
-        let hvx = 0,
-          hvy = 0;
-        if (p.x !== homeX || p.y !== homeY) {
-          const dx = homeX - p.x;
-          const dy = homeY - p.y;
-          const d = hypotAbs(dx, dy);
-          const f = Math.max(d * 0.2, 1);
-          const ang = Math.atan2(dy, dx);
-          hvx = f * Math.cos(ang);
-          hvy = f * Math.sin(ang);
-        }
-
-        let mvx = 0,
-          mvy = 0;
-        const mdx = p.x - mx;
-        const mdy = p.y - my;
-        if (!(mdx > radius || mdy > radius || mdy < -radius || mdx < -radius)) {
-          const ang = Math.atan2(mdy, mdx);
-          const d = hypotAbs(mdx, mdy);
-          const f = Math.max(0, Math.min(radius - d, radius));
-          mvx = f * Math.cos(ang);
-          mvy = f * Math.sin(ang);
-        }
-
-        const vx = Math.round(mid((mvx + hvx) * 0.9, maxSpeed, -maxSpeed));
-        const vy = Math.round(mid((mvy + hvy) * 0.9, maxSpeed, -maxSpeed));
-        if (vx) p.x += vx;
-        if (vy) p.y += vy;
-        line[j] = p;
-      }
-    }
-    return line;
-  };
-
-  const draw = (ctx, W, H) => {
-    ctx.clearRect(0, 0, W, H);
-
-    ctx.save();
-    ctx.globalCompositeOperation = "lighter"; // or "screen"
-    ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = lineWidth;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.shadowColor = "transparent";
-
-    const lines = linesRef.current;
-    const homesLine = homesLineRef.current;
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = updateLine(lines[i], homesLine[i]);
-      lines[i] = line;
-
-      ctx.beginPath();
-
-      if (orientation === "horizontal") {
-        ctx.moveTo(line[0].x, line[0].y);
-        for (let j = 1; j < line.length - 1; j++) {
-          const cur = line[j];
-          const next = line[j + 1];
-          const xc = (cur.x + next.x) / 2;
-          const yc = (cur.y + next.y) / 2;
-          ctx.quadraticCurveTo(cur.x, cur.y, xc, yc);
-        }
-        ctx.lineTo(line[line.length - 1].x, line[line.length - 1].y);
-      } else {
-        ctx.moveTo(line[line.length - 1].x, line[line.length - 1].y);
-        for (let j = line.length - 2; j > 0; j--) {
-          const cur = line[j];
-          const prev = line[j - 1];
-          const xc = (cur.x + prev.x) / 2;
-          const yc = (cur.y + prev.y) / 2;
-          ctx.quadraticCurveTo(cur.x, cur.y, xc, yc);
-        }
-        ctx.lineTo(line[0].x, line[0].y);
-      }
-
-      ctx.stroke();
-
-      if (showPoints) {
-        for (let j = 0; j < line.length; j++) {
-          const d = line[j];
-          ctx.beginPath();
-          ctx.fillStyle = "red";
-          ctx.arc(d.x, d.y, 1.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-    }
-    ctx.restore();
-  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    if (!canvas) return;
 
-    const setSize = () => {
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const gl = canvas.getContext('webgl2');
+    if (!gl) {
+      console.error('WebGL2 not supported');
+      return;
+    }
 
-      const Wcss = canvas.clientWidth;
-      const Hcss = canvas.clientHeight;
+    const vsSource = `#version 300 es
+      in vec2 a_position;
+      out vec2 v_texCoord;
+      void main() {
+        gl_Position = vec4(a_position, 0.0, 1.0);
+        v_texCoord = (a_position + 1.0) / 2.0;
+      }`;
 
-      WRef.current = Wcss;
-      HRef.current = Hcss;
+    const fsSource = `#version 300 es
+precision highp float;
+uniform vec3 iResolution;
+uniform float iTime;
+uniform vec4 iMouse;
+in vec2 v_texCoord;
+out vec4 fragColor;
 
-      canvas.width = Math.round(Wcss * dpr);
-      canvas.height = Math.round(Hcss * dpr);
+float psrdnoise(vec2 x, vec2 period, float alpha, out vec2 gradient) {
+  vec2 uv = vec2(x.x + x.y*0.5, x.y);
+  vec2 i0 = floor(uv);
+  vec2 f0 = fract(uv);
+  float cmp = step(f0.y, f0.x);
+  vec2 o1 = vec2(cmp, 1.0-cmp);
+  vec2 i1 = i0 + o1;
+  vec2 i2 = i0 + vec2(1.0, 1.0);
+  vec2 v0 = vec2(i0.x - i0.y * 0.5, i0.y);
+  vec2 v1 = vec2(v0.x + o1.x - o1.y * 0.5, v0.y + o1.y);
+  vec2 v2 = vec2(v0.x + 0.5, v0.y + 1.0);
+  vec2 x0 = x - v0;
+  vec2 x1 = x - v1;
+  vec2 x2 = x - v2;
+  vec3 iu, iv, xw, yw;
+  if(any(greaterThan(period, vec2(0.0)))) {
+    xw = vec3(v0.x, v1.x, v2.x);
+    yw = vec3(v0.y, v1.y, v2.y);
+    if(period.x > 0.0) xw = mod(vec3(v0.x, v1.x, v2.x), period.x);
+    if(period.y > 0.0) yw = mod(vec3(v0.y, v1.y, v2.y), period.y);
+    iu = floor(xw + 0.5*yw + 0.5);
+    iv = floor(yw + 0.5);
+  } else {
+    iu = vec3(i0.x, i1.x, i2.x);
+    iv = vec3(i0.y, i1.y, i2.y);
+  }
+  vec3 hash = mod(iu, 289.0);
+  hash = mod((hash*51.0 + 2.0)*hash + iv, 289.0);
+  hash = mod((hash*34.0 + 10.0)*hash, 289.0);
+  vec3 psi = hash * 0.07482 + alpha;
+  vec3 gx = cos(psi);
+  vec3 gy = sin(psi);
+  vec2 g0 = vec2(gx.x, gy.x);
+  vec2 g1 = vec2(gx.y, gy.y);
+  vec2 g2 = vec2(gx.z, gy.z);
+  vec3 w = 0.8 - vec3(dot(x0,x0), dot(x1,x1), dot(x2,x2));
+  w = max(w, 0.0);
+  vec3 w2 = w*w;
+  vec3 w4 = w2*w2;
+  vec3 gdotx = vec3(dot(g0,x0), dot(g1,x1), dot(g2,x2));
+  float n = dot(w4,gdotx);
+  vec3 w3 = w2*w;
+  vec3 dw = -8.0*w3*gdotx;
+  vec2 dn0 = w4.x*g0 + dw.x*x0;
+  vec2 dn1 = w4.y*g1 + dw.y*x1;
+  vec2 dn2 = w4.z*g2 + dw.z*x2;
+  gradient = 10.9*(dn0 + dn1 + dn2);
+  return 10.9*n;
+}
 
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+#define PI 3.1415926535897932384626433832795
 
-      buildMask(Wcss, Hcss);
-      layout(Wcss, Hcss);
+float bounceOut(in float t) {
+  const float a = 4.0 / 11.0;
+  const float b = 8.0 / 11.0;
+  const float c = 9.0 / 10.0;
+  const float ca = 4356.0 / 361.0;
+  const float cb = 35442.0 / 1805.0;
+  const float cc = 16061.0 / 1805.0;
+  float t2 = t * t;
+  return t < a
+    ? 7.5625 * t2
+    : t < b
+      ? 9.075 * t2 - 9.9 * t + 3.4
+      : t < c
+        ? ca * t2 - cb * t + cc
+        : 10.8 * t * t - 20.52 * t + 10.72;
+}
+float bounceIn(in float t) { return 1.0 - bounceOut(1.0 - t); }
+
+vec2 rot(vec2 v, float a){
+  return mat2(cos(a), -sin(a), sin(a), cos(a)) * v;
+}
+
+void main() {
+  vec2 fragCoord = v_texCoord * iResolution.xy;
+  vec2 uv = fragCoord / iResolution.xy;
+  vec2 st = uv * vec2(iResolution.x / iResolution.y, 1.0);
+
+  st = rot(st, -PI / 10.0);
+
+  vec2 mouse = iMouse.xy / iResolution.xy;
+
+
+  vec2 gradient;
+  float n = psrdnoise(st * 1.2, vec2(0.0), 0.2 * iTime + mouse.y * PI, gradient);
+
+
+  float lines = cos((st.x * 0.3 + n * 0.25 + mouse.x + 0.2) * PI);
+
+
+vec3 colorA = vec3(1.0, 1.0, 1.0);           // brighter pure white
+vec3 colorB = vec3(0.4, 0.6, 1.0);   
+
+
+  float wave = bounceIn(lines * 0.5 + 0.5);
+  float fade = smoothstep(0.2, 1.0, uv.x);
+
+  vec3 col = mix(colorA, colorB, wave * fade * 0.8);
+
+  fragColor = vec4(col, 1.0);
+}
+`;
+
+    const createShader = (type, source) => {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+      }
+      return shader;
     };
 
-    const updateMouse = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseRef.current.x = e.clientX - rect.left;
-      mouseRef.current.y = e.clientY - rect.top;
+    const vs = createShader(gl.VERTEX_SHADER, vsSource);
+    const fs = createShader(gl.FRAGMENT_SHADER, fsSource);
+
+    const program = gl.createProgram();
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('Program link error:', gl.getProgramInfoLog(program));
+      return;
+    }
+
+    gl.useProgram(program);
+
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    const positions = new Float32Array([
+      -1, -1,
+      1, -1,
+      -1, 1,
+      1, 1,
+    ]);
+    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+    const positionLocation = gl.getAttribLocation(program, 'a_position');
+    gl.enableVertexAttribArray(positionLocation);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+    const iTimeLoc = gl.getUniformLocation(program, 'iTime');
+    const iResLoc = gl.getUniformLocation(program, 'iResolution');
+    const iMouseLoc = gl.getUniformLocation(program, 'iMouse');
+
+    const resizeCanvas = () => {
+      const { clientWidth, clientHeight } = canvas;
+      canvas.width = clientWidth;
+      canvas.height = clientHeight;
+      gl.viewport(0, 0, clientWidth, clientHeight);
+      gl.uniform3f(iResLoc, clientWidth, clientHeight, 1.0);
     };
 
-    const leaveMouse = () => {
-      mouseRef.current.x = -9999;
-      mouseRef.current.y = -9999;
-    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
-    setSize();
-    canvas.addEventListener("pointermove", updateMouse);
-    canvas.addEventListener("pointerleave", leaveMouse);
-    window.addEventListener("resize", setSize);
-
-    const loop = () => {
-      draw(ctx, WRef.current, HRef.current);
-      rafRef.current = requestAnimationFrame(loop);
+    let startTime = Date.now();
+    const animate = () => {
+      const currentTime = (Date.now() - startTime) / 1000;
+      gl.uniform1f(iTimeLoc, currentTime);
+      gl.uniform4f(iMouseLoc, 0.0, 0.0, 0.0, 0.0);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(animate);
     };
-    loop();
+    animate();
 
     return () => {
-      cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener("pointermove", updateMouse);
-      canvas.removeEventListener("pointerleave", leaveMouse);
-      window.removeEventListener("resize", setSize);
+      window.removeEventListener('resize', resizeCanvas);
+      gl.deleteProgram(program);
+      gl.deleteShader(vs);
+      gl.deleteShader(fs);
+      gl.deleteBuffer(positionBuffer);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    text,
-    orientation,
-    nLines,
-    nPoints,
-    paddingPct,
-    radius,
-    maxSpeed,
-    fontPx,
-    fontFamily,
-    textMargin,
-    blurPx,
-    amplitude,
-    terraces,
-    threshold,
-    softness,
-    invert,
-    strokeMask,
-    strokeColor,
-    lineWidth,
-    showPoints,
-  ]);
-
-  return (
-    <div className="flex items-center justify-center">
-      <canvas
-        ref={canvasRef}
-        style={{ width: "880px", height: "600px", display: "block" }}
-      />
-    </div>
-  );
-}
-const Marquee = () => {
-  const items = [
-    { word: "Click here to shop gift cards" },
-    { word: "Click here to shop gift cards" },
-    { word: "Click here to shop gift cards" },
-    { word: "Click here to shop gift cards" },
-  ];
-
-  return (
-    <div className="relative overflow-hidden w-screen bg-[#F0EF59]">
-      <div className="flex animate-marquee min-w-full hover:[animation-play-state:paused]">
-        {[...items, ...items].map((item, index) => (
-          <div key={index} className="px-4 py-4 text-[12px] whitespace-nowrap">
-            {item.word}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const Hero: React.FC = () => {
-  const slices = [
-    { id: 1, containerHeight: 50, translateY: -420 },
-    { id: 2, containerHeight: 50, translateY: -370 },
-    { id: 3, containerHeight: 50, translateY: -320 },
-    { id: 4, containerHeight: 320, translateY: -0 },
-  ];
-
-  const lineRef = useRef<SVGPathElement | null>(null);
-
-  useEffect(() => {
-    const path = lineRef.current;
-    if (!path) return;
-
-    const length = path.getTotalLength();
-    path.style.strokeDasharray = `${length}`;
-    path.style.strokeDashoffset = `${length}`;
-
-    gsap.to(path, {
-      strokeDashoffset: 0,
-      duration: 3,
-      ease: "power2.out",
-    });
   }, []);
 
-  // useEffect(() => {
-  //   const triggers: ScrollTrigger[] = [];
-
-  //   gsap.utils.toArray<HTMLElement>(".img-container").forEach((container) => {
-  //     const img = container.querySelector("img") as HTMLImageElement | null;
-
-  //     if (img) {
-  //       const trigger = gsap.fromTo(
-  //         img,
-  //         { yPercent: -20, ease: "none" },
-  //         {
-  //           yPercent: 20,
-  //           ease: "none",
-  //           scrollTrigger: {
-  //             trigger: container,
-  //             scrub: true,
-  //           },
-  //         }
-  //       ).scrollTrigger as ScrollTrigger;
-
-  //       triggers.push(trigger);
-  //     }
-  //   });
-
-  //   return () => {
-  //     triggers.forEach((trigger) => trigger.kill());
-  //   };
-  // }, []);
   return (
-    <section>
-      <FrameBox>
-        <div className="w-[78%] max-w-[900px] aspect-[16/9]">
-          <RepellingLines
-            text="SHOP"
-            orientation="horizontal"
-            nLines={60}
-            nPoints={200}
-            amplitude={10}
-            terraces={25}
-            blurPx={5}
-            paddingPct={12}
-            strokeColor="	#93FAAF"
-            lineWidth={0.5}
-            threshold={0.08}
-            softness={0.15}
-          />
-        </div>
-      </FrameBox>
-     
-    </section>
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 w-full h-full pointer-events-none z-0"
+    />
   );
 };
 
-function FrameBox({ children }) {
-  return (
-    <section className="relative w-full h-[100svh] bg-[#BBBBBB] text-[#d6c4ad]">
-      <span className="pointer-events-none absolute left-0 right-0 top-[23%] border-t border-[#C4C3D0]" />
-      <span className="pointer-events-none absolute left-0 right-0 bottom-[20%] border-t border-[#C4C3D0]" />
 
-      <div
-        className="
-          grid w-full h-full border border-[#C4C3D0]
-          grid-cols-[minmax(220px,0.9fr)_minmax(0,2.6fr)_minmax(220px,0.9fr)]
-          grid-rows-[minmax(120px,1fr)_1fr_minmax(120px,1fr)]
-          divide-x divide-[#C4C3D0]
-        "
-      >
-
-        <div />
-        <div />
-        <div />
-
-
-        <div className="font-neuehaas45 p-6 text-[13px] leading-4 tracking-wider text-white flex items-center">
-          <div>
-            <div>Our gift cards can be used toward any part of treatment—and they never expire.</div>
-            <div>Send one digitally OR</div>
-            <div>choose a physical card</div>
-          </div>
-        </div>
-
-        {/* RepellingLines */}
-        <div className="relative flex items-center justify-center overflow-visible">
-          <div className="relative z-[1] w-[calc(100%-1rem)] h-[calc(100%-3rem)] flex items-center justify-center">
-            {children}
-          </div>
-        </div>
-
-
-        <div className="font-neuehaas45 p-6 text-[13px] leading-4 tracking-wider text-white flex items-center text-left">
-          <div>We’ve curated a handful of products to elevate your routine—nothing extra.</div>
-        </div>
-
-
-        <div />
-        <div />
-        <div />
-      </div>
-    </section>
-  );
-}
 export default Hero;

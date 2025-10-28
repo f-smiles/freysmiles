@@ -1217,7 +1217,7 @@ void main() {
 >
   <div>
     <p className="font-neuehaas45 text-[20px] text-white max-w-[600px] tracking-wider">
- From national certs to hands-on trainings, we’re always leveling up. The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
+ From national certifications to hands-on trainings, we’re always leveling up. The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
     </p>
   </div>
 </section>

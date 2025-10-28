@@ -1182,7 +1182,7 @@ function FrostedGlassSphere({ position = [0, 0, 0] }) {
   });
 
   return (
-    <group position={position}>
+  <group position={position}>
       <mesh ref={meshRef} geometry={geometry} castShadow receiveShadow>
         <meshPhysicalMaterial
           map={baseColor}
@@ -1190,35 +1190,36 @@ function FrostedGlassSphere({ position = [0, 0, 0] }) {
           normalScale={new THREE.Vector2(1.2, 1.2)}
           roughnessMap={roughnessMap}
           aoMap={aoMap}
-          aoMapIntensity={0.1}
+          aoMapIntensity={0.08}
           displacementMap={heightMap}
-          displacementScale={0.004}
-          metalness={0.55}
-          roughness={0.85}
-          transmission={0.9}
+          displacementScale={0.003}
+          metalness={0.45}
+          roughness={0.88}
+          transmission={0.92}
           ior={1.45}
-          thickness={1.5}
-          attenuationColor="#e6f3ff"
-          attenuationDistance={3.0}
-          clearcoat={0.5}
-          envMapIntensity={0.3}
-          color="#e0e7ff"
+          thickness={1.6}
+          attenuationColor="#bcdcff"        // 🌤 powdery light blue tone
+          attenuationDistance={1.5}         // tighter distance for more color saturation
+          clearcoat={0.6}
+          envMapIntensity={0.18}            // lower to remove the gray cast from reflections
+          color="#cfe5ff"                   // 🌤 soft pastel blue
           transparent
           opacity={1.0}
           toneMapped
-          iridescence={1.0}
-          iridescenceIOR={1.3}
+          iridescence={0.8}
+          iridescenceIOR={1.25}
           iridescenceThicknessMap={roughnessMap}
-          iridescenceThicknessMax={500}
-           sheen={1.0}        
-             sheenColor="#eaf2ff"
-  sheenRoughness={0.9}
+          iridescenceThicknessMax={400}
+          sheen={0.8}
+          sheenColor="#d6ecff"
+          sheenRoughness={0.8}
         />
       </mesh>
 
+      {/* inner glow for diffusion */}
       <mesh scale={0.97}>
         <sphereGeometry args={[1, 64, 64]} />
-        <meshBasicMaterial color="#e6f3ff" transparent opacity={0.4} />
+        <meshBasicMaterial color="#cde9ff" transparent opacity={0.35} />
       </mesh>
     </group>
   );
@@ -1534,10 +1535,10 @@ const noiseTex = useMemo(() => {
     blur={2.5}
   />
 
-  <ambientLight intensity={0.4} color="#f0f8ff" />
+  <pointLight position={[0, 0, -3]} intensity={1.0} color="#dbeeff" />
+  <pointLight position={[0, 0, 3]} intensity={1.2} color="#e9f6ff" />
+  <ambientLight intensity={0.55} color="#eaf3ff" />
   <directionalLight position={[1.5, 2.5, 1.5]} intensity={1.5} color="#b0c4de" />
-  <pointLight position={[0, -1, 2]} intensity={1.2} color="#e6f3ff" />
-  <pointLight position={[0, 0, -3]} intensity={1.8} color="#d1e8ff" />
 
 
 <mesh position={[1.5, 0, -1]} rotation={[0, 0, Math.PI / 8]}>
@@ -1550,7 +1551,7 @@ const noiseTex = useMemo(() => {
   />
 </mesh>
 <EffectComposer>
-<Bloom intensity={0.3} luminanceThreshold={0.8} />
+<Bloom intensity={0.9} luminanceThreshold={0.8} />
 </EffectComposer>
 
 <group scale={0.5}>

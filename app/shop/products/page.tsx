@@ -20,8 +20,8 @@ export default async function ProductsPage() {
     <div className="bg-[#F1F2F5]" >
       {/* <Banner /> */}
       <Hero />
-      <section className="flex items-start justify-center w-full h-full min-h-screen px-4 sm:px-6 lg:px-8 ">
-        <div className="px-4 py-16 overflow-hidden sm:px-6 sm:py-24 lg:px-8">
+      <section className="flex items-start justify-center w-full h-full min-h-screen ">
+        <div className="py-16 overflow-hidden sm:py-24 ">
           <Variants variants={data} />
         </div>
       </section>

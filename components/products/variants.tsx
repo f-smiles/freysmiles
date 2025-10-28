@@ -8,8 +8,33 @@ import { useLayoutEffect, useRef, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { MotionPathPlugin } from "gsap/MotionPathPlugin"
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin)
+
+
+
+const Marquee = () => {
+  const items = [
+    { word: "Click here to shop gift cards" },
+    { word: "Click here to shop gift cards" },
+    { word: "Click here to shop gift cards" },
+    { word: "Click here to shop gift cards" },
+  ];
+
+  return (
+    <div className="relative overflow-hidden w-screen bg-[#F0EF59]">
+      <div className="font-neuehaas45 flex animate-marquee min-w-full hover:[animation-play-state:paused]">
+        {[...items, ...items].map((item, index) => (
+          <div key={index} className="px-4 py-4 text-[12px] whitespace-nowrap">
+            {item.word}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 
 type ProductVariantsProps = {
   variants: VariantsWithProductImagesTags[]
@@ -148,9 +173,62 @@ export default function Variants({ variants }: ProductVariantsProps) {
       window.history.replaceState({}, '', window.location.pathname);
     }
   }, []);
+useLayoutEffect(() => {
+  if (!sectionContainerRef.current) return;
 
+  const ctx = gsap.context(() => {
+    const rows = gsap.utils.toArray<HTMLElement>(
+      sectionContainerRef.current.querySelectorAll(".products-row")
+    );
+
+    rows.forEach((row) => {
+      const cards = gsap.utils.toArray<HTMLElement>(
+        row.querySelectorAll(".card-anim")
+      );
+
+
+      gsap.set(cards, {
+        opacity: 0,
+        x: 140,
+        y: -40,
+        force3D: true,
+        willChange: "transform, opacity",
+      });
+
+      ScrollTrigger.create({
+        trigger: row,
+        start: "top 90%",
+        once: true,
+        onEnter: () => {
+          const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+          tl.to(cards, {
+            x: 0,
+            y: 0,
+            duration: 1.1,
+            ease: "cubic-bezier(0.33, 1, 0.68, 1)", 
+            stagger: { each: 0.12, from: "start" },
+          }, 0);
+
+
+          tl.to(cards, {
+            opacity: 1,
+            duration: 0.9,
+            ease: "linear",
+            stagger: { each: 0.12, from: "start" },
+          }, 0.05);
+        },
+      });
+    });
+  }, sectionContainerRef);
+
+  return () => ctx.revert();
+}, []);
   return (
+<>
+    <Marquee />
     <div className="grid grid-cols-12 gap-8 relative">
+      
       <aside ref={asideRef} className="col-span-3 -ml-2">
         <div 
           ref={filterContainerRef}
@@ -196,53 +274,73 @@ export default function Variants({ variants }: ProductVariantsProps) {
         id={group.id}
         className="space-y-4"
       >
-            <div className="text-[20px] leading-tight text-zinc-500 font-saolitalic tracking-tight">
+            <div className="text-[18px] leading-tight text-zinc-500 font-canelathin">
               {group.prefix}
               <br />
             </div>
     
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 products-row">
               {group.variants.map((variant) => (
-                <div
-                  key={variant.id}
-                  className="flex flex-col justify-between overflow-hidden text-sm transition bg-white shadow-sm group font-neueroman rounded-2xl hover:shadow-md"
-                >
-                  <Link
-                    href={`/shop/products/${variant.id}?id=${variant.id}&title=${variant.product.title}&variant=${variant.variantName}&prodId=${variant.productID}`}
-                    className="flex flex-col h-full"
-                  >
-                    <figure className="w-full aspect-[1/1] p-6 flex items-center justify-center">
-                      <Image
-                        className="object-contain w-full h-full"
-                        src={variant.variantImages[0].url}
-                        alt={`${variant.product.title} - ${variant.variantName}`}
-                        width={360}
-                        height={640}
-                        priority
-                      />
-                    </figure>
-    
-                    <div className="bg-[#F2F2F2] px-5 pt-4 pb-6 flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-[12px] text-zinc-900 capitalize">
-                          {variant.product.title}
-                        </h3>
-                        <span className="text-[12px] text-zinc-900 font-semibold">
-                          {formatPrice(variant.product.price)}
-                        </span>
-                      </div>
-    
-                      <div className="h-[1px] bg-gray-300" />
-    
-                      <span className="text-[12px] text-zinc-900">{variant.variantName}</span>
-                    </div>
-                  </Link>
-                </div>
+<div
+  key={variant.id}
+        className="card-anim group relative flex flex-col justify-between bg-[#DBE5F2] rounded-[24px] overflow-hidden h-[460px] shadow-sm transition-transform duration-300 hover:scale-[1.015] hover:shadow-md will-change-transform"
+>
+  <Link
+    href={`/shop/products/${variant.id}?id=${variant.id}&title=${variant.product.title}&variant=${variant.variantName}&prodId=${variant.productID}`}
+    className="flex flex-col h-full p-5"
+  >
+
+    <div className="flex items-center justify-between mb-5">
+      <span className="px-4 py-[5px] bg-white/50 text-black text-[11px] font-neuehaas45 rounded-full tracking-wide shadow-sm">
+        {variant.product.title}
+      </span>
+    <div className="w-6 h-6 rounded-full bg-white/50 flex items-center justify-center shadow-sm">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#111"
+    strokeWidth="1"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="w-4 h-4 transition-transform duration-500 hover:-translate-y-[1.5px] hover:rotate-[5deg]"
+  >
+    <path d="M6 8h12l-1.5 12h-9L6 8z" />
+    <path d="M9 8a3 3 0 0 1 6 0" />
+  </svg>
+</div>
+    </div>
+
+
+    <figure className="flex-1 flex items-center justify-center">
+      <Image
+        className="object-contain w-[58%] max-h-[210px]"
+        src={variant.variantImages[0].url}
+        alt={`${variant.product.title} - ${variant.variantName}`}
+        width={400}
+        height={600}
+        priority
+      />
+    </figure>
+
+
+    <div className="flex items-center justify-between pt-6">
+      <span className="text-[13px] font-neuehaas45 text-black">
+        {variant.variantName}
+      </span>
+      <span className="text-[13px] font-neuehaas45 text-black">
+        {formatPrice(variant.product.price)}
+      </span>
+    </div>
+  </Link>
+</div>
               ))}
             </div>
           </div>
         ))}
       </section>
     </div>
+</>
+
   );
 }

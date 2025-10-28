@@ -1866,6 +1866,25 @@ useLayoutEffect(() => {
   return () => ctx.revert();
 }, []);
     const panelsRef = useRef(null);
+const hexToRgb = (hex) => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
+    : null;
+};
+
+const rgbToHex = (r, g, b) => {
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+};
+
+const colorLerp = (color1, color2, amount) => {
+  const [r1, g1, b1] = hexToRgb(color1);
+  const [r2, g2, b2] = hexToRgb(color2);
+  const r = Math.round(r1 + (r2 - r1) * amount);
+  const g = Math.round(g1 + (g2 - g1) * amount);
+  const b = Math.round(b1 + (b2 - b1) * amount);
+  return rgbToHex(r, g, b);
+};
 
   return (
     <section className="circle-section">
@@ -1887,15 +1906,37 @@ useLayoutEffect(() => {
           <div className="circle red" />
           <div className="circle blue" />
 <div className="circle purple">
-  <svg viewBox="0 0 400 400" className="ring-svg">
-    <circle cx="200" cy="200" r="140" stroke="#FA7546" strokeWidth="6" fill="none" />
-    <circle cx="200" cy="200" r="132" stroke="#E071BA" strokeWidth="6" fill="none" opacity="0.9" />
-    <circle cx="200" cy="200" r="124" stroke="#EC479B" strokeWidth="6" fill="none" opacity="0.85" />
-    <circle cx="200" cy="200" r="116" stroke="#9EBEDB" strokeWidth="6" fill="none" opacity="0.8" />
-    <circle cx="200" cy="200" r="108" stroke="#FEBB39" strokeWidth="6" fill="none" opacity="0.75" />
-    <circle cx="200" cy="200" r="100" stroke="#D4BD2D" strokeWidth="6" fill="none" opacity="0.7" />
-  </svg>
-</div>
+            <svg
+              viewBox="0 0 400 400"
+              className="ring-svg"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {Array.from({ length: 40 }).map((_, i) => {
+                const r = 200 - i * 4;
+                const t = i / 39;
+                const colors = ["#B8E3E9", "#E6E6FA", "#FFDAB9"]; // blue, lavender, peach
+                const segment = Math.floor(t * 3);
+                const localT = (t * 3) % 1;
+                const startColor = colors[segment % 3];
+                const endColor = colors[(segment + 1) % 3];
+                const stroke = colorLerp(startColor, endColor, localT);
+
+                return (
+                  <circle
+                    key={i}
+                    cx="200"
+                    cy="200"
+                    r={r}
+                    stroke={stroke}
+                    strokeWidth="1.3"
+                    fill="none"
+                    opacity={1 - t * 0.1}
+                    style={{ filter: `drop-shadow(0 0 ${1 + t * 2}px rgba(255, 182, 193, 0.2))` }} // subtle pinkish glow for inner spiral vibe
+                  />
+                );
+              })}
+            </svg>
+          </div>
           <div className="circle green" />
           <div className="circle pink" />
         </div>
@@ -1939,22 +1980,9 @@ useLayoutEffect(() => {
   margin: auto;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0 10px rgba(170, 130, 255, 0.3))
-          drop-shadow(0 0 20px rgba(60, 214, 210, 0.2));
+  // filter: drop-shadow(0 0 10px rgba(170, 130, 255, 0.3))
+  //         drop-shadow(0 0 20px rgba(60, 214, 210, 0.2));
 
-}
-
-
-.ring-svg circle {
-  opacity: 1;  
-  stroke-linecap: round;
-  stroke-dasharray: 2 1.5;
-  animation: sketch 6s ease-in-out infinite alternate;
-}
-
-@keyframes sketch {
-  0% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: 20; }
 }
 
         .pinned-content {
@@ -2040,8 +2068,8 @@ useLayoutEffect(() => {
         }
 
         .circle.purple {
-          width: 600px;
-  height: 600px;
+          width: 400px;
+  height: 400px;
   border-radius: 50%;
   display: flex;
   align-items: center;

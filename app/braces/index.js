@@ -53,500 +53,6 @@ if (typeof window !== "undefined") {
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
-const Braces = () => {
-  useEffect(() => {
-    const canvas = document.getElementById("shader-bg");
-    if (!canvas) return;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.Camera();
-
-    const uniforms = {
-      u_time: { value: 0 },
-      u_resolution: {
-        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
-      },
-      u_mouse: { value: new THREE.Vector2() },
-    };
-
-    const vertexShader = `
-      varying vec2 v_uv;
-      void main() {
-        v_uv = uv;
-        gl_Position = vec4(position, 1.0);
-      }
-    `;
-
-    const fragmentShader = `
-   precision mediump float;
-
-uniform vec2 u_resolution;
-
-void main() {
-  vec2 uv = gl_FragCoord.xy / u_resolution;
-  vec2 centeredUV = (uv - 0.5) * vec2(u_resolution.x / u_resolution.y, 1.0);
-  vec3 stone = vec3(0.94, 0.93, 0.91);
-  vec2 orbCenter = vec2(-0.15, -0.05); // slightly left of center
-  float orbDist = length(centeredUV - orbCenter);
-  float orb = smoothstep(0.8, 0.0, orbDist); 
-  vec3 glow = vec3(1.0, 0.93, 0.72); 
-  vec3 color = mix(stone, glow, orb * 0.8); 
-  gl_FragColor = vec4(color, 1.0);
-}
- `;
-
-    const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms,
-    });
-
-    const geometry = new THREE.PlaneGeometry(2, 2);
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
-    const clock = new THREE.Clock();
-
-    const animate = () => {
-      requestAnimationFrame(animate);
-      uniforms.u_time.value = clock.getElapsedTime();
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    const handleResize = () => {
-      const { innerWidth: w, innerHeight: h } = window;
-      renderer.setSize(w, h);
-      uniforms.u_resolution.value.set(w, h);
-    };
-
-    const handleMouseMove = (e) => {
-      uniforms.u_mouse.value.set(e.clientX, window.innerHeight - e.clientY);
-    };
-
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", handleMouseMove);
-      renderer.dispose();
-    };
-  }, []);
-
-  const sectionRef = useRef(null);
-  const lineRefs = useRef([]);
-  const textRefs = useRef([]);
-
-  useEffect(() => {
-    gsap.set(lineRefs.current, { scaleX: 0, transformOrigin: "left" });
-    gsap.set(textRefs.current, { y: 20, opacity: 0 });
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top center-=100",
-        end: "bottom bottom",
-        toggleActions: "play none none none",
-      },
-    });
-
-    lineRefs.current.forEach((line, i) => {
-      tl.to(
-        line,
-        {
-          scaleX: 1,
-          duration: 1,
-          ease: "power3.out",
-        },
-        i * 0.2
-      );
-    });
-
-    textRefs.current.forEach((text, i) => {
-      tl.to(
-        text,
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "power2.out",
-        },
-        i * 0.2 + 0.1
-      );
-    });
-
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-  }, []);
-
-  const items = [
-    "Cleaner braces",
-    "Less discomfort",
-    "Less time in treatment",
-    "Fewer office visits",
-    "Less frequent office visits",
-    "Wider arches than other braces",
-    "Fewer extractions of permanent teeth",
-  ];
-  const ELLIPSE_COUNT = 7;
-  const ellipsesRef = useRef([]);
-
-  useEffect(() => {
-    ellipsesRef.current.forEach((el, i) => {
-      gsap.to(el, {
-        yPercent: i * 60,
-        ease: "none",
-        scrollTrigger: {
-          trigger: "#scroll-down",
-          start: "top bottom",
-          end: "bottom bottom",
-          scrub: true,
-        },
-      });
-    });
-  }, []);
-
-  const pathRef = useRef(null);
-  const cardsectionRef = useRef(null);
-  const textContainerRef = useRef(null);
-  useEffect(() => {
-    const path = pathRef.current;
-    const text = textContainerRef.current;
-    const pathLength = path.getTotalLength();
-
-    gsap.set(path, {
-      strokeDasharray: pathLength,
-      strokeDashoffset: 0,
-    });
-
-    gsap.set(text, {
-      opacity: 0,
-      y: 30,
-      filter: "blur(2px)",
-    });
-
-    const trigger = ScrollTrigger.create({
-      trigger: cardsectionRef.current,
-      start: "top top",
-      end: "bottom top",
-      scrub: 1,
-      pin: true,
-      pinSpacing: true,
-      onUpdate: (self) => {
-        const progress = self.progress;
-
-        gsap.to(path, {
-          strokeDashoffset: progress * pathLength,
-          ease: "none",
-          overwrite: true,
-        });
-
-        const textFadeStart = 0.66;
-        const textFadeDuration = 0.33;
-
-        if (progress >= textFadeStart) {
-          const textProgress = (progress - textFadeStart) / textFadeDuration;
-          const easedProgress = gsap.parseEase("sine.out")(
-            Math.min(1, textProgress)
-          );
-
-          gsap.to(text, {
-            opacity: easedProgress,
-            y: 30 * (1 - easedProgress),
-            filter: `blur(${2 * (1 - easedProgress)}px)`,
-            ease: "none",
-            overwrite: true,
-          });
-        } else {
-          gsap.to(text, {
-            opacity: 0,
-            y: 30,
-            filter: "blur(2px)",
-            overwrite: true,
-            duration: 0.2,
-          });
-        }
-      },
-      onLeave: () => {
-        gsap.to(text, {
-          opacity: 1,
-          y: 0,
-          filter: "blur(0px)",
-          overwrite: true,
-          duration: 0.3,
-        });
-      },
-    });
-
-    return () => {
-      if (trigger) trigger.kill();
-      gsap.killTweensOf([path, text]);
-    };
-  }, []);
-
-  return (
-    <>
-      <canvas
-        id="shader-bg"
-        className="fixed top-0 left-0 w-full min-h-screen z-[-1] pointer-events-none"
-      />
-      <div className="relative">
-        <div className="min-h-screen flex flex-col items-center space-y-16 px-4">
-          <div className="h-[33vh]" />
-
-          <div className="text-[13px] max-w-[500px] font-neuehaas45 leading-snug tracking-wider">
-            We love our patients so much we only use braces when we have to. Not
-            because it’s cheaper. Not because it’s easier. Just because it’s
-            what’s best. And when braces are needed? We're using the best
-            ones—and getting them off as fast as humanly possible when there's
-            no longer a need for braces which could cause staining and cavities.
-          </div>
-          <div className="h-[20vh]" />
-          <img
-            src="/images/ajomockupchair.png"
-            className="w-2/3 object-contain"
-            alt="AJO Mockup"
-          />
-        </div>
-
-        <div className="h-[20vh]" />
-        <div className="grid grid-cols-2 h-screen w-screen">
-          <div className="flex justify-center">
-            <div className="w-full max-w-2xl mx-auto">
-              <section className="px-8 py-24 font-neuehaas45 text-sm tracking-tight">
-                <div className="mb-10">
-                  <h1 className="text-[42px] font-neuehaas45 tracking-wide flex items-center gap-2">
-                    <span className="w-[1px] h-[42px] bg-black opacity-30"></span>
-                    <span>Not Your</span>
-                    {/* <span className="w-[1px] h-[42px] bg-black opacity-30"></span> */}
-                    <span>Average Braces</span>
-                  </h1>
-                  <p className="mt-4 text-[12px] tracking-wider max-w-xs leading-snug font-neuehaas45 uppercase">
-                    You may experience some <strong>or</strong> all of the many
-                    benefits
-                  </p>
-                </div>
-                <div ref={sectionRef} className="space-y-4">
-                  {items.map((item, i) => (
-                    <div key={item} className="space-y-4">
-                      <div
-                        ref={(el) => (lineRefs.current[i] = el)}
-                        className="h-[1px] bg-[#cdccc9] w-full origin-left scale-x-0"
-                      />
-                      <div
-                        ref={(el) => (textRefs.current[i] = el)}
-                        className="tracking-wide font-neuehaas45 text-[13px]"
-                      >
-                        <li>{item}</li>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </div>
-          </div>
-
-          <div className="flex justify-center items-center">
-            <img
-              src="/images/7number.png"
-              className="max-w-full max-h-[100vh] object-contain"
-              alt="7graphic"
-            />
-          </div>
-        </div>
-        <section
-          ref={cardsectionRef}
-          className="h-[100vh] relative z-10 flex items-center justify-center"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 951 367"
-            fill="none"
-            className="w-full h-auto max-w-5xl pt-40 mx-auto"
-          >
-            <path
-              ref={pathRef}
-              d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
-              stroke="#0C0EFE"
-              strokeWidth="40"
-              strokeMiterlimit="10"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </section>
-        <div className="flex flex-col justify-center items-center min-h-screen space-y-24 font-neuehaas45 px-4 py-12">
-          <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
-            <div className="max-w-[450px]">
-              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Cleaner by Design
-              </h2>
-              <p className="text-[15px] leading-snug font-neuehaas45">
-                The self-closing door means no need for elastic ties — fewer
-                materials in your mouth and less friction. The wire itself is a
-                shape-memory alloy engineered to move teeth smoothly and
-                efficiently.
-              </p>
-            </div>
-
-            <div className="max-w-[450px]">
-              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Less Frequent Office Visits
-              </h2>
-              <p className="text-[15px] leading-snug font-neuehaas45">
-                With Damon archwires, rubber ties are not a mandatory component.
-                The sliding door keeps the wire secure until we choose to move
-                it. No metal twist ties pretending to be high-tech.
-              </p>
-            </div>
-          </div>
-
-          <h2 className="text-[60px] font-saolitalic pt-4 pb-2">
-            Vivre sa vie
-          </h2>
-
-          <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
-            <div className="max-w-[450px]">
-              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Smarter Mechanics
-              </h2>
-              <p className="text-[15px] leading-snug font-neuehaas45">
-                Damon braces uses a sliding door mechanism that reduces the
-                amount of friction during tooth movement. This allows for more
-                efficient initial tooth alignment. Not only is this faster
-                movement completely healthy and safe, it will help you achieve
-                the results in half the time.
-              </p>
-            </div>
-
-            <div className="max-w-[450px]">
-              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Fewer Appointments. More Time for Personal Nonsense
-              </h2>
-              <p className="text-[15px] leading-snug font-neuehaas45">
-                Traditional braces (aka twin brackets) often require monthly
-                visits just to replace rubber bands that lose elasticity
-                fast—and don’t even hold the wire that well. In some cases, the
-                rubber’s so weak that doctors resort to metal twist ties. Yes.
-                Think—barbed wire, but in your mouth.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-center items-start py-24 px-4">
-          <div className="max-w-2xl w-full text-[15px] font-neuehaas45 space-y-6 leading-snug">
-            <h2 className="text-[14px] uppercase tracking-wider font-neuehaas35 mb-2">
-              Considerations with Braces
-            </h2>
-            <p className="font-neuehaas45">
-              Because of their complex geometry, brackets make thorough cleaning
-              significantly more difficult. Plaque retention becomes almost
-              inevitable — which increases the risk of permanent enamel damage
-              and long-term discoloration due to decalcification.
-            </p>
-
-            <p className="font-neuehaas45">
-              A successful outcome with braces comes down to three essentials:
-              frequent and consistent hygiene practices, mindful eating, and
-              staying consistent with appointments. The constellation of these
-              habits works in tandem to keep your treatment efficient,
-              comfortable, and on track.
-            </p>
-
-            <p className="font-neuehaas45">
-              We’ve put together a few practical tips to help you stay on top of
-              it all.
-            </p>
-
-            <div className="pt-6">
-              <a
-                href="/caring-for-your-braces"
-                className="z-10 inline-flex items-center justify-center text-[14px] uppercase tracking-wide font-neuehaas35 border border-black px-6 py-2 hover:bg-black hover:text-white transition-all"
-                role="button"
-              >
-                How to Care for Your Braces
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-center items-start py-24 px-4">
-          <div className="w-full max-w-3xl pt-12">
-            <p className="text-center text-[14px] font-neuehaas35 uppercase tracking-wide opacity-60 mb-2">
-              A final note on treatment philosophy
-            </p>
-            <h3 className="text-center text-[32px] font-neuehaas45 leading-snug mb-4">
-              In most cases, we still prefer finishing with clear aligners.
-            </h3>
-            <p className="text-[15px] leading-[1.2] font-neuehaas45 max-w-xl mx-auto">
-              Our breadth of clinical experience with fixed appliances —
-              including Damon Braces — has shaped our current methodology: we
-              begin with braces when they offer a mechanical advantage, then
-              transition to clear aligners to guide teeth into their final
-              position. This hybrid approach creates a more cohesive treatment
-              arc — not only improving precision and predictability, but also
-              easing patients into the retention phase with less relapse and
-              better long-term compliance.
-            </p>
-          </div>
-        </div>
-
-        <FluidSimulation />
-        {/* <WebGLGalleryApp /> */}
-      </div>
-      <footer id="scroll-down" className=" relative overflow-hidden h-[100vh]">
-        <div className="relative w-full h-full">
-          <div
-            style={{
-              transformStyle: "preserve-3d",
-              transform: "rotateX(70deg) translateZ(1px) scaleY(.6)",
-              height: "100%",
-              width: "100%",
-              position: "relative",
-              transformOrigin: "center",
-              perspective: "2000px",
-              backfaceVisibility: "hidden",
-            }}
-            className="w__oval-animations relative w-full h-full"
-          >
-            {[...Array(ELLIPSE_COUNT)].map((_, i) => (
-              <div
-                key={i}
-                ref={(el) => (ellipsesRef.current[i] = el)}
-                className="absolute w-[60vw] h-[24vw] rounded-full"
-                style={{
-                  left: "50%",
-                  marginLeft: "-45vw",
-                  border: "3px solid #f7f5f7",
-                  boxSizing: "border-box",
-                  // willChange: "transform",
-                  transformStyle: "preserve-3d",
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
-                  transformOrigin: "center",
-                  filter: "contrast(1.1)",
-                }}
-              />
-            ))}
-          </div>
-          <div className="w__scroll-down__trigger" />
-        </div>
-      </footer>
-      {/* <TextEffect 
-    text="Braces" 
-    font="NeueHaasRoman" 
-    color="#ffffff" 
-    fontWeight="normal" 
-  /> */}
-    </>
-  );
-};
-
-export default Braces;
-
 const FluidSimulation = () => {
   const canvasRef = useRef(null);
 
@@ -1526,6 +1032,863 @@ void main() {
     />
   );
 };
+function RepellingLines({
+  text = "BRACES",
+  orientation = "horizontal",
+  nLines = 60,
+  nPoints = 160,
+  paddingPct = 10,
+  radius = 80,
+  maxSpeed = 28,
+  strokeColor = "#C4C3D0",
+  lineWidth = 0.5,
+  showPoints = false,
+  fontPx = 420,
+  fontFamily = "'NeueHaasGroteskDisplayPro45Light', sans-serif",
+  textMargin = 0.1, // fraction of min(W,H)
+  blurPx = 4,
+  amplitude = 10, // raise height inside letters
+  terraces = 25, // 1 = off; higher = more contour steps
+  threshold = 0.04,
+  softness = 0.2,
+  invert = false,
+  strokeMask = false,
+  maskScaleX = 1.3,
+  maskBaseline = 0.5,
+}) {
+  const canvasRef = useRef(null);
+
+  const rafRef = useRef(null);
+  const WRef = useRef(0);
+  const HRef = useRef(0);
+  const mouseRef = useRef({ x: -9999, y: -9999 });
+
+  const linesRef = useRef([]); // array of lines; each line is array of {x,y}
+  const homesLineRef = useRef([]); // home coordinate for the line (y if horizontal, x if vertical)
+  const homesPointRef = useRef([]); // home coord for each point along the line (x if horizontal, y if vertical)
+
+  // offscreen mask
+  const maskCanvasRef = useRef(null);
+  const maskDataRef = useRef(null);
+  const maskWRef = useRef(0);
+  const maskHRef = useRef(0);
+
+  const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
+  const mid = (...vals) => {
+    if (vals.length < 3) return vals[0] ?? 0;
+    const s = vals.slice().sort((a, b) => a - b);
+    return s[Math.round((s.length - 1) / 2)];
+  };
+  const hypotAbs = (dx, dy) => Math.hypot(Math.abs(dx), Math.abs(dy));
+  const smoothstep = (e0, e1, x) => {
+    const t = clamp((x - e0) / (e1 - e0 || 1e-6), 0, 1);
+    return t * t * (3 - 2 * t);
+  };
+  const pt = (x, y) => ({ x, y });
+
+  const buildMask = (W, H) => {
+    let off = maskCanvasRef.current;
+    if (!off) {
+      off = document.createElement("canvas");
+      maskCanvasRef.current = off;
+    }
+    off.width = W;
+    off.height = H;
+    const g = off.getContext("2d");
+    g.clearRect(0, 0, W, H);
+
+    const pad = Math.min(W, H) * textMargin;
+    const targetW = (W - pad * 2) / Math.max(0.0001, maskScaleX);
+
+    g.font = `700 ${fontPx}px ${fontFamily}`;
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+
+    const rawWidth = Math.max(1, g.measureText(text).width);
+    const scaleByWidth = Math.min(1, targetW / rawWidth);
+    const px = Math.max(10, Math.round(fontPx * scaleByWidth));
+    g.font = `700 ${px}px ${fontFamily}`;
+
+    g.save();
+    g.filter = `blur(${blurPx}px)`;
+    g.fillStyle = "#fff";
+    g.strokeStyle = "#fff";
+
+    const cx = W * 0.5;
+    const cy = H * maskBaseline;
+    g.translate(cx, cy);
+    g.scale(maskScaleX, 1);
+
+    if (strokeMask) {
+      g.lineWidth = Math.max(1, px * 0.08);
+      g.strokeText(text, 0, 0);
+    } else {
+      g.fillText(text, 0, 0);
+    }
+    g.restore();
+
+    const img = g.getImageData(0, 0, W, H);
+    maskDataRef.current = img.data;
+    maskWRef.current = W;
+    maskHRef.current = H;
+  };
+
+  const sampleAlpha = (x, y) => {
+    const W = maskWRef.current;
+    const H = maskHRef.current;
+    const data = maskDataRef.current;
+    if (!data) return 0;
+    const ix = clamp(x | 0, 0, W - 1);
+    const iy = clamp(y | 0, 0, H - 1);
+    const a = data[(iy * W + ix) * 4 + 3];
+    return a / 255;
+  };
+
+  const layout = (W, H) => {
+    const lines = [];
+    const homesLine = [];
+    const homesPoint = [];
+    const pad = (orientation === "horizontal" ? H : W) * (paddingPct / 100);
+
+    if (orientation === "horizontal") {
+      const yStart = pad;
+      const yEnd = H - pad;
+      for (let i = 0; i <= nLines; i++) {
+        const y = Math.round(yStart + (i / nLines) * (yEnd - yStart));
+        homesLine.push(y);
+        const line = [];
+        if (i === 0) homesPoint.length = 0;
+        for (let j = 0; j <= nPoints; j++) {
+          const x = Math.round((j / nPoints) * W);
+          line.push(pt(x, y));
+          if (i === 0) homesPoint.push(x);
+        }
+        lines.push(line);
+      }
+    } else {
+      const xStart = pad;
+      const xEnd = W - pad;
+      for (let i = 0; i <= nLines; i++) {
+        const x = Math.round(xStart + (i / nLines) * (xEnd - xStart));
+        homesLine.push(x);
+        const line = [];
+        if (i === 0) homesPoint.length = 0;
+        for (let j = 0; j <= nPoints; j++) {
+          const y = Math.round((j / nPoints) * H);
+          line.push(pt(x, y));
+          if (i === 0) homesPoint.push(y);
+        }
+        lines.push(line);
+      }
+    }
+
+    linesRef.current = lines;
+    homesLineRef.current = homesLine;
+    homesPointRef.current = homesPoint;
+  };
+
+  const updateLine = (line, lineHome) => {
+    const mx = mouseRef.current.x;
+    const my = mouseRef.current.y;
+
+    if (orientation === "horizontal") {
+      for (let j = line.length - 1; j >= 0; j--) {
+        const p = line[j];
+        const homeX = homesPointRef.current[j];
+        const baseHomeY = lineHome;
+
+        // displacement from text mask at (homeX, baseHomeY)
+        const a = sampleAlpha(homeX, baseHomeY);
+        const terr = terraces > 1 ? Math.round(a * terraces) / terraces : a;
+        const s = smoothstep(threshold, threshold + softness, terr);
+        const dir = invert ? -1 : 1;
+        const dispY = dir * amplitude * s;
+        const homeY = baseHomeY - dispY;
+
+        // force toward (homeX, homeY)
+        let hvx = 0,
+          hvy = 0;
+        if (p.x !== homeX || p.y !== homeY) {
+          const dx = homeX - p.x;
+          const dy = homeY - p.y;
+          const d = hypotAbs(dx, dy);
+          const f = Math.max(d * 0.2, 1);
+          const ang = Math.atan2(dy, dx);
+          hvx = f * Math.cos(ang);
+          hvy = f * Math.sin(ang);
+        }
+
+        let mvx = 0,
+          mvy = 0;
+        const mdx = p.x - mx;
+        const mdy = p.y - my;
+        if (!(mdx > radius || mdy > radius || mdy < -radius || mdx < -radius)) {
+          const ang = Math.atan2(mdy, mdx);
+          const d = hypotAbs(mdx, mdy);
+          const f = Math.max(0, Math.min(radius - d, radius));
+          mvx = f * Math.cos(ang);
+          mvy = f * Math.sin(ang);
+        }
+
+        const vx = Math.round(mid((mvx + hvx) * 0.9, maxSpeed, -maxSpeed));
+        const vy = Math.round(mid((mvy + hvy) * 0.9, maxSpeed, -maxSpeed));
+        if (vx) p.x += vx;
+        if (vy) p.y += vy;
+        line[j] = p;
+      }
+    }
+    return line;
+  };
+
+  const draw = (ctx, W, H) => {
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter"; // or "screen"
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.shadowColor = "transparent";
+
+    const lines = linesRef.current;
+    const homesLine = homesLineRef.current;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = updateLine(lines[i], homesLine[i]);
+      lines[i] = line;
+
+      ctx.beginPath();
+
+      if (orientation === "horizontal") {
+        ctx.moveTo(line[0].x, line[0].y);
+        for (let j = 1; j < line.length - 1; j++) {
+          const cur = line[j];
+          const next = line[j + 1];
+          const xc = (cur.x + next.x) / 2;
+          const yc = (cur.y + next.y) / 2;
+          ctx.quadraticCurveTo(cur.x, cur.y, xc, yc);
+        }
+        ctx.lineTo(line[line.length - 1].x, line[line.length - 1].y);
+      } else {
+        ctx.moveTo(line[line.length - 1].x, line[line.length - 1].y);
+        for (let j = line.length - 2; j > 0; j--) {
+          const cur = line[j];
+          const prev = line[j - 1];
+          const xc = (cur.x + prev.x) / 2;
+          const yc = (cur.y + prev.y) / 2;
+          ctx.quadraticCurveTo(cur.x, cur.y, xc, yc);
+        }
+        ctx.lineTo(line[0].x, line[0].y);
+      }
+
+      ctx.stroke();
+
+      if (showPoints) {
+        for (let j = 0; j < line.length; j++) {
+          const d = line[j];
+          ctx.beginPath();
+          ctx.fillStyle = "red";
+          ctx.arc(d.x, d.y, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+    ctx.restore();
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    const setSize = () => {
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+
+      const Wcss = canvas.clientWidth;
+      const Hcss = canvas.clientHeight;
+
+      WRef.current = Wcss;
+      HRef.current = Hcss;
+
+      canvas.width = Math.round(Wcss * dpr);
+      canvas.height = Math.round(Hcss * dpr);
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      buildMask(Wcss, Hcss);
+      layout(Wcss, Hcss);
+    };
+
+    const updateMouse = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseRef.current.x = e.clientX - rect.left;
+      mouseRef.current.y = e.clientY - rect.top;
+    };
+
+    const leaveMouse = () => {
+      mouseRef.current.x = -9999;
+      mouseRef.current.y = -9999;
+    };
+
+    setSize();
+    canvas.addEventListener("pointermove", updateMouse);
+    canvas.addEventListener("pointerleave", leaveMouse);
+    window.addEventListener("resize", setSize);
+
+    const loop = () => {
+      draw(ctx, WRef.current, HRef.current);
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    loop();
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      canvas.removeEventListener("pointermove", updateMouse);
+      canvas.removeEventListener("pointerleave", leaveMouse);
+      window.removeEventListener("resize", setSize);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    text,
+    orientation,
+    nLines,
+    nPoints,
+    paddingPct,
+    radius,
+    maxSpeed,
+    fontPx,
+    fontFamily,
+    textMargin,
+    blurPx,
+    amplitude,
+    terraces,
+    threshold,
+    softness,
+    invert,
+    strokeMask,
+    strokeColor,
+    lineWidth,
+    showPoints,
+  ]);
+
+  return (
+    <div className="flex items-center justify-center">
+      <canvas
+        ref={canvasRef}
+        style={{ width: "880px", height: "600px", display: "block" }}
+      />
+    </div>
+  );
+}
+const Braces = () => {
+  useEffect(() => {
+    const canvas = document.getElementById("shader-bg");
+    if (!canvas) return;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.Camera();
+
+    const uniforms = {
+      u_time: { value: 0 },
+      u_resolution: {
+        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+      },
+      u_mouse: { value: new THREE.Vector2() },
+    };
+
+    const vertexShader = `
+      varying vec2 v_uv;
+      void main() {
+        v_uv = uv;
+        gl_Position = vec4(position, 1.0);
+      }
+    `;
+
+    const fragmentShader = `
+   precision mediump float;
+
+uniform vec2 u_resolution;
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / u_resolution;
+  vec2 centeredUV = (uv - 0.5) * vec2(u_resolution.x / u_resolution.y, 1.0);
+  vec3 stone = vec3(0.94, 0.93, 0.91);
+  vec2 orbCenter = vec2(-0.15, -0.05); // slightly left of center
+  float orbDist = length(centeredUV - orbCenter);
+  float orb = smoothstep(0.8, 0.0, orbDist); 
+  vec3 glow = vec3(1.0, 0.93, 0.72); 
+  vec3 color = mix(stone, glow, orb * 0.8); 
+  gl_FragColor = vec4(color, 1.0);
+}
+ `;
+
+    const material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms,
+    });
+
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    const clock = new THREE.Clock();
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      uniforms.u_time.value = clock.getElapsedTime();
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    const handleResize = () => {
+      const { innerWidth: w, innerHeight: h } = window;
+      renderer.setSize(w, h);
+      uniforms.u_resolution.value.set(w, h);
+    };
+
+    const handleMouseMove = (e) => {
+      uniforms.u_mouse.value.set(e.clientX, window.innerHeight - e.clientY);
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      renderer.dispose();
+    };
+  }, []);
+
+  const sectionRef = useRef(null);
+  const lineRefs = useRef([]);
+  const textRefs = useRef([]);
+
+  useEffect(() => {
+    gsap.set(lineRefs.current, { scaleX: 0, transformOrigin: "left" });
+    gsap.set(textRefs.current, { y: 20, opacity: 0 });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top center-=100",
+        end: "bottom bottom",
+        toggleActions: "play none none none",
+      },
+    });
+
+    lineRefs.current.forEach((line, i) => {
+      tl.to(
+        line,
+        {
+          scaleX: 1,
+          duration: 1,
+          ease: "power3.out",
+        },
+        i * 0.2
+      );
+    });
+
+    textRefs.current.forEach((text, i) => {
+      tl.to(
+        text,
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+        },
+        i * 0.2 + 0.1
+      );
+    });
+
+    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
+  }, []);
+
+  const items = [
+    "Cleaner braces",
+    "Less discomfort",
+    "Less time in treatment",
+    "Fewer office visits",
+    "Less frequent office visits",
+    "Wider arches than other braces",
+    "Fewer extractions of permanent teeth",
+  ];
+  const ELLIPSE_COUNT = 7;
+  const ellipsesRef = useRef([]);
+
+  useEffect(() => {
+    ellipsesRef.current.forEach((el, i) => {
+      gsap.to(el, {
+        yPercent: i * 60,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#scroll-down",
+          start: "top bottom",
+          end: "bottom bottom",
+          scrub: true,
+        },
+      });
+    });
+  }, []);
+
+  const pathRef = useRef(null);
+  const cardsectionRef = useRef(null);
+  const textContainerRef = useRef(null);
+  useEffect(() => {
+    const path = pathRef.current;
+    const text = textContainerRef.current;
+    const pathLength = path.getTotalLength();
+
+    gsap.set(path, {
+      strokeDasharray: pathLength,
+      strokeDashoffset: 0,
+    });
+
+    gsap.set(text, {
+      opacity: 0,
+      y: 30,
+      filter: "blur(2px)",
+    });
+
+    const trigger = ScrollTrigger.create({
+      trigger: cardsectionRef.current,
+      start: "top top",
+      end: "bottom top",
+      scrub: 1,
+      pin: true,
+      pinSpacing: true,
+      onUpdate: (self) => {
+        const progress = self.progress;
+
+        gsap.to(path, {
+          strokeDashoffset: progress * pathLength,
+          ease: "none",
+          overwrite: true,
+        });
+
+        const textFadeStart = 0.66;
+        const textFadeDuration = 0.33;
+
+        if (progress >= textFadeStart) {
+          const textProgress = (progress - textFadeStart) / textFadeDuration;
+          const easedProgress = gsap.parseEase("sine.out")(
+            Math.min(1, textProgress)
+          );
+
+          gsap.to(text, {
+            opacity: easedProgress,
+            y: 30 * (1 - easedProgress),
+            filter: `blur(${2 * (1 - easedProgress)}px)`,
+            ease: "none",
+            overwrite: true,
+          });
+        } else {
+          gsap.to(text, {
+            opacity: 0,
+            y: 30,
+            filter: "blur(2px)",
+            overwrite: true,
+            duration: 0.2,
+          });
+        }
+      },
+      onLeave: () => {
+        gsap.to(text, {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          overwrite: true,
+          duration: 0.3,
+        });
+      },
+    });
+
+    return () => {
+      if (trigger) trigger.kill();
+      gsap.killTweensOf([path, text]);
+    };
+  }, []);
+
+  return (
+    <>
+          <div className="w-[78%] max-w-[900px] aspect-[16/9]">
+          <RepellingLines
+            text="BRACES"
+            orientation="horizontal"
+            nLines={60}
+            nPoints={200}
+            amplitude={10}
+            terraces={25}
+            blurPx={5}
+            paddingPct={12}
+            strokeColor="#6495ED"
+            // #93FAAF
+            lineWidth={0.5}
+            threshold={0.08}
+            softness={0.15}
+          />
+        </div>
+
+      <div className="relative">
+        <div className="min-h-screen flex flex-col items-center space-y-16 px-4">
+          <div className="h-[33vh]" />
+
+          <div className="text-[13px] max-w-[500px] font-neuehaas45 leading-snug tracking-wider">
+            We love our patients so much we only use braces when we have to. Not
+            because it’s cheaper. Not because it’s easier. Just because it’s
+            what’s best. And when braces are needed? We're using the best
+            ones—and getting them off as fast as humanly possible when there's
+            no longer a need for braces which could cause staining and cavities.
+          </div>
+          <div className="h-[20vh]" />
+          <img
+            src="/images/ajomockupchair.png"
+            className="w-2/3 object-contain"
+            alt="AJO Mockup"
+          />
+        </div>
+
+        <div className="h-[20vh]" />
+        <div className="grid grid-cols-2 h-screen w-screen">
+          <div className="flex justify-center">
+            <div className="w-full max-w-2xl mx-auto">
+              <section className="px-8 py-24 font-neuehaas45 text-sm tracking-tight">
+                <div className="mb-10">
+                  <h1 className="text-[42px] font-neuehaas45 tracking-wide flex items-center gap-2">
+                    <span className="w-[1px] h-[42px] bg-black opacity-30"></span>
+                    <span>Not Your</span>
+                    {/* <span className="w-[1px] h-[42px] bg-black opacity-30"></span> */}
+                    <span>Average Braces</span>
+                  </h1>
+                  <p className="mt-4 text-[12px] tracking-wider max-w-xs leading-snug font-neuehaas45 uppercase">
+                    You may experience some <strong>or</strong> all of the many
+                    benefits
+                  </p>
+                </div>
+                <div ref={sectionRef} className="space-y-4">
+                  {items.map((item, i) => (
+                    <div key={item} className="space-y-4">
+                      <div
+                        ref={(el) => (lineRefs.current[i] = el)}
+                        className="h-[1px] bg-[#cdccc9] w-full origin-left scale-x-0"
+                      />
+                      <div
+                        ref={(el) => (textRefs.current[i] = el)}
+                        className="tracking-wide font-neuehaas45 text-[13px]"
+                      >
+                        <li>{item}</li>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <div className="flex justify-center items-center">
+            <img
+              src="/images/7number.png"
+              className="max-w-full max-h-[100vh] object-contain"
+              alt="7graphic"
+            />
+          </div>
+        </div>
+        <section
+          ref={cardsectionRef}
+          className="h-[100vh] relative z-10 flex items-center justify-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 951 367"
+            fill="none"
+            className="w-full h-auto max-w-5xl pt-40 mx-auto"
+          >
+            <path
+              ref={pathRef}
+              d="M926 366V41.4C926 32.7 919 25.6 910.2 25.6C904.6 25.6 899.7 28.4 897 32.9L730.2 333.3C727.5 338 722.3 341.2 716.5 341.2C707.8 341.2 700.7 334.2 700.7 325.4V41.6C700.7 32.9 693.7 25.8 684.9 25.8C679.3 25.8 674.4 28.6 671.7 33.1L504.7 333.3C502 338 496.8 341.2 491 341.2C482.3 341.2 475.2 334.2 475.2 325.4V41.6C475.2 32.9 468.2 25.8 459.4 25.8C453.8 25.8 448.9 28.6 446.2 33.1L280.2 333.3C277.5 338 272.3 341.2 266.5 341.2C257.8 341.2 250.7 334.2 250.7 325.4V41.6C250.7 32.9 243.7 25.8 234.9 25.8C229.3 25.8 224.4 28.6 221.7 33.1L54.7 333.3C52 338 46.8 341.2 41 341.2C32.3 341.2 25.2 334.2 25.2 325.4V1"
+              stroke="#0C0EFE"
+              strokeWidth="40"
+              strokeMiterlimit="10"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </section>
+        <div className="flex flex-col justify-center items-center min-h-screen space-y-24 font-neuehaas45 px-4 py-12">
+          <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
+            <div className="max-w-[450px]">
+              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
+                Cleaner by Design
+              </h2>
+              <p className="text-[15px] leading-snug font-neuehaas45">
+                The self-closing door means no need for elastic ties — fewer
+                materials in your mouth and less friction. The wire itself is a
+                shape-memory alloy engineered to move teeth smoothly and
+                efficiently.
+              </p>
+            </div>
+
+            <div className="max-w-[450px]">
+              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
+                Less Frequent Office Visits
+              </h2>
+              <p className="text-[15px] leading-snug font-neuehaas45">
+                With Damon archwires, rubber ties are not a mandatory component.
+                The sliding door keeps the wire secure until we choose to move
+                it. No metal twist ties pretending to be high-tech.
+              </p>
+            </div>
+          </div>
+
+          <h2 className="text-[60px] font-saolitalic pt-4 pb-2">
+            Vivre sa vie
+          </h2>
+
+          <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
+            <div className="max-w-[450px]">
+              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
+                Smarter Mechanics
+              </h2>
+              <p className="text-[15px] leading-snug font-neuehaas45">
+                Damon braces uses a sliding door mechanism that reduces the
+                amount of friction during tooth movement. This allows for more
+                efficient initial tooth alignment. Not only is this faster
+                movement completely healthy and safe, it will help you achieve
+                the results in half the time.
+              </p>
+            </div>
+
+            <div className="max-w-[450px]">
+              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
+                Fewer Appointments. More Time for Personal Nonsense
+              </h2>
+              <p className="text-[15px] leading-snug font-neuehaas45">
+                Traditional braces (aka twin brackets) often require monthly
+                visits just to replace rubber bands that lose elasticity
+                fast—and don’t even hold the wire that well. In some cases, the
+                rubber’s so weak that doctors resort to metal twist ties. Yes.
+                Think—barbed wire, but in your mouth.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-center items-start py-24 px-4">
+          <div className="max-w-2xl w-full text-[15px] font-neuehaas45 space-y-6 leading-snug">
+            <h2 className="text-[14px] uppercase tracking-wider font-neuehaas35 mb-2">
+              Considerations with Braces
+            </h2>
+            <p className="font-neuehaas45">
+              Because of their complex geometry, brackets make thorough cleaning
+              significantly more difficult. Plaque retention becomes almost
+              inevitable — which increases the risk of permanent enamel damage
+              and long-term discoloration due to decalcification.
+            </p>
+
+            <p className="font-neuehaas45">
+              A successful outcome with braces comes down to three essentials:
+              frequent and consistent hygiene practices, mindful eating, and
+              staying consistent with appointments. The constellation of these
+              habits works in tandem to keep your treatment efficient,
+              comfortable, and on track.
+            </p>
+
+            <p className="font-neuehaas45">
+              We’ve put together a few practical tips to help you stay on top of
+              it all.
+            </p>
+
+            <div className="pt-6">
+              <a
+                href="/caring-for-your-braces"
+                className="z-10 inline-flex items-center justify-center text-[14px] uppercase tracking-wide font-neuehaas35 border border-black px-6 py-2 hover:bg-black hover:text-white transition-all"
+                role="button"
+              >
+                How to Care for Your Braces
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-center items-start py-24 px-4">
+          <div className="w-full max-w-3xl pt-12">
+            <p className="text-center text-[14px] font-neuehaas35 uppercase tracking-wide opacity-60 mb-2">
+              A final note on treatment philosophy
+            </p>
+            <h3 className="text-center text-[32px] font-neuehaas45 leading-snug mb-4">
+              In most cases, we still prefer finishing with clear aligners.
+            </h3>
+            <p className="text-[15px] leading-[1.2] font-neuehaas45 max-w-xl mx-auto">
+              Our breadth of clinical experience with fixed appliances —
+              including Damon Braces — has shaped our current methodology: we
+              begin with braces when they offer a mechanical advantage, then
+              transition to clear aligners to guide teeth into their final
+              position. This hybrid approach creates a more cohesive treatment
+              arc — not only improving precision and predictability, but also
+              easing patients into the retention phase with less relapse and
+              better long-term compliance.
+            </p>
+          </div>
+        </div>
+
+        <FluidSimulation />
+        {/* <WebGLGalleryApp /> */}
+      </div>
+      <footer id="scroll-down" className=" relative overflow-hidden h-[100vh]">
+        <div className="relative w-full h-full">
+          <div
+            style={{
+              transformStyle: "preserve-3d",
+              transform: "rotateX(70deg) translateZ(1px) scaleY(.6)",
+              height: "100%",
+              width: "100%",
+              position: "relative",
+              transformOrigin: "center",
+              perspective: "2000px",
+              backfaceVisibility: "hidden",
+            }}
+            className="w__oval-animations relative w-full h-full"
+          >
+            {[...Array(ELLIPSE_COUNT)].map((_, i) => (
+              <div
+                key={i}
+                ref={(el) => (ellipsesRef.current[i] = el)}
+                className="absolute w-[60vw] h-[24vw] rounded-full"
+                style={{
+                  left: "50%",
+                  marginLeft: "-45vw",
+                  border: "3px solid #f7f5f7",
+                  boxSizing: "border-box",
+                  // willChange: "transform",
+                  transformStyle: "preserve-3d",
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
+                  transformOrigin: "center",
+                  filter: "contrast(1.1)",
+                }}
+              />
+            ))}
+          </div>
+          <div className="w__scroll-down__trigger" />
+        </div>
+      </footer>
+      {/* <TextEffect 
+    text="Braces" 
+    font="NeueHaasRoman" 
+    color="#ffffff" 
+    fontWeight="normal" 
+  /> */}
+    </>
+  );
+};
+
+export default Braces;
+
+
 
 const TextEffect = ({
   text = "braces",
