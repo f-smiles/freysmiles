@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { VariantsWithProductImagesTags } from "@/lib/infer-type"
 import { formatPrice } from "@/lib/format-price"
-import { useLayoutEffect, useRef, useEffect } from "react"
+import { useLayoutEffect, useRef, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -38,6 +38,185 @@ const Marquee = () => {
 
 type ProductVariantsProps = {
   variants: VariantsWithProductImagesTags[]
+}
+
+function ProductCard({ variant, backgroundUrl }: ProductCardProps) {
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  const [vars, setVars] = useState({
+    mx: "50%",
+    my: "50%",
+    posx: "50%",
+    posy: "50%",
+    hyp: "0",
+  });
+
+  const round = (n: number, fix = 3) => parseFloat(n.toFixed(fix));
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const onMove = (e: MouseEvent) => {
+      const r = el.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+
+      const pctX = round((100 / r.width) * x);
+      const pctY = round((100 / r.height) * y);
+
+      // tilt
+      setRotation({
+        y: (pctX - 50) * 0.2,
+        x: (50 - pctY) * 0.2,
+      });
+
+      // light
+      const posx = round(50 + pctX / 4 - 12.5);
+      const posy = round(50 + pctY / 3 - 16.67);
+      const hyp = Math.sqrt((pctY - 50) ** 2 + (pctX - 50) ** 2) / 50;
+
+      setVars({
+        mx: `${pctX}%`,
+        my: `${pctY}%`,
+        posx: `${posx}%`,
+        posy: `${posy}%`,
+        hyp: `${round(hyp)}`,
+      });
+    };
+
+    const onLeave = () => {
+      setRotation({ x: 0, y: 0 });
+      setVars({ mx: "50%", my: "50%", posx: "50%", posy: "50%", hyp: "0" });
+    };
+
+    el.addEventListener("mousemove", onMove);
+    el.addEventListener("mouseleave", onLeave);
+    return () => {
+      el.removeEventListener("mousemove", onMove);
+      el.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
+
+  const holoOverlayStyle: React.CSSProperties = {
+
+    backgroundImage: `
+      url("https://res.cloudinary.com/simey/image/upload/Dev/PokemonCards/illusion.webp"),
+      repeating-linear-gradient(
+        0deg,
+        #ff7773 calc(5% * 1),
+        #ffed5f calc(5% * 2),
+        #a8ff5f calc(5% * 3),
+        #83fff7 calc(5% * 4),
+        #7894ff calc(5% * 5),
+        #d875ff calc(5% * 6),
+        #ff7773 calc(5% * 7)
+      ),
+      repeating-linear-gradient(
+        133deg,
+        #0e152e 0%,
+        #8fa3a3 3.8%,
+        #8fc1c1 4.5%,
+        #8fa3a3 5.2%,
+        #0e152e 10%,
+        #0e152e 12%
+      ),
+      radial-gradient(
+        farthest-corner circle at var(--mx) var(--my),
+        rgb(0 0 0 / 0.1) 12%,
+        rgb(0 0 0 / 0.15) 20%,
+        rgb(0 0 0 / 0.25) 120%
+      )
+    `,
+    backgroundSize: `50%, 200% 700%, 300%, 200%`,
+    backgroundPosition: `center, 0% var(--posy), var(--posx) var(--posy), var(--posx) var(--posy)`,
+    backgroundBlendMode: `exclusion, hue, hard-light, exclusion`,
+    mixBlendMode: "color-dodge", 
+    filter: `brightness(calc((var(--hyp) * 0.3) + 0.5)) contrast(2) saturate(1.5)`,
+    opacity: 1,
+    transition: "background-position 0.25s ease, filter 0.25s ease",
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      className="holo-card relative rounded-[24px] overflow-hidden h-[460px] shadow-sm will-change-transform group"
+      style={{
+        transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+        transformStyle: "preserve-3d",
+        // expose CSS vars to overlay
+        "--mx": vars.mx,
+        "--my": vars.my,
+        "--posx": vars.posx,
+        "--posy": vars.posy,
+        "--hyp": vars.hyp,
+      }}
+    >
+    
+      {backgroundUrl && (
+        <img
+          src={backgroundUrl}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+      )}
+
+
+      <Link
+        href={`/shop/products/${variant.id}?id=${variant.id}&title=${variant.product.title}&variant=${variant.variantName}&prodId=${variant.productID}`}
+        className="relative z-10 flex flex-col h-full p-5"
+      >
+        <div className="flex items-center justify-between mb-5">
+          <span className="px-4 py-[5px] bg-white/60 text-black text-[11px] font-neuehaas45 rounded-full tracking-wide shadow-sm">
+            {variant.product.title}
+          </span>
+          <div className="w-6 h-6 rounded-full bg-white/60 flex items-center justify-center shadow-sm">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#111"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-4 h-4 transition-transform duration-500 group-hover:-translate-y-[1.5px] group-hover:rotate-[5deg]"
+            >
+              <path d="M6 8h12l-1.5 12h-9L6 8z" />
+              <path d="M9 8a3 3 0 0 1 6 0" />
+            </svg>
+          </div>
+        </div>
+
+        <figure className="flex-1 flex items-center justify-center">
+          <Image
+            className="object-contain w-[58%] max-h-[210px]"
+            src={variant.variantImages[0].url}
+            alt={`${variant.product.title} - ${variant.variantName}`}
+            width={400}
+            height={600}
+            priority
+          />
+        </figure>
+
+        <div className="flex items-center justify-between pt-6">
+          <span className="text-[12px] font-neuehaas45 text-zinc-800">
+            {variant.variantName}
+          </span>
+          <span className="text-[12px] font-neuehaas45 text-zinc-800">
+            ${Number(variant.product.price).toFixed(2)}
+          </span>
+        </div>
+      </Link>
+
+      {/* foil overlay on top of everything */}
+      <div
+        className="absolute inset-0 z-[20] pointer-events-none"
+        style={holoOverlayStyle}
+      />
+    </div>
+  );
 }
 
 export default function Variants({ variants }: ProductVariantsProps) {
@@ -224,8 +403,11 @@ useLayoutEffect(() => {
 
   return () => ctx.revert();
 }, []);
+
   return (
 <>
+
+
     <Marquee />
     <div className="grid grid-cols-12 gap-8 relative">
       
@@ -234,8 +416,8 @@ useLayoutEffect(() => {
           ref={filterContainerRef}
           className="pt-12 space-y-8 will-change-transform pl-2" 
         >
-          <div className="space-y-4">
-            <h3 className="text-[12px] font-neueroman uppercase text-gray-500">Filters</h3>
+          <div className="space-y-4 space-x-6">
+            <h3 className="text-[12px] font-neuehaas45 uppercase tracking-wide text-gray-400 pl-6">Filters</h3>
       
             <div className="space-y-2">
               <h4 className="text-[10px] font-neuehaas45 uppercase text-gray-400">Range</h4>
@@ -264,81 +446,50 @@ useLayoutEffect(() => {
         </div>
       </aside>
     
-      <section ref={sectionContainerRef} className="col-span-9 space-y-8">
-        {groupedVariants.map((group, index) => (
-        <div 
-        key={group.id}
-        ref={(el) => {
-          sectionRefs.current[index] = el;
-        }}
-        id={group.id}
-        className="space-y-4"
-      >
-            <div className="text-[18px] leading-tight text-zinc-500 font-canelathin">
-              {group.prefix}
-              <br />
-            </div>
-    
-<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 products-row">
-              {group.variants.map((variant) => (
-<div
-  key={variant.id}
-        className="card-anim group relative flex flex-col justify-between bg-[#DBE5F2] rounded-[24px] overflow-hidden h-[460px] shadow-sm transition-transform duration-300 hover:scale-[1.015] hover:shadow-md will-change-transform"
->
-  <Link
-    href={`/shop/products/${variant.id}?id=${variant.id}&title=${variant.product.title}&variant=${variant.variantName}&prodId=${variant.productID}`}
-    className="flex flex-col h-full p-5"
-  >
+  <section ref={sectionContainerRef} className="col-span-9 space-y-8">
+  {groupedVariants.map((group, index) => (
+    <div
+      key={group.id}
+      ref={(el) => (sectionRefs.current[index] = el)}
+      id={group.id}
+      className="space-y-4"
+    >
+      <div className="text-[18px] text-zinc-500 font-canelathin">
+        {group.prefix}
+        <br />
+      </div>
 
-    <div className="flex items-center justify-between mb-5">
-      <span className="px-4 py-[5px] bg-white/50 text-black text-[11px] font-neuehaas45 rounded-full tracking-wide shadow-sm">
-        {variant.product.title}
-      </span>
-    <div className="w-6 h-6 rounded-full bg-white/50 flex items-center justify-center shadow-sm">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#111"
-    strokeWidth="1"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-4 h-4 transition-transform duration-500 hover:-translate-y-[1.5px] hover:rotate-[5deg]"
-  >
-    <path d="M6 8h12l-1.5 12h-9L6 8z" />
-    <path d="M9 8a3 3 0 0 1 6 0" />
-  </svg>
-</div>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 products-row">
+      {group.variants.map((variant) => {
+  let backgroundUrl = "/images/_mesh_gradients/metallicdream.png";
+
+  switch (group.id) {
+    case "devices":
+      backgroundUrl = "/images/_mesh_gradients/metallicdream.png";
+      break;
+    case "floss":
+      backgroundUrl = "/images/_mesh_gradients/greenpurpleyellow.png";
+      break;
+    case "whitening":
+      backgroundUrl = "/images/_mesh_gradients/lightblue.png";
+      break;
+    case "cases":
+      backgroundUrl = "/images/_mesh_gradients/47. Whisper.jpg";
+      break;
+  }
+
+  return (
+    <ProductCard
+      key={variant.id}
+      variant={variant}
+      backgroundUrl={backgroundUrl}
+    />
+  );
+})}
+      </div>
     </div>
-
-
-    <figure className="flex-1 flex items-center justify-center">
-      <Image
-        className="object-contain w-[58%] max-h-[210px]"
-        src={variant.variantImages[0].url}
-        alt={`${variant.product.title} - ${variant.variantName}`}
-        width={400}
-        height={600}
-        priority
-      />
-    </figure>
-
-
-    <div className="flex items-center justify-between pt-6">
-      <span className="text-[13px] font-neuehaas45 text-black">
-        {variant.variantName}
-      </span>
-      <span className="text-[13px] font-neuehaas45 text-black">
-        {formatPrice(variant.product.price)}
-      </span>
-    </div>
-  </Link>
-</div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </section>
+  ))}
+</section>
     </div>
 </>
 

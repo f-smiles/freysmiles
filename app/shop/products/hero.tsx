@@ -15,21 +15,12 @@ const Hero: React.FC = () => {
     <section>
       <AnimatedBackground />
       <div className="relative min-h-screen overflow-hidden">
-        <div className="relative flex items-center justify-center h-screen">
-          <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border border-white/60" />
-            <div className="relative text-center w-full h-full flex items-center justify-center">
-       
-        <div className="font-neuehaas45 p-6 text-[13px] leading-4 tracking-wider text-white flex items-center">
-            <div>
-              <div>Our gift cards can be used toward any part of treatment—and they never expire.</div>
-              <div>Send one digitally OR</div>
-              <div>choose a physical card</div>
-            </div>
-          </div>
-            </div>
-          </div>
-        </div>
+      <div className="flex items-center justify-center min-h-screen text-center">
+  <div className="font-neuehaas45 p-6 text-[12px] leading-4 tracking-wider">
+    <p className="font-neuehaas45">Our gift cards can be used toward any part of treatment—and they never expire.</p>
+    <p className="font-neuehaas45">Send one digitally or choose a physical card.</p>
+  </div>
+</div>
       </div>
     </section>
   );
