@@ -7,7 +7,7 @@ const items = [
   {
     // src: '/images/members/edit/adriana-blurry-distortion-effect-1920px-1.jpg',
     // hoverSrc: '/images/members/orig/adriana.png',
-    src: '../images/team_members/Adriana-Photoroom.jpg',
+    src: '../images/team_members/Adriana-greenborder.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Insurance Coordinator',
     name: 'Adriana',
@@ -15,7 +15,7 @@ const items = [
   {
     // src: '/images/members/edit/alyssa-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/alyssa.png',
-    src: '/images/test/base.jpg',
+    src: '/images/team_members/alyssa-border.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Alyssa',
@@ -23,7 +23,7 @@ const items = [
   {
     // src: '/images/members/edit/elizabeth-blurry-distortion-effect-1.jpg',
     // hoverSrc: '/images/members/orig/elizabeth.png',
-    src: '/images/test/base.jpg',
+   src: '/images/team_members/elizabeth-green.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Patient Services',
     name: 'Elizabeth',
@@ -31,7 +31,7 @@ const items = [
   {
     // src: '/images/members/edit/lexi-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/lexi.png',
-    src: '/images/test/base.jpg',
+    src: '/images/team_members/lexi-greenborder.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Lexi',
@@ -39,10 +39,10 @@ const items = [
   {
     // src: '/images/members/edit/nicole-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/nicolle.png',
-    src: '/images/test/base.jpg',
+    src: '/images/team_members/nicolle-green.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Specialized Orthodontic Assistant',
-    name: 'Nicole',
+    name: 'Nicolle',
   },
 ]
 
