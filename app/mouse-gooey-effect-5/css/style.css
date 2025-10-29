@@ -13,10 +13,10 @@
 }
 
 body {
-  font-family: "NeueMontrealLight", sans-serif;
+  font-family: "NeueHaasGroteskDisplayPro45Light", sans-serif;
   font-weight: 500;
-  font-size: 16px;
-  letter-spacing: -0.03em;
+  font-size: 14px;
+  /* letter-spacing: -0.03em; */
   background-color: var(--bg-color);
   color: var(--text-color);
   overflow-x: hidden;
@@ -79,22 +79,23 @@ body {
   align-items: center;
   margin-top: 1.25rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  color: #000;
+  border-bottom: 1px solid rgba(12, 12, 12, 0.8);
 }
 
 .member-title {
   font-weight: 500;
-  font-size: 1.1rem;
+ font-size: 14px;
   text-transform: none;
-  color: #fff;
-  letter-spacing: -0.02em;
+  color: #000;
+  /* letter-spacing: -0.02em; */
 }
 
 .member-role {
-  font-size: 1.1rem;
+  font-size: 1rem;
   text-transform: none;
-  opacity: 0.8;
-  color: #fff;
+  /* opacity: 0.8; */
+  color: #000;
   letter-spacing: -0.02em;
 }
 

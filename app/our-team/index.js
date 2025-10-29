@@ -745,197 +745,139 @@ tl.to([col1Ref.current, col2Ref.current, col3Ref.current], {
 
   return () => ScrollTrigger.getAll().forEach((t) => t.kill());
 }, []);
-  useEffect(() => {
-    const canvas = document.getElementById('shader-bg');
-    if (!canvas) return;
-  
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-  
-    const scene = new THREE.Scene();
-    const camera = new THREE.Camera();
-  
-    const uniforms = {
-      u_time: { value: 0 },
-      u_resolution: {
-        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
-      },
-      u_mouse: { value: new THREE.Vector2() },
-    };
-  
-    const vertexShader = `
-      varying vec2 v_uv;
-      void main() {
-        v_uv = uv;
-        gl_Position = vec4(position, 1.0);
-      }
-    `;
-  
-    const fragmentShader = `
-precision mediump float;
+useEffect(() => {
+  const canvas = document.getElementById('shader-bg');
+  if (!canvas) return;
 
-uniform float u_time;
-uniform vec2 u_mouse;
-uniform vec2 u_resolution;
-varying vec2 v_uv;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
 
-#define PI 3.14159265359
-#define TWO_PI 6.28318530718
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-// Hash function for randomness
-float hash(float n) {
-    return fract(sin(n) * 43758.5453123);
-}
+  const uniforms = {
+    u_time: { value: 0 },
+    u_resolution: {
+      value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+    },
+    u_mouse: { value: new THREE.Vector2() },
+  };
 
-// 2D noise function
-float noise(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    float n = i.x + i.y * 57.0;
-    float a = hash(n);
-    float b = hash(n + 1.0);
-    float c = hash(n + 57.0);
-    float d = hash(n + 58.0);
-    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
-}
-
-// FBM (Fractal Brownian Motion)
-float fbm(vec2 p) {
-    float f = 0.0;
-    float amp = 0.5;
-    float freq = 1.0;
-    for(int i = 0; i < 6; i++) {
-        f += amp * noise(p * freq);
-        amp *= 0.5;
-        freq *= 2.0;
+  const vertexShader = `
+    varying vec2 v_uv;
+    void main() {
+      v_uv = uv;
+      gl_Position = vec4(position, 1.0);
     }
-    return f;
-}
+  `;
 
-// Star field
-float stars(vec2 p, float threshold) {
-    float n = hash(p.x * 100.0 + p.y * 10000.0);
-    return (n > threshold) ? n : 0.0;
-}
+  const fragmentShader = `
+    varying vec2 v_uv;
+    uniform float u_time;
+    uniform vec2 u_resolution;
+    uniform vec2 u_mouse;
 
-// Nebula cloud
-vec3 nebula(vec2 p, vec3 color1, vec3 color2, vec3 color3) {
-    // Mouse influence on nebula position
-    vec2 mouseOffset = (u_mouse - 0.5) * 0.2;
-    p += mouseOffset;
-    
-    // Base noise layers
-    float n1 = fbm(p * 1.0 + u_time * 0.05);
-    float n2 = fbm(p * 2.0 - u_time * 0.03);
-    float n3 = fbm(p * 4.0 + u_time * 0.02);
-    
-    // Combine noise layers
-    float finalNoise = n1 * 0.5 + n2 * 0.3 + n3 * 0.2;
-    
-    // Create color gradient based on noise
-    vec3 col = mix(color1, color2, smoothstep(0.2, 0.6, finalNoise));
-    col = mix(col, color3, smoothstep(0.5, 0.8, finalNoise));
-    
-    // Add some brightness variation
-    float brightness = fbm(p * 3.0 + vec2(u_time * 0.1, u_time * 0.05));
-    col *= 0.8 + brightness * 0.5;
-    
-    // Mouse proximity effect - brighten areas near mouse
-    float mouseDist = length(p - (u_mouse - 0.5) * 2.0);
-    float mouseGlow = 0.1 / (0.1 + mouseDist * 2.0);
-    col += color3 * mouseGlow * 2.0;
-    
-    return col * smoothstep(0.2, 0.3, finalNoise);
-}
+    #define MIN_DIST .01
+    #define MAX_DIST 100.
+    #define MAX_STEPS 100
 
-void main() {
-    // Correct aspect ratio
-    vec2 uv = v_uv;
-    float aspect = u_resolution.x / u_resolution.y;
-    uv.x *= aspect;
-    uv = uv * 2.0 - vec2(aspect, 1.0);
-    
-    // Deep space background colors
-    vec3 bgColor = vec3(0.02, 0.01, 0.05);
-    vec3 nebulaColor1 = vec3(0.2, 0.0, 0.4);  // Deep purple
-    vec3 nebulaColor2 = vec3(0.0, 0.2, 0.5);  // Deep blue
-    vec3 nebulaColor3 = vec3(0.7, 0.3, 0.9);  // Bright purple
-    
-    // Create the nebula
-    vec3 color = bgColor;
-    
-    // Add stars
-    float starIntensity = stars(uv, 0.98);
-    float twinkling = 0.5 + 0.5 * sin(u_time * 5.0 + uv.x * 10.0 + uv.y * 5.0);
-    vec3 starColor = vec3(0.9, 0.9, 1.0) * starIntensity * twinkling;
-    
-    // Add distant stars (smaller and more numerous)
-    float distantStars = stars(uv * 2.0, 0.97) * 0.3;
-    starColor += vec3(0.8, 0.8, 1.0) * distantStars;
-    
-    // Add nebula layers
-    vec3 nebulaLayer1 = nebula(uv * 0.5, nebulaColor1, nebulaColor2, nebulaColor3);
-    vec3 nebulaLayer2 = nebula(uv * 0.3 + vec2(0.1, 0.2), nebulaColor2, nebulaColor3, nebulaColor1) * 0.7;
-    
-    // Combine everything
-    color += nebulaLayer1 + nebulaLayer2;
-    color += starColor;
-    
-    // Add a subtle glow at the center
-    float centerGlow = 0.1 / (0.1 + length(uv) * 0.8);
-    color += nebulaColor3 * centerGlow * 0.5;
-    
-    // Mouse interaction - add a subtle glow around mouse position
-    float mouseGlow = 0.05 / (0.05 + length(uv - (u_mouse - 0.5) * 2.0) * 1.5);
-    color += vec3(0.5, 0.3, 0.9) * mouseGlow;
-    
-    // Final color
-    gl_FragColor = vec4(color, 1.0);
-    
-    #include <colorspace_fragment>
-}
-    `;
-  
-    const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms,
-    });
-  
-    const geometry = new THREE.PlaneGeometry(2, 2);
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-  
-    const clock = new THREE.Clock();
-  
-    const animate = () => {
-      requestAnimationFrame(animate);
-      uniforms.u_time.value = clock.getElapsedTime();
-      renderer.render(scene, camera);
-    };
-    animate();
-  
-    const handleResize = () => {
-      const { innerWidth: w, innerHeight: h } = window;
-      renderer.setSize(w, h);
-      uniforms.u_resolution.value.set(w, h);
-    };
-  
-    const handleMouseMove = (e) => {
-      uniforms.u_mouse.value.set(e.clientX, window.innerHeight - e.clientY);
-    };
-  
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('mousemove', handleMouseMove);
-  
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      renderer.dispose();
-    };
-  }, []);
+    float pointSDF(vec3 p, float r){
+        return length(p) - r;
+    }
+
+    float getDist(vec3 p){
+        float p1 = pointSDF(p-vec3(0., 1., 4.), 2.)-cos(2.*u_time+p.x*5.+p.z*.1)*.2;
+        p1 -= sin(u_time*2. + p.y*p.x * 2.)*.5;
+        float pl = p.y+1.;
+        return min(p1, pl);
+    }
+
+    vec3 getNormal(vec3 p){
+        vec2 off = vec2(.01,0.);
+        float d = getDist(p);
+        vec3 n = d-vec3(
+                getDist(p - off.xyy),
+                getDist(p - off.yxy),
+                getDist(p - off.yyx)
+                    );
+        return normalize(n);
+    }
+
+    float rayMarch(vec3 ro, vec3 rd){
+        float dO = 0.;
+        for(int i = 0; i < MAX_STEPS; i++){
+            float d = getDist(ro+ rd*dO);
+            
+            dO += d;
+            if(d < MIN_DIST || abs(dO) > MAX_DIST) break;
+           
+        }
+        return dO;
+    }
+
+    void mainImage( out vec4 fragColor, in vec2 fragCoord )
+    {
+        vec2 uv = fragCoord/u_resolution.xy;
+        uv -=.5;
+        uv.x *= u_resolution.x / u_resolution.y;
+        vec3 col = vec3(0.);
+        vec3 ro = vec3(0., 1., -5.);
+        vec3 rd = normalize(vec3(uv.x, uv.y, 1.));
+        
+        float d = rayMarch(ro, rd);
+        vec3 p = ro + rd * d;
+        vec3 n = abs(getNormal(p));
+        col = mix(vec3(0.56, 0.7, 0.0), vec3(0.8, 1.0, 0.0), n.y);
+        fragColor = vec4(col,1.0);
+    }
+
+    void main() {
+        vec2 fragCoord = v_uv * u_resolution;
+        vec4 color;
+        mainImage(color, fragCoord);
+        gl_FragColor = color;
+    }
+  `;
+
+  const material = new THREE.ShaderMaterial({
+    vertexShader,
+    fragmentShader,
+    uniforms,
+  });
+
+  const geometry = new THREE.PlaneGeometry(2, 2);
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  const clock = new THREE.Clock();
+
+  const animate = () => {
+    requestAnimationFrame(animate);
+    uniforms.u_time.value = clock.getElapsedTime();
+    renderer.render(scene, camera);
+  };
+  animate();
+
+  const handleResize = () => {
+    const { innerWidth: w, innerHeight: h } = window;
+    renderer.setSize(w, h);
+    uniforms.u_resolution.value.set(w, h);
+  };
+
+  const handleMouseMove = (e) => {
+    uniforms.u_mouse.value.set(e.clientX, window.innerHeight - e.clientY);
+  };
+
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('mousemove', handleMouseMove);
+
+  return () => {
+    window.removeEventListener('resize', handleResize);
+    window.removeEventListener('mousemove', handleMouseMove);
+    renderer.dispose();
+  };
+}, []);
   return (
 <div className="relative w-full h-screen">
 <canvas
@@ -969,7 +911,7 @@ void main() {
           <div ref={leftColumnRef} className="z-10 h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-[#DBDBDB] w-3/5 bg-[#FCFFFE] rounded-[24px]">
           <div className="max-w-[400px] ml-10 my-10 flex flex-col overflow-hidden">
           <div className="inline-block overflow-hidden">
-          <div className="text-[12px] leading-[1.1] font-neuehaas45 tracking-wider text-black">
+          <div className="text-[12px] leading-[1.1] font-neuehaas45 tracking-wide text-black">
       {lines.map((line, index) => (
         <div key={index} className="overflow-hidden">
           <motion.span
@@ -1150,7 +1092,7 @@ void main() {
                     {switchDoctor ? (
                       <p
                         ref={doctorBioRef}
-                        className="leading-[1.3] font-neuehaas45 text-[13px] tracking-wider text-black"
+                        className="leading-[1.3] font-neuehaas45 text-[13px] tracking-wide text-black"
                       >
      Dr. Daniel Frey pursued his pre-dental requisites at the
                         University of Pittsburgh, majoring in Biology. Dr. Frey
@@ -1174,7 +1116,7 @@ void main() {
                       <p
                         style={{ visibility: "hidden" }}
                         ref={doctorBioRef}
-                      className="leading-[1.3] font-neuehaas45 text-[13px] tracking-wider text-black"
+                      className="leading-[1.3] font-neuehaas45 text-[13px] tracking-wide text-black"
                       >
                             Dr. Gregg Frey is an orthodontist based in Pennsylvania,
                         who graduated from Temple University School of Dentistry
@@ -1216,7 +1158,7 @@ void main() {
   className="absolute top-0 left-0 w-screen h-screen z-[-1] flex flex-col items-center justify-center"
 >
   <div>
-    <p className="font-neuehaas45 text-[20px] text-white max-w-[600px] tracking-wider">
+    <p className="text-black font-neuehaas45 text-[16px] max-w-[600px] tracking-wider">
  From national certifications to hands-on trainings, we’re always leveling up. The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
     </p>
   </div>
@@ -1232,7 +1174,7 @@ void main() {
       <div ref={col1Ref} className="flex flex-col will-change-transform">
         <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] border-l h-[33.33vh] "></div>
         <div className="border-l bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
-          <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">
+          <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
             Fun fact — our team is made up of former FreySmiles patients, something we think is important, 
             because we have all experienced treatment and can help guide you through it.
           </p>
@@ -1253,7 +1195,7 @@ void main() {
       <div ref={col2Ref} className="flex flex-col will-change-transform">
         <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
           <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
-     <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">
+     <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
               Our members have received the designation of Specialized Orthodontic Assistant. 
               This is a voluntary certification program started by the American Association of Orthodontists 
               to recognize those in the profession for their knowledge and experience.
@@ -1262,7 +1204,7 @@ void main() {
         </div>
         <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]"></div>
         <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#FCFFFE] rounded-[20px] p-8 border-b border-r border-[#DBDBDB] h-[33.33vh]">
-          <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">
+          <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
             This office is on 🔥! The orthodontists as well as every single staff member.
           </p>
         </a>
@@ -1273,16 +1215,16 @@ void main() {
     <div className="overflow-hidden">
       <div ref={col3Ref} className="flex flex-col will-change-transform">
         <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
-          <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">Trained in CPR and first aid</p>
+          <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">Trained in CPR and first aid</p>
         </div>
         <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center  bg-[#FCFFFE] rounded-[20px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]">
-          <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">
+          <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
             Had a wonderful experience at FreySmiles. Everyone is extremely professional, 
             polite, timely. Would highly recommend! — TK
           </p>
         </a>
         <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
-      <p className="font-neuehaas45 tracking-wider text-[13px] leading-[1.1]">
+      <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
             We've invested in in-office trainings with leading clinical consultants 
             that have helped us develop systems and protocols streamlining our processes.
           </p>

@@ -380,7 +380,7 @@ export default function Page() {
             className="SplitText AnimatedSplitText --anim-title MainSection-headTitle AppTitle-1 --in-view"
             style={{ opacity: 1, visibility: "inherit" }}
           >
-            {"Early Orthodontics".split(" ").map((word, i) => (
+            {"Braces Care 101".split(" ").map((word, i) => (
               <div
                 key={word}
                 style={{
@@ -408,7 +408,7 @@ export default function Page() {
                   </div>
                 ))}
 
-                {i < "Early Orthodontics".split(" ").length - 1 && (
+                {i < "Brace Care 101".split(" ").length - 1 && (
                   <div className="chars-wrapper">
                     <div className="chars">&nbsp;</div>
                   </div>

@@ -1689,12 +1689,12 @@ header h1 {
 
 .animate-giftCardMarquee {
   display: flex;
-  animation: giftCardMarquee 20.5s infinite linear;
+  animation: giftCardMarquee 30.5s infinite linear;
 }
 
 .animate-locationsCardMarquee {
   display: inline-block;
-  animation: locationsCardMarquee 20.5s infinite linear;
+  animation: locationsCardMarquee 30.5s infinite linear;
   overflow: hidden;
   white-space: nowrap;
 }

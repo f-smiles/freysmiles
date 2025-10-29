@@ -44,7 +44,7 @@ const Marquee = () => {
 const Hero: React.FC = () => {
   return (
     <section>    
-      <Marquee />
+      {/* <Marquee /> */}
 
       <AnimatedBackground />
       <div className="relative min-h-screen overflow-hidden">

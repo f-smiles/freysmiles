@@ -1889,9 +1889,7 @@ const colorLerp = (color1, color2, amount) => {
   return (
     <section className="circle-section">
       <div className="pinned-content">
-        <nav className="navbar">
-          <div className="logo">COST OF</div>
-        </nav>
+     
 
         <div className="left-text">
           <h3>
@@ -1971,7 +1969,7 @@ const colorLerp = (color1, color2, amount) => {
         .circle-section {
           position: relative;
           height: 300vh;
-   background: #E7E7E7;
+   background: #FEF9F8;
           overflow: hidden;
         }
 .ring-svg {
@@ -1993,30 +1991,8 @@ const colorLerp = (color1, color2, amount) => {
           z-index: 0;
         }
 
-        .navbar {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 70px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 2rem;
-          background: rgba(255, 255, 255, 0.9);
-          border-bottom: 1px solid #ddd;
-          z-index: 10;
-        }
+     
 
-        .logo {
-          font-family: "NeueHaasGroteskDisplayPro45Light";
-          font-size: 1rem;
-          font-weight: 600;
-          letter-spacing: 0.05em;
-          color: #111;
-          border: 1px solid #111;
-          padding: 6px 10px;
-        }
 
         .left-text {
           position: absolute;
@@ -2074,7 +2050,7 @@ const colorLerp = (color1, color2, amount) => {
   display: flex;
   align-items: center;
   justify-content: center;
-          background: #E7E7E7;
+          background: #FEF9F8;
   z-index: 4;
         }
 
@@ -3043,7 +3019,7 @@ const FinancingTreatment = () => {
       <div>
         <CircleReveal />
         {/* <CardScanner /> */}
-        <ScrollAnimation />
+        {/* <ScrollAnimation /> */}
         <canvas
           id="shader-bg"
           className="fixed top-0 left-0 w-full min-h-screen z-[-1] pointer-events-none"
