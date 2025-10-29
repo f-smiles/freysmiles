@@ -8,18 +8,48 @@ import { shaderMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
 
+const Marquee = () => {
+  const text = "Our gift cards can be used toward any part of treatment—and they never expire. Send one digitally or choose a physical card.";
+  const repeatCount = 12;
 
+  return (
+ <div className="relative overflow-hidden w-full bg-[#F0EF59]">
+  <div className="marquee">
+    <div className="marquee__group">
+      {[...Array(repeatCount)].map((_, i) => (
+        <span
+          key={i}
+          className="px-6 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide"
+        >
+          {text}
+        </span>
+      ))}
+    </div>
+
+    <div className="marquee__group" aria-hidden="true">
+      {[...Array(repeatCount)].map((_, i) => (
+        <span
+          key={i}
+          className="px-8 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide"
+        >
+          {text}
+        </span>
+      ))}
+    </div>
+  </div>
+</div>
+  );
+};
 
 const Hero: React.FC = () => {
   return (
-    <section>
+    <section>    
+      <Marquee />
+
       <AnimatedBackground />
       <div className="relative min-h-screen overflow-hidden">
       <div className="flex items-center justify-center min-h-screen text-center">
-  <div className="font-neuehaas45 p-6 text-[12px] leading-4 tracking-wider">
-    <p className="font-neuehaas45">Our gift cards can be used toward any part of treatment—and they never expire.</p>
-    <p className="font-neuehaas45">Send one digitally or choose a physical card.</p>
-  </div>
+
 </div>
       </div>
     </section>

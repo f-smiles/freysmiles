@@ -302,13 +302,7 @@ const menuText = "Menu";
     </motion.div>
   </Link> */}
 
-  <Link href="/">
-<motion.div
-  className="sun" aria-hidden
-  whileHover={{ scale: 1.2 }}
-  transition={{ duration: 0.6, ease: "easeOut" }}
->
-          {/* <Link href="/">
+          <Link href="/">
             <motion.div
               className={`${
                 isActive ? "hidden" : "block"
@@ -365,9 +359,9 @@ const menuText = "Menu";
                 </g>
               </svg>
             </motion.div> 
-          </Link> */}
-  </motion.div>
-</Link>
+          </Link>
+
+
 
   {/* <Link href="/shop/products">
     <motion.div

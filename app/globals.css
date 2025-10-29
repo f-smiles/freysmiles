@@ -1891,17 +1891,29 @@ header h1 {
   --move-final: calc(-50% + var(--offset));
 }
 
-.animate-marquee {
-  animation: marquee 60s linear infinite;
-  animation-play-state: running;
+.marquee {
+  display: flex;
+  overflow: hidden;
+  user-select: none;
 }
 
-@keyframes marquee {
-  0% {
-    transform: translate3d(var(--move-initial), 0, 0);
+.marquee__group {
+  display: flex;
+  flex-shrink: 0;
+  min-width: 100%;
+  animation: scroll 400s linear infinite;
+}
+
+.marquee:hover .marquee__group {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
   }
-  100% {
-    transform: translate3d(var(--move-final), 0, 0);
+  to {
+    transform: translateX(-100%);
   }
 }
 .logo-grid {
@@ -6425,91 +6437,3 @@ body,
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-/* Sun base */
-.sun {
-  --bg-color: #e4deee; 
-  --mid1:     #d4cae4; 
-  --mid2:     #c4b7d8; 
-  --mid3:     #b6aaca;
-  --mid4:     #a79bbd; 
---fg-color: #8c82a0;
-
---fg-gradient: linear-gradient(
-  0deg,
-  var(--bg-color) 0%,
-  var(--mid1) 22%,
-  var(--mid2) 38%,
-  var(--mid3) 49%, 
-  var(--mid4) 64%, 
-  var(--fg-color) 100%
-);
-
-  width: 3rem;        
-  height: 3rem;        
-  border-radius: 9999px;
-  position: relative;
-  overflow: hidden;
-  filter: drop-shadow(0 12px 30px rgba(154, 139, 174, 0.35));
-}
-
-.sun::before,
-.sun::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  width: 100%;
-  background: var(--fg-gradient);
-}
-
-.sun::before {
-  top: 0;
-  height: 50%;
-  background-position: top center;
-}
-
-
-.sun::after {
-  bottom: 0;
-  height: 50%;
-
-
-  background: linear-gradient(
-    180deg,      
-    var(--bg-color) 0%,
-    var(--mid1) 22%,
-    var(--mid2) 38%,
-    var(--mid3) 49%,
-    var(--mid4) 64%,
-    var(--fg-color) 100%
-  );
-
-  -webkit-mask-image: repeating-linear-gradient(
-    to top,
-    #000 0 2px,
-    transparent 2px 6px
-  );
-  mask-image: repeating-linear-gradient(
-    to top,
-    #000 0 2px,
-    transparent 2px 6px
-  );
-
-  -webkit-mask-repeat: repeat;
-  mask-repeat: repeat;
-  -webkit-mask-size: 100% 200%;
-  mask-size: 100% 200%;
-  -webkit-mask-position: 0 0;
-  mask-position: 0 0;
-
-  will-change: -webkit-mask-position, mask-position;
-  animation: sun-scan 6s linear infinite;
-}
-
-
-@keyframes sun-scan {
-  to {
-    -webkit-mask-position: 0 100%;
-    mask-position: 0 100%;
-  }
-}
-
