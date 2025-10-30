@@ -697,11 +697,7 @@ const specialChars = "⬝";
 };
 
 const Testimonials = () => {
-  // const { scene } = useGLTF("/images/SVOX1F.glb");
 
-  // if (!scene) return null;
-
-  // const { nodes } = useGLTF("/images/SVOX1F.glb");
   const textRef = useRef(null);
   const bgTextColor = "#CECED3";
   const fgTextColor = "#161818";

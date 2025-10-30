@@ -31,9 +31,109 @@ import GridContainer from "../mouse-gooey-effect-5/components/GridContainer";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
+function SonarSweep() {
+  const canvasRef = useRef(null);
+  const width = 240;
+  const height = 240;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
 
+    ctx.imageSmoothingEnabled = false;
 
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const dotRings = [
+      { radius: 15, count: 6 },
+      { radius: 30, count: 12 },
+      { radius: 45, count: 18 },
+      { radius: 60, count: 24 },
+      { radius: 75, count: 30 },
+    ];
+
+    const waveSpeed = 30;
+    const waveThickness = 40;
+    const maxDotRadius = dotRings[dotRings.length - 1].radius;
+    const maxAnimatedRadius = maxDotRadius + waveThickness;
+    const rotationMagnitude = 0.15;
+    const rotationSpeedFactor = 3;
+    const BLUE = "#DDFF00";
+
+    let time = 0;
+    let lastTime = 0;
+
+    function animate(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const deltaTime = timestamp - lastTime;
+      lastTime = timestamp;
+      time += deltaTime * 0.001;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // center dot
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 2, 0, Math.PI * 2);
+      ctx.fillStyle = BLUE;
+      ctx.fill();
+
+      const currentWaveFront = (time * waveSpeed) % maxAnimatedRadius;
+
+      dotRings.forEach((ring) => {
+        for (let i = 0; i < ring.count; i++) {
+          const baseAngle = (i / ring.count) * Math.PI * 2;
+          const baseRadius = ring.radius;
+          const distToWaveFront = baseRadius - currentWaveFront;
+
+          let pulseFactor = 0;
+          if (Math.abs(distToWaveFront) < waveThickness / 2) {
+            pulseFactor = Math.cos(
+              (distToWaveFront / (waveThickness / 2)) * (Math.PI / 2)
+            );
+            pulseFactor = Math.max(0, pulseFactor);
+          }
+
+          let currentAngle = baseAngle;
+          if (pulseFactor > 0.01) {
+            const angleOffset =
+              pulseFactor *
+              Math.sin(time * rotationSpeedFactor + i * 0.5) *
+              rotationMagnitude;
+            currentAngle += angleOffset;
+          }
+
+          const dotSize = 1.5 + pulseFactor * 1.8;
+          const x = centerX + Math.cos(currentAngle) * baseRadius;
+          const y = centerY + Math.sin(currentAngle) * baseRadius;
+
+          ctx.beginPath();
+          ctx.arc(x, y, dotSize, 0, Math.PI * 2);
+          ctx.fillStyle = BLUE;
+          ctx.fill();
+        }
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  }, []);
+
+  return (
+    <div className="flex items-center justify-center w-full h-full scale-[0.93]">
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+
+      />
+    </div>
+  );
+}
 const vertexShader = `
 uniform vec2 uOffset;
 varying vec2 vUv;
@@ -541,11 +641,11 @@ const greenCursorStyle = {
   position: "fixed",
   left: `${cursorPosition.x}px`,
   top: `${cursorPosition.y}px`,
-  width: isFocused ? "100px" : "10px",
-  height: isFocused ? "100px" : "10px",
+  width: isFocused ? "70px" : "10px",
+  height: isFocused ? "70px" : "10px",
   borderRadius: "50%",
   background: isFocused
-    ? "rgba(196, 209, 51, 0.3)"   
+    ? "rgba(220, 227, 143, 0.69)"   
     : "rgba(255,255,255, 1)",
   backdropFilter: isFocused ? "blur(10px) saturate(180%)" : "none", 
   WebkitBackdropFilter: isFocused ? "blur(10px) saturate(180%)" : "none", 
@@ -554,8 +654,6 @@ const greenCursorStyle = {
   transform: "translate(-50%, -50%)",
   transition: "width 0.5s, height 0.5s, background 0.25s, border 0.25s",
   zIndex: 9999,
-  color: "#FFF",
-  fontFamily: "NeueHaasGroteskDisplayPro45Light",
 };
 
   useEffect(() => {
@@ -696,55 +794,7 @@ const greenCursorStyle = {
     },
   });
 
-  const wrapperRef = useRef(null);
-  const scrollRef = useRef(null);
-  const lastSectionRef = useRef(null);
-  const newSectionRef = useRef(null);
-  const col1Ref = useRef(null);
-  const col2Ref = useRef(null);
-  const col3Ref = useRef(null);
-const leftColumnRef = useRef(null)
-useLayoutEffect(() => {
-  if (!wrapperRef.current || !scrollRef.current || !lastSectionRef.current) return;
-  ScrollTrigger.getAll().forEach((t) => t.kill());
-  const targetY = scrollRef.current.offsetHeight - lastSectionRef.current.offsetHeight;
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: wrapperRef.current,
-      start: "top top",
-      end: "+=" + (window.innerHeight * 3), 
-      scrub: true,
-      pin: true,
-      anticipatePin: 1,
-      invalidateOnRefresh: true,
-    },
-  });
 
-  tl.to(scrollRef.current, {
-    y: -targetY,
-    ease: "none",
-    duration: 1,
-  }, 0);
-
-
-  tl.to(wrapperRef.current, {
-    xPercent: -100,
-    ease: "none",
-    duration: 1,
-  }, "+=0.5");
-tl.to([col1Ref.current, col2Ref.current, col3Ref.current], {
-  yPercent: (i) => (i % 2 === 0 ? -100 : 100),
-  ease: "none",
-  duration: 2,
-  stagger: {
-    each: 0.5,   
-  }
-}, "+=0.2");
-
-  ScrollTrigger.refresh();
-
-  return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-}, []);
 useEffect(() => {
   const canvas = document.getElementById('shader-bg');
   if (!canvas) return;
@@ -878,6 +928,60 @@ useEffect(() => {
     renderer.dispose();
   };
 }, []);
+
+
+  const wrapperRef = useRef(null);
+  const scrollRef = useRef(null);
+  const lastSectionRef = useRef(null);
+  const newSectionRef = useRef(null);
+  const col1Ref = useRef(null);
+  const col2Ref = useRef(null);
+  const col3Ref = useRef(null);
+const leftColumnRef = useRef(null)
+const gridRef = useRef(null)
+useLayoutEffect(() => {
+  if (!wrapperRef.current || !scrollRef.current || !lastSectionRef.current) return;
+  ScrollTrigger.getAll().forEach((t) => t.kill());
+  const targetY = scrollRef.current.offsetHeight - lastSectionRef.current.offsetHeight;
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: wrapperRef.current,
+      start: "top top",
+      end: "+=" + (window.innerHeight * 3), 
+      scrub: true,
+      pin: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+    },
+  });
+
+  tl.to(scrollRef.current, {
+    y: -targetY,
+    ease: "none",
+    duration: 1,
+  }, 0);
+
+
+  tl.to(wrapperRef.current, {
+    xPercent: -100,
+    ease: "none",
+    duration: 1,
+  }, "+=0.5");
+tl.to([col1Ref.current, col2Ref.current, col3Ref.current], {
+  yPercent: (i) => (i % 2 === 0 ? -100 : 100),
+  ease: "none",
+  duration: 2,
+  stagger: {
+    each: 0.5,   
+  }
+}, "+=0.2");
+
+  ScrollTrigger.refresh();
+
+  return () => ScrollTrigger.getAll().forEach((t) => t.kill());
+}, []);
+
+
   return (
 <div className="relative w-full h-screen">
 <canvas
@@ -1144,9 +1248,7 @@ useEffect(() => {
   ref={lastSectionRef}
   className="relative flex-col bg-cover h-screen flex justify-center items-center rounded-[24px] bg-[#FCFFFE] overflow-hidden"
 >
-<div className="halftone">
-  <img src ="../../images/team_members/DanFrey.png" />
-</div>
+
 </section>
 
 
@@ -1154,15 +1256,7 @@ useEffect(() => {
   ref={newSectionRef}
   className="absolute top-0 w-full h-full left-full"
 >
-<section
-  className="absolute top-0 left-0 w-screen h-screen z-[-1] flex flex-col items-center justify-center"
->
-  <div>
-    <p className="text-black font-neuehaas45 text-[16px] max-w-[600px] tracking-wider">
- From national certifications to hands-on trainings, we’re always leveling up. The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
-    </p>
-  </div>
-</section>
+
 
   <div
     onMouseEnter={() => setIsFocused(true)}
@@ -1172,18 +1266,17 @@ useEffect(() => {
     {/* Col 1 */}
     <div className="overflow-hidden">
       <div ref={col1Ref} className="flex flex-col will-change-transform">
-        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] border-l h-[33.33vh] "></div>
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] border-l h-[33.33vh] ">
+               <SonarSweep />
+        </div>
         <div className="border-l bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
           <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
-            Fun fact — our team is made up of former FreySmiles patients, something we think is important, 
+            Fun fact — our team is made up of former Frey Smiles patients, something we think is important, 
             because we have all experienced treatment and can help guide you through it.
           </p>
         </div>
         <div className="border-l  bg-[#FCFFFE] rounded-[24px] p-8 border-b border-[#DBDBDB] border-r h-[33.33vh]">
-        <div className="ballcontainer">
-      <div id="ballone" />
-      <div id="balltwo" />
-    </div>
+
         </div>
         <div className="border-l bg-[#FCFFFE] rounded-[24px] p-8 border-b border-[#DBDBDB] border-r h-[66.66vh]"></div>
 
@@ -1215,7 +1308,7 @@ useEffect(() => {
     <div className="overflow-hidden">
       <div ref={col3Ref} className="flex flex-col will-change-transform">
         <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
-          <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">Trained in CPR and first aid</p>
+          <p className="font-neuehaas45 tracking-wide text-[16px] leading-[1.1]">Trained in CPR and first aid</p>
         </div>
         <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center  bg-[#FCFFFE] rounded-[20px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]">
           <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
@@ -1238,23 +1331,29 @@ useEffect(() => {
           </div>
 
         </div>
+      <GridContainer ref={gridRef} />
+   <div style={greenCursorStyle}>
+  {isFocused && (
+    <img
+      src="/images/pinkeye.png"
+      alt="Eye icon"
+      style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "38px",
+        height: "auto",
+        pointerEvents: "none",
+        userSelect: "none",
+        filter: "drop-shadow(0 0 8px rgba(188,205,1,0.6))",
+      }}
+    />
+  )}
+</div>
 
-        <div style={greenCursorStyle}>
-          {isFocused && (
-            <span
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              View
-            </span>
-          )}
-        </div>
 
-      <GridContainer />
+
         {/* <section className="overflow-x-auto overflow-y-hidden lg:overflow-hidden">
           <div
          

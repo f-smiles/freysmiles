@@ -6280,50 +6280,10 @@ body,
   transform: translateY(100%);
   will-change: transform;
 }
-.ballcontainer {
-  width: 100%;
-
-  margin: 0;
 
 
-}
 
-#ballone,
-#balltwo {
-  width: 100px;
-  height: 100px;
-  display: inline-block;
-  position: relative;
-  border-radius: 50%;
-  animation-duration: 5s;
-  animation-iteration-count: infinite;
-}
-
-#ballone {
-  left: 35%;
-  background: linear-gradient(35deg, #6559ff, #f7a4a7);
-  animation-name: fadeone;
-}
-
-@keyframes fadeone {
-  50% {
-    left: 60%;
-    opacity: 0.1;
-  }
-}
-
-#balltwo {
-  left: 25%;
-  background: linear-gradient(35deg, #f7a4a7, #6559ff);
-  animation-name: fadetwo;
-}
-
-@keyframes fadetwo {
-  50% {
-    left: 35%;
-    opacity: 0.5;
-  }
-}.halftone {
+.halftone {
   background: white;
   position: relative;
   filter: contrast(25000%);

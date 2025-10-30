@@ -6,157 +6,144 @@
 
 :root {
   --padding: 2rem;
-  --bg-color: #0a0a0a;
-  --text-color: #e0e0e0;
-  --accent-color: #3a3aff;
-  --grid-color: rgba(255, 255, 255, 0.15);
 }
 
+/* BASE STYLING */
 body {
   font-family: "NeueHaasGroteskDisplayPro45Light", sans-serif;
   font-weight: 500;
   font-size: 14px;
-  /* letter-spacing: -0.03em; */
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  letter-spacing: -0.03em;
   overflow-x: hidden;
   position: relative;
 }
 
-/* GRID CONTAINER */
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  column-gap: 4rem; 
-  row-gap: 8rem;
-  width: 75%; 
-  margin: 0 0 0 auto;
-  justify-items: center;
-  align-items: start;
-  padding-right: 3rem;
-}
-
-/* GRID ITEMS */
-.item-1-container,
-.item-2-container,
-.item-3-container,
-.item-4-container,
-.item-5-container {
+.horizontal-section {
   position: relative;
   width: 100%;
-  max-width: 450px;
-  text-align: center;
+  overflow: hidden;
 }
 
-/* IMAGE CANVAS CONTAINER */
-.inversion-lens {
+.horizontal-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  z-index: 1;
+}
+
+
+.horizontal-track {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 10vw;
+  will-change: transform;
+}
+
+
+.intro-card {
+  flex-shrink: 0;
+  width: 45vw;
+  min-width: 400px;
+  max-width: 600px;
+}
+
+.intro-heading {
+  font-family: "Canela-ThinItalic", serif;
+  font-size: clamp(1.46rem, 2.27vw, 2.43rem);
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 1.5rem;
+}
+
+.intro-subtext {
+  font-family: "NeueHaasGroteskDisplayPro45Light", sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+  max-width: 90%;
+}
+
+/* MEMBER CARD STYLING */
+.member-card {
+  flex-shrink: 0;
+  width: 26vw;
+  min-width: 320px;
+  text-align: center;
+  color: black;
+}
+
+.image-wrapper {
   position: relative;
   overflow: hidden;
-  width: 100%;
+  border-radius: 1.25rem;
   aspect-ratio: 3 / 4;
-  border-radius: 4px;
-  background-color: #111;
+  background: #111;
 }
 
-.inversion-lens img {
-  display: none;
-}
-
-.inversion-lens canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  object-fit: cover;
-}
-
-/* MEMBER INFO BAR */
 .member-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 1.25rem;
   padding-bottom: 0.5rem;
-  color: #000;
-  border-bottom: 1px solid rgba(12, 12, 12, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .member-title {
+  font-size: 14px;
   font-weight: 500;
- font-size: 14px;
-  text-transform: none;
-  color: #000;
-  /* letter-spacing: -0.02em; */
+  letter-spacing: .01rem;
+   color: #252424;
 }
 
 .member-role {
-  font-size: 1rem;
-  text-transform: none;
-  /* opacity: 0.8; */
-  color: #000;
-  letter-spacing: -0.02em;
+  font-size: 14px;
+ color: #252424;
+  letter-spacing: .01rem;
+
 }
 
-/* STAGGERED LAYOUT */
-.item-1-container,
-.item-3-container,
-.item-5-container {
-  transform: translateY(3rem);
-}
-
-.item-2-container,
-.item-4-container {
-  transform: translateY(0);
-}
-
-
-/* RESPONSIVE DESIGN */
-@media (max-width: 1400px) {
-  .grid-container {
-    width: 80%;
-    column-gap: 3.5rem;
-    padding-right: 2rem;
-  }
-
-  .item-1-container,
-  .item-2-container,
-  .item-3-container,
-  .item-4-container,
-  .item-5-container {
-    max-width: 420px;
-  }
-}
-
-@media (max-width: 1100px) {
-  .grid-container {
-    width: 85%;
-    column-gap: 3rem;
-  }
-}
-
+/* Responsive */
 @media (max-width: 900px) {
-  .grid-container {
-    grid-template-columns: 1fr;
-    width: 90%;
-    margin: 0 auto;
-    row-gap: 5rem;
-    padding: 0;
-  }
-
-  .item-1-container,
-  .item-2-container,
-  .item-3-container,
-  .item-4-container,
-  .item-5-container {
-    transform: none;
-    max-width: 90%;
-  }
-
-  .member-info {
+  .horizontal-track {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
+    gap: 3rem;
+    padding: 2rem;
   }
+
+  .intro-card,
+  .member-card {
+    width: 90%;
+    min-width: unset;
+  }
+}
+
+/* GOOEY HOVER / INVERSION LENS FIX */
+.inversion-lens {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: #111;
+  isolation: isolate; 
+}
+
+.inversion-lens img {
+  display: none; 
+}
+
+.inversion-lens canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2; 
+  pointer-events: none;
+  transform: translateZ(0);
 }

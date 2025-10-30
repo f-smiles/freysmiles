@@ -1,10 +1,17 @@
 "use client";
+
 import { gsap } from "gsap";
 import { useRef, useEffect, useMemo } from "react";
 import { useFrame, extend, useThree, Canvas } from "@react-three/fiber";
 import FlutedGlassEffect from "../../../utils/glass";
 
-import { shaderMaterial } from "@react-three/drei";
+import {
+  OrbitControls,
+  useGLTF,
+  MeshTransmissionMaterial,
+  Environment,
+  shaderMaterial,
+} from "@react-three/drei";
 import * as THREE from "three";
 
 
@@ -41,17 +48,81 @@ const Marquee = () => {
   );
 };
 
-const Hero: React.FC = () => {
+function DentalModel() {
+  const { nodes } = useGLTF("/models/flower_button.glb");
+  const groupRef = useRef();
+
+useFrame((state, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.5;  
+      groupRef.current.rotation.x += delta * 0.2;  
+    }
+  });
+
   return (
-    <section>    
+    <group
+      ref={groupRef}
+  rotation={[Math.PI / 3, 0, 0]} 
+      scale={0.23}
+      position={[-1, 0, 0]}
+    >
+      <mesh geometry={nodes.Object_2.geometry}>
+       <meshPhysicalMaterial
+  transmission={0.9}         
+  roughness={0.25}     
+  thickness={2.0}               
+  clearcoat={0.6}            
+  clearcoatRoughness={0.15}     
+  metalness={0.0}
+  reflectivity={0.5}           
+  ior={1.3}                 
+  attenuationDistance={1.8}
+  attenuationColor="#B6D0E2" 
+  color="#BDB6D7"        
+  sheen={0.3}
+  sheenTint="#c7b7ff"        
+  sheenRoughness={0.6}
+/>
+      </mesh>
+    </group>
+  );
+}
+const Hero: React.FC = () => {
+
+  return (
+    <section> 
+         
       {/* <Marquee /> */}
 
       <AnimatedBackground />
-      <div className="relative min-h-screen overflow-hidden">
-      <div className="flex items-center justify-center min-h-screen text-center">
+<div className="relative min-h-screen overflow-hidden">
+<section className="grid grid-cols-1 lg:grid-cols-2 min-h-screen items-center px-6 py-20">
 
+  <div className="flex justify-end pr-[-50px] lg:pr-[-100px] xl:pr-[-120px]">
+<div className="translate-x-[30%] h-[200px]">
+  <Canvas
+    camera={{ position: [0, 0.5, 6], fov: 40 }}
+    className="w-full h-full"
+  >
+    <ambientLight intensity={0.4} />
+    <directionalLight position={[2, 2, 2]} intensity={0.8} />
+    <pointLight position={[0, 0, -3]} intensity={1.5} color="#e5f2e9" />
+    <DentalModel />
+    <Environment preset="dawn" background={false} />
+    <OrbitControls enableZoom={false} />
+  </Canvas>
 </div>
-      </div>
+  </div>
+
+  <div className="flex items-center justify-center text-center lg:text-left">
+    <h1 className="text-[clamp(24px,4vw,48px)] font-canelathin leading-tight text-[#4a484b]">
+      welcome to the dental shop. <br />
+     buy something - or don’t. <br />
+      but don't forget to floss.
+    </h1>
+  </div>
+</section>
+</div>
     </section>
   );
 };
