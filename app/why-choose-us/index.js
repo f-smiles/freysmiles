@@ -1856,9 +1856,10 @@ const TechSection = () => {
             <div className="w-full flex gap-4">
               <div className="w-1/2">
                 <div className="relative overflow-hidden img-container">
+                 
                   <img
-                    src="/images/glassflower.jpeg"
-                    alt="placeholder"
+                    src="/images/ajomockupchair.png"
+                    alt="AJO Mockup"
                     className="object-contain w-full h-full"
                     style={{
                       transform: "translateY(0%) scale(1.0)",
@@ -1971,7 +1972,7 @@ function ScrollPanels() {
                   Smart <br />
                   <span className="mt-2 pt-2 block">Orthodontics</span>
                 </h1>
-                <p className="text-[12px] uppercase mt-4 text-black/70 font-khteka">
+                <p className="text-[15px] mt-4 text-black/70 font-neuehaas45">
                   Built around your life
                 </p>
               </div>
@@ -1996,7 +1997,7 @@ function ScrollPanels() {
                   3D <br />
                   <span className="mt-2 pt-2 block">Imaging</span>
                 </h1>
-                <p className="max-w-[400px] text-[12px] uppercase mt-4 text-black/70 font-khteka">
+                <p className="max-w-[400px] text-[15px] mt-4 text-black/70 font-neuehaas45">
                   3D technology is reshaping modern orthodontics. Expect
                   different information from our competitors.
                 </p>

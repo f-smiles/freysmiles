@@ -1617,6 +1617,56 @@ void main() {
 
   return (
     <>
+    <LandscapeBackground />
+<section className="relative w-full h-screen overflow-hidden pointer-events-none">
+
+
+<img
+  src="/images/oval_desktop_top.svg"
+  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[95%] scale-[0.9] max-w-[1600px] h-auto z-1 pointer-events-none opacity-90"
+  alt="top oval"
+/>
+
+<img
+  src="/images/oval_desktop_bot.svg"
+  className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-[-5.5%] scale-[0.9] max-w-[1600px] h-auto z-1 pointer-events-none opacity-90"
+  alt="bottom oval"
+/>
+
+
+
+{/* 
+<div className="absolute z-20 text-left text-[13px] font-medium tracking-wide"
+     style={{
+       top: '15.5%',
+       left: '6%',
+     }}>
+  <p className="uppercase mb-2 text-xs font-neuehaas35">Smile Design Studio</p>
+  <p className="text-xs font-neuehaas35 max-w-xs">Braces that don’t just straighten / they shine 🌈</p>
+</div> */}
+
+ 
+  <div className="inline-flex items-center absolute bottom-40 right-24 z-20">
+  <div className="w-[9px] h-[9px]">
+  <img
+    src="/images/small_title.svg"
+    className="w-full h-full filter brightness-0"
+    alt=""
+  />
+</div>
+   
+    <button className="uppercase px-1 py-2 text-[10px] font-neuehaas35 text-black">
+      Scroll to explore
+    </button>
+      <div className="w-[9px] h-[9px] -scale-x-100">
+  <img
+    src="/images/small_title.svg"
+    className="w-full h-full filter brightness-0"
+    alt=""
+  />
+</div>
+  </div>
+</section>
           <div className="w-[78%] max-w-[900px] aspect-[16/9]">
           <RepellingLines
             text="BRACES"
@@ -1627,7 +1677,7 @@ void main() {
             terraces={25}
             blurPx={5}
             paddingPct={12}
-            strokeColor="#6495ED"
+            strokeColor="#000"
             // #93FAAF
             lineWidth={0.5}
             threshold={0.08}
@@ -1639,7 +1689,7 @@ void main() {
         <div className="min-h-screen flex flex-col items-center space-y-16 px-4">
           <div className="h-[33vh]" />
 
-          <div className="text-[13px] max-w-[500px] font-neuehaas45 leading-snug tracking-wider">
+          <div className="text-[13px] max-w-[500px] text-white font-neuehaas45 leading-snug tracking-wider">
             We love our patients so much we only use braces when we have to. Not
             because it’s cheaper. Not because it’s easier. Just because it’s
             what’s best. And when braces are needed? We're using the best
@@ -1647,11 +1697,7 @@ void main() {
             no longer a need for braces which could cause staining and cavities.
           </div>
           <div className="h-[20vh]" />
-          <img
-            src="/images/ajomockupchair.png"
-            className="w-2/3 object-contain"
-            alt="AJO Mockup"
-          />
+        
         </div>
 
         <div className="h-[20vh]" />
@@ -1663,11 +1709,12 @@ void main() {
                   <h1 className="text-[42px] font-neuehaas45 tracking-wide flex items-center gap-2">
                     <span className="w-[1px] h-[42px] bg-black opacity-30"></span>
                     <span>Not Your</span>
-                    {/* <span className="w-[1px] h-[42px] bg-black opacity-30"></span> */}
+              
                     <span>Average Braces</span>
+                          <span className="w-[1px] h-[42px] bg-black opacity-30"></span>
                   </h1>
-                  <p className="mt-4 text-[12px] tracking-wider max-w-xs leading-snug font-neuehaas45 uppercase">
-                    You may experience some <strong>or</strong> all of the many
+                  <p className="mt-4 text-[13px] tracking-wider max-w-xs leading-snug font-neuehaas35">
+                    You may experience some or all of the many
                     benefits
                   </p>
                 </div>
@@ -1680,7 +1727,7 @@ void main() {
                       />
                       <div
                         ref={(el) => (textRefs.current[i] = el)}
-                        className="tracking-wide font-neuehaas45 text-[13px]"
+                        className="font-neuehaas35 tracking-wide text-[13px]"
                       >
                         <li>{item}</li>
                       </div>
@@ -1693,7 +1740,7 @@ void main() {
 
           <div className="flex justify-center items-center">
             <img
-              src="/images/7number.png"
+              src="/images/fsstickers.png"
               className="max-w-full max-h-[100vh] object-contain"
               alt="7graphic"
             />
@@ -1719,64 +1766,64 @@ void main() {
             />
           </svg>
         </section>
-        <div className="flex flex-col justify-center items-center min-h-screen space-y-24 font-neuehaas45 px-4 py-12">
-          <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
-            <div className="max-w-[450px]">
-              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Cleaner by Design
-              </h2>
-              <p className="text-[15px] leading-snug font-neuehaas45">
-                The self-closing door means no need for elastic ties — fewer
-                materials in your mouth and less friction. The wire itself is a
-                shape-memory alloy engineered to move teeth smoothly and
-                efficiently.
-              </p>
-            </div>
+<div className="flex flex-col justify-center items-center min-h-screen">
+<div className="w-full max-w-[1200px] px-4 py-24 
+  bg-[#d2d2cf]/30 
+  backdrop-blur-md 
+  border border-white/30 
+  rounded-2xl 
+">
+    <div className="flex flex-col md:flex-row justify-between w-full gap-12">
+      <div className="max-w-[450px]">
+<h2 className="relative pl-5 before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full before:bg-[#B0C85D] uppercase tracking-wide text-[12px] font-neuehaas35 mb-4">
+          Cleaner by Design
+        </h2>
+        <p className="text-[14px] text-[#2C2C2C] leading-snug font-neuehaas45">
+          The self-closing door means no need for elastic ties — fewer materials
+          in your mouth and less friction. The wire itself is a shape-memory
+          alloy engineered to move teeth smoothly and efficiently.
+        </p>
+      </div>
 
-            <div className="max-w-[450px]">
-              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Less Frequent Office Visits
-              </h2>
-              <p className="text-[15px] leading-snug font-neuehaas45">
-                With Damon archwires, rubber ties are not a mandatory component.
-                The sliding door keeps the wire secure until we choose to move
-                it. No metal twist ties pretending to be high-tech.
-              </p>
-            </div>
-          </div>
+      <div className="max-w-[450px]">
+<h2 className="relative pl-5 before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full before:bg-[#B0C85D] uppercase tracking-wide text-[12px] font-neuehaas35 mb-4">
+  Less Frequent Office Visits
+</h2>
+        <p className="text-[14px] text-[#2C2C2C] leading-snug font-neuehaas45">
+          With Damon archwires, rubber ties are not a mandatory component. The
+          sliding door keeps the wire secure until we choose to move it.
+        </p>
+      </div>
+    </div>
 
-          <h2 className="text-[60px] font-saolitalic pt-4 pb-2">
-            Vivre sa vie
-          </h2>
+    <div className="flex justify-center items-center">
+     <PulsingGrid />
+    </div>
 
-          <div className="flex flex-col md:flex-row justify-between w-full max-w-5xl gap-12">
-            <div className="max-w-[450px]">
-              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Smarter Mechanics
-              </h2>
-              <p className="text-[15px] leading-snug font-neuehaas45">
-                Damon braces uses a sliding door mechanism that reduces the
-                amount of friction during tooth movement. This allows for more
-                efficient initial tooth alignment. Not only is this faster
-                movement completely healthy and safe, it will help you achieve
-                the results in half the time.
-              </p>
-            </div>
+    <div className="flex flex-col md:flex-row justify-between w-full gap-12">
+      <div className="max-w-[450px]">
+<h2 className="relative pl-5 before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full before:bg-[#B0C85D] uppercase tracking-wide text-[12px] font-neuehaas35 mb-4">
+          Smarter Mechanics
+        </h2>
+        <p className="text-[14px] text-[#2C2C2C] leading-snug font-neuehaas45">
+          Damon braces use a sliding door mechanism that reduces friction during
+          tooth movement. This allows for more efficient alignment.
+        </p>
+      </div>
 
-            <div className="max-w-[450px]">
-              <h2 className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
-                Fewer Appointments. More Time for Personal Nonsense
-              </h2>
-              <p className="text-[15px] leading-snug font-neuehaas45">
-                Traditional braces (aka twin brackets) often require monthly
-                visits just to replace rubber bands that lose elasticity
-                fast—and don’t even hold the wire that well. In some cases, the
-                rubber’s so weak that doctors resort to metal twist ties. Yes.
-                Think—barbed wire, but in your mouth.
-              </p>
-            </div>
-          </div>
-        </div>
+      <div className="max-w-[450px]">
+<h2 className="relative pl-5 before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full before:bg-[#B0C85D] uppercase tracking-wide text-[12px] font-neuehaas35 mb-4">
+          Fewer Appointments. More Time for Personal Nonsense
+        </h2>
+        <p className="text-[14px] text-[#2C2C2C] leading-snug font-neuehaas45">
+          Traditional braces often require monthly visits just to replace rubber
+          bands that lose elasticity fast — and don’t even hold the wire that
+          well.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
         <div className="flex justify-center items-start py-24 px-4">
           <div className="max-w-2xl w-full text-[15px] font-neuehaas45 space-y-6 leading-snug">
             <h2 className="text-[14px] uppercase tracking-wider font-neuehaas35 mb-2">
@@ -1887,6 +1934,652 @@ void main() {
 };
 
 export default Braces;
+
+
+const LandscapeBackground = () => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const gl = canvas.getContext('webgl2');
+    if (!gl) {
+      console.error('WebGL2 not supported');
+      return;
+    }
+
+    const vsSource = `#version 300 es
+      in vec2 a_position;
+      out vec2 v_texCoord;
+      void main() {
+        gl_Position = vec4(a_position, 0.0, 1.0);
+        v_texCoord = (a_position + 1.0) / 2.0;
+      }`;
+
+    const fsSource = `#version 300 es
+precision highp float;
+uniform vec3 iResolution;
+uniform float iTime;
+uniform vec4 iMouse;
+uniform sampler2D iChannel0;
+uniform sampler2D iChannel1;
+uniform sampler2D iChannel2;
+in vec2 v_texCoord;
+out vec4 fragColor;
+
+#define S smoothstep
+#define AA 1
+#define T iTime*1.2 // Slowed down from 4.0 to 0.5 for dreamy pace
+#define PI 3.1415926535897932384626433832795
+#define TAU 6.283185
+
+#define MAX_STEPS 300
+#define MAX_DIST 60.
+#define SURF_DIST .0001
+
+mat2 Rot(float a) {
+    float s = sin(a);
+    float c = cos(a);
+    return mat2(c, -s, s, c);
+}
+
+float smin( float a, float b, float k ) {
+    float h = clamp( 0.5+0.5*(b-a)/k, 0., 1. );
+    return mix( b, a, h ) - k*h*(1.0-h);
+}
+mat3 rotationMatrixY (float theta)
+{
+    float c = cos (theta);
+    float s = sin (theta);
+    return mat3(
+        vec3(c, 0, s),
+        vec3(0, 1, 0),
+        vec3(-s, 0, c)
+    );
+}
+mat3 rotationMatrixX(float theta){
+	float c = cos (theta);
+	float s = sin (theta);
+	return mat3(
+		vec3(1, 0, 0),
+		vec3(0, c, -s),
+		vec3(0, s, c)
+	);
+}
+mat3 rotationMatrixZ(float theta){
+	float c = cos (theta);
+	float s = sin (theta);
+	return mat3(
+		vec3(c, -s, 0),
+		vec3(s, c, 0),
+		vec3(0, 0, 1)
+	);
+}
+vec3 rotateX (vec3 p, float theta)
+{
+	return rotationMatrixX(theta) * p;
+}
+vec3 rotateY (vec3 p, float theta)
+{
+    return p*rotationMatrixY(theta); 
+}
+vec3 rotateZ (vec3 p, float theta)
+{
+	return p*rotationMatrixZ(theta); 
+}
+
+float rounding( in float d, in float h )
+{
+    return d - h;
+}
+
+
+float opUnion( float d1, float d2 )
+{
+    return min(d1,d2);
+}
+
+
+float opSmoothUnion( float d1, float d2, float k )
+{
+    float h = max(k-abs(d1-d2),0.0);
+    return min(d1, d2) - h*h*0.25/k;
+}
+
+
+float opSmoothSubtraction( float d1, float d2, float k ) {
+    float h = clamp( 0.5 - 0.5*(d2+d1)/k, 0.0, 1.0 );
+    return mix( d2, -d1, h ) + k*h*(1.0-h); 
+}
+// ================================
+// SDF
+// ================================
+float sdCircle( in vec3 p, in float r )
+{
+	return length(p)-r;
+}
+float sdBox( vec3 p, vec3 b )
+{
+  vec3 q = abs(p) - b;
+  return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+}
+float sdCappedCylinder( vec3 p, float h, float r )
+{
+  vec2 d = abs(vec2(length(p.xz),p.y)) - vec2(h,r);
+  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
+}
+float sdCappedTorus(in vec3 p, in vec2 sc, in float ra, in float rb)
+{
+  p.x = abs(p.x);
+  float k = (sc.y*p.x>sc.x*p.y) ? dot(p.xy,sc) : length(p.xy);
+  return sqrt( dot(p,p) + ra*ra - 2.0*ra*k ) - rb;
+}
+float ndot(vec2 a, vec2 b ) { return a.x*b.x - a.y*b.y; }
+float sdRhombus(vec3 p, float la, float lb, float h, float ra)
+{
+  p = abs(p);
+  vec2 b = vec2(la,lb);
+  float f = clamp( (ndot(b,b-2.0*p.xz))/dot(b,b), -1.0, 1.0 );
+  vec2 q = vec2(length(p.xz-0.5*b*vec2(1.0-f,1.0+f))*sign(p.x*b.y+p.z*b.x-b.x*b.y)-ra, p.y-h);
+  return min(max(q.x,q.y),0.0) + length(max(q,0.0));
+}
+float sdEllipsoid( vec3 p, vec3 r )
+{
+  float k0 = length(p/r);
+  float k1 = length(p/(r*r));
+  return k0*(k0-1.0)/k1;
+}
+float sdCapsule( vec3 p, vec3 a, vec3 b, float r )
+{
+  vec3 pa = p - a, ba = b - a;
+  float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+  return length( pa - ba*h ) - r;
+}
+float sdPlane( vec3 p, vec3 n, float h )
+{
+  // n must be normalized
+  return dot(p,n) + h;
+}
+
+
+// ================================
+// FBM
+// ===============================
+
+float hash(vec3 p) {
+  // Simple fast hash function to scatter values
+  p = fract(p * 0.3183099 + vec3(0.1, 0.2, 0.3));
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+
+float noise(vec3 x) {
+  // Smooth interpolated value noise
+  vec3 i = floor(x);
+  vec3 f = fract(x);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(
+      mix(hash(i + vec3(0.0, 0.0, 0.0)), hash(i + vec3(1.0, 0.0, 0.0)), f.x),
+      mix(hash(i + vec3(0.0, 1.0, 0.0)), hash(i + vec3(1.0, 1.0, 0.0)), f.x),
+      f.y
+    ),
+    mix(
+      mix(hash(i + vec3(0.0, 0.0, 1.0)), hash(i + vec3(1.0, 0.0, 1.0)), f.x),
+      mix(hash(i + vec3(0.0, 1.0, 1.0)), hash(i + vec3(1.0, 1.0, 1.0)), f.x),
+      f.y
+    ),
+    f.z
+  );
+}
+const mat3 m = mat3( 0.00,  0.80,  0.60,
+                    -0.80,  0.36, -0.48,
+                    -0.60, -0.48,  0.64 );
+
+float fbm(vec3 p) {
+  // Fractal Brownian Motion using the procedural noise above
+  float f = 0.0;
+  float amplitude = 0.5;
+  mat3 m = mat3( 0.00,  0.80,  0.60,
+                -0.80,  0.36, -0.48,
+                -0.60, -0.48,  0.64 );
+  for (int i = 0; i < 5; i++) {
+    f += amplitude * noise(p);
+    p = m * p * 1.8;     // rotate and scale to reduce repetition
+    amplitude *= 0.5;
+  }
+  return f;
+}
+const mat2 m2 = mat2(0.8,-0.6,0.6,0.8);
+float fbm( vec2 p )
+{
+    float f = 0.0;
+    f += 0.5000*texture( iChannel2, p/256.0 ).x; p = m2*p*2.02;
+    f += 0.2500*texture( iChannel2, p/256.0 ).x; p = m2*p*2.03;
+    f += 0.1250*texture( iChannel2, p/256.0 ).x; p = m2*p*2.01;
+    f += 0.0625*texture( iChannel2, p/256.0 ).x;
+    return f/0.9375;
+}
+
+
+//===============================
+// TERRAIN
+//=============================== 
+
+vec2 terrainMap(vec3 pos){
+    float hPlane = smoothstep(-0.5, 0.5,  0.2 * sin(pos.z* 2.) * sin(pos.x));
+    float plane = sdPlane(pos, vec3(0.0,2.1,0.0),hPlane);
+    //ROCKS
+    vec3 q = vec3( mod(abs(pos.x),7.0)-2.5,pos.y,mod(abs(pos.z+3.0),7.0)-3.0);
+    vec2 id = vec2( floor(pos.x/7.0)-2.5, floor((pos.z+3.0)/7.0)-3.0);
+    float fid = id.x*121.1 + id.y*31.7;
+    float h   = 1.8 + 1.0 * sin(fid*21.7);
+    float wid = 1.0 + 0.8 * sin(fid*31.7);
+    float len = 1.0 + 0.8 * sin(fid*41.7);
+    h   = min(max(h, 1.),2.2);
+    len = max(len, 1.5);
+    wid = max(wid, 1.5);
+    float ellip = sdEllipsoid(q, vec3(wid,h,len));
+    ellip -= 0.04*smoothstep(-1.0,1.0,sin(5.0*pos.x)+cos(5.0*pos.y)+sin(5.0*pos.z));
+    
+
+    //TORUS
+    q = vec3( mod(abs(pos.x+5.0),14.0)-5.,pos.y+0.1,mod(abs(pos.z+3.0),14.0)-3.0);
+    float torus = sdCappedTorus(q, vec2(1.,0), 1.5, 0.35);
+    torus -= 0.05*smoothstep(-1.0,1.0,sin(9.0*pos.x)+cos(5.0*pos.y)+sin(5.0*pos.z));
+    
+    float d = opSmoothUnion(torus, ellip, 0.5);
+    d = opUnion(d, plane);
+    
+    
+    float material;
+    if( abs(d) < 0.001)
+        material = 4.; 
+    if(abs(d -plane) <0.0001) 
+        material = 5.;
+    return vec2(d, material);
+}
+
+
+//===============================
+
+vec2 path(in float z){ 
+    //return vec2(0);
+    float a = sin(z * 0.1);
+    float b = cos(z * 0.8/2.0);
+    return vec2(a*1.5 - b*1., b + a*1.5); 
+}
+
+
+vec2 map(in vec3 pos)
+{
+    
+    float material;
+
+    vec3 terrainPos = pos;
+    terrainPos.xz -= path(pos.z);
+    vec2 terrain = terrainMap(terrainPos);
+
+    float d = terrain.x;
+    material = terrain.y;
+    
+    return vec2(d, material);
+}
+
+
+vec2 RayMarch(vec3 ro, vec3 rd, out int mat) {
+	float dO=0.;
+    float dM=MAX_DIST;
+    for(int i=0; i<MAX_STEPS; i++) {
+    	vec3 p = ro + rd*dO;
+        vec2 res = map(p);
+        float dS = 0.75*res.x;
+        mat = int(map(p).y);
+        if(dS<dM) dM = dS;
+        dO += dS;
+        if(dO>MAX_DIST || abs(dS)<SURF_DIST) break;
+    }
+    
+    return vec2(dO, dM);
+}
+
+vec3 GetNormal(vec3 p) {
+    int mat = 0;
+	float d = map(p).x;
+    vec2 e = vec2(.001, 0);
+    vec3 n = d - vec3(
+        map(p-e.xyy).x,
+        map(p-e.yxy).x,
+        map(p-e.yyx));
+    
+    return normalize(n);
+}
+
+vec3 R(vec2 uv, vec3 p, vec3 l, float z) {
+    vec3 f = normalize(l-p),
+        r = normalize(cross(vec3(0,1,0), f)),
+        u = cross(f,r),
+        c = p+f*z,
+        i = c + uv.x*r + uv.y*u,
+        d = normalize(i-p);
+    return d;
+}
+
+float calcAO( in vec3 pos, in vec3 nor, in float time )
+{
+	float occ = 0.0;
+    float sca = 1.0;
+    for( int i=0; i<5; i++ )
+    {
+        float h = 0.01 + 0.12*float(i)/4.0;
+        float d = map( pos+h*nor).x;
+        occ += (h-d)*sca;
+        sca *= 0.95;
+    }
+    return clamp( 1.0 - 3.0*occ, 0.0, 1.0 );
+}
+
+// https://iquilezles.org/articles/rmshadows
+float calcSoftshadow( in vec3 ro, in vec3 rd, float tmin, float tmax, const float k )
+{
+	float res = 1.0;
+    float t = tmin;
+    for( int i=0; i<50; i++ )
+    {
+		float h = map( ro + rd*t).x;
+        res = min( res, k*h/t );
+        t += clamp( h, 0.02, 0.20 );
+        if( res<0.005 || t>tmax ) break;
+    }
+    return clamp( res, 0.0, 1.0 );
+}
+
+
+
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 m = vec2(0.5, 0.3); // Fixed mouse for level flyover (adjust y for pitch)
+    
+    vec3 col = vec3(0.,0.,0.);
+    vec3 ro = vec3(0, 1., 1.)*3.5;
+    ro.yz *= Rot(-m.y*3.14+1.);
+    //ro.xz *= Rot(-m.x*6.2831);
+    ro.z = ro.z - T;
+    
+    ro.x += path(ro.z).x;
+    
+    ro.y = max(ro.y, -0.1);
+    ro.y = min(ro.y, 1.);
+    
+
+    for(int x=0; x<AA; x++) {
+        for(int y=0; y<AA; y++) {
+            
+            vec2 offs = vec2(x, y)/float(AA) -.5;
+
+            vec2 uv = (fragCoord+offs-.5*iResolution.xy)/iResolution.y;
+            vec3 dir = vec3(ro.x, 1, path(ro.z).y - T);
+            vec3 rd = R(uv, ro, dir, 1.);
+            
+// Sky base color (dusty pink tone)
+col = vec3(0.95, 0.78, 0.75); // soft desert pink
+
+// Slight gradient darkening near top of sky
+col -= max(rd.y, 0.0) * 0.7;
+
+// Clouds (dusty white)
+vec2 sc = ro.xz + rd.xz * (200.0 - ro.y) / rd.y;
+float cloudNoise = smoothstep(0.4, 0.9, fbm(0.0005 * sc));
+col = mix(col, vec3(1.0, 0.95, 0.92), 0.5 * cloudNoise); // warmer clouds
+
+
+col += 0.1 * exp(-15.0 * abs(rd.y));
+
+            int mat = -1;
+            float dist = RayMarch(ro, rd, mat).x;
+            
+            
+            vec3 p = ro + rd * dist;
+            vec3 movingPos = p;
+            movingPos.z += T;
+            movingPos.xz = path(movingPos.z);
+            vec3 f0;
+            switch(mat){
+               // Ground
+case 4:
+  f0 = vec3(0.);
+
+  // Sample desaturated texture color
+  vec3 gd = 0.33 * texture(iChannel1, p.xy * 2.0).xyz
+          + 0.33 * texture(iChannel1, p.yz).xyz
+          + 0.33 * texture(iChannel1, p.xz).xyz;
+  gd *= 0.5;
+
+  // Noise variation
+  float variation = fbm(p.xz * 0.2 + iTime * 0.1);
+
+  // Desert-inspired tones
+  vec3 dustyPink     = vec3(0.75, 0.6, 0.62); // dreamy pink-terracotta
+  vec3 powderBlue    = vec3(0.72, 0.78, 0.95); // soft lavender-blue
+  vec3 cloudPurple   = vec3(0.6, 0.5, 0.7);    // dusty violet
+
+  // Strata-like blend
+  vec3 blended = mix(dustyPink, powderBlue, smoothstep(0.4, 0.8, variation));
+  blended = mix(blended, cloudPurple, smoothstep(0.7, 1.0, variation));
+
+  // Final composite
+  col = 0.5 * blended + 0.5 * gd;
+  break;
+                case 5: 
+                    col *= vec3(0.5, 0.4, 0.2);
+                case -1:
+                    //col *= vec3(1.,1.,1.);
+                    break;
+            }
+            
+
+            if(dist<MAX_DIST) {
+                
+                vec3 lightPos = vec3(0.,10.,4.);
+                //vec3 lightPos = movingPos + vec3(0.,10.,4.);
+                vec3 l = normalize(lightPos);
+                vec3 n = GetNormal(p);
+                
+                float occ = calcAO(p, n, iTime);
+                //Top Light
+                {
+                    
+                    float dif = clamp(dot(n, l), 0., 1.);
+                    vec3 ref = reflect(rd, n);
+                    vec3 spe = vec3(1.0) * smoothstep(0.4,0.6,ref.y);
+                     float fre = clamp(1.0+dot(rd, n), 0., 1.);
+                    spe *= f0; + (1.-f0) * pow(fre,5.0);
+                    spe *= 6.0;
+                    //float shadow = calcSoftshadow(p, l, 0.1, 2.0, 32.0 );
+                   // dif *= shadow;
+                    col += 0.55*vec3(0.7,0.7,0.9)*dif*occ;
+                    col += vec3(0.7,0.7,0.9)*spe*dif*f0;  
+                }
+            
+                //Side Light
+                {
+                    vec3 lightPos = normalize(vec3(-2.7,1.2,-0.4));
+                    float dif = clamp(dot(n, lightPos), 0., 1.);
+                    float shadow = calcSoftshadow(p, lightPos, 0.001, 2.0, 16.0 );
+
+                    vec3 hal = normalize(lightPos-rd);
+                    vec3 spe = vec3(1.) * pow(clamp(dot(hal, n), 0., 1.),32.0);
+                    spe *= f0 + (1.-f0) * pow(1.-+clamp(dot(hal, lightPos), 0., 1.),5.0);
+
+                    dif *= shadow;
+                    col += 0.5*vec3(1.0,0.6,0.3)*dif*occ;
+                    col += 1.0*vec3(1.0,0.6,0.3)*spe*f0;
+                }
+                
+                //Bottom light
+                {
+                    float dif = clamp(0.5 -0.5 * n.y,0.0 ,1.);
+                    col += 0.15*dif*occ;
+                }
+                //Reactor Light
+                {
+                    //vec3 lightPos = normalize(vec3(abs(movingPos.x) - 0.5,0.0, lenReactor));
+                    //float dif = clamp(dot(n, lightPos), 0., 1.);
+                    
+                    //float shadow = calcSoftshadow(p, lightPos, 0.001, 0.5, 8.0 );
+                    
+                    //col += (0.7 + 0.3 * sin(iTime))*vec3(1.0,1.0,2.) * dif * shadow;
+                    
+                }
+                col = mix( col, 0.9*vec3(0.5, 0.4, 0.2), 1.0-exp( -0.000005*dist*dist*dist ) );  // Increased fog coefficient (from 0.00001 to 0.000005) for dreamier haze
+            }
+            
+            
+        }
+    }
+    
+    
+    col /= float(AA*AA);
+    
+    col = clamp(col,0.0,1.0);
+    col = col*col*(3.0-2.0*col);
+    
+    
+    fragColor = vec4(col,1.0);
+}
+
+void main() {
+  vec2 fragCoord = v_texCoord * iResolution.xy;
+  mainImage(fragColor, fragCoord);
+}
+`;
+
+    const createShader = (type, source) => {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+      }
+      return shader;
+    };
+
+    const vs = createShader(gl.VERTEX_SHADER, vsSource);
+    const fs = createShader(gl.FRAGMENT_SHADER, fsSource);
+
+    const program = gl.createProgram();
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('Program link error:', gl.getProgramInfoLog(program));
+      return;
+    }
+
+    gl.useProgram(program);
+
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    const positions = new Float32Array([
+      -1, -1,
+      1, -1,
+      -1, 1,
+      1, 1,
+    ]);
+    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+    const positionLocation = gl.getAttribLocation(program, 'a_position');
+    gl.enableVertexAttribArray(positionLocation);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+    // Uniform locations
+    const iTimeLoc = gl.getUniformLocation(program, 'iTime');
+    const iResLoc = gl.getUniformLocation(program, 'iResolution');
+    const iMouseLoc = gl.getUniformLocation(program, 'iMouse');
+    const iChannel0Loc = gl.getUniformLocation(program, 'iChannel0');
+    const iChannel1Loc = gl.getUniformLocation(program, 'iChannel1');
+    const iChannel2Loc = gl.getUniformLocation(program, 'iChannel2');
+
+    // Fallback textures (1x1 for simplicity; replace with real seamless ones for better results)
+    // iChannel0: Metal (not used after ship removal, but kept for completeness) - silverish
+    const tex0 = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, tex0);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([200, 200, 200, 255]));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.uniform1i(iChannel0Loc, 0);
+
+    // iChannel1: Ground/rock texture - earthy brown
+    const tex1 = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, tex1);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([139, 69, 19, 255]));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.uniform1i(iChannel1Loc, 1);
+
+    // iChannel2: Noise texture - blue noise for FBM (grayscale)
+    const tex2 = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, tex2);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([128, 128, 128, 255]));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.uniform1i(iChannel2Loc, 2);
+
+    const resizeCanvas = () => {
+      const { clientWidth, clientHeight } = canvas;
+      canvas.width = clientWidth;
+      canvas.height = clientHeight;
+      gl.viewport(0, 0, clientWidth, clientHeight);
+      gl.uniform3f(iResLoc, clientWidth, clientHeight, 1.0);
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let startTime = Date.now();
+    const animate = () => {
+      const currentTime = (Date.now() - startTime) / 1000;
+      gl.uniform1f(iTimeLoc, currentTime);
+      gl.uniform4f(iMouseLoc, 0.0, 0.0, 0.0, 0.0); // Fixed, as mouse is hardcoded in shader
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      gl.deleteProgram(program);
+      gl.deleteShader(vs);
+      gl.deleteShader(fs);
+      gl.deleteBuffer(positionBuffer);
+      gl.deleteTexture(tex0);
+      gl.deleteTexture(tex1);
+      gl.deleteTexture(tex2);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 w-full h-full pointer-events-none -z-1"
+    />
+  );
+};
+
+
 
 
 
@@ -2517,3 +3210,138 @@ const images = [
   "/images/glassflower.jpeg",
   "/images/image6.jpg",
 ];
+function PulsingGrid() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    canvas.width = 180;
+    canvas.height = 180;
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    let time = 0;
+    let lastTime = 0;
+
+    // Grid parameters
+    const gridSize = 5; // 5x5 grid
+    const spacing = 15;
+
+    // Animation parameters
+    const breathingSpeed = 0.5;
+    const waveSpeed = 1.2;
+    const colorPulseSpeed = 1.0;
+
+    let animationFrameId;
+
+    function animate(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const deltaTime = timestamp - lastTime;
+      lastTime = timestamp;
+      time += deltaTime * 0.001;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Breathing effect (expansion/contraction)
+      const breathingFactor = Math.sin(time * breathingSpeed) * 0.2 + 1.0;
+
+      // Center dot
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 3, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.fill();
+
+      // Draw pulsing grid
+      for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+          if (row === Math.floor(gridSize / 2) && col === Math.floor(gridSize / 2))
+            continue;
+
+          const baseX = (col - (gridSize - 1) / 2) * spacing;
+          const baseY = (row - (gridSize - 1) / 2) * spacing;
+          const distance = Math.sqrt(baseX * baseX + baseY * baseY);
+          const maxDistance = (spacing * Math.sqrt(2) * (gridSize - 1)) / 2;
+          const normalizedDistance = distance / maxDistance;
+          const angle = Math.atan2(baseY, baseX);
+
+          const radialPhase = (time - normalizedDistance * waveSpeed) % 1;
+          const radialWave = Math.sin(radialPhase * Math.PI * 2) * 4;
+
+          const breathingX = baseX * breathingFactor;
+          const breathingY = baseY * breathingFactor;
+
+          const waveX = centerX + breathingX + Math.cos(angle) * radialWave;
+          const waveY = centerY + breathingY + Math.sin(angle) * radialWave;
+
+          const baseSize = 1.5 + (1 - normalizedDistance) * 1.5;
+          const pulseFactor = Math.sin(time * 2 + normalizedDistance * 5) * 0.6 + 1;
+          const size = baseSize * pulseFactor;
+
+          const blueAmount =
+            Math.sin(time * colorPulseSpeed + normalizedDistance * 3) * 0.3 + 0.3;
+          const whiteness = 1 - blueAmount;
+          const r = Math.floor(255 * whiteness + 200 * blueAmount);
+          const g = Math.floor(255 * whiteness + 220 * blueAmount);
+          const b = 255;
+
+          const opacity =
+            0.5 +
+            Math.sin(time * 1.5 + angle * 3) * 0.2 +
+            normalizedDistance * 0.3;
+
+          // Draw connecting lines
+          if (row > 0 && col > 0 && row < gridSize - 1 && col < gridSize - 1) {
+            const neighbors = [
+              { r: row - 1, c: col },
+              { r: row, c: col + 1 },
+              { r: row + 1, c: col },
+              { r: row, c: col - 1 },
+            ];
+            for (const neighbor of neighbors) {
+              const nBaseX = (neighbor.c - (gridSize - 1) / 2) * spacing;
+              const nBaseY = (neighbor.r - (gridSize - 1) / 2) * spacing;
+              const nBreathingX = nBaseX * breathingFactor;
+              const nBreathingY = nBaseY * breathingFactor;
+              const lineDistance = Math.sqrt(
+                Math.pow(col - neighbor.c, 2) + Math.pow(row - neighbor.r, 2)
+              );
+              const lineOpacity =
+                0.1 + Math.sin(time * 1.5 + lineDistance * 2) * 0.05;
+
+              ctx.beginPath();
+              ctx.moveTo(waveX, waveY);
+              ctx.lineTo(centerX + nBreathingX, centerY + nBreathingY);
+              ctx.strokeStyle = `rgba(255, 255, 255, ${lineOpacity})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+
+          // Draw dot
+          ctx.beginPath();
+          ctx.arc(waveX, waveY, size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          ctx.fill();
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    }
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, []);
+
+  return (
+    <div
+      id="pulsing-grid"
+      className="relative w-[180px] h-[180px] flex items-center justify-center"
+    >
+      <canvas ref={canvasRef} className="absolute inset-0" />
+    </div>
+  );
+}
