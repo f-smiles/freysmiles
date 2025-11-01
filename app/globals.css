@@ -4708,7 +4708,7 @@ a {
   white-space: nowrap;
   --text-width: 100px;
   --gsplits: 4;
-  --gcolor: #fff;
+  --gcolor: #000;
   --gsize: 1rem;
   font-size: var(--gsize);
   color: var(--gcolor);
@@ -5976,7 +5976,7 @@ a {
   cursor: pointer;
   width: 100%;
   display: grid;
-  color: #000;
+  color: #FFF;
   grid-template-columns: 100px 1fr 1fr auto;
   grid-column-gap: 2rem;
   padding: 1rem 0;
@@ -6355,7 +6355,6 @@ body,
   max-width: 1200px;
   height: 100px;
   margin: 0 auto;
-  color: #FFF;
   font-family: "NeueHaasGroteskDisplayPro45Light";
   overflow: hidden;
 }
@@ -6370,6 +6369,7 @@ body,
 .terminal-line {
   position: absolute;
   font-size: .75em;
+   color: #FFF;
   line-height: 1.2;
   letter-spacing: 0.05em;
   white-space: nowrap;
@@ -6383,7 +6383,7 @@ body,
 }
 
 .highlight {
-  color: #000;
+ color: #FFF;
   /* font-weight: 800; */
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -6391,7 +6391,7 @@ body,
 }
 
 .faded {
-    color: #000;
+ color: #FFF;
 
 
   text-transform: uppercase;

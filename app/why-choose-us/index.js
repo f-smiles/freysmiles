@@ -1478,7 +1478,7 @@ export default function WhyChooseUs() {
     <>
    <FluidSimulation />
 
-      <div className="relative">
+      <div className="relative bg-[#F9F9F9]">
         <div className="overflow-x-hidden w-full">
           {/* <div className="relative w-full h-screen" style={{ zIndex: 1 }}>
             <Canvas
@@ -1502,10 +1502,11 @@ export default function WhyChooseUs() {
             </div>
           </div>
 
-          <ImageGrid />
+     
+           <StackCards />
+         
           <CardStack />
-          <StackCards />
-          <TechSection />
+          <WorkGrid />
           <MoreThanSmiles />
           <About />
           <VennDiagram />
@@ -1513,6 +1514,227 @@ export default function WhyChooseUs() {
         </div>
       </div>
     </>
+  );
+}
+
+function WorkGrid() {
+  const workRef = useRef(null);
+
+  const sectionRef = useRef(null);
+  const headingRefs = useRef([]);
+
+  useGSAP(
+    () => {
+      gsap.set(headingRefs.current, { opacity: 0 });
+    },
+    { scope: sectionRef }
+  );
+
+  useGSAP(
+    () => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              headingRefs.current.forEach((el) => {
+                if (!el) return;
+
+                gsap.set(el, { opacity: 0 });
+
+                const childSplit = new SplitText(el, {
+                  type: "lines",
+                  linesClass: "split-child",
+                });
+
+                new SplitText(el, {
+                  type: "lines",
+                  linesClass: "split-parent",
+                });
+
+                gsap.set(childSplit.lines, {
+                  yPercent: 100,
+                  opacity: 1,
+                });
+
+                gsap.to(childSplit.lines, {
+                  yPercent: 0,
+                  duration: 1.5,
+                  ease: "power4.out",
+                  stagger: 0.1,
+                  onStart: () => {
+                    gsap.set(el, { opacity: 1 });
+                  },
+                });
+              });
+              observer.disconnect();
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+
+      if (sectionRef.current) observer.observe(sectionRef.current);
+      return () => observer.disconnect();
+    },
+    { scope: sectionRef }
+  );
+  const projects = [
+     {
+      id: 1,
+      name: "Setting the benchmark for modern orthodontic treatment",
+      img: "/images/ajomockupchair.png",
+      route: "#",
+    },
+  
+    {
+      id: 2,
+      name: "We don't do goopy impressions and neither should you",
+      img: "/images/iteroposter.png",
+      route: "#",
+    },
+     {
+      id: 3,
+      name: "3D printing for appliance fabrication",
+      img: "/images/3dprinting.png",
+      route: "#",
+    },
+    {
+      id: 4,
+      name: "Our office supports real-time texting for fast, personal support",
+      img: "/images/officetexting.png",
+      route: "#",
+    },
+  ];
+
+
+  const gridProjects = [...projects,];
+
+  useEffect(() => {
+
+
+    const rows = workRef.current.querySelectorAll(".row");
+
+    rows.forEach((row) => {
+      const items = row.querySelectorAll(".work-item");
+
+      // initial rotation + offset
+      items.forEach((item, index) => {
+        const isLeft = index === 0;
+        gsap.set(item, {
+          y: 1000,
+          rotation: isLeft ? -60 : 60,
+          transformOrigin: "center center",
+        });
+      });
+
+      ScrollTrigger.create({
+        trigger: row,
+        start: "top 70%",
+        onEnter: () => {
+          gsap.to(items, {
+            y: 0,
+            rotation: 0,
+            duration: 1.2,
+            ease: "power4.out",
+            stagger: 0.25,
+          });
+        },
+      });
+    });
+
+    return () => {
+
+      ScrollTrigger.getAll().forEach((st) => st.kill());
+    };
+  }, []);
+
+  return (
+    <>
+
+    <div ref={sectionRef}  className="px-6 py-4 md:px-12">
+
+                 <div   className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
+            <span>All.</span>
+            <span>
+              — Invisalign. <sup className="text-xs align-super">(10k)</sup>
+            </span>
+            <span>— Accelerated Treatment. </span>
+            <span>— Low-Dose Digital 3D Radiographs. </span>
+            <span>
+              — Damon Braces. <sup className="text-xs align-super">(15k)</sup>
+            </span>
+            <span>— iTero Lumina.</span>
+            <span>— 3D Printing.</span>
+            <span>— Laser Therapy.</span>
+            <span>
+              — Live Text Support.{" "}
+              <sup className="text-xs align-super">(8)</sup>
+            </span>
+          </div>
+      <VideoAnimation />
+               <div className="mb-16">
+              <p className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
+                Pioneering Digital Orthodontics
+              </p>
+              <h2 className="max-w-3xl font-neuehaas45 text-[26px] leading-tight">
+                Our office was the first in the region to go fully digital—
+                leveraging iTero 3D scanning and in-house printing to lead a new
+                era of appliance design and fabrication.
+              </h2>
+            </div>
+
+    </div>
+
+         
+       <div className="min-h-screen bg-[#F9F9F9] text-[#0f0f0f] font-[Manrope] overflow-x-hidden">
+      <header className="w-full h-[400px] flex items-center justify-center text-center p-6">
+               <ImageGrid />
+      </header>
+
+
+      <section
+        ref={workRef}
+        className="relative w-full h-full p-6 flex flex-col gap-12 md:gap-16 overflow-hidden"
+      >
+        {Array.from({ length: Math.ceil(gridProjects.length / 2) }).map((_, i) => {
+          const left = gridProjects[i * 2 % gridProjects.length];
+          const right = gridProjects[(i * 2 + 1) % gridProjects.length];
+          return (
+        <div
+    key={i}
+    className="row flex gap-6 md:gap-8 flex-col md:flex-row w-full"
+  >
+    {[left, right].map((proj, idx) => (
+      <div
+        key={proj.id + idx}
+        className="work-item flex-1 flex flex-col gap-3"
+      >
+        <a
+          href={proj.route}
+          className="work-item-link flex flex-col gap-3 text-[#0f0f0f] no-underline hover:opacity-90 transition"
+        >
+          <div className="work-item-img aspect-[4/3] overflow-hidden">
+            <img
+              src={proj.img}
+              alt={proj.name}
+              className="w-full h-full object-cover scale-90"
+            />
+          </div>
+          <div className="work-item-copy pl-[5%]">
+            <h3 className="text-[14px] font-neuehaas35 tracking-wide ">
+              {proj.name}
+            </h3>
+          </div>
+        </a>
+      </div>
+    ))}
+  </div>
+          );
+        })}
+      </section>
+    </div>
+    </>
+   
   );
 }
 
@@ -1694,273 +1916,103 @@ function StringScene() {
   );
 }
 
-const TechSection = () => {
-  useEffect(() => {
-    const triggers = [];
 
-    gsap.utils.toArray(".img-container").forEach((container) => {
-      const img = container.querySelector("img");
-
-      const trigger = gsap.fromTo(
-        img,
-        { yPercent: -20, ease: "none" },
-        {
-          yPercent: 20,
-          ease: "none",
-          scrollTrigger: {
-            trigger: container,
-            scrub: true,
-          },
-        }
-      ).scrollTrigger;
-
-      triggers.push(trigger);
-    });
-
-    return () => {
-      triggers.forEach((trigger) => trigger.kill());
-    };
-  }, []);
-
-  const sectionRef = useRef(null);
-  const headingRefs = useRef([]);
-
-  useGSAP(
-    () => {
-      gsap.set(headingRefs.current, { opacity: 0 });
-    },
-    { scope: sectionRef }
-  );
-
-  useGSAP(
-    () => {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              headingRefs.current.forEach((el) => {
-                if (!el) return;
-
-                gsap.set(el, { opacity: 0 });
-
-                const childSplit = new SplitText(el, {
-                  type: "lines",
-                  linesClass: "split-child",
-                });
-
-                new SplitText(el, {
-                  type: "lines",
-                  linesClass: "split-parent",
-                });
-
-                gsap.set(childSplit.lines, {
-                  yPercent: 100,
-                  opacity: 1,
-                });
-
-                gsap.to(childSplit.lines, {
-                  yPercent: 0,
-                  duration: 1.5,
-                  ease: "power4.out",
-                  stagger: 0.1,
-                  onStart: () => {
-                    gsap.set(el, { opacity: 1 });
-                  },
-                });
-              });
-              observer.disconnect();
-            }
-          });
-        },
-        { threshold: 0.2 }
-      );
-
-      if (sectionRef.current) observer.observe(sectionRef.current);
-      return () => observer.disconnect();
-    },
-    { scope: sectionRef }
-  );
-
-  return (
-    <>
-      <div className="bg-[#F9F9F9]">
-        {/* <div className="bg-[#DCDCDC] text-[#d2ff8c]"> */}
-
-        <section ref={sectionRef} className="px-6 py-12 md:px-12">
-          <div className="font-neuehaas45 flex flex-wrap items-center gap-x-4 gap-y-2 text-[clamp(1rem,2vw,1.75rem)] font-neue">
-            <span>All.</span>
-            <span>
-              — Invisalign. <sup className="text-xs align-super">(10k)</sup>
-            </span>
-            <span>— Accelerated Treatment. </span>
-            <span>— Low-Dose Digital 3D Radiographs. </span>
-            <span>
-              — Damon Braces. <sup className="text-xs align-super">(15k)</sup>
-            </span>
-            <span>— iTero Lumina.</span>
-            <span>— 3D Printing.</span>
-            <span>— Laser Therapy.</span>
-            <span>
-              — Live Text Support.{" "}
-              <sup className="text-xs align-super">(8)</sup>
-            </span>
-          </div>
-          <VideoAnimation />
-          
-          <div className="mt-12 w-full flex flex-col gap-4">
-            <div className="mb-16">
-              <p className="uppercase tracking-wide text-[12px] font-neuehaas35 mb-4">
-                Pioneering Digital Orthodontics
-              </p>
-              <h2 className="max-w-3xl font-neuehaas45 text-[26px] leading-tight">
-                Our office was the first in the region to go fully digital—
-                leveraging iTero 3D scanning and in-house printing to lead a new
-                era of appliance design and fabrication.
-              </h2>
-            </div>
-
-            <div className="w-full flex gap-4">
-              <div className="w-1/2">
-                <div className="relative overflow-hidden img-container">
-                  <img
-                    src="/images/3dprinting.png"
-                    alt="metalrack"
-                    className="object-contain w-full h-full"
-                    style={{
-                      transform: "translateY(0%) scale(1.0)",
-                      transformOrigin: "center",
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="w-1/2"></div>
-            </div>
-
-            <div className="w-full flex gap-4">
-              <div className="w-1/2"></div>
-              <div className="w-1/2">
-                <div className="img-container relative overflow-hidden">
-                  <img
-                    src="/images/iterolumina2.png"
-                    alt="placeholder"
-                    className="object-contain w-full h-full"
-                    style={{
-                      transform: "translateY(0%) scale(1.0)",
-                      transformOrigin: "center",
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full flex gap-4">
-              <div className="w-1/2">
-                <div className="relative overflow-hidden img-container">
-                 
-                  <img
-                    src="/images/ajomockupchair.png"
-                    alt="AJO Mockup"
-                    className="object-contain w-full h-full"
-                    style={{
-                      transform: "translateY(0%) scale(1.0)",
-                      transformOrigin: "center",
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="w-1/2"></div>
-            </div>
-
-            <div className="w-full flex gap-4">
-              <div className="w-1/2"></div>
-              <div className="w-1/2">
-                <div className="relative overflow-hidden img-container">
-                  <img
-                    src="/images/testphonemockup.png"
-                    className="w-full h-full object-contain"
-                    style={{
-                      transform: "translateY(0%) scale(1.0)",
-                      transformOrigin: "center",
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </>
-  );
-};
 function ScrollPanels() {
-  const images = [
-    { src: "/images/signonmetalrack.png", alt: "sign" },
-    { src: "/images/tablemockup.png", alt: "table" },
-    { src: "/images/signonmetalrack.png", alt: "3" },
-  ];
   useEffect(() => {
     gsap.to(".textslide", {
       y: "0%",
       duration: 1,
       stagger: 0.2,
-      ease: "power3.out",
+      ease: "none",
     });
   }, []);
+  const sectionRef = useRef(null);
+  const imgRef = useRef(null);
+  const heroRef = useRef(null);
+  const standardRef = useRef(null);
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        imgRef.current,
+        { 
+          scale: 0.3, 
+          y: "-100vh" 
+        },
+        {
+          scale: 1.2,
+          y: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            endTrigger: standardRef.current,
+            end: "top center",
+            scrub: 1, 
+          },
+        }
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
   return (
-    <div className="bg-[#F9F9F9]">
-      {/* <section className="min-h-screen flex flex-col items-center justify-center px-6 py-16 text-center">
-          <div className="relative w-[360px] h-[540px] rounded-[32px] overflow-hidden bg-black/10 shadow-md">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover opacity-50"
-            >
-              <source src="/images/retaintracing.mp4" type="video/mp4" />
-            </video>
-
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-3.5 h-3.5 border-[3px] border-black rounded-full" />
-            </div>
-          </div>
-        </section> */}
-      {/* <section
-        style={{
-
-          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-
-        }}
-        className="bg-[#F7F5EF] h-screen flex flex-col justify-center items-start px-16"
-      ></section> */}
+    <div ref={sectionRef} className="bg-[#F9F9F9]">
       <div className="relative">
-        <section class="make">
-          <div class="make-main">
-            <div className="make-text title-h2 up-text text-[4rem] leading-none font-neuehaas45 uppercase">
-              <div className="reveal-line">
-                <span className="textslide">Backed</span>
-              </div>
-              <div className="reveal-line">
-                <span className="textslide">by over 60 years</span>
+        <section ref={heroRef} className="w-full h-screen text-black flex flex-col justify-between font-neuehaas35 relative ">
+          <div className="flex justify-between px-8 md:px-16 pt-8 h-full relative">
+            <div className="flex flex-col justify-between w-1/2 relative">
+              <div className="absolute top-[65%] left-0 -translate-y-1/2 text-left">
+                <h1 className="text-[4.5rem] md:text-[4.5rem] leading-[1.05] font-neuehaas45 uppercase">
+                  Backed By<br />Over 60 Years
+                </h1>
               </div>
             </div>
 
-            <div class="make-text title-h2 up-text text-[4rem] leading-none font-neuehaas45 uppercase">
-              {" "}
-              <div className="reveal-line">
-                <span className="textslide">of combined</span>
-              </div>{" "}
-              <div className="reveal-line">
-                <span className="textslide">orthodontic</span>
-              </div>{" "}
-              <div className="reveal-line">
-                <span className="textslide">experience</span>
+            <div className="flex flex-col w-1/2 relative">
+              <div className="absolute top-[50%] right-0 -translate-y-1/2 text-left">
+                <h1 className="text-[4.5rem] md:text-[4.5rem] leading-[1.05] font-neuehaas45 uppercase">
+                  Of Combined<br />Orthodontic<br />Experience
+                </h1>
               </div>
             </div>
           </div>
+
+          <footer className="absolute bottom-[8%] left-0 w-full px-4 md:px-16 flex items-center justify-between text-xs tracking-widest text-gray-600 uppercase">
+            <span>Welcome</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm">↓</span>
+              <span>Scroll to Explore</span>
+            </div>
+            <span>...</span>
+          </footer>
         </section>
         <section className="w-full bg-[#f9f9f9] flex flex-col items-center">
+          <div className="w-full px-[6vw]">
+            <div className="border-t border-black/10 w-full" />
+          </div>
+          <div ref={standardRef} className="w-full px-[6vw] py-[10vh]">
+<div className="flex flex-col lg:flex-row items-center justify-between px-8 md:px-16 pt-8 relative">
+              <div className="w-full lg:w-[40vw] flex justify-center">
+        
+                <img
+                  ref={imgRef}
+                  src="/images/cardsonpalm.png"
+                  alt="phone"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+              <div className="flex flex-col text-left z-10">
+                <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45 uppercase">
+                  Standard <br />
+                  <span className="mt-2 pt-2 block">Setting</span>
+                </h1>
+                <p className="text-[15px] mt-4 text-black/70 font-neuehaas45">
+                  Built around your life
+                </p>
+              </div>
+            </div>
+          </div>
           <div className="w-full px-[6vw]">
             <div className="border-t border-black/10 w-full" />
           </div>
@@ -3244,9 +3296,26 @@ function StackCards() {
   };
   return (
     <>
-      <section className="-mt-[10vh] bg-[#F9F9F9]" ref={containerRef}>
+      <section className="mt-[4vh] bg-[#F9F9F9]" ref={containerRef}>
         <section className=" w-full flex flex-col items-center">
+                 <div className="mt-[10vh]">
+          <div
+            ref={textRef}
+            className="mx-auto font-neuehaas45 mb-40 text-[26px] max-w-[1100px] leading-[1.3]"
+          >
+            Our doctors aren’t just orthodontists — they’re in the top 1%. Dr.
+            Gregg Frey is board certified for life. Dr. Daniel Frey is locking
+            his in this year. That’s a level fewer than 1 in 4 orthodontists
+            reach. And when it comes to Invisalign? We don’t follow trends — we
+            set them. As Diamond Plus providers, we’ve shaped how clear aligners
+            are done in the region (and treated thousands along the way).
+            <br />
+            <br />
+            <span> TL;DR: You’re in elite company.</span>
+          </div>
+        </div>
           <div className="flex flex-row gap-x-12">
+            
             <div className=" flex flex-col justify-center">
               <div
                 style={{
@@ -3348,22 +3417,7 @@ function StackCards() {
           </p>
         </div> */}
         </section>
-        <div className="mt-[20vh]">
-          <div
-            ref={textRef}
-            className="mx-auto font-neuehaas45 mb-40 text-[18px] max-w-[700px] leading-[1.3]"
-          >
-            Our doctors aren’t just orthodontists — they’re in the top 1%. Dr.
-            Gregg Frey is board certified for life. Dr. Daniel Frey is locking
-            his in this year. That’s a level fewer than 1 in 4 orthodontists
-            reach. And when it comes to Invisalign? We don’t follow trends — we
-            set them. As Diamond Plus providers, we’ve shaped how clear aligners
-            are done in the region (and treated thousands along the way).
-            <br />
-            <br />
-            <span> TL;DR: You’re in elite company.</span>
-          </div>
-        </div>
+ 
         <div className="mt-20 font-neuehaas45 min-h-screen text-[13px] tracking-wide leading-none  px-2">
           {[
             {
@@ -3393,7 +3447,7 @@ function StackCards() {
                 style={{ "--br": "0px" }}
               >
                 <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-                <div className="relative z-10 flex items-center justify-center col-span-1 text-[#ff007f]">
+                <div className="relative z-10 flex items-center justify-center col-span-1 text-[#008000]">
                   {block.title}
                 </div>
                 <div className="relative z-10 col-span-3 max-w-4xl text-black leading-relaxed">
@@ -4402,6 +4456,95 @@ const Marquee = ({ texts = [], onFinished }) => {
 
   return (
     <main ref={wrapperRef} className="relative w-full h-screen overflow-hidden">
+<footer className="w-full bg-white text-black px-8 md:px-24 py-20 grid md:grid-cols-2 gap-16">
+      {/* Left column */}
+      <div className="flex flex-col justify-between">
+      
+      </div>
+
+      {/* Right column */}
+      <div className="flex flex-col justify-between text-gray-700 font-neuehaas35">
+
+        <div className="grid grid-cols-2 gap-12">
+          <div>
+            <h3 className="text-black text-lg">Schnecksville</h3>
+            <p className="mt-2 text-gray-700 font-neuehaas35">
+              4155 Independence Dr<br />
+              PA 18078
+            </p>
+          </div>
+          <div>
+           <h3 className="text-black text-lg">Schnecksville</h3>
+            <p className="mt-2 text-gray-700 font-neuehaas35">
+              4155 Independence Dr<br />
+              PA 18078
+            </p>
+          </div>
+        </div>
+
+    
+        <div className="mt-10 grid grid-cols-2 gap-12">
+      
+          <div>
+            <h3 className="text-black text-lg">Schnecksville</h3>
+            <p className="mt-2 text-gray-700 font-neuehaas35">
+              4155 Independence Dr<br />
+              PA 18078
+            </p>
+            <a
+              href="#"
+              className="mt-4 inline-flex items-center gap-2 text-black hover:opacity-70 transition"
+            >
+              <span className="text-xl">→</span> Learn more
+            </a>
+          </div>
+
+         
+          <div>
+            <h3 className="text-black text-lg">Schnecksville</h3>
+            <p className="mt-2 text-gray-700 font-neuehaas35">
+              4155 Independence Dr<br />
+              PA 18078
+            </p>
+            <a
+              href="#"
+              className="mt-4 inline-flex items-center gap-2 text-black hover:opacity-70 transition"
+            >
+              <span className="text-xl">→</span> Explore work
+            </a>
+          </div>
+        </div>
+
+
+        <div className="mt-10 flex flex-wrap gap-8 text-black">
+          <a href="#" className="flex items-center gap-2 hover:opacity-70">
+            <span className="text-lg">↗</span> Twitter
+          </a>
+          <a href="#" className="flex items-center gap-2 hover:opacity-70">
+            <span className="text-lg">↗</span> Instagram
+          </a>
+          <a href="#" className="flex items-center gap-2 hover:opacity-70">
+            <span className="text-lg">↗</span> Linkedin
+          </a>
+        </div>
+
+    
+        <div className="mt-16 flex items-center justify-between">
+          <a href="#" className="text-sm text-gray-600 hover:text-black transition">
+            Terms
+          </a>
+          <button className="flex items-center gap-2 bg-white border border-gray-300 rounded-full px-4 py-2 shadow-sm hover:shadow-md transition">
+            <span className="text-gray-800">Chat with us</span>
+            <div className="relative w-8 h-8 flex items-center justify-center bg-black rounded-full">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                1
+              </span>
+              💬
+            </div>
+          </button>
+        </div>
+      </div>
+    </footer>
       <svg className="w-full h-full circles" viewBox="0 0 1400 1400">
         <defs>
           <path

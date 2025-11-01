@@ -169,36 +169,100 @@ const TextAnimator = forwardRef(({ children, className }, ref) => {
 });
 
 const Testimonial = ({ borderRef }) => {
-  const patients = [
-    { name: "Lainie", duration: "20 months" },
-    { name: "Ron L.", duration: "INVISALIGN" },
-    { name: "Elizabeth", duration: "INVISALIGN, GROWTH APPLIANCE" },
-    { name: "Kinzie", duration: "BRACES, 24 months" },
-    { name: "Kasprenski" },
-    { name: "Leanne", duration: "12 months" },
-    { name: "Harold", duration: "Invisalign" },
-    { name: "Rosie & Grace" },
-    { name: "Keith", duration: "" },
-    { name: "Justin", duration: "Invisalign, 2 years" },
-    { name: "Kara" },
-    { name: "Sophia", duration: "2 years, Braces" },
-    { name: "Brynn" },
-    { name: "Emma" },
-    { name: "Brooke", duration: "2 years, Braces" },
-    { name: "Nilaya", duration: "Braces" },
-    { name: "Maria A." },
-    { name: "Natasha K.", duration: "" },
-    { name: "James C.", duration: "Invisalign, 2 years" },
-    { name: "Devika K." },
-    { name: "Ibis S.", duration: "Invisalign, 1 year" },
-    { name: "Abigail" },
-    { name: "Emma" },
-    { name: "Karoun G", duration: "Motion Appliance, Invisalign" },
-  ];
-  const nameRef = useRef([]);
+const patients = [
+  {
+    name: "Lainie",
+    image: "../images/testimonials/laniepurple.png",
+    duration: "20 months",
+  },
+  {
+    name: "Ron L.",
+    image: "../images/testimonials/Ron_Lucien.jpg",
+    duration: "INVISALIGN",
+  },
+  {
+    name: "Elizabeth",
+    image: "../images/testimonials/elizabethpatient.jpeg",
+    duration: "INVISALIGN, GROWTH APPLIANCE",
+  },
+  {
+    name: "Kinzie",
+    image: "../images/testimonials/kinzie1.jpg",
+    duration: "BRACES, 24 months",
+  },
+  { name: "Kasprenski", image: "../images/testimonials/kasprenski.jpg" },
+  {
+    name: "Leanne",
+    image: "../images/testimonials/leanne.png",
+    duration: "12 months",
+  },
+  {
+    name: "Harold",
+    image: "../images/testimonials/Narvaez.jpg",
+    duration: "Invisalign",
+  },
+  { name: "Rosie & Grace", image: "../images/testimonials/Rosiegrace.png" },
+  {
+    name: "Keith",
+    image: "../images/testimonials/hobsonblue.png",
+    duration: "",
+  },
+  {
+    name: "Justin",
+    image: "../images/testimonials/hurlburt.jpeg",
+    duration: "Invisalign, 2 years",
+  },
+  { name: "Kara", image: "../images/testimonials/Kara.jpeg" },
+  {
+    name: "Sophia",
+    image: "../images/testimonials/Sophia_Lee.jpg",
+    duration: "2 years, Braces",
+  },
+  { name: "Brynn", image: "../images/testimonials/brynnportrait.png" },
+  { name: "Emma", image: "../images/testimonials/Emma.png" },
+  {
+    name: "Brooke",
+    image: "../images/testimonials/Brooke_Walker.jpg",
+    duration: "2 years, Braces",
+  },
+  {
+    name: "Nilaya",
+    image: "../images/testimonials/nilaya.jpeg",
+    duration: "Braces",
+  },
+  { name: "Maria A.", image: "../images/testimonials/Maria_Anagnostou.jpg" },
+  {
+    name: "Natasha K.",
+    image: "../images/testimonials/Natasha_Khela.jpg",
+    duration: "",
+  },
+  {
+    name: "James C.",
+    image: "../images/testimonials/James_Cipolla.jpg",
+    duration: "Invisalign, 2 years",
+  },
+  {
+    name: "Devika K.",
+    image: "../images/testimonials/Devika_Knafo.jpg",
+  },
+  {
+    name: "Ibis S.",
+    image: "../images/testimonials/Ibis_Subero.jpg",
+    duration: "Invisalign, 1 year",
+  },
+  { name: "Abigail", image: "../images/testimonials/abigail.png" },
+  { name: "Emma", image: "../images/testimonials/EmmaF.png" },
+  {
+    name: "Karoun G",
+    duration: "Motion Appliance, Invisalign",
+
+  },
+];
+ const nameRef = useRef([]);
   const durationRefs = useRef([]);
   const listRefs = useRef([]);
   const [opacities, setOpacities] = useState(patients.map(() => 1));
+  const [activeIndex, setActiveIndex] = useState(0);
   
   useEffect(() => {
     listRefs.current.forEach((el) => {
@@ -220,52 +284,52 @@ const Testimonial = ({ borderRef }) => {
     });
   }, []);
 
-useEffect(() => {
-  if (!borderRef?.current) return;
+ useEffect(() => {
+    if (!borderRef?.current) return;
 
-  const limit = 3; 
-  let ticking = false;
+    const limit = 3;
+    let ticking = false;
 
-  const update = () => {
-    ticking = false;
-    const borderTop = borderRef.current.getBoundingClientRect().top;
+    const update = () => {
+      ticking = false;
+      const borderTop = borderRef.current.getBoundingClientRect().top;
 
-    const next = listRefs.current.map((el) => {
-      if (!el) return 1;
-      const { top: lineTop } = el.getBoundingClientRect();
-      return lineTop <= borderTop - limit ? 0 : 1;
-    });
+      let newActiveIndex = activeIndex;
 
-    setOpacities(next);
-  };
+      const next = listRefs.current.map((el, i) => {
+        if (!el) return 1;
+        const { top: lineTop } = el.getBoundingClientRect();
+        if (lineTop <= borderTop - limit) {
+          newActiveIndex = i;
+          return 0;
+        }
+        return 1;
+      });
 
-  const onScrollOrResize = () => {
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(update);
-    }
-  };
+      setOpacities(next);
+      setActiveIndex(newActiveIndex);
+    };
 
-  update();
-  window.addEventListener("scroll", onScrollOrResize, { passive: true });
-  window.addEventListener("resize", onScrollOrResize);
-  return () => {
-    window.removeEventListener("scroll", onScrollOrResize);
-    window.removeEventListener("resize", onScrollOrResize);
-  };
-}, [borderRef]);
+    const onScrollOrResize = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+
+    update();
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
+    };
+  }, [borderRef]);
+
 
  return (
-    <main className="demo-4">
-      <section
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          padding: "0 2rem 2rem",
-          justifyContent: "center",
-        }}
-      >
-
+   <main className="relative demo-4">
+<section className="relative flex w-full min-h-screen px-8 md:px-16 pb-24 justify-center">
         <ul
           style={{
             margin: 0,
@@ -286,7 +350,9 @@ useEffect(() => {
                 className="list__item"
                 style={{
                   opacity: hidden ? 0 : 1,
-                  transition: hidden ? "opacity 0ms linear" : "opacity 160ms linear",
+                  transition: hidden
+                    ? "opacity 0ms linear"
+                    : "opacity 160ms linear",
                   willChange: "opacity",
                 }}
                 onMouseEnter={() => {
@@ -309,10 +375,37 @@ useEffect(() => {
             );
           })}
         </ul>
+
+
+        <AnimatePresence mode="wait">
+          {activeIndex !== null && (
+            <motion.div
+              key={`image-${activeIndex}`}
+className="relative bottom-[8%] right-[20%] z-40 w-[240px] h-[300px] rounded-2xl overflow-hidden shadow-xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              <motion.img
+                key={`img-${activeIndex}`}
+                src={patients[activeIndex]?.image}
+                alt={patients[activeIndex]?.name}
+                className="absolute inset-0 object-cover w-full h-full rounded-2xl"
+                initial={{ clipPath: "inset(0% 100% 0% 0%)" }}
+                animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+                exit={{ clipPath: "inset(0% 100% 0% 0%)" }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
     </main>
   );
 };
+
+
 
 function Background() {
   const canvasRef = useRef(null);
@@ -328,7 +421,7 @@ function Background() {
     });
 
     const { gl } = renderer;
-gl.clearColor(0.93, 0.94, 0.96, 1.0); 
+    gl.clearColor(0.93, 0.94, 0.96, 1.0); 
 
     const geometry = new Triangle(gl);
 
@@ -345,102 +438,101 @@ gl.clearColor(0.93, 0.94, 0.96, 1.0);
     `;
 
     const fragment = `
-precision highp float;
+      precision highp float;
 
-uniform vec3 uColor1;   // peach glow
-uniform vec3 uColor2;   // powder lavender
-uniform vec3 uColor3;   // slate lavender
-uniform float uTime;
-uniform float uScroll;
+      uniform vec3 uColor1;   // deeper peach orange glow
+      uniform vec3 uColor2;   // stronger AAAEC3 blue (powder lavender updated)
+      uniform vec3 uColor3;   // slate lavender
+      uniform float uTime;
+      uniform float uScroll;
 
-varying vec2 vUv;
+      varying vec2 vUv;
 
-vec4 permute(vec4 x){ return mod(((x*34.0)+1.0)*x,289.0); }
-vec2 fade(vec2 t){ return t*t*t*(t*(t*6.0-15.0)+10.0); }
+      vec4 permute(vec4 x){ return mod(((x*34.0)+1.0)*x,289.0); }
+      vec2 fade(vec2 t){ return t*t*t*(t*(t*6.0-15.0)+10.0); }
 
-float cnoise(vec2 P){
-  vec4 Pi=floor(P.xyxy)+vec4(0.0,0.0,1.0,1.0);
-  vec4 Pf=fract(P.xyxy)-vec4(0.0,0.0,1.0,1.0);
-  Pi=mod(Pi,289.0);
-  vec4 ix=Pi.xzxz, iy=Pi.yyww, fx=Pf.xzxz, fy=Pf.yyww;
-  vec4 i=permute(permute(ix)+iy);
-  vec4 gx=2.0*fract(i*0.0243902439)-1.0;
-  vec4 gy=abs(gx)-0.5;
-  vec4 tx=floor(gx+0.5);
-  gx=gx-tx;
-  vec2 g00=vec2(gx.x,gy.x), g10=vec2(gx.y,gy.y);
-  vec2 g01=vec2(gx.z,gy.z), g11=vec2(gx.w,gy.w);
-  vec4 norm=1.79284291400159-0.85373472095314*
-    vec4(dot(g00,g00),dot(g01,g01),dot(g10,g10),dot(g11,g11));
-  g00*=norm.x; g01*=norm.y; g10*=norm.z; g11*=norm.w;
-  float n00=dot(g00,vec2(fx.x,fy.x));
-  float n10=dot(g10,vec2(fx.y,fy.y));
-  float n01=dot(g01,vec2(fx.z,fy.z));
-  float n11=dot(g11,vec2(fx.w,fy.w));
-  vec2 fade_xy=fade(Pf.xy);
-  vec2 n_x=mix(vec2(n00,n01),vec2(n10,n11),fade_xy.x);
-  float n_xy=mix(n_x.x,n_x.y,fade_xy.y);
-  return 2.3*n_xy;
-}
+      float cnoise(vec2 P){
+        vec4 Pi=floor(P.xyxy)+vec4(0.0,0.0,1.0,1.0);
+        vec4 Pf=fract(P.xyxy)-vec4(0.0,0.0,1.0,1.0);
+        Pi=mod(Pi,289.0);
+        vec4 ix=Pi.xzxz, iy=Pi.yyww, fx=Pf.xzxz, fy=Pf.yyww;
+        vec4 i=permute(permute(ix)+iy);
+        vec4 gx=2.0*fract(i*0.0243902439)-1.0;
+        vec4 gy=abs(gx)-0.5;
+        vec4 tx=floor(gx+0.5);
+        gx=gx-tx;
+        vec2 g00=vec2(gx.x,gy.x), g10=vec2(gx.y,gy.y);
+        vec2 g01=vec2(gx.z,gy.z), g11=vec2(gx.w,gy.w);
+        vec4 norm=1.79284291400159-0.85373472095314*
+          vec4(dot(g00,g00),dot(g01,g01),dot(g10,g10),dot(g11,g11));
+        g00*=norm.x; g01*=norm.y; g10*=norm.z; g11*=norm.w;
+        float n00=dot(g00,vec2(fx.x,fy.x));
+        float n10=dot(g10,vec2(fx.y,fy.y));
+        float n01=dot(g01,vec2(fx.z,fy.z));
+        float n11=dot(g11,vec2(fx.w,fy.w));
+        vec2 fade_xy=fade(Pf.xy);
+        vec2 n_x=mix(vec2(n00,n01),vec2(n10,n11),fade_xy.x);
+        float n_xy=mix(n_x.x,n_x.y,fade_xy.y);
+        return 2.3*n_xy;
+      }
 
-// fbm for cloud coat
-float fbm(vec2 p){
-  float a = 0.0;
-  float w = 0.55;
-  a += w * cnoise(p*0.6);  w *= 0.55;
-  a += w * cnoise(p*1.1);  w *= 0.55;
-  a += w * cnoise(p*2.0);
-  return a;
-}
+      // fbm for cloud coat
+      float fbm(vec2 p){
+        float a = 0.0;
+        float w = 0.55;
+        a += w * cnoise(p*0.6);  w *= 0.55;
+        a += w * cnoise(p*1.1);  w *= 0.55;
+        a += w * cnoise(p*2.0);
+        return a;
+      }
 
-void main(){
-  // moving band
-  float n = cnoise(vUv + uScroll + sin(uTime*0.1));
-  float t = 0.5 + 0.5*n;
-  t = pow(t, 0.25);
+      void main(){
+        // moving band
+        float n = cnoise(vUv + uScroll + sin(uTime*0.1));
+        float t = 0.5 + 0.5*n;
+        t = pow(t, 0.25);
+        t = mix(t, 1.0, 0.1);  // Maintains the 10% shift to favor blue more
 
-  vec3 color = mix(uColor1, uColor2, t);
+        vec3 color = mix(uColor1, uColor2, t);
 
-  // vignette / depth
-  float vign = smoothstep(0.68, 1.10, distance(vUv, vec2(0.5)));
-  color = mix(color, uColor3, vign * 0.10);
+        // vignette / depth
+        float vign = smoothstep(0.68, 1.10, distance(vUv, vec2(0.5)));
+        color = mix(color, uColor3, vign * 0.10);
 
-  float valley = smoothstep(0.50, 0.28, t);
-  color = mix(color, uColor3, valley * 0.08);
+        float valley = smoothstep(0.50, 0.28, t);
+        color = mix(color, uColor3, valley * 0.08);
 
-  // cloud coat
-  float clouds = fbm(vUv*0.9 + vec2(uScroll*0.2, 0.0) + uTime*0.015);
-  float cMask  = smoothstep(0.35, 0.85, 0.5 + 0.5*clouds);
-  vec3 coat    = mix(uColor2, vec3(0.96, 0.97, 1.0), 0.65);
-  color = mix(color, coat, cMask * 0.55);
+        // cloud coat
+        float clouds = fbm(vUv*0.9 + vec2(uScroll*0.2, 0.0) + uTime*0.015);
+        float cMask  = smoothstep(0.35, 0.85, 0.5 + 0.5*clouds);
+        vec3 coat    = mix(uColor2, vec3(0.96, 0.97, 1.0), 0.65);
+        color = mix(color, coat, cMask * 0.55);
 
+        vec2 center = vec2(0.92, 0.06);
+        float r = distance(vUv, center);
+        float lift = 1.0 - smoothstep(0.25, 0.95, r);
+        color = mix(color, vec3(0.98, 0.985, 1.0), lift * 0.35);
 
-  vec2 center = vec2(0.92, 0.06);
-  float r = distance(vUv, center);
-  float lift = 1.0 - smoothstep(0.25, 0.95, r);
-  color = mix(color, vec3(0.98, 0.985, 1.0), lift * 0.35);
+        vec2 glowCenter = vec2(0.08, 0.92);
+        float glow = 1.0 - smoothstep(0.0, 0.8, distance(vUv, glowCenter));
+        color += uColor1 * glow * 0.108;  // Keeps reduced glow for balance
 
-
-  vec2 glowCenter = vec2(0.08, 0.92);
-  float glow = 1.0 - smoothstep(0.0, 0.8, distance(vUv, glowCenter));
-  color += uColor1 * glow * 0.12;
-
-  // final output
-  gl_FragColor = vec4(color, 1.0);
-}
+        // final output
+        gl_FragColor = vec4(color, 1.0);
+      }
     `;
     
     const program = new Program(gl, {
       vertex,
       fragment,
-     uniforms: {
-  uTime: { value: 0 },
-  uScroll: { value: 0 },
-uColor1: { value: new Color("#F3D2B3") }, 
-uColor2: { value: new Color("#C7CBD9") }, 
-uColor3: { value: new Color("#9FA8BC") }, 
-  uResolution: { value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight) },
-}
+      uniforms: {
+        uTime: { value: 0 },
+        uScroll: { value: 0 },
+        uColor1: { value: new Color("#E48B74") }, 
+        uColor2: { value: new Color("#AAAEC3") }, 
+        uColor3: { value: new Color("#ADB1C2") }, 
+        uResolution: { value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight) },
+      }
     });
 
     const mesh = new Mesh(gl, { geometry, program });
@@ -1110,26 +1202,7 @@ const Testimonials = () => {
     });
   }, []);
 
-  const sectionOneRef = useRef(null);
-  const navBarRef = useRef(null);
 
-  useEffect(() => {
-    if (!sectionOneRef.current || !navBarRef.current) return;
-
-    ScrollTrigger.create({
-      trigger: sectionOneRef.current,
-      start: "75% top",
-      end: () => `+=${navBarRef.current.offsetTop + window.innerHeight}`,
-      pin: true,
-      pinSpacing: false,
-    });
-
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-  }, []);
-const testimonialsRef = useRef(null); 
-const reviewsRef = useRef(null);   
-
-const [activeDot, setActiveDot] = useState("results");
 useEffect(() => {
   const centerBias = 0.55; 
   const distToCenter = (el) => {
@@ -1236,7 +1309,54 @@ const makeCardVariants = (i) => ({
 
   const xOffset = useMemo(() => -(page * viewportW), [page, viewportW]);
 
+  const sectionOneRef = useRef(null);
+  const navBarRef = useRef(null);
 
+useEffect(() => {
+  if (!sectionOneRef.current || !navBarRef.current) return;
+
+  const st = ScrollTrigger.create({
+    trigger: sectionOneRef.current,
+    start: "75% top",
+    end: () => `+=${navBarRef.current.offsetTop + window.innerHeight}`,
+    pin: navBarRef.current,      
+    pinSpacing: false,
+    pinType: "fixed",       
+    anticipatePin: 1
+  });
+
+  return () => st.kill();
+}, []);
+const testimonialsRef = useRef(null); 
+const reviewsRef = useRef(null);   
+
+const [activeDot, setActiveDot] = useState("results");
+useEffect(() => {
+  let lastY = window.scrollY;
+  const checkScrollJump = () => {
+    const y = window.scrollY;
+    if (Math.abs(y - lastY) > 150) ScrollTrigger.refresh(true);
+    lastY = y;
+  };
+  gsap.ticker.add(checkScrollJump);
+  return () => gsap.ticker.remove(checkScrollJump);
+}, []);
+
+const [trailEnabled, setTrailEnabled] = useState(true);
+const testimonialRef = useRef(null);
+
+useEffect(() => {
+  const st = ScrollTrigger.create({
+    trigger: testimonialRef.current,
+    start: "top center",
+    end: "bottom center",
+    onEnter: () => setTrailEnabled(false),
+    onLeave: () => setTrailEnabled(true),
+    onEnterBack: () => setTrailEnabled(false),
+    onLeaveBack: () => setTrailEnabled(true),
+  });
+  return () => st.kill();
+}, []);
 
   return (
     <>
@@ -1276,6 +1396,7 @@ const makeCardVariants = (i) => ({
   className="z-10 relative w-full min-h-[110vh] px-6 md:px-12"
 >
   <div className="z-10 max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-0">
+    
     <div className="w-full md:w-1/2 min-h-[100vh]"></div>
     <div className="w-full md:w-1/2 flex items-center justify-center min-h-[100vh]">
       <div className="max-w-[1200px] w-full">
@@ -1290,7 +1411,7 @@ const makeCardVariants = (i) => ({
     ref={navBarRef}
     className="z-10 absolute bottom-0 left-0 w-full pb-2"
   >
-    <div className="flex items-center justify-center text-[13px] tracking-wider uppercase font-neuehaas45 gap-4">
+    <div className="flex items-center justify-center text-[15px] text-white tracking-wider uppercase font-neuehaas45 gap-4">
       <span className={activeDot === "results" ? "opacity-100" : "opacity-30"}>●</span>
       <span>Our patient results</span>
       <span className={activeDot === "reviews" ? "opacity-100" : "opacity-30"}>●</span>
@@ -1328,7 +1449,7 @@ const makeCardVariants = (i) => ({
           whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
           dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
           dragMomentum={false}
-          className="relative bg-[#F2F2F2]/20 backdrop-blur-lg
+          className="relative bg-[#F2F2F2]/70 backdrop-blur-xl
                      w-[320px] min-h-[450px] flex flex-col justify-start
                      border border-white cursor-grab active:cursor-grabbing
                      will-change-transform"
