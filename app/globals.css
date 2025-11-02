@@ -3327,14 +3327,7 @@ img:nth-child(6) {
   overflow: hidden;
 }
 
-.w-layout-grid {
-  grid-row-gap: 16px;
-  grid-column-gap: 16px;
-  grid-template-rows: auto auto;
-  grid-template-columns: 1fr 1fr;
-  grid-auto-columns: 1fr;
-  display: grid;
-}
+
 
 .timeline-grid.mod--timeline {
   align-items: center;
@@ -3420,7 +3413,7 @@ img:nth-child(6) {
 
 .timeline__year {
   margin-left: 350px;
-  font-size: 142px;
+  font-size: 143px;
   transition: all 0.5s;
   font-family: "NeueMontrealBook";
 }
@@ -3571,12 +3564,12 @@ img:nth-child(6) {
   transition: all 0.2s;
   display: block;
 }
-
+/* 
 .overflow-hidden {
   z-index: 2;
   position: relative;
   overflow: hidden;
-}
+} */
 
 .overflow-hidden.mod--hero-desc-01 {
   left: 0.4rem;

@@ -60,7 +60,9 @@ import GalaxyShape from "../_components/shapes/galaxy";
 import Shape03 from "../_components/shapes/shape03";
 import Shape05 from "../_components/shapes/shape05";
 import Shape06 from "../_components/shapes/shape06";
-import VennDiagram from "./vennDiagram";
+import VennDiagram1 from "./vennDiagramleft";
+import RightFloatingCircle from "./vennDiagramright.js";
+
 import { GUI } from "dat.gui";
 import {
   CuboidCollider,
@@ -152,10 +154,6 @@ function PixiFlower() {
     />
   );
 }
-
-
-
-
 
 
 const FluidSimulation = () => {
@@ -1454,13 +1452,7 @@ gl.disable(gl.BLEND);
       }}
     />
   );
-};
-
-
-
-
-
-
+}
 
 
 export default function WhyChooseUs() {
@@ -1479,7 +1471,7 @@ export default function WhyChooseUs() {
    <FluidSimulation />
 
       <div className="relative bg-[#F9F9F9]">
-        <div className="overflow-x-hidden w-full">
+        <div className=" w-full">
           {/* <div className="relative w-full h-screen" style={{ zIndex: 1 }}>
             <Canvas
               className="absolute inset-0"
@@ -1507,16 +1499,343 @@ export default function WhyChooseUs() {
          
           <CardStack />
           <WorkGrid />
-          <MoreThanSmiles />
-          <About />
-          <VennDiagram />
+          {/* <MoreThanSmiles /> */}
+          <CircleReveal />
+          {/* <About /> */}
+         
           <Marquee />
         </div>
       </div>
     </>
   );
 }
+function CircleReveal() {
+useLayoutEffect(() => {
+  const ctx = gsap.context(() => {
+    const section = document.querySelector(".circle-section");
+    const circle = document.querySelector(".circle.yellow");
+    const panels = gsap.utils.toArray(".panel");
+    const panelTrack = document.querySelector(".panel-track");
+    const numPanels = panels.length;
 
+    if (!circle || !panelTrack) return;
+
+
+    const scrollTween = gsap.to(panelTrack, {
+      xPercent: -100 * (numPanels - 1),
+      ease: "none",
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: "+=6000",
+        scrub: 1,
+        pin: true,
+      },
+    });
+
+    // circle color transitions
+    const circleWidth = circle.offsetWidth;
+    const colors = [".circle.red", ".circle.blue", ".circle.purple", ".circle.green", ".circle.pink"];
+
+    colors.forEach((selector, i) => {
+      const colorCircle = document.querySelector(selector);
+      const triggerPanel = panels[i];
+      if (!colorCircle || !triggerPanel) return;
+
+      ScrollTrigger.create({
+        trigger: triggerPanel,
+        containerAnimation: scrollTween,
+        scrub: true,
+        start: () => `left center+=${circleWidth / 2}`,
+        end: () => `left center-=${circleWidth / 2}`,
+        onUpdate: (self) => {
+          const pct = 100 - self.progress * 100;
+          gsap.set(colorCircle, { clipPath: `inset(0% 0% 0% ${pct}%)` });
+        },
+      });
+    });
+
+
+    panels.forEach((panel) => {
+      const el = panel.querySelector("h2");
+      if (!el) return;
+
+      const split = new SplitText(el, { type: "chars, words", charsClass: "chars" });
+
+      gsap.from(split.chars, {
+        scrollTrigger: {
+          trigger: el,
+          containerAnimation: scrollTween, 
+          start: "left 80%",
+          end: "left 20%",
+          toggleActions: "play none none none",
+          markers: false,
+        },
+        y: 15,
+        opacity: 0,
+        stagger: 0.06,
+        duration: 1.2,
+        ease: "power3.out",
+      });
+    });
+  });
+
+  return () => ctx.revert();
+}, []);
+    const panelsRef = useRef(null);
+const hexToRgb = (hex) => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
+    : null;
+};
+
+const rgbToHex = (r, g, b) => {
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+};
+
+const colorLerp = (color1, color2, amount) => {
+  const [r1, g1, b1] = hexToRgb(color1);
+  const [r2, g2, b2] = hexToRgb(color2);
+  const r = Math.round(r1 + (r2 - r1) * amount);
+  const g = Math.round(g1 + (g2 - g1) * amount);
+  const b = Math.round(b1 + (b2 - b1) * amount);
+  return rgbToHex(r, g, b);
+};
+
+  return (
+    <section className="circle-section">
+      <div className="pinned-content">
+     
+
+        <div className="left-text">
+          Your glow-up deserves better than basic. 
+        </div>
+
+        <div className="circle-wrapper">
+          <div className="circle yellow" > 
+
+            
+          </div>
+          <div className="circle red" > 
+            <VennDiagram1 /> 
+            </div>
+          <div className="circle blue" >
+             <RightFloatingCircle /> 
+               
+             </div>
+<div className="circle purple">
+            <svg
+              viewBox="0 0 400 400"
+              className="ring-svg"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {Array.from({ length: 40 }).map((_, i) => {
+                const r = 200 - i * 4;
+                const t = i / 39;
+                const colors = ["#B8E3E9", "#E6E6FA", "#FFDAB9"]; // blue, lavender, peach
+                const segment = Math.floor(t * 3);
+                const localT = (t * 3) % 1;
+                const startColor = colors[segment % 3];
+                const endColor = colors[(segment + 1) % 3];
+                const stroke = colorLerp(startColor, endColor, localT);
+
+                return (
+                  <circle
+                    key={i}
+                    cx="200"
+                    cy="200"
+                    r={r}
+                    stroke={stroke}
+                    strokeWidth="1.3"
+                    fill="none"
+                    opacity={1 - t * 0.1}
+                    style={{ filter: `drop-shadow(0 0 ${1 + t * 2}px rgba(255, 182, 193, 0.2))` }} // subtle pinkish glow for inner spiral vibe
+                  />
+                );
+              })}
+            </svg>
+          </div>
+          <div className="circle green" />
+          <div className="circle pink" />
+        </div>
+
+ <div className="panel-track" ref={panelsRef}>
+      <div className="panel">
+        <h2>Our office never takes shortcuts when it comes to patient care. </h2>
+       
+      </div>
+      <div className="panel">
+        <h2>We can't guarantee whether you'll get that transparency elsewhere.</h2>
+     
+      </div>
+      <div className="panel">
+        <h2>Total Flexibility</h2>
+
+      </div>
+      <div className="panel">
+        <h2>Transparency</h2>
+   
+      </div>
+      <div className="panel">
+        <h2>Support</h2>
+
+      </div>
+    </div>
+      </div>
+
+      <style jsx>{`
+        .circle-section {
+          position: relative;
+          height: 300vh;
+   background: #FEF9F8;
+          overflow: hidden;
+        }
+.ring-svg {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  // filter: drop-shadow(0 0 10px rgba(170, 130, 255, 0.3))
+  //         drop-shadow(0 0 20px rgba(60, 214, 210, 0.2));
+
+}
+
+        .pinned-content {
+          position: relative;
+          height: 100vh;
+          width: 100%;
+          overflow: hidden;
+          z-index: 0;
+        }
+
+     
+
+
+        .left-text {
+          position: absolute;
+          left: 5%;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 5;
+          width: 20vw;
+          font-family: "NeueHaasGroteskDisplayPro45Light";
+          font-size: 16px;
+          line-height: 1.2;
+          letter-spacing: .31rem
+        }
+
+    
+
+        .circle-wrapper {
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .circle {
+          position: absolute;
+          width: 560px;
+          height: 560px;
+          border-radius: 50%;
+          clip-path: inset(0% 0% 0% 100%);
+        }
+
+        .circle.yellow {
+          background: #ff4d4d;
+          z-index: 1;
+          clip-path: inset(0% 0% 0% 0%);
+        }
+
+        .circle.red {
+          background: #ff4d4d;
+          z-index: 2;
+        }
+
+        .circle.blue {
+          background: #4d7dff;
+          z-index: 3;
+        }
+
+        .circle.purple {
+          width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+          background: #FEF9F8;
+  z-index: 4;
+        }
+
+        .circle.green {
+          background: #91ff91;
+          z-index: 5;
+        }
+
+        .circle.pink {
+          background: #ff7fbf;
+          z-index: 6;
+        }
+.panel-track,
+.panel {
+  pointer-events: none;
+}
+        .panel-track {
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: 100vh;
+          display: flex;
+          flex-direction: row;
+          z-index: 5;
+          transform: translateX(100%);
+          will-change: transform;
+        }
+
+        .panel {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          height: 100vh;
+          width: 40vw;
+          padding: 3rem;
+          border-left: 1px solid rgba(0, 0, 0, 0.15);
+          flex-shrink: 0;
+      // background: rgba(255, 255, 255, 0.3); 
+          justify-content: flex-start;
+          padding-top: calc(33vh);
+        }
+
+.panel h2 {
+  font-size: 1rem;
+  font-family: "NeueHaasGroteskDisplayPro45Light";
+  margin-top: 0.5rem;
+  color: #111;
+  padding: 0.8rem .2rem;
+  // border-radius: 12px;
+  // background: rgba(255, 255, 255, 0.35);
+  // backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.panel h2:hover {
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+
+      `}</style>
+    </section>
+  );
+}
 function WorkGrid() {
   const workRef = useRef(null);
 
@@ -1981,10 +2300,27 @@ function ScrollPanels() {
           <footer className="absolute bottom-[8%] left-0 w-full px-4 md:px-16 flex items-center justify-between text-xs tracking-widest text-gray-600 uppercase">
             <span>Welcome</span>
             <div className="flex items-center gap-2">
-              <span className="text-sm">↓</span>
+              <span className="inline-flex w-4 h-4">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="w-full h-full"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
+    />
+  </svg>
+</span>
               <span>Scroll to Explore</span>
             </div>
-            <span>...</span>
+            <span className="w-[4px] h-auto">
+              {/* <PixiFlower /> */}
+              </span>
           </footer>
         </section>
         <section className="w-full bg-[#f9f9f9] flex flex-col items-center">
@@ -2003,12 +2339,12 @@ function ScrollPanels() {
                 />
               </div>
               <div className="flex flex-col text-left z-10">
-                <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45 uppercase">
+                <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45">
                   Standard <br />
                   <span className="mt-2 pt-2 block">Setting</span>
                 </h1>
-                <p className="text-[15px] mt-4 text-black/70 font-neuehaas45">
-                  Built around your life
+                <p className="text-[16px] mt-4 font-neuehaas45 text-xs tracking-widest text-gray-600 uppercase">
+                  Since 1977
                 </p>
               </div>
             </div>
@@ -2020,11 +2356,11 @@ function ScrollPanels() {
           <div className="w-full px-[6vw] py-[10vh]">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
               <div className="flex flex-col text-left z-10">
-                <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45 uppercase">
+                <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45">
                   Smart <br />
                   <span className="mt-2 pt-2 block">Orthodontics</span>
                 </h1>
-                <p className="text-[15px] mt-4 text-black/70 font-neuehaas45">
+                <p className="text-[16px] mt-4 text-xs tracking-widest text-gray-600 uppercase font-neuehaas45">
                   Built around your life
                 </p>
               </div>
@@ -2045,11 +2381,11 @@ function ScrollPanels() {
           <div className="w-full px-[6vw] py-[10vh]">
             <div className="flex flex-col lg:flex-row-reverse items-center justify-between gap-12">
               <div className="flex flex-col text-left z-10">
-                <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45 uppercase">
+                <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45">
                   3D <br />
                   <span className="mt-2 pt-2 block">Imaging</span>
                 </h1>
-                <p className="max-w-[400px] text-[15px] mt-4 text-black/70 font-neuehaas45">
+                <p className="max-w-[400px] mt-4 text-xs tracking-widest text-gray-600 uppercase font-neuehaas45">
                   3D technology is reshaping modern orthodontics. Expect
                   different information from our competitors.
                 </p>
@@ -3514,7 +3850,7 @@ const About = () => {
 
   useEffect(() => {
     if (swiper2) {
-      swiper2.slideTo(2, 0);
+      swiper2.slideTo(0, 0);
     }
 
     const handleScroll = () => {
@@ -3561,7 +3897,7 @@ const About = () => {
           </div>
 
           {/* (Horizontal Swiper) */}
-          <div className="timeline-grid mod--timeline w-layout-grid">
+          <div className="timeline-grid mod--timeline">
             <div className="timeline__col mod--2">
               <Swiper
                 onSwiper={(swiper) => setSwiper2(swiper)}
