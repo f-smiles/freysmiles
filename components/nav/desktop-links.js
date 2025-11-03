@@ -3,6 +3,11 @@ import UserButton from "@/components/auth/user-button";
 
 export const links = [
   {
+    title: "TREATMENTS",
+    sublinks: ["Invisalign", "Braces", "Early & Adult Orthodontics"],
+    hrefs: ["/invisalign", "/braces", "/early-adult-orthodontics"],
+  },
+  {
     title: "ABOUT",
     sublinks: ["Team", "Manifesto", "Testimonials", "Locations"],
     hrefs: ["/our-team", "/why-choose-us", "/testimonials", "/#locations"],
@@ -29,7 +34,7 @@ export const links = [
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <p className="text-sm font-saolitalic opacity-60">(5)</p>
-              <h2 className="text-[24px] font-light uppercase font-neueroman">
+              <h2 className="text-[20px] font-neuehaas45">
                 Login
               </h2>
             </div>
@@ -37,9 +42,18 @@ export const links = [
         </Link>
       ),
   },
+
+  // NEW: Book
   {
-    title: "TREATMENTS",
-    sublinks: ["Invisalign", "Braces", "Early & Adult Orthodontics"],
-    hrefs: ["/invisalign", "/braces", "/early-adult-orthodontics"],
+    title: "BOOK",
+
+    hrefs: ["/book-now"],
+  },
+
+  // NEW: Shop
+  {
+    title: "SHOP",
+
+    hrefs: ["/shop/products"],
   },
 ];

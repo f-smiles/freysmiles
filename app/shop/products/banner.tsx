@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export default function Banner() {
-  const text = "CLICK HERE TO SHOP GIFT CARDS ";
+  const text = "Our gift cards can be used toward any part of treatment—and they never expire. Send one digitally or choose a physical card. ";
   const separator = " • ";
   const repeatedText = Array(50).fill(text + separator).join("");
 
@@ -36,7 +36,7 @@ export default function Banner() {
           href={`${process.env.NEXT_PUBLIC_SQUARE_GIFT_CARDS_URL}`}
           target="_blank"
         >
-          <div className="animate-giftCardMarquee whitespace-nowrap block text-[15vw] text-purple-400 text-sm leading-6">
+          <div className="animate-giftCardMarquee whitespace-nowrap block text-[#8b830f] text-[13px] font-neuehaas45 leading-6">
             {repeatedText}{repeatedText}
           </div>
         </Link>

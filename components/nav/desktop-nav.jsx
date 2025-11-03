@@ -1,4 +1,5 @@
 "use client";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
@@ -145,9 +146,11 @@ const bgRef = useRef(null);
 //   if (buttons[activeIndex]) buttons[activeIndex].appendChild(bg);
 // }, [activeIndex]);
 
-
+  const [hovered, setHovered] = useState(false);
+const menuText = "Menu";
   return (
     <>
+
       <motion.nav
         id="desktop-nav"
         className={`${styles.header} ${
@@ -161,57 +164,146 @@ const bgRef = useRef(null);
           variants={opacity}
           animate={!isActive ? "open" : "closed"}
         >
-          <motion.div variants={opacity} animate={!isActive ? "open" : "closed"}>
-            <motion.div
-              ref={wrapperRef}
-              className="relative flex items-center py-4"
-            >
-              <div className="flex gap-1">
-                {links.slice(0, 4).map((link, i) => (
-                  <motion.div
-                    key={`${i}-${link.title}`}
-                    data-flip-button="button"
-                    className="bg-[#F2F2F2]/70 text-black rounded-[8px] px-6 py-3 flex items-center relative border border-gray-300 transition-colors duration-200 hover:border-gray-500"
-                    onClick={() => {
-                      setSelectedLink(link.title);
-                      setIsActive(!isActive);
-                      setActiveIndex(i);
-                    }}
-                  >
-                    <motion.p
-                      className="text-gray-500 font-neuehaas35 tracking-wider text-[11px] cursor-pointer"
-                      variants={opacity}
-                      animate={!isActive ? "open" : "closed"}
-                    >
-                      {link.title}
-                    </motion.p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
 
-          <Link href="/" className="absolute mx-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <svg className="size-[72px]" fill="#fff" id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 299.67 158">
-              <g id="Layer_4" data-name="Layer 4">
-                <g id="freysmiles_logo" data-name="freysmiles logo">
-                  <g id="f">
-                    <path d="M25,0h0C38.8,0,50,11.2,50,25v24c0,.55-.45,1-1,1H25C11.2,50,0,38.8,0,25H0C0,11.2,11.2,0,25,0Z" fill="#000" /> {/* red */}
-                    <path d="M79.37,0h30C123.17,0,134.38,11.2,134.38,25h0c0,13.8-11.2,25-25,25H55.38c-.55,0-1-.45-1-1V25C54.38,11.2,65.58,0,79.37,0Z" fill="#000" /> {/* orange */}
-                    <path d="M25,54h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25h0C11.2,104,0,92.8,0,79H0C0,65.2,11.2,54,25,54Z" fill="#000" /> {/* yellow */}
-                    <path d="M55.38,54h24c13.8,0,25,11.2,25,25h0c0,13.8-11.2,25-25,25h-24c-.55,0-1-.45-1-1V55c0-.55,.45-1,1-1Z" fill="#000" /> {/* green */}
-                    <path d="M25,108h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25H1C.45,158,0,157.55,0,157v-24C0,119.2,11.2,108,25,108Z" fill="#000" /> {/* light blue */}
-                  </g>
-                  <g id="s">
-                    <path d="M180.75,0h37.96c.55,0,1,.45,1,1V74.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-1.96C143.75,16.58,160.33,0,180.75,0Z" fill="#000" /> {/* purple */}
-                    <path d="M224.71,0h37.96C283.09,0,299.67,16.58,299.67,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37V1C223.71,.45,224.16,0,224.71,0Z" fill="#000" /> {/* blue */}
-                    <path d="M144.75,79.96h37.96c20.42,0,37,16.58,37,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-37.96c0-.55,.45-1,1-1Z" fill="#000" /> {/* indigo */}
-                    <path d="M224.71,79.96h37.96c20.42,0,37,16.58,37,37v1.96c0,20.42-16.58,37-37,37h-37.96c-.55,0-1-.45-1-1V80.96c0-.55,.45-1,1-1Z" fill="#000" /> {/* light green */}
-                  </g>
-                </g>
-              </g>
-            </svg>
-            {/* <motion.div
+<div
+  className="relative flex items-center"
+  onMouseEnter={() => setHovered(true)}
+  onMouseLeave={() => setHovered(false)}
+>
+
+<motion.div
+  className="w-12 h-12 rounded-full backdrop-blur-lg bg-white/40 border border-[#808080]/10 flex items-center justify-center z-10"
+  style={{ position: "absolute", left: 0, transformOrigin: "right center" }}
+  initial={{ scaleX: 0, scaleY: 0.3, opacity: 0 }}
+  animate={{
+    scaleX: hovered ? 1 : 0,
+    scaleY: hovered ? 1 : 0.3,
+    opacity: hovered ? 1 : 0
+  }}
+  transition={{
+    scaleX: { duration: 0.3, ease: [0.65, 0, 0.35, 1] }, 
+    scaleY: { duration: 0.3, ease: [0.65, 0, 0.35, 1], delay: 0.08 },
+    opacity: { duration: 0.3 }
+  }}
+  aria-hidden="true"
+>
+<svg
+  fill="#000000"
+  viewBox="0 0 256 256"
+  id="Flat"
+  xmlns="http://www.w3.org/2000/svg"
+  style={{ width: "50%", height: "50%" }}
+>
+  <path d="M218.82812,130.82812l-72,72a3.99957,3.99957,0,0,1-5.65625-5.65625L206.34326,132H40a4,4,0,0,1,0-8H206.34326L141.17187,58.82812a3.99957,3.99957,0,0,1,5.65625-5.65625l72,72A3.99854,3.99854,0,0,1,218.82812,130.82812Z" />
+</svg>
+</motion.div>
+<motion.div className={`relative ml-12 flex items-center  backdrop-blur-lg bg-white/40  border border-[#808080]/10 rounded-full h-14 overflow-hidden
+              transition-all duration-300 ease-[cubic-bezier(0.16,0.3,0.3,1)]
+              ${hovered ? "w-[380px] md:w-[400px] px-6" : "w-[86px] px-6"}`}
+>
+    <motion.span
+      className="absolute left-6 tracking-[0.06em] text-black text-[12px] font-neuehaas45 whitespace-nowrap flex"
+      initial="show"
+      animate={hovered ? "hide" : "show"}
+      variants={{
+        show: { transition: { staggerChildren: 0.03 } },
+        hide: { transition: { staggerChildren: 0.03 } },
+      }}
+    >
+      {(typeof menuText === "string" ? menuText : "Menu").split("").map((char, i) => (
+        <motion.span
+          key={i}
+          className="inline-block"
+          variants={{ show: { opacity: 1, y: 0 }, hide: { opacity: 0, y: 20 } }}
+          transition={{ duration: 0.3, ease: [0.16, 0.3, 0.3, 1] }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </motion.span>
+
+
+    <motion.div
+      className="absolute left-6 flex items-center gap-3"
+      initial="hide"
+      animate={hovered ? "show" : "hide"}
+      variants={{
+        show: { transition: { staggerChildren: 0.05 } },
+        hide: { transition: { staggerChildren: 0.03 } },
+      }}
+    >
+      {links.slice(0, 5).map((link, i) => {
+        const isDirect = !link.sublinks || link.sublinks.length === 0;
+        const href = isDirect && link.hrefs && link.hrefs[0];
+
+        const activate = () => {
+          if (isDirect && href) {
+            setIsActive(false);
+            window.location.href = href;
+          } else {
+            setSelectedLink(link.title);
+            setIsActive(true);
+            setActiveIndex(i);
+          }
+        };
+
+        return (
+          <motion.button
+            key={link.title}
+            type="button"
+            className="text-black tracking-[0.06em] px-2 py-2 flex items-center cursor-pointer outline-none "
+            variants={{ show: { opacity: 1, y: 0 }, hide: { opacity: 0, y: -10 } }}
+            transition={{ duration: 0.35, ease: [0.16, 0.3, 0.3, 1] }}
+            onClick={activate}
+            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && activate()}
+          >
+            <span className="text-[11px] text-black font-neuehaas35">{link.title}</span>
+          </motion.button>
+        );
+      })}
+    </motion.div>
+  </motion.div>
+
+  <motion.div
+    className="w-12 h-12 rounded-full backdrop-blur-lg bg-white/40  border border-[#808080]/10 flex items-center justify-center z-10"
+    initial={{ scaleY: 1, opacity: 1 }}
+    animate={{ scaleY: hovered ? 0 : 1, opacity: hovered ? 0 : 1 }}
+    transition={{ duration: 0.5, ease: [0.16, 0.3, 0.3, 1] }}
+    aria-hidden={hovered}
+  >
+<svg
+  fill="#000000"
+  viewBox="0 0 256 256"
+  id="Flat"
+  xmlns="http://www.w3.org/2000/svg"
+  style={{ width: "50%", height: "50%", transform: "scaleX(-1)" }}
+>
+  <path d="M218.82812,130.82812l-72,72a3.99957,3.99957,0,0,1-5.65625-5.65625L206.34326,132H40a4,4,0,0,1,0-8H206.34326L141.17187,58.82812a3.99957,3.99957,0,0,1,5.65625-5.65625l72,72A3.99854,3.99854,0,0,1,218.82812,130.82812Z" />
+</svg>
+  </motion.div>
+</div>
+
+
+
+          <motion.div
+            variants={opacity}
+            animate={!isActive ? "open" : "closed"}
+          >
+            {/* styles.el */}
+            <motion.div className="flex items-center ">
+
+  {/* <Link href="/book-now">
+    <motion.div
+      className="bg-black text-[white] rounded-full px-6 py-5 font-helvetica-neue-light tracking-wider text-[11px]"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      Book
+    </motion.div>
+  </Link> */}
+
+          <Link href="/">
+            <motion.div
               className={`${
                 isActive ? "hidden" : "block"
               }    text-black flex justify-center items-center  p-3`}
@@ -266,54 +358,23 @@ const bgRef = useRef(null);
                   <rect x="8" y="16" width="16" height="8" />
                 </g>
               </svg>
-            </motion.div> */}
+            </motion.div> 
           </Link>
 
-          <motion.div
-            variants={opacity}
-            animate={!isActive ? "open" : "closed"}
-          >
-            {/* styles.el */}
-            <motion.div className="flex items-center">
-              {cart.length > 0 && (
-                <motion.div
-                  className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 rounded-full px-1 py-4"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <CartComponent />
-                </motion.div>
-              )}
-              <Link href="/book-now">
-                <motion.div
-                  className="bg-black backdrop-blur-lg shadow-lg shadow-white/10 text-[white] rounded-full px-6 py-5 font-helvetica-neue-light tracking-wider text-[11px]"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Book
-                </motion.div>
-              </Link>
-              <Link href="/">
-                <motion.div
-                  className="bg-black text-white rounded-full w-12 h-12 flex items-center justify-center text-[11px] font-helvetica-neue-light"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  MAIN
-                </motion.div>
-              </Link>
-              <Link href="/shop/products">
-                <motion.div
-                  className="flex items-center justify-center w-10 h-16 transition-all bg-black rounded-full shadow-lg cursor-pointer backdrop-blur-lg shadow-white/10"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span className="rotate-90 text-white font-helvetica-neue-light text-[11px]">
-                    Shop
-                  </span>
-                </motion.div>
-              </Link>
-            </motion.div>
+
+
+  {/* <Link href="/shop/products">
+    <motion.div
+      className="flex items-center justify-center w-10 h-16 transition-all bg-black rounded-full shadow-lg cursor-pointer"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <span className="rotate-90 text-white font-helvetica-neue-light text-[11px]">
+        Shop
+      </span>
+    </motion.div>
+  </Link> */}
+</motion.div>
 
           </motion.div>
         </motion.div>
@@ -378,7 +439,7 @@ const bgRef = useRef(null);
                     <p className="text-sm font-saolitalic opacity-60">
                       ({j + 1})
                     </p>
-                    <h2 className="text-[24px] font-light uppercase font-neueroman">
+                    <h2 className="text-[20px] font-neuehaas45">
                       {sublink}
                     </h2>
                   </div>
@@ -406,37 +467,33 @@ const bgRef = useRef(null);
   )}
 </div>
               {/* RIGHT */}
-              <div className="flex flex-col justify-center w-1/2 gap-8 text-sm text-center font-neuehaas35">
-                <div>
-                  <p className="mb-2 text-xs uppercase font-neuehaas35 opacity-70">
-                    E:
-                  </p>
-                  <div className="flex flex-col gap-1 underline underline-offset-2">
-                    <a href="mailto:info@email.com">info@freysmiles.com</a>
-                  </div>
-                </div>
+         <div className="flex flex-col justify-center w-1/2 gap-8 text-[14px] text-center font-neuehaas35">
+  <div>
+    <p className="mb-2 text-[14px] font-neuehaas35 opacity-70">
+      Email:
+    </p>
+    <div className="flex flex-col gap-1 underline underline-offset-2">
+      <a href="mailto:info@email.com">info@freysmiles.com</a>
+    </div>
+  </div>
 
-                <div>
-                  <p className="mb-2 text-xs uppercase font-neuehaas35 opacity-70">
-                    T:
-                  </p>
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xs font-neuehaas35">
-                      (610) 437-4748
-                    </p>
-                  </div>
-                </div>
+  <div>
+    <p className="mb-2 text-[14px] font-neuehaas35 opacity-70">
+      Telephone:
+    </p>
+    <div className="flex flex-col gap-1">
+      <p className="text-[14px] font-neuehaas35">(610) 437-4748</p>
+    </div>
+  </div>
 
-                <div>
-                  <p className="mb-2 text-xs font-neuehaas35 opacity-70">
-                    Social
-                  </p>
-                  <div className="flex flex-col gap-1 underline underline-offset-2">
-                    <a href="#">Instagram</a>
-                    <a href="#">Facebook</a>
-                  </div>
-                </div>
-              </div>
+  <div>
+    <p className="mb-2 text-[14px] font-neuehaas35 opacity-70">Social</p>
+    <div className="flex flex-col gap-1 underline underline-offset-2">
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+    </div>
+  </div>
+</div>
             </div>
           </motion.div>
         )}

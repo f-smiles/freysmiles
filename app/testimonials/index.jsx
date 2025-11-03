@@ -1,5 +1,5 @@
 "use client";
-import MouseTrail from "./mouse";
+import MouseTrail from "./mouse.jsx";
 import { Renderer, Program, Color, Mesh, Triangle, Vec2 } from "ogl";
 import {
   motion,
@@ -7,6 +7,8 @@ import {
   AnimatePresence,
   useMotionValue,
   useSpring,
+  useMotionValueEvent,
+  useScroll
 } from "framer-motion";
 import {
   Canvas,
@@ -23,6 +25,7 @@ import React, {
   useMemo,
   forwardRef,
   useImperativeHandle,
+  useLayoutEffect
 } from "react";
 import {
   EffectComposer,
@@ -119,7 +122,7 @@ const TextAnimator = forwardRef(({ children, className }, ref) => {
     });
 
     charsRef.current = chars;
-    originalText.current = chars.map((span) => span.textContent); // 💾 Store clean original chars
+    originalText.current = chars.map((span) => span.textContent);
   }, [children]);
 
   useImperativeHandle(ref, () => ({
@@ -164,39 +167,103 @@ const TextAnimator = forwardRef(({ children, className }, ref) => {
     </span>
   );
 });
-TextAnimator.displayName = "TextAnimator";
 
-const Testimonial = () => {
-  const patients = [
-    { name: "Lainie", duration: "20 months" },
-    { name: "Ron L.", duration: "INVISALIGN" },
-    { name: "Elizabeth", duration: "INVISALIGN, GROWTH APPLIANCE" },
-    { name: "Kinzie", duration: "BRACES, 24 months" },
-    { name: "Kasprenski" },
-    { name: "Leanne", duration: "12 months" },
-    { name: "Harold", duration: "Invisalign" },
-    { name: "Rosie & Grace" },
-    { name: "Keith", duration: "" },
-    { name: "Justin", duration: "Invisalign, 2 years" },
-    { name: "Kara" },
-    { name: "Sophia", duration: "2 years, Braces" },
-    { name: "Brynn" },
-    { name: "Emma" },
-    { name: "Brooke", duration: "2 years, Braces" },
-    { name: "Nilaya", duration: "Braces" },
-    { name: "Maria A." },
-    { name: "Natasha K.", duration: "" },
-    { name: "James C.", duration: "Invisalign, 2 years" },
-    { name: "Devika K." },
-    { name: "Ibis S.", duration: "Invisalign, 1 year" },
-    { name: "Abigail" },
-    { name: "Emma" },
-    { name: "Karoun G", duration: "Motion Appliance, Invisalign" },
-  ];
+const Testimonial = ({ borderRef }) => {
+const patients = [
+  {
+    name: "Lainie",
+    image: "../images/testimonials/laniepurple.png",
+    duration: "20 months",
+  },
+  {
+    name: "Ron L.",
+    image: "../images/testimonials/Ron_Lucien.jpg",
+    duration: "INVISALIGN",
+  },
+  {
+    name: "Elizabeth",
+    image: "../images/testimonials/elizabethpatient.jpeg",
+    duration: "INVISALIGN, GROWTH APPLIANCE",
+  },
+  {
+    name: "Kinzie",
+    image: "../images/testimonials/kinzie1.jpg",
+    duration: "BRACES, 24 months",
+  },
+  { name: "Kasprenski", image: "../images/testimonials/kasprenski.jpg" },
+  {
+    name: "Leanne",
+    image: "../images/testimonials/leanne.png",
+    duration: "12 months",
+  },
+  {
+    name: "Harold",
+    image: "../images/testimonials/Narvaez.jpg",
+    duration: "Invisalign",
+  },
+  { name: "Rosie & Grace", image: "../images/testimonials/Rosiegrace.png" },
+  {
+    name: "Keith",
+    image: "../images/testimonials/hobsonblue.png",
+    duration: "",
+  },
+  {
+    name: "Justin",
+    image: "../images/testimonials/hurlburt.jpeg",
+    duration: "Invisalign, 2 years",
+  },
+  { name: "Kara", image: "../images/testimonials/Kara.jpeg" },
+  {
+    name: "Sophia",
+    image: "../images/testimonials/Sophia_Lee.jpg",
+    duration: "2 years, Braces",
+  },
+  { name: "Brynn", image: "../images/testimonials/brynnportrait.png" },
+  { name: "Emma", image: "../images/testimonials/Emma.png" },
+  {
+    name: "Brooke",
+    image: "../images/testimonials/Brooke_Walker.jpg",
+    duration: "2 years, Braces",
+  },
+  {
+    name: "Nilaya",
+    image: "../images/testimonials/nilaya.jpeg",
+    duration: "Braces",
+  },
+  { name: "Maria A.", image: "../images/testimonials/Maria_Anagnostou.jpg" },
+  {
+    name: "Natasha K.",
+    image: "../images/testimonials/Natasha_Khela.jpg",
+    duration: "",
+  },
+  {
+    name: "James C.",
+    image: "../images/testimonials/James_Cipolla.jpg",
+    duration: "Invisalign, 2 years",
+  },
+  {
+    name: "Devika K.",
+    image: "../images/testimonials/Devika_Knafo.jpg",
+  },
+  {
+    name: "Ibis S.",
+    image: "../images/testimonials/Ibis_Subero.jpg",
+    duration: "Invisalign, 1 year",
+  },
+  { name: "Abigail", image: "../images/testimonials/abigail.png" },
+  { name: "Emma", image: "../images/testimonials/EmmaF.png" },
+  {
+    name: "Karoun G",
+    duration: "Motion Appliance, Invisalign",
+
+  },
+];
+ const nameRef = useRef([]);
+  const durationRefs = useRef([]);
   const listRefs = useRef([]);
-  const nameRef = useRef();
-  const durationRef = useRef();
-
+  const [opacities, setOpacities] = useState(patients.map(() => 1));
+  const [activeIndex, setActiveIndex] = useState(0);
+  
   useEffect(() => {
     listRefs.current.forEach((el) => {
       gsap.fromTo(
@@ -217,25 +284,52 @@ const Testimonial = () => {
     });
   }, []);
 
-  return (
-    <main className="demo-4">
-      <section
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          padding: "0 2rem 2rem",
-          justifyContent: "center",
-        }}
-      >
-        <h2
-          style={{
-            fontSize: "12px",
-            color: "black",
-          }}
-        >
-          Patient Cases
-        </h2>
+ useEffect(() => {
+    if (!borderRef?.current) return;
 
+    const limit = 3;
+    let ticking = false;
+
+    const update = () => {
+      ticking = false;
+      const borderTop = borderRef.current.getBoundingClientRect().top;
+
+      let newActiveIndex = activeIndex;
+
+      const next = listRefs.current.map((el, i) => {
+        if (!el) return 1;
+        const { top: lineTop } = el.getBoundingClientRect();
+        if (lineTop <= borderTop - limit) {
+          newActiveIndex = i;
+          return 0;
+        }
+        return 1;
+      });
+
+      setOpacities(next);
+      setActiveIndex(newActiveIndex);
+    };
+
+    const onScrollOrResize = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+
+    update();
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
+    };
+  }, [borderRef]);
+
+
+ return (
+   <main className="relative demo-4">
+<section className="relative flex w-full min-h-screen px-8 md:px-16 pb-24 justify-center">
         <ul
           style={{
             margin: 0,
@@ -248,22 +342,32 @@ const Testimonial = () => {
           }}
         >
           {patients.map((item, index) => {
+            const hidden = (opacities[index] ?? 1) === 0;
             return (
               <li
                 key={index}
                 ref={(el) => (listRefs.current[index] = el)}
                 className="list__item"
+                style={{
+                  opacity: hidden ? 0 : 1,
+                  transition: hidden
+                    ? "opacity 0ms linear"
+                    : "opacity 160ms linear",
+                  willChange: "opacity",
+                }}
                 onMouseEnter={() => {
                   nameRef.current[index]?.animate?.();
-                  durationRef.current[index]?.animate?.();
+                  durationRefs.current[index]?.animate?.();
                 }}
               >
                 <span className="list__item-col" aria-hidden="true" />
                 <span className="list__item-col">
-                  <TextAnimator ref={nameRef}>{item.name}</TextAnimator>
+                  <TextAnimator ref={(el) => (nameRef.current[index] = el)}>
+                    {item.name}
+                  </TextAnimator>
                 </span>
                 <span className="list__item-col list__item-col--last">
-                  <TextAnimator ref={durationRef}>
+                  <TextAnimator ref={(el) => (durationRefs.current[index] = el)}>
                     {item.duration || "—"}
                   </TextAnimator>
                 </span>
@@ -271,10 +375,37 @@ const Testimonial = () => {
             );
           })}
         </ul>
+
+
+        <AnimatePresence mode="wait">
+          {activeIndex !== null && (
+            <motion.div
+              key={`image-${activeIndex}`}
+className="relative bottom-[8%] right-[20%] z-40 w-[240px] h-[300px] rounded-2xl overflow-hidden shadow-xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              <motion.img
+                key={`img-${activeIndex}`}
+                src={patients[activeIndex]?.image}
+                alt={patients[activeIndex]?.name}
+                className="absolute inset-0 object-cover w-full h-full rounded-2xl"
+                initial={{ clipPath: "inset(0% 100% 0% 0%)" }}
+                animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+                exit={{ clipPath: "inset(0% 100% 0% 0%)" }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
     </main>
   );
 };
+
+
 
 function Background() {
   const canvasRef = useRef(null);
@@ -290,7 +421,7 @@ function Background() {
     });
 
     const { gl } = renderer;
-    gl.clearColor(1, 1, 1, 1);
+    gl.clearColor(0.93, 0.94, 0.96, 1.0); 
 
     const geometry = new Triangle(gl);
 
@@ -309,70 +440,99 @@ function Background() {
     const fragment = `
       precision highp float;
 
-      uniform vec3 uColor1;
-      uniform vec3 uColor2;
+      uniform vec3 uColor1;   // deeper peach orange glow
+      uniform vec3 uColor2;   // stronger AAAEC3 blue (powder lavender updated)
+      uniform vec3 uColor3;   // slate lavender
       uniform float uTime;
       uniform float uScroll;
 
       varying vec2 vUv;
 
+      vec4 permute(vec4 x){ return mod(((x*34.0)+1.0)*x,289.0); }
+      vec2 fade(vec2 t){ return t*t*t*(t*(t*6.0-15.0)+10.0); }
 
-      vec4 permute(vec4 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
-      vec2 fade(vec2 t) { return t*t*t*(t*(t*6.0-15.0)+10.0); }
-
-      float cnoise(vec2 P) {
-        vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
-        vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
-        Pi = mod(Pi, 289.0); 
-        vec4 ix = Pi.xzxz;
-        vec4 iy = Pi.yyww;
-        vec4 fx = Pf.xzxz;
-        vec4 fy = Pf.yyww;
-        vec4 i = permute(permute(ix) + iy);
-        vec4 gx = 2.0 * fract(i * 0.0243902439) - 1.0; // 1/41 = 0.024...
-        vec4 gy = abs(gx) - 0.5;
-        vec4 tx = floor(gx + 0.5);
-        gx = gx - tx;
-        vec2 g00 = vec2(gx.x,gy.x);
-        vec2 g10 = vec2(gx.y,gy.y);
-        vec2 g01 = vec2(gx.z,gy.z);
-        vec2 g11 = vec2(gx.w,gy.w);
-        vec4 norm = 1.79284291400159 - 0.85373472095314 * 
-          vec4(dot(g00, g00), dot(g01, g01), dot(g10, g10), dot(g11, g11));
-        g00 *= norm.x;
-        g01 *= norm.y;
-        g10 *= norm.z;
-        g11 *= norm.w;
-        float n00 = dot(g00, vec2(fx.x, fy.x));
-        float n10 = dot(g10, vec2(fx.y, fy.y));
-        float n01 = dot(g01, vec2(fx.z, fy.z));
-        float n11 = dot(g11, vec2(fx.w, fy.w));
-        vec2 fade_xy = fade(Pf.xy);
-        vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
-        float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
-        return 2.3 * n_xy;
+      float cnoise(vec2 P){
+        vec4 Pi=floor(P.xyxy)+vec4(0.0,0.0,1.0,1.0);
+        vec4 Pf=fract(P.xyxy)-vec4(0.0,0.0,1.0,1.0);
+        Pi=mod(Pi,289.0);
+        vec4 ix=Pi.xzxz, iy=Pi.yyww, fx=Pf.xzxz, fy=Pf.yyww;
+        vec4 i=permute(permute(ix)+iy);
+        vec4 gx=2.0*fract(i*0.0243902439)-1.0;
+        vec4 gy=abs(gx)-0.5;
+        vec4 tx=floor(gx+0.5);
+        gx=gx-tx;
+        vec2 g00=vec2(gx.x,gy.x), g10=vec2(gx.y,gy.y);
+        vec2 g01=vec2(gx.z,gy.z), g11=vec2(gx.w,gy.w);
+        vec4 norm=1.79284291400159-0.85373472095314*
+          vec4(dot(g00,g00),dot(g01,g01),dot(g10,g10),dot(g11,g11));
+        g00*=norm.x; g01*=norm.y; g10*=norm.z; g11*=norm.w;
+        float n00=dot(g00,vec2(fx.x,fy.x));
+        float n10=dot(g10,vec2(fx.y,fy.y));
+        float n01=dot(g01,vec2(fx.z,fy.z));
+        float n11=dot(g11,vec2(fx.w,fy.w));
+        vec2 fade_xy=fade(Pf.xy);
+        vec2 n_x=mix(vec2(n00,n01),vec2(n10,n11),fade_xy.x);
+        float n_xy=mix(n_x.x,n_x.y,fade_xy.y);
+        return 2.3*n_xy;
       }
 
-      void main() {
-        float noise = cnoise(vUv * 1.0 + uScroll + sin(uTime * 0.1));
-        vec3 color = mix(uColor1, uColor2, noise);
+      // fbm for cloud coat
+      float fbm(vec2 p){
+        float a = 0.0;
+        float w = 0.55;
+        a += w * cnoise(p*0.6);  w *= 0.55;
+        a += w * cnoise(p*1.1);  w *= 0.55;
+        a += w * cnoise(p*2.0);
+        return a;
+      }
 
+      void main(){
+        // moving band
+        float n = cnoise(vUv + uScroll + sin(uTime*0.1));
+        float t = 0.5 + 0.5*n;
+        t = pow(t, 0.25);
+        t = mix(t, 1.0, 0.1);  // Maintains the 10% shift to favor blue more
+
+        vec3 color = mix(uColor1, uColor2, t);
+
+        // vignette / depth
+        float vign = smoothstep(0.68, 1.10, distance(vUv, vec2(0.5)));
+        color = mix(color, uColor3, vign * 0.10);
+
+        float valley = smoothstep(0.50, 0.28, t);
+        color = mix(color, uColor3, valley * 0.08);
+
+        // cloud coat
+        float clouds = fbm(vUv*0.9 + vec2(uScroll*0.2, 0.0) + uTime*0.015);
+        float cMask  = smoothstep(0.35, 0.85, 0.5 + 0.5*clouds);
+        vec3 coat    = mix(uColor2, vec3(0.96, 0.97, 1.0), 0.65);
+        color = mix(color, coat, cMask * 0.55);
+
+        vec2 center = vec2(0.92, 0.06);
+        float r = distance(vUv, center);
+        float lift = 1.0 - smoothstep(0.25, 0.95, r);
+        color = mix(color, vec3(0.98, 0.985, 1.0), lift * 0.35);
+
+        vec2 glowCenter = vec2(0.08, 0.92);
+        float glow = 1.0 - smoothstep(0.0, 0.8, distance(vUv, glowCenter));
+        color += uColor1 * glow * 0.108;  // Keeps reduced glow for balance
+
+        // final output
         gl_FragColor = vec4(color, 1.0);
       }
     `;
-
+    
     const program = new Program(gl, {
       vertex,
       fragment,
       uniforms: {
         uTime: { value: 0 },
         uScroll: { value: 0 },
-        uColor1: { value: new Color("#fdfaee") },
-        uColor2: { value: new Color("#d6abb4") },
-        uResolution: {
-          value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight),
-        },
-      },
+        uColor1: { value: new Color("#E48B74") }, 
+        uColor2: { value: new Color("#AAAEC3") }, 
+        uColor3: { value: new Color("#ADB1C2") }, 
+        uResolution: { value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight) },
+      }
     });
 
     const mesh = new Mesh(gl, { geometry, program });
@@ -500,7 +660,7 @@ const ScrambleBlock = ({
   charsType = "letters",
 }) => {
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={`space-y-1 ${className}`}>
       {lines.map((line, i) => (
         <ScrambleText
           key={i}
@@ -512,89 +672,124 @@ const ScrambleBlock = ({
     </div>
   );
 };
+const TerminalPreloader = () => {
+  
+  const containerRef = useRef();
+const specialChars = "⬝";
+  const lines = [
+  { id: 1, faded: "We are committed to setting the highest standard through", highlight: "Exceptional Service", top: 0 },
+  { id: 2, faded: "That commitment is supported by our use of", highlight: "State-of-the-Art Technology", top: 20 },
+  { id: 3, faded: "And strengthened by the expertise that comes from", highlight: "Unmatched Experience", top: 40 },
+  ];
 
-const RotatingModel = () => {
-  const { nodes } = useGLTF("/images/SVOX1F.glb");
-  console.log(nodes);
-  const modelRef = useRef();
+  useEffect(() => {
+    const terminalLines = containerRef.current.querySelectorAll('.terminal-line');
+    
 
-  useFrame(() => {
-    if (modelRef.current) {
-      modelRef.current.rotation.y += 0.005;
-    }
-  });
-  const { clock } = useThree();
+    gsap.set(terminalLines, { opacity: 0 });
+
+    const tl = gsap.timeline({
+      defaults: { ease: "none" }
+    });
+
+    lines.forEach((line, index) => {
+      const lineEl = terminalLines[index];
+      if (!lineEl) return;
+
+
+      const appearTime = index * 0.3;
+
+      tl.to(
+        lineEl,
+        { opacity: 1, duration: 0.3 },
+        appearTime
+      );
+
+
+      if (line.faded) {
+        const fadedSpan = lineEl.querySelector('.faded');
+        tl.to(
+          fadedSpan,
+          {
+            duration: 0.8,
+            scrambleText: {
+              text: line.faded,
+              chars: specialChars,
+              revealDelay: 0,
+              speed: 0.3
+            }
+          },
+          appearTime + 0.1
+        );
+      }
+
+
+      if (line.highlight) {
+        const highlightSpan = lineEl.querySelector('.highlight');
+        tl.to(
+          highlightSpan,
+          {
+            duration: 0.8,
+            scrambleText: {
+              text: line.highlight,
+              chars: specialChars,
+              revealDelay: 0,
+              speed: 0.3
+            }
+          },
+          appearTime + (line.faded ? 0.5 : 0.1) 
+        );
+      }
+
+
+      if (index % 3 === 0 && index > 0) {
+        tl.add(() => {
+          const spans = lineEl.querySelectorAll('span');
+          spans.forEach(span => {
+            const text = span.textContent;
+            gsap.to(span, {
+              duration: 0.2,
+              scrambleText: {
+                text: text,
+                chars: specialChars,
+                speed: 0.1
+              },
+              repeat: 1,
+              yoyo: true
+            });
+          });
+        }, `+=${Math.random() * 0.5}`);
+      }
+    });
+
+    return () => tl.kill(); 
+  }, []);
 
   return (
-    <>
-      <group ref={modelRef} position={[0, 0, 0]} scale={[3, 3, 3]}>
-        {nodes.mesh_0 && (
-          <mesh geometry={nodes.mesh_0.geometry}>
-            <meshPhysicalMaterial
-              transmission={1}
-              thickness={1.5}
-              roughness={0.07}
-              clearcoat={1}
-              clearcoatRoughness={0.2}
-              envMapIntensity={1.5}
-              metalness={0}
-              reflectivity={0.9}
-              sheen={0.3}
-              color={"#FFFFFF"}
-              iridescence={0.05}
-              iridescenceIOR={1.1}
-              // ior={1.47}
-              iridescenceThicknessRange={[100, 500]}
-            />
-          </mesh>
-        )}
-        {nodes.mesh_0_1 && (
-          <mesh geometry={nodes.mesh_0_1.geometry}>
-            <meshPhysicalMaterial
-              transmission={1}
-              thickness={1.5}
-              roughness={0.07}
-              clearcoat={1}
-              clearcoatRoughness={0.2}
-              envMapIntensity={1.5}
-              metalness={0}
-              reflectivity={0.9}
-              sheen={0.3}
-              // ior={1.47}
-              color={"#FFFFFF"}
-              iridescence={0.05}
-              iridescenceIOR={1.1}
-              iridescenceThicknessRange={[100, 500]}
-            />
-          </mesh>
-        )}
-      </group>
-      <EffectComposer>
-        <ChromaticAberration
-          blendFunction={BlendFunction.NORMAL}
-          offset={[
-            0.00002 + Math.sin(clock.elapsedTime) * 0.00005,
-            0.00002 + Math.cos(clock.elapsedTime) * 0.00005,
-          ]}
-        />
+    
+    <div className="terminal-preloader">
+    
 
-        <Outline
-          edgeStrength={5}
-          pulseSpeed={0}
-          visibleEdgeColor="#BCC6CC"
-          hiddenEdgeColor="#BCC6CC"
-        />
-      </EffectComposer>
-    </>
+      <div className="terminal-container" ref={containerRef}>
+        {lines.map((line) => (
+          <div 
+            key={line.id}
+            className="terminal-line"
+            style={{ top: `${line.top}px` }}
+          >
+            {line.faded && <span className="faded"></span>}
+            {line.highlight && <span className="highlight"></span>}
+          </div>
+        ))}
+      </div>
+
+    
+    </div>
   );
 };
 
-export default function Testimonials() {
-  // const { scene } = useGLTF("/images/SVOX1F.glb");
+const Testimonials = () => {
 
-  // if (!scene) return null;
-
-  // const { nodes } = useGLTF("/images/SVOX1F.glb");
   const textRef = useRef(null);
   const bgTextColor = "#CECED3";
   const fgTextColor = "#161818";
@@ -889,7 +1084,7 @@ export default function Testimonials() {
       name: "JAMES PICA",
       text: "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!",
       color: "bg-[#9482A3]",
-      image: "/images/_mesh_gradients/background_min.png",
+      image: "/images/_mesh_gradients/lightblue.png",
 
       height: "h-[320px]",
       width: "w-[320px]",
@@ -898,7 +1093,7 @@ export default function Testimonials() {
       name: "Thomas StPierre",
       text: "I had a pretty extreme case and it took some time, but FreySmiles gave me the smile I had always hoped for. Thank you!",
       color: "bg-[#EB7104]",
-      image: "/images/_mesh_gradients/sherbert.svg",
+      image: "/images/_mesh_gradients/purplegrey.png",
       height: "h-[240px]",
       width: "w-[240px]",
     },
@@ -906,63 +1101,65 @@ export default function Testimonials() {
       name: "FEI ZHAO",
       text: "Our whole experience for the past 10 years of being under Dr. Gregg Frey’s care and his wonderful staff has been amazing. My son and my daughter have most beautiful smiles, and they received so many compliments on their teeth. It has made a dramatic and positive change in their lives. Dr. Frey is a perfectionist, and his treatment is second to none. I recommend Dr. Frey highly and without any reservation.",
       color: "bg-[#80A192]",
-      image: "/images/_mesh_gradients/purplepeach.jpg",
+      image: "/images/_mesh_gradients/pantonepinkblue.png",
       height: "h-[320px]",
       width: "w-[320px]",
-    },
-    {
-      name: "Diana Gomez",
-      text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don’t have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
-      color: "bg-[#F3B700]",
-      image: "/images/_mesh_gradients/HarvestGold.jpg",
-      height: "h-[320px]",
-      width: "w-[320px]",
-    },
-    {
-      name: "Brandi Moyer",
-      text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
-      color: "bg-[#4C90B3]",
-      image: "/images/_mesh_gradients/LightSkyBlue.jpg",
-    },
-    {
-      name: "Tracee Benton",
-      text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
-      color: "bg-[#036523]",
-      image: "/images/_mesh_gradients/Milkyway.jpg",
-    },
-
-    {
-      name: "Sara Moyer",
-      text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
-
-      image: "/images/_mesh_gradients/blueorange.png",
-      height: "h-[320px]",
-      width: "w-[320px]",
-    },
-    {
-      name: "Vicki Weaver",
-      text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
-      color: "bg-[#EA9CBE]",
-      image: "/images/_mesh_gradients/Watusi.jpg",
-    },
-    {
-      name: "Andrew Cornell",
-      text: "Over 20 years ago, I went to Dr. Frey to fix my cross bite and get braces. Since then, my smile looks substantially nicer. My entire mouth feels better as well. The benefits of orthodontics under Dr. Frey continue paying dividends.",
-      color: "bg-[#56A0FC]",
-      image: "/images/_mesh_gradients/Tumbleweed.jpg",
     },
     {
       name: "Shelby Loucks",
       text: "THEY ARE AMAZING!! Great staff and wonderful building. HIGHLY recommend to anyone looking for an orthodontist.",
       color: "bg-[#A81919]",
-      image: "/images/_mesh_gradients/purplegrey.png",
+      image: "/images/_mesh_gradients/redorange.png",
 
       height: "h-[240px]",
       width: "w-[240px]",
     },
     {
+      name: "Diana Gomez",
+      text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don’t have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
+      color: "bg-[#F3B700]",
+      image: "/images/_mesh_gradients/pinkwhite.png",
+      height: "h-[320px]",
+      width: "w-[320px]",
+    },
+    {
+      name: "Tracee Benton",
+      text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
+      color: "bg-[#036523]",
+      image: "/images/_mesh_gradients/purpledred.png",
+    },
+    {
+      name: "Brandi Moyer",
+      text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
+      color: "bg-[#4C90B3]",
+      image: "/images/_mesh_gradients/purpleyellow.png",
+    },
+
+    {
+      name: "Andrew Cornell",
+      text: "Over 20 years ago, I went to Dr. Frey to fix my cross bite and get braces. Since then, my smile looks substantially nicer. My entire mouth feels better as well. The benefits of orthodontics under Dr. Frey continue paying dividends.",
+      color: "bg-[#56A0FC]",
+      image: "/images/_mesh_gradients/greenwhite.png",
+    },
+
+    {
+      name: "Vicki Weaver",
+      text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
+      color: "bg-[#EA9CBE]",
+      image: "/images/_mesh_gradients/blueyellowgradient.png",
+    },
+
+    {
+      name: "Sara Moyer",
+      text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
+      image: "/images/_mesh_gradients/turquoisegradient.png",
+      height: "h-[320px]",
+      width: "w-[320px]",
+    },
+
+    {
       name: "Mandee Kaur",
-      image: "/images/_mesh_gradients/Sunset.jpg",
+      image: "/images/_mesh_gradients/pinkparty.png",
       text: "I would highly recommend FreySmiles! Excellent orthodontic care, whether it’s braces or Invisalign, Dr. Frey and his team pay attention to detail in making sure your smile is flawless! I would not trust anyone else for my daughter’s care other than FreySmiles.",
       color: "bg-[#49ABA3]",
     },
@@ -1005,27 +1202,40 @@ export default function Testimonials() {
     });
   }, []);
 
-  const sectionOneRef = useRef(null);
-  const navBarRef = useRef(null);
 
-  useEffect(() => {
-    if (!sectionOneRef.current || !navBarRef.current) return;
+useEffect(() => {
+  const centerBias = 0.55; 
+  const distToCenter = (el) => {
+    if (!el) return Infinity;
+    const r = el.getBoundingClientRect();
+    const sectionCenter = (r.top + r.bottom) / 2;
+    const viewportCenter = window.innerHeight * centerBias;
+    return Math.abs(sectionCenter - viewportCenter);
+  };
 
-    ScrollTrigger.create({
-      trigger: sectionOneRef.current,
-      start: "75% top",
-      end: () => `+=${navBarRef.current.offsetTop + window.innerHeight}`,
-      pin: true,
-      pinSpacing: false,
-    });
+  let raf = 0;
+  const update = () => {
+    raf = 0;
+    if (!testimonialsRef.current || !reviewsRef.current) return;
+    const a = distToCenter(testimonialsRef.current);
+    const b = distToCenter(reviewsRef.current);
+    setActiveDot(a <= b ? "results" : "reviews");
+  };
 
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-  }, []);
+  const onScrollOrResize = () => {
+    if (!raf) raf = requestAnimationFrame(update);
+  };
 
-  const isPatientSectionInView = useInView(patientSectionRef, {
-    margin: "-25% 0px -25% 0px",
-  });
 
+  update();
+  window.addEventListener("scroll", onScrollOrResize, { passive: true });
+  window.addEventListener("resize", onScrollOrResize, { passive: true });
+  return () => {
+    window.removeEventListener("scroll", onScrollOrResize);
+    window.removeEventListener("resize", onScrollOrResize);
+    if (raf) cancelAnimationFrame(raf);
+  };
+}, []);
   const textRefs = useRef([]);
 
   useEffect(() => {
@@ -1048,93 +1258,229 @@ export default function Testimonials() {
     });
   }, []);
 
-  const dragCardRef = useRef(null);
+const borderRef = useRef(null);
+const containerVariants = {
+  initial: {},
+  show: { transition: { staggerChildren: 0.12, delayChildren: 0.08 } },
+};
+
+const makeCardVariants = (i) => ({
+  hidden: { x: 120, opacity: 0, rotate: 2, filter: "blur(4px)" },
+  visible: {
+    x: 0,
+    opacity: 1,
+    rotate: 0,
+    filter: "blur(0px)",
+    transition: { type: "spring", stiffness: 140, damping: 18, mass: 0.6, delay: i * 0.05 },
+  },
+});
+  const sectionRef = useRef(null);    
+  const viewportRef = useRef(null);   
+  const [viewportW, setViewportW] = useState(0);
+
+
+  const VISIBLE = 4;
+
+
+  const maxPage = Math.max(0, Math.ceil(testimonials.length / VISIBLE) - 1);
+
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"], 
+  });
+
+  const [page, setPage] = useState(0);
+
+
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const snapped = Math.round(v * maxPage);
+    const clamped = Math.max(0, Math.min(maxPage, snapped));
+    setPage(clamped);
+  });
+
+
+  useEffect(() => {
+    const measure = () => setViewportW(viewportRef.current?.clientWidth ?? 0);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const xOffset = useMemo(() => -(page * viewportW), [page, viewportW]);
+
+  const sectionOneRef = useRef(null);
+  const navBarRef = useRef(null);
+
+useEffect(() => {
+  if (!sectionOneRef.current || !navBarRef.current) return;
+
+  const st = ScrollTrigger.create({
+    trigger: sectionOneRef.current,
+    start: "75% top",
+    end: () => `+=${navBarRef.current.offsetTop + window.innerHeight}`,
+    pin: navBarRef.current,      
+    pinSpacing: false,
+    pinType: "fixed",       
+    anticipatePin: 1
+  });
+
+  return () => st.kill();
+}, []);
+const testimonialsRef = useRef(null); 
+const reviewsRef = useRef(null);   
+
+const [activeDot, setActiveDot] = useState("results");
+useEffect(() => {
+  let lastY = window.scrollY;
+  const checkScrollJump = () => {
+    const y = window.scrollY;
+    if (Math.abs(y - lastY) > 150) ScrollTrigger.refresh(true);
+    lastY = y;
+  };
+  gsap.ticker.add(checkScrollJump);
+  return () => gsap.ticker.remove(checkScrollJump);
+}, []);
+
+const [trailEnabled, setTrailEnabled] = useState(true);
+const testimonialRef = useRef(null);
+
+useEffect(() => {
+  const st = ScrollTrigger.create({
+    trigger: testimonialRef.current,
+    start: "top center",
+    end: "bottom center",
+    onEnter: () => setTrailEnabled(false),
+    onLeave: () => setTrailEnabled(true),
+    onEnterBack: () => setTrailEnabled(false),
+    onLeaveBack: () => setTrailEnabled(true),
+  });
+  return () => st.kill();
+}, []);
+
   return (
     <>
+
+      <MouseTrail
+        images={[
+          "../images/mousetrail/flame.png",
+          "../images/mousetrail/cat.png",
+          "../images/mousetrail/pixelstar.png",
+          "../images/mousetrail/avocado.png",
+          "../images/mousetrail/ghost.png",
+          "../images/mousetrail/pacman.png",
+          "../images/mousetrail/evilrobot.png",
+          "../images/mousetrail/thirdeye.png",
+          "../images/mousetrail/alientcat.png",
+          "../images/mousetrail/gotcha.png",
+          "../images/mousetrail/karaokekawaii.png",
+          "../images/mousetrail/mushroom.png",
+          "../images/mousetrail/pixelcloud.png",
+          "../images/mousetrail/pineapple.png",
+          "../images/mousetrail/pixelsun.png",
+          "../images/mousetrail/cherries.png",
+          "../images/mousetrail/watermelon.png",
+          "../images/mousetrail/dolphins.png",
+          "../images/mousetrail/jellyfish.png",
+          "../images/mousetrail/nyancat.png",
+          "../images/mousetrail/donut.png",
+          "../images/mousetrail/controller.png",
+          "../images/mousetrail/dinosaur.png",
+          "../images/mousetrail/headphones.png",
+          "../images/mousetrail/porsche.png",
+        ]}
+      />
       <Background />
+<section
+  ref={sectionOneRef}
+  className="z-10 relative w-full min-h-[110vh] px-6 md:px-12"
+>
+  <div className="z-10 max-w-[1400px] mx-auto w-full flex flex-col md:flex-row gap-0">
+    
+    <div className="w-full md:w-1/2 min-h-[100vh]"></div>
+    <div className="w-full md:w-1/2 flex items-center justify-center min-h-[100vh]">
+      <div className="max-w-[1200px] w-full">
+        <div className="font-neuehaas45 leading-[1.2] relative">
+          <TerminalPreloader />
+        </div>
+      </div>
+    </div>
+  </div>
 
-      <section
-        ref={sectionOneRef}
-        className="z-10 relative w-full min-h-[110vh] flex flex-col px-12"
-      >
-        <div className="z-10 max-w-[1400px] w-full flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1"></div>
-          <MouseTrail
-            images={[
-              "../images/mousetrail/flame.png",
-              "../images/mousetrail/cat.png",
-              "../images/mousetrail/pixelstar.png",
-              "../images/mousetrail/avocado.png",
-              "../images/mousetrail/ghost.png",
-              "../images/mousetrail/pacman.png",
-              "../images/mousetrail/evilrobot.png",
-              "../images/mousetrail/thirdeye.png",
-              "../images/mousetrail/alientcat.png",
-              "../images/mousetrail/gotcha.png",
-              "../images/mousetrail/karaokekawaii.png",
-              "../images/mousetrail/mushroom.png",
-              "../images/mousetrail/pixelcloud.png",
-              "../images/mousetrail/pineapple.png",
-              // "../images/mousetrail/upsidedowncat.png",
-              "../images/mousetrail/pixelsun.png",
-              "../images/mousetrail/cherries.png",
-              "../images/mousetrail/watermelon.png",
-              "../images/mousetrail/dolphins.png",
-              "../images/mousetrail/jellyfish.png",
-              "../images/mousetrail/nyancat.png",
-              "../images/mousetrail/donut.png",
-              "../images/mousetrail/controller.png",
-              "../images/mousetrail/dinosaur.png",
-              "../images/mousetrail/headphones.png",
-              "../images/mousetrail/porsche.png",
-            ]}
-          />
-          <div className="flex-1 max-w-[500px] flex flex-col justify-center h-full min-h-[100vh]">
-            <h2 className="flex justify-center mb-6 text-3xl uppercase font-neueroman md:text-4xl">
-              Join the smile club
-            </h2>
+  <div
+    ref={navBarRef}
+    className="z-10 absolute bottom-0 left-0 w-full pb-2"
+  >
+    <div className="flex items-center justify-center text-[15px] text-white tracking-wider uppercase font-neuehaas45 gap-4">
+      <span className={activeDot === "results" ? "opacity-100" : "opacity-30"}>●</span>
+      <span>Our patient results</span>
+      <span className={activeDot === "reviews" ? "opacity-100" : "opacity-30"}>●</span>
+      <span>Read the reviews</span>
+    </div>
 
-            <div className="font-chivomono text-[14px] leading-none  uppercase font-bold relative">
-              <span className="absolute invisible block">
-                We are committed to setting the standard for exceptional
-                service. Our communication is always open—every question is
-                welcome, and every concern is met with care and professionalism.
-              </span>
+<div
+  ref={borderRef}
+  className="z-10 mt-1 mx-auto max-w-[90%] border-b border-white"
+>
+  
+</div>
+  </div>
+</section>
+<div className="z-1 overflow-hidden" ref={testimonialsRef}>
+  <Testimonial borderRef={borderRef} />
+</div>
 
-              <ScrambleBlock
-                lines={[
-                  "We are committed to setting the standard for exceptional service.",
-                  "Our communication is always open—every question and every concern",
-                  "is met with care and professionalism is welcome.",
-                ]}
-                scrambleOnLoad={true}
-                charsType="letters"
-              />
+
+
+  <motion.section
+      ref={reviewsRef}
+      className="relative flex flex-wrap items-center justify-center min-h-screen gap-4 p-8 overflow-hidden"
+      variants={containerVariants}
+      initial="initial"
+      whileInView="show"
+      viewport={{ amount: 0.2, once: false }} 
+    >
+      {testimonials.map((t, i) => (
+        <motion.div
+          key={i}
+          drag
+          dragConstraints={reviewsRef}
+          dragElastic={0.05}
+          whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
+          dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
+          dragMomentum={false}
+          className="relative bg-[#F2F2F2]/70 backdrop-blur-xl
+                     w-[320px] min-h-[450px] flex flex-col justify-start
+                     border border-white cursor-grab active:cursor-grabbing
+                     will-change-transform"
+          style={{ zIndex: i }}
+          variants={makeCardVariants(i)}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ amount: 0.3, once: false }} 
+          whileHover={{ y: -4, boxShadow: "0 8px 24px rgba(0,0,0,0.12)" }}
+        >
+          <div className="relative w-full h-[240px] p-2">
+            <div
+              className="w-full h-full bg-cover bg-center rounded-[8px] overflow-hidden relative"
+              style={{ backgroundImage: `url(${t.image})` }}
+            >
+              <div className="absolute inset-0 z-10 pointer-events-none tile-overlay" />
             </div>
           </div>
-        </div>
 
-        <div ref={navBarRef} className="absolute bottom-0 left-0 w-full pb-2">
-          <div className="flex items-center justify-center text-[14px] uppercase font-ibmregular gap-4">
-            <span
-              className={isPatientSectionInView ? "opacity-100" : "opacity-30"}
-            >
-              ●
-            </span>
-            <span>Our patient results</span>
-
-            <span
-              className={!isPatientSectionInView ? "opacity-100" : "opacity-30"}
-            >
-              ●
-            </span>
-            <span>Read the reviews</span>
+          <div className="flex flex-col gap-2 p-4">
+            <h3 className="text-[16px] leading-tight tracking-wider uppercase font-neuehaas45">
+              {t.name}
+            </h3>
+            <p className="font-neuehaas45 text-[12px] leading-snug tracking-wider">
+              {t.text}
+            </p>
           </div>
-
-          <div className="mt-1 w-full border-b border-[#D3D3D3]"></div>
-        </div>
-      </section>
-      <Testimonial />
+        </motion.div>
+      ))}
+    </motion.section>
+      {/* <Contents /> */}
       {/* <section
         ref={patientSectionRef}
         className="relative w-full min-h-screen px-6 overflow-hidden "
@@ -1228,101 +1574,6 @@ export default function Testimonials() {
         </AnimatePresence>
       </section> */}
 
-      <section
-        ref={dragCardRef}
-        className="relative flex flex-wrap items-center justify-center min-h-screen gap-4 p-8 overflow-hidden"
-      >
-        {testimonials.map((t, i) => (
-          <motion.div
-            key={i}
-            drag
-            dragConstraints={dragCardRef}
-            dragElastic={0.05}
-            whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
-            dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
-            dragMomentum={false}
-            className="relative bg-[#F3F2F6]/70 text-black backdrop-blur-md
-            w-[320px] min-h-[450px] flex flex-col justify-start
-            border border-gray-300 cursor-grab active:cursor-grabbing
-            will-change-transform"
-            style={{ zIndex: i }}
-          >
-            <div className="relative w-full h-[240px] p-2">
-              <div
-                className="w-full h-full bg-cover bg-center rounded-[8px] overflow-hidden relative"
-                style={{ backgroundImage: `url(${t.image})` }}
-              >
-                <div className="absolute inset-0 z-10 pointer-events-none tile-overlay" />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 p-4">
-              <h3 className="text-xl leading-tight uppercase font-neuehaas45">
-                {t.name}
-              </h3>
-              <p className="font-chivomono text-[12px] leading-snug tracking-tight">
-                {t.text}
-              </p>
-            </div>
-          </motion.div>
-        ))}
-      </section>
-
-      {/* <header className="sticky top-0 w-full flex justify-between items-center py-2 border-b bg-[#F9F9F9] z-50">
-          <div className="w-[64px] h-auto">
-    
-            <img src="../images/whitedots.svg" />
-          </div>
-          <nav className="flex space-x-6 text-sm">
-            <h1 class="text-2xl font-bold">
-              <span className="inline-flex items-center text-black font-agrandir-bold">
-                TESTI
-                <img
-                  src="../images/mo.svg"
-                  alt="MO"
-                  className="h-[1em] mx-1 inline-flex"
-                />
-                NIALS
-              </span>
-            </h1>
-          </nav>
-        </header> */}
-
-      {/* <section className="bg-[#fb542d] py-10">
-          <Canvas
-            camera={{ position: [0, 1.5, 4] }}
-            gl={{ alpha: true }}
-            style={{
-              position: "fixed",
-              top: "50%",
-              right: "20%",
-              transform: "translate(-95%, -50%)",
-              width: "20vw",
-              height: "100vh",
-              zIndex: 0,
-            }}
-          >
-            <ambientLight intensity={0.5} /> //lower to avoid washed out
-            <directionalLight position={[4, 4, 4]} intensity={4} castShadow />
-            <spotLight
-              position={[3, 4, 3]}
-              angle={0.2}
-              intensity={4.5} //brightness
-              penumbra={0.8}
-              distance={8}
-              castShadow
-            />
-            <pointLight position={[-4, 3, 2]} intensity={2} color="#000" />
-            <pointLight position={[0, 0, -5]} intensity={3} color="#BCC6CC" />
-            <Environment files="../images/studio_small_03_4k.hdr" />
-            <EffectComposer></EffectComposer>
-            <Suspense fallback={<span>Loading</span>}>
-              <RotatingModel />
-            </Suspense>
-            <OrbitControls enableZoom={false} />
-          </Canvas>
-        </section> */}
-
       {/* <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
 
           <div id="right-column" className="relative w-1/2">
@@ -1363,4 +1614,220 @@ export default function Testimonials() {
         </div> */}
     </>
   );
+};
+
+export default Testimonials;
+
+class MousePointer {
+  constructor() {
+    this.x = window.innerWidth * 0.5;
+    this.y = window.innerHeight * 0.5;
+    this.normal = { x: 0, y: 0 };
+    this.isDown = false;
+
+    this._setupListeners();
+  }
+
+  _setupListeners() {
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    const target = document.querySelector(".l-canvas") || window;
+
+    if (isTouch) {
+      target.addEventListener("touchstart", (e) => this._handleStart(e));
+      target.addEventListener("touchend", () => this._handleEnd());
+      target.addEventListener("touchmove", (e) => this._handleMove(e), {
+        passive: false,
+      });
+    } else {
+      window.addEventListener("mousedown", (e) => this._handleStart(e));
+      window.addEventListener("mouseup", () => this._handleEnd());
+      window.addEventListener("mousemove", (e) => this._handleMove(e));
+    }
+  }
+
+  _handleStart(e) {
+    this.isDown = true;
+    this._updatePosition(e);
+  }
+
+  _handleEnd() {
+    this.isDown = false;
+  }
+
+  _handleMove(e) {
+    this._updatePosition(e);
+  }
+
+  _updatePosition(e) {
+    const pos = this._getEventPosition(e);
+    this.x = pos.x;
+    this.y = pos.y;
+
+    this.normal.x = this.x / window.innerWidth;
+    this.normal.y = this.y / window.innerHeight;
+  }
+
+  _getEventPosition(e) {
+    if (e.touches) {
+      return {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+    }
+    return {
+      x: e.clientX,
+      y: e.clientY,
+    };
+  }
 }
+
+const mousePointer = new MousePointer();
+
+const map = (num, toMin, toMax, fromMin, fromMax) => {
+  if (num <= fromMin) return toMin;
+  if (num >= fromMax) return toMax;
+  const p = (toMax - toMin) / (fromMax - fromMin);
+  return (num - fromMin) * p + toMin;
+};
+
+const useWindowSize = () => {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return size;
+};
+
+const Contents = () => {
+  const line = 10;
+  const [blocks, setBlocks] = useState([]);
+  const photoRef = useRef(null);
+  const blocksRef = useRef(null);
+  const animationRef = useRef();
+  const counterRef = useRef(0);
+  const windowSize = useWindowSize();
+
+  const useGPU = (el) => {
+    gsap.set(el, {
+      willChange: "transform, opacity",
+    });
+  };
+
+  useEffect(() => {
+    if (!photoRef.current || !blocksRef.current) return;
+
+    const img = photoRef.current.querySelector("img");
+    const block = blocksRef.current;
+    const num = line * line;
+    const newBlocks = [];
+
+    for (let i = 0; i < num; i++) {
+      const b = document.createElement("div");
+      block.append(b);
+      b.append(img.cloneNode(false));
+
+      gsap.set(b, {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        overflow: "hidden",
+      });
+
+      const imgEl = b.querySelector("img");
+      useGPU(imgEl);
+      useGPU(b);
+
+      newBlocks.push({
+        con: b,
+        img: imgEl,
+      });
+    }
+
+    setBlocks(newBlocks);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      gsap.killTweensOf("*");
+    };
+  }, []);
+
+  const update = () => {
+    counterRef.current++;
+
+    const minDimension = Math.min(windowSize.width, windowSize.height);
+    gsap.set(photoRef.current, {
+      width: minDimension * 0.75,
+    });
+
+    const mx = mousePointer.normal.x;
+    const my = mousePointer.normal.y;
+
+    if (counterRef.current % 2 === 0) {
+      const imgSize = blocksRef.current?.offsetWidth || 0;
+      const size = imgSize / line;
+      const scale = 25;
+
+      blocks.forEach((val, i) => {
+        const ix = ~~(i / line);
+        const iy = ~~(i % line);
+
+        const blockX = (ix + 0.5) / line;
+        const blockY = (iy + 0.5) / line;
+
+        const dx = blockX - mx;
+        const dy = blockY - my;
+        const d = Math.sqrt(dx * dx + dy * dy);
+
+        const isVisible = d < 0.3;
+
+        gsap.set(val.con, {
+          width: size + 2,
+          height: size + 2,
+          left: ix * size,
+          top: iy * size,
+          opacity: isVisible ? 1 : 0,
+        });
+
+        const size2 = scale * size;
+        gsap.set(val.img, {
+          scale: scale,
+          x: blockX * -size2,
+          y: blockY * -size2,
+        });
+      });
+    }
+
+    animationRef.current = requestAnimationFrame(update);
+  };
+
+  useEffect(() => {
+    animationRef.current = requestAnimationFrame(update);
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [blocks, windowSize]);
+
+  return (
+    <div className="js-photo" ref={photoRef}>
+      <img src="/images/1.jpg" alt="" />
+      <div className="js-photo-blocks" ref={blocksRef} />
+    </div>
+  );
+};

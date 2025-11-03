@@ -6,159 +6,144 @@
 
 :root {
   --padding: 2rem;
-  --gutter: 0.75rem; /* Reduced spacing between lines */
-  --columns: 12;
-  --bg-color: #0a0a0a;
-  --text-color: #e0e0e0;
-  --accent-color: #3a3aff;
-  --grid-color: rgba(255, 255, 255, 0.15);
-  --row-spacing: 4rem;
 }
 
+/* BASE STYLING */
 body {
-  font-family: "NeueMontrealLight", sans-serif;
+  font-family: "NeueHaasGroteskDisplayPro45Light", sans-serif;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 14px;
   letter-spacing: -0.03em;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  /* padding: var(--padding); */
   overflow-x: hidden;
   position: relative;
 }
 
-/* Grid overlay */
-.grid-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: var(--padding);
-  pointer-events: none;
-  z-index: -1000;
-  background: none;
-}
-
-.grid-overlay-inner {
-  display: grid;
-  grid-template-columns: repeat(var(--columns), 1fr);
-  gap: var(--gutter);
-  height: 100%;
-  width: 100%; /* Match the grid container width */
-  margin: 0 auto;
-}
-
-.grid-column {
-  height: 100%;
-  border-left: 1px solid var(--grid-color);
-  border-right: 1px solid var(--grid-color);
-  border-top: none;
-  border-bottom: none;
-  opacity: 0;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(var(--columns), 1fr);
-  gap: var(--gutter);
-  row-gap: var(--row-spacing);
-  width: 100%; /* Use 100% width instead of fixed max-width */
-  margin: 0 auto;
+.horizontal-section {
   position: relative;
+  width: 100%;
+  overflow: hidden;
 }
 
+.horizontal-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  z-index: 1;
+}
+
+
+.horizontal-track {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 10vw;
+  will-change: transform;
+}
+
+
+.intro-card {
+  flex-shrink: 0;
+  width: 45vw;
+  min-width: 400px;
+  max-width: 600px;
+}
+
+.intro-heading {
+  font-family: "Canela-ThinItalic", serif;
+  font-size: clamp(1.46rem, 2.27vw, 2.43rem);
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 1.5rem;
+}
+
+.intro-subtext {
+  font-family: "NeueHaasGroteskDisplayPro45Light", sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+  max-width: 90%;
+}
+
+/* MEMBER CARD STYLING */
+.member-card {
+  flex-shrink: 0;
+  width: 26vw;
+  min-width: 320px;
+  text-align: center;
+  color: black;
+}
+
+.image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  aspect-ratio: 3 / 4;
+  background: #111;
+}
+
+.member-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.member-title {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: .01rem;
+   color: #252424;
+}
+
+.member-role {
+  font-size: 14px;
+ color: #252424;
+  letter-spacing: .01rem;
+
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .horizontal-track {
+    flex-direction: column;
+    gap: 3rem;
+    padding: 2rem;
+  }
+
+  .intro-card,
+  .member-card {
+    width: 90%;
+    min-width: unset;
+  }
+}
+
+/* GOOEY HOVER / INVERSION LENS FIX */
 .inversion-lens {
   position: relative;
   overflow: hidden;
   width: 100%;
   height: 100%;
+  border-radius: inherit;
+  background-color: #111;
+  isolation: isolate; 
 }
 
 .inversion-lens img {
-  display: none;
+  display: none; 
 }
 
 .inversion-lens canvas {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
-}
-
-.member-info {
-  font-size: 1rem;
-  margin-top: 1rem;
-  line-height: 1.2;
-}
-
-.member-role {
-  font-size: 1rem;
-  text-transform: uppercase;
-  margin-bottom: 0.1rem;
-}
-
-.member-name {
-  font-weight: 700;
-  font-size: 2rem;
-  margin-top: 0.125rem;
-  text-transform: uppercase;
-}
-
-/* Editorial grid layout with increased row spacing */
-.item-1-container {
-  grid-column: 2 / span 5;
-  /* grid-row: 2 / span 2; */
-}
-
-.item-1 {
-  aspect-ratio: 1 / 1;
-  /* height: 700px; */
-}
-
-.item-2-container {
-  grid-column: 8 / span 4;
-  /* grid-row: 2; */
-}
-
-.item-2 {
-  aspect-ratio: 1 / 1;
-}
-
-.item-3-container {
-  grid-column: 3 / span 4;
-  /* grid-row: 4 / span 2; */
-  margin-top: var(--row-spacing); /* Added extra spacing */
-}
-
-.item-3 {
-  aspect-ratio: 1 / 1;
-  /* width: auto; */
-  /* height: 500px; */
-}
-
-.item-4-container {
-  grid-column: 8 / span 4;
-  /* grid-row: 3; */
-  margin-top: var(--row-spacing); /* Added extra spacing */
-}
-
-.item-4 {
-  aspect-ratio: 1 / 1;
-  /* width: auto; */
-  /* height: 500px; */
-}
-
-.item-5-container {
-  grid-column: 8 / span 3;
-  /* grid-row: 4; */
-  margin-top: var(--row-spacing); /* Added extra spacing */
-}
-
-.item-5 {
-  aspect-ratio: 1 / 1;
-  /* width: auto; */
-  /* height: 700px; */
+  z-index: 2; 
+  pointer-events: none;
+  transform: translateZ(0);
 }
