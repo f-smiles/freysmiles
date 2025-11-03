@@ -155,7 +155,6 @@ function PixiFlower() {
   );
 }
 
-
 const FluidSimulation = () => {
   const canvasRef = useRef(null);
 
@@ -1454,7 +1453,6 @@ gl.disable(gl.BLEND);
   );
 }
 
-
 export default function WhyChooseUs() {
   const imageRef = useRef();
   const [isMobile, setIsMobile] = useState(false);
@@ -1509,6 +1507,7 @@ export default function WhyChooseUs() {
     </>
   );
 }
+
 function CircleReveal() {
 useLayoutEffect(() => {
   const ctx = gsap.context(() => {
@@ -1723,7 +1722,7 @@ const colorLerp = (color1, color2, amount) => {
           font-family: "NeueHaasGroteskDisplayPro45Light";
           font-size: 16px;
           line-height: 1.2;
-          letter-spacing: .31rem
+          letter-spacing: .1rem
         }
 
     
@@ -2340,8 +2339,8 @@ function ScrollPanels() {
               </div>
               <div className="flex flex-col text-left z-10">
                 <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45">
-                  Standard <br />
-                  <span className="mt-2 pt-2 block">Setting</span>
+                  Redefining
+                  <span className="block">Excellence</span>
                 </h1>
                 <p className="text-[16px] mt-4 font-neuehaas45 text-xs tracking-widest text-gray-600 uppercase">
                   Since 1977
@@ -2356,10 +2355,10 @@ function ScrollPanels() {
           <div className="w-full px-[6vw] py-[10vh]">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
               <div className="flex flex-col text-left z-10">
-                <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45">
-                  Smart <br />
-                  <span className="mt-2 pt-2 block">Orthodontics</span>
-                </h1>
+              <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45">
+  Smart
+  <span className="block">Orthodontics</span>
+</h1>
                 <p className="text-[16px] mt-4 text-xs tracking-widest text-gray-600 uppercase font-neuehaas45">
                   Built around your life
                 </p>
@@ -2382,12 +2381,12 @@ function ScrollPanels() {
             <div className="flex flex-col lg:flex-row-reverse items-center justify-between gap-12">
               <div className="flex flex-col text-left z-10">
                 <h1 className="text-[8vw] lg:text-[3.5vw] leading-[1] font-neuehaas45">
-                  3D <br />
-                  <span className="mt-2 pt-2 block">Imaging</span>
+                  3D 
+                  <span className="block">Imaging</span>
                 </h1>
                 <p className="max-w-[400px] mt-4 text-xs tracking-widest text-gray-600 uppercase font-neuehaas45">
                   3D technology is reshaping modern orthodontics. Expect
-                  different information from our competitors.
+                  different information from our competitors
                 </p>
               </div>
               <div className="w-full lg:w-[50vw]">
@@ -3377,11 +3376,7 @@ const CardStack = () => {
                 <div className="card-inner">
                   <h2 className="card-title">4 Locations</h2>
                   <p className="card-subtitle">IRL + URL</p>
-                  <div className="card-caption-box">
-                    Allentown / Bethlehem /<br />
-                    Lehighton /<br />
-                    Schnecksville
-                  </div>
+              
                 </div>
               </li>
             </ul>
@@ -3473,32 +3468,33 @@ function StackCards() {
     once: true,
   });
 
-  useEffect(() => {
-    if (!textRef.current) return;
+useLayoutEffect(() => {
+  const ctx = gsap.context(() => {
+    const lines = textRef.current.querySelectorAll("span");
 
-    const split = new SplitText(textRef.current, { type: "words, chars" });
+    gsap.set(lines, {
+      opacity: 0,
+      y: 40,
+      clipPath: "polygon(0 100%, 100% 100%, 100% 80%, 0 80%)",
+    });
 
-    const tl = gsap.fromTo(
-      split.chars,
-      { color: "#d4d4d4" },
-      {
-        color: "#000000",
-        stagger: 0.03,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: textRef.current,
-          start: "top 80%",
-          end: "top 30%",
-          scrub: true,
-        },
-      }
-    );
+    gsap.to(lines, {
+      opacity: 1,
+      y: 0,
+      clipPath: "polygon(0 0%, 100% 0%, 100% 100%, 0 100%)",
+      duration: 1.2,
+      stagger: 0.15,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: textRef.current,
+        start: "top 80%",
+        once: true,
+      },
+    });
+  });
 
-    return () => {
-      tl.scrollTrigger?.kill();
-      split.revert();
-    };
-  }, []);
+  return () => ctx.revert();
+}, []);
 
   useEffect(() => {
     let activeCard = null;
@@ -3635,20 +3631,29 @@ function StackCards() {
       <section className="mt-[4vh] bg-[#F9F9F9]" ref={containerRef}>
         <section className=" w-full flex flex-col items-center">
                  <div className="mt-[10vh]">
-          <div
-            ref={textRef}
-            className="mx-auto font-neuehaas45 mb-40 text-[26px] max-w-[1100px] leading-[1.3]"
-          >
-            Our doctors aren’t just orthodontists — they’re in the top 1%. Dr.
-            Gregg Frey is board certified for life. Dr. Daniel Frey is locking
-            his in this year. That’s a level fewer than 1 in 4 orthodontists
-            reach. And when it comes to Invisalign? We don’t follow trends — we
-            set them. As Diamond Plus providers, we’ve shaped how clear aligners
-            are done in the region (and treated thousands along the way).
-            <br />
-            <br />
-            <span> TL;DR: You’re in elite company.</span>
-          </div>
+      <div
+      ref={textRef}
+      className="tracking-wider mx-auto mb-40 max-w-[740px] text-[19px] leading-none font-neuehaas45"
+    >
+      <p className="text-[19px] leading-[1.3] font-neuehaas45 tracking-wider space-y-2">
+        <span className="textline block overflow-hidden">
+          <span className="textline-inner block">
+            Our doctors aren’t just orthodontists — they’re in the top 1%.
+            That’s a level fewer than 1 in 4 orthodontists reach. And when it comes to Invisalign? We don’t follow trends — we set them.
+                   As Diamond Plus providers, we’ve shaped how clear aligners are done in the region
+            (and treated thousands along the way).
+          </span>
+        </span>
+       
+      </p>
+
+      <div className="h-4" />
+      <span className="textline block overflow-hidden">
+        <span className="textline-inner block text-black">
+          tl;dr: You’re in elite company.
+        </span>
+      </span>
+    </div>
         </div>
           <div className="flex flex-row gap-x-12">
             
@@ -3754,7 +3759,7 @@ function StackCards() {
         </div> */}
         </section>
  
-        <div className="mt-20 font-neuehaas45 min-h-screen text-[13px] tracking-wide leading-none  px-2">
+        <div className="mt-20 font-neuehaas45 text-gray-600 uppercase min-h-screen leading-none  px-2">
           {[
             {
               title: "ABO Treatment Standards",
@@ -3783,10 +3788,10 @@ function StackCards() {
                 style={{ "--br": "0px" }}
               >
                 <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-                <div className="relative z-10 flex items-center justify-center col-span-1 text-[#008000]">
+                <div className="tracking-wider text-[13px] relative z-10 flex items-center justify-center col-span-1 text-[#fe019a]">
                   {block.title}
                 </div>
-                <div className="relative z-10 col-span-3 max-w-4xl text-black leading-relaxed">
+                <div className="tracking-widest text-[11px] relative z-10 col-span-3 max-w-4xl text-black leading-relaxed">
                   <div>{block.content}</div>
                 </div>
               </div>
