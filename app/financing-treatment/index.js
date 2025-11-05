@@ -33,6 +33,90 @@ gsap.registerPlugin(
   MorphSVGPlugin
 );
 
+
+const lerp = (a, b, n) => (1 - n) * a + n * b;
+
+function CrossCursor() {
+  const refV = useRef(null);
+  const refH = useRef(null);
+  const refDot = useRef(null);
+  const mouse = useRef({ x: 0, y: 0 });
+  const rendered = useRef({
+    tx: { prev: 0, curr: 0, amt: 0.15 },
+    ty: { prev: 0, curr: 0, amt: 0.15 },
+  });
+
+  useEffect(() => {
+    const onMove = (e) => {
+      mouse.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener("mousemove", onMove);
+
+    const render = () => {
+      rendered.current.tx.curr = mouse.current.x;
+      rendered.current.ty.curr = mouse.current.y;
+
+      for (const key in rendered.current) {
+        const axis = rendered.current[key];
+        axis.prev = lerp(axis.prev, axis.curr, axis.amt);
+      }
+
+      const x = rendered.current.tx.prev;
+      const y = rendered.current.ty.prev;
+
+      gsap.set(refV.current, { x });
+      gsap.set(refH.current, { y });
+      gsap.set(refDot.current, { x, y });
+
+      requestAnimationFrame(render);
+    };
+
+    const fadeIn = () => {
+      gsap.to([refV.current, refH.current, refDot.current], {
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+      });
+      requestAnimationFrame(render);
+      window.removeEventListener("mousemove", fadeIn);
+    };
+
+    window.addEventListener("mousemove", fadeIn);
+
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mousemove", fadeIn);
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-[1001]">
+
+      <div
+        ref={refH}
+        className="fixed left-0 w-full h-[.5px] top-0 bg-[#d3d3d3] opacity-0 will-change-transform"
+      ></div>
+
+ 
+      <div
+        ref={refV}
+        className="fixed top-0 h-full w-[.5px] left-0 bg-[#d3d3d3] opacity-0 will-change-transform"
+      ></div>
+
+
+      <div
+        ref={refDot}
+        className="fixed w-[24px] h-[24px] bg-transparent opacity-0 will-change-transform"
+        style={{ transform: "translate(-50%, -50%)" }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute w-[24px] h-[.5px] bg-black/70"></div>
+          <div className="absolute h-[24px] w-[.5px] bg-black/70"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
 const CardScanner = () => {
   const controlsRef = useRef(null);
   const speedIndicatorRef = useRef(null);
@@ -46,12 +130,12 @@ const CardScanner = () => {
   const inspirationCreditRef = useRef(null);
 
   useEffect(() => {
-    // Expose globals for button onclicks if needed, but we'll handle in React
+
     window.toggleAnimation = toggleAnimation;
     window.resetPosition = resetPosition;
     window.changeDirection = changeDirection;
 
-    // Initialize after refs are set
+
     const init = () => {
       console.log('Initializing controllers...');
       if (cardStreamRef.current && cardLineRef.current && speedValueRef.current) {
@@ -73,7 +157,7 @@ const CardScanner = () => {
     };
   }, []);
 
-  // Global vars for controllers (in real app, use state or context)
+
   let cardStream;
   let particleSystem;
   let particleScanner;
@@ -90,7 +174,6 @@ const CardScanner = () => {
     if (cardStream) cardStream.changeDirection();
   };
 
-  // CardStreamController class (adapted for refs, with fixed clipping logic)
   class CardStreamController {
     constructor() {
       this.container = cardStreamRef.current;
@@ -1067,322 +1150,6 @@ body {
   );
 };
 
-function CircleReveal() {
-useLayoutEffect(() => {
-  const ctx = gsap.context(() => {
-    const section = document.querySelector(".circle-section");
-    const circle = document.querySelector(".circle.yellow");
-    const panels = gsap.utils.toArray(".panel");
-    const panelTrack = document.querySelector(".panel-track");
-    const numPanels = panels.length;
-
-    if (!circle || !panelTrack) return;
-
-
-    const scrollTween = gsap.to(panelTrack, {
-      xPercent: -100 * (numPanels - 1),
-      ease: "none",
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: "+=6000",
-        scrub: 1,
-        pin: true,
-      },
-    });
-
-    // circle color transitions
-    const circleWidth = circle.offsetWidth;
-    const colors = [".circle.red", ".circle.blue", ".circle.purple", ".circle.green", ".circle.pink"];
-
-    colors.forEach((selector, i) => {
-      const colorCircle = document.querySelector(selector);
-      const triggerPanel = panels[i];
-      if (!colorCircle || !triggerPanel) return;
-
-      ScrollTrigger.create({
-        trigger: triggerPanel,
-        containerAnimation: scrollTween,
-        scrub: true,
-        start: () => `left center+=${circleWidth / 2}`,
-        end: () => `left center-=${circleWidth / 2}`,
-        onUpdate: (self) => {
-          const pct = 100 - self.progress * 100;
-          gsap.set(colorCircle, { clipPath: `inset(0% 0% 0% ${pct}%)` });
-        },
-      });
-    });
-
-
-    panels.forEach((panel) => {
-      const el = panel.querySelector("h2");
-      if (!el) return;
-
-      const split = new SplitText(el, { type: "chars, words", charsClass: "chars" });
-
-      gsap.from(split.chars, {
-        scrollTrigger: {
-          trigger: el,
-          containerAnimation: scrollTween, 
-          start: "left 80%",
-          end: "left 20%",
-          toggleActions: "play none none none",
-          markers: false,
-        },
-        y: 15,
-        opacity: 0,
-        stagger: 0.06,
-        duration: 1.2,
-        ease: "power3.out",
-      });
-    });
-  });
-
-  return () => ctx.revert();
-}, []);
-    const panelsRef = useRef(null);
-const hexToRgb = (hex) => {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
-    : null;
-};
-
-const rgbToHex = (r, g, b) => {
-  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-};
-
-const colorLerp = (color1, color2, amount) => {
-  const [r1, g1, b1] = hexToRgb(color1);
-  const [r2, g2, b2] = hexToRgb(color2);
-  const r = Math.round(r1 + (r2 - r1) * amount);
-  const g = Math.round(g1 + (g2 - g1) * amount);
-  const b = Math.round(b1 + (b2 - b1) * amount);
-  return rgbToHex(r, g, b);
-};
-
-  return (
-    <section className="circle-section">
-      <div className="pinned-content">
-     
-
-        <div className="left-text">
-          <h3>
-            Your Treatment
-            <br />
-            Your Pace
-          </h3>
-        </div>
-
-        <div className="circle-wrapper">
-          <div className="circle yellow" />
-          <div className="circle red" />
-          <div className="circle blue" />
-<div className="circle purple">
-            <svg
-              viewBox="0 0 400 400"
-              className="ring-svg"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {Array.from({ length: 40 }).map((_, i) => {
-                const r = 200 - i * 4;
-                const t = i / 39;
-                const colors = ["#B8E3E9", "#E6E6FA", "#FFDAB9"]; // blue, lavender, peach
-                const segment = Math.floor(t * 3);
-                const localT = (t * 3) % 1;
-                const startColor = colors[segment % 3];
-                const endColor = colors[(segment + 1) % 3];
-                const stroke = colorLerp(startColor, endColor, localT);
-
-                return (
-                  <circle
-                    key={i}
-                    cx="200"
-                    cy="200"
-                    r={r}
-                    stroke={stroke}
-                    strokeWidth="1.3"
-                    fill="none"
-                    opacity={1 - t * 0.1}
-                    style={{ filter: `drop-shadow(0 0 ${1 + t * 2}px rgba(255, 182, 193, 0.2))` }} // subtle pinkish glow for inner spiral vibe
-                  />
-                );
-              })}
-            </svg>
-          </div>
-          <div className="circle green" />
-          <div className="circle pink" />
-        </div>
-
- <div className="panel-track" ref={panelsRef}>
-      <div className="panel">
-        <h2>Complimentary Consultation</h2>
-        <p>Initial consultations are always free of charge.</p>
-      </div>
-      <div className="panel">
-        <h2>Timeline</h2>
-        <p>Payment plans typically span 12–24 months.</p>
-      </div>
-      <div className="panel">
-        <h2>Total Flexibility</h2>
-        <p>
-          Instant approvals and flexible financing with Klarna and OrthoBanc.
-        </p>
-      </div>
-      <div className="panel">
-        <h2>Transparency</h2>
-        <p>All inclusive pricing — no hidden fees or unexpected add-ons.</p>
-      </div>
-      <div className="panel">
-        <h2>Support</h2>
-        <p>Continued care and follow-up for one year after treatment.</p>
-      </div>
-    </div>
-      </div>
-
-      <style jsx>{`
-        .circle-section {
-          position: relative;
-          height: 300vh;
-   background: #FEF9F8;
-          overflow: hidden;
-        }
-.ring-svg {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 100%;
-  height: 100%;
-  // filter: drop-shadow(0 0 10px rgba(170, 130, 255, 0.3))
-  //         drop-shadow(0 0 20px rgba(60, 214, 210, 0.2));
-
-}
-
-        .pinned-content {
-          position: relative;
-          height: 100vh;
-          width: 100%;
-          overflow: hidden;
-          z-index: 0;
-        }
-
-     
-
-
-        .left-text {
-          position: absolute;
-          left: 5%;
-          top: 50%;
-          transform: translateY(-50%);
-          z-index: 5;
-          width: 20vw;
-        }
-
-        .left-text h3 {
-          font-family: "NeueHaasGroteskDisplayPro45Light";
-          font-size: 1.8rem;
-          line-height: 1.2;
-        }
-
-        .circle-wrapper {
-          position: sticky;
-          top: 0;
-          height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-        }
-
-        .circle {
-          position: absolute;
-          width: 400px;
-          height: 400px;
-          border-radius: 50%;
-          clip-path: inset(0% 0% 0% 100%);
-        }
-
-        .circle.yellow {
-          background: #f5ff7d;
-          z-index: 1;
-          clip-path: inset(0% 0% 0% 0%);
-        }
-
-        .circle.red {
-          background: #ff4d4d;
-          z-index: 2;
-        }
-
-        .circle.blue {
-          background: #4d7dff;
-          z-index: 3;
-        }
-
-        .circle.purple {
-          width: 400px;
-  height: 400px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-          background: #FEF9F8;
-  z-index: 4;
-        }
-
-        .circle.green {
-          background: #91ff91;
-          z-index: 5;
-        }
-
-        .circle.pink {
-          background: #ff7fbf;
-          z-index: 6;
-        }
-
-        .panel-track {
-          position: absolute;
-          top: 0;
-          right: 0;
-          height: 100vh;
-          display: flex;
-          flex-direction: row;
-          z-index: 5;
-          transform: translateX(100%);
-          will-change: transform;
-        }
-
-        .panel {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          height: 100vh;
-          width: 30vw;
-          padding: 3rem;
-          border-left: 1px solid rgba(0, 0, 0, 0.15);
-          flex-shrink: 0;
-      background: rgba(255, 255, 255, 0.3); 
-          justify-content: flex-start;
-          padding-top: calc(66vh);
-        }
-
-        .panel h2 {
-          font-size: 1.4rem;
-          font-family: "NeueHaasGroteskDisplayPro45Light";
-          margin-bottom: 0.5rem;
-          color: #111;
-        }
-
-        .panel p {
-          font-size: 1rem;
-          font-family: "NeueHaasGroteskDisplayPro45Light";
-          line-height: 1.5;
-          color: #333;
-        }
-      `}</style>
-    </section>
-  );
-}
-
 const ScrollAnimation = () => {
   const stickySectionRef = useRef(null);
   const cardRefs = useRef([]);
@@ -1822,17 +1589,6 @@ const FinancingTreatment = () => {
       });
   }, []);
 
-  const cubeRef = useRef();
-
-  useEffect(() => {
-    gsap.to(cubeRef.current, {
-      rotateY: 360,
-      rotateX: 360,
-      duration: 20,
-      repeat: -1,
-      ease: "linear",
-    });
-  }, []);
 
   const textPathRef = useRef();
   const svgRef = useRef();
@@ -1852,88 +1608,13 @@ const FinancingTreatment = () => {
     });
   }, []);
 
-  const curveSvgRef = useRef();
+
   const textCurveRef = useRef();
   const filterRef = useRef();
 
   const map = (x, a, b, c, d) => ((x - a) * (d - c)) / (b - a) + c;
   const lerp = (a, b, n) => (1 - n) * a + n * b;
   const clamp = (val, min, max) => Math.max(Math.min(val, max), min);
-
-  useEffect(() => {
-    let pathLength;
-    let positionY;
-    let svgRect;
-
-    const startOffset = { value: 0, amt: 0.22 };
-    const scroll = { value: window.scrollY, amt: 0.17 };
-    let entered = false;
-
-    const updateMetrics = () => {
-      svgRect = curveSvgRef.current.getBoundingClientRect();
-      positionY = svgRect.top + window.scrollY;
-      pathLength = curveSvgRef.current.querySelector("path").getTotalLength();
-    };
-
-    const computeOffset = () => {
-      return map(
-        positionY - window.scrollY,
-        window.innerHeight,
-        0,
-        pathLength,
-        -pathLength / 2
-      );
-    };
-
-    const updateTextOffset = () => {
-      if (textCurveRef.current) {
-        textCurveRef.current.setAttribute("startOffset", startOffset.value);
-      }
-    };
-
-    const updateFilter = (distance) => {
-      const maxScale = parseFloat(filterRef.current?.dataset.maxScale || 100);
-      const minScale = parseFloat(filterRef.current?.dataset.minScale || 0);
-      const newScale = clamp(
-        map(distance, 0, 200, minScale, maxScale),
-        minScale,
-        maxScale
-      );
-      if (filterRef.current) {
-        filterRef.current.scale.baseVal = newScale;
-      }
-    };
-
-    const update = () => {
-      const currentOffset = computeOffset();
-      startOffset.value = !entered
-        ? currentOffset
-        : lerp(startOffset.value, currentOffset, startOffset.amt);
-      updateTextOffset();
-
-      const currentScroll = window.scrollY;
-      scroll.value = !entered
-        ? currentScroll
-        : lerp(scroll.value, currentScroll, scroll.amt);
-      const distance = Math.abs(scroll.value - currentScroll);
-      updateFilter(distance);
-
-      if (!entered) entered = true;
-    };
-
-    const render = () => {
-      update();
-      requestAnimationFrame(render);
-    };
-
-    updateMetrics();
-    window.addEventListener("resize", updateMetrics);
-    render();
-
-    return () => {
-      window.removeEventListener("resize", updateMetrics);
-    };
-  }, []);
 
   const starRef = useRef(null);
   useEffect(() => {
@@ -2168,47 +1849,6 @@ const FinancingTreatment = () => {
       u_mouse: { value: new THREE.Vector2() },
     };
 
-    const vertexShader = `
-      varying vec2 v_uv;
-      void main() {
-        v_uv = uv;
-        gl_Position = vec4(position, 1.0);
-      }
-    `;
-
-    const fragmentShader = `
-    precision mediump float;
-    
-    uniform vec2 u_resolution;
-    
-    void main() {
-      vec2 st = gl_FragCoord.xy / u_resolution;
-      float x = st.x, y = st.y;
-    
-      vec3 peachDust = vec3(0.89, 0.75, 0.65);
-      vec3 mauveDust = vec3(0.82, 0.78, 0.88);
-      vec3 duskBase  = vec3(0.92, 0.90, 0.92);
-    
-      // Distance from bottom-left
-      float dist = length(st - vec2(0.0, 0.0));
-    
-      // Increase peach reach by bumping 0.7 → 0.9
-      float peachWeight = smoothstep(2.1, 0.0, dist);
-    
-      vec3 blendColor = mix(mauveDust, peachDust, peachWeight);
-      vec3 color = mix(blendColor, duskBase, 0.22);
-    
-      gl_FragColor = vec4(color, 1.0);
-    }
-    
-        `;
-
-    const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms,
-    });
-
     const geometry = new THREE.PlaneGeometry(2, 2);
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
@@ -2289,18 +1929,12 @@ const FinancingTreatment = () => {
 
   return (
     <>
-
-
-      <div>
-        <CircleReveal />
+  <div className="-[var(--color-bg)] text-[var(--color-text)]">
+      <CrossCursor />
         {/* <CardScanner /> */}
         {/* <ScrollAnimation /> */}
-        <canvas
-          id="shader-bg"
-          className="fixed top-0 left-0 w-full min-h-screen z-[-1] pointer-events-none"
-        />
+    
         <div className="relative z-0 h-screen w-full">
-
         <div ref={cardRef} className="relative">
 
           <div className="h-screen flex justify-center items-center">
@@ -2764,50 +2398,6 @@ const FinancingTreatment = () => {
             </svg>
           </section>
           <div className="overflow-hidden" style={{ height: "400vh" }}>
-            <svg
-              ref={curveSvgRef}
-              className="svgtext"
-              data-filter-type="distortion"
-              width="120%"
-              viewBox="0 0 1000 200"
-              preserveAspectRatio="xMidYMid meet"
-            >
-              <defs>
-                <filter id="distortionFilter">
-                  <feTurbulence
-                    type="turbulence"
-                    baseFrequency="0.01"
-                    numOctaves="1"
-                    result="noise"
-                  />
-                  <feDisplacementMap
-                    ref={filterRef}
-                    in="SourceGraphic"
-                    in2="noise"
-                    scale="0"
-                    xChannelSelector="R"
-                    yChannelSelector="G"
-                    data-min-scale="0"
-                    data-max-scale="80"
-                  />
-                </filter>
-              </defs>
-
-              <path
-                id="text-curve"
-                d="M 0 50 Q 100 0 200 100 Q 300 200 650 50 C 750 0 750 150 1000 50"
-                fill="none"
-              />
-              <text filter="url(#distortionFilter)">
-                <textPath
-                  className="font-neueroman uppercase text-[20px] fill-[#624B48]"
-                  ref={textCurveRef}
-                  href="#text-curve"
-                >
-                  Invest in your smile, with flexibility built in.
-                </textPath>
-              </text>
-            </svg>
 
             <section
               ref={sectionRef}
@@ -2885,43 +2475,8 @@ const FinancingTreatment = () => {
                 d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
               />
             </svg>
-            <section className="bg-[#FF621D]"></section>
-            <div className="items-start flex flex-col px-6">
-              <div className="cube-outline">
-                <div class="cube">
-                  <div className="cube-face cube-face--front">
-                    <div className="text-overlay">
-                      <p className="first-line font-neueroman uppercase">
-                        One year post-treatment follow-up
-                      </p>
-                      <p
-                        className=" font-neueroman uppercase"
-                        style={{
-                          position: "absolute",
-                          transform: "rotate(90deg)",
-                          transformOrigin: "left top",
-                          top: "40%",
-                          left: "70%",
-                          fontSize: ".8rem",
-                          lineHeight: "1.2",
-                          color: "black",
-                          maxWidth: "120px",
-                        }}
-                      >
-                        Retainers and retention visits for one year
-                        post-treatment included.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="cube-face cube-face--back">2</div>
-                  <div class="cube-face cube-face--top "></div>
-                  <div class="cube-face cube-face--bottom">4</div>
-                  <div class="cube-face cube-face--left"></div>
-                  <div class="cube-face cube-face--right"></div>
-                </div>
-              </div>
-            </div>
+           
+  
           </section>
         </div>
         <section className="relative">
@@ -3115,7 +2670,10 @@ const FinancingTreatment = () => {
             </svg>
           </div>
         </section>
-      </div>
+
+    </div>
+
+
 
       {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
 

@@ -5306,36 +5306,6 @@ a {
         margin-right: 2.5em;
       }
     } */
-.cube-outline {
-  width: 500px;
-  height: 250px;
-  perspective: 1000px;
-  margin: 100px auto;
-}
-
-.cube {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  animation: spinCube 10s infinite linear;
-}
-
-.cube-face {
-  position: absolute;
-  background-color: #fedff4;
-  font-size: 1em;
-}
-.cube-face--front {
-  width: 500px;
-  height: 250px;
-  transform: translateZ(125px);
-  background-image: url("/images/borders.png");
-  background-size: 100% 100%;
-
-  background-repeat: no-repeat;
-  background-position: center center;
-}
 
 .text-overlay {
   position: relative;
@@ -6390,4 +6360,3 @@ body,
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-

@@ -81,6 +81,9 @@ if (typeof window !== "undefined") {
     useGSAP
   );
 }
+
+
+
 function PixiFlower() {
   const containerRef = useRef(null);
   useEffect(() => {
@@ -1466,7 +1469,7 @@ export default function WhyChooseUs() {
 
   return (
     <>
-   <FluidSimulation />
+   {/* <FluidSimulation /> */}
 
       <div className="relative bg-[#F9F9F9]">
         <div className=" w-full">
@@ -1968,6 +1971,9 @@ function WorkGrid() {
 
   return (
     <>
+      <header className="-mt-[40vh] w-full h-[400px] flex items-center justify-center text-center p-6">
+               <ImageGrid />
+      </header>
 
     <div ref={sectionRef}  className="px-6 py-4 md:px-12">
 
@@ -1989,9 +1995,10 @@ function WorkGrid() {
               <sup className="text-xs align-super">(8)</sup>
             </span>
           </div>
+          
       <VideoAnimation />
                <div className="mb-16">
-              <p className="uppercase tracking-wider text-[12px] font-neuehaas35 mb-4">
+              <p className="font-neuehaas45 text-xs tracking-widest text-gray-600 uppercase mb-4">
                 Pioneering Digital Orthodontics
               </p>
               <h2 className="max-w-3xl font-neuehaas45 text-[26px] leading-tight">
@@ -2005,11 +2012,6 @@ function WorkGrid() {
 
          
        <div className="min-h-screen bg-[#F9F9F9] text-[#0f0f0f] font-[Manrope] overflow-x-hidden">
-      <header className="w-full h-[400px] flex items-center justify-center text-center p-6">
-               <ImageGrid />
-      </header>
-
-
       <section
         ref={workRef}
         className="relative w-full h-full p-6 flex flex-col gap-12 md:gap-16 overflow-hidden"
@@ -2274,6 +2276,9 @@ function ScrollPanels() {
 
     return () => ctx.revert();
   }, []);
+
+
+  
   return (
     <div ref={sectionRef} className="bg-[#F9F9F9]">
       <div className="relative">
@@ -2322,6 +2327,10 @@ function ScrollPanels() {
               </span>
           </footer>
         </section>
+        
+
+
+
         <section className="w-full bg-[#f9f9f9] flex flex-col items-center">
           <div className="w-full px-[6vw]">
             <div className="border-t border-black/10 w-full" />
@@ -3452,49 +3461,7 @@ const RepeatText = ({ text = "MTS", totalLayers = 7 }) => {
 };
 
 function StackCards() {
-  const containerRef = useRef(null);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  const topPathLength = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
-  const bottomPathLength = useTransform(scrollYProgress, [0.5, 1], [0, 1]);
-  const textRef = useRef(null);
-  const blockRef = useRef(null);
-  const isInView = useInView(blockRef, {
-    margin: "0px 0px -10% 0px",
-    once: true,
-  });
-
-useLayoutEffect(() => {
-  const ctx = gsap.context(() => {
-    const lines = textRef.current.querySelectorAll("span");
-
-    gsap.set(lines, {
-      opacity: 0,
-      y: 40,
-      clipPath: "polygon(0 100%, 100% 100%, 100% 80%, 0 80%)",
-    });
-
-    gsap.to(lines, {
-      opacity: 1,
-      y: 0,
-      clipPath: "polygon(0 0%, 100% 0%, 100% 100%, 0 100%)",
-      duration: 1.2,
-      stagger: 0.15,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: textRef.current,
-        start: "top 80%",
-        once: true,
-      },
-    });
-  });
-
-  return () => ctx.revert();
-}, []);
 
   useEffect(() => {
     let activeCard = null;
@@ -3626,36 +3593,234 @@ useLayoutEffect(() => {
   const handlePointerLeave = () => {
     setMPos({ x: 50, y: 50 });
   };
+
+
+
+  const [index, setIndex] = useState(0);
+  const textWrapRef = useRef(null);
+  const sectionRef = useRef(null);
+  const hasAnimated = useRef(false);
+
+  const texts = [
+    `Our doctors aren’t just orthodontists — they’re in the top 1%. That’s a level fewer than 1 in 4 orthodontists reach. And when it comes to Invisalign? We don’t follow trends — we set them. As Diamond Plus providers, we’ve shaped how clear aligners are done in the region (and treated thousands along the way).`,
+    `Our doctors aren’t just orthodontists — they’re in the top 1%. That’s a level fewer than 1 in 4 orthodontists reach. And when it comes to Invisalign? We don’t follow trends — we set them. As Diamond Plus providers, we’ve shaped how clear aligners are done in the region (and treated thousands along the way).`,
+  ];
+
+
+useLayoutEffect(() => {
+  const wrapper = textWrapRef.current;
+  wrapper.innerHTML = '';
+
+
+  texts.forEach((text, i) => {
+    const div = document.createElement('div');
+    div.className = `content__text${i === 0 ? ' content__text--current' : ''}`;
+    const words = text.split(' ');
+    words.forEach((word, wi) => {
+      const wrap = document.createElement('span');
+      wrap.className = 'word-wrap';
+      const span = document.createElement('span');
+      span.className = 'word';
+      span.textContent = word;
+      wrap.appendChild(span);
+      if (wi < words.length - 1) wrap.appendChild(document.createTextNode(' '));
+      div.appendChild(wrap);
+    });
+    wrapper.appendChild(div);
+  });
+
+
+  const switchText = () => {
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+
+    const textsEls = textWrapRef.current.querySelectorAll('.content__text');
+    const currentText = textsEls[index];
+    const nextIndex = index === 0 ? 1 : 0;
+    const nextText = textsEls[nextIndex];
+
+    const currentWords = currentText.querySelectorAll('.word');
+    const nextWords = nextText.querySelectorAll('.word');
+
+    gsap.set(nextText, { opacity: 1, zIndex: 2 });
+    gsap.set(nextWords, { yPercent: 125, rotation: -3 });
+
+
+    const outDuration = 0.3;
+    const outStaggerEach = 0.02;
+    const totalOutTime = outDuration + currentWords.length * outStaggerEach;
+    const overlap = totalOutTime * 0.6; 
+
+    const tl = gsap.timeline({
+      defaults: { ease: 'expo' },
+      onComplete: () => {
+        currentText.classList.remove('content__text--current');
+        nextText.classList.add('content__text--current');
+        gsap.set(currentText, { opacity: 0, zIndex: 1 });
+        setIndex(nextIndex);
+      },
+    });
+
+    tl.fromTo(
+      currentWords,
+      { yPercent: 0, rotation: 0 },
+      {
+        duration: outDuration,
+        yPercent: -125,
+        rotation: 3,
+        stagger: { each: outStaggerEach, from: 'start' },
+        ease: 'power1.in',
+      }
+    );
+
+
+    tl.fromTo(
+      nextWords,
+      { yPercent: 125, rotation: -3 },
+      {
+        duration: 0.6,
+        yPercent: 0,
+        rotation: 0,
+        stagger: { each: 0.02, from: 'start' },
+        ease: 'back.out(1.4)',
+      },
+      `-=${overlap}`
+    );
+  };
+
+  const el = sectionRef.current;
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+          switchText();
+        }
+      });
+    },
+    { threshold: [0.6] }
+  );
+
+  if (el) observer.observe(el);
+  return () => observer.disconnect();
+}, [texts, index]);
+
+
+ const switchText = () => {
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+
+    const textsEls = textWrapRef.current.querySelectorAll('.content__text');
+    const currentText = textsEls[index];
+    const nextIndex = index === 0 ? 1 : 0;
+    const nextText = textsEls[nextIndex];
+
+    const currentWords = currentText.querySelectorAll('.word');
+    const nextWords = nextText.querySelectorAll('.word');
+
+    gsap.set(nextText, { opacity: 1, zIndex: 2 });
+    gsap.set(nextWords, { yPercent: 125, rotation: -3 });
+
+    const tl = gsap.timeline({
+      defaults: { ease: 'expo' },
+      onComplete: () => {
+        currentText.classList.remove('content__text--current');
+        nextText.classList.add('content__text--current');
+        gsap.set(currentText, { opacity: 0, zIndex: 1 });
+        setIndex(nextIndex);
+      },
+    });
+
+    tl.fromTo(
+      currentWords,
+      { yPercent: 0, rotation: 0 },
+      {
+        duration: 0.3,
+        yPercent: -125,
+        rotation: 3,
+        stagger: { each: 0.02, from: 'start' },
+        ease: 'power1.in',
+      }
+    ).fromTo(
+      nextWords,
+      { yPercent: 125, rotation: -3 },
+      {
+        duration: 0.6,
+        yPercent: 0,
+        rotation: 0,
+        stagger: { each: 0.02, from: 'start' },
+        ease: 'back.out(1.4)',
+      },
+      '-=0.7'
+    );
+  };
+
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+            switchText();
+          }
+        });
+      },
+      { threshold: [0.6] }
+    );
+    if (el) observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
-      <section className="mt-[4vh] bg-[#F9F9F9]" ref={containerRef}>
-        <section className=" w-full flex flex-col items-center">
-                 <div className="mt-[10vh]">
-      <div
-      ref={textRef}
-      className="tracking-wider mx-auto mb-40 max-w-[740px] text-[19px] leading-none font-neuehaas45"
+      <section className="mt-[10vh] bg-[#F9F9F9]">
+                     <section
+      ref={sectionRef}
+      className="flex flex-col items-center justify-center text-black"
     >
-      <p className="text-[19px] leading-[1.3] font-neuehaas45 tracking-wider space-y-2">
-        <span className="textline block overflow-hidden">
-          <span className="textline-inner block">
-            Our doctors aren’t just orthodontists — they’re in the top 1%.
-            That’s a level fewer than 1 in 4 orthodontists reach. And when it comes to Invisalign? We don’t follow trends — we set them.
-                   As Diamond Plus providers, we’ve shaped how clear aligners are done in the region
-            (and treated thousands along the way).
-          </span>
-        </span>
-       
-      </p>
+      <div
+        ref={textWrapRef}
+        className="relative text-center text-[1.3rem] leading-snug max-w-3xl overflow-hidden"
+      />
 
-      <div className="h-4" />
-      <span className="textline block overflow-hidden">
-        <span className="textline-inner block text-black">
-          tl;dr: You’re in elite company.
-        </span>
-      </span>
-    </div>
-        </div>
-          <div className="flex flex-row gap-x-12">
+      <style jsx global>{`
+        .content__text {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          opacity: 0;
+          pointer-events: none;
+          display: flex;
+          flex-wrap: wrap;
+          line-height: 1.4;
+          font-family: 'NeueHaasDisplay35';
+        }
+
+        .content__text--current {
+          opacity: 1;
+          pointer-events: auto;
+          position: relative;
+          z-index: 2;
+        }
+
+        .word-wrap {
+          display: inline-block;
+          overflow: hidden;
+          margin-right: 0.25em; 
+        }
+
+        .word {
+          display: inline-block;
+          transform: translateY(0%);
+          will-change: transform;
+        }
+      `}</style>
+    </section>
+
+<div className="mt-[10vh] w-full flex justify-center">
+
+            <div className="flex flex-row gap-x-12 items-center">
             
             <div className=" flex flex-col justify-center">
               <div
@@ -3742,6 +3907,8 @@ useLayoutEffect(() => {
               />
             </div>
           </div>
+</div>
+
 
           {/* <div className="blockcontainer">
           <p>
@@ -3757,9 +3924,9 @@ useLayoutEffect(() => {
             <span></span>
           </p>
         </div> */}
-        </section>
+
  
-        <div className="mt-20 font-neuehaas45 text-gray-600 uppercase min-h-screen leading-none  px-2">
+        <div className="mt-20 font-neuehaas45 text-gray-600 uppercase min-h-screen leading-none px-2">
           {[
             {
               title: "ABO Treatment Standards",
@@ -3788,7 +3955,7 @@ useLayoutEffect(() => {
                 style={{ "--br": "0px" }}
               >
                 <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-                <div className="tracking-wider text-[13px] relative z-10 flex items-center justify-center col-span-1 text-[#fe019a]">
+                <div className="tracking-wider text-[12px] relative z-10 flex items-center justify-center col-span-1 text-[#fe019a]">
                   {block.title}
                 </div>
                 <div className="tracking-widest text-[11px] relative z-10 col-span-3 max-w-4xl text-black leading-relaxed">
