@@ -1,13 +1,15 @@
 'use client'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useLayoutEffect} from 'react'
 import gsap from 'gsap'
 import { LinearFilter, Mesh, OrthographicCamera, PlaneGeometry, Scene, ShaderMaterial, TextureLoader, Vector2, WebGLRenderer } from 'three'
+import ScrollTrigger from 'gsap/ScrollTrigger'
 
+gsap.registerPlugin(ScrollTrigger)
 const items = [
   {
     // src: '/images/members/edit/adriana-blurry-distortion-effect-1920px-1.jpg',
     // hoverSrc: '/images/members/orig/adriana.png',
-    src: '/images/test/base.jpg',
+    src: '../images/team_members/Adriana-greenborder.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Insurance Coordinator',
     name: 'Adriana',
@@ -15,7 +17,7 @@ const items = [
   {
     // src: '/images/members/edit/alyssa-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/alyssa.png',
-    src: '/images/test/base.jpg',
+    src: '/images/team_members/alyssa-border.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Alyssa',
@@ -23,7 +25,7 @@ const items = [
   {
     // src: '/images/members/edit/elizabeth-blurry-distortion-effect-1.jpg',
     // hoverSrc: '/images/members/orig/elizabeth.png',
-    src: '/images/test/base.jpg',
+   src: '/images/team_members/elizabeth-green.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Patient Services',
     name: 'Elizabeth',
@@ -31,7 +33,7 @@ const items = [
   {
     // src: '/images/members/edit/lexi-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/lexi.png',
-    src: '/images/test/base.jpg',
+    src: '/images/team_members/lexi-greenborder.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Lexi',
@@ -39,10 +41,10 @@ const items = [
   {
     // src: '/images/members/edit/nicole-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/nicolle.png',
-    src: '/images/test/base.jpg',
+    src: '/images/team_members/nicolle-green.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Specialized Orthodontic Assistant',
-    name: 'Nicole',
+    name: 'Nicolle',
   },
 ]
 
@@ -398,17 +400,84 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
 }
 
 export default function GridContainer() {
+  const sectionRef = useRef(null);
+  const stickyRef = useRef(null);
+  const trackRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    const sticky = stickyRef.current;
+    const track = trackRef.current;
+    if (!section || !sticky || !track) return;
+
+    ScrollTrigger.getAll().forEach((t) => t.kill());
+    gsap.killTweensOf(track);
+
+    const build = () => {
+      const totalScroll = track.scrollWidth - window.innerWidth;
+      gsap.set(section, { height: track.scrollWidth });
+
+      gsap.to(track, {
+        x: -totalScroll,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${totalScroll}`,
+          scrub: 1,
+          pin: sticky,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      ScrollTrigger.refresh();
+    };
+
+    build();
+
+    const ro = new ResizeObserver(() => build());
+    ro.observe(track);
+    ro.observe(sticky);
+
+    return () => {
+      ro.disconnect();
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
+  }, []);
+
   return (
-    <div className="grid-container">
-      {items.map((item, i) => (
-        <div key={item.name} className={`item-${i + 1}-container`}>
-          <ImageCanvas className={`item-${i + 1}`} member={item.name} imgSrc={item.src} hoverSrc={item.hoverSrc} />
-          <div className="member-info">
-            <div className="member-date">{item.role}</div>
-            <div className="member-title">{item.name}</div>
+    <section ref={sectionRef} className="horizontal-section">
+      <div ref={stickyRef} className="horizontal-sticky">
+        <div ref={trackRef} className="horizontal-track">
+          <div className="intro-card">
+            <h2 className="intro-heading">
+      Entrust your smile's transformation to our handpicked team of orthodontic specialists.
+            </h2>
+            <p className="intro-subtext">
+             From national certifications to hands-on trainings, we’re always leveling up. The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
+            </p>
           </div>
+
+  
+          {items.map((item, i) => (
+            <div key={item.name} className="member-card">
+              <div className="image-wrapper">
+                <ImageCanvas
+                  className={`item-${i + 1}`}
+                  member={item.name}
+                  imgSrc={item.src}
+                  hoverSrc={item.hoverSrc}
+                />
+              </div>
+              <div className="member-info">
+                <div className="member-role">{item.role}</div>
+                <div className="member-title">{item.name}</div>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  )
+      </div>
+    </section>
+  );
 }

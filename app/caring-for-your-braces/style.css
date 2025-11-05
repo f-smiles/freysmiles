@@ -1,0 +1,449 @@
+:root {
+  --terra: #b2b5ce;
+  --green: #dd5310;
+  --pink: #f3c744;
+  --blue: #df9df3 ;
+  --black: #0e0e0e;
+  --beige: #cfde79;
+  --grey: #f19949;
+  --91c5acce: 5;
+  --sbw: 0px;
+}
+/* #CADACF */
+
+
+
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 3.3333333333vw; 
+    font-size: calc(3.33333vw - var(--sbw) / 30); 
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1079px) {
+  html {
+    font-size: 2.470703125vw; 
+    font-size: calc(1.2207vw - var(--sbw) / 81.92); 
+  }
+}
+
+@media screen and (min-width: 1080px) {
+  html {
+    font-size: 0.8680555555vw;
+    font-size: calc(0.86806vw - var(--sbw) / 115.2); 
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  html {
+    font-size: 0.8680555555vw; 
+    font-size: calc(0.86806vw - var(--sbw) / 115.2);
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  html {
+    font-size: 0.78125vw; 
+    font-size: calc(0.78125vw - var(--sbw) / 128);
+  }
+}
+
+@media screen and (min-width:1080px) {
+  .MainSectionItem {
+    height: 100vh;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}
+
+.MainSectionItem-inner {
+  pointer-events: none;
+}
+
+@media screen and (max-width:768px) {
+  .MainSectionItem-inner.--index-first {
+    height: 200vh;
+    height: 200svh;
+    z-index: 10;
+  }
+  .MainSectionItem-inner.--index-between {
+    height: 200vh;
+    height: 200svh;
+    margin-top: -100svh;
+    z-index: 20;
+  }
+  .MainSectionItem-inner.--index-last {
+    height: 100vh;
+    height: 100svh;
+    margin-top: -100svh;
+    z-index: 30;
+  }
+}
+
+@media screen and (min-width:769px) and (max-width:1079px) {
+  .MainSectionItem-inner.--index-first {
+    height: 100vh;
+    height: 100svh;
+    z-index: 10;
+  }
+  .MainSectionItem-inner.--index-between {
+    height: 100vh;
+    height: 100svh;
+    margin-top: -50svh;
+    z-index: 20;
+  }
+  .MainSectionItem-inner.--index-last {
+    height: 50vh;
+    height: 50svh;
+    margin-top: -50svh;
+    z-index: 30;
+  }
+}
+
+@media screen and (min-width:1080px) {
+  .MainSectionItem-inner {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}
+
+.MainSectionItem-innerSticky {
+  display: flex;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  top: 0;
+}
+
+@media screen and (max-width:768px) {
+  .MainSectionItem-innerSticky {
+    flex-direction: column-reverse;
+    height: 100vh;
+    height: 100svh;
+    justify-content: flex-end;
+    padding: 1rem 1rem 0;
+  }
+}
+
+@media screen and (min-width:769px) {
+  .MainSectionItem-innerSticky {
+    align-items: center;
+    height: 50vh;
+    height: 50svh;
+    justify-content: space-between;
+    padding: 0 3.2rem 0 12.8rem;
+  }
+}
+
+@media screen and (min-width:1080px) {
+  .MainSectionItem-innerSticky {
+    gap: 13rem;
+    height: 100%;
+    left: 0;
+    padding: 15vh 16rem 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width:1440px) {
+  .MainSectionItem-innerSticky {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-left: 10rem;
+    padding-top: 10vh;
+  }
+}
+
+.MainSectionItem-background {
+  height: 100%;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.MainSectionItem-imageContainer {
+  aspect-ratio: 448/325;
+  flex: none;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+@media screen and (min-width:769px) {
+  .MainSectionItem-imageContainer {
+    margin-bottom: 0;
+    width: 44.8rem;
+  }
+}
+
+@media screen and (min-width:1080px) {
+  .MainSectionItem-imageContainer {
+    aspect-ratio: 480/348;
+    margin-top: -27.25rem;
+    position: absolute;
+    right: 0;
+    top: 73%;
+    width: 33.3%;
+  }
+}
+.MainSectionItem-image,
+.MainSectionItem-imageContainerInner {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.MainSectionItem-image,
+.MainSectionItem-imageContainerInner {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.MainSectionItem-content {
+  padding-left: 8rem;
+  pointer-events: auto;
+  position: relative;
+  width: 100%;
+  color: var(--black);
+}
+
+.MainSectionItem-contentTitle {
+  margin-bottom: 1rem;
+}
+
+.MainSectionItem-contentText {
+  overflow: hidden;
+}
+
+.MainSectionItem-index {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  left: 1rem;
+  position: absolute;
+  top: 0.8rem;
+}
+
+@media screen and (min-width:769px) {
+  .MainSectionItem-content {
+    padding-left: 0;
+  }
+}
+
+@media screen and (min-width:769px) and (max-width:1079px) {
+  .MainSectionItem-contentTitle,
+  .MainSectionItem-contentText {
+    max-width: 85%;
+    width: 100%;
+  }
+  .MainSectionItem-index {
+    left: -10rem;
+  }
+}
+
+@media screen and (min-width:1080px) {
+  .MainSectionItem-contentTitle {
+    margin-bottom: 3rem;
+  }
+  .MainSectionItem-contentText {
+    max-width: 32%;
+    width: 100%;
+  }
+  .MainSectionItem-index {
+    display: none;
+  }
+}
+
+@media screen and (min-width:1440px) {
+  .MainSectionItem-content {
+    margin-top: -23.25rem;
+    top: 65%;
+  }
+  .MainSectionItem-contentTitle {
+    max-width: 35%;
+    width: 100%;
+  }
+}
+
+.MainSection {
+  background: #f1efeb;
+  position: relative;
+  width: 100%;
+  z-index: 20;
+}
+
+@media screen and (min-width:1080px) {
+  .MainSection {
+    height: calc(var(--91c5acce) * 130vh);
+  }
+  .MainSection-wrap {
+    height: 100vh;
+    height: 100svh;
+    /* left: 0; */
+    overflow: hidden;
+    position: relative;
+    /* position: absolute; */
+    /* top: 0; */
+    width: 100%;
+  }
+}
+
+
+.MainSection-headTitle {
+  pointer-events: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.MainSection-headTitle.AppTitle-1 {
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  line-height: 1.15;
+  letter-spacing: 0.01em; 
+  font-family:"NeueHaasGroteskDisplayPro45Light"
+}
+
+.SplitText {
+  word-break: break-word;
+}
+
+.AnimatedSplitText .head-lines {
+  will-change: transform;
+  color: var(--black);
+}
+.AnimatedSplitText .chars-wrapper {
+  display: inline-block;
+}
+.AnimatedSplitText .chars {
+  will-change: transform;
+}
+.AnimatedSplitText.--anim-title .head-lines {
+  overflow: hidden;
+}
+
+
+@media screen and (max-width:768px) {
+  .MainSection-head {
+    padding: 4rem 2rem 2rem;
+    position: relative;
+    text-align: center;
+  }
+  .MainSection-head .lines {
+    text-align: center;
+  }
+}
+
+@media screen and (min-width:769px) and (max-width:1079px) {
+  .MainSection-head {
+    padding: 12rem 12.8rem 0;
+  }
+}
+
+@media screen and (min-width:1080px) {
+  .MainSection-head {
+    height: 100%;
+    left: 0;
+    padding-left: 10rem;
+    pointer-events: none;
+    position: absolute;
+    top: 10vh;
+    top: 10svh;
+    width: 100%;
+    z-index: 10;
+  }
+}
+
+@media screen and (min-width:1440px) {
+  .MainSection-head {
+    top: 14vh;
+    top: 14svh;
+  }
+}
+
+.MainSection-items {
+  position: relative;
+}
+
+@media screen and (min-width:1080px) {
+  .MainSection-items {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}
+
+.MainSection-nav {
+  display: none;
+}
+
+@media screen and (min-width:1080px) {
+  .MainSection-nav {
+    bottom: 5vh;
+    bottom: 5svh;
+    display: flex;
+    left: 3.2rem;
+    overflow: hidden;
+    position: absolute;
+    right: 3.2rem;
+  }
+}
+
+@media screen and (min-width:1440px) {
+  .MainSection-nav {
+    left: 16rem;
+    right: 16rem;
+  }
+}
+
+.MainSection-navItem {
+  margin-bottom: 2rem;
+  overflow: hidden;
+  width: 100%;
+  color: var(--black);
+}
+
+.MainSection-navItem span {
+  display: inline-block;
+}
+
+.MainSection-navItem:first-child .MainSection-navItemTitle {
+  transform: translateZ(0);
+}
+
+.MainSection-navItemTitle {
+  margin-left: 2.2rem;
+  font-family: "NeueHaasGroteskDisplayPro45Light";
+  /* transform: translate3d(0, 5rem, 0); */
+}
+
+.MainSection-navProgress {
+  bottom: 0;
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+}
+
+.MainSection-navProgressBar {
+  background: #0e0e0e;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  /* transform: translate3d(-100%, 0, 0); */
+  width: 100%;
+}

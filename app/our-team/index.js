@@ -11,13 +11,13 @@ import React, {
   useMemo,
   useLayoutEffect,
 } from "react";
-import { SplitText } from "gsap/all";
+import { SplitText } from "gsap/SplitText";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader, useThree} from "@react-three/fiber";
 import * as THREE from "three";
 import {
   TextureLoader,
@@ -31,7 +31,109 @@ import GridContainer from "../mouse-gooey-effect-5/components/GridContainer";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
+function SonarSweep() {
+  const canvasRef = useRef(null);
+  const width = 240;
+  const height = 240;
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+
+    ctx.imageSmoothingEnabled = false;
+
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const dotRings = [
+      { radius: 15, count: 6 },
+      { radius: 30, count: 12 },
+      { radius: 45, count: 18 },
+      { radius: 60, count: 24 },
+      { radius: 75, count: 30 },
+    ];
+
+    const waveSpeed = 30;
+    const waveThickness = 40;
+    const maxDotRadius = dotRings[dotRings.length - 1].radius;
+    const maxAnimatedRadius = maxDotRadius + waveThickness;
+    const rotationMagnitude = 0.15;
+    const rotationSpeedFactor = 3;
+    const BLUE = "#DDFF00";
+
+    let time = 0;
+    let lastTime = 0;
+
+    function animate(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const deltaTime = timestamp - lastTime;
+      lastTime = timestamp;
+      time += deltaTime * 0.001;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // center dot
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 2, 0, Math.PI * 2);
+      ctx.fillStyle = BLUE;
+      ctx.fill();
+
+      const currentWaveFront = (time * waveSpeed) % maxAnimatedRadius;
+
+      dotRings.forEach((ring) => {
+        for (let i = 0; i < ring.count; i++) {
+          const baseAngle = (i / ring.count) * Math.PI * 2;
+          const baseRadius = ring.radius;
+          const distToWaveFront = baseRadius - currentWaveFront;
+
+          let pulseFactor = 0;
+          if (Math.abs(distToWaveFront) < waveThickness / 2) {
+            pulseFactor = Math.cos(
+              (distToWaveFront / (waveThickness / 2)) * (Math.PI / 2)
+            );
+            pulseFactor = Math.max(0, pulseFactor);
+          }
+
+          let currentAngle = baseAngle;
+          if (pulseFactor > 0.01) {
+            const angleOffset =
+              pulseFactor *
+              Math.sin(time * rotationSpeedFactor + i * 0.5) *
+              rotationMagnitude;
+            currentAngle += angleOffset;
+          }
+
+          const dotSize = 1.5 + pulseFactor * 1.8;
+          const x = centerX + Math.cos(currentAngle) * baseRadius;
+          const y = centerY + Math.sin(currentAngle) * baseRadius;
+
+          ctx.beginPath();
+          ctx.arc(x, y, dotSize, 0, Math.PI * 2);
+          ctx.fillStyle = BLUE;
+          ctx.fill();
+        }
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  }, []);
+
+  return (
+    <div className="flex items-center justify-center w-full h-full scale-[0.93]">
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+
+      />
+    </div>
+  );
+}
 const vertexShader = `
 uniform vec2 uOffset;
 varying vec2 vUv;
@@ -417,15 +519,16 @@ export default function OurTeam() {
         "+=0.2"
       );
     }
-
+console.log(panelRefs.current);
     tl.fromTo(
+
       panelRefs.current,
       { y: "0%" },
       {
         y: "-100%",
         duration: 1.2,
         stagger: 0.08,
-        ease: [0.65, 0, 0.35, 1],
+        ease: "none"
       },
       "+=0.1"
     );
@@ -534,21 +637,24 @@ export default function OurTeam() {
     }
   }, []);
 
-  const greenCursorStyle = {
-    position: "fixed",
-    left: `${cursorPosition.x}px`,
-    top: `${cursorPosition.y}px`,
-    width: isFocused ? "100px" : "10px",
-    height: isFocused ? "100px" : "10px",
-    borderRadius: "50%",
-    backgroundColor: isFocused ? "rgb(12, 14, 254)" : "#FFFFFF",
-    pointerEvents: "none",
-    transform: "translate(-50%, -50%)",
-    transition: "width 0.5s, height 0.5s, background-color 0.25s",
-    zIndex: 9999,
-    color: "#FFF",
-    fontFamily: "NeueMontrealBook",
-  };
+const greenCursorStyle = {
+  position: "fixed",
+  left: `${cursorPosition.x}px`,
+  top: `${cursorPosition.y}px`,
+  width: isFocused ? "70px" : "10px",
+  height: isFocused ? "70px" : "10px",
+  borderRadius: "50%",
+  background: isFocused
+    ? "rgba(220, 227, 143, 0.69)"   
+    : "rgba(255,255,255, 1)",
+  backdropFilter: isFocused ? "blur(10px) saturate(180%)" : "none", 
+  WebkitBackdropFilter: isFocused ? "blur(10px) saturate(180%)" : "none", 
+  // border: isFocused ? "1px solid rgba(255, 255, 255, 0.4)" : "none",
+  pointerEvents: "none",
+  transform: "translate(-50%, -50%)",
+  transition: "width 0.5s, height 0.5s, background 0.25s, border 0.25s",
+  zIndex: 9999,
+};
 
   useEffect(() => {
     const lines = document.querySelectorAll(".stagger-line");
@@ -688,6 +794,142 @@ export default function OurTeam() {
     },
   });
 
+
+useEffect(() => {
+  const canvas = document.getElementById('shader-bg');
+  if (!canvas) return;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+  const uniforms = {
+    u_time: { value: 0 },
+    u_resolution: {
+      value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+    },
+    u_mouse: { value: new THREE.Vector2() },
+  };
+
+  const vertexShader = `
+    varying vec2 v_uv;
+    void main() {
+      v_uv = uv;
+      gl_Position = vec4(position, 1.0);
+    }
+  `;
+
+  const fragmentShader = `
+    varying vec2 v_uv;
+    uniform float u_time;
+    uniform vec2 u_resolution;
+    uniform vec2 u_mouse;
+
+    #define MIN_DIST .01
+    #define MAX_DIST 100.
+    #define MAX_STEPS 100
+
+    float pointSDF(vec3 p, float r){
+        return length(p) - r;
+    }
+
+    float getDist(vec3 p){
+        float p1 = pointSDF(p-vec3(0., 1., 4.), 2.)-cos(2.*u_time+p.x*5.+p.z*.1)*.2;
+        p1 -= sin(u_time*2. + p.y*p.x * 2.)*.5;
+        float pl = p.y+1.;
+        return min(p1, pl);
+    }
+
+    vec3 getNormal(vec3 p){
+        vec2 off = vec2(.01,0.);
+        float d = getDist(p);
+        vec3 n = d-vec3(
+                getDist(p - off.xyy),
+                getDist(p - off.yxy),
+                getDist(p - off.yyx)
+                    );
+        return normalize(n);
+    }
+
+    float rayMarch(vec3 ro, vec3 rd){
+        float dO = 0.;
+        for(int i = 0; i < MAX_STEPS; i++){
+            float d = getDist(ro+ rd*dO);
+            
+            dO += d;
+            if(d < MIN_DIST || abs(dO) > MAX_DIST) break;
+           
+        }
+        return dO;
+    }
+
+    void mainImage( out vec4 fragColor, in vec2 fragCoord )
+    {
+        vec2 uv = fragCoord/u_resolution.xy;
+        uv -=.5;
+        uv.x *= u_resolution.x / u_resolution.y;
+        vec3 col = vec3(0.);
+        vec3 ro = vec3(0., 1., -5.);
+        vec3 rd = normalize(vec3(uv.x, uv.y, 1.));
+        
+        float d = rayMarch(ro, rd);
+        vec3 p = ro + rd * d;
+        vec3 n = abs(getNormal(p));
+        col = mix(vec3(0.56, 0.7, 0.0), vec3(0.8, 1.0, 0.0), n.y);
+        fragColor = vec4(col,1.0);
+    }
+
+    void main() {
+        vec2 fragCoord = v_uv * u_resolution;
+        vec4 color;
+        mainImage(color, fragCoord);
+        gl_FragColor = color;
+    }
+  `;
+
+  const material = new THREE.ShaderMaterial({
+    vertexShader,
+    fragmentShader,
+    uniforms,
+  });
+
+  const geometry = new THREE.PlaneGeometry(2, 2);
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  const clock = new THREE.Clock();
+
+  const animate = () => {
+    requestAnimationFrame(animate);
+    uniforms.u_time.value = clock.getElapsedTime();
+    renderer.render(scene, camera);
+  };
+  animate();
+
+  const handleResize = () => {
+    const { innerWidth: w, innerHeight: h } = window;
+    renderer.setSize(w, h);
+    uniforms.u_resolution.value.set(w, h);
+  };
+
+  const handleMouseMove = (e) => {
+    uniforms.u_mouse.value.set(e.clientX, window.innerHeight - e.clientY);
+  };
+
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('mousemove', handleMouseMove);
+
+  return () => {
+    window.removeEventListener('resize', handleResize);
+    window.removeEventListener('mousemove', handleMouseMove);
+    renderer.dispose();
+  };
+}, []);
+
+
   const wrapperRef = useRef(null);
   const scrollRef = useRef(null);
   const lastSectionRef = useRef(null);
@@ -695,55 +937,57 @@ export default function OurTeam() {
   const col1Ref = useRef(null);
   const col2Ref = useRef(null);
   const col3Ref = useRef(null);
+const leftColumnRef = useRef(null)
+const gridRef = useRef(null)
+useLayoutEffect(() => {
+  if (!wrapperRef.current || !scrollRef.current || !lastSectionRef.current) return;
+  ScrollTrigger.getAll().forEach((t) => t.kill());
+  const targetY = scrollRef.current.offsetHeight - lastSectionRef.current.offsetHeight;
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: wrapperRef.current,
+      start: "top top",
+      end: "+=" + (window.innerHeight * 3), 
+      scrub: true,
+      pin: true,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+    },
+  });
 
-  useLayoutEffect(() => {
-    if (
-      !wrapperRef.current ||
-      !lastSectionRef.current ||
-      !newSectionRef.current
-    )
-      return;
+  tl.to(scrollRef.current, {
+    y: -targetY,
+    ease: "none",
+    duration: 1,
+  }, 0);
 
-    ScrollTrigger.getAll().forEach((t) => t.kill());
 
-    const horizontalScrollDistance = window.innerWidth;
-    const columnStartDelay = 0.5;
-    const staggerAmount = 0.05;
+  tl.to(wrapperRef.current, {
+    xPercent: -100,
+    ease: "none",
+    duration: 1,
+  }, "+=0.5");
+tl.to([col1Ref.current, col2Ref.current, col3Ref.current], {
+  yPercent: (i) => (i % 2 === 0 ? -100 : 100),
+  ease: "none",
+  duration: 2,
+  stagger: {
+    each: 0.5,   
+  }
+}, "+=0.2");
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: lastSectionRef.current,
-        start: "top top",
-        end: `+=${horizontalScrollDistance}`,
-        scrub: 1,
-        pin: wrapperRef.current,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-      },
-    });
+  ScrollTrigger.refresh();
 
-    tl.to(wrapperRef.current, { x: "-100%", ease: "none" }, 0);
+  return () => ScrollTrigger.getAll().forEach((t) => t.kill());
+}, []);
 
-    gsap.utils.toArray([col1Ref, col2Ref, col3Ref]).forEach((colRef, index) => {
-      tl.to(
-        colRef.current,
-        {
-          yPercent: index % 2 === 0 ? -100 : 100,
-          ease: "none",
-        },
-        columnStartDelay + index * staggerAmount
-      );
-    });
-
-    setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 100);
-
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-  }, []);
 
   return (
-    <div className="">
+<div className="relative w-full h-screen">
+<canvas
+    id="shader-bg"
+    className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"
+  />
       {/* <div
         className={`fixed inset-0 z-50 flex transition-transform duration-1000 ${
           isRevealing ? "translate-y-0" : "-translate-y-full"
@@ -764,27 +1008,29 @@ export default function OurTeam() {
         </div>
       </div> */}
 
-      <div className="relative bg-black overflow-x-clip">
+      <div className="relative overflow-x-clip">
+
         <div ref={wrapperRef} className="flex w-full">
-          <div className="h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-black w-3/5 bg-[#FCF9F8] rounded-[24px]">
-            <div className="max-w-[400px] ml-10 my-10 flex flex-col overflow-hidden">
-              <div className="inline-block overflow-hidden">
-                <div className="text-[12px] leading-[1.1] font-neueroman text-black">
-                  {lines.map((line, index) => (
-                    <div key={index} className="overflow-hidden">
-                      <motion.span
-                        variants={fadeUpMasked(index * 0.2)}
-                        initial="hidden"
-                        animate="visible"
-                        className="inline-block"
-                      >
-                        {line}
-                      </motion.span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              {/* {lines.map((line, index) => (
+
+          <div ref={leftColumnRef} className="z-10 h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-[#DBDBDB] w-3/5 bg-[#FCFFFE] rounded-[24px]">
+          <div className="max-w-[400px] ml-10 my-10 flex flex-col overflow-hidden">
+          <div className="inline-block overflow-hidden">
+          <div className="text-[12px] leading-[1.1] font-neuehaas45 tracking-wide text-black">
+      {lines.map((line, index) => (
+        <div key={index} className="overflow-hidden">
+          <motion.span
+            variants={fadeUpMasked(index * 0.2)}  
+            initial="hidden"
+            animate="visible"
+            className="inline-block"
+          >
+            {line}
+          </motion.span>
+        </div>
+      ))}
+    </div>
+    </div>
+                {/* {lines.map((line, index) => (
                   <motion.div
                     key={index}
                     className="font-neueroman uppercase  text-[12px] overflow-hidden text-black"
@@ -840,10 +1086,10 @@ export default function OurTeam() {
                     />
                   </figure>
                   <figcaption className="mt-5 ">
-                    <p className="text-[12px] uppercase font-neueroman">
+                    <p className="text-[14px] text-[#111] tracking-wider font-neuehaas45">
                       {!switchDoctor ? "Dr. Gregg Frey" : "Dr. Dan Frey"}
                     </p>
-                    <p className="text-[12px] font-neueroman">
+                    <p className="text-[14px] text-[#111] tracking-wider font-neuehaas45">
                       {!switchDoctor ? "DDS" : "DMD, MSD"}
                     </p>
                   </figcaption>
@@ -884,9 +1130,11 @@ export default function OurTeam() {
             </section>
           </div>
 
-          <div ref={scrollRef} className="relative w-2/5">
-            <div className="rounded-[24px] border-b border-b border-black bg-[#FCF9F8]  py-[10em] sm:py-[10em] h-screen lg:px-8 ">
-              <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
+<div ref={scrollRef} className="z-10 relative w-2/5">
+
+            <div className="rounded-[24px] border-b border-b bg-[#FCFFFE]  py-[10em] sm:py-[10em] h-screen lg:px-8 ">
+          
+            <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
                 <div className="lg:col-span-6">
                   <div
                     id="controls"
@@ -910,7 +1158,7 @@ export default function OurTeam() {
                         <path d="M99.75 76.596C73.902 76.596 52.62 43.07 49.895 0 47.168 43.07 25.886 76.596.036 76.596"></path>
                       </svg>
                     </button>
-                    <span className="font-neueroman text-[12px] text-black">
+                    <span className="font-neuehaas45 text-[12px] text-black">
                       0{!switchDoctor ? index : index + 1} / 02
                     </span>
                     <button className="z-3" onClick={toggleSwitchDoctor}>
@@ -948,9 +1196,9 @@ export default function OurTeam() {
                     {switchDoctor ? (
                       <p
                         ref={doctorBioRef}
-                        className="leading-[1.5] font-neueroman uppercase text-[12px] text-black"
+                        className="leading-[1.3] font-neuehaas45 text-[13px] tracking-wide text-black"
                       >
-                        Dr. Daniel Frey pursued his pre-dental requisites at the
+     Dr. Daniel Frey pursued his pre-dental requisites at the
                         University of Pittsburgh, majoring in Biology. Dr. Frey
                         excelled in his studies and was admitted to Temple
                         University&apos;s dental school, graduating at the top
@@ -972,9 +1220,9 @@ export default function OurTeam() {
                       <p
                         style={{ visibility: "hidden" }}
                         ref={doctorBioRef}
-                        className="leading-[1.5] font-neueroman uppercase text-[12px] "
+                      className="leading-[1.3] font-neuehaas45 text-[13px] tracking-wide text-black"
                       >
-                        Dr. Gregg Frey is an orthodontist based in Pennsylvania,
+                            Dr. Gregg Frey is an orthodontist based in Pennsylvania,
                         who graduated from Temple University School of Dentistry
                         with honors and served in the U.S. Navy Dental Corps
                         before establishing his practice in the Lehigh Valley.
@@ -996,124 +1244,115 @@ export default function OurTeam() {
               </div>
             </div>
             <div className="relative h-full">
-              <section
-                ref={lastSectionRef}
-                className="relative flex-col bg-cover h-screen flex justify-center items-center rounded-[24px] bg-[#FCF9F8] overflow-hidden"
-              >
-                <Intro />
-              </section>
+            <section
+  ref={lastSectionRef}
+  className="relative flex-col bg-cover h-screen flex justify-center items-center rounded-[24px] bg-[#FCFFFE] overflow-hidden"
+>
 
-              <div
-                ref={newSectionRef}
-                className="absolute top-0 w-full h-full left-full"
-              >
-                <div
-                  onMouseEnter={() => setIsFocused(true)}
-                  onMouseLeave={() => setIsFocused(false)}
-                  className="w-screen h-screen grid grid-cols-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed"
-                >
-                  {/* Col 1 */}
-                  <div className="overflow-hidden">
-                    <div
-                      ref={col1Ref}
-                      className="flex flex-col will-change-transform"
-                    >
-                      <div className="bg-[#FAFAF8] rounded-[24px] p-8 border-r border-b border-black border-l h-[33.33vh] "></div>
-                      <div className="border-l bg-[#FAFAF8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
-                        <p className="font-neueroman text-[13px] leading-[1.1]">
-                          Fun fact — our team is made up of former FreySmiles
-                          patients, something we think is important, because we
-                          have all experienced treatment and can help guide you
-                          through it.
-                        </p>
-                      </div>
-                      <div className="border-l  bg-[#FCF9F8] rounded-[24px] p-8 border-b border-black border-r h-[33.33vh]"></div>
-                      <div className="border-l bg-[#FCF9F8] rounded-[24px] p-8 border-b border-black border-r h-[66.66vh]"></div>
-                    </div>
-                  </div>
+</section>
 
-                  {/* Col 2 */}
-                  <div className="overflow-hidden">
-                    <div
-                      ref={col2Ref}
-                      className="flex flex-col will-change-transform"
-                    >
-                      <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
-                        <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
-                          <p className="font-neueroman text-[13px] leading-[1.1]">
-                            Our members have received the designation of
-                            Specialized Orthodontic Assistant. This is a
-                            voluntary certification program started by the
-                            American Association of Orthodontists to recognize
-                            those in the profession for their knowledge and
-                            experience.
-                          </p>
-                        </a>
-                      </div>
-                      <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black h-[33.33vh]"></div>
-                      <a
-                        href="https://g.co/kgs/Sds93Ha"
-                        className="flex justify-center items-center bg-[#FCF9F8] rounded-[20px] p-8 border-b border-r border-black h-[33.33vh]"
-                      >
-                        <p className="leading-[1.1] font-neueroman text-[13px]">
-                          This office is on 🔥! The orthodontists as well as
-                          every single staff member.
-                        </p>
-                      </a>
-                    </div>
-                  </div>
 
-                  {/* Col 3 */}
-                  <div className="overflow-hidden">
-                    <div
-                      ref={col3Ref}
-                      className="flex flex-col will-change-transform"
-                    >
-                      <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
-                        <p className="font-neueroman text-[13px]">
-                          Trained in CPR and first aid
-                        </p>
-                      </div>
-                      <a
-                        href="https://g.co/kgs/YkknjNg"
-                        className="flex justify-center items-center  bg-[#F8F6F0] rounded-[20px] p-8 border-r border-b border-black h-[33.33vh]"
-                      >
-                        <p className="leading-[1.1] font-neueroman text-[13px]">
-                          Had a wonderful experience at FreySmiles. Everyone is
-                          extremely professional, polite, timely. Would highly
-                          recommend! — TK
-                        </p>
-                      </a>
-                      <div className="bg-[#FCF9F8] rounded-[24px] p-8 border-r border-b border-black flex justify-center items-center h-[33.33vh]">
-                        <p className="leading-[1.1] font-neueroman text-[13px]">
-                          We&apos;ve invested in in-office trainings with
-                          leading clinical consultants that have helped us
-                          develop systems and protocols streamlining our
-                          processes.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div 
+  ref={newSectionRef}
+  className="absolute top-0 w-full h-full left-full"
+>
+
+
+  <div
+    onMouseEnter={() => setIsFocused(true)}
+    onMouseLeave={() => setIsFocused(false)}
+    className="w-screen h-screen grid grid-cols-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed"
+  >
+    {/* Col 1 */}
+    <div className="overflow-hidden">
+      <div ref={col1Ref} className="flex flex-col will-change-transform">
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] border-l h-[33.33vh] ">
+               <SonarSweep />
+        </div>
+        <div className="border-l bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+          <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
+            Fun fact — our team is made up of former Frey Smiles patients, something we think is important, 
+            because we have all experienced treatment and can help guide you through it.
+          </p>
+        </div>
+        <div className="border-l  bg-[#FCFFFE] rounded-[24px] p-8 border-b border-[#DBDBDB] border-r h-[33.33vh]">
+
+        </div>
+        <div className="border-l bg-[#FCFFFE] rounded-[24px] p-8 border-b border-[#DBDBDB] border-r h-[66.66vh]"></div>
+
+      </div>
+    </div>
+
+    {/* Col 2 */}
+    <div className="overflow-hidden">
+      <div ref={col2Ref} className="flex flex-col will-change-transform">
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+          <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
+     <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
+              Our members have received the designation of Specialized Orthodontic Assistant. 
+              This is a voluntary certification program started by the American Association of Orthodontists 
+              to recognize those in the profession for their knowledge and experience.
+            </p>
+          </a>
+        </div>
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]"></div>
+        <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#FCFFFE] rounded-[20px] p-8 border-b border-r border-[#DBDBDB] h-[33.33vh]">
+          <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
+            This office is on 🔥! The orthodontists as well as every single staff member.
+          </p>
+        </a>
+      </div>
+    </div>
+
+    {/* Col 3 */}
+    <div className="overflow-hidden">
+      <div ref={col3Ref} className="flex flex-col will-change-transform">
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+          <p className="font-neuehaas45 tracking-wide text-[16px] leading-[1.1]">Trained in CPR and first aid</p>
+        </div>
+        <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center  bg-[#FCFFFE] rounded-[20px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]">
+          <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
+            Had a wonderful experience at FreySmiles. Everyone is extremely professional, 
+            polite, timely. Would highly recommend! — TK
+          </p>
+        </a>
+        <div className="bg-[#FCFFFE] rounded-[24px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+      <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
+            We've invested in in-office trainings with leading clinical consultants 
+            that have helped us develop systems and protocols streamlining our processes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+     </div>
           </div>
-        </div>
 
-        <div style={greenCursorStyle}>
-          {isFocused && (
-            <span
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              View
-            </span>
-          )}
         </div>
+      <GridContainer ref={gridRef} />
+   <div style={greenCursorStyle}>
+  {isFocused && (
+    <img
+      src="/images/pinkeye.png"
+      alt="Eye icon"
+      style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "38px",
+        height: "auto",
+        pointerEvents: "none",
+        userSelect: "none",
+        filter: "drop-shadow(0 0 8px rgba(188,205,1,0.6))",
+      }}
+    />
+  )}
+</div>
+
+
 
         {/* <section className="overflow-x-auto overflow-y-hidden lg:overflow-hidden">
           <div
@@ -1197,7 +1436,7 @@ export default function OurTeam() {
         </section> */}
       </div>
 
-      <GridContainer />
+
 
       {/* <div className="bg-[#F7F7F7]">
           

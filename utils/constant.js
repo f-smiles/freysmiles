@@ -10,7 +10,7 @@ export const OPTS = {
     rainbow:   false,     
     fluidColor: '#C0C0C0',
     // backgroundColor: '#FFFFFF',
-    densityDissipation: 0.92,
+    densityDissipation: .96,
     velocityDissipation: 1.0,
     showBackground: true,
     dyeRes: 512,

@@ -552,9 +552,9 @@
             </div>
           </div>
         </div>
-      </div> */}
+      </div> *
 
-      {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#EFEFEF]">
+ <div ref={sectionRef} className="relative h-[200vh] bg-[#EFEFEF]">
 
   <div className="sticky top-0 h-screen flex items-center justify-center z-50">
     
@@ -573,4 +573,4 @@
       )}
     </div>
   </div>
-</div> */}
+</div> 

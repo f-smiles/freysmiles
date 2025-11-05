@@ -5,7 +5,7 @@ const lerp = (a, b, n) => (1 - n) * a + n * b;
 const getMouseDistance = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
 const getPointerPos = (e) => ({ x: e.pageX, y: e.pageY });
 
-export default function MouseTrail({ images = [] }) {
+export default function MouseTrail({ images = [], enabled = true }) {
   const containerRef = useRef(null);
   const imageRefs = useRef([]);
 
@@ -19,15 +19,22 @@ export default function MouseTrail({ images = [] }) {
   const threshold = 80;
 
   useEffect(() => {
-    const handleMove = (e) => {
-      const pos = getPointerPos(e);
-      mousePos.current = pos;
+ const handleMove = (e) => {
+      if (!enabled) return; // ignore all motion if disabled
+      mousePos.current = getPointerPos(e);
     };
 
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('touchmove', handleMove);
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("touchmove", handleMove);
 
-    const update = () => {
+   const update = () => {
+      // Skip updating if disabled (but keep rAF alive)
+      if (!enabled) {
+        requestAnimationFrame(update);
+        return;
+      }
+
+      // Normal behavior when active
       const dist = getMouseDistance(mousePos.current, lastMousePos.current);
       cacheMousePos.current.x = lerp(cacheMousePos.current.x, mousePos.current.x, 0.1);
       cacheMousePos.current.y = lerp(cacheMousePos.current.y, mousePos.current.y, 0.1);
@@ -43,11 +50,12 @@ export default function MouseTrail({ images = [] }) {
     };
 
     requestAnimationFrame(update);
+
     return () => {
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("touchmove", handleMove);
     };
-  }, [images]);
+  }, [images, enabled]);
 
   
 

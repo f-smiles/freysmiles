@@ -59,22 +59,22 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
         <div className="flex flex-col flex-1 gap-2 pb-16 space-y-4">
           <div className="space-y-1">
-            <h1 className="text-[14px] font-neueroman uppercase">{variant?.product.title}</h1>
+            <h1 className="text-[14px] font-neuehaas45 ">{variant?.product.title}</h1>
             <VariantName variants={variant.product.productVariants} />
           </div>
 
           <Separator />
 
-          <h1 className="text-xl text-gray-900 u font-neueroman">{formatPrice(variant?.product.price)}</h1>
+          <h1 className="text-xl text-gray-900 u font-neuehaas45">{formatPrice(variant?.product.price)}</h1>
           <div
-  className="[&_*]:!font-neueroman [&_*]:!text-[12px]"
+  className="[&_*]:!font-neuehaas45 [&_*]:!text-[13px]"
   dangerouslySetInnerHTML={{ __html: variant?.product.description }}
 />
 
 
 
           <div className="space-y-2">
-            <h3 className="text-[12px] font-neueroman uppercase text-gray-900">Color</h3>
+            <h3 className="text-[12px] font-neuehaas45 uppercase text-gray-900">Color</h3>
             <span className="inline-flex flex-wrap items-center gap-2">
               {variant?.product.productVariants.map((prodVar) => (
                 <SelectColor key={prodVar.id} id={prodVar.id} productID={prodVar.productID} color={prodVar.color} variantName={prodVar.variantName} title={variant.product.title} />
