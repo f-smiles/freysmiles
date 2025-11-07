@@ -5332,98 +5332,7 @@ a {
   top: 30%;
 }
 
-.cube-face--left {
-  width: 250px;
-  height: 250px;
-  transform: rotateY(-90deg) translateZ(125px);
-  background-image: url("/images/wavyneonyellowgrid.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
 
-.cube-face--right {
-  width: 250px;
-  height: 250px;
-  transform: rotateY(-90deg) translateZ(125px);
-  background-image: url("/images/wavybluegrid.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.cube-face--back {
-  width: 500px;
-  height: 250px;
-  transform: rotateX(90deg) translateZ(125px);
-  background-image: url("/images/arches.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-.cube-face--top {
-  width: 500px;
-  height: 250px;
-  transform: rotateX(90deg) translateZ(125px);
-  background-image: url("/images/wavypinkonorange.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.cube-face--front,
-.cube-face--back {
-  width: 500px;
-  height: 250px;
-}
-
-.cube-face--front {
-  transform: translateZ(125px);
-}
-.cube-face--back {
-  transform: rotateY(180deg) translateZ(125px);
-}
-
-.cube-face--left,
-.cube-face--right {
-  width: 250px;
-  height: 250px;
-}
-
-.cube-face--left {
-  transform: rotateY(-90deg) translateZ(125px);
-}
-.cube-face--right {
-  transform: rotateY(90deg) translateZ(375px);
-}
-
-.cube-face--top,
-.cube-face--bottom {
-  width: 500px;
-  height: 250px;
-}
-
-.cube-face--top {
-  transform: rotateX(90deg) translateZ(125px);
-}
-.cube-face--bottom {
-  transform: rotateX(-90deg) translateZ(125px);
-}
-@keyframes spinCube {
-  0%,
-  70% {
-    transform: rotateY(0deg) rotateZ(0deg) translateZ(-125px); /* Hold front */
-  }
-  75% {
-    transform: rotateY(120deg) rotateZ(45deg) translateZ(-125px); /* Start spin */
-  }
-  80% {
-    transform: rotateY(240deg) rotateZ(90deg) translateZ(-125px); /* Mid spin */
-  }
-  100% {
-    transform: rotateY(360deg) rotateZ(0deg) translateZ(-125px); /* Full forward spin back to front */
-  }
-}
 
 /* .frame {
       padding: 3rem 5vw;
@@ -6360,3 +6269,5 @@ body,
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
+
+

@@ -9,7 +9,7 @@ const items = [
   {
     // src: '/images/members/edit/adriana-blurry-distortion-effect-1920px-1.jpg',
     // hoverSrc: '/images/members/orig/adriana.png',
-    src: '../images/team_members/Adriana-greenborder.png',
+    src: '/images/team_members/Adriana-Photoroom.jpg',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Insurance Coordinator',
     name: 'Adriana',
@@ -17,7 +17,7 @@ const items = [
   {
     // src: '/images/members/edit/alyssa-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/alyssa.png',
-    src: '/images/team_members/alyssa-border.png',
+    src: '/images/team_members/alyssascan.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Alyssa',
@@ -25,7 +25,7 @@ const items = [
   {
     // src: '/images/members/edit/elizabeth-blurry-distortion-effect-1.jpg',
     // hoverSrc: '/images/members/orig/elizabeth.png',
-   src: '/images/team_members/elizabeth-green.png',
+   src: '/images/team_members/elizabethaao.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Patient Services',
     name: 'Elizabeth',
@@ -33,7 +33,7 @@ const items = [
   {
     // src: '/images/members/edit/lexi-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/lexi.png',
-    src: '/images/team_members/lexi-greenborder.png',
+    src: '/images/team_members/lexiworking.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Lexi',
@@ -41,7 +41,7 @@ const items = [
   {
     // src: '/images/members/edit/nicole-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/nicolle.png',
-    src: '/images/team_members/nicolle-green.png',
+    src: '/images/team_members/nicollewaving.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Specialized Orthodontic Assistant',
     name: 'Nicolle',
@@ -400,84 +400,43 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
 }
 
 export default function GridContainer() {
-  const sectionRef = useRef(null);
-  const stickyRef = useRef(null);
-  const trackRef = useRef(null);
 
-  useLayoutEffect(() => {
-    const section = sectionRef.current;
-    const sticky = stickyRef.current;
-    const track = trackRef.current;
-    if (!section || !sticky || !track) return;
 
-    ScrollTrigger.getAll().forEach((t) => t.kill());
-    gsap.killTweensOf(track);
-
-    const build = () => {
-      const totalScroll = track.scrollWidth - window.innerWidth;
-      gsap.set(section, { height: track.scrollWidth });
-
-      gsap.to(track, {
-        x: -totalScroll,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () => `+=${totalScroll}`,
-          scrub: 1,
-          pin: sticky,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      });
-
-      ScrollTrigger.refresh();
-    };
-
-    build();
-
-    const ro = new ResizeObserver(() => build());
-    ro.observe(track);
-    ro.observe(sticky);
-
-    return () => {
-      ro.disconnect();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
-  }, []);
 
   return (
-    <section ref={sectionRef} className="horizontal-section">
-      <div ref={stickyRef} className="horizontal-sticky">
-        <div ref={trackRef} className="horizontal-track">
-          <div className="intro-card">
-            <h2 className="intro-heading">
-      Entrust your smile's transformation to our handpicked team of orthodontic specialists.
-            </h2>
-            <p className="intro-subtext">
-             From national certifications to hands-on trainings, we’re always leveling up. The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
-            </p>
-          </div>
+<section className="layout">
 
-  
-          {items.map((item, i) => (
-            <div key={item.name} className="member-card">
-              <div className="image-wrapper">
-                <ImageCanvas
-                  className={`item-${i + 1}`}
-                  member={item.name}
-                  imgSrc={item.src}
-                  hoverSrc={item.hoverSrc}
-                />
-              </div>
-              <div className="member-info">
-                <div className="member-role">{item.role}</div>
-                <div className="member-title">{item.name}</div>
-              </div>
-            </div>
-          ))}
+  {/* <div className="intro-section">
+    <div className="intro-card">
+      <h2 className="intro-heading">
+        Entrust your smile's transformation to our handpicked team of orthodontic specialists.
+      </h2>
+      <p className="intro-subtext">
+        From national certifications to hands-on trainings, we’re always leveling up.
+        The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
+      </p>
+    </div>
+  </div> */}
+
+
+  <div className="members-section">
+    {items.map((item, i) => (
+      <div key={item.name} className="member-card">
+        <div className="image-wrapper">
+          <ImageCanvas
+            className={`item-${i + 1}`}
+            member={item.name}
+            imgSrc={item.src}
+            hoverSrc={item.hoverSrc}
+          />
+        </div>
+        <div className="member-info">
+          <div className="member-role">{item.role}</div>
+          <div className="member-title">{item.name}</div>
         </div>
       </div>
-    </section>
+    ))}
+  </div>
+</section>
   );
 }

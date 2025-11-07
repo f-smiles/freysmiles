@@ -1,5 +1,11 @@
 "use client";
-import { Canvas, useFrame, extend } from "@react-three/fiber";
+import {
+  Canvas,
+  useFrame,
+  useThree,
+  useLoader,
+  extend,
+} from "@react-three/fiber";
 import Copy from "@/utils/Copy.jsx";
 import {
   Sphere,
@@ -18,7 +24,7 @@ import {
   useSpring,
   useAnimation,
 } from "framer-motion";
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect, useMemo } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap/all";
@@ -32,7 +38,6 @@ gsap.registerPlugin(
   SplitText,
   MorphSVGPlugin
 );
-
 
 const lerp = (a, b, n) => (1 - n) * a + n * b;
 
@@ -91,18 +96,15 @@ function CrossCursor() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[1001]">
-
       <div
         ref={refH}
         className="fixed left-0 w-full h-[.5px] top-0 bg-[#d3d3d3] opacity-0 will-change-transform"
       ></div>
 
- 
       <div
         ref={refV}
         className="fixed top-0 h-full w-[.5px] left-0 bg-[#d3d3d3] opacity-0 will-change-transform"
       ></div>
-
 
       <div
         ref={refDot}
@@ -117,1038 +119,7 @@ function CrossCursor() {
     </div>
   );
 }
-const CardScanner = () => {
-  const controlsRef = useRef(null);
-  const speedIndicatorRef = useRef(null);
-  const containerRef = useRef(null);
-  const particleCanvasRef = useRef(null);
-  const scannerCanvasRef = useRef(null);
-  const scannerRef = useRef(null);
-  const cardStreamRef = useRef(null);
-  const cardLineRef = useRef(null);
-  const speedValueRef = useRef(null);
-  const inspirationCreditRef = useRef(null);
 
-  useEffect(() => {
-
-    window.toggleAnimation = toggleAnimation;
-    window.resetPosition = resetPosition;
-    window.changeDirection = changeDirection;
-
-
-    const init = () => {
-      console.log('Initializing controllers...');
-      if (cardStreamRef.current && cardLineRef.current && speedValueRef.current) {
-        cardStream = new CardStreamController();
-      }
-
-      window.setScannerScanning = (active) => {
-       
-      };
-    };
-
-    // Delay init to ensure DOM is ready
-    const timeoutId = setTimeout(init, 0);
-    return () => {
-      clearTimeout(timeoutId);
-      // Cleanup
-      if (particleSystem) particleSystem.destroy();
-      if (particleScanner) particleScanner.destroy();
-    };
-  }, []);
-
-
-  let cardStream;
-  let particleSystem;
-  let particleScanner;
-
-  const toggleAnimation = () => {
-    if (cardStream) cardStream.toggleAnimation();
-  };
-
-  const resetPosition = () => {
-    if (cardStream) cardStream.resetPosition();
-  };
-
-  const changeDirection = () => {
-    if (cardStream) cardStream.changeDirection();
-  };
-
-  class CardStreamController {
-    constructor() {
-      this.container = cardStreamRef.current;
-      this.cardLine = cardLineRef.current;
-      this.speedIndicator = speedValueRef.current;
-
-      this.position = -200; // Offset slightly left so first cards enter from right immediately
-      this.velocity = 120;
-      this.direction = -1;
-      this.isAnimating = true;
-      this.isDragging = false;
-
-      this.lastTime = 0;
-      this.lastMouseX = 0;
-      this.mouseVelocity = 0;
-      this.friction = 0.95;
-      this.minVelocity = 30;
-
-      this.containerWidth = 0;
-      this.cardLineWidth = 0;
-
-      this.init();
-    }
-
-    init() {
-      this.populateCardLine();
-      this.calculateDimensions();
-      this.bindScroll();
-      // this.setupEventListeners();
-      // this.updateCardPosition();
-
-  this.bindScroll();
-      // this.animate();
-      // this.startPeriodicUpdates();
-    }
-bindScroll() {
-  window.addEventListener("scroll", () => {
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-
-    // Scroll progress (0 → 1)
-    const progress = Math.min(scrollTop / scrollHeight, 1);
-
-    // Update clipping directly
-    const wrapper = this.cardLine.querySelector(".scanner-card-wrapper");
-    const normalCard = wrapper.querySelector(".scanner-card-normal");
-    const asciiCard = wrapper.querySelector(".scanner-card-ascii");
-
-    normalCard.style.setProperty("--clip-left", `${progress * 100}%`);
-    asciiCard.style.setProperty("--clip-right", `${100 - progress * 100}%`);
-  });
-}
-    calculateDimensions() {
-      this.containerWidth = this.container.offsetWidth;
-      const cardWidth = 400;
-      const cardGap = 60;
-      const cardCount = this.cardLine.children.length;
-      this.cardLineWidth = (cardWidth + cardGap) * cardCount;
-      console.log('Dimensions calculated:', { containerWidth: this.containerWidth, cardLineWidth: this.cardLineWidth, cardCount });
-    }
-
-    setupEventListeners() {
-      this.cardLine.addEventListener("mousedown", (e) => this.startDrag(e));
-      document.addEventListener("mousemove", (e) => this.onDrag(e));
-      document.addEventListener("mouseup", () => this.endDrag());
-
-      this.cardLine.addEventListener(
-        "touchstart",
-        (e) => this.startDrag(e.touches[0]),
-        { passive: false }
-      );
-      document.addEventListener("touchmove", (e) => this.onDrag(e.touches[0]), {
-        passive: false,
-      });
-      document.addEventListener("touchend", () => this.endDrag());
-
-      this.cardLine.addEventListener("wheel", (e) => this.onWheel(e));
-      this.cardLine.addEventListener("selectstart", (e) => e.preventDefault());
-      this.cardLine.addEventListener("dragstart", (e) => e.preventDefault());
-
-      window.addEventListener("resize", () => this.calculateDimensions());
-    }
-
-    startDrag(e) {
-      e.preventDefault();
-
-      this.isDragging = true;
-      this.isAnimating = false;
-      this.lastMouseX = e.clientX;
-      this.mouseVelocity = 0;
-
-      const transform = window.getComputedStyle(this.cardLine).transform;
-      if (transform !== "none") {
-        const matrix = new DOMMatrix(transform);
-        this.position = matrix.m41;
-      }
-
-      this.cardLine.style.animation = "none";
-      this.cardLine.classList.add("scanner-dragging");
-
-      document.body.style.userSelect = "none";
-      document.body.style.cursor = "grabbing";
-    }
-
-    onDrag(e) {
-      if (!this.isDragging) return;
-      e.preventDefault();
-
-      const deltaX = e.clientX - this.lastMouseX;
-      this.position += deltaX;
-      this.mouseVelocity = deltaX * 60;
-      this.lastMouseX = e.clientX;
-
-      this.cardLine.style.transform = `translateX(${this.position}px)`;
-      this.updateCardClipping();
-    }
-
-    endDrag() {
-      if (!this.isDragging) return;
-
-      this.isDragging = false;
-      this.cardLine.classList.remove("scanner-dragging");
-
-      if (Math.abs(this.mouseVelocity) > this.minVelocity) {
-        this.velocity = Math.abs(this.mouseVelocity);
-        this.direction = this.mouseVelocity > 0 ? 1 : -1;
-      } else {
-        this.velocity = 120;
-      }
-
-      this.isAnimating = true;
-      this.updateSpeedIndicator();
-
-      document.body.style.userSelect = "";
-      document.body.style.cursor = "";
-    }
-
-    animate() {
-      const currentTime = performance.now();
-      const deltaTime = (currentTime - this.lastTime) / 1000;
-      this.lastTime = currentTime;
-
-      if (this.isAnimating && !this.isDragging) {
-        if (this.velocity > this.minVelocity) {
-          this.velocity *= this.friction;
-        } else {
-          this.velocity = Math.max(this.minVelocity, this.velocity);
-        }
-
-        this.position += this.velocity * this.direction * deltaTime;
-        this.updateCardPosition();
-        this.updateSpeedIndicator();
-      }
-
-      requestAnimationFrame(() => this.animate());
-    }
-
-    updateCardPosition() {
-      const containerWidth = this.containerWidth;
-      const cardLineWidth = this.cardLineWidth;
-
-      if (this.position < -cardLineWidth) {
-        this.position = containerWidth;
-      } else if (this.position > containerWidth) {
-        this.position = -cardLineWidth;
-      }
-
-      this.cardLine.style.transform = `translateX(${this.position}px)`;
-      this.updateCardClipping();
-    }
-
-    updateSpeedIndicator() {
-      this.speedIndicator.textContent = Math.round(this.velocity);
-    }
-
-    toggleAnimation() {
-      this.isAnimating = !this.isAnimating;
-      const btn = controlsRef.current.querySelector(".scanner-control-btn");
-      if (btn) {
-        btn.innerHTML = this.isAnimating ? "⏸️ Pause" : "▶️ Play";
-      }
-
-      if (this.isAnimating) {
-        this.cardLine.style.animation = "none";
-      }
-    }
-
-    resetPosition() {
-      this.position = -200; // Ensure first cards visible on reset
-      this.velocity = 120;
-      this.direction = -1;
-      this.isAnimating = true;
-      this.isDragging = false;
-
-      this.cardLine.style.animation = "none";
-      this.cardLine.style.transform = `translateX(${this.position}px)`;
-      this.cardLine.classList.remove("scanner-dragging");
-
-      this.updateSpeedIndicator();
-
-      const btn = controlsRef.current.querySelector(".scanner-control-btn");
-      if (btn) btn.innerHTML = "⏸️ Pause";
-      console.log('Reset position:', this.position);
-    }
-
-    changeDirection() {
-      this.direction *= -1;
-      this.updateSpeedIndicator();
-    }
-
-    onWheel(e) {
-      e.preventDefault();
-
-      const scrollSpeed = 20;
-      const delta = e.deltaY > 0 ? scrollSpeed : -scrollSpeed;
-
-      this.position += delta;
-      this.updateCardPosition();
-      this.updateCardClipping();
-    }
-
-    generateCode(width, height) {
-      const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-      const pick = (arr) => arr[randInt(0, arr.length - 1)];
-
-      const header = [
-        "// compiled preview • scanner demo",
-        "/* generated for visual effect – not executed */",
-        "const SCAN_WIDTH = 8;",
-        "const FADE_ZONE = 35;",
-        "const MAX_PARTICLES = 2500;",
-        "const TRANSITION = 0.05;",
-      ];
-
-      const helpers = [
-        "function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }",
-        "function lerp(a, b, t) { return a + (b - a) * t; }",
-        "const now = () => performance.now();",
-        "function rng(min, max) { return Math.random() * (max - min) + min; }",
-      ];
-
-      const particleBlock = (idx) => [
-        `class Particle${idx} {`,
-        "  constructor(x, y, vx, vy, r, a) {",
-        "    this.x = x; this.y = y;",
-        "    this.vx = vx; this.vy = vy;",
-        "    this.r = r; this.a = a;",
-        "  }",
-        "  step(dt) { this.x += this.vx * dt; this.y += this.vy * dt; }",
-        "}",
-      ];
-
-      const scannerBlock = [
-        "const scanner = {",
-        "  x: Math.floor(window.innerWidth / 2),",
-        "  width: SCAN_WIDTH,",
-        "  glow: 3.5,",
-        "};",
-        "",
-        "function drawParticle(ctx, p) {",
-        "  ctx.globalAlpha = clamp(p.a, 0, 1);",
-        "  ctx.drawImage(gradient, p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);",
-        "}",
-      ];
-
-      const loopBlock = [
-        "function tick(t) {",
-        "  // requestAnimationFrame(tick);",
-        "  const dt = 0.016;",
-        "  // update & render",
-        "}",
-      ];
-
-      const misc = [
-        "const state = { intensity: 1.2, particles: MAX_PARTICLES };",
-        "const bounds = { w: window.innerWidth, h: 300 };",
-        "const gradient = document.createElement('canvas');",
-        "const ctx = gradient.getContext('2d');",
-        "ctx.globalCompositeOperation = 'lighter';",
-        "// ascii overlay is masked with a 3-phase gradient",
-      ];
-
-      const library = [];
-      header.forEach((l) => library.push(l));
-      helpers.forEach((l) => library.push(l));
-      for (let b = 0; b < 3; b++) particleBlock(b).forEach((l) => library.push(l));
-      scannerBlock.forEach((l) => library.push(l));
-      loopBlock.forEach((l) => library.push(l));
-      misc.forEach((l) => library.push(l));
-
-      for (let i = 0; i < 40; i++) {
-        const n1 = randInt(1, 9);
-        const n2 = randInt(10, 99);
-        library.push(`const v${i} = (${n1} + ${n2}) * 0.${randInt(1, 9)};`);
-      }
-      for (let i = 0; i < 20; i++) {
-        library.push(`if (state.intensity > ${1 + (i % 3)}) { scanner.glow += 0.01; }`);
-      }
-
-      let flow = library.join(" ");
-      flow = flow.replace(/\s+/g, " ").trim();
-      const totalChars = width * height;
-      while (flow.length < totalChars + width) {
-        const extra = pick(library).replace(/\s+/g, " ").trim();
-        flow += " " + extra;
-      }
-
-      let out = "";
-      let offset = 0;
-      for (let row = 0; row < height; row++) {
-        let line = flow.slice(offset, offset + width);
-        if (line.length < width) line = line + " ".repeat(width - line.length);
-        out += line + (row < height - 1 ? "\n" : "");
-        offset += width;
-      }
-      return out;
-    }
-
-    calculateCodeDimensions(cardWidth, cardHeight) {
-      const fontSize = 11;
-      const lineHeight = 13;
-      const charWidth = 6;
-      const width = Math.floor(cardWidth / charWidth);
-      const height = Math.floor(cardHeight / lineHeight);
-      return { width, height, fontSize, lineHeight };
-    }
-
-    createCardWrapper(index) {
-      const wrapper = document.createElement("div");
-      wrapper.className = "scanner-card-wrapper";
-
-      const normalCard = document.createElement("div");
-      normalCard.className = "scanner-card scanner-card-normal";
-
-      const cardImages = [
-        "https://cdn.prod.website-files.com/68789c86c8bc802d61932544/689f20b55e654d1341fb06f8_4.1.png",
-        "https://cdn.prod.website-files.com/68789c86c8bc802d61932544/689f20b5a080a31ee7154b19_1.png",
-        "https://cdn.prod.website-files.com/68789c86c8bc802d61932544/689f20b5c1e4919fd69672b8_3.png",
-        "https://cdn.prod.website-files.com/68789c86c8bc802d61932544/689f20b5f6a5e232e7beb4be_2.png",
-        "https://cdn.prod.website-files.com/68789c86c8bc802d61932544/689f20b5bea2f1b07392d936_4.png",
-      ];
-
-      const cardImage = document.createElement("img");
-      cardImage.className = "scanner-card-image";
-      cardImage.src = cardImages[index % cardImages.length];
-      cardImage.alt = "Credit Card";
-
-      cardImage.onerror = () => {
-        console.log(`Image failed for card ${index}, using fallback`);
-        const canvas = document.createElement("canvas");
-        canvas.width = 400;
-        canvas.height = 250;
-        const ctx = canvas.getContext("2d");
-
-        const gradient = ctx.createLinearGradient(0, 0, 400, 250);
-        gradient.addColorStop(0, "#667eea");
-        gradient.addColorStop(1, "#764ba2");
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 400, 250);
-
-        cardImage.src = canvas.toDataURL();
-      };
-
-      normalCard.appendChild(cardImage);
-
-      const asciiCard = document.createElement("div");
-      asciiCard.className = "scanner-card scanner-card-ascii";
-
-      const asciiContent = document.createElement("div");
-      asciiContent.className = "scanner-ascii-content";
-
-      const { width, height, fontSize, lineHeight } = this.calculateCodeDimensions(400, 250);
-      asciiContent.style.fontSize = fontSize + "px";
-      asciiContent.style.lineHeight = lineHeight + "px";
-      asciiContent.textContent = this.generateCode(width, height);
-
-      asciiCard.appendChild(asciiContent);
-      wrapper.appendChild(normalCard);
-      wrapper.appendChild(asciiCard);
-
-      return wrapper;
-    }
-updateCardClipping() {
-  const scannerX = window.innerWidth / 2;
-  const scannerWidth = 8;
-  const scannerLeft = scannerX - scannerWidth / 2;
-  const scannerRight = scannerX + scannerWidth / 2;
-  let anyScanningActive = false;
-
-  document.querySelectorAll(".scanner-card-wrapper").forEach((wrapper) => {
-    const rect = wrapper.getBoundingClientRect();
-    const cardLeft = rect.left;
-    const cardRight = rect.right;
-    const cardWidth = rect.width;
-
-    const normalCard = wrapper.querySelector(".scanner-card-normal");
-    const asciiCard = wrapper.querySelector(".scanner-card-ascii");
-
-    // Beam intersects card
-    if (cardLeft < scannerRight && cardRight > scannerLeft) {
-      anyScanningActive = true;
-
-      // distance of the beam across the card
-      const intersectLeft = Math.max(scannerLeft - cardLeft, 0);
-      const intersectRight = Math.min(scannerRight - cardLeft, cardWidth);
-
-      // Percent progress through the card
-      const progress = intersectRight / cardWidth;
-
-      // Hide image from left → right
-      normalCard.style.setProperty("--clip-left", `${progress * 100}%`);
-
-      // Reveal ASCII from left → right — only clip the *right* side
-      const remaining = 100 - progress * 100;
-      asciiCard.style.setProperty("--clip-right", `${remaining}%`);
-
-      if (!wrapper.hasAttribute("data-scanned") && intersectLeft > 0) {
-        wrapper.setAttribute("data-scanned", "true");
-        const scanEffect = document.createElement("div");
-        scanEffect.className = "scanner-scan-effect";
-        wrapper.appendChild(scanEffect);
-        setTimeout(() => scanEffect.remove(), 600);
-      }
-    } else {
-      // Reset visibility
-      if (cardRight < scannerLeft) {
-        // Left side (beam passed): fully ASCII
-        normalCard.style.setProperty("--clip-left", "100%");
-        asciiCard.style.setProperty("--clip-right", "0%");
-      } else if (cardLeft > scannerRight) {
-    
-        normalCard.style.setProperty("--clip-left", "0%");
-        asciiCard.style.setProperty("--clip-right", "100%");
-      }
-      wrapper.removeAttribute("data-scanned");
-    }
-  });
-
-  if (window.setScannerScanning) {
-    window.setScannerScanning(anyScanningActive);
-  }
-}
-
-    updateAsciiContent() {
-      document.querySelectorAll(".scanner-ascii-content").forEach((content) => {
-        if (Math.random() < 0.15) {
-          const { width, height } = this.calculateCodeDimensions(400, 250);
-          content.textContent = this.generateCode(width, height);
-        }
-      });
-    }
-
-populateCardLine() {
-  this.cardLine.innerHTML = "";
-  const cardWrapper = this.createCardWrapper(0);
-  this.cardLine.appendChild(cardWrapper);
-  this.cardLine.style.justifyContent = "center";
-}
-    startPeriodicUpdates() {
-      setInterval(() => {
-        this.updateAsciiContent();
-      }, 200);
-
-      const updateClipping = () => {
-        this.updateCardClipping();
-        requestAnimationFrame(updateClipping);
-      };
-      updateClipping();
-    }
-  }
-
-
-
-  return (
-    <>
-      <div className="min-h-screen bg-black text-white overflow-hidden">
-        <div ref={controlsRef} className="scanner-controls">
-          <button
-            className="scanner-control-btn"
-            onClick={toggleAnimation}
-          >
-            ⏸️ Pause
-          </button>
-          <button
-            className="scanner-control-btn"
-            onClick={resetPosition}
-          >
-            🔄 Reset
-          </button>
-          <button
-            className="scanner-control-btn"
-            onClick={changeDirection}
-          >
-            ↔️ Direction
-          </button>
-        </div>
-
-        <div ref={speedIndicatorRef} className="scanner-speed-indicator">
-          Speed: <span ref={speedValueRef} id="speedValue">120</span> px/s
-        </div>
-<div style={{ height: "300vh" }} />
-        <div ref={containerRef} className="scanner-container">
-
-          <canvas ref={scannerCanvasRef} id="scannerCanvas" />
-          <div ref={scannerRef} className="scanner-scanner" />
-
-          <div ref={cardStreamRef} className="scanner-card-stream">
-            <div ref={cardLineRef} id="cardLine" className="scanner-card-line" />
-          </div>
-        </div>
-
-        <div className="scanner-inspiration-credit" ref={inspirationCreditRef}>
-          Inspired by{' '}
-          <a href="https://evervault.com/" target="_blank" rel="noopener noreferrer">
-            @evervault.com
-          </a>
-        </div>
-      </div>
-
-      {/* Updated CSS with prefix */}
-      <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap");
-
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-body {
-  background: #000000;
-  min-height: 100vh;
-  overflow: auto; /* ✅ allow scrolling */
-  font-family: "Arial", sans-serif;
-}
-
-        .scanner-controls {
-          position: absolute;
-          top: 20px;
-          left: 20px;
-          display: flex;
-          gap: 10px;
-          z-index: 100;
-        }
-
-        .scanner-control-btn {
-          padding: 10px 20px;
-          background: rgba(255, 255, 255, 0.2);
-          border: none;
-          border-radius: 25px;
-          color: white;
-          font-weight: bold;
-          cursor: pointer;
-          backdrop-filter: blur(5px);
-          transition: all 0.3s ease;
-          font-size: 14px;
-        }
-
-        .scanner-control-btn:hover {
-          background: rgba(255, 255, 255, 0.3);
-          transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .scanner-speed-indicator {
-          position: absolute;
-          top: 20px;
-          right: 20px;
-          color: white;
-          font-size: 16px;
-          background: rgba(0, 0, 0, 0.3);
-          padding: 8px 16px;
-          border-radius: 20px;
-          backdrop-filter: blur(5px);
-          z-index: 100;
-        }
-
-        .scanner-info {
-          position: absolute;
-          bottom: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          color: rgba(255, 255, 255, 0.9);
-          text-align: center;
-          font-size: 14px;
-          background: rgba(0, 0, 0, 0.3);
-          padding: 15px 25px;
-          border-radius: 20px;
-          backdrop-filter: blur(5px);
-          z-index: 100;
-          line-height: 1.4;
-        }
-
-.scanner-container {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.scanner-card-stream {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  pointer-events: none;
-}
-        .scanner-card-line {
-          display: flex;
-          align-items: center;
-          gap: 60px;
-          white-space: nowrap;
-          cursor: grab;
-          user-select: none;
-          will-change: transform;
-        }
-
-        .scanner-card-line:active {
-          cursor: grabbing;
-        }
-
-        .scanner-card-line.scanner-dragging {
-          cursor: grabbing;
-        }
-
-        .scanner-card-line.scanner-css-animated {
-          animation: scanner-scrollCards 40s linear infinite;
-        }
-
-        @keyframes scanner-scrollCards {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(100vw);
-          }
-        }
-
-        .scanner-card-wrapper {
-          position: relative;
-          width: 400px;
-          height: 250px;
-          flex-shrink: 0;
-        }
-
-        .scanner-card {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 400px;
-          height: 250px;
-          border-radius: 15px;
-          overflow: hidden;
-        }
-
-        .scanner-card-normal {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          padding: 0;
-          color: white;
-          z-index: 2;
-          position: relative;
-          overflow: hidden;
-  clip-path: inset(0 0 0 var(--clip-left, 0%));
-        }
-
-        .scanner-card-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 15px;
-          transition: all 0.3s ease;
-          filter: brightness(1.1) contrast(1.1);
-          box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .scanner-card-image:hover {
-          filter: brightness(1.2) contrast(1.2);
-        }
-
-        .scanner-card-ascii {
-          background: transparent;
-          z-index: 1;
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 400px;
-          height: 250px;
-          border-radius: 15px;
-          overflow: hidden;
-  clip-path: inset(0 var(--clip-right, 100%) 0 0);
-  
-        }
-
-        .scanner-card-chip {
-          width: 40px;
-          height: 30px;
-          background: linear-gradient(45deg, #ffd700, #ffed4e);
-          border-radius: 5px;
-          position: relative;
-          margin-bottom: 20px;
-        }
-
-        .scanner-card-chip::before {
-          content: "";
-          position: absolute;
-          top: 3px;
-          left: 3px;
-          right: 3px;
-          bottom: 3px;
-          background: linear-gradient(45deg, #e6c200, #f4d03f);
-          border-radius: 2px;
-        }
-
-        .scanner-contactless {
-          position: absolute;
-          top: 60px;
-          left: 20px;
-          width: 25px;
-          height: 25px;
-          border: 2px solid rgba(255, 255, 255, 0.8);
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
-        }
-
-        .scanner-contactless::after {
-          content: "";
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 15px;
-          height: 15px;
-          border: 1px solid rgba(255, 255, 255, 0.6);
-          border-radius: 50%;
-        }
-
-        .scanner-card-number {
-          font-size: 22px;
-          font-weight: bold;
-          letter-spacing: 3px;
-          margin-bottom: 15px;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .scanner-card-info {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-        }
-
-        .scanner-card-holder {
-          color: white;
-          font-size: 14px;
-          text-transform: uppercase;
-        }
-
-        .scanner-card-expiry {
-          color: white;
-          font-size: 14px;
-        }
-
-        .scanner-card-logo {
-          position: absolute;
-          top: 20px;
-          right: 20px;
-          font-size: 18px;
-          font-weight: bold;
-          color: white;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .scanner-ascii-content {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          color: rgba(220, 210, 255, 0.6);
-          font-family: "Courier New", monospace;
-          font-size: 11px;
-          line-height: 13px;
-          overflow: hidden;
-          white-space: pre;
-          animation: scanner-glitch 0.1s infinite linear alternate-reverse;
-          margin: 0;
-          padding: 0;
-          text-align: left;
-          vertical-align: top;
-          box-sizing: border-box;
-          -webkit-mask-image: linear-gradient(
-            to right,
-            rgba(0, 0, 0, 1) 0%,
-            rgba(0, 0, 0, 0.8) 30%,
-            rgba(0, 0, 0, 0.6) 50%,
-            rgba(0, 0, 0, 0.4) 80%,
-            rgba(0, 0, 0, 0.2) 100%
-          );
-          mask-image: linear-gradient(
-            to right,
-            rgba(0, 0, 0, 1) 0%,
-            rgba(0, 0, 0, 0.8) 30%,
-            rgba(0, 0, 0, 0.6) 50%,
-            rgba(0, 0, 0, 0.4) 80%,
-            rgba(0, 0, 0, 0.2) 100%
-          );
-        }
-
-        @keyframes scanner-glitch {
-          0% {
-            opacity: 1;
-          }
-          15% {
-            opacity: 0.9;
-          }
-          16% {
-            opacity: 1;
-          }
-          49% {
-            opacity: 0.8;
-          }
-          50% {
-            opacity: 1;
-          }
-          99% {
-            opacity: 0.9;
-          }
-          100% {
-            opacity: 1;
-          }
-        }
-
-        .scanner-scanner {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          width: 4px;
-          height: 300px;
-          border-radius: 30px;
-          background: linear-gradient(
-            to bottom,
-            transparent,
-            rgba(0, 255, 255, 0.8),
-            rgba(0, 255, 255, 1),
-            rgba(0, 255, 255, 0.8),
-            transparent
-          );
-          box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.4);
-          animation: scanner-scanPulse 2s ease-in-out infinite alternate;
-          z-index: 10;
-        }
-
-        @keyframes scanner-scanPulse {
-          0% {
-            opacity: 0.8;
-            transform: translate(-50%, -50%) scaleY(1);
-          }
-          100% {
-            opacity: 1;
-            transform: translate(-50%, -50%) scaleY(1.1);
-          }
-        }
-
-        .scanner-scanner-label {
-          position: absolute;
-          bottom: -40px;
-          left: 50%;
-          transform: translateX(-50%);
-          color: rgba(0, 255, 255, 0.9);
-          font-size: 12px;
-          font-weight: bold;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-        }
-
-        .scanner-scan-effect {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(0, 255, 255, 0.4),
-            transparent
-          );
-          animation: scanner-scanEffect 0.6s ease-out;
-          pointer-events: none;
-          z-index: 5;
-        }
-
-        @keyframes scanner-scanEffect {
-          0% {
-            transform: translateX(-100%);
-            opacity: 0;
-          }
-          50% {
-            opacity: 1;
-          }
-          100% {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-        }
-
-        .scanner-instructions {
-          position: absolute;
-          top: 50%;
-          right: 30px;
-          transform: translateY(-50%);
-          color: rgba(255, 255, 255, 0.7);
-          font-size: 14px;
-          max-width: 200px;
-          text-align: right;
-          z-index: 5;
-        }
-
-        #particleCanvas {
-          position: absolute;
-          top: 50%;
-          left: 0;
-          transform: translateY(-50%);
-          width: 100vw;
-          height: 250px;
-          z-index: 0;
-          pointer-events: none;
-        }
-
-        #scannerCanvas {
-          position: absolute;
-          top: 50%;
-          left: -3px;
-          transform: translateY(-50%);
-          width: 100vw;
-          height: 300px;
-          z-index: 15;
-          pointer-events: none;
-        }
-
-        .scanner-inspiration-credit {
-          position: fixed;
-          bottom: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          font-family: "Roboto Mono", monospace;
-          font-size: 12px;
-          font-weight: 900;
-          color: #ff9a9c;
-          z-index: 1000;
-          text-align: center;
-        }
-
-        .scanner-inspiration-credit a {
-          color: #ff9a9c;
-          text-decoration: none;
-          transition: color 0.3s ease;
-        }
-
-        .scanner-inspiration-credit a:hover {
-          color: #ff7a7c;
-        }
-      `}</style>
-    </>
-  );
-};
 
 const ScrollAnimation = () => {
   const stickySectionRef = useRef(null);
@@ -1269,35 +240,36 @@ const ScrollAnimation = () => {
     };
   }, []);
 
-
-
-  
   return (
     <div className="relative">
-  
-      <section 
-        className="movingcard-sticky-section h-screen w-full relative" 
+      <section
+        className="movingcard-sticky-section h-screen w-full relative"
         ref={stickySectionRef}
       >
-
-        <div 
+        <div
           className="absolute inset-0 flex flex-col items-center justify-center z-0"
           ref={textSectionRef}
         >
           <div className="w-full max-w-5xl px-8">
-<h1 className="text-[3vw] sm:text-[4vw] lg:text-[3.5vw] font-neuehaas45 text-white leading-[1.1]">
-  Orthodontic treatment is more than just straightening teeth —
-  it’s about setting the foundation for long-term health, confidence,<br />
-  and facial harmony.
-</h1>
-<div className="font-neuehaas45 mt-10 max-w-xl text-[16px] text-white leading-[1.2] mx-auto">
-
-    While many orthodontists offer Invisalign or braces, the difference lies in how they approach treatment — what they’re aiming to achieve, and how precisely they execute it. Advances in modern orthodontics now allow us to do far more than align teeth. We can optimize jaw positioning, enhance facial balance, and design results that feel both natural and transformative.
-    We understand that cost matters — but choosing an orthodontist is ultimately about trust. Who do you believe will deliver the best result? Who sees the full picture, not just the teeth? A slightly lower fee might save money in the short term, but true value comes from results that last a lifetime.
-
- 
-</div>
-
+            <h1 className="text-[3vw] sm:text-[4vw] lg:text-[3.5vw] font-neuehaas45 text-white leading-[1.1]">
+              Orthodontic treatment is more than just straightening teeth — it’s
+              about setting the foundation for long-term health, confidence,
+              <br />
+              and facial harmony.
+            </h1>
+            <div className="font-neuehaas45 mt-10 max-w-xl text-[16px] text-white leading-[1.2] mx-auto">
+              While many orthodontists offer Invisalign or braces, the
+              difference lies in how they approach treatment — what they’re
+              aiming to achieve, and how precisely they execute it. Advances in
+              modern orthodontics now allow us to do far more than align teeth.
+              We can optimize jaw positioning, enhance facial balance, and
+              design results that feel both natural and transformative. We
+              understand that cost matters — but choosing an orthodontist is
+              ultimately about trust. Who do you believe will deliver the best
+              result? Who sees the full picture, not just the teeth? A slightly
+              lower fee might save money in the short term, but true value comes
+              from results that last a lifetime.
+            </div>
           </div>
         </div>
 
@@ -1309,27 +281,202 @@ const ScrollAnimation = () => {
           >
             <div className="movingcard-content">
               <div className="movingcard-title">
-                <h2 className="movingcard-title-text font-neuehaas45">{card.title}</h2>
+                <h2 className="movingcard-title-text font-neuehaas45">
+                  {card.title}
+                </h2>
               </div>
               <div className="movingcard-description">
-                <p className="movingcard-description-text font-neuehaas45">{card.description}</p>
+                <p className="movingcard-description-text font-neuehaas45">
+                  {card.description}
+                </p>
               </div>
             </div>
           </div>
         ))}
       </section>
-
-
     </div>
   );
 };
 
+
+
+const ShaderBackground = ({ className = '' }) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const gl = canvas.getContext('webgl');
+    if (!gl) {
+      console.error('WebGL not supported');
+      return;
+    }
+
+    // Vertex shader
+    const vertexShaderSource = `
+      attribute vec2 position;
+      void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
+      }
+    `;
+
+    // Fragment shader (adapted from provided code)
+    const fragmentShaderSource = `
+      precision mediump float;
+      uniform float u_time;
+      uniform vec2 u_resolution;
+
+      #define PI 3.14159265359
+      #define NUM_LIGHTS 8
+
+      float gradientNoise(vec2 uv) {
+          const vec3 magic = vec3(0.06711056, 0.00583715, 52.9829189);
+          return fract(magic.z * fract(dot(uv, magic.xy)));
+      }
+
+      vec3 palette(in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d) {
+          return a + b * cos(6.28318 * (c * t + d));
+      }
+
+      float map(float value, float inMin, float inMax, float outMin, float outMax) {
+          return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin);
+      }
+
+      void main() {
+          vec2 fragCoord = gl_FragCoord.xy;
+          vec2 uv = (2.0 * fragCoord - u_resolution) / u_resolution.y;
+          float time = u_time * 0.75;
+
+          vec3 finalColor = vec3(0.0);
+          float sumWeights = 0.0;
+
+          vec3 bgColor = vec3(0.75);
+          float bgWeight = 0.025;
+          finalColor += bgColor * bgWeight;
+          sumWeights += bgWeight;
+
+          for (float i = 0.0; i < float(NUM_LIGHTS); i++) {
+              float n = i / float(NUM_LIGHTS);
+              float wave = sin(n * PI + time) * 0.5 + 0.5;
+
+              float distance = 0.6 + wave * 0.125;
+              vec2 position = vec2(
+                  cos(n * PI * 2.0 + time * 0.1) * distance,
+                  sin(n * PI * 2.0 + time * 0.1) * distance
+              );
+
+              float d = 0.2;
+
+              vec2 toLight = position - uv;
+              float distFragLight = length(toLight);
+              distFragLight = distFragLight < d ? 1000.0 : distFragLight;
+
+              float angle = atan(toLight.y, toLight.x);
+              angle = angle / (PI * 2.0) + 0.5;
+              angle += time * 0.25;
+
+              float decayRate = map(wave, 0.0, 1.0, 6.0, 16.0);
+
+              float distanceFactor = exp(-1.0 * decayRate * distFragLight);
+
+              vec3 color = palette(
+                  distanceFactor + angle,
+                  vec3(0.5, 0.5, 0.5),
+                  vec3(0.5, 0.5, 0.5),
+                  vec3(1.0, 1.0, 1.0),
+                  vec3(0.0, 0.10, 0.20)
+              );
+              vec3 lightColor = color * distFragLight * distanceFactor;
+
+              finalColor += lightColor;
+              sumWeights += distanceFactor * distFragLight;
+          }
+
+          finalColor = finalColor / sumWeights;
+          finalColor = pow(finalColor, vec3(1.0 / 2.2));
+          finalColor += (1.0 / 255.0) * gradientNoise(fragCoord) - (0.5 / 255.0);
+
+          gl_FragColor = vec4(finalColor, 1.0);
+      }
+    `;
+
+    // Compile shader helper
+    const createShader = (gl, type, source) => {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+      }
+      return shader;
+    };
+
+    const vs = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    const fs = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+    const program = gl.createProgram();
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('Program link error:', gl.getProgramInfoLog(program));
+      return;
+    }
+
+    gl.useProgram(program);
+
+    // Full-screen quad vertices
+    const positions = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+    const positionLocation = gl.getAttribLocation(program, 'position');
+    gl.enableVertexAttribArray(positionLocation);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+    // Get uniform locations
+    const timeLocation = gl.getUniformLocation(program, 'u_time');
+    const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+
+const resize = () => {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.clientWidth * dpr;
+  canvas.height = canvas.clientHeight * dpr;
+  canvas.style.width = canvas.clientWidth + 'px';
+  canvas.style.height = canvas.clientHeight + 'px';
+  gl.viewport(0, 0, canvas.width, canvas.height);
+};
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Animation loop
+    let startTime = performance.now();
+    const animate = () => {
+      const currentTime = (performance.now() - startTime) / 1000;
+      gl.uniform1f(timeLocation, currentTime);
+      gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(animate);
+    };
+    animate();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', resize);
+      gl.deleteProgram(program);
+      gl.deleteShader(vs);
+      gl.deleteShader(fs);
+      gl.deleteBuffer(buffer);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className={className} style={{ display: 'block' }} />;
+};
 const FinancingTreatment = () => {
-
-
-
-  
-
   // const containerRef = useRef(null);
   // const pathRef = useRef(null);
   // const dottedEllipsesRef = useRef([]);
@@ -1420,115 +567,115 @@ const FinancingTreatment = () => {
 
   useEffect(() => {
     requestAnimationFrame(() => {
-    const stepContent = [
-      {
-        title: "Complimentary consultation",
-        description: "Initial consultations are always free of charge.",
-      },
-      {
-        title: "Payment plans are available",
-        description: "We offer a variety of payment plans at no interest.",
-      },
-      {
-        title: "No hidden fees",
-        description:
-          "Comprehensive treatment plans include retainers and supervision",
-      },
-    ];
-    const section = sectionRef.current;
-    const scrollContainer = scrollContainerRef.current;
-    const path = drawPathRef.current;
-
-    if (!section || !scrollContainer || !path) return;
-
-    const scrollDistance = scrollContainer.scrollWidth - window.innerWidth;
-    const pathLength = path.getTotalLength();
-
-    gsap.set(path, {
-      strokeDasharray: pathLength,
-      strokeDashoffset: pathLength,
-    });
-
-    const mainTrigger = ScrollTrigger.create({
-      trigger: section,
-      start: "top top",
-      end: () => `+=${scrollDistance}`,
-      pin: true,
-      pinSpacing: false,
-      scrub: true,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        scrollContainer.style.transform = `translateX(${
-          -scrollDistance * progress
-        }px)`;
-        path.style.strokeDashoffset = pathLength * (1 - progress);
-      },
-    });
-    gsap.fromTo(
-      textCurveRef.current,
-      { attr: { startOffset: "150%" } },
-      {
-        attr: { startOffset: "-50%" },
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () => `+=${scrollDistance}`,
-          scrub: true,
+      const stepContent = [
+        {
+          title: "Complimentary consultation",
+          description: "Initial consultations are always free of charge.",
         },
-        ease: "none",
-      }
-    );
-    const getCriticalPoints = () => {
-      const points = [];
-      let prevAngle = null;
-      const samples = 150;
-      const angleThreshold = 0.4; // the more speciifc the angle the more logged steps
-      const minProgressDistance = 0.03; // dist etween points
-      let lastValidProgress = -Infinity;
+        {
+          title: "Payment plans are available",
+          description: "We offer a variety of payment plans at no interest.",
+        },
+        {
+          title: "No hidden fees",
+          description:
+            "Comprehensive treatment plans include retainers and supervision",
+        },
+      ];
+      const section = sectionRef.current;
+      const scrollContainer = scrollContainerRef.current;
+      const path = drawPathRef.current;
 
-      for (let i = 1; i <= samples; i++) {
-        const progress = i / samples;
-        const currentPoint = path.getPointAtLength(progress * pathLength);
-        const prevPoint = path.getPointAtLength(
-          ((i - 1) / samples) * pathLength
-        );
+      if (!section || !scrollContainer || !path) return;
 
-        const angle = Math.atan2(
-          currentPoint.y - prevPoint.y,
-          currentPoint.x - prevPoint.x
-        );
+      const scrollDistance = scrollContainer.scrollWidth - window.innerWidth;
+      const pathLength = path.getTotalLength();
 
-        // Only count large direction changes
-        if (
-          prevAngle !== null &&
-          Math.abs(angle - prevAngle) > angleThreshold &&
-          progress - lastValidProgress >= minProgressDistance
-        ) {
-          points.push({
-            point: currentPoint,
-            progress,
-            scrollPosition: scrollDistance * progress,
-          });
-          lastValidProgress = progress;
+      gsap.set(path, {
+        strokeDasharray: pathLength,
+        strokeDashoffset: pathLength,
+      });
+
+      const mainTrigger = ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: () => `+=${scrollDistance}`,
+        pin: true,
+        pinSpacing: false,
+        scrub: true,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          scrollContainer.style.transform = `translateX(${
+            -scrollDistance * progress
+          }px)`;
+          path.style.strokeDashoffset = pathLength * (1 - progress);
+        },
+      });
+      gsap.fromTo(
+        textCurveRef.current,
+        { attr: { startOffset: "150%" } },
+        {
+          attr: { startOffset: "-50%" },
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: () => `+=${scrollDistance}`,
+            scrub: true,
+          },
+          ease: "none",
         }
-        prevAngle = angle;
-      }
+      );
+      const getCriticalPoints = () => {
+        const points = [];
+        let prevAngle = null;
+        const samples = 150;
+        const angleThreshold = 0.4; // the more speciifc the angle the more logged steps
+        const minProgressDistance = 0.03; // dist etween points
+        let lastValidProgress = -Infinity;
 
-      return points;
-    };
+        for (let i = 1; i <= samples; i++) {
+          const progress = i / samples;
+          const currentPoint = path.getPointAtLength(progress * pathLength);
+          const prevPoint = path.getPointAtLength(
+            ((i - 1) / samples) * pathLength
+          );
 
-    const criticalPoints = getCriticalPoints();
+          const angle = Math.atan2(
+            currentPoint.y - prevPoint.y,
+            currentPoint.x - prevPoint.x
+          );
 
-    const textMarkers = criticalPoints.map(
-      ({ point, scrollPosition }, index) => {
-        const content = stepContent[index] || {
-          title: `Phase ${index + 1}`,
-          description: "",
-        };
+          // Only count large direction changes
+          if (
+            prevAngle !== null &&
+            Math.abs(angle - prevAngle) > angleThreshold &&
+            progress - lastValidProgress >= minProgressDistance
+          ) {
+            points.push({
+              point: currentPoint,
+              progress,
+              scrollPosition: scrollDistance * progress,
+            });
+            lastValidProgress = progress;
+          }
+          prevAngle = angle;
+        }
 
-        const marker = document.createElement("div");
-        marker.className = "path-marker";
-        marker.innerHTML = `
+        return points;
+      };
+
+      const criticalPoints = getCriticalPoints();
+
+      const textMarkers = criticalPoints.map(
+        ({ point, scrollPosition }, index) => {
+          const content = stepContent[index] || {
+            title: `Phase ${index + 1}`,
+            description: "",
+          };
+
+          const marker = document.createElement("div");
+          marker.className = "path-marker";
+          marker.innerHTML = `
       <div class="relative inline-block">
 
   <img
@@ -1552,43 +699,42 @@ const FinancingTreatment = () => {
 
       `;
 
-        Object.assign(marker.style, {
-          position: "absolute",
-          left: `${point.x}px`,
-          top: `${point.y}px`,
-          transform: "translate(-50%, -50%)",
-          opacity: "0",
-          willChange: "opacity",
-          // border: '2px solid red',
-          padding: "4px",
-        });
+          Object.assign(marker.style, {
+            position: "absolute",
+            left: `${point.x}px`,
+            top: `${point.y}px`,
+            transform: "translate(-50%, -50%)",
+            opacity: "0",
+            willChange: "opacity",
+            // border: '2px solid red',
+            padding: "4px",
+          });
 
-        scrollContainer.appendChild(marker);
+          scrollContainer.appendChild(marker);
 
-        ScrollTrigger.create({
-          trigger: section,
-          start: `top top+=${scrollPosition - 200}`,
-          end: `top top+=${scrollPosition + 200}`,
-          scrub: 0.5,
-          onEnter: () => gsap.to(marker, { opacity: 1, duration: 0.3 }),
-          onLeaveBack: () => gsap.to(marker, { opacity: 0, duration: 0.3 }),
-        });
+          ScrollTrigger.create({
+            trigger: section,
+            start: `top top+=${scrollPosition - 200}`,
+            end: `top top+=${scrollPosition + 200}`,
+            scrub: 0.5,
+            onEnter: () => gsap.to(marker, { opacity: 1, duration: 0.3 }),
+            onLeaveBack: () => gsap.to(marker, { opacity: 0, duration: 0.3 }),
+          });
 
-        return marker;
-      }
-    );
-
-    return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-      textMarkers.forEach((marker) => {
-        if (marker.parentNode) {
-          marker.parentNode.removeChild(marker);
+          return marker;
         }
-      });
-    };
-      });
-  }, []);
+      );
 
+      return () => {
+        ScrollTrigger.getAll().forEach((t) => t.kill());
+        textMarkers.forEach((marker) => {
+          if (marker.parentNode) {
+            marker.parentNode.removeChild(marker);
+          }
+        });
+      };
+    });
+  }, []);
 
   const textPathRef = useRef();
   const svgRef = useRef();
@@ -1607,7 +753,6 @@ const FinancingTreatment = () => {
       ease: "none",
     });
   }, []);
-
 
   const textCurveRef = useRef();
   const filterRef = useRef();
@@ -1927,187 +1072,580 @@ const FinancingTreatment = () => {
     });
   }, []);
 
+
+    const scrollAwayRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const items = gsap.utils.toArray(".work-item");
+
+      items.forEach((item) => {
+        const img = item.querySelector(".work-item-img");
+        const nameH1 = item.querySelector(".work-item-name h1");
+
+
+        const split = SplitText.create(nameH1, { type: "chars", mask: "chars" });
+        gsap.set(split.chars, { y: "125%" });
+
+
+        split.chars.forEach((char, index) => {
+          ScrollTrigger.create({
+            trigger: item,
+            start: `top+=${index * 25 - 250} top`,
+            end: `top+=${index * 25 - 100} top`,
+            scrub: 1,
+            animation: gsap.fromTo(
+              char,
+              { y: "125%" },
+              { y: "0%", ease: "none" }
+            ),
+          });
+        });
+
+
+ScrollTrigger.create({
+  trigger: item,
+  start: "top+=120 bottom",
+  end: "top top",
+  scrub: 0.8,
+  animation: gsap.fromTo(
+    img,
+    {
+      clipPath: "polygon(25% 25%, 75% 40%, 100% 100%, 0% 100%)",
+      rotateX: 15,
+      scale: 0.9,
+      transformOrigin: "center bottom",
+    },
+    {
+      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+      rotateX: 0,
+      scale: 1,
+      ease: "power2.out",
+    }
+  ),
+});
+
+
+ScrollTrigger.create({
+  trigger: item,
+  start: "bottom+=120 bottom", 
+  end: "bottom top",
+  scrub: 0.8,
+  animation: gsap.fromTo(
+    img,
+    {
+      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+      rotateX: 0,
+      scale: 1,
+    },
+    {
+      clipPath: "polygon(0% 0%, 100% 0%, 75% 60%, 25% 75%)",
+      rotateX: -12,
+      scale: 0.95,
+      ease: "power2.inOut",
+    }
+  ),
+});
+      });
+    }, scrollAwayRef);
+
+    return () => ctx.revert();
+  }, []);
+
+
+  
   return (
     <>
-  <div className="-[var(--color-bg)] text-[var(--color-text)]">
-      <CrossCursor />
-        {/* <CardScanner /> */}
-        {/* <ScrollAnimation /> */}
-    
-        <div className="relative z-0 h-screen w-full">
-        <div ref={cardRef} className="relative">
 
-          <div className="h-screen flex justify-center items-center">
-            <div
-              style={{
-                padding: "20px",
-                background: "rgba(0, 0, 0, 0.05)",
-                boxShadow: `
+      <div className="-[var(--color-bg)] text-[var(--color-text)]">
+
+        <CrossCursor />
+                <section className="relative min-h-screen grid grid-cols-2 bg-[#f8f8f8] text-[#111]">
+  {/* LEFT SECTION */}
+  <div className="relative flex flex-col h-screen">
+    {/* TOP HALF */}
+    <div className="flex-1 flex flex-col justify-start items-center pt-[8vh]">
+      <div className="leading-[0.9] w-fit mx-auto">
+
+        <div className="relative">
+          <h1 className="text-[clamp(6rem,10vw,12rem)] font-aileron uppercase text-[#2e182f] tracking-tight relative z-10 text-center">
+           Modern
+          </h1>
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[clamp(2.5rem,5vw,6rem)] font-canelalight text-[#0395E6] z-20 whitespace-nowrap pointer-events-none">
+            Personalized
+          </span>
+        </div>
+
+        
+        <div className="relative mt-[1rem]">
+          <h1 className="text-[clamp(6rem,10vw,12rem)] font-aileron uppercase text-[#2e182f] tracking-tight relative z-10 text-center">
+           Methods
+          </h1>
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[clamp(2.5rem,5vw,6rem)] font-canelalight text-[#CCF33C] z-20 whitespace-nowrap pointer-events-none">
+           Care
+          </span>
+        </div>
+      </div>
+
+  
+      <div className="mt-8 flex flex-wrap justify-center gap-12 text-[0.75rem] uppercase tracking-wider text-[#555] max-w-[480px]">
+        <p className="font-neuehaas45">
+          We're won multiple awards from different organizations.
+        </p>
+
+      </div>
+    </div>
+
+    {/* BOTTOM HALF */}
+    <div className="flex justify-center items-end pb-[8vh]">
+      <button className="border border-[#ccc] px-10 py-4 flex items-center justify-center gap-3 text-[0.7rem] uppercase tracking-widest font-neuehaas45 text-gray-500 hover:bg-[#111] hover:text-white transition-all duration-300">
+       Learn More
+         <span className="inline-flex w-4 h-4">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="w-full h-full"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
+    />
+  </svg>
+</span>
+      </button>
+    </div>
+  </div>
+
+  {/* RIGHT SECTION */}
+  <div className="relative flex flex-col justify-center items-start px-[8vw]">
+
+    <div className="absolute top-10 right-10 flex gap-3 text-[#d69a2d] text-4xl font-serif select-none">
+      <span>✻</span>
+      <span>✻</span>
+      <span>✻</span>
+    </div>
+
+    <div className="mb-8">
+      <p className="text-[0.7rem] uppercase tracking-widest font-neuehaas45 text-gray-400">
+       Our Expertise
+      </p>
+    </div>
+
+    <p className="max-w-[520px] text-[clamp(1rem,1.6vw,1.4rem)] font-canelathin leading-[1]">
+While any orthodontist can move teeth into place, we focus on how alignment integrates with facial harmony — creating results that feel naturally your own.
+    </p>
+  </div>
+</section>
+<section
+  ref={scrollAwayRef}
+  className="relative w-screen pt-[160px] overflow-hidden flex flex-col"
+>
+<div className="relative z-10 w-full px-[10vw] max-w-[900px] mb-[15vh]">
+  <div className="w-fit mb-6 px-6 py-4 backdrop-blur-[10px] bg-[rgba(160,253,208,0.85)] border border-white/10">
+    <div className="text-gray-500 uppercase tracking-widest font-neuehaas45 text-[11px]">
+      First Impressions
+    </div>
+  </div>
+
+  <p className="tracking-wide font-neuehaas45 text-[clamp(.75rem,1.1vw,1.1rem)] leading-[1.1] max-w-[700px]">
+    Your first visit is where it all begins. We’ll get to know you, take
+    digital photos and X-rays, and map out your smile goals together. It’s
+    a simple, one-on-one visit that gives us a clear picture of your
+    orthodontic needs.
+  </p>
+</div>
+
+{[
+  { id: 1, name: "Discuss" }, 
+  { id: 2, name: "Digital Records", video: "/videos/cbctscan.mp4" }, 
+  { id: 3, name: "Personalized Plan", img: "/images/flower.jpeg" }, 
+].map((work) => (
+ <div
+  key={work.id}
+  className="relative work-item h-[90svh] w-full flex items-center justify-center"
+>
+  <div
+    className="work-item-img relative w-[75vw] h-[75vh] overflow-hidden"
+    style={{
+      clipPath: "polygon(25% 25%, 75% 40%, 100% 100%, 0% 100%)",
+      willChange: "clip-path",
+    }}
+  >
+    {work.id === 1 ? (
+
+      <ShaderBackground className="w-full h-full" />
+    ) : work.id === 2 ? (
+
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline 
+        className="w-full h-full object-cover"
+        poster={work.img || "/images/background_min.png"} 
+      >
+        <source src={work.video || "/videos/cbctscan.mp4"} type="video/mp4" />
+        {/* Fallback to image if video fails */}
+        <img src="/images/background_min.png" alt={work.name} className="w-full h-full object-cover" />
+      </video>
+    ) : (
+   
+      <img
+        src={work.img}
+        alt={work.name}
+        className="w-full h-full object-cover"
+      />
+    )}
+  </div>
+
+
+  <div className="work-item-name absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full z-[1]">
+    <h1
+      className="text-center text-white font-neuehaas35 leading-[1]"
+      style={{
+        fontSize: "5rem",
+      }}
+    >
+      {work.name}
+    </h1>
+  </div>
+</div>
+  ))}
+</section>
+  <div className="bg-[#E2DD70] min-h-screen relative text-[#f6f1df] overflow-hidden flex flex-col justify-start">
+
+  <div className="absolute top-[25vh] left-1/2 -translate-x-1/2 flex justify-center text-[22vw] font-black uppercase tracking-tight text-[#f6f1df]/10 select-none z-0">
+    <span className="mx-6">W</span>
+    <span className="mx-6">O</span>
+    <span className="mx-6">R</span>
+    <span className="mx-6">K</span>
+    <span className="mx-6">S</span>
+  </div>
+
+
+
+  <div className="bg-[#E2DD70] relative z-10 mt-[15vh] pl-[8vw]">
+
+
+    {/* Gradient preview block */}
+    <div className="mt-[-2vh] w-[60vw] h-[55vh] bg-gradient-to-br from-[#ffb98d] via-[#f9c0a0] to-[#e5cec7] flex items-end p-10">
+     
+    </div>
+  </div>
+
+<section className="relative h-screen flex items-center justify-center z-[10]">
+  <svg
+    ref={starRef}
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 200 200"
+
+  >
+    <g className="shape-wrapper" style={{ transformOrigin: "center center" }}>
+
+      <rect width="200" height="200" fill="#f8f8f8" />
+
+      {/* Circle cutout using mask */}
+      <mask id="cutout-mask">
+        <rect width="200" height="200" fill="white" />
+        <circle cx="100" cy="100" r="100" fill="black" />
+      </mask>
+
+
+      <rect
+        width="200"
+        height="200"
+        fill="#F2F2F2"
+        mask="url(#cutout-mask)"
+      />
+    </g>
+
+  
+    <text
+      x="50%"
+      y="50%"
+      textAnchor="middle"
+      dominantBaseline="middle"
+      className="scrolling-content"
+      style={{
+        fontFamily: "sans-serif",
+        fontSize: "5px",
+        fill: "black",
+        opacity: 0,
+        pointerEvents: "none",
+      }}
+    >
+      <tspan x="50%" dy="-1em">
+        AFFORDABLE FINANCING
+      </tspan>
+      <tspan x="50%" dy="1.2em">
+        NO HIDDEN COSTS
+      </tspan>
+    </text>
+  </svg>
+</section>
+
+  {/* CURVED PATH SECTION */}
+  <div className="overflow-hidden" style={{ height: "400vh" }}>
+    <section
+      ref={sectionRef}
+      className="w-screen h-screen overflow-hidden flex items-center px-10"
+    >
+      <div ref={scrollContainerRef}>
+        <svg
+          width="3370"
+          height="671"
+          viewBox="0 0 3370 671"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            ref={drawPathRef}
+            d="M0.998047 1C0.998047 1 849.498 764.605 786.498 659.553C723.498 554.5 1725.51 370.052 1660.51 419.052C1595.5 468.052 2515.02 616.409 2491.26 660.981C2467.5 705.553 3369 419.052 3369 419.052"
+            stroke="#EBFD15"
+            strokeWidth="3"
+          />
+        </svg>
+      </div>
+    </section>
+  </div>
+
+
+  <section className="relative flex items-center justify-center">
+    <div className="w-[36vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
+      <p className="font-neueroman text-[18px] uppercase leading-snug text-black">
+        Your first visit is where it all begins. We’ll get to know you, take
+        digital photos and X-rays, and map out your smile goals together. It’s
+        a simple, one-on-one visit that gives us a clear picture of your
+        orthodontic needs.
+      </p>
+    </div>
+
+    <svg
+      width="90vw"
+      height="170vh"
+      viewBox="-100 0 1100 1800"
+      xmlns="http://www.w3.org/2000/svg"
+      ref={svgRef}
+      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
+    >
+      <defs>
+        <path
+          id="text-arc-path"
+          d="M0,820 A450,450 0 0 1 900,820 L900,1440 L0,1440 Z"
+          fill="none"
+        />
+      </defs>
+
+      <text
+        className="text-[12vw] tracking-wide font-neueroman fill-[#FEB448] font-sinistre"
+        textAnchor="middle"
+        dominantBaseline="middle"
+      >
+        <textPath ref={textPathRef} href="#text-arc-path" startOffset="4%">
+          GETTING STARTED
+        </textPath>
+      </text>
+    </svg>
+  </section>
+
+
+  <section className="relative w-full h-screen font-neuehaas45">
+    <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
+      <path
+        ref={lineRef}
+        strokeLinecap="round"
+        strokeLinejoin="miter"
+        fillOpacity="0"
+        strokeMiterlimit="4"
+        stroke="rgb(248,134,63)"
+        strokeOpacity="1"
+        strokeWidth="1.5"
+        d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
+      />
+    </svg>
+  </section>
+</div>
+        {/* <ScrollAnimation /> */}
+
+        <div className="relative z-0 h-screen w-full">
+          <div ref={cardRef} className="relative">
+            <div className="h-screen flex justify-center items-center">
+              <div
+                style={{
+                  padding: "20px",
+                  background: "rgba(0, 0, 0, 0.05)",
+                  boxShadow: `
                     inset 1px 1.5px 2px rgba(255, 255, 255, 0.6),
                     inset 1px -0.5px 2px rgba(255, 255, 255, 0.3),
                     0 0.6px 0.6px -1.25px rgba(0, 0, 0, 0.18),
                     0 2.29px 2.29px -2.5px rgba(0, 0, 0, 0.16),
                     0 10px 10px -3.75px rgba(0, 0, 0, 0.06)
                   `,
-                backdropFilter: "blur(45px)",
-                WebkitBackdropFilter: "blur(45px)",
-                borderRadius: "30px",
-              }}
-              className="h-[90vh] max-w-7xl p-10"
-            >
-              {/* <div className="absolute w-[400px] h-[400px] bg-purple-500 opacity-20 blur-[140px] rounded-full top-1/3 left-[-140px] pointer-events-none mix-blend-screen"></div>
+                  backdropFilter: "blur(45px)",
+                  WebkitBackdropFilter: "blur(45px)",
+                  borderRadius: "30px",
+                }}
+                className="h-[90vh] max-w-7xl p-10"
+              >
+                {/* <div className="absolute w-[400px] h-[400px] bg-purple-500 opacity-20 blur-[140px] rounded-full top-1/3 left-[-140px] pointer-events-none mix-blend-screen"></div>
             <div className="absolute w-[400px] h-[400px] bg-orange-500 opacity-20 blur-[140px] rounded-full top-[40%] left-[-100px] pointer-events-none mix-blend-screen"></div>
             <div className="absolute w-[400px] h-[400px] bg-sky-300 opacity-30 blur-[140px] rounded-full top-1/4 right-[-120px] pointer-events-none"></div> */}
 
-              <div className="grid grid-cols-3 gap-4 h-full">
-                <div className="flex flex-col items-center justify-center h-full">
-                  <div className="relative backdrop-blur-xl bg-white/70  shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10">
-                    <div className="absolute top-4 right-4 w-4 h-5 text-white text-xs flex items-center justify-center "></div>
-                    <div className="space-y-2">
-                      <span className="inline-block bg-black/10 text-[10px] uppercase px-3 py-2 rounded-full text-gray-600 font-khteka tracking-wider">
-                        Transparent Pricing
+                <div className="grid grid-cols-3 gap-4 h-full">
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <div className="relative backdrop-blur-xl bg-white/70  shadow-[0_0_0_1px_rgba(255,255,255,0.5)] border border-white border-[4px] rounded-[8px] p-10">
+                      <div className="absolute top-4 right-4 w-4 h-5 text-white text-xs flex items-center justify-center "></div>
+                      <div className="space-y-2">
+                        <span className="inline-block bg-black/10 text-[10px] uppercase px-3 py-2 rounded-full text-gray-600 font-khteka tracking-wider">
+                          Transparent Pricing
+                        </span>
+                        <div>
+                          <h3 className="font-neuehaas45 text-black text-[16px] mb-2">
+                            No Hidden Fees
+                          </h3>
+                          <ul className="list-disc pl-[1.25em] text-sm text-gray-700 font-neuehaas45 space-y-1">
+                            <li>
+                              All-inclusive pricing — from start to finish.
+                            </li>
+                            <li>
+                              No up-charges for ceramic or “special” braces.
+                            </li>
+                            <li>No surprise fees or unexpected add-ons.</li>
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h3 className="font-neuehaas45 text-black text-[16px] mb-2">
+                            Flexible Monthly Plans
+                          </h3>
+                          <ul className="list-disc pl-[1.25em] text-sm text-gray-700 font-neuehaas45 space-y-1">
+                            <li>Payment plans typically span 12–24 months.</li>
+                            <li>
+                              A manageable down payment, with monthly plans
+                              available
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="w-full max-w-md mx-auto mt-4">
+                      <svg width="400" height="200" viewBox="0 0 200 100">
+                        <path
+                          d="M 20 100 A 80 80 0 0 1 180 100"
+                          stroke="grey"
+                          stroke-width="6"
+                          fill="none"
+                        />
+                        <path
+                          ref={arcRef}
+                          d="M 20 100 A 80 80 0 0 1 180 100"
+                          stroke="white"
+                          strokeWidth="6"
+                          fill="none"
+                          strokeDasharray="100 250"
+                          strokeLinecap="round"
+                        />
+                        <text
+                          x="100"
+                          y="70"
+                          font-size="12"
+                          text-anchor="middle"
+                          fill="black"
+                          className="font-neuehaas45"
+                        >
+                          250/month
+                        </text>
+                        <text
+                          x="70"
+                          y="60"
+                          font-size="5"
+                          text-anchor="end"
+                          fill="black"
+                          class="font-khteka uppercase"
+                        >
+                          Starting
+                        </text>
+                      </svg>
+
+                      <div className="relative mt-4">
+                        <div className="h-[1px] bg-black/20 rounded-full"></div>
+
+                        <div className="absolute top-1/2 left-[55%] -translate-y-1/2 w-[20%] h-[6px] bg-white rounded-full"></div>
+
+                        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
+                        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
+
+                        <div className="absolute top-full left-[65%] mt-2 flex flex-col items-center">
+                          <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-black"></div>
+                          <span className="mt-1 font-khteka text-[10px] uppercase">
+                            Our price
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      background: "rgba(255, 255, 255, 0.6)",
+                      borderRadius: "16px",
+                      boxShadow: "0 0 20px rgba(255, 255, 255, 0.2)",
+                      backdropFilter: "blur(7.4px)",
+                      WebkitBackdropFilter: "blur(7.4px)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      padding: "2rem",
+                    }}
+                    className="relative  p-10 flex flex-col justify-between"
+                  >
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-10 h-5 bg-gray-300 rounded-full relative">
+                        <div className="w-4 h-4 bg-white rounded-full absolute left-0 top-0.5 shadow-md transition-all"></div>
+                      </div>
+                      <span className="text-xs text-gray-600 font-neuehaas45">
+                        AutoPay Enabled
                       </span>
-                      <div>
-                        <h3 className="font-neuehaas45 text-black text-[16px] mb-2">
-                          No Hidden Fees
-                        </h3>
-                        <ul className="list-disc pl-[1.25em] text-sm text-gray-700 font-neuehaas45 space-y-1">
-                          <li>All-inclusive pricing — from start to finish.</li>
-                          <li>
-                            No up-charges for ceramic or “special” braces.
-                          </li>
-                          <li>No surprise fees or unexpected add-ons.</li>
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h3 className="font-neuehaas45 text-black text-[16px] mb-2">
-                          Flexible Monthly Plans
-                        </h3>
-                        <ul className="list-disc pl-[1.25em] text-sm text-gray-700 font-neuehaas45 space-y-1">
-                          <li>Payment plans typically span 12–24 months.</li>
-                          <li>
-                            A manageable down payment, with monthly plans
-                            available
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="w-full max-w-md mx-auto mt-4">
-                    <svg width="400" height="200" viewBox="0 0 200 100">
-                      <path
-                        d="M 20 100 A 80 80 0 0 1 180 100"
-                        stroke="grey"
-                        stroke-width="6"
-                        fill="none"
-                      />
-                      <path
-                        ref={arcRef}
-                        d="M 20 100 A 80 80 0 0 1 180 100"
-                        stroke="white"
-                        strokeWidth="6"
-                        fill="none"
-                        strokeDasharray="100 250"
-                        strokeLinecap="round"
-                      />
-                      <text
-                        x="100"
-                        y="70"
-                        font-size="12"
-                        text-anchor="middle"
-                        fill="black"
-                        className="font-neuehaas45"
-                      >
-                        250/month
-                      </text>
-                      <text
-                        x="70"
-                        y="60"
-                        font-size="5"
-                        text-anchor="end"
-                        fill="black"
-                        class="font-khteka uppercase"
-                      >
-                        Starting
-                      </text>
-                    </svg>
-
-                    <div className="relative mt-4">
-                      <div className="h-[1px] bg-black/20 rounded-full"></div>
-
-                      <div className="absolute top-1/2 left-[55%] -translate-y-1/2 w-[20%] h-[6px] bg-white rounded-full"></div>
-
-                      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
-                      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-md"></div>
-
-                      <div className="absolute top-full left-[65%] mt-2 flex flex-col items-center">
-                        <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-black"></div>
-                        <span className="mt-1 font-khteka text-[10px] uppercase">
-                          Our price
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  style={{
-                    background: "rgba(255, 255, 255, 0.6)",
-                    borderRadius: "16px",
-                    boxShadow: "0 0 20px rgba(255, 255, 255, 0.2)",
-                    backdropFilter: "blur(7.4px)",
-                    WebkitBackdropFilter: "blur(7.4px)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    padding: "2rem",
-                  }}
-                  className="relative  p-10 flex flex-col justify-between"
-                >
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-10 h-5 bg-gray-300 rounded-full relative">
-                      <div className="w-4 h-4 bg-white rounded-full absolute left-0 top-0.5 shadow-md transition-all"></div>
-                    </div>
-                    <span className="text-xs text-gray-600 font-neuehaas45">
-                      AutoPay Enabled
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-[13px] text-gray-700 font-neuehaas45">
-                      Flexible monthly payments — as low as 0% APR. Exact rate
-                      based on your credit profile.
-                    </p>
-                  </div>
-
-                  <div className="flex items-start gap-3 mb-6">
-                    <div className="w-4 h-4 rounded-full border border-gray-400 flex items-center justify-center mt-[2px]">
-                      <div className="w-2 h-2 bg-gray-900 rounded-full"></div>
                     </div>
 
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-neuehaas45 font-semibold text-sm text-black">
-                          Financing.
-                        </span>
-                        <span className="bg-[#ffe5f2] text-[#7f187f] text-[10px] uppercase px-2 py-0.5 rounded-full font-khteka tracking-wider">
-                          Klarna
-                        </span>
-                      </div>
-                      <p className="text-[13px] text-gray-500 mt-0.5 font-neuehaas45">
-                        Pay over 6 – 36 months.
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-[13px] text-gray-700 font-neuehaas45">
+                        Flexible monthly payments — as low as 0% APR. Exact rate
+                        based on your credit profile.
                       </p>
                     </div>
-                  </div>
 
-                  <ul className="text-sm text-gray-700 font-neuehaas45 space-y-2 mb-4">
-                    <li>Instant monthly quote</li>
-                    <li>No impact on credit to explore</li>
-                  </ul>
+                    <div className="flex items-start gap-3 mb-6">
+                      <div className="w-4 h-4 rounded-full border border-gray-400 flex items-center justify-center mt-[2px]">
+                        <div className="w-2 h-2 bg-gray-900 rounded-full"></div>
+                      </div>
 
-                  <div className="w-full bg-gray-200 rounded-full h-[6px] relative mb-1">
-                    <div className="bg-[#ffb3d6] h-full rounded-full w-[65%]"></div>
-                  </div>
-                  {/* <div
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-neuehaas45 font-semibold text-sm text-black">
+                            Financing.
+                          </span>
+                          <span className="bg-[#ffe5f2] text-[#7f187f] text-[10px] uppercase px-2 py-0.5 rounded-full font-khteka tracking-wider">
+                            Klarna
+                          </span>
+                        </div>
+                        <p className="text-[13px] text-gray-500 mt-0.5 font-neuehaas45">
+                          Pay over 6 – 36 months.
+                        </p>
+                      </div>
+                    </div>
+
+                    <ul className="text-sm text-gray-700 font-neuehaas45 space-y-2 mb-4">
+                      <li>Instant monthly quote</li>
+                      <li>No impact on credit to explore</li>
+                    </ul>
+
+                    <div className="w-full bg-gray-200 rounded-full h-[6px] relative mb-1">
+                      <div className="bg-[#ffb3d6] h-full rounded-full w-[65%]"></div>
+                    </div>
+                    {/* <div
                 ref={processingRef}
                 id="processing"
                 className={`absolute inset-0 flex flex-col justify-center items-center ${
@@ -2270,215 +1808,75 @@ const FinancingTreatment = () => {
                   </svg>
                 </div>
               </div> */}
-                  <span className="text-[10px] text-[#7f187f] font-khteka uppercase tracking-wider">
-                    Prequalifying with Klarna...
-                  </span>
-                  <div className="w-[300px] space-y-4">
-                    <div>
-                      <div className="flex justify-between text-xs mb-1 font-neuehaas45 uppercase">
-                        <span>Remaining balance</span>
+                    <span className="text-[10px] text-[#7f187f] font-khteka uppercase tracking-wider">
+                      Prequalifying with Klarna...
+                    </span>
+                    <div className="w-[300px] space-y-4">
+                      <div>
+                        <div className="flex justify-between text-xs mb-1 font-neuehaas45 uppercase">
+                          <span>Remaining balance</span>
+                        </div>
+                        <div className="bg-black/10 h-2 rounded-full relative overflow-hidden">
+                          <div className="bg-lime-300 h-full rounded-full w-[75%]"></div>
+                        </div>
                       </div>
-                      <div className="bg-black/10 h-2 rounded-full relative overflow-hidden">
-                        <div className="bg-lime-300 h-full rounded-full w-[75%]"></div>
+
+                      <div>
+                        <div className="flex justify-between text-xs mb-1 font-neuehaas45 uppercase">
+                          <span>NEXT PAYMENT DUE</span>
+                        </div>
+                        <div className="bg-black/10 h-2 rounded-full relative overflow-hidden">
+                          <div className="bg-purple-300 h-full rounded-full w-[45%]"></div>
+                        </div>
                       </div>
                     </div>
 
-                    <div>
-                      <div className="flex justify-between text-xs mb-1 font-neuehaas45 uppercase">
-                        <span>NEXT PAYMENT DUE</span>
-                      </div>
-                      <div className="bg-black/10 h-2 rounded-full relative overflow-hidden">
-                        <div className="bg-purple-300 h-full rounded-full w-[45%]"></div>
-                      </div>
+                    <button className="mt-4 w-full bg-[#ffe5f2] border border-[#ffb3d6] text-[#7f187f] py-2 rounded-md text-xs font-khteka uppercase hover:bg-[#ffd6e9] transition-all">
+                      Continue with Klarna
+                    </button>
+
+                    <div className="mt-3 text-center"></div>
+                  </div>
+                  <div className="relative border border-white border-[4px] rounded-[8px] p-10">
+                    <div className="flex justify-between mt-4 px-6">
+                      {[...Array(5)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="w-2 h-2 rounded-full bg-black/10"
+                        ></div>
+                      ))}
                     </div>
+
+                    <div
+                      className="text-[14px] uppercase font-khteka text-gray-700 tracking-widest mb-4"
+                      ref={text2Ref}
+                      id="text-2"
+                    />
+
+                    <div
+                      className="text-sm text-gray-700 font-neuehaas45 mb-6 min-h-[40px]"
+                      ref={text3Ref}
+                      id="text-3"
+                    />
+
+                    <div className="relative w-full">
+                      <img
+                        src="../images/iphoneoutline.png"
+                        className="w-full"
+                      />
+                    </div>
+
+                    <button className="w-full bg-black text-white py-2 rounded-md text-sm font-khteka uppercase hover:bg-gray-900 transition-all">
+                      Text Our Team
+                    </button>
+                    <div className="flex-1 flex flex-col items-center relative"></div>
                   </div>
-
-                  <button className="mt-4 w-full bg-[#ffe5f2] border border-[#ffb3d6] text-[#7f187f] py-2 rounded-md text-xs font-khteka uppercase hover:bg-[#ffd6e9] transition-all">
-                    Continue with Klarna
-                  </button>
-
-                  <div className="mt-3 text-center"></div>
-                </div>
-                <div className="relative border border-white border-[4px] rounded-[8px] p-10">
-                  <div className="flex justify-between mt-4 px-6">
-                    {[...Array(5)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-2 h-2 rounded-full bg-black/10"
-                      ></div>
-                    ))}
-                  </div>
-
-                  <div
-                    className="text-[14px] uppercase font-khteka text-gray-700 tracking-widest mb-4"
-                    ref={text2Ref}
-                    id="text-2"
-                  />
-
-                  <div
-                    className="text-sm text-gray-700 font-neuehaas45 mb-6 min-h-[40px]"
-                    ref={text3Ref}
-                    id="text-3"
-                  />
-
-                  <div className="relative w-full">
-                    <img src="../images/iphoneoutline.png" className="w-full" />
-                  </div>
-
-                  <button className="w-full bg-black text-white py-2 rounded-md text-sm font-khteka uppercase hover:bg-gray-900 transition-all">
-                    Text Our Team
-                  </button>
-                  <div className="flex-1 flex flex-col items-center relative"></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        </div>
-        <div className="min-h-screen pt-[160px] relative ">
-          <section className="relative flex items-center justify-center">
-            <div className=" w-[36vw] h-[90vh] bg-[#FF8111] rounded-t-[600px] flex flex-col items-center justify-center px-8 pt-24 pb-20 z-10">
-              <Copy>
-                <p className="font-neueroman text-[18px] uppercase leading-snug text-black">
-                  Orthodontic treatment is a transformative investment in both
-                  your appearance and long-term dental health — ideally, a
-                  once-in-a-lifetime experience. While many orthodontists can
-                  straighten teeth with braces or Invisalign, the quality of
-                  outcomes varies widely. With today's advanced technology,
-                  treatment goes far beyond alignment — it can enhance facial
-                  aesthetics and deliver truly life-changing results.
-                </p>
-              </Copy>
-            </div>
-
-            <svg
-              width="90vw"
-              height="170vh"
-              viewBox="-100 0 1100 1800"
-              xmlns="http://www.w3.org/2000/svg"
-              ref={svgRef}
-              className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
-            >
-              <defs>
-                <path
-                  id="text-arc-path"
-                  d="M0,820 
-           A450,450 0 0 1 900,820 
-           L900,1440 
-           L0,1440 
-           Z"
-                  fill="none"
-                />
-              </defs>
-
-              <path
-                d="M0,820 
-         A450,450 0 0 1 900,820 
-         L900,1400 
-         L0,1400 
-         Z"
-                fill="none"
-                // stroke="#fe6531"
-                // strokeWidth="4"
-              />
-
-              <text
-                className="text-[12vw] tracking-wide font-neueroman fill-[#FEB448] font-sinistre"
-                textAnchor="middle"
-                dominantBaseline="middle"
-              >
-                <textPath
-                  ref={textPathRef}
-                  href="#text-arc-path"
-                  startOffset="4%"
-                >
-                  GETTING STARTED
-                </textPath>
-              </text>
-            </svg>
-          </section>
-          <div className="overflow-hidden" style={{ height: "400vh" }}>
-
-            <section
-              ref={sectionRef}
-              className="w-screen h-screen overflow-hidden flex items-center px-10"
-            >
-              <div ref={scrollContainerRef}>
-                <svg
-                  width="3370"
-                  height="671"
-                  viewBox="0 0 3370 671"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    ref={drawPathRef}
-                    d="M0.998047 1C0.998047 1 849.498 764.605 786.498 659.553C723.498 554.5 1725.51 370.052 1660.51 419.052C1595.5 468.052 2515.02 616.409 2491.26 660.981C2467.5 705.553 3369 419.052 3369 419.052"
-                    stroke="#EBFD15"
-                    strokeWidth="3"
-                  />
-                </svg>
-              </div>
-            </section>
-          </div>
-
-          <svg
-            ref={starRef}
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 162 162"
-            style={{ enableBackground: "new 0 0 162 162" }}
-          >
-            <g
-              className="shape-wrapper"
-              style={{ transformOrigin: "center center" }}
-            >
-              <path
-                className="hsc-img-path"
-                d="M108 88.7c-10.8 0-19.7 8.8-19.7 19.7v47.4c0 1.9-1.5 3.4-3.4 3.4h-8.6c-1.9 0-3.4-1.5-3.4-3.4v-47.4c0-10.8-8.8-19.7-19.7-19.7H6.4c-1.9 0-3.4-1.5-3.4-3.4v-8c0-1.9 1.5-3.4 3.4-3.4h46.9c10.8 0 19.7-8.8 19.6-19.7V6.4c0-1.9 1.5-3.4 3.4-3.4H85c1.9 0 3.4 1.5 3.4 3.4v47.8c0 10.8 8.8 19.7 19.7 19.7h46.6c1.9 0 3.4 1.5 3.4 3.4v8c0 1.9-1.5 3.4-3.4 3.4H108z"
-                fill="#EAFE08"
-              />
-            </g>
-
-            <text
-              x="50%"
-              y="50%"
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="scrolling-content"
-              style={{
-                fontFamily: "sans-serif",
-                fontSize: "4px",
-                fill: "black",
-                opacity: 0,
-                pointerEvents: "none",
-              }}
-            >
-              <tspan x="50%" dy="-1em">
-                AFFORDABLE FINANCING
-              </tspan>
-              <tspan x="50%" dy="1.2em">
-                NO HIDDEN COSTS
-              </tspan>
-            </text>
-          </svg>
-          <section className="relative w-full h-screen font-neuehaas45">
-            <svg viewBox="-960 -540 1920 1080" width="100%" height="100%">
-              <path
-                ref={lineRef}
-                strokeLinecap="round"
-                strokeLinejoin="miter"
-                fillOpacity="0"
-                strokeMiterlimit="4"
-                stroke="rgb(248,134,63)"
-                strokeOpacity="1"
-                strokeWidth="1.5"
-                d="M-954,-192 C-954,-192 -659,-404 -520,-431 C-379,-454 -392,-360 -588,-33 C-730,212 -926,640 -350,397 C135.86099243164062,192.0279998779297 324,-61 523,-160 C705.1939697265625,-250.63900756835938 828,-256 949,-194"
-              />
-            </svg>
-           
-  
-          </section>
-        </div>
+    
         <section className="relative">
           <div className="absolute inset-0 z-0 pointer-events-none flex justify-center items-center overflow-hidden px-5">
             <svg
@@ -2670,10 +2068,7 @@ const FinancingTreatment = () => {
             </svg>
           </div>
         </section>
-
-    </div>
-
-
+      </div>
 
       {/* <div ref={sectionRef} className="relative h-[200vh] bg-[#F2F2F4]">
 
@@ -2699,10 +2094,10 @@ const FinancingTreatment = () => {
           />
         </div>
       </div> */}
-
     </>
   );
 };
+
 
 
 export default FinancingTreatment;

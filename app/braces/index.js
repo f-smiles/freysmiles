@@ -1943,7 +1943,7 @@ const LandscapeBackground = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext('webgl2');
+    const gl = canvas.getContext('webgl2', { antialias: true, alpha: false });
     if (!gl) {
       console.error('WebGL2 not supported');
       return;
@@ -1970,7 +1970,7 @@ out vec4 fragColor;
 
 #define S smoothstep
 #define AA 1
-#define T iTime*1.2 // Slowed down from 4.0 to 0.5 for dreamy pace
+#define T iTime*1.5
 #define PI 3.1415926535897932384626433832795
 #define TAU 6.283185
 
@@ -2106,7 +2106,6 @@ float sdPlane( vec3 p, vec3 n, float h )
 // ================================
 // FBM
 // ===============================
-
 float hash(vec3 p) {
   // Simple fast hash function to scatter values
   p = fract(p * 0.3183099 + vec3(0.1, 0.2, 0.3));
@@ -2539,11 +2538,14 @@ void main() {
     gl.uniform1i(iChannel2Loc, 2);
 
     const resizeCanvas = () => {
+      const dpr = window.devicePixelRatio || 1;
       const { clientWidth, clientHeight } = canvas;
-      canvas.width = clientWidth;
-      canvas.height = clientHeight;
-      gl.viewport(0, 0, clientWidth, clientHeight);
-      gl.uniform3f(iResLoc, clientWidth, clientHeight, 1.0);
+      canvas.width = clientWidth * dpr;
+      canvas.height = clientHeight * dpr;
+      canvas.style.width = clientWidth + 'px';
+      canvas.style.height = clientHeight + 'px';
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.uniform3f(iResLoc, clientWidth, clientHeight, 1.0); // Logical for shader aspect/UVs
     };
 
     resizeCanvas();
