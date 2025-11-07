@@ -5,7 +5,7 @@ import { LinearFilter, Mesh, OrthographicCamera, PlaneGeometry, Scene, ShaderMat
 import ScrollTrigger from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
-const items = [
+export const items = [
   {
     // src: '/images/members/edit/adriana-blurry-distortion-effect-1920px-1.jpg',
     // hoverSrc: '/images/members/orig/adriana.png',
@@ -399,6 +399,35 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
   )
 }
 
+const MemberCard = ({ member, className = '' }) => {
+  return (
+    <div className={`member-slot ${className} flex flex-col justify-between h-full w-full p-8`}>
+    
+      <div className="image-section flex-1 flex items-center justify-center mb-4">
+        <div className="image-wrapper w-full max-w-[320px] max-h-[80vh] relative overflow-hidden rounded-[1.25rem] bg-[#111] aspect-[3/4]">
+          <ImageCanvas
+            className="absolute inset-0 w-full h-full" 
+            member={member.name}
+            imgSrc={member.src}
+            hoverSrc={member.hoverSrc}
+          />
+        </div>
+      </div>
+
+
+      <div className="member-info flex justify-between items-center text-center flex-1 min-h-[60px] pt-4">
+        <div className="member-role text-[13px] font-neuehaas45 tracking-wide text-[#252424] opacity-80">
+          {member.role}
+        </div>
+        <div className="member-title text-[14px] font-neuehaas45 font-500 tracking-[0.01rem] text-[#252424]">
+          {member.name}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export { MemberCard };
 export default function GridContainer() {
 
 

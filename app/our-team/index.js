@@ -26,7 +26,7 @@ import {
   LinearMipmapLinearFilter,
   RGBFormat,
 } from "three";
-import GridContainer from "../mouse-gooey-effect-5/components/GridContainer";
+import {MemberCard, items}from "../mouse-gooey-effect-5/components/GridContainer";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -650,9 +650,6 @@ export default function OurTeam() {
     });
   }, []);
 
-
-
-
   useLayoutEffect(() => {
     if (!wrapperRef.current || !scrollRef.current || !lastSectionRef.current) return;
     ScrollTrigger.getAll().forEach((t) => t.kill());
@@ -747,7 +744,7 @@ export default function OurTeam() {
       ease: "none",
       duration: 2,
       stagger: {
-        each: 0.5,   
+        each: 0.3,   
       }
     }, "+=0.2");
 
@@ -776,11 +773,11 @@ export default function OurTeam() {
   });
 
   return (
-    <div className="relative w-full h-screen bg-[#DBDBDB]">
+    <div className="relative w-full h-screen bg-[#E4E7FF]">
       <div className="relative overflow-x-clip">
-        <div ref={wrapperRef} className="flex w-full bg-[#DBDBDB]">
+        <div ref={wrapperRef} className="flex w-full bg-[#E4E7FF]">
 
-          <div ref={leftColumnRef} className="z-10 h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-[#DBDBDB] w-3/5 bg-[#FCFFFE] rounded-[12px]">
+          <div ref={leftColumnRef} className="z-10 h-screen sticky top-0 py-[10em] sm:py-[10em] border-l border-b border-r border-[#E4E7FF] w-3/5 bg-[#FCFFFE] rounded-[12px]">
             <div className="max-w-[400px] ml-10 my-10 flex flex-col overflow-hidden">
               <div className="inline-block overflow-hidden">
                 <div className="text-[12px] leading-[1.1] font-neuehaas45 tracking-wider text-black">
@@ -816,8 +813,8 @@ export default function OurTeam() {
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   </figure>
-                  <figcaption className="mt-5 relative h-[2.4em]">
-                    <div className="relative h-[1.2em]">
+                  <figcaption className="mt-5 relative h-[3em]">
+                    <div className="relative h-[1.4em]">
                       <p ref={greggNameRef} className="absolute top-0 left-0 text-[14px] text-[#111] tracking-wider font-neuehaas45">
                         Dr. Gregg Frey
                       </p>
@@ -927,58 +924,52 @@ export default function OurTeam() {
 <div
   onMouseEnter={() => setIsFocused(true)}
   onMouseLeave={() => setIsFocused(false)}
-  className="bg-[#DBDBDB] w-screen h-screen grid grid-cols-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed"
+  className="bg-[#E4E7FF] w-screen h-screen grid grid-cols-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed"
 >
   {/* Col 1 */}
-  <div className="overflow-hidden">
-    <div ref={col1Ref} className="flex flex-col will-change-transform">
-      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] border-l h-[33.33vh] ">
-         <SonarSweep />
-      </div>
-      <div className="border-l bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
-        <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
-          Fun fact — our team is made up of former Frey Smiles patients, something we think is important, 
-          because we have all experienced treatment and can help guide you through it.
-        </p>
-      </div>
-      <div className="border-l  bg-[#FCFFFE] rounded-[12px] p-8 border-b border-[#DBDBDB] border-r h-[33.33vh]">
+<div className="overflow-hidden">
+  <div ref={col1Ref} className="flex flex-col will-change-transform">
+    
+    {/* Adriana */}
+    <div className="bg-[#FCFFFE] rounded-[12px] p-0 border-r border-b border-[#E4E7FF] border-l h-[66.66vh]">
+      <MemberCard member={items?.[0] || { name: 'Fallback', role: 'Loading...', src: '/placeholder.jpg', hoverSrc: '/placeholder.jpg' }} />
+    </div>
 
-      </div>
-      <div className="border-l bg-[#FCFFFE] rounded-[12px] p-8 border-b border-[#DBDBDB] border-r h-[33.33vh] flex justify-center items-center">
-        <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
-          Lorem Ipsum
-        </p>
-      </div>
+    {/*  Alyssa */}
+    <div className="border-l bg-[#FCFFFE] rounded-[12px] p-0 border-r border-b border-[#E4E7FF] h-[66.66vh]">
+      <MemberCard member={items?.[1] || { name: 'Fallback', role: 'Loading...', src: '/placeholder.jpg', hoverSrc: '/placeholder.jpg' }} />
+    </div>
 
-      <div className="border-l bg-[#FCFFFE] rounded-[12px] p-8 border-b border-[#DBDBDB] border-r  relative grid-container-wrapper">
-        <GridContainer 
-          style={{ 
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            padding: 0
-          }} 
-        />
-      </div>
+    {/* Elizabeth */}
+    <div className="border-l bg-[#FCFFFE] rounded-[12px] p-0 border-b border-[#E4E7FF] border-r h-[66.66vh]">
+      <MemberCard member={items?.[2] || { name: 'Fallback', role: 'Loading...', src: '/placeholder.jpg', hoverSrc: '/placeholder.jpg' }} />
+    </div>
+
+    {/* Lexi */}
+    <div className="border-l bg-[#FCFFFE] rounded-[12px] p-0 border-b border-[#E4E7FF] border-r h-[66.66vh]">
+      <MemberCard member={items?.[3] || { name: 'Fallback', role: 'Loading...', src: '/placeholder.jpg', hoverSrc: '/placeholder.jpg' }} />
+    </div>
+
+    {/*  Nicolle */}
+    <div className="border-l bg-[#FCFFFE] rounded-[12px] p-0 border-b border-[#E4E7FF] border-r h-[66.66vh]">
+      <MemberCard member={items?.[4] || { name: 'Fallback', role: 'Loading...', src: '/placeholder.jpg', hoverSrc: '/placeholder.jpg' }} />
     </div>
   </div>
-
+</div>
   {/* Col 2  */}
   <div className="overflow-hidden">
     <div ref={col2Ref} className="flex flex-col will-change-transform" style={{ transform: 'translateY(-66.66vh)' }}>
-      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#E4E7FF] flex justify-center items-center h-[33.33vh]">
         <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
          The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
         </p>
       </div>
-      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#E4E7FF] flex justify-center items-center h-[33.33vh]">
         <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
-         Entrust your smile's transformation to our handpicked team of orthodontic specialists.
+        
         </p>
       </div>
-      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#E4E7FF] flex justify-center items-center h-[33.33vh]">
         <a href="https://www.trapezio.com/training-resources/course-outlines/soa-prep-course-outline/">
           <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
             Our members have received the designation of Specialized Orthodontic Assistant. 
@@ -987,8 +978,13 @@ export default function OurTeam() {
           </p>
         </a>
       </div>
-      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]"></div>
-      <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#FCFFFE] rounded-[12px] p-8 border-b border-r border-[#DBDBDB] h-[33.33vh]">
+       <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#E4E7FF] flex justify-center items-center h-[33.33vh]">
+         <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
+           Entrust your smile's transformation to our handpicked team of orthodontic specialists.
+         </p>
+        
+      </div>
+      <a href="https://g.co/kgs/Sds93Ha" className="flex justify-center items-center bg-[#FCFFFE] rounded-[12px] p-8 border-b border-r border-[#E4E7FF] h-[33.33vh]">
         <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
           This office is on 🔥! The orthodontists as well as every single staff member.
         </p>
@@ -999,29 +995,30 @@ export default function OurTeam() {
   {/* Col 3  */}
   <div className="overflow-hidden">
     <div ref={col3Ref} className="flex flex-col will-change-transform">
-      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#E4E7FF] flex justify-center items-center h-[33.33vh]">
         <p className="font-neuehaas45 tracking-wide text-[16px] leading-[1.1]">Trained in CPR and first aid</p>
       </div>
-      <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center  bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] h-[33.33vh]">
+      <a href="https://g.co/kgs/YkknjNg" className="flex justify-center items-center  bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#E4E7FF] h-[33.33vh]">
         <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
           Had a wonderful experience at FreySmiles. Everyone is extremely professional, 
           polite, timely. Would highly recommend! — TK
         </p>
       </a>
-      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#E4E7FF] flex justify-center items-center h-[33.33vh]">
         <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
           We've invested in in-office trainings with leading clinical consultants 
           that have helped us develop systems and protocols streamlining our processes.
         </p>
       </div>
-      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#E4E7FF] flex justify-center items-center h-[33.33vh]">
         <a href="https://g.co/kgs/example-review-1">
           <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
-            Lorem Ipsum
+               Fun fact — our team is made up of former Frey Smiles patients, something we think is important, 
+          because we have all experienced treatment and can help guide you through it.
           </p>
         </a>
       </div>
-      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#DBDBDB] flex justify-center items-center h-[33.33vh]">
+      <div className="bg-[#FCFFFE] rounded-[12px] p-8 border-r border-b border-[#E4E7FF] flex justify-center items-center h-[33.33vh]">
         <p className="font-neuehaas45 tracking-wide text-[13px] leading-[1.1]">
           Eco-friendly practice: We prioritize recycling and digital workflows to reduce waste.
         </p>
