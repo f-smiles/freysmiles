@@ -1,5 +1,14 @@
 "use client";
 import {
+  Renderer,
+  Camera,
+  Transform,
+  Plane,
+  Texture,
+  Mesh,
+  Program,
+} from "ogl";
+import {
   Canvas,
   useFrame,
   useThree,
@@ -12,6 +21,7 @@ import {
   OrbitControls,
   Environment,
   shaderMaterial,
+  useTexture
 } from "@react-three/drei";
 import { Media } from "/utils/Media.js";
 import { EffectComposer } from "@react-three/postprocessing";
@@ -24,7 +34,7 @@ import {
   useSpring,
   useAnimation,
 } from "framer-motion";
-import React, { useState, useEffect, useRef, useLayoutEffect, useMemo } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useLayoutEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger, MotionPathPlugin, SplitText } from "gsap/all";
@@ -39,9 +49,11 @@ gsap.registerPlugin(
   MorphSVGPlugin
 );
 
-const lerp = (a, b, n) => (1 - n) * a + n * b;
+
+
 
 function CrossCursor() {
+  const lerp = (a, b, n) => (1 - n) * a + n * b;
   const refV = useRef(null);
   const refH = useRef(null);
   const refDot = useRef(null);
@@ -476,6 +488,15 @@ const resize = () => {
 
   return <canvas ref={canvasRef} className={className} style={{ display: 'block' }} />;
 };
+
+
+
+
+
+
+
+
+
 const FinancingTreatment = () => {
   // const containerRef = useRef(null);
   // const pathRef = useRef(null);
@@ -1157,40 +1178,23 @@ ScrollTrigger.create({
   return (
     <>
 
-      <div className="-[var(--color-bg)] text-[var(--color-text)]">
+
+      <div className="relative -[var(--color-bg)] text-[var(--color-text)]">
+
 
         <CrossCursor />
                 <section className="relative min-h-screen grid grid-cols-2 bg-[#f8f8f8] text-[#111]">
+                  
   {/* LEFT SECTION */}
   <div className="relative flex flex-col h-screen">
+    
     {/* TOP HALF */}
     <div className="flex-1 flex flex-col justify-start items-center pt-[8vh]">
-      <div className="leading-[0.9] w-fit mx-auto">
-
-        <div className="relative">
-          <h1 className="text-[clamp(6rem,10vw,12rem)] font-aileron uppercase text-[#2e182f] tracking-tight relative z-10 text-center">
-           Modern
-          </h1>
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[clamp(2.5rem,5vw,6rem)] font-canelalight text-[#0395E6] z-20 whitespace-nowrap pointer-events-none">
-            Personalized
-          </span>
-        </div>
-
-        
-        <div className="relative mt-[1rem]">
-          <h1 className="text-[clamp(6rem,10vw,12rem)] font-aileron uppercase text-[#2e182f] tracking-tight relative z-10 text-center">
-           Methods
-          </h1>
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[clamp(2.5rem,5vw,6rem)] font-canelalight text-[#CCF33C] z-20 whitespace-nowrap pointer-events-none">
-           Care
-          </span>
-        </div>
-      </div>
-
+      <WebGLGalleryApp />
   
       <div className="mt-8 flex flex-wrap justify-center gap-12 text-[0.75rem] uppercase tracking-wider text-[#555] max-w-[480px]">
         <p className="font-neuehaas45">
-          We're won multiple awards from different organizations.
+      
         </p>
 
       </div>
@@ -1224,9 +1228,7 @@ ScrollTrigger.create({
   <div className="relative flex flex-col justify-center items-start px-[8vw]">
 
     <div className="absolute top-10 right-10 flex gap-3 text-[#d69a2d] text-4xl font-serif select-none">
-      <span>✻</span>
-      <span>✻</span>
-      <span>✻</span>
+     
     </div>
 
     <div className="mb-8">
@@ -2101,3 +2103,452 @@ While any orthodontist can move teeth into place, we focus on how alignment inte
 
 
 export default FinancingTreatment;
+
+
+const fragment = `precision highp float;
+
+uniform vec2 uImageSizes;
+uniform vec2 uPlaneSizes;
+uniform sampler2D tMap;
+
+varying vec2 vUv;
+
+void main() {
+  vec2 ratio = vec2(
+    min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
+    min((uPlaneSizes.y / uPlaneSizes.x) / (uImageSizes.y / uImageSizes.x), 1.0)
+  );
+
+  vec2 uv = vec2(
+    vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
+    vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
+  );
+
+  gl_FragColor.rgb = texture2D(tMap, uv).rgb;
+  gl_FragColor.a = 1.0;
+}`;
+
+const vertex = `
+#define PI 3.1415926535897932384626433832795
+
+precision highp float;
+precision highp int;
+
+attribute vec3 position;
+attribute vec2 uv;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
+uniform float uStrength;
+uniform vec2 uViewportSizes;
+
+varying vec2 vUv;
+
+void main() {
+  vec4 newPosition = modelViewMatrix * vec4(position, 1.0);
+  newPosition.z += sin(newPosition.y / uViewportSizes.y * PI + PI / 2.0) * -uStrength;
+  vUv = uv;
+  gl_Position = projectionMatrix * newPosition;
+}
+`;
+
+function WebGLGalleryApp() {
+  const canvasRef = useRef(null);
+  const galleryRef = useRef(null);
+  const mediasRef = useRef([]);
+  const scrollRef = useRef({ ease: 0.05, current: 0, target: 0, last: 0 });
+  const rendererRef = useRef();
+  const sceneRef = useRef();
+  const cameraRef = useRef();
+  const geometryRef = useRef();
+  const viewportRef = useRef();
+  const screenRef = useRef();
+
+  useEffect(() => {
+    const renderer = new Renderer({ canvas: canvasRef.current, alpha: true });
+    const gl = renderer.gl;
+    const camera = new Camera(gl);
+    camera.position.z = 5;
+    const scene = new Transform();
+    const geometry = new Plane(gl, { heightSegments: 10 });
+
+    rendererRef.current = renderer;
+    sceneRef.current = scene;
+    cameraRef.current = camera;
+    geometryRef.current = geometry;
+
+    const resize = () => {
+      screenRef.current = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+
+      renderer.setSize(screenRef.current.width, screenRef.current.height);
+
+      camera.perspective({
+        aspect: gl.canvas.width / gl.canvas.height,
+      });
+
+      const fov = camera.fov * (Math.PI / 180);
+      const height = 2 * Math.tan(fov / 2) * camera.position.z;
+      const width = height * camera.aspect;
+
+      viewportRef.current = { width, height };
+
+      if (mediasRef.current.length) {
+        mediasRef.current.forEach((media) =>
+          media.onResize({
+            screen: screenRef.current,
+            viewport: viewportRef.current,
+          })
+        );
+      }
+    };
+
+    resize();
+
+    const figures = galleryRef.current.querySelectorAll("figure");
+    const medias = Array.from(figures).map((element) =>
+      createMedia({
+        element,
+        geometry,
+        gl,
+        scene,
+        screen: screenRef.current,
+        viewport: viewportRef.current,
+        vertex,
+        fragment,
+      })
+    );
+    mediasRef.current = medias;
+
+    scrollRef.current.current = window.scrollY;
+    scrollRef.current.last = window.scrollY;
+
+    const update = () => {
+      scrollRef.current.target = window.scrollY;
+      scrollRef.current.current = lerp(
+        scrollRef.current.current,
+        scrollRef.current.target,
+        scrollRef.current.ease
+      );
+
+      const direction =
+        scrollRef.current.current > scrollRef.current.last ? "down" : "up";
+
+      mediasRef.current.forEach((media) =>
+        media.update(scrollRef.current, direction)
+      );
+
+      renderer.render({ scene, camera });
+
+      scrollRef.current.last = scrollRef.current.current;
+
+      requestAnimationFrame(update);
+    };
+
+    update();
+
+    window.addEventListener("resize", resize);
+
+
+    return () => {
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <>
+
+      <canvas ref={canvasRef} className="h-screen w-full webgl-canvas" />
+      <div className="gallery1" ref={galleryRef}>
+        <main>
+          <section className="gallery-section">
+            <div className="gallery1 flex flex-col space-y-8"> 
+              {images.map((src, i) => (
+                <figure key={i} className="gallery__item w-full"> 
+                  <img
+                    className="gallery__image w-full h-auto"
+                    src={src}
+                    alt={`Gallery ${i + 1}`}
+                  />
+                </figure>
+              ))}
+            </div>
+          </section>
+        </main>
+      </div>
+    </>
+  );
+}
+
+function createMedia({
+  element,
+  geometry,
+  gl,
+  scene,
+  screen,
+  viewport,
+  vertex,
+  fragment,
+}) {
+  const img = element.querySelector("img");
+  const texture = new Texture(gl, { generateMipmaps: false });
+  const image = new Image();
+  image.crossOrigin = "anonymous";
+  image.src = img.src;
+
+  const state = {
+    plane: null,
+    program: null,
+  };
+
+  const createMesh = () => {
+    const program = new Program(gl, {
+      vertex,
+      fragment,
+      uniforms: {
+        tMap: { value: texture },
+        uPlaneSizes: { value: [0, 0] },
+        uImageSizes: { value: [0, 0] },
+        uViewportSizes: { value: [viewport.width, viewport.height] },
+        uStrength: { value: 0 },
+      },
+      transparent: true,
+    });
+
+    const plane = new Mesh(gl, { geometry, program });
+    plane.setParent(scene);
+
+    state.plane = plane;
+    state.program = program;
+  };
+
+  const updateScale = () => {
+    const rect = element.getBoundingClientRect();
+    state.plane.scale.x = (rect.width / screen.width) * viewport.width;
+    state.plane.scale.y = (rect.height / screen.height) * viewport.height;
+  };
+
+  const updateX = () => {
+    const rect = element.getBoundingClientRect();
+    state.plane.position.x =
+      ((rect.left + rect.width / 2) / screen.width * viewport.width) -
+      viewport.width / 2;
+  };
+
+  const updateY = () => {
+    const rect = element.getBoundingClientRect();
+    state.plane.position.y =
+      viewport.height / 2 -
+      ((rect.top + rect.height / 2) / screen.height * viewport.height);
+  };
+
+  const updateBounds = () => {
+    updateScale();
+    updateX();
+    updateY();
+    state.program.uniforms.uPlaneSizes.value = [
+      state.plane.scale.x,
+      state.plane.scale.y,
+    ];
+  };
+
+  const onResize = (sizes) => {
+    if (sizes) {
+      if (sizes.screen) screen = sizes.screen;
+      if (sizes.viewport) {
+        viewport = sizes.viewport;
+        state.program.uniforms.uViewportSizes.value = [
+          viewport.width,
+          viewport.height,
+        ];
+      }
+    }
+    updateBounds();
+  };
+
+  const update = (scroll, direction) => {
+    updateScale();
+    updateX();
+    updateY();
+
+    // Calculate base strength using smoothed scroll delta
+    const baseStrength = ((scroll.current - scroll.last) / screen.width) * 30; // Amped up from 10 to 30 for more prominent bulge
+
+    // Reverse the strength based on direction
+    state.program.uniforms.uStrength.value =
+      direction === "down" ? -Math.abs(baseStrength) : Math.abs(baseStrength);
+
+    state.program.uniforms.uPlaneSizes.value = [
+      state.plane.scale.x,
+      state.plane.scale.y,
+    ];
+  };
+
+  image.onload = () => {
+    texture.image = image;
+    state.program.uniforms.uImageSizes.value = [
+      image.naturalWidth,
+      image.naturalHeight,
+    ];
+  };
+
+  createMesh();
+  updateBounds();
+
+  return {
+    update,
+    onResize,
+    get plane() {
+      return state.plane;
+    },
+  };
+}
+
+const lerp = (a, b, t) => a + (b - a) * t;
+
+const images = [
+  "/images/background_min.png",
+  "/images/bracesrubberbands.png",
+  "/images/background_min.png",
+  "/images/background_min.png",
+  "/images/background_min.png",
+  "/images/background_min.png",
+];
+function PulsingGrid() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    canvas.width = 180;
+    canvas.height = 180;
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    let time = 0;
+    let lastTime = 0;
+
+    // Grid parameters
+    const gridSize = 5; // 5x5 grid
+    const spacing = 15;
+
+    // Animation parameters
+    const breathingSpeed = 0.5;
+    const waveSpeed = 1.2;
+    const colorPulseSpeed = 1.0;
+
+    let animationFrameId;
+
+    function animate(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const deltaTime = timestamp - lastTime;
+      lastTime = timestamp;
+      time += deltaTime * 0.001;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      
+      const breathingFactor = Math.sin(time * breathingSpeed) * 0.2 + 1.0;
+
+      // Center dot
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 3, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.fill();
+
+      // Draw pulsing grid
+      for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+          if (row === Math.floor(gridSize / 2) && col === Math.floor(gridSize / 2))
+            continue;
+
+          const baseX = (col - (gridSize - 1) / 2) * spacing;
+          const baseY = (row - (gridSize - 1) / 2) * spacing;
+          const distance = Math.sqrt(baseX * baseX + baseY * baseY);
+          const maxDistance = (spacing * Math.sqrt(2) * (gridSize - 1)) / 2;
+          const normalizedDistance = distance / maxDistance;
+          const angle = Math.atan2(baseY, baseX);
+
+          const radialPhase = (time - normalizedDistance * waveSpeed) % 1;
+          const radialWave = Math.sin(radialPhase * Math.PI * 2) * 4;
+
+          const breathingX = baseX * breathingFactor;
+          const breathingY = baseY * breathingFactor;
+
+          const waveX = centerX + breathingX + Math.cos(angle) * radialWave;
+          const waveY = centerY + breathingY + Math.sin(angle) * radialWave;
+
+          const baseSize = 1.5 + (1 - normalizedDistance) * 1.5;
+          const pulseFactor = Math.sin(time * 2 + normalizedDistance * 5) * 0.6 + 1;
+          const size = baseSize * pulseFactor;
+
+          const blueAmount =
+            Math.sin(time * colorPulseSpeed + normalizedDistance * 3) * 0.3 + 0.3;
+          const whiteness = 1 - blueAmount;
+          const r = Math.floor(255 * whiteness + 200 * blueAmount);
+          const g = Math.floor(255 * whiteness + 220 * blueAmount);
+          const b = 255;
+
+          const opacity =
+            0.5 +
+            Math.sin(time * 1.5 + angle * 3) * 0.2 +
+            normalizedDistance * 0.3;
+
+          // Draw connecting lines
+          if (row > 0 && col > 0 && row < gridSize - 1 && col < gridSize - 1) {
+            const neighbors = [
+              { r: row - 1, c: col },
+              { r: row, c: col + 1 },
+              { r: row + 1, c: col },
+              { r: row, c: col - 1 },
+            ];
+            for (const neighbor of neighbors) {
+              const nBaseX = (neighbor.c - (gridSize - 1) / 2) * spacing;
+              const nBaseY = (neighbor.r - (gridSize - 1) / 2) * spacing;
+              const nBreathingX = nBaseX * breathingFactor;
+              const nBreathingY = nBaseY * breathingFactor;
+              const lineDistance = Math.sqrt(
+                Math.pow(col - neighbor.c, 2) + Math.pow(row - neighbor.r, 2)
+              );
+              const lineOpacity =
+                0.1 + Math.sin(time * 1.5 + lineDistance * 2) * 0.05;
+
+              ctx.beginPath();
+              ctx.moveTo(waveX, waveY);
+              ctx.lineTo(centerX + nBreathingX, centerY + nBreathingY);
+              ctx.strokeStyle = `rgba(255, 255, 255, ${lineOpacity})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+
+          // Draw dot
+          ctx.beginPath();
+          ctx.arc(waveX, waveY, size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          ctx.fill();
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    }
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, []);
+
+  return (
+    <div
+      id="pulsing-grid"
+      className="relative w-[180px] h-[180px] flex items-center justify-center"
+    >
+      <canvas ref={canvasRef} className="absolute inset-0" />
+    </div>
+  );
+}
