@@ -1411,7 +1411,7 @@ useEffect(() => {
     ref={navBarRef}
     className="z-10 absolute bottom-0 left-0 w-full pb-2"
   >
-    <div className="flex items-center justify-center text-[15px] text-white tracking-wider uppercase font-neuehaas45 gap-4">
+    <div className="flex items-center justify-center text-[15px] text-white tracking-wider font-neuehaas45 gap-4">
       <span className={activeDot === "results" ? "opacity-100" : "opacity-30"}>●</span>
       <span>Our patient results</span>
       <span className={activeDot === "reviews" ? "opacity-100" : "opacity-30"}>●</span>
@@ -1449,7 +1449,7 @@ useEffect(() => {
           whileDrag={{ scale: 1.03, transition: { duration: 0.1 } }}
           dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
           dragMomentum={false}
-          className="relative bg-[#F2F2F2]/70 backdrop-blur-xl
+          className="relative bg-[#FEFCFF]/50 backdrop-blur-2xl backdrop-saturate-150
                      w-[320px] min-h-[450px] flex flex-col justify-start
                      border border-white cursor-grab active:cursor-grabbing
                      will-change-transform"

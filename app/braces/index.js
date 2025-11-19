@@ -1617,7 +1617,8 @@ void main() {
 
   return (
     <>
-    <LandscapeBackground />
+
+    {/* <LandscapeBackground /> */}
 <section className="relative w-full h-screen overflow-hidden pointer-events-none">
 
 
@@ -1883,7 +1884,7 @@ void main() {
         </div>
 
         <FluidSimulation />
-        {/* <WebGLGalleryApp /> */}
+     
       </div>
       <footer id="scroll-down" className=" relative overflow-hidden h-[100vh]">
         <div className="relative w-full h-full">
@@ -1943,7 +1944,7 @@ const LandscapeBackground = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext('webgl2', { antialias: true, alpha: false });
+    const gl = canvas.getContext('webgl2');
     if (!gl) {
       console.error('WebGL2 not supported');
       return;
@@ -1970,7 +1971,7 @@ out vec4 fragColor;
 
 #define S smoothstep
 #define AA 1
-#define T iTime*1.5
+#define T iTime*1.2 // Slowed down from 4.0 to 0.5 for dreamy pace
 #define PI 3.1415926535897932384626433832795
 #define TAU 6.283185
 
@@ -2106,6 +2107,7 @@ float sdPlane( vec3 p, vec3 n, float h )
 // ================================
 // FBM
 // ===============================
+
 float hash(vec3 p) {
   // Simple fast hash function to scatter values
   p = fract(p * 0.3183099 + vec3(0.1, 0.2, 0.3));
@@ -2244,15 +2246,12 @@ vec2 RayMarch(vec3 ro, vec3 rd, out int mat) {
 }
 
 vec3 GetNormal(vec3 p) {
-    int mat = 0;
-	float d = map(p).x;
-    vec2 e = vec2(.001, 0);
-    vec3 n = d - vec3(
-        map(p-e.xyy).x,
-        map(p-e.yxy).x,
-        map(p-e.yyx));
-    
-    return normalize(n);
+  float h = max(0.00025, 0.5*abs(map(p).x));  // adaptive step
+  vec2 e = vec2(h, 0.0);
+  float dx = map(p + e.xyy).x - map(p - e.xyy).x;
+  float dy = map(p + e.yxy).x - map(p - e.yxy).x;
+  float dz = map(p + e.yyx).x - map(p - e.yyx).x;
+  return normalize(vec3(dx, dy, dz));
 }
 
 vec3 R(vec2 uv, vec3 p, vec3 l, float z) {
@@ -2394,7 +2393,7 @@ case 4:
                     vec3 ref = reflect(rd, n);
                     vec3 spe = vec3(1.0) * smoothstep(0.4,0.6,ref.y);
                      float fre = clamp(1.0+dot(rd, n), 0., 1.);
-                    spe *= f0; + (1.-f0) * pow(fre,5.0);
+                  spe *= f0 + (1.0 - f0) * pow(fre, 5.0);
                     spe *= 6.0;
                     //float shadow = calcSoftshadow(p, l, 0.1, 2.0, 32.0 );
                    // dif *= shadow;
@@ -2538,14 +2537,11 @@ void main() {
     gl.uniform1i(iChannel2Loc, 2);
 
     const resizeCanvas = () => {
-      const dpr = window.devicePixelRatio || 1;
       const { clientWidth, clientHeight } = canvas;
-      canvas.width = clientWidth * dpr;
-      canvas.height = clientHeight * dpr;
-      canvas.style.width = clientWidth + 'px';
-      canvas.style.height = clientHeight + 'px';
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.uniform3f(iResLoc, clientWidth, clientHeight, 1.0); // Logical for shader aspect/UVs
+      canvas.width = clientWidth;
+      canvas.height = clientHeight;
+      gl.viewport(0, 0, clientWidth, clientHeight);
+      gl.uniform3f(iResLoc, clientWidth, clientHeight, 1.0);
     };
 
     resizeCanvas();
@@ -2897,321 +2893,6 @@ const TextEffect = ({
   );
 };
 
-const fragment = `precision highp float;
-
-uniform vec2 uImageSizes;
-uniform vec2 uPlaneSizes;
-uniform sampler2D tMap;
-
-varying vec2 vUv;
-
-void main() {
-  vec2 ratio = vec2(
-    min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
-    min((uPlaneSizes.y / uPlaneSizes.x) / (uImageSizes.y / uImageSizes.x), 1.0)
-  );
-
-  vec2 uv = vec2(
-    vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
-    vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
-  );
-
-  gl_FragColor.rgb = texture2D(tMap, uv).rgb;
-  gl_FragColor.a = 1.0;
-}`;
-
-const vertex = `
-#define PI 3.1415926535897932384626433832795
-
-precision highp float;
-precision highp int;
-
-attribute vec3 position;
-attribute vec2 uv;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-
-uniform float uStrength;
-uniform vec2 uViewportSizes;
-
-varying vec2 vUv;
-
-void main() {
-  vec4 newPosition = modelViewMatrix * vec4(position, 1.0);
-  newPosition.z += sin(newPosition.y / uViewportSizes.y * PI + PI / 2.0) * -uStrength;
-  vUv = uv;
-  gl_Position = projectionMatrix * newPosition;
-}
-`;
-function WebGLGalleryApp() {
-  const canvasRef = useRef(null);
-  const galleryRef = useRef(null);
-  const mediasRef = useRef([]);
-  const scrollRef = useRef({ ease: 0.05, current: 0, target: 0, last: 0 });
-  const rendererRef = useRef();
-  const sceneRef = useRef();
-  const cameraRef = useRef();
-  const geometryRef = useRef();
-  const viewportRef = useRef();
-  const screenRef = useRef();
-  const galleryHeightRef = useRef();
-
-  useEffect(() => {
-    const renderer = new Renderer({ canvas: canvasRef.current, alpha: true });
-    const gl = renderer.gl;
-    const camera = new Camera(gl);
-    camera.position.z = 5;
-    const scene = new Transform();
-    const geometry = new Plane(gl, { heightSegments: 10 });
-
-    rendererRef.current = renderer;
-    sceneRef.current = scene;
-    cameraRef.current = camera;
-    geometryRef.current = geometry;
-
-    const resize = () => {
-      screenRef.current = {
-        width: window.innerWidth,
-        height: window.innerHeight,
-      };
-
-      renderer.setSize(screenRef.current.width, screenRef.current.height);
-
-      camera.perspective({
-        aspect: gl.canvas.width / gl.canvas.height,
-      });
-
-      const fov = camera.fov * (Math.PI / 180);
-      const height = 2 * Math.tan(fov / 2) * camera.position.z;
-      const width = height * camera.aspect;
-
-      viewportRef.current = { width, height };
-
-      const galleryBounds = galleryRef.current.getBoundingClientRect();
-      galleryHeightRef.current = galleryBounds.height;
-
-      if (mediasRef.current.length) {
-        mediasRef.current.forEach((media) =>
-          media.onResize({
-            screen: screenRef.current,
-            viewport: viewportRef.current,
-          })
-        );
-      }
-    };
-
-    resize();
-
-    const figures = galleryRef.current.querySelectorAll("figure");
-    const medias = Array.from(figures).map((element) =>
-      createMedia({
-        element,
-        geometry,
-        gl,
-        scene,
-        screen: screenRef.current,
-        viewport: viewportRef.current,
-        vertex,
-        fragment,
-      })
-    );
-    mediasRef.current = medias;
-
-    const update = () => {
-      scrollRef.current.current = lerp(
-        scrollRef.current.current,
-        scrollRef.current.target,
-        scrollRef.current.ease
-      );
-
-      const direction =
-        scrollRef.current.current > scrollRef.current.last ? "down" : "up";
-
-      mediasRef.current.forEach((media) =>
-        media.update(scrollRef.current, direction)
-      );
-
-      renderer.render({ scene, camera });
-
-      scrollRef.current.last = scrollRef.current.current;
-
-      requestAnimationFrame(update);
-    };
-
-    update();
-
-    window.addEventListener("resize", resize);
-    window.addEventListener("wheel", (e) => {
-      const normalized = NormalizeWheel(e);
-      scrollRef.current.target += normalized.pixelY * 0.5;
-
-      const galleryHeight = galleryRef.current.getBoundingClientRect().height;
-      const maxScroll = galleryHeight - window.innerHeight;
-      scrollRef.current.target = Math.max(
-        0,
-        Math.min(maxScroll, scrollRef.current.target)
-      );
-    });
-
-    return () => {
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return (
-    <>
-      <canvas ref={canvasRef} className="h-screen w-full webgl-canvas" />
-      <div className="gallery1" ref={galleryRef}>
-        <main>
-          <section className="gallery-section">
-            <div className="gallery1">
-              {images.map((src, i) => (
-                <figure key={i} className="gallery__item">
-                  <img
-                    className="gallery__image"
-                    src={src}
-                    alt={`Gallery ${i + 1}`}
-                  />
-                </figure>
-              ))}
-            </div>
-          </section>
-        </main>
-      </div>
-    </>
-  );
-}
-
-function createMedia({
-  element,
-  geometry,
-  gl,
-  scene,
-  screen,
-  viewport,
-  vertex,
-  fragment,
-}) {
-  const img = element.querySelector("img");
-  const bounds = element.getBoundingClientRect();
-  const texture = new Texture(gl, { generateMipmaps: false });
-  const image = new Image();
-  image.crossOrigin = "anonymous";
-  image.src = img.src;
-
-  const state = {
-    plane: null,
-    program: null,
-  };
-
-  const createMesh = () => {
-    const program = new Program(gl, {
-      vertex,
-      fragment,
-      uniforms: {
-        tMap: { value: texture },
-        uPlaneSizes: { value: [0, 0] },
-        uImageSizes: { value: [0, 0] },
-        uViewportSizes: { value: [viewport.width, viewport.height] },
-        uStrength: { value: 0 },
-      },
-      transparent: true,
-    });
-
-    const plane = new Mesh(gl, { geometry, program });
-    plane.setParent(scene);
-
-    state.plane = plane;
-    state.program = program;
-  };
-
-  const updateScale = () => {
-    state.plane.scale.x = (viewport.width * bounds.width) / screen.width;
-    state.plane.scale.y = (viewport.height * bounds.height) / screen.height;
-  };
-
-  const updateX = (x = 0) => {
-    state.plane.position.x =
-      -(viewport.width / 2) +
-      state.plane.scale.x / 2 +
-      ((bounds.left - x) / screen.width) * viewport.width;
-  };
-
-  const updateY = (y = 0) => {
-    state.plane.position.y =
-      viewport.height / 2 -
-      state.plane.scale.y / 2 -
-      ((bounds.top - y) / screen.height) * viewport.height;
-  };
-
-  const onResize = (sizes) => {
-    if (sizes) {
-      if (sizes.screen) screen = sizes.screen;
-      if (sizes.viewport) {
-        viewport = sizes.viewport;
-        state.program.uniforms.uViewportSizes.value = [
-          viewport.width,
-          viewport.height,
-        ];
-      }
-    }
-    updateBounds();
-  };
-
-  const updateBounds = () => {
-    updateScale();
-    updateX();
-    updateY();
-    state.program.uniforms.uPlaneSizes.value = [
-      state.plane.scale.x,
-      state.plane.scale.y,
-    ];
-  };
-
-  const update = (scroll, direction) => {
-    updateScale();
-    updateX();
-    updateY(scroll.current);
-
-    // Calculate base strength
-    const baseStrength = ((scroll.current - scroll.last) / screen.width) * 10;
-
-    // Reverse the strength based on direction
-    state.program.uniforms.uStrength.value =
-      direction === "down" ? -Math.abs(baseStrength) : Math.abs(baseStrength);
-  };
-
-  image.onload = () => {
-    texture.image = image;
-    state.program.uniforms.uImageSizes.value = [
-      image.naturalWidth,
-      image.naturalHeight,
-    ];
-  };
-
-  createMesh();
-  updateBounds();
-
-  return {
-    update,
-    onResize,
-    get plane() {
-      return state.plane;
-    },
-  };
-}
-
-const lerp = (a, b, t) => a + (b - a) * t;
-
-const images = [
-  "/images/background_min.png",
-  "/images/bracesrubberbands.png",
-  "/images/adobetest.png",
-  "/images/glassflower.jpeg",
-  "/images/glassflower.jpeg",
-  "/images/image6.jpg",
-];
 function PulsingGrid() {
   const canvasRef = useRef(null);
 

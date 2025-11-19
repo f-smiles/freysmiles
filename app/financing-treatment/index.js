@@ -1179,7 +1179,7 @@ ScrollTrigger.create({
     <>
 
 
-      <div className="relative -[var(--color-bg)] text-[var(--color-text)]">
+      <div className="relative bg-[#FEFCFF]">
 
 
         <CrossCursor />
@@ -1242,7 +1242,7 @@ While any orthodontist can move teeth into place, we focus on how alignment inte
     </p>
   </div>
 </section>
-<section
+{/* <section
   ref={scrollAwayRef}
   className="relative w-screen pt-[160px] overflow-hidden flex flex-col"
 >
@@ -1291,7 +1291,7 @@ While any orthodontist can move teeth into place, we focus on how alignment inte
         poster={work.img || "/images/background_min.png"} 
       >
         <source src={work.video || "/videos/cbctscan.mp4"} type="video/mp4" />
-        {/* Fallback to image if video fails */}
+   
         <img src="/images/background_min.png" alt={work.name} className="w-full h-full object-cover" />
       </video>
     ) : (
@@ -1317,23 +1317,13 @@ While any orthodontist can move teeth into place, we focus on how alignment inte
   </div>
 </div>
   ))}
-</section>
+</section> */}
   <div className="bg-[#E2DD70] min-h-screen relative text-[#f6f1df] overflow-hidden flex flex-col justify-start">
-
-  <div className="absolute top-[25vh] left-1/2 -translate-x-1/2 flex justify-center text-[22vw] font-black uppercase tracking-tight text-[#f6f1df]/10 select-none z-0">
-    <span className="mx-6">W</span>
-    <span className="mx-6">O</span>
-    <span className="mx-6">R</span>
-    <span className="mx-6">K</span>
-    <span className="mx-6">S</span>
-  </div>
-
-
 
   <div className="bg-[#E2DD70] relative z-10 mt-[15vh] pl-[8vw]">
 
 
-    {/* Gradient preview block */}
+    {/* Gradient */}
     <div className="mt-[-2vh] w-[60vw] h-[55vh] bg-gradient-to-br from-[#ffb98d] via-[#f9c0a0] to-[#e5cec7] flex items-end p-10">
      
     </div>
@@ -1350,7 +1340,7 @@ While any orthodontist can move teeth into place, we focus on how alignment inte
 
       <rect width="200" height="200" fill="#f8f8f8" />
 
-      {/* Circle cutout using mask */}
+
       <mask id="cutout-mask">
         <rect width="200" height="200" fill="white" />
         <circle cx="100" cy="100" r="100" fill="black" />
@@ -2100,7 +2090,265 @@ While any orthodontist can move teeth into place, we focus on how alignment inte
   );
 };
 
+const SkyShader = () => {
+  const canvasRef = useRef(null);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Set canvas size explicitly
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+
+    const gl = canvas.getContext('webgl');
+    if (!gl) {
+      console.error('WebGL not supported');
+      return;
+    }
+
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    // Vertex shader source
+    const vertexShaderSource = `
+      attribute vec2 position;
+      void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
+      }
+    `;
+
+    // Full sky fragment shader
+    const fragmentShaderSource = `
+      precision mediump float;
+
+      uniform vec3 iResolution;
+      uniform float iTime;
+
+      const float PI = 3.14159265359;
+      const float MAX = 10000.0;
+
+      float radians(float deg) {
+        return deg * PI / 180.0;
+      }
+
+      vec2 ray_vs_sphere( vec3 p, vec3 dir, float r ) {
+        float b = dot( p, dir );
+        float c = dot( p, p ) - r * r;
+        float d = b * b - c;
+        if ( d < 0.0 ) {
+          return vec2( MAX, -MAX );
+        }
+        d = sqrt( d );
+        return vec2( -b - d, -b + d );
+      }
+
+      float phase_mie( float g, float c, float cc ) {
+        float gg = g * g;
+        float a = ( 1.0 - gg ) * ( 1.0 + cc );
+        float b = 1.0 + gg - 2.0 * g * c;
+        b *= sqrt( b );
+        b *= 2.0 + gg;
+        return ( 3.0 / 8.0 / PI ) * a / b;
+      }
+
+      float phase_ray( float cc ) {
+        return ( 3.0 / 16.0 / PI ) * ( 1.0 + cc );
+      }
+
+      const float R_INNER = 1.0;
+      const float R = R_INNER + 0.5;
+      const int NUM_OUT_SCATTER = 4;  // Low for perf
+      const int NUM_IN_SCATTER = 20;  // Low for perf
+
+      float density( vec3 p, float ph ) {
+        return exp( -max( length( p ) - R_INNER, 0.0 ) / ph );
+      }
+
+      float optic( vec3 p, vec3 q, float ph ) {
+        vec3 s = ( q - p ) / float( NUM_OUT_SCATTER );
+        vec3 v = p + s * 0.5;
+        float sum = 0.0;
+        for ( int i = 0; i < NUM_OUT_SCATTER; i++ ) {
+          sum += density( v, ph );
+          v += s;
+        }
+        sum *= length( s );
+        return sum;
+      }
+
+      vec3 in_scatter( vec3 o, vec3 dir, vec2 e, vec3 l ) {
+        const float ph_ray = 0.05;
+        const float ph_mie = 0.02;
+       
+        const vec3 k_ray = vec3( 3.8, 13.5, 33.1 );
+        const vec3 k_mie = vec3( 21.0 );
+        const float k_mie_ex = 1.1;
+       
+        vec3 sum_ray = vec3( 0.0 );
+        vec3 sum_mie = vec3( 0.0 );
+       
+        float n_ray0 = 0.0;
+        float n_mie0 = 0.0;
+       
+        float len = ( e.y - e.x ) / float( NUM_IN_SCATTER );
+        vec3 s = dir * len;
+        vec3 v = o + dir * ( e.x + len * 0.5 );
+       
+        for ( int i = 0; i < NUM_IN_SCATTER; i++, v += s ) {
+          float d_ray = density( v, ph_ray ) * len;
+          float d_mie = density( v, ph_mie ) * len;
+         
+          n_ray0 += d_ray;
+          n_mie0 += d_mie;
+         
+          vec2 f = ray_vs_sphere( v, l, R );
+          vec3 u = v + l * f.y;
+         
+          float n_ray1 = optic( v, u, ph_ray );
+          float n_mie1 = optic( v, u, ph_mie );
+          vec3 att = exp( - ( n_ray0 + n_ray1 ) * k_ray - ( n_mie0 + n_mie1 ) * k_mie * k_mie_ex );
+         
+          sum_ray += d_ray * att;
+          sum_mie += d_mie * att;
+        }
+        float c = dot( dir, -l );
+        float cc = c * c;
+        vec3 scatter =
+            sum_ray * k_ray * phase_ray( cc ) +
+          sum_mie * k_mie * phase_mie( -0.78, c, cc );
+       
+        return 100.0 * scatter;  // Bumped up for more visible blue
+      }
+
+      mat3 rot3xy( vec2 angle ) {
+        vec2 c = cos( angle );
+        vec2 s = sin( angle );
+        return mat3(
+          c.y , 0.0, -s.y,
+          s.y * s.x, c.x, c.y * s.x,
+          s.y * c.x, -s.x, c.y * c.x
+        );
+      }
+
+      vec3 ray_dir( float fov, vec2 size, vec2 pos ) {
+        vec2 xy = pos - size * 0.5;
+        float cot_half_fov = tan( radians( 90.0 - fov * 0.5 ) );
+        float z = size.y * 0.5 * cot_half_fov;
+        return normalize( vec3( xy, -z ) );
+      }
+
+      void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+        vec3 dir = ray_dir( 45.0, iResolution.xy, fragCoord );
+        vec3 eye = vec3( 0.0, 0.0, 3.0 );
+        mat3 rot = rot3xy( vec2( 0.0, iTime * 0.5 ) );
+        dir = rot * dir;
+        eye = rot * eye;
+        vec3 l = vec3( 0.0, 0.0, 1.0 );
+     
+        vec2 e = ray_vs_sphere( eye, dir, R );
+        if ( e.x > e.y ) {
+          fragColor = vec4( 0.0, 0.0, 0.1, 1.0 );  // Subtle space blue fallback
+          return;
+        }
+        vec2 f = ray_vs_sphere( eye, dir, R_INNER );
+        e.y = min( e.y, f.x );
+        vec3 I = in_scatter( eye, dir, e, l );
+        fragColor = vec4( pow( max(I, 0.0), vec3( 1.0 / 2.2 ) ), 1.0 );
+      }
+
+      void main() {
+        mainImage(gl_FragColor, gl_FragCoord.xy);
+      }
+    `;
+
+    // Compile function
+    const compileShader = (source, type) => {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        const error = gl.getShaderInfoLog(shader);
+        console.error('Shader compile error:', error);
+        gl.deleteShader(shader);
+        return null;
+      }
+      return shader;
+    };
+
+    const vs = compileShader(vertexShaderSource, gl.VERTEX_SHADER);
+    if (!vs) return;
+
+    const fs = compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER);
+    if (!fs) return;
+
+    const program = gl.createProgram();
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('Program link error:', gl.getProgramInfoLog(program));
+      return;
+    }
+
+    gl.useProgram(program);
+
+    // Quad buffer
+    const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    const positionLoc = gl.getAttribLocation(program, 'position');
+    gl.enableVertexAttribArray(positionLoc);
+    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+
+    // Uniforms
+    const resolutionLoc = gl.getUniformLocation(program, 'iResolution');
+    const timeLoc = gl.getUniformLocation(program, 'iTime');
+
+    // Resize listener
+    const handleResize = () => {
+      resizeCanvas();
+      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    };
+    window.addEventListener('resize', handleResize);
+
+    // Render loop
+    let startTime = Date.now();
+    const render = (time) => {
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      
+      const currentTime = (Date.now() - startTime) / 1000;
+      gl.uniform3f(resolutionLoc, gl.canvas.width, gl.canvas.height, 1);
+      gl.uniform1f(timeLoc, currentTime);
+
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+      requestAnimationFrame(render);
+    };
+    render();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      gl.deleteProgram(program);
+      gl.deleteShader(vs);
+      gl.deleteShader(fs);
+      gl.deleteBuffer(buffer);
+    };
+  }, []);
+
+  return (
+    <div style={{ width: '100vw', height: '100vh', margin: 0, padding: 0 }}>
+      <canvas
+        ref={canvasRef}
+        style={{ display: 'block', width: '100%', height: '100%' }}
+      />
+    </div>
+  );
+};
 
 export default FinancingTreatment;
 
@@ -2411,144 +2659,9 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 const images = [
   "/images/background_min.png",
-  "/images/bracesrubberbands.png",
+  "/images/background_min.png",
   "/images/background_min.png",
   "/images/background_min.png",
   "/images/background_min.png",
   "/images/background_min.png",
 ];
-function PulsingGrid() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    canvas.width = 180;
-    canvas.height = 180;
-
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    let time = 0;
-    let lastTime = 0;
-
-    // Grid parameters
-    const gridSize = 5; // 5x5 grid
-    const spacing = 15;
-
-    // Animation parameters
-    const breathingSpeed = 0.5;
-    const waveSpeed = 1.2;
-    const colorPulseSpeed = 1.0;
-
-    let animationFrameId;
-
-    function animate(timestamp) {
-      if (!lastTime) lastTime = timestamp;
-      const deltaTime = timestamp - lastTime;
-      lastTime = timestamp;
-      time += deltaTime * 0.001;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      
-      const breathingFactor = Math.sin(time * breathingSpeed) * 0.2 + 1.0;
-
-      // Center dot
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, 3, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-      ctx.fill();
-
-      // Draw pulsing grid
-      for (let row = 0; row < gridSize; row++) {
-        for (let col = 0; col < gridSize; col++) {
-          if (row === Math.floor(gridSize / 2) && col === Math.floor(gridSize / 2))
-            continue;
-
-          const baseX = (col - (gridSize - 1) / 2) * spacing;
-          const baseY = (row - (gridSize - 1) / 2) * spacing;
-          const distance = Math.sqrt(baseX * baseX + baseY * baseY);
-          const maxDistance = (spacing * Math.sqrt(2) * (gridSize - 1)) / 2;
-          const normalizedDistance = distance / maxDistance;
-          const angle = Math.atan2(baseY, baseX);
-
-          const radialPhase = (time - normalizedDistance * waveSpeed) % 1;
-          const radialWave = Math.sin(radialPhase * Math.PI * 2) * 4;
-
-          const breathingX = baseX * breathingFactor;
-          const breathingY = baseY * breathingFactor;
-
-          const waveX = centerX + breathingX + Math.cos(angle) * radialWave;
-          const waveY = centerY + breathingY + Math.sin(angle) * radialWave;
-
-          const baseSize = 1.5 + (1 - normalizedDistance) * 1.5;
-          const pulseFactor = Math.sin(time * 2 + normalizedDistance * 5) * 0.6 + 1;
-          const size = baseSize * pulseFactor;
-
-          const blueAmount =
-            Math.sin(time * colorPulseSpeed + normalizedDistance * 3) * 0.3 + 0.3;
-          const whiteness = 1 - blueAmount;
-          const r = Math.floor(255 * whiteness + 200 * blueAmount);
-          const g = Math.floor(255 * whiteness + 220 * blueAmount);
-          const b = 255;
-
-          const opacity =
-            0.5 +
-            Math.sin(time * 1.5 + angle * 3) * 0.2 +
-            normalizedDistance * 0.3;
-
-          // Draw connecting lines
-          if (row > 0 && col > 0 && row < gridSize - 1 && col < gridSize - 1) {
-            const neighbors = [
-              { r: row - 1, c: col },
-              { r: row, c: col + 1 },
-              { r: row + 1, c: col },
-              { r: row, c: col - 1 },
-            ];
-            for (const neighbor of neighbors) {
-              const nBaseX = (neighbor.c - (gridSize - 1) / 2) * spacing;
-              const nBaseY = (neighbor.r - (gridSize - 1) / 2) * spacing;
-              const nBreathingX = nBaseX * breathingFactor;
-              const nBreathingY = nBaseY * breathingFactor;
-              const lineDistance = Math.sqrt(
-                Math.pow(col - neighbor.c, 2) + Math.pow(row - neighbor.r, 2)
-              );
-              const lineOpacity =
-                0.1 + Math.sin(time * 1.5 + lineDistance * 2) * 0.05;
-
-              ctx.beginPath();
-              ctx.moveTo(waveX, waveY);
-              ctx.lineTo(centerX + nBreathingX, centerY + nBreathingY);
-              ctx.strokeStyle = `rgba(255, 255, 255, ${lineOpacity})`;
-              ctx.lineWidth = 0.5;
-              ctx.stroke();
-            }
-          }
-
-          // Draw dot
-          ctx.beginPath();
-          ctx.arc(waveX, waveY, size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-          ctx.fill();
-        }
-      }
-
-      animationFrameId = requestAnimationFrame(animate);
-    }
-
-    animationFrameId = requestAnimationFrame(animate);
-
-    return () => cancelAnimationFrame(animationFrameId);
-  }, []);
-
-  return (
-    <div
-      id="pulsing-grid"
-      className="relative w-[180px] h-[180px] flex items-center justify-center"
-    >
-      <canvas ref={canvasRef} className="absolute inset-0" />
-    </div>
-  );
-}

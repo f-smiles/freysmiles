@@ -25,10 +25,10 @@ export const items = [
   {
     // src: '/images/members/edit/elizabeth-blurry-distortion-effect-1.jpg',
     // hoverSrc: '/images/members/orig/elizabeth.png',
-   src: '/images/team_members/elizabethaao.png',
+   src: '/images/team_members/stefhany.png',
     hoverSrc: '/images/test/hover.jpg',
-    role: 'Patient Services',
-    name: 'Elizabeth',
+    role: 'Specialized Orthodontic Assistant',
+    name: 'Stefhany',
   },
   {
     // src: '/images/members/edit/lexi-blurry-distortion-effect.jpg',
@@ -41,10 +41,10 @@ export const items = [
   {
     // src: '/images/members/edit/nicole-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/nicolle.png',
-    src: '/images/team_members/nicollewaving.png',
+    src: '/images/team_members/alexisbg.png',
     hoverSrc: '/images/test/hover.jpg',
-    role: 'Specialized Orthodontic Assistant',
-    name: 'Nicolle',
+    role: 'Records Technician',
+    name: 'Alexis',
   },
 ]
 

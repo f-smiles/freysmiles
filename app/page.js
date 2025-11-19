@@ -1,5 +1,10 @@
 "use client";
-
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import {
+  Line2,
+  LineMaterial,
+  LineGeometry,
+} from "three-stdlib";
 import { Water } from "three/examples/jsm/objects/Water";
 import { Sky } from "three/examples/jsm/objects/Sky";
 import { Curtains, Plane } from "curtainsjs";
@@ -51,6 +56,8 @@ import {
   useGLTF,
   shaderMaterial,
   useFBO,
+  Line,
+  useTexture
 } from "@react-three/drei";
 import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
 
@@ -204,27 +211,504 @@ function PortalScene() {
   return null;
 }
 
+
+class OceanPortalMaterial extends THREE.ShaderMaterial {
+  constructor(noiseTex) {
+    super({
+      uniforms: {
+        iTime: { value: 0 },
+        iResolution: { value: new THREE.Vector3() },
+        iChannel0: { value: noiseTex },
+      },
+
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+
+      fragmentShader: `
+uniform float iTime;
+uniform vec3 iResolution;
+varying vec2 vUv;
+
+#define FAR 50.0
+#define EPS 0.002
+#define OCEAN_OCT 12
+#define CLOUD_OCT 6
+
+vec3 CAMERA_POS = vec3(-0.4, 0.87, 0.3);
+vec3 CAMERA_LOOK = vec3(0.0, -0.3, 0.2);
+vec2 WIND = vec2(0.2, -0.1);
+
+const vec3 SUN = normalize(vec3(0.3, -0.4, 0.01));
+const vec3 SUN_C = vec3(0.8, 0.6, 0.4) * 3.7;
+
+
+// ---------------------------------------------------------
+//  MATH HASH (replaces texture-based hash)
+// ---------------------------------------------------------
+
+vec2 hash(vec2 p) {
+    vec2 k = vec2(0.3183099, 0.3678794);  // 1/pi, 1/e
+    p = fract(p * k * 43758.5453);
+    p += dot(p, p.yx + 19.19);
+    return fract(vec2(p.x * p.y, p.x + p.y));
+}
+
+
+// ---------------------------------------------------------
+//  SIMPLEX-ish 2D NOISE
+// ---------------------------------------------------------
+
+float noise(vec2 p)
+{
+    const float K1 = 0.366025404;
+    const float K2 = 0.211324865;
+
+    vec2 i = floor(p + (p.x+p.y)*K1);
+    vec2 a = p - i + (i.x+i.y)*K2;
+
+    float m = step(a.y,a.x);
+    vec2 o = vec2(m, 1.0-m);
+
+    vec2 b = a - o + K2;
+    vec2 c = a - 1.0 + 2.0*K2;
+
+    float h0 = max(0.5 - dot(a,a), 0.0);
+    float h1 = max(0.5 - dot(b,b), 0.0);
+    float h2 = max(0.5 - dot(c,c), 0.0);
+
+    h0 *= h0; h0 *= h0;
+    h1 *= h1; h1 *= h1;
+    h2 *= h2; h2 *= h2;
+
+    float n0 = dot(a, hash(i));
+    float n1 = dot(b, hash(i+o));
+    float n2 = dot(c, hash(i+1.0));
+
+    return dot(vec3(n0,n1,n2), vec3(h0,h1,h2)) * 70.0;
+}
+
+
+// ---------------------------------------------------------
+//  OCEAN FBM
+// ---------------------------------------------------------
+
+float ocean_height(vec2 p)
+{
+    float sc = 0.15;
+    float am = 0.4;
+    float n = 0.0;
+
+    for(int i = 0; i < OCEAN_OCT; i++)
+    {
+        n += -abs(noise(p * sc + float(i) + WIND * iTime)) * am;
+
+        float cs = cos(float(i)*0.3);
+        float sn = sin(float(i)*0.3);
+        p = vec2(p.x * cs - p.y * sn, p.x * sn + p.y * cs);
+
+        sc *= 1.45;
+        am *= 0.6;
+    }
+    return n;
+}
+
+vec3 ocean_nrm(vec2 p)
+{
+    return normalize(vec3(
+        ocean_height(p + vec2(-EPS,0.0)) - ocean_height(p + vec2(EPS,0.0)),
+        ocean_height(p + vec2(0.0,-EPS)) - ocean_height(p + vec2(0.0,EPS)),
+        2.0 * EPS
+    ));
+}
+
+
+// ---------------------------------------------------------
+//  SKY
+// ---------------------------------------------------------
+
+float cloud_d(vec3 p)
+{
+    vec2 cloud_p = p.xy / p.z * 0.4;
+
+    float sc = 0.3;
+    float am = 0.8;
+    float n = 0.0;
+
+    for(int i = 0; i < CLOUD_OCT; i++)
+    {
+        n += noise(cloud_p * sc + float(i) + WIND * 0.5 * iTime) * am;
+
+        float cs = cos(float(i)*0.3);
+        float sn = sin(float(i)*0.3);
+        cloud_p = vec2(cloud_p.x * cs - cloud_p.y * sn,
+                       cloud_p.x * sn + cloud_p.y * cs);
+
+        sc *= 1.3;
+        am *= 0.73;
+    }
+
+    return n + 0.3;
+}
+
+vec3 shade_sky(vec3 p, bool clouds)
+{
+    p = normalize(p);
+
+    vec3 col = mix(vec3(0.6,0.6,0.85), vec3(0.55,0.55,0.85), p.z) * 1.4;
+    col = mix(vec3(0.8,0.5,0.54), col, clamp(p.z+0.4,0.0,1.0)) * 0.8;
+
+    float sun = dot(p, SUN);
+    col = mix(col, SUN_C, min(max(sun - 0.996, 0.0) * 500.0, 1.0));
+
+    if (clouds && p.z > 0.0)
+    {
+        float cl = cloud_d(p);
+        float cl2 = cloud_d(p - SUN * 0.3);
+        float l = cl - cl2;
+
+        vec3 ccol = mix(vec3(0.65,0.7,0.7) * SUN_C,
+                        vec3(0.4),
+                        l - min(max(sun - 0.8, 0.0) * 11.0, 1.0)) * 0.6;
+
+        col = mix(col, ccol, clamp(cl,0.0,1.0) * 0.6);
+    }
+
+    return col * vec3(0.9,1.0,1.0);
+}
+
+
+// ---------------------------------------------------------
+//  OCEAN
+// ---------------------------------------------------------
+
+vec3 shade_ocean(vec3 pos, vec3 dir, float h)
+{
+    vec3 col = vec3(0.2,0.2,0.7) * 0.4;
+    vec3 nrm = ocean_nrm(pos.xy);
+
+    vec3 refr = refract(dir, nrm, 1.03);
+    float fr = pow(1.0 - dot(dir,nrm), 5.0);
+    vec3 rc = shade_sky(pos + reflect(nrm,dir), true) * 0.96;
+
+    vec3 rrc = mix(col,
+                   shade_sky(pos + refr, false) * 0.9,
+                   clamp(refr.z + 0.8, 0.0, 1.0));
+
+    col = mix(rrc, rc, fr);
+
+    float foam = min(max(h + 0.16, 0.0) * 20.0, 1.0) * nrm.z * 0.6;
+    vec3 fc = vec3(0.75) + SUN_C * clamp(dot(SUN,nrm), 0.0, 1.0);
+
+    col = mix(col, fc, foam);
+
+    return col * vec3(1.0, 0.9, 0.9);
+}
+
+
+// ---------------------------------------------------------
+//  RAYMARCH
+// ---------------------------------------------------------
+
+vec2 march_ocean(vec3 p, vec3 d)
+{
+    float dep = 0.0;
+    float h = 0.0;
+    float eps = EPS;
+
+    while (dep < FAR)
+    {
+        vec3 pos = p + d * dep;
+        h = ocean_height(pos.xy);
+
+        float dist = pos.z - h;
+        if (dist < eps)
+            return vec2(dep, h);
+
+        eps *= 1.15;
+        dep += dist;
+    }
+
+    return vec2(FAR, 0.0);
+}
+
+
+// ---------------------------------------------------------
+//  MAIN
+// ---------------------------------------------------------
+
+void main()
+{
+    vec2 fragCoord = vUv * iResolution.xy;
+
+CAMERA_POS.z = 0.1;
+CAMERA_LOOK.z = 0.1;
+
+    // Build camera ray
+    vec2 xy = fragCoord - iResolution.xy * 0.5;
+    float z = iResolution.y / tan(radians(85.0) / 2.0);
+    vec3 local_dir = normalize(vec3(xy, -z));
+
+    // View matrix
+    vec3 f = normalize(CAMERA_LOOK - CAMERA_POS);
+    vec3 s = normalize(cross(f, vec3(0,0,1)));
+    vec3 u = cross(s, f);
+
+    mat3 view = mat3(s, u, -f);
+    vec3 dir = view * local_dir;
+
+    vec2 res = march_ocean(CAMERA_POS, dir);
+    float dep = res.x;
+    vec3 pos = CAMERA_POS + dir * dep;
+
+    vec3 col = shade_sky(dir, false);
+
+    if (dep < FAR)
+        col = mix(shade_ocean(pos, dir, res.y), col, dep/FAR);
+    else
+        col = shade_sky(dir, true);
+
+    col *= vec3(1.19, 0.9, 1.14) * 0.7;
+    col = pow(col, vec3(1.0/2.1));
+
+    gl_FragColor = vec4(col, 1.0);
+}
+      `,
+    });
+  }
+}
+
+extend({ OceanPortalMaterial });
+const OceanPortalInterior = ({ width, height }) => {
+  const matRef = useRef();
+  const noise = useTexture("/images/noiseLUT.png");
+
+  useEffect(() => {
+    if (matRef.current) {
+      matRef.current.uniforms.iChannel0.value = noise;
+    }
+  }, [noise]);
+
+  useFrame(({ clock, size }) => {
+    const mat = matRef.current;
+    if (!mat) return;
+    mat.uniforms.iTime.value = clock.elapsedTime;
+    mat.uniforms.iResolution.value.set(size.width, size.height, 1);
+  });
+
+  return (
+    <mesh position={[0, 0, -0.05]}>
+      <planeGeometry args={[width, height]} />
+      <oceanPortalMaterial ref={matRef} args={[noise]} />
+    </mesh>
+  );
+};
+
+
+class NeonMaterial extends THREE.ShaderMaterial {
+  constructor() {
+    super({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+
+      uniforms: {
+        uColor: { value: new THREE.Color('#ff4fd8') },
+        uIntensity: { value: 5.0 },
+        uTime: { value: 0 },
+      },
+
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+
+      fragmentShader: `
+        uniform vec3 uColor;
+        uniform float uIntensity;
+        uniform float uTime;
+        varying vec2 vUv;
+
+        void main() {
+          float dist = length(vUv - 0.5);
+
+          float glow = 1.0 / (dist * 8.0 + 0.2);
+          glow *= 0.90 + 0.10 * sin(uTime * 5.0 + dist * 20.0);
+
+          vec3 col = uColor * glow * uIntensity;
+          gl_FragColor = vec4(col, glow);
+        }
+      `,
+    });
+  }
+}
+
+extend({ NeonMaterial });
+
+
+const BeepleNeonBar = ({ length, thickness, position, rotation }) => {
+  const matRef = useRef();
+
+  useFrame((state) => {
+    if (!matRef.current) return;
+    const t = state.clock.elapsedTime;
+    matRef.current.uniforms.uTime.value = t;
+    matRef.current.uniforms.uIntensity.value = 2.0 + Math.sin(t * 2.0) * 0.8;
+  });
+
+  return (
+    <mesh position={position} rotation={rotation}>
+      <planeGeometry args={[length, thickness]} />
+      <neonMaterial ref={matRef} />
+    </mesh>
+  );
+};
+
+
+const BeepleNeonPortal = () => {
+  const W = 4.0;
+  const H = 8.0;
+  const T = 0.5;
+
+  const PORTAL_Y = 6.5;   
+  const PORTAL_Z = 10.0; 
+
+  return (
+    <group position={[0, PORTAL_Y, PORTAL_Z]}>
+
+   <OceanPortalInterior width={W} height={H} />
+
+
+      <BeepleNeonBar length={W} thickness={T} position={[0,  H/2, 0]} />
+      <BeepleNeonBar length={W} thickness={T} position={[0, -H/2, 0]} />
+
+      <BeepleNeonBar
+        length={H}
+        thickness={T}
+        position={[-W/2, 0, 0]}
+        rotation={[0, 0, Math.PI / 2]}
+      />
+
+      <BeepleNeonBar
+        length={H}
+        thickness={T}
+        position={[ W/2, 0, 0]}
+        rotation={[0, 0, Math.PI / 2]}
+      />
+    </group>
+  );
+};
+
+//  function OceanScene() {
+//   const { scene, camera, gl, size } = useThree();
+
+//   // --- BLOOM COMPOSER ---
+//   const composer = useMemo(() => {
+//     const comp = new EffectComposer(gl);
+//     comp.addPass(new RenderPass(scene, camera));
+//     const bloom = new UnrealBloomPass(
+//       new THREE.Vector2(size.width, size.height),
+//       2.4, // strength
+//       0.8, // radius
+//       0.0  // threshold
+//     );
+//     comp.addPass(bloom);
+//     return comp;
+//   }, [scene, camera, gl, size]);
+
+//   // --- CREATE INFINITY CUBE ---
+//   const groupRef = useRef();
+
+//   useEffect(() => {
+//     scene.clear();
+
+//     const baseGeo = new THREE.BoxGeometry(1, 1, 1);
+//     const edgeGeo = new THREE.EdgesGeometry(baseGeo); // ✅ no diagonals
+//     const baseMat = new THREE.LineBasicMaterial({
+//       color: 0x00ccff,
+//       toneMapped: false,
+//     });
+
+//     const group = new THREE.Group();
+//     const layers = 8;
+//     const spacing = 0.18;
+//     const scaleStart = 1.0;
+
+//     for (let i = 0; i < layers; i++) {
+//       const line = new THREE.LineSegments(edgeGeo, baseMat.clone());
+//       const scale = scaleStart + i * spacing;
+//       line.scale.set(scale, scale, scale);
+//       line.material.color = new THREE.Color(`hsl(${180 + i * 20}, 100%, 60%)`);
+//       group.add(line);
+//     }
+
+//     group.position.set(0, 0, 0);
+//     scene.add(group);
+//     groupRef.current = group;
+
+//     const light = new THREE.PointLight(0xffffff, 0.5);
+//     light.position.set(3, 3, 5);
+//     scene.add(light);
+
+//     scene.background = new THREE.Color(0x000000);
+//   }, [scene]);
+
+//   useFrame((state) => {
+//     const t = state.clock.getElapsedTime();
+//     if (groupRef.current) {
+//       groupRef.current.rotation.x = t * 0.4;
+//       groupRef.current.rotation.y = t * 0.6;
+//     }
+//     composer.render();
+//   }, 1);
+
+//   return null;
+// }
+
+
 const OceanScene = () => {
-  
+  useFrame((state) => {
+    state.gl.setClearColor(0x000000, 0);
+  });
+
   const scroll = useThreeScroll();
   const { scene, gl, camera } = useThree();
   const waterRef = useRef();
   const meshRef = useRef();
   const [enteredPortal, setEnteredPortal] = useState(false);
-  const tunnelStart = new Vector3((68.5 - 150) * 0.05, 0, (185.5 - 150) * 0.05 - 5);
-  const tunnelNext = new Vector3((1 - 150) * 0.05, 0, (262.5 - 150) * 0.05 - 5);
+
+  const tunnelStart = new THREE.Vector3(
+    (68.5 - 150) * 0.05,
+    0,
+    (185.5 - 150) * 0.05 - 5
+  );
+  const tunnelNext = new THREE.Vector3(
+    (1 - 150) * 0.05,
+    0,
+    (262.5 - 150) * 0.05 - 5
+  );
+
   useEffect(() => {
+    gl.outputEncoding = THREE.sRGBEncoding;
+    gl.toneMapping = THREE.ACESFilmicToneMapping;
+    gl.toneMappingExposure = 0.85;
+
     const waterNormals = new THREE.TextureLoader().load(
-      "https://threejs.org/examples/textures/waternormals.jpg"
+      'https://threejs.org/examples/textures/waternormals.jpg'
     );
     waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
 
-    const waterGeometry = new THREE.PlaneGeometry(10000, 10000);
-
-    const water = new Water(waterGeometry, {
+    const water = new Water(new THREE.PlaneGeometry(10000, 10000), {
       textureWidth: 512,
       textureHeight: 512,
-      waterNormals: waterNormals,
+      waterNormals,
       sunDirection: new THREE.Vector3(),
       sunColor: 0xffffff,
       waterColor: 0x001e0f,
@@ -236,92 +720,90 @@ const OceanScene = () => {
     scene.add(water);
     waterRef.current = water;
 
+    // --- Sky ---
     const sky = new Sky();
     sky.scale.setScalar(10000);
     scene.add(sky);
 
-    const skyUniforms = sky.material.uniforms;
-    skyUniforms["turbidity"].value = 10;
-    skyUniforms["rayleigh"].value = 2;
-    skyUniforms["mieCoefficient"].value = 0.005;
-    skyUniforms["mieDirectionalG"].value = 0.8;
+    const U = sky.material.uniforms;
+    U['turbidity'].value = 10;
+    U['rayleigh'].value = 2;
+    U['mieCoefficient'].value = 0.005;
+    U['mieDirectionalG'].value = 0.8;
 
-    const pmremGenerator = new THREE.PMREMGenerator(gl);
+    const pmrem = new THREE.PMREMGenerator(gl);
     const sun = new THREE.Vector3();
 
     const updateSun = () => {
-      const theta = Math.PI * (0.49 - 0.5);
+      const theta = Math.PI * (0.48 - 0.5);
       const phi = 2 * Math.PI * (0.205 - 0.5);
 
       sun.x = Math.cos(phi);
       sun.y = Math.sin(phi) * Math.sin(theta);
       sun.z = Math.sin(phi) * Math.cos(theta);
 
-      sky.material.uniforms["sunPosition"].value.copy(sun);
-      water.material.uniforms["sunDirection"].value.copy(sun).normalize();
-      scene.environment = pmremGenerator.fromScene(sky).texture;
-    };
+      U['sunPosition'].value.copy(sun);
+      water.material.uniforms['sunDirection'].value.copy(sun).normalize();
 
+      scene.environment = pmrem.fromScene(sky).texture;
+    };
     updateSun();
 
+    const ambient = new THREE.AmbientLight(0xffffff, 0.15);
+    const point = new THREE.PointLight(0xffffff, 0.25);
+    point.position.set(5, 5, 10);
+    scene.add(ambient, point);
+
     return () => {
-      scene.remove(water);
-      scene.remove(sky);
+      scene.remove(water, sky, ambient, point);
+      water.geometry.dispose();
+      water.material.dispose();
     };
   }, [scene, gl]);
 
   useFrame(() => {
     const t = scroll.offset;
     const camY = 8;
-  
-    // camera approaches door from fov 35
+
     if (t < 0.4) {
-      const ease = Math.pow(t / 0.4, 0.85); 
+      const ease = Math.pow(t / 0.4, 0.85);
       const targetZ = THREE.MathUtils.lerp(35, 5, ease);
       const targetY = THREE.MathUtils.lerp(5, camY, ease);
       const lookY = THREE.MathUtils.lerp(5, camY, ease);
-  
+
       camera.position.set(0, targetY, targetZ);
       camera.lookAt(0, lookY, 0);
     }
-  
-    // door opens when >.3 
-    if (t >= 0.3 && !enteredPortal) {
-      setEnteredPortal(true);
-    }
-  
-    // transition (need to fix this)
+
+    if (t >= 0.3 && !enteredPortal) setEnteredPortal(true);
+
     if (t >= 0.4 && t < 0.45) {
       const ease = (t - 0.4) / 0.05;
       const from = new THREE.Vector3(0, camY, 1);
       camera.position.lerpVectors(from, tunnelStart, ease);
       camera.lookAt(tunnelStart.clone().lerp(tunnelNext, ease));
     }
-  
-    // Tunnel takes over camera in tunnel.jsx 
+
     if (waterRef.current) {
-      waterRef.current.material.uniforms.time.value += 1.0 / 60.0;
+      waterRef.current.material.uniforms.time.value += 1 / 60;
     }
   });
+
   return (
     <>
-      <DoorModel />
-      <LiquidPortalPlane
-  position={[-.5, 1.35, -4.99]}
-  scale={[7.5, 13, 1]} 
-/>
-      {/* <Tunnel /> */}
-      <PortalScene
-        active={enteredPortal}
-        intensity={enteredPortal ? 1 : 0}
-      />
+      {/* Neon portal floating over the water */}
+      <BeepleNeonPortal />
+
+      {/* Tunnel / portal interior scene */}
+      <PortalScene active={enteredPortal} intensity={enteredPortal ? 1 : 0} />
+
+      {/* Extra mesh if you still need it */}
       <mesh ref={meshRef} position={[0, 10, 0]}>
         <meshStandardMaterial roughness={0} color="white" />
       </mesh>
     </>
   );
 };
-
 const ScrollTracker = ({ onScrollChange }) => {
   const scroll = useThreeScroll();
 
@@ -376,6 +858,8 @@ vec2 jitter = vec2(
   gl_FragColor = color;
 }
 `;
+
+
 const LiquidPortalMaterial = shaderMaterial(
   {
     iTime: 0,
@@ -406,6 +890,7 @@ function LiquidPortalPlane({ position, scale }) {
   );
 }
 
+
 export default function LandingComponent() {
   const [scrollOffset, setScrollOffset] = useState(0);
 
@@ -435,10 +920,9 @@ export default function LandingComponent() {
       <div style={{ height: '100vh', width: '100vw' }}>
       <Canvas camera={{ position: [0, 5, 30], fov: 50 }}>
   <ambientLight intensity={0.5} />
-
+<pointLight position={[0, 0, 7]} intensity={0.1} color="#ff6b35" />
   <ScrollControls pages={5} damping={0.1}>
     <ScrollTracker onScrollChange={setScrollOffset} />
-
 
     <OceanScene />
     <Tunnel />

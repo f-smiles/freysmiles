@@ -5915,31 +5915,25 @@ a {
   transform-origin: 0% 0%;
 }
 
-.gallery1 {
+.gallery {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center; 
-  gap: 2rem;    
-  padding: 2vh 2vw;      
-  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  gap: 5rem;         
+  padding: 5vh 3vw;
 }
 
 .gallery__item {
-  width: 35vw;            
-  aspect-ratio: 4 / 5;
+  width: 40vw;       
+  max-width: 900px;  
   position: relative;
 }
 
-
 .gallery__image {
-  opacity: 0;
-  pointer-events: none;
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: block;
 }
 
 .webgl-canvas {
