@@ -1,10 +1,10 @@
 :root {
-  --terra: #e49366;
-  --green: #798e7b;
-  --pink: #b692a1;
-  --blue: #bfccd8;
+  --terra:  #BDD5E6;
+  --green:  #C57B57;
+  --pink: #BDBECF;
+  --blue: #D9CA51;
   --black: #0e0e0e;
-  --beige: #f1efeb;
+  --beige: #C2CB23 ;
   --grey: #666d73;
   --91c5acce: 5;
   --sbw: 0px;
@@ -206,14 +206,17 @@
   position: relative;
   width: 100%;
   color: var(--black);
+  
 }
 
 .MainSectionItem-contentTitle {
   margin-bottom: 1rem;
+    font-family: "NeueHaasDisplay35";
 }
 
 .MainSectionItem-contentText {
   overflow: hidden;
+
 }
 
 .MainSectionItem-index {
@@ -223,6 +226,11 @@
   left: 1rem;
   position: absolute;
   top: 0.8rem;
+}
+
+.AppParagraph{
+  font-family:"NeueHaasDisplay35";
+  font-size: 1.2em;
 }
 
 @media screen and (min-width:769px) {
@@ -302,6 +310,7 @@
 .AnimatedSplitText .head-lines {
   will-change: transform;
   color: var(--black);
+  font-family: "NeueHaasDisplay35"
 }
 .AnimatedSplitText .chars-wrapper {
   display: inline-block;
