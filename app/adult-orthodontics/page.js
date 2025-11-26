@@ -240,10 +240,86 @@ export default function Page() {
                 </div>
                 <div className="MainSectionItem-imageContainer">
                   <div className="MainSectionItem-imageContainerInner">
-                    <div className="AppImage MainSectionItem-image">
-                      <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/test/2.jpg')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
-                      <img src="/images/test/2.jpg" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
-                    </div>
+               <div className="AppImage MainSectionItem-image image-wrapper">
+
+
+  <div
+    className="AppImage-image --placeholder --lazy --loaded base-image"
+    style={{
+      objectFit: 'cover',
+      backgroundImage: "url('/images/test/2.jpg')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center center'
+    }}
+  ></div>
+
+
+  <img
+    src="/images/nasionanolines.png"
+    alt="Facial silhouette"
+    loading="lazy"
+    className="profile-image"
+  />
+
+
+<svg
+  className="overlay-lines"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 100 100"
+  preserveAspectRatio="none"
+>
+  {/* Vertical line */}
+  <line 
+    x1="69" y1="30" 
+    x2="69" y2="73" 
+    stroke="#ffffff80" 
+    strokeWidth="0.5"
+    strokeLinecap="round"
+    vectorEffect="non-scaling-stroke"
+  />
+
+  {/* Long diagonal */}
+  <line 
+    x1="30" y1="38" 
+    x2="72" y2="75" 
+    stroke="#ffffff80" 
+    strokeWidth="0.5" 
+    strokeLinecap="round" 
+    vectorEffect="non-scaling-stroke"
+  />
+
+  {/* Upper horizontal */}
+  <line
+    x1="55" y1="31"
+    x2="74" y2="31"
+    stroke="#ffffff80"
+    strokeWidth="0.5"
+    strokeLinecap="round"
+    vectorEffect="non-scaling-stroke"
+  />
+
+  {/* Lower horizontal */}
+  <line
+    x1="47" y1="61"
+    x2="73" y2="61"
+    stroke="#ffffff80"
+    strokeWidth="0.5"
+    strokeLinecap="round"
+    vectorEffect="non-scaling-stroke"
+  />
+
+
+  <line
+    x1="75" y1="56"
+    x2="69" y2="73"
+    stroke="#ffffff80"
+    strokeWidth="0.5"
+    strokeLinecap="round"
+    vectorEffect="non-scaling-stroke"
+  />
+</svg>
+
+</div>
                   </div>
                 </div>
               </div>
@@ -315,7 +391,7 @@ export default function Page() {
                   <div className="MainSectionItem-imageContainerInner">
                     <div className="AppImage MainSectionItem-image">
                       <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/test/hover.jpg')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
-                      <img src="/images/test/hover.jpg" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
+                      <img src="/images/aafe.png" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
                     </div>
                   </div>
                 </div>
