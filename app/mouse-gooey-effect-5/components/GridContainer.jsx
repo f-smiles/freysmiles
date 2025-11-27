@@ -5,11 +5,11 @@ import { LinearFilter, Mesh, OrthographicCamera, PlaneGeometry, Scene, ShaderMat
 import ScrollTrigger from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
-const items = [
+export const items = [
   {
     // src: '/images/members/edit/adriana-blurry-distortion-effect-1920px-1.jpg',
     // hoverSrc: '/images/members/orig/adriana.png',
-    src: '../images/team_members/Adriana-greenborder.png',
+    src: '/images/team_members/Adriana-Photoroom.jpg',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Insurance Coordinator',
     name: 'Adriana',
@@ -17,7 +17,7 @@ const items = [
   {
     // src: '/images/members/edit/alyssa-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/alyssa.png',
-    src: '/images/team_members/alyssa-border.png',
+    src: '/images/team_members/alyssascan.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Alyssa',
@@ -25,15 +25,15 @@ const items = [
   {
     // src: '/images/members/edit/elizabeth-blurry-distortion-effect-1.jpg',
     // hoverSrc: '/images/members/orig/elizabeth.png',
-   src: '/images/team_members/elizabeth-green.png',
+   src: '/images/team_members/stefhany.png',
     hoverSrc: '/images/test/hover.jpg',
-    role: 'Patient Services',
-    name: 'Elizabeth',
+    role: 'Specialized Orthodontic Assistant',
+    name: 'Stefhany',
   },
   {
     // src: '/images/members/edit/lexi-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/lexi.png',
-    src: '/images/team_members/lexi-greenborder.png',
+    src: '/images/team_members/lexiworking.png',
     hoverSrc: '/images/test/hover.jpg',
     role: 'Treatment Coordinator',
     name: 'Lexi',
@@ -41,10 +41,10 @@ const items = [
   {
     // src: '/images/members/edit/nicole-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/nicolle.png',
-    src: '/images/team_members/nicolle-green.png',
+    src: '/images/team_members/alexisbg.png',
     hoverSrc: '/images/test/hover.jpg',
-    role: 'Specialized Orthodontic Assistant',
-    name: 'Nicolle',
+    role: 'Records Technician',
+    name: 'Alexis',
   },
 ]
 
@@ -399,85 +399,73 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
   )
 }
 
-export default function GridContainer() {
-  const sectionRef = useRef(null);
-  const stickyRef = useRef(null);
-  const trackRef = useRef(null);
-
-  useLayoutEffect(() => {
-    const section = sectionRef.current;
-    const sticky = stickyRef.current;
-    const track = trackRef.current;
-    if (!section || !sticky || !track) return;
-
-    ScrollTrigger.getAll().forEach((t) => t.kill());
-    gsap.killTweensOf(track);
-
-    const build = () => {
-      const totalScroll = track.scrollWidth - window.innerWidth;
-      gsap.set(section, { height: track.scrollWidth });
-
-      gsap.to(track, {
-        x: -totalScroll,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () => `+=${totalScroll}`,
-          scrub: 1,
-          pin: sticky,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      });
-
-      ScrollTrigger.refresh();
-    };
-
-    build();
-
-    const ro = new ResizeObserver(() => build());
-    ro.observe(track);
-    ro.observe(sticky);
-
-    return () => {
-      ro.disconnect();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
-  }, []);
-
+const MemberCard = ({ member, className = '' }) => {
   return (
-    <section ref={sectionRef} className="horizontal-section">
-      <div ref={stickyRef} className="horizontal-sticky">
-        <div ref={trackRef} className="horizontal-track">
-          <div className="intro-card">
-            <h2 className="intro-heading">
-      Entrust your smile's transformation to our handpicked team of orthodontic specialists.
-            </h2>
-            <p className="intro-subtext">
-             From national certifications to hands-on trainings, we’re always leveling up. The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
-            </p>
-          </div>
-
-  
-          {items.map((item, i) => (
-            <div key={item.name} className="member-card">
-              <div className="image-wrapper">
-                <ImageCanvas
-                  className={`item-${i + 1}`}
-                  member={item.name}
-                  imgSrc={item.src}
-                  hoverSrc={item.hoverSrc}
-                />
-              </div>
-              <div className="member-info">
-                <div className="member-role">{item.role}</div>
-                <div className="member-title">{item.name}</div>
-              </div>
-            </div>
-          ))}
+    <div className={`member-slot ${className} flex flex-col justify-between h-full w-full p-8`}>
+    
+      <div className="image-section flex-1 flex items-center justify-center mb-4">
+        <div className="image-wrapper w-full max-w-[320px] max-h-[80vh] relative overflow-hidden rounded-[1.25rem] bg-[#111] aspect-[3/4]">
+          <ImageCanvas
+            className="absolute inset-0 w-full h-full" 
+            member={member.name}
+            imgSrc={member.src}
+            hoverSrc={member.hoverSrc}
+          />
         </div>
       </div>
-    </section>
+
+
+      <div className="member-info flex justify-between items-center text-center flex-1 min-h-[60px] pt-4">
+        <div className="member-role text-[13px] font-neuehaas45 tracking-wide text-[#252424] opacity-80">
+          {member.role}
+        </div>
+        <div className="member-title text-[14px] font-neuehaas45 font-500 tracking-[0.01rem] text-[#252424]">
+          {member.name}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export { MemberCard };
+export default function GridContainer() {
+
+
+
+  return (
+<section className="layout">
+
+  {/* <div className="intro-section">
+    <div className="intro-card">
+      <h2 className="intro-heading">
+        Entrust your smile's transformation to our handpicked team of orthodontic specialists.
+      </h2>
+      <p className="intro-subtext">
+        From national certifications to hands-on trainings, we’re always leveling up.
+        The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
+      </p>
+    </div>
+  </div> */}
+
+
+  <div className="members-section">
+    {items.map((item, i) => (
+      <div key={item.name} className="member-card">
+        <div className="image-wrapper">
+          <ImageCanvas
+            className={`item-${i + 1}`}
+            member={item.name}
+            imgSrc={item.src}
+            hoverSrc={item.hoverSrc}
+          />
+        </div>
+        <div className="member-info">
+          <div className="member-role">{item.role}</div>
+          <div className="member-title">{item.name}</div>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
   );
 }
