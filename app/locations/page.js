@@ -6,188 +6,132 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import './style.css'
 
 export default function Locations() {
-  const mapContainerRef = useRef()
-  const mapRef = useRef()
+  const mapContainerRef = useRef(null)
+  const mapRef = useRef(null)
+
   const innerCursor = useRef(null)
   const outerCursor = useRef(null)
-  const horizontalRef = useRef(null)
-  const verticalRef = useRef(null)
-  const hoverRAF = useRef(null)
-  const hoverMoveCursor = useRef(null)
-  const hoverUnveilCursor = useRef(null)
-  const [outerCursorSpeed, setOuterCursorSpeed] = useState(0)
-  const [showCircleCursor, setShowCircleCursor] = useState(false)
-  const [showCrosshairCursor, setShowCrosshairCursor] = useState(false)
+  const horizontalLine = useRef(null)
+  const verticalLine = useRef(null)
+  const showCursor = useRef(false)
+  const showCrosshair = useRef(false)
+  const outerCursorSpeed = useRef(0)
+  const mouseX = useRef(-100)
+  const mouseY = useRef(-100)
 
-  const initHover = () => {
-    let clientX = -100
-    let clientY = -100
-    const rect = verticalRef.current.getBoundingClientRect()
-
-    gsap.set(horizontalRef.current, { opacity: 1 })
-    gsap.set(verticalRef.current, { opacity: 1 })
-
-    if (hoverRAF.current) cancelAnimationFrame(hoverRAF.current)
-
-    function unveilCursor() {
-      gsap.set(horizontalRef.current, {
-        x: clientX,
-        y: clientY,
-      })
-      gsap.set(verticalRef.current, {
-        x: clientX - rect.width / 2,
-        y: clientY - rect.height / 2,
-      })
-      setShowCrosshairCursor(true)
-    }
-    function moveCursor(e) {
-      clientX = e.clientX
-      clientY = e.clientY
-    }
-    hoverUnveilCursor.current = unveilCursor
-    hoverMoveCursor.current = moveCursor
-    document.addEventListener('mousemove', unveilCursor)
-    document.addEventListener('mousemove', moveCursor)
-
-    function render() {
-      gsap.set(horizontalRef.current, {
-        x: clientX,
-        y: clientY,
-      })
-      gsap.to(verticalRef.current, {
-        x: clientX - rect.width / 2,
-        y: clientY - rect.height / 2,
-      })
-      hoverRAF.current = requestAnimationFrame(render)
-    }
-    hoverRAF.current = requestAnimationFrame(render)
-  }
-
-  const handleMarkerEnter = () => {
-    hoverRAF.current = null
-    hoverMoveCursor.current = null
-    hoverUnveilCursor.current = null
-    initHover()
-  }
-  const handleMarkerLeave = () => {
-    setShowCrosshairCursor(false)
-    document.removeEventListener('mousemove', hoverUnveilCursor.current)
-    document.removeEventListener('mousemove', hoverMoveCursor.current)
-    cancelAnimationFrame(hoverRAF.current)
-    gsap.set(horizontalRef.current, { opacity: 0 })
-    gsap.set(verticalRef.current, { opacity: 0 })
-  }
-
+  // INIT CURSOR
   useEffect(() => {
-    if (!innerCursor.current || !outerCursor.current || !horizontalRef.current || !verticalRef.current) return
+    if (!outerCursor.current || !innerCursor.current) return
 
-    gsap.set(horizontalRef.current, { y: -100 })
+    gsap.set([innerCursor.current, outerCursor.current, horizontalLine.current, verticalLine.current], {
+      x: -1000,
+      y: -1000,
+    })
 
+    const revealCursor = () => {
+      gsap.set(innerCursor.current, {
+        x: mouseX.current,
+        y: mouseY.current,
+      })
+      gsap.set(outerCursor.current, {
+        x: mouseX.current - outerCursor.current.getBoundingClientRect().width / 2,
+        y: mouseY.current - outerCursor.current.getBoundingClientRect().height / 2,
+      })
+      setTimeout(() => {
+        outerCursorSpeed.current = 0.2
+      }, 100)
+      showCursor.current = true
+    }
+    const updateCursor = (e) => {
+      mouseX.current = e.clientX
+      mouseY.current = e.clientY
+    }
+    document.addEventListener('mousemove', revealCursor)
+    document.addEventListener('mousemove', updateCursor)
+
+    return () => {
+      document.removeEventListener('mousemove', revealCursor)
+      document.removeEventListener('mousemove', updateCursor)
+    }
+  }, [])
+
+  // MAPBOX
+  useEffect(() => {
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-    mapRef.current = new mapboxgl.Map({
+    const map = (mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: process.env.NEXT_PUBLIC_MAPBOX_MAP_STYLE,
       center: [-75.5, 40.5],
       zoom: 8,
-    })
+    }))
+   
+    const createMarker = (name) => {
+      const el = document.createElement('div')
+      const innerEl = document.createElement('div')
+      innerEl.className = 'marker marker-pop'
+      el.appendChild(innerEl)
 
-    const lehightonElement = document.createElement('div')
-    const lehightonInner = document.createElement('div')
-    lehightonInner.className = 'marker marker-pop'
-    new mapboxgl.Marker({
-      element: lehightonElement,
-    }).setLngLat([-75.73039, 40.817605]).addTo(mapRef.current)
-    lehightonElement.appendChild(lehightonInner)
-    
-    const schnecksvilleElement = document.createElement('div')
-    const schnecksvilleInner = document.createElement('div')
-    schnecksvilleInner.className = 'marker marker-pop'
-    new mapboxgl.Marker({
-      element: schnecksvilleElement,
-    }).setLngLat([-75.59864, 40.661055]).addTo(mapRef.current)
-    schnecksvilleElement.appendChild(schnecksvilleInner)
-
-    const allentownElement = document.createElement('div')
-    const allentownInner = document.createElement('div')
-    allentownInner.className = 'marker marker-pop'
-    new mapboxgl.Marker({
-      element: allentownElement,
-    }).setLngLat([-75.51711, 40.565945]).addTo(mapRef.current)
-    allentownElement.appendChild(allentownInner)
-    
-    const bethlehemElement = document.createElement('div')
-    const bethlehemInner = document.createElement('div')
-    bethlehemInner.className = 'marker marker-pop'
-    new mapboxgl.Marker({
-      element: bethlehemElement,
-    }).setLngLat([-75.295623, 40.66286]).addTo(mapRef.current)
-    bethlehemElement.appendChild(bethlehemInner)
-
-    const initCursor = () => {
-      let clientX = -100
-      let clientY = -100
-      const rect = outerCursor.current.getBoundingClientRect()
-      
-      function unveilCursor() {
-        gsap.set(innerCursor.current, {
-          x: clientX,
-          y: clientY,
+      el.addEventListener('mousemove', (e) => {
+        showCrosshair.current = true
+        showCursor.current = false
+        gsap.set(horizontalLine.current, {
+          x: e.clientX,
+          y: e.clientY,
+          opacity: 1,
         })
-        gsap.set(outerCursor.current, {
-          x: clientX - rect.width / 2,
-          y: clientY - rect.height / 2,
+        gsap.set(verticalLine.current, {
+          x: e.clientX,
+          y: e.clientY,
+          opacity: 1,
         })
-        setTimeout(() => {
-          setOuterCursorSpeed(0.2)
-        }, 100)
-        setShowCircleCursor(true)
-      }
-      document.addEventListener('mousemove', unveilCursor)
-      document.addEventListener('mousemove', (e) => {
-        clientX = e.clientX
-        clientY = e.clientY
       })
 
-      function render() {
-        gsap.set(innerCursor.current, {
-          x: clientX,
-          y: clientY,
+      el.addEventListener('mouseleave', (e) => {
+        showCrosshair.current = false
+        showCursor.current = true
+        gsap.set(horizontalLine.current, {
+          opacity: 0,
         })
-        gsap.to(outerCursor.current, {
-          x: clientX - rect.width / 2,
-          y: clientY - rect.height / 2,
-          duration: 0.2,
+        gsap.set(verticalLine.current, {
+          opacity: 0,
         })
-        if (showCircleCursor) {
-          document.removeEventListener('mousemove', unveilCursor)
-        }
-        requestAnimationFrame(render)
-      }
-      requestAnimationFrame(render)
+      })
+
+      return el
     }
 
-    [lehightonElement, schnecksvilleElement, bethlehemElement, allentownElement].forEach((marker) => {
-      marker.addEventListener('mouseenter', handleMarkerEnter)
-      marker.addEventListener('mouseleave', handleMarkerLeave)
-    })
-
-    initCursor()
+    new mapboxgl
+      .Marker({ element: createMarker('lehighton') })
+      .setLngLat([-75.73039, 40.817605])
+      .addTo(map) 
+    
+    new mapboxgl
+      .Marker({ element: createMarker('schnecksville') })
+      .setLngLat([-75.59864, 40.661055])
+      .addTo(map) 
+    
+    new mapboxgl
+      .Marker({ element: createMarker('allentown') })
+      .setLngLat([-75.51711, 40.565945])
+      .addTo(map)
+    
+    new mapboxgl
+      .Marker({ element: createMarker('bethlehem') })
+      .setLngLat([-75.295623, 40.66286])
+      .addTo(map)
   }, [])
 
   return (
-    <section className='h-[100dvh]'>
-      <div
-        ref={mapContainerRef}
-        className='map-container h-[100dvh]'
-      />
+     <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
+      <div ref={mapContainerRef} style={{ width: '100%', height: '100%' }} />
 
-      {/* Circle Cursor */}
+      {/* circle cursor */}
       <div ref={innerCursor} className='circle-cursor circle-cursor--inner' />
       <div ref={outerCursor} className='circle-cursor circle-cursor--outer' />
 
-      {/* Crosshair Cursor */}
-      <div ref={horizontalRef} className='cursor__line cursor__line--horizontal' />
-      <div ref={verticalRef} className='cursor__line cursor__line--vertical' />
-    </section>
+      {/* crosshair cursor */}
+      <div ref={horizontalLine} className='cursor-line cursor-line--horizontal' />
+      <div ref={verticalLine} className='cursor-line cursor-line--vertical' />
+    </div>
   )
 }
