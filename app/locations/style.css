@@ -1,5 +1,13 @@
+:root {
+  --marker-size: 48px;
+}
+
+.mapboxgl-canvas-container.mapboxgl-interactive {
+  cursor: none;
+}
+
 .circle-cursor,
-.cursor__line {
+.cursor-line {
   position: fixed;
   top: 0;
   left: 0;
@@ -7,43 +15,42 @@
 }
 
 .circle-cursor--outer {
-  width: 36px;
-  height: 36px;
-  border: 2px solid #ff4747;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ff4747;
   border-radius: 50%;
-  opacity: 0.2;
+  /* opacity: 0.2; */
   z-index: 99999;
 }
 
 .circle-cursor--inner {
   width: 5px;
   height: 5px;
-  top: -2.5px;
-  left: -2.5px;
+  top: -3px;
+  left: -3px;
   border-radius: 50%;
-  background: #ff0000;
-  opacity: 1;
+  background: #ff4747;
+  /* opacity: 1; */
   z-index: 88888;
 }
 
-.cursor__line--horizontal {
+.cursor-line--horizontal {
   width: 200dvw;
   height: 1px;
-  background-color: #000;
+  background-color: #ff4747;
   /* opacity: 0.2; */
   transform: translateX(-50%);
   z-index: 99999;
 }
 
-.cursor__line--vertical {
+.cursor-line--vertical {
   width: 1px;
   height: 200dvh;
-  background-color: #000;
+  background-color: #ff4747;
   /* opacity: 1; */
-  transform: translateY(50%);
+  transform: translateY(-50%);
   z-index: 88888;
 }
-
 
 /* Style the marker div as a circle with a background image */
 .marker {
@@ -51,7 +58,10 @@
   /* background-size: contain; */
   /* background-position-x: 50%; */
   /* background-repeat: no-repeat; */
-  background-color: #365874;
+  width: var(--marker-size, 16px);
+  height: var(--marker-size, 16px);
+  background-color: #000;
+  /* background-color: #365874; */
   border-radius: 50%;
   /* cursor: pointer; */
   transition-property: width, height;
@@ -69,7 +79,7 @@
   height: 0;
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
-  border-top: 7px solid #365874;
+  border-top: 7px solid #000;
   display: block;
   position: absolute;
   bottom: -5px;
@@ -117,10 +127,10 @@
     transform: rotate(0deg);
   }
   20% {
-    transform: rotate(2.5deg);
+    transform: rotate(3deg);
   }
   50% {
-    transform: rotate(-2deg);
+    transform: rotate(-3deg);
   }
   65% {
     transform: rotate(1deg);
