@@ -61,8 +61,10 @@ export default function Locations() {
     const map = (mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: process.env.NEXT_PUBLIC_MAPBOX_MAP_STYLE,
-      center: [-75.5, 40.5],
-      zoom: 8,
+      center: [-75.5, 40.7],
+      zoom: 10,
+      minZoom: 8,
+      maxZoom: 14,
     }))
    
     const createMarker = (name) => {
