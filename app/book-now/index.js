@@ -414,14 +414,14 @@ export default function BookNow() {
 
               <div className="relative z-10 flex flex-col justify-center h-full items-center">
                 <div className="flex flex-col gap-6 text-sm uppercase">
-                  <p className="text-xs uppercase font-neueroman">
+                  <p className="text-xs text-[#9856D4] uppercase font-neueroman">
                     // Contact Us
                   </p>
                   <div>
-                    <p className="text-[12px] mb-1 font-neueroman uppercase">
+                    <p className="text-[12px] mb-1 font-neueroman uppercase text-[#9856D4]">
                       <ScrambleText text="GENERAL" className="mr-10" />
                     </p>
-                    <p className="text-[12px] leading-snug font-khteka">
+                    <p className="text-[#9856D4] text-[12px] leading-snug font-khteka">
                       <ScrambleText text="info@freysmiles.com" />
                       <br />
                       <ScrambleText text="(610)437-4748" charsType="numbers" />
@@ -429,10 +429,10 @@ export default function BookNow() {
                   </div>
 
                   <div>
-                    <p className="text-[12px] mb-1 font-neueroman uppercase">
+                    <p className="text-[12px] mb-1 font-neueroman uppercase text-[#9856D4]">
                       <ScrambleText text="ADDRESS" className="mr-10" />
                     </p>
-                    <p className="text-[12px] leading-tight font-khteka">
+                    <p className="text-[#9856D4] text-[12px] leading-tight font-khteka">
                       <ScrambleText text="Frey Smiles" charsType="numbers" />
                       <br />
                       <ScrambleText

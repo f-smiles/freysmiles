@@ -150,7 +150,8 @@ export default function Page() {
   }, [])
   
   return (
-    <div ref={mainSection} className="MainSection` --dark --in-view" style={{ backgroundColor: 'var(--blue)', '--91c5acce': 5, }}>
+    <div className="AdultOrthodonticsSection">
+          <div ref={mainSection} className="MainSection` --dark --in-view" style={{ backgroundColor: 'var(--blue)', '--91c5acce': 5, }}>
       <div className="MainSection-wrap">
         <div className="MainSection-head">
           <h2 className="SplitText AnimatedSplitText --anim-title MainSection-headTitle AppTitle-1 --in-view" style={{ opacity: 1, visibility: "inherit" }}>
@@ -193,15 +194,25 @@ export default function Page() {
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">Who do we treat?</h3>
                   <div className="MainSectionItem-contentText">
                     <div className="AppText-12">
-                      <p>Whether you've had orthodontic treatment before or are exploring it for the first time, we're here to help you achieve your smile goals. We treat adults experiencing orthodontic relapse after previous treatment, as well as those who've noticed gradual dental shifting over the years. Invisalign allows us to treat patients with periodontal concerns—including tissue loss and compromised bone support—with greater precision than braces.</p>
+                      <p className="AppParagraph">Whether you've had orthodontic treatment before or are exploring it for the first time, we're here to help you achieve your smile goals. We treat adults experiencing orthodontic relapse after previous treatment, as well as those who've noticed gradual dental shifting over the years. Invisalign allows us to treat patients with periodontal concerns—including tissue loss and compromised bone support—with greater precision than braces.</p>
                     </div>
+                
                   </div>
                 </div>
                 <div className="MainSectionItem-imageContainer">
                   <div className="MainSectionItem-imageContainerInner">
                     <div className="AppImage MainSectionItem-image">
                       <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/test/1.jpg')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
-                      <img src="/images/test/1.jpg" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
+                     <video
+  src="https://www.stephen-wells.com/media/pages/projects/nutiani/fc3e968038-1730620681/taichi_3.3.mp4#t=0.1"
+  alt="Video of a landscape"
+  loading="lazy"
+  style={{ objectFit: 'cover' }}
+  loop
+  autoPlay
+  muted
+  playsInline
+/>
                     </div>
                   </div>
                 </div>
@@ -214,19 +225,95 @@ export default function Page() {
                 <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--teal)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">02</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">What is accelerated adult orthodontics, and how does it work?</h3>
+                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Accelerated Movement</h3>
                   <div className="MainSectionItem-contentText">
                     <div className="AppText-12">
-                      <p>We're proud to be the first practice in the area to focus on accelerated adult orthodontics, using devices that optimize tooth movement in mature bone. Our doctors have trained extensively with leaders in TAD-assisted orthodontics (Temporary Anchorage Devices) and routinely design non-surgical treatment plans for patients seeking alternatives to orthognathic surgery.</p>
+                      <p className="AppParagraph">We're proud to be the first practice in the area to focus on accelerated adult orthodontics, using devices that optimize tooth movement in mature bone. Our doctors have trained extensively with leaders in TAD-assisted orthodontics (Temporary Anchorage Devices) and routinely design non-surgical treatment plans for patients seeking alternatives to orthognathic surgery.</p>
                     </div>
                   </div>
                 </div>
                 <div className="MainSectionItem-imageContainer">
                   <div className="MainSectionItem-imageContainerInner">
-                    <div className="AppImage MainSectionItem-image">
-                      <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/test/2.jpg')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
-                      <img src="/images/test/2.jpg" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
-                    </div>
+               <div className="AppImage MainSectionItem-image image-wrapper">
+
+
+  <div
+    className="AppImage-image --placeholder --lazy --loaded base-image"
+    style={{
+      objectFit: 'cover',
+      backgroundImage: "url('/images/test/2.jpg')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center center'
+    }}
+  ></div>
+
+
+  <img
+    src="/images/nasionanolines.png"
+    alt="Facial silhouette"
+    loading="lazy"
+    className="profile-image"
+  />
+
+
+<svg
+  className="overlay-lines"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 100 100"
+  preserveAspectRatio="none"
+>
+  {/* Vertical line */}
+  <line 
+    x1="69" y1="30" 
+    x2="69" y2="73" 
+    stroke="#ffffff80" 
+    strokeWidth="0.5"
+    strokeLinecap="round"
+    vectorEffect="non-scaling-stroke"
+  />
+
+  {/* Long diagonal */}
+  <line 
+    x1="30" y1="38" 
+    x2="72" y2="75" 
+    stroke="#ffffff80" 
+    strokeWidth="0.5" 
+    strokeLinecap="round" 
+    vectorEffect="non-scaling-stroke"
+  />
+
+  {/* Upper horizontal */}
+  <line
+    x1="55" y1="31"
+    x2="74" y2="31"
+    stroke="#ffffff80"
+    strokeWidth="0.5"
+    strokeLinecap="round"
+    vectorEffect="non-scaling-stroke"
+  />
+
+  {/* Lower horizontal */}
+  <line
+    x1="47" y1="61"
+    x2="73" y2="61"
+    stroke="#ffffff80"
+    strokeWidth="0.5"
+    strokeLinecap="round"
+    vectorEffect="non-scaling-stroke"
+  />
+
+
+  <line
+    x1="75" y1="56"
+    x2="69" y2="73"
+    stroke="#ffffff80"
+    strokeWidth="0.5"
+    strokeLinecap="round"
+    vectorEffect="non-scaling-stroke"
+  />
+</svg>
+
+</div>
                   </div>
                 </div>
               </div>
@@ -238,10 +325,10 @@ export default function Page() {
                 <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--beige)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">03</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">How do we collaborate with surgeons for jaw surgery cases?</h3>
+                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Coordinated Care</h3>
                   <div className="MainSectionItem-contentText">
                     <div className="AppText-12">
-                      <p>When jaw surgery is the pursued path, we coordinate closely with the region's top oral and maxillofacial surgeons to ensure care continuity, expert management, and care that remains conveniently local.</p>
+                      <p className="AppParagraph">When jaw surgery is the pursued path, we coordinate closely with the region's top oral and maxillofacial surgeons to ensure care continuity, expert management, and care that remains conveniently local.</p>
                     </div>
                   </div>
                 </div>
@@ -262,10 +349,10 @@ export default function Page() {
                 <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--green)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">04</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Why is facial esthetics an important part of orthodontics?</h3>
+                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Our Philosophy</h3>
                   <div className="MainSectionItem-contentText">
                     <div className="AppText-12">
-                      <p>Orthodontics has always been rooted in understanding how bone structure, dental positioning, and soft tissue interact to shape the face—not just in growing faces, but in aging ones too.Our doctors bring a natural appreciation for facial aesthetics, shaped by their orthodontic training and clinical expertise.</p>
+                      <p className="AppParagraph">Orthodontics has always been rooted in understanding how bone structure, dental positioning, and soft tissue interact to shape the face—not just in growing faces, but in aging ones too. Our doctors bring a natural appreciation for facial aesthetics, shaped by their orthodontic training and clinical expertise.</p>
                     </div>
                   </div>
                 </div>
@@ -273,7 +360,7 @@ export default function Page() {
                   <div className="MainSectionItem-imageContainerInner">
                     <div className="AppImage MainSectionItem-image">
                       <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/test/base.jpg')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
-                      <img src="/images/test/base.jpg" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
+                      <img src="/images/face-line-art.png" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
                     </div>
                   </div>
                 </div>
@@ -286,10 +373,11 @@ export default function Page() {
                 <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--terra)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">05</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">How does our structure-first approach enhance cosmetic treatments?</h3>
+                  <h3 className="MainSectionItem-contentTitle AppTitle-3">AAFE</h3>
                   <div className="MainSectionItem-contentText">
                     <div className="AppText-12">
-                      <p>Orthodontics has always been rooted in understanding how bone structure, dental positioning, and soft tissue interact to shape the face—not just in growing faces, but in aging ones too.Our doctors bring a natural appreciation for facial aesthetics, shaped by their orthodontic training and clinical expertise.</p>
+                      <p className="AppParagraph">Because of this foundation, we approach cosmetic treatment by addressing skeletal balance first—restoring harmony at the level of the hard tissue. Prioritizing the skeletal foundation allows us to minimize reliance on overfilling and support outcomes that look natural and require less upkeep.  As members of the American Academy of Facial Esthetics (AAFE), our doctors offer Botox and dermal fillers as part of a comprehensive, structure-first approach to confidence and care.
+</p>
                     </div>
                   </div>
                 </div>
@@ -297,7 +385,7 @@ export default function Page() {
                   <div className="MainSectionItem-imageContainerInner">
                     <div className="AppImage MainSectionItem-image">
                       <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/test/hover.jpg')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
-                      <img src="/images/test/hover.jpg" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
+                      <img src="/images/aafe.png" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
                     </div>
                   </div>
                 </div>
@@ -307,5 +395,7 @@ export default function Page() {
         </div>
       </div>
     </div>
+    </div>
+
   )
 }

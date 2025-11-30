@@ -1,15 +1,15 @@
 :root {
-  --mint: #93B7BE;
-  --beige: #FFFFFF;
-  --orange: #F28F3B;
-  --peach: #FFD5C2;
-  --terra: #C8553D;
-  --teal: #588B8B;
+  --terra: #E9E15B;
+  --green: #B4B534;
+  --pink: #C7C6FE ;
+  --blue: #A4CEFF;
   --black: #0e0e0e;
+  --beige: #D5BADE;
+  --grey: #FCA21D;
   --91c5acce: 5;
   --sbw: 0px;
 }
-
+/* #DBE3FD */
 @media screen and (max-width:768px) {
   html {
     font-size: 2.6666666667vw;
@@ -206,6 +206,12 @@
   position: relative;
   width: 100%;
   color: var(--black);
+  font-family:"NeueHaasDisplay35"
+}
+
+.AppParagraph{
+ font-family:"NeueHaasGroteskDisplayPro45Light";
+ font-size: 1.1rem;
 }
 
 .MainSectionItem-contentTitle {
@@ -214,6 +220,7 @@
 
 .MainSectionItem-contentText {
   overflow: hidden;
+  
 }
 
 .MainSectionItem-index {
@@ -270,6 +277,7 @@
   background: #f1efeb;
   position: relative;
   width: 100%;
+  
   z-index: 20;
 }
 
