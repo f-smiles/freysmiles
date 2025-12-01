@@ -288,7 +288,117 @@ void main() {
   );
 };
 
+function ShaderBackground() {
+  const materialRef = useRef();
+  const { size } = useThree();
 
+  useFrame(({ clock }) => {
+    if (!materialRef.current) return;
+    materialRef.current.uniforms.iTime.value = clock.getElapsedTime();
+    materialRef.current.uniforms.iResolution.value.set(size.width, size.height, 1);
+  });
+
+return (
+  <mesh>
+    <planeGeometry args={[2, 2]} />
+    <shaderMaterial
+      ref={materialRef}
+      uniforms={{
+        iTime: { value: 0 },
+        iResolution: { value: new THREE.Vector3() }
+      }}
+      fragmentShader={fragmentShader}
+      vertexShader={vertexShader}
+    />
+  </mesh>
+);
+}
+
+const vertexShader = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = vec4(position, 1.0);
+}
+`;
+
+const fragmentShader = `
+
+#define S(a,b,t) smoothstep(a,b,t)
+
+uniform float iTime;
+uniform vec3 iResolution;
+varying vec2 vUv;
+
+mat2 Rot(float a) {
+    float s = sin(a);
+    float c = cos(a);
+    return mat2(c, -s, s, c);
+}
+
+vec2 hash(vec2 p) {
+    p = vec2(
+        dot(p, vec2(2127.1, 81.17)),
+        dot(p, vec2(1269.5, 283.37))
+    );
+    return fract(sin(p) * 43758.5453);
+}
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 u = f * f * (3.0 - 2.0 * f);
+
+    float n = mix(
+        mix(
+            dot(-1.0 + 2.0 * hash(i + vec2(0,0)), f - vec2(0,0)),
+            dot(-1.0 + 2.0 * hash(i + vec2(1,0)), f - vec2(1,0)),
+            u.x
+        ),
+        mix(
+            dot(-1.0 + 2.0 * hash(i + vec2(0,1)), f - vec2(0,1)),
+            dot(-1.0 + 2.0 * hash(i + vec2(1,1)), f - vec2(1,1)),
+            u.x
+        ),
+        u.y
+    );
+
+    return 0.5 + 0.5 * n;
+}
+
+void main() {
+    vec2 fragCoord = vUv * iResolution.xy;
+    vec2 uv = fragCoord / iResolution.xy;
+
+    float ratio = iResolution.x / iResolution.y;
+    vec2 tuv = uv - 0.5;
+
+    float degree = noise(vec2(iTime * 0.1, tuv.x * tuv.y));
+
+    tuv.y *= 1.0 / ratio;
+    tuv *= Rot(radians((degree - 0.5) * 720.0 + 180.0));
+    tuv.y *= ratio;
+
+    float frequency = 5.0;
+    float amplitude = 30.0;
+    float speed = iTime * 2.0;
+
+    tuv.x += sin(tuv.y * frequency + speed) / amplitude;
+    tuv.y += sin(tuv.x * frequency * 1.5 + speed) / (amplitude * 0.5);
+
+    vec3 colorYellow = vec3(0.957, 0.804, 0.623);
+    vec3 colorDeepBlue = vec3(0.192, 0.384, 0.933);
+    vec3 layer1 = mix(colorYellow, colorDeepBlue, S(-0.3, 0.2, (tuv * Rot(radians(-5.0))).x));
+
+    vec3 colorRed = vec3(0.910, 0.510, 0.8);
+    vec3 colorBlue = vec3(0.350, 0.71, 0.953);
+    vec3 layer2 = mix(colorRed, colorBlue, S(-0.3, 0.2, (tuv * Rot(radians(-5.0))).x));
+
+    vec3 finalComp = mix(layer1, layer2, S(0.5, -0.3, tuv.y));
+
+    gl_FragColor = vec4(finalComp, 1.0);
+}
+`;
 
 export default function BookNow() {
   
@@ -375,6 +485,19 @@ export default function BookNow() {
   return (
     <>
 
+<section
+  className="relative z-10 w-full h-screen flex flex-col items-center justify-center text-white"
+  style={{
+    background: "linear-gradient(135deg, #a8c5ff 0%, #c5a8ff 40%, #e5caff 100%)"
+  }}
+>
+  <h1 className="text-4xl lg:text-6xl font-canelathin tracking-tight">
+    Coming soon
+  </h1>
+  <p className="mt-4 text-[14px] lg:text-[16px] font-neuehaas35">
+    Scroll down to book
+  </p>
+</section>
 
 <section  className="relative w-full">
   {/* <div style={{ 
@@ -447,12 +570,14 @@ export default function BookNow() {
               </div>
             </div>
 
-            <div className="flex items-center justify-center w-1/2">
-              <iframe
+            <div className="acuity-font flex items-center justify-center w-1/2">
+            <iframe src="https://app.acuityscheduling.com/schedule.php?owner=37685601&ref=embedded_csp" title="Schedule Appointment" width="100%" height="800" frameBorder="0" allow="payment"></iframe>
+            
+              {/* <iframe
                 src="https://app.acuityscheduling.com/schedule.php?owner=35912720"
                 title="Schedule Appointment"
                 className="w-full max-w-[820px] min-h-[90vh] "
-              />
+              /> */}
             </div>
           </div>
         </div>

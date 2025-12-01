@@ -1,41 +1,41 @@
 :root {
   --terra: #E9E15B;
   --green: #B4B534;
-  --pink: #C7C6FE ;
-  --blue: #A4CEFF;
+  --pink: #A4CEFF  ;
+  --blue: #D5BADE ;
   --black: #0e0e0e;
-  --beige: #D5BADE;
+  --beige: #C7C6FE;
   --grey: #FCA21D;
   --91c5acce: 5;
   --sbw: 0px;
 }
 /* #DBE3FD */
 @media screen and (max-width:768px) {
-  html {
+  .AdultOrthodontics {
     font-size: 2.6666666667vw;
     font-size: calc(2.66667vw - var(--sbw) / 37.5);
   }
 }
 @media screen and (min-width:769px) and (max-width:1079px) {
-  html {
+ .AdultOrthodontics {
     font-size: 0.9765625vw;
     font-size: calc(0.97656vw - var(--sbw) / 102.4);
   }
 }
 @media screen and (min-width:1080px) {
-  html {
+ .AdultOrthodontics {
     font-size: 0.6944444444vw;
     font-size: calc(0.69444vw - var(--sbw) / 144);
   }
 }
 @media screen and (min-width:1440px) {
-  html {
+  .AdultOrthodontics {
     font-size: 0.6944444444vw;
     font-size: calc(0.69444vw - var(--sbw) / 144);
   }
 }
 @media screen and (min-width:1920px) {
-  html {
+ .AdultOrthodontics {
     font-size: 0.625vw;
     font-size: calc(0.625vw - var(--sbw) / 160);
   }
@@ -150,7 +150,7 @@
   .MainSectionItem-innerSticky {
     align-items: flex-start;
     justify-content: flex-start;
-    padding-left: 16rem;
+    padding-left: 12rem;
     padding-top: 10vh;
   }
 }
@@ -343,7 +343,7 @@
   .MainSection-head {
     height: 100%;
     left: 0;
-    padding-left: 16rem;
+    padding-left: 12rem;
     pointer-events: none;
     position: absolute;
     top: 10vh;

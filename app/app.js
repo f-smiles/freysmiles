@@ -17,6 +17,7 @@ export default function App({ children, user }) {
             <Toast />
             {children}
           </main>
+          <script src="https://embed.acuityscheduling.com/js/embed.js" type="text/javascript"></script>
           {/* <Footer /> */}
         </PersistGate>
       </Provider>
