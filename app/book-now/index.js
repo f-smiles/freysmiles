@@ -509,7 +509,7 @@ export default function BookNow() {
     </h1>
 
     <p className="mt-4 text-[14px] lg:text-[16px] font-neuehaas35 text-center leading-relaxed">
-      Text Us: 610-437-4748
+      Text Us: 610-437-4748 <br/>
       Email Us: info@freysmiles.com
     </p>
   </section>
@@ -528,8 +528,8 @@ export default function BookNow() {
   </div>
 
 </div>
-<section  className="relative w-full">
-  {/* <div style={{ 
+{/* <section  className="relative w-full">
+  <div style={{ 
     position: 'fixed', 
     top: 0, 
     left: 0, 
@@ -540,7 +540,7 @@ export default function BookNow() {
     <Canvas>
       <RaymarchingShader />
     </Canvas>
-  </div> */}
+  </div>
 
         <div className="relative z-10 ">
           
@@ -602,15 +602,15 @@ export default function BookNow() {
             <div className="acuity-font flex items-center justify-center w-1/2">
             <iframe src="https://app.acuityscheduling.com/schedule.php?owner=37685601&ref=embedded_csp" title="Schedule Appointment" width="100%" height="800" frameBorder="0" allow="payment"></iframe>
             
-              {/* <iframe
+              <iframe
                 src="https://app.acuityscheduling.com/schedule.php?owner=35912720"
                 title="Schedule Appointment"
                 className="w-full max-w-[820px] min-h-[90vh] "
-              /> */}
+              />
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* <div ref={containerRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black">
 <svg ref={starRef} width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0_116_153)"> <path d="M100 0C103.395 53.7596 146.24 96.6052 200 100C146.24 103.395 103.395 146.24 100 200C96.6052 146.24 53.7596 103.395 0 100C53.7596 96.6052 96.6052 53.7596 100 0Z" fill="url(#paint0_linear_116_153)"/> </g> <defs> <linearGradient id="paint0_linear_116_153" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse"> <stop stop-color="#DF99F7"/> <stop offset="1" stop-color="#FFDBB0"/> </linearGradient> <clipPath id="clip0_116_153"> <rect width="200" height="200" fill="white"/> </clipPath> </defs> </svg>
