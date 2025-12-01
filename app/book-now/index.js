@@ -487,15 +487,26 @@ export default function BookNow() {
 
 <section
   className="relative z-10 w-full h-screen flex flex-col items-center justify-center text-white"
-  style={{
-    background: "linear-gradient(135deg, #a8c5ff 0%, #c5a8ff 40%, #e5caff 100%)"
+ style={{
+    background: `
+      linear-gradient(
+        180deg,
+        #e9dccd 0%,
+        #e8c1b0 20%,
+        #d9b7b6 40%,
+        #c4b8c9 60%,
+        #b7bfd8 80%,
+        #aebfda 100%
+      )
+    `
   }}
 >
   <h1 className="text-4xl lg:text-6xl font-canelathin tracking-tight">
-    Coming soon
+  Website Coming Soon
   </h1>
   <p className="mt-4 text-[14px] lg:text-[16px] font-neuehaas35">
-    Scroll down to book
+    Text Us: 610-437-4748 <br />
+    Email: info@freysmiles.com
   </p>
 </section>
 
