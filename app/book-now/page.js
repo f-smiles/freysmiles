@@ -1,4 +1,4 @@
-import BookNow from "."
+import BookNow from "./index"
 
 export const metadata = {
   title: "Book Now",
