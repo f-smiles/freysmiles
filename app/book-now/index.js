@@ -437,7 +437,7 @@ const CopyButton = ({ text, label }) => {
     if (!success && textareaRef.current) {
       const el = textareaRef.current;
       el.value = text;
-      el.select();
+el.setSelectionRange(0, text.length);
       try {
         success = document.execCommand("copy");
       } catch (err) {

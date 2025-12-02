@@ -1,41 +1,42 @@
 :root {
-  --terra: #E9E15B;
+  --terra: #E6CE40;
   --green: #B4B534;
-  --pink: #A4CEFF  ;
-  --blue: #D5BADE ;
+  --pink: #E37632 ;
+  --blue:#CAE7F7;
   --black: #0e0e0e;
   --beige: #C7C6FE;
-  --grey: #FCA21D;
+  --grey: #E8A32B;
   --91c5acce: 5;
   --sbw: 0px;
 }
 /* #DBE3FD */
+/* #94C001 */
 @media screen and (max-width:768px) {
-  .AdultOrthodontics {
+  html {
     font-size: 2.6666666667vw;
     font-size: calc(2.66667vw - var(--sbw) / 37.5);
   }
 }
 @media screen and (min-width:769px) and (max-width:1079px) {
- .AdultOrthodontics {
+ html{
     font-size: 0.9765625vw;
     font-size: calc(0.97656vw - var(--sbw) / 102.4);
   }
 }
 @media screen and (min-width:1080px) {
- .AdultOrthodontics {
+ html {
     font-size: 0.6944444444vw;
     font-size: calc(0.69444vw - var(--sbw) / 144);
   }
 }
 @media screen and (min-width:1440px) {
-  .AdultOrthodontics {
+  html {
     font-size: 0.6944444444vw;
     font-size: calc(0.69444vw - var(--sbw) / 144);
   }
 }
 @media screen and (min-width:1920px) {
- .AdultOrthodontics {
+ html {
     font-size: 0.625vw;
     font-size: calc(0.625vw - var(--sbw) / 160);
   }
