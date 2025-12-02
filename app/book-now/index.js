@@ -412,16 +412,15 @@ const CopyButton = ({ text, label }) => {
   };
 
   return (
-    <button
-      onClick={handleCopy}
-      className="
-        relative px-5 py-2 rounded-full text-[12px] tracking-wider
-        border border-white transition-all duration-300
-        text-white bg-transparent
-        overflow-hidden
-      "
-    >
-
+  <button
+  onClick={handleCopy}
+  className="
+    relative px-5 py-2 rounded-full text-[12px] tracking-wider
+    border-[0.2px] border-white transition-all duration-300
+    text-white bg-transparent
+    overflow-hidden
+  "
+>
       <span
         className={`
           transition-opacity duration-300
@@ -434,7 +433,7 @@ const CopyButton = ({ text, label }) => {
 
       <span
         className={`
-          absolute inset-0 flex items-center justify-center
+          font-neuehaas45 absolute inset-0 flex items-center justify-center
           transition-opacity duration-300
           ${copied ? "opacity-100" : "opacity-0"}
         `}
@@ -623,8 +622,8 @@ useEffect(() => {
 
 <div
   className="
-    tracking-wider text-[14px] lg:text-[16px]
-    font-neuehaas45 leading-relaxed
+     text-[14px] lg:text-[16px]
+    font-neuehaas35 leading-relaxed
     absolute top-[72%] right-8 z-10 text-left
     -translate-y-1/2
   "
