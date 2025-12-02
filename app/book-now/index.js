@@ -613,7 +613,7 @@ useEffect(() => {
     ref={containerOneRef}
   >
     <h1
-      className="text-4xl lg:text-6xl font-canelathin tracking-tight text-center"
+      className="lowercase text-[32px] lg:text-[34px] font-seaword text-center"
       ref={h1Ref}
     >
       Website Coming Soon

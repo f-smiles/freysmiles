@@ -24,6 +24,11 @@
 }
 
 @font-face {
+  font-family: "Seaword2";
+  src: url("/fonts/Seaword2.ttf") format("truetype");
+}
+
+@font-face {
   font-family: "ChivoMono";
   src: url("/fonts/ChivoMono-ExtraLight.ttf") format("truetype");
 }
