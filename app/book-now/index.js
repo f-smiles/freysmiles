@@ -408,52 +408,44 @@ const CopyButton = ({ text, label }) => {
   const textareaRef = useRef(null);
 
   useEffect(() => {
-
-    if (!textareaRef.current) {
-      textareaRef.current = document.createElement('textarea');
-      textareaRef.current.style.position = 'absolute';
-      textareaRef.current.style.left = '-9999px';
-      textareaRef.current.style.opacity = '0';
-      textareaRef.current.style.height = '0';
-      textareaRef.current.style.width = '0';
-      document.body.appendChild(textareaRef.current);
-    }
-
+    // Create hidden textarea fallback
+    const el = document.createElement("textarea");
+    el.style.position = "fixed";
+    el.style.opacity = "0";
+    el.style.pointerEvents = "none";
+    el.style.zIndex = "-9999";
+    textareaRef.current = el;
+    document.body.appendChild(el);
 
     return () => {
-      if (textareaRef.current) {
-        document.body.removeChild(textareaRef.current);
-      }
+      document.body.removeChild(el);
     };
   }, []);
 
-  const handleCopy = () => {
-    let copiedSuccessfully = false;
+  const handleCopy = async () => {
+    let success = false;
 
     if (navigator?.clipboard?.writeText) {
-
-      navigator.clipboard.writeText(text).then(
-        () => { copiedSuccessfully = true; },
-        (err) => { console.warn('Clipboard API failed:', err); }
-      );
-    } else {
-
-      const textarea = textareaRef.current;
-      if (textarea) {
-        textarea.value = text;
-        textarea.select();
-        textarea.setSelectionRange(0, 99999); 
-        try {
-          copiedSuccessfully = document.execCommand('copy');
-          textarea.blur(); 
-        } catch (err) {
-          console.warn('Fallback copy failed:', err);
-        }
+      try {
+        await navigator.clipboard.writeText(text);
+        success = true;
+      } catch (err) {
+        console.warn("Clipboard API failed:", err);
       }
     }
 
+    if (!success && textareaRef.current) {
+      const el = textareaRef.current;
+      el.value = text;
+      el.select();
+      try {
+        success = document.execCommand("copy");
+      } catch (err) {
+        console.warn("execCommand fallback failed:", err);
+      }
+    }
 
-    if (copiedSuccessfully) {
+    if (success) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1400);
     }
@@ -469,10 +461,11 @@ const CopyButton = ({ text, label }) => {
         overflow-hidden
       "
     >
+
       <span
         className={`
           transition-opacity duration-300
-          ${copied ? 'opacity-0' : 'opacity-100'}
+          ${copied ? "opacity-0" : "opacity-100"}
         `}
       >
         {label}
@@ -482,7 +475,7 @@ const CopyButton = ({ text, label }) => {
         className={`
           font-neuehaas45 absolute inset-0 flex items-center justify-center
           transition-opacity duration-300
-          ${copied ? 'opacity-100' : 'opacity-0'}
+          ${copied ? "opacity-100" : "opacity-0"}
         `}
       >
         COPIED
@@ -660,7 +653,7 @@ useEffect(() => {
     ref={containerOneRef}
   >
     <h1
-      className="lowercase text-[32px] lg:text-[34px] font-seawor text-center"
+      className="lowercase text-[32px] lg:text-[34px] font-seaword text-center"
       ref={h1Ref}
     >
       Website Coming Soon
