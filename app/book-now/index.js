@@ -14,8 +14,8 @@ import { useThree, useFrame, extend, Canvas } from "@react-three/fiber";
 import * as THREE from "three";
 import { NormalBlending } from 'three';
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-
-gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin);
+import { SplitText } from 'gsap/SplitText';
+gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin, SplitText);
 
 extend({ OrbitControls, EffectComposer });
 
@@ -323,82 +323,127 @@ void main() {
 `;
 
 const fragmentShader = `
-
 #define S(a,b,t) smoothstep(a,b,t)
 
 uniform float iTime;
 uniform vec3 iResolution;
 varying vec2 vUv;
 
-mat2 Rot(float a) {
+mat2 Rot(float a)
+{
     float s = sin(a);
     float c = cos(a);
     return mat2(c, -s, s, c);
 }
-
-vec2 hash(vec2 p) {
-    p = vec2(
-        dot(p, vec2(2127.1, 81.17)),
-        dot(p, vec2(1269.5, 283.37))
-    );
-    return fract(sin(p) * 43758.5453);
+// Created by inigo quilez - iq/2014
+// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+vec2 hash( vec2 p )
+{
+    p = vec2( dot(p,vec2(2127.1,81.17)), dot(p,vec2(1269.5,283.37)) );
+    return fract(sin(p)*43758.5453);
 }
 
-float noise(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    vec2 u = f * f * (3.0 - 2.0 * f);
-
-    float n = mix(
-        mix(
-            dot(-1.0 + 2.0 * hash(i + vec2(0,0)), f - vec2(0,0)),
-            dot(-1.0 + 2.0 * hash(i + vec2(1,0)), f - vec2(1,0)),
-            u.x
-        ),
-        mix(
-            dot(-1.0 + 2.0 * hash(i + vec2(0,1)), f - vec2(0,1)),
-            dot(-1.0 + 2.0 * hash(i + vec2(1,1)), f - vec2(1,1)),
-            u.x
-        ),
-        u.y
-    );
-
-    return 0.5 + 0.5 * n;
+float noise( in vec2 p )
+{
+    vec2 i = floor( p );
+    vec2 f = fract( p );
+    vec2 u = f*f*(3.0-2.0*f);
+    float n = mix( mix( dot( -1.0+2.0*hash( i + vec2(0.0,0.0) ), f - vec2(0.0,0.0) ),
+                        dot( -1.0+2.0*hash( i + vec2(1.0,0.0) ), f - vec2(1.0,0.0) ), u.x),
+                   mix( dot( -1.0+2.0*hash( i + vec2(0.0,1.0) ), f - vec2(0.0,1.0) ),
+                        dot( -1.0+2.0*hash( i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), u.x), u.y);
+    return 0.5 + 0.5*n;
 }
 
 void main() {
-    vec2 fragCoord = vUv * iResolution.xy;
+    // Convert to fragCoord like Shadertoy
+    vec2 fragCoord = vec2(vUv.x * iResolution.x, vUv.y * iResolution.y);
     vec2 uv = fragCoord / iResolution.xy;
-
     float ratio = iResolution.x / iResolution.y;
-    vec2 tuv = uv - 0.5;
-
-    float degree = noise(vec2(iTime * 0.1, tuv.x * tuv.y));
-
-    tuv.y *= 1.0 / ratio;
-    tuv *= Rot(radians((degree - 0.5) * 720.0 + 180.0));
+    vec2 tuv = uv;
+    tuv -= .5;
+    // rotate with Noise
+    float degree = noise(vec2(iTime*.1, tuv.x*tuv.y));
+    tuv.y *= 1./ratio;
+    tuv *= Rot(radians((degree-.5)*720.+75.));
     tuv.y *= ratio;
-
-    float frequency = 5.0;
-    float amplitude = 30.0;
-    float speed = iTime * 2.0;
-
-    tuv.x += sin(tuv.y * frequency + speed) / amplitude;
-    tuv.y += sin(tuv.x * frequency * 1.5 + speed) / (amplitude * 0.5);
-
-    vec3 colorYellow = vec3(0.957, 0.804, 0.623);
-    vec3 colorDeepBlue = vec3(0.192, 0.384, 0.933);
-    vec3 layer1 = mix(colorYellow, colorDeepBlue, S(-0.3, 0.2, (tuv * Rot(radians(-5.0))).x));
-
-    vec3 colorRed = vec3(0.910, 0.510, 0.8);
-    vec3 colorBlue = vec3(0.350, 0.71, 0.953);
-    vec3 layer2 = mix(colorRed, colorBlue, S(-0.3, 0.2, (tuv * Rot(radians(-5.0))).x));
-
-    vec3 finalComp = mix(layer1, layer2, S(0.5, -0.3, tuv.y));
-
-    gl_FragColor = vec4(finalComp, 1.0);
+   
+    // Wave warp with sin
+    float frequency = 2.;
+    float amplitude = 30.;
+    float speed = iTime * 4.;
+    tuv.x += sin(tuv.y*frequency+speed)/amplitude;
+    tuv.y += sin(tuv.x*frequency*1.5+speed)/(amplitude*.5);
+   
+   
+    // draw the image
+    // Your 6 exact Frey gradient hex colors (adapted to the shader's color slots)
+    vec3 colorWhite = vec3(0.9137, 0.8627, 0.8039); // #e9dccd (TOP, assigned to white)
+    vec3 colorRed = vec3(0.9098, 0.7569, 0.6863); // #e8c1b0 (assigned to red)
+    vec3 colorPurple = vec3(0.7686, 0.7216, 0.7882); // #c4b8c9 (assigned to purple)
+    vec3 colorGreen = vec3(0.7176, 0.7490, 0.8471); // #b7bfd8 (assigned to green)
+    vec3 colorBlue = vec3(0.6824, 0.7490, 0.8549); // #aebfda (BOTTOM, assigned to blue)
+    vec3 colorYellow = vec3(0.8509, 0.7176, 0.7137); // #d9b7b6 (assigned to yellow)
+   
+    vec3 layer1 = mix(colorRed, colorYellow, S(-.6, .2, (tuv*Rot(radians(-5.))).x));
+    layer1 = mix(layer1, colorWhite, S(-.6, .2, (tuv*Rot(radians(-5.))).x));
+    layer1 = mix(layer1, colorPurple, S(-.2, .6, (tuv*Rot(radians(-5.))).x));
+   
+    vec3 layer2 = mix(colorRed, colorYellow, S(-.8, .2, (tuv*Rot(radians(-5.))).x));
+    layer2 = mix(layer2, colorGreen, S(-.1, .9, (tuv*Rot(radians(-5.))).x));
+    layer2 = mix(layer2, colorBlue, S(-.5, .5, (tuv*Rot(radians(-5.))).x));
+   
+    vec3 finalComp = mix(layer1, layer2, S(.7, -.5, tuv.y));
+   
+    vec3 col = finalComp;
+   
+    gl_FragColor = vec4(col, 1.0);
 }
 `;
+
+
+const CopyButton = ({ text, label }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1400);
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="
+        relative px-5 py-2 rounded-full text-[12px] tracking-wider
+        border border-white transition-all duration-300
+        text-white bg-transparent
+        overflow-hidden
+      "
+    >
+
+      <span
+        className={`
+          transition-opacity duration-300
+          ${copied ? "opacity-0" : "opacity-100"}
+        `}
+      >
+        {label}
+      </span>
+
+
+      <span
+        className={`
+          absolute inset-0 flex items-center justify-center
+          transition-opacity duration-300
+          ${copied ? "opacity-100" : "opacity-0"}
+        `}
+      >
+        COPIED
+      </span>
+    </button>
+  );
+};
 
 export default function BookNow() {
   
@@ -481,43 +526,125 @@ export default function BookNow() {
 
   //   return () => ctx.revert()
   // }, [])
+const containerOneRef = useRef(null);
+  const h1Ref = useRef(null);
+
+useEffect(() => {
+  if (!h1Ref.current) return;
+
+  const split = new SplitText(h1Ref.current, { types: "chars" });
+  const chars = split.chars;
+
+
+  gsap.set(chars, {
+    y: 100,
+    rotation: 2,    
+    opacity: 0,
+    force3D: true
+  });
+
+  gsap.to(chars, {
+    y: 0,
+    rotation: 0,
+    opacity: 1,
+    duration: 1,    
+    ease: "power3.inOut",
+    stagger: 0.1,   
+  });
+
+  return () => split.revert();
+}, []);
+
+
 
   return (
     <>
 
 <div className="flex flex-col lg:flex-row w-full h-screen">
 
+<section
+  className="relative z-10 w-full lg:w-1/2 h-[50vh] lg:h-full 
+             flex flex-col items-center justify-center text-white p-8 overflow-hidden"
+>
 
-  <section
-    className="relative z-10 w-full lg:w-1/2 h-[50vh] lg:h-full flex flex-col items-center justify-center text-white p-8"
-    style={{
-      background: `
-        linear-gradient(
-          180deg,
-          #e9dccd 0%,
-          #e8c1b0 20%,
-          #d9b7b6 40%,
-          #c4b8c9 60%,
-          #b7bfd8 80%,
-          #aebfda 100%
-        )
-      `
-    }}
+  <div className="absolute inset-0 -z-10">
+    <Canvas
+      orthographic
+      camera={{ zoom: 1, position: [0, 0, 1] }}
+      className="w-full h-full"
+    >
+      <ShaderBackground />
+    </Canvas>
+  </div>
+
+  <div className="pointer-events-none absolute inset-0 z-0">
+    <div
+      className="
+        absolute 
+        w-[400px] h-[400px]
+        border border-white/35 
+        rounded-full
+        top-[100px]     
+        right-[40px]   
+      "
+    />
+    <div
+      className="
+        absolute 
+        w-[450px] h-[450px]
+        border border-white/30
+        rounded-full
+        bottom-[60px] 
+        left-[0px]    
+      "
+    />
+  </div>
+
+
+  <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+    <div className="circle-loader relative">
+      {[0, 1, 2, 3, 4].map((i) => (
+        <div key={i} className={`circle circle-${i}`} />
+      ))}
+    </div>
+  </div>
+
+  <div
+    className="relative z-10 flex flex-col items-center overflow-hidden"
+    ref={containerOneRef}
   >
-    <h1 className="text-4xl lg:text-6xl font-canelathin tracking-tight text-center">
+    <h1
+      className="text-4xl lg:text-6xl font-canelathin tracking-tight text-center"
+      ref={h1Ref}
+    >
       Website Coming Soon
     </h1>
+  </div>
 
-    <p className="mt-4 text-[14px] lg:text-[16px] font-neuehaas35 text-center leading-relaxed">
-      Text Us: 610-437-4748 <br/>
-      Email Us: info@freysmiles.com
-    </p>
-  </section>
-
+<div
+  className="
+    tracking-wider text-[14px] lg:text-[16px]
+    font-neuehaas45 leading-relaxed
+    absolute top-[72%] right-8 z-10 text-left
+    -translate-y-1/2
+  "
+>
+  <div className="flex flex-col gap-3 items-start">
+    <CopyButton 
+      text="610-437-4748" 
+      label="Copy 610-437-4748" 
+    />
+    <CopyButton 
+      text="info@freysmiles.com" 
+      label="Copy Email" 
+    />
+  </div>
+</div>
+</section>
 
   <div className="acuity-font w-full lg:w-1/2 h-[50vh] lg:h-full flex items-center justify-center bg-white">
     <iframe
-      src="https://app.acuityscheduling.com/schedule.php?owner=37685601&ref=embedded_csp"
+      src="https://app.acuityscheduling.com/schedule.php?owner=37690830"
       title="Schedule Appointment"
       width="100%"
       height="100%"

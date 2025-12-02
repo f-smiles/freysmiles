@@ -69,7 +69,10 @@
   src: url("/fonts/Canela-ThinItalic-Trial.otf") format("opentype");
 }
 
-
+@font-face {
+  font-family: "Canela-ThinStraight";
+  src: url("/fonts/CanelaText-Thin-Trial.otf") format("opentype");
+}
 @font-face {
   font-family: "Amribail";
   src: url("/fonts/Amribail.ttf") format("truetype");
@@ -6258,13 +6261,38 @@ body,
 
 .faded {
  color: #FFF;
-
-
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 
-.btn{
-     font-family: "UnifrakturMaguntia", serif !important;
+@keyframes rotate-animation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
+
+.circle-loader {
+  position: relative;
+  width: 12em;
+  height: 12em;
+}
+
+.circle {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -0.3em;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  transform-origin: 0.3em 6em;
+  background-color: #ffffffbb;
+  animation: rotate-animation 6.5s infinite;
+  box-shadow: 0 0 0.6em rgba(255, 255, 255, 0.5);
+}
+
+.circle-0 { animation-timing-function: cubic-bezier(0, 0, 1, 1); }
+.circle-1 { animation-timing-function: cubic-bezier(0.16, 0, 0.84, 1); }
+.circle-2 { animation-timing-function: cubic-bezier(0.32, 0, 0.68, 1); }
+.circle-3 { animation-timing-function: cubic-bezier(0.48, 0, 0.52, 1); }
+.circle-4 { animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }

@@ -41,6 +41,7 @@ module.exports = withUt({
 		calyx: 'Calyx Regular',
 		canelalight:'Canela-LightItalic',
 		canelathin:'Canela-ThinItalic',
+		canelathinstraight:'Canela-ThinStraight',
   		cera: 'CeraProRegular',
   		'cera-bold': 'CeraProBold',
   		'Chaney-Ultra': 'Chaney-Ultra',
