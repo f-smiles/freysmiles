@@ -504,7 +504,7 @@ export default function BookNow() {
       `
     }}
   >
-    <h1 className="text-4xl lg:text-6xl font-canelathin tracking-tight text-center">
+    <h1 className="text-4xl lg:text-6xl tracking-tight text-center font-sinistre">
       Website Coming Soon
     </h1>
 
