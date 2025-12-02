@@ -1,6 +1,6 @@
 'use client'
 
-export default function App({ children, user }) {
+export default function App({ children }) {
   return (
     <main>
       {children}

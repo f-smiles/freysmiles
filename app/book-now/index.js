@@ -1,16 +1,13 @@
 "use client";
 
-import { Renderer, Program, Mesh, Plane, Uniform } from "wtc-gl";
-import { Vec2, Mat2 } from "wtc-math";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import React, { useRef, useEffect, useState, useMemo } from "react";
-import { motion } from "framer-motion";
 import "tw-elements";
 import gsap from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import { Text, OrbitControls } from "@react-three/drei";
-import { useThree, useFrame, extend, Canvas } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
+import { useThree, useFrame, extend } from "@react-three/fiber";
 import * as THREE from "three";
 import { NormalBlending } from 'three';
 import { EffectComposer, Bloom } from "@react-three/postprocessing";

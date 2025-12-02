@@ -1,7 +1,6 @@
 import './globals.css'
 import "@/public/styles/uploadthing.css"
 import "@/public/styles/index.css"
-import { auth } from '@/server/auth'
 import App from './app'
 
 
@@ -20,7 +19,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body suppressHydrationWarning>
-        <App user={session?.user}>
+        <App>
           {children}
         </App>
       </body>
