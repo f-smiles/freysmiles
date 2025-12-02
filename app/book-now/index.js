@@ -324,6 +324,7 @@ void main() {
 
 const fragmentShader = `
 #define S(a,b,t) smoothstep(a,b,t)
+precision mediump float;
 
 uniform float iTime;
 uniform vec3 iResolution;
@@ -404,54 +405,84 @@ void main() {
 
 const CopyButton = ({ text, label }) => {
   const [copied, setCopied] = useState(false);
-const handleCopy = () => {
-  if (navigator?.clipboard?.writeText) {
-    navigator.clipboard.writeText(text);
-  } else {
-    // iOS fallback
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.style.position = "fixed";
-    textarea.style.opacity = "0";
-    document.body.appendChild(textarea);
-    textarea.select();
-    try {
-      document.execCommand("copy");
-    } catch (err) {
-      console.warn("Copy failed:", err);
-    }
-    document.body.removeChild(textarea);
-  }
+  const textareaRef = useRef(null);
 
-  setCopied(true);
-  setTimeout(() => setCopied(false), 1400);
-};
+  useEffect(() => {
+
+    if (!textareaRef.current) {
+      textareaRef.current = document.createElement('textarea');
+      textareaRef.current.style.position = 'absolute';
+      textareaRef.current.style.left = '-9999px';
+      textareaRef.current.style.opacity = '0';
+      textareaRef.current.style.height = '0';
+      textareaRef.current.style.width = '0';
+      document.body.appendChild(textareaRef.current);
+    }
+
+
+    return () => {
+      if (textareaRef.current) {
+        document.body.removeChild(textareaRef.current);
+      }
+    };
+  }, []);
+
+  const handleCopy = () => {
+    let copiedSuccessfully = false;
+
+    if (navigator?.clipboard?.writeText) {
+
+      navigator.clipboard.writeText(text).then(
+        () => { copiedSuccessfully = true; },
+        (err) => { console.warn('Clipboard API failed:', err); }
+      );
+    } else {
+
+      const textarea = textareaRef.current;
+      if (textarea) {
+        textarea.value = text;
+        textarea.select();
+        textarea.setSelectionRange(0, 99999); 
+        try {
+          copiedSuccessfully = document.execCommand('copy');
+          textarea.blur(); 
+        } catch (err) {
+          console.warn('Fallback copy failed:', err);
+        }
+      }
+    }
+
+
+    if (copiedSuccessfully) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
+    }
+  };
 
   return (
-  <button
-  onClick={handleCopy}
-  className="
-    relative px-5 py-2 rounded-full text-[12px] tracking-wider
-    border-[0.2px] border-white transition-all duration-300
-    text-white bg-transparent
-    overflow-hidden
-  "
->
+    <button
+      onClick={handleCopy}
+      className="
+        relative px-5 py-2 rounded-full text-[12px] tracking-wider
+        border-[0.2px] border-white transition-all duration-300
+        text-white bg-transparent
+        overflow-hidden
+      "
+    >
       <span
         className={`
           transition-opacity duration-300
-          ${copied ? "opacity-0" : "opacity-100"}
+          ${copied ? 'opacity-0' : 'opacity-100'}
         `}
       >
         {label}
       </span>
 
-
       <span
         className={`
           font-neuehaas45 absolute inset-0 flex items-center justify-center
           transition-opacity duration-300
-          ${copied ? "opacity-100" : "opacity-0"}
+          ${copied ? 'opacity-100' : 'opacity-0'}
         `}
       >
         COPIED
@@ -629,7 +660,7 @@ useEffect(() => {
     ref={containerOneRef}
   >
     <h1
-      className="lowercase text-[32px] lg:text-[34px] font-seaword text-center"
+      className="lowercase text-[32px] lg:text-[34px] font-seawor text-center"
       ref={h1Ref}
     >
       Website Coming Soon
