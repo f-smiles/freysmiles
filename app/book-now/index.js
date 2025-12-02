@@ -31,7 +31,7 @@ export default function BookNow() {
 
       <div className="acuity-font w-full lg:w-1/2 h-[50vh] lg:h-full flex items-center justify-center bg-white">
         <iframe
-          src="https://app.acuityscheduling.com/schedule.php?owner=37685601&ref=embedded_csp"
+          src={process.env.NEXT_PUBLIC_ACUITY_SCHEDULING_SRC}
           title="Schedule Appointment"
           width="100%"
           height="100%"
