@@ -404,12 +404,28 @@ void main() {
 
 const CopyButton = ({ text, label }) => {
   const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
+const handleCopy = () => {
+  if (navigator?.clipboard?.writeText) {
     navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1400);
-  };
+  } else {
+    // iOS fallback
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+    } catch (err) {
+      console.warn("Copy failed:", err);
+    }
+    document.body.removeChild(textarea);
+  }
+
+  setCopied(true);
+  setTimeout(() => setCopied(false), 1400);
+};
 
   return (
   <button
@@ -613,7 +629,7 @@ useEffect(() => {
     ref={containerOneRef}
   >
     <h1
-      className="lowercase text-[32px] lg:text-[34px] font-seaword text-center"
+      className="lowercase text-[32px] lg:text-[34px] font-canelathin text-center"
       ref={h1Ref}
     >
       Website Coming Soon
@@ -631,11 +647,11 @@ useEffect(() => {
   <div className="flex flex-col gap-3 items-start">
     <CopyButton 
       text="610-437-4748" 
-      label="Copy 610-437-4748" 
+      label="copy 610-437-4748" 
     />
     <CopyButton 
       text="info@freysmiles.com" 
-      label="Copy Email" 
+      label="copy email" 
     />
   </div>
 </div>
