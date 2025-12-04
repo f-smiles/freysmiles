@@ -1,5 +1,4 @@
 "use client";
-
 import { Renderer, Program, Mesh, Plane, Uniform } from "wtc-gl";
 import { Vec2, Mat2 } from "wtc-math";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
@@ -407,20 +406,32 @@ const CopyButton = ({ text, label }) => {
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef(null);
 
-  useEffect(() => {
-    // Create hidden textarea fallback
-    const el = document.createElement("textarea");
-    el.style.position = "fixed";
-    el.style.opacity = "0";
-    el.style.pointerEvents = "none";
-    el.style.zIndex = "-9999";
-    textareaRef.current = el;
-    document.body.appendChild(el);
+useEffect(() => {
 
-    return () => {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+
+  const el = document.createElement("textarea");
+  el.style.position = "fixed";
+  el.style.opacity = "0";
+  el.style.pointerEvents = "none";
+  el.style.zIndex = "-9999";
+
+  textareaRef.current = el;
+  
+
+  if (document.body) {
+    document.body.appendChild(el);
+  }
+
+  return () => {
+
+    if (typeof document !== "undefined" && 
+        document.body && 
+        document.body.contains(el)) {
       document.body.removeChild(el);
-    };
-  }, []);
+    }
+  };
+}, []);
 
   const handleCopy = async () => {
     let success = false;
@@ -569,7 +580,7 @@ const containerOneRef = useRef(null);
   const h1Ref = useRef(null);
 
 useEffect(() => {
-  if (!h1Ref.current) return;
+ if (typeof window === "undefined" || !h1Ref.current) return;
 
   const split = new SplitText(h1Ref.current, { types: "chars" });
   const chars = split.chars;
@@ -653,7 +664,7 @@ useEffect(() => {
     ref={containerOneRef}
   >
     <h1
-      className="lowercase text-[32px] lg:text-[34px] font-seaword text-center"
+      className="lowercase text-[32px] lg:text-[34px] font-canelathin text-center"
       ref={h1Ref}
     >
       Website Coming Soon
@@ -682,15 +693,7 @@ useEffect(() => {
 </section>
 
   <div className="acuity-font w-full lg:w-1/2 h-[50vh] lg:h-full flex items-center justify-center bg-white">
-    <iframe
-      src="https://app.acuityscheduling.com/schedule.php?owner=37690830"
-      title="Schedule Appointment"
-      width="100%"
-      height="100%"
-      frameBorder="0"
-      allow="payment"
-      className="border-0"
-    ></iframe>
+<iframe src="https://app.acuityscheduling.com/schedule.php?owner=37690830&ref=embedded_csp" title="Schedule Appointment" width="100%" height="800" frameBorder="0" allow="payment"></iframe>
   </div>
 
 </div>

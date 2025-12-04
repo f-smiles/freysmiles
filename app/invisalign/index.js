@@ -1,5 +1,6 @@
 "use client";
-import { RGBELoader } from "three-stdlib";
+import { Color } from "three";
+import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import Copy from "@/utils/Copy.jsx";
 import normalizeWheel from "normalize-wheel";
 import {
@@ -43,7 +44,7 @@ import { SplitText } from "gsap/all";
 import * as THREE from "three";
 import { Canvas, useLoader, useFrame, useThree, extend } from "@react-three/fiber";
 import { useMemo } from "react";
-import { Environment, OrbitControls, useTexture, shaderMaterial } from "@react-three/drei";
+import { Environment, OrbitControls, useTexture, shaderMaterial, useGLTF, Text3D, Center } from "@react-three/drei";
 import { TextureLoader, CubeTextureLoader } from "three";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
@@ -373,6 +374,7 @@ const WavePlane = forwardRef(({ uniformsRef }, ref) => {
     </mesh>
   );
 });
+
 const MorphingSphere = ({sectionRef}) => {
   const canvasRef = useRef(null);
   const sceneRef = useRef(null);
@@ -1090,140 +1092,7 @@ ScrollTrigger.create({
     </>
   );
 };
-function ShaderBeam({ width = 4, height = 8, position = [0, 0, -1] }) {
-  const meshRef = useRef();
-  const uniforms = useRef({
-    iResolution: { value: new THREE.Vector3() },
-    iTime: { value: 0 },
-  }).current;
 
-  useFrame(({ clock, size }) => {
-    uniforms.iResolution.value.set(size.width, size.height, 1);
-    uniforms.iTime.value = clock.getElapsedTime();
-  });
-
-  return (
-    <mesh ref={meshRef} position={position}>
-      <planeGeometry args={[width, height]} />
-      <shaderMaterial
-        uniforms={uniforms}
-        transparent
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-        vertexShader={`
-          varying vec2 vUv;
-          void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }
-        `}
-        fragmentShader={`
-          uniform vec3 iResolution;
-          uniform float iTime;
-          varying vec2 vUv;
-
-          void main() {
-            vec2 uv = vUv * 2.0 - 1.0;
-            
-            // Wider beam with smooth edges (unchanged for width maintenance)
-            float distX = abs(uv.x);
-            float core = smoothstep(0.5, 0.0, distX);  // solid-ish core
-            float outer = smoothstep(1.0, 0.4, distX); // soft edges
-
-            // Static vertical variation (no time-based travel; subtle shimmer without the blob)
-            float shimmer = 0.9 + 0.1 * sin(uv.y * 6.0);
-
-            // Purply blue energy tone with a touch more white in the core
-            vec3 colorTop = vec3(0.6, 0.7, 1.0); // Cooler purple-blue top
-            vec3 colorMid = vec3(0.95, 0.92, 1.0); // Subtle white tint in mid for glow
-            vec3 colorBot = vec3(0.5, 0.4, 0.9); // Deeper purple base
-            vec3 color = mix(colorTop, colorBot, uv.y * 0.5 + 0.5);
-            color = mix(color, colorMid, 0.4 * shimmer); // Less white dominance, static blend
-
-            // Beam brightness and alpha control (toned down for subtlety)
-            vec3 beamGlow = color * (core * 1.2 + outer * 0.3) * shimmer;
-            float alpha = clamp(core * 0.6 + outer * 0.2, 0.0, 1.0);
-
-            gl_FragColor = vec4(beamGlow * 0.7, alpha * 0.8); // Further reduced for cleaner look
-          }
-        `}
-      />
-    </mesh>
-  );
-}
-
-function FrostedGlassSphere({ position = [0, 0, 0] }) {
-  const meshRef = useRef();
-
-  const baseColor = useLoader(THREE.TextureLoader, "/images/Glass_Frosted_001_basecolor.jpg");
-  const normalMap = useLoader(THREE.TextureLoader, "/images/Glass_Frosted_001_normal.jpg");
-  const roughnessMap = useLoader(THREE.TextureLoader, "/images/Glass_Frosted_001_roughness.jpg");
-  const aoMap = useLoader(THREE.TextureLoader, "/images/Glass_Frosted_001_ambientOcclusion.jpg");
-  const heightMap = useLoader(THREE.TextureLoader, "/images/Glass_Frosted_001_height.png");
-
-  [baseColor, normalMap, roughnessMap, aoMap, heightMap].forEach((tex) => {
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(4, 4);
-    tex.anisotropy = 8;
-    tex.encoding = THREE.sRGBEncoding;
-  });
-
-  const geometry = useMemo(() => {
-    const geo = new THREE.SphereGeometry(1, 128, 128);
-    geo.attributes.uv2 = geo.attributes.uv;
-    return geo;
-  }, []);
-
-  useFrame((state, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.15;
-      meshRef.current.rotation.x += delta * 0.05;
-    }
-  });
-
-  return (
-  <group position={position}>
-      <mesh ref={meshRef} geometry={geometry} castShadow receiveShadow>
-        <meshPhysicalMaterial
-          map={baseColor}
-          normalMap={normalMap}
-          normalScale={new THREE.Vector2(1.2, 1.2)}
-          roughnessMap={roughnessMap}
-          aoMap={aoMap}
-          aoMapIntensity={0.08}
-          displacementMap={heightMap}
-          displacementScale={0.003}
-          metalness={0.45}
-          roughness={0.88}
-          transmission={0.92}
-          ior={1.45}
-          thickness={1.6}
-          attenuationColor="#bcdcff"        // 🌤 powdery light blue tone
-          attenuationDistance={1.5}         // tighter distance for more color saturation
-          clearcoat={0.6}
-          envMapIntensity={0.18}            // lower to remove the gray cast from reflections
-          color="#cfe5ff"                   // 🌤 soft pastel blue
-          transparent
-          opacity={1.0}
-          toneMapped
-          iridescence={0.8}
-          iridescenceIOR={1.25}
-          iridescenceThicknessMap={roughnessMap}
-          iridescenceThicknessMax={400}
-          sheen={0.8}
-          sheenColor="#d6ecff"
-          sheenRoughness={0.8}
-        />
-      </mesh>
-
-      {/* inner glow for diffusion */}
-      <mesh scale={0.97}>
-        <sphereGeometry args={[1, 64, 64]} />
-        <meshBasicMaterial color="#cde9ff" transparent opacity={0.35} />
-      </mesh>
-    </group>
-  );
-}
 const Invisalign = () => {
   const headingRef = useRef(null);
 
@@ -1487,100 +1356,25 @@ useEffect(() => {
 }, []);
 
 
-const noiseTex = useMemo(() => {
-    const size = 256;
-    const data = new Uint8Array(size * size * 4);
-    for (let i = 0; i < size * size; i++) {
-      const stride = i * 4;
-      data[stride] = (Math.random() * 256) | 0; // R
-      data[stride + 1] = (Math.random() * 256) | 0; // G (used in .y)
-      data[stride + 2] = (Math.random() * 256) | 0; // B (used in .z)
-      data[stride + 3] = 255; // A (used in .w)
-    }
-    const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
-    texture.needsUpdate = true;
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    return texture;
-  }, []);
 
-  const uniforms = useMemo(
-    () => ({
-      u_time: { value: 0 },
-      u_resolution: { value: new THREE.Vector3(1, 1, 1) },
-      u_channel1: { value: noiseTex },
-    }),
-    [noiseTex]
-  );
+
+
   return (
     <>
-
       {/* <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black "> */}
 
-
-<section className="relative min-h-screen flex flex-col text-neutral-900 font-sans overflow-hidden">
-        <div className="w-full h-screen">
-<Canvas
-  camera={{ position: [0, 0, 4], fov: 45 }}
-  gl={{
-    toneMapping: THREE.ACESFilmicToneMapping,
-    toneMappingExposure: 1.0,
-    outputEncoding: THREE.sRGBEncoding,
-    antialias: true,
-  }}
->
-  <Environment
-    files="/images/qwantani_night_puresky_4k.hdr"
-    background={false}
-    blur={2.5}
-  />
-
-  <pointLight position={[0, 0, -3]} intensity={1.0} color="#dbeeff" />
-  <pointLight position={[0, 0, 3]} intensity={1.2} color="#e9f6ff" />
-  <ambientLight intensity={0.55} color="#eaf3ff" />
-  <directionalLight position={[1.5, 2.5, 1.5]} intensity={1.5} color="#b0c4de" />
-
-
-<mesh position={[1.5, 0, -1]} rotation={[0, 0, Math.PI / 8]}>
-  <cylinderGeometry args={[0.002, 0.002, 10, 64]} />
-  <meshStandardMaterial
-    emissive="#ffffff"
-    emissiveIntensity={2.5}
-    color="#ffffff"
-    toneMapped={false}
-  />
-</mesh>
-<EffectComposer>
-<Bloom intensity={0.9} luminanceThreshold={0.8} />
-</EffectComposer>
-
-<group scale={0.5}>
-  <FrostedGlassSphere position={[0, 0, 0]} />
-</group>
-</Canvas>
-      </div>
-
-  <div className="absolute inset-0 -z-10">
-<div
-  className="absolute inset-0"
-  style={{
-    background: `radial-gradient(ellipse at center, #D8D8D8 0%, #D8DBDC 60%, #C9CCCE 100%)`,
-  }}
-/>
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <div className="w-[500px] h-[500px] rounded-full bg-[#fbe8dc] opacity-90 blur-[100px]" />
-    </div>
-  </div>
-
-
-
-  <div className="flex flex-col md:flex-row justify-between items-start px-8 md:px-16 py-16 md:py-28 gap-12">
+<section className="relative min-h-screen flex flex-col">
+  <div className="flex flex-col md:flex-row justify-between items-start px-8 md:px-16 gap-12">
     {/* Left */}
         <div className="relative pt-[33vh]">
+           <p className="leading-[1.3] font-canelathin text-[17px] md:text-[17px] text-[#0f172a] max-w-md">
+  The science of Invisalign is not in the clear aligners, but in overall design and prescription for tooth movement by our doctors based on the full facial evaluation to craft the smile that is perfect for you. Our experienced doctors are top experts and providers in clear aligner treatment.
+          </p>
+<div className="font-canelathin text-[26px] flex justify-center pt-[10vh]">
+  Experience that matters
+</div>
 
-
-          
-          <h2 className="text-5xl md:text-6xl leading-tight text-[#0f172a]">
+    {/* <h2 className="text-5xl md:text-6xl leading-tight text-[#0f172a]">
             <Copy>
               <div className="relative ml-10 text-[26px] sm:text-[26px] leading-tight text-black font-neuehaasdisplaythin">
                 <span className="font-normal">Our doctors </span>{" "}
@@ -1593,27 +1387,35 @@ const noiseTex = useMemo(() => {
                 <span className="font-normal">system.</span>{" "}
               </div>
             </Copy>
-          </h2>
+          </h2> */}
         </div>
 
     {/* Right */}
     <div className="flex-1 space-y-6 max-w-md">
      <div className="pt-[33vh] flex flex-col space-y-6">
-          <p className="leading-[1.2] font-neuehaas35 text-[15px] md:text-[15px] text-[#0f172a] max-w-md">
-  The science of Invisalign is not in the clear aligners, but in overall design and prescription for tooth movement by our doctors based on the full facial evaluation to craft the smile that is perfect for you. Our experienced doctors are top experts and providers in clear aligner treatment.
-          </p>
-          <div>
-            <a
-              href="#"
-              className="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-medium"
-            >
-              Read On
-            </a>
-          </div>
+
         </div>
     </div>
   </div>
 </section>
+
+<div style={{ width: "100vw", height: "100vh" }}>
+<Canvas
+  camera={{ position: [0, 0, 8], fov: 35 }}
+  gl={{
+    toneMapping: THREE.ACESFilmicToneMapping,
+    toneMappingExposure: 1.25,
+  }}
+>
+  <ambientLight intensity={1.2} />
+  <directionalLight intensity={1.6} position={[5, 5, 5]} />
+
+
+  <Environment preset="studio" />
+
+<GlassPanel rotation={[0, -0.1, 0.02]} position={[0, 0, 0]} />
+</Canvas>
+</div>
       {/* <div className="fixed inset-0 bg-black/10 -z-10"></div> */}
 
 
@@ -2862,6 +2664,47 @@ Treatment Duration
 };
 
 export default Invisalign;
+function GlassPanel(props) {
+  const hdri = useLoader(RGBELoader, "/images/industrial_sunset_puresky_4k.hdr");
+
+  hdri.mapping = THREE.EquirectangularReflectionMapping;
+
+  const scene = useThree((state) => state.scene);
+  useEffect(() => {
+    scene.environment = hdri;
+    scene.background = hdri;
+  }, [hdri]);
+
+  const material = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff,
+    roughness: 0.4,
+    metalness: 0.0,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.25,
+    ior: 1.3,
+    reflectivity: 0.1,
+    iridescence: 0.3,
+    iridescenceIOR: 1.1,
+    sheen: 0.5,
+    sheenRoughness: 0.5,
+    sheenColor: 0xffffff,
+    specularIntensity: 2.0,
+    specularColor: 0xffffff,
+    thickness: 3.0,
+    transmission: 1.0,
+    attenuationColor: "#ffffff",
+    attenuationDistance: 200,
+    transparent: true,
+    opacity: 1.0,
+  });
+
+  return (
+<mesh material={material} {...props}
+     rotation={[-0.25, 0.25, -0.05]}>
+<boxGeometry args={[3, 3, 0.3]} />
+    </mesh>
+  );
+}
 
 // const BulgeGallery = ({ slides }) => {
 //   const canvasWrapperRef = useRef();
