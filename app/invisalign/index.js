@@ -44,7 +44,7 @@ import { SplitText } from "gsap/all";
 import * as THREE from "three";
 import { Canvas, useLoader, useFrame, useThree, extend } from "@react-three/fiber";
 import { useMemo } from "react";
-import { Environment, OrbitControls, useTexture, shaderMaterial, useGLTF, Text3D, Center } from "@react-three/drei";
+import { Environment, OrbitControls, useTexture, shaderMaterial, useGLTF, Text, Center } from "@react-three/drei";
 import { TextureLoader, CubeTextureLoader } from "three";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
@@ -1252,61 +1252,52 @@ const Invisalign = () => {
   const addToTextRefs = (el) => el && textRefs.current.push(el);
   const addToSectionLineRefs = (el) => el && sectionLineRefs.current.push(el); 
   
- 
-  useEffect(() => {
-    gsap.set([...lineRefs.current, ...sectionLineRefs.current], {
-      scaleX: 0,
-      transformOrigin: "left center",
-    });
-    gsap.set(textRefs.current, { y: 20, opacity: 0 });
+useEffect(() => {
+  gsap.set([...lineRefs.current, ...sectionLineRefs.current], {
+    scaleX: 0,
+    transformOrigin: "center center", 
+  });
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top 80%",
-        toggleActions: "play none none none",
-      },
-    });
+  gsap.set(textRefs.current, { y: 20, opacity: 0 });
 
-    sectionLineRefs.current.forEach((line) => {
-      tl.to(
-        line,
-        {
-          scaleX: 1,
-          duration: 1.4,
-          ease: "power3.out",
-        },
-        0
-      );
-    });
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: containerRef.current,
+      start: "top 80%",
+      toggleActions: "play none none none",
+    },
+  });
 
-    lineRefs.current.forEach((line, i) => {
-      tl.to(
-        line,
-        {
-          scaleX: 1,
-          duration: 1.2,
-          ease: "power2.out",
-        },
-        0.5 + i * 0.15
-      );
-    });
 
-    textRefs.current.forEach((text, i) => {
-      tl.to(
-        text,
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: "power2.out",
-        },
-        0.7 + i * 0.07
-      );
-    });
+  sectionLineRefs.current.forEach((line) => {
+    tl.to(line, {
+      scaleX: 1,
+      duration: 1.6,
+      ease: "power3.out",
+    }, 0);
+  });
 
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
-  }, []);
+
+  lineRefs.current.forEach((line, i) => {
+    tl.to(line, {
+      scaleX: 1,
+      duration: 1.3,
+      ease: "power3.out",          
+    }, 0.4 + i * 0.12);   
+  });
+
+
+  textRefs.current.forEach((text, i) => {
+    tl.to(text, {
+      y: 0,
+      opacity: 1,
+      duration: 0.9,
+      ease: "power2.out",
+    }, 0.6 + i * 0.08);
+  });
+
+  return () => ScrollTrigger.getAll().forEach(t => t.kill());
+}, []);
   
   const sectionRef = useRef(null);
   const sphereRef = useRef(null);
@@ -1355,23 +1346,61 @@ useEffect(() => {
   return () => ctx.revert();
 }, []);
 
-
-
-
+const panes = [
+  {
+    position: [-5.2,  0.3,  1.6],
+    rotation: [0, 0, -0.12],   // only Z rotation → feels hand-placed, not tilted back
+    scale: .75,
+    title: "With over 40 years of combined experience, our doctors were the first in the region to offer Invisalign—setting the benchmark well before it became the industry standard.",
+    tag: "Expertise"
+  },
+  {
+    position: [-1.8, -0.2,  0.9],
+    rotation: [0, 0, 0.08],
+    scale: .75,
+    title: "We've proudly ranked among the top 1% of certified Invisalign providers nationwide — every year since 2000.",
+    tag: "Recognition"
+  },
+  {
+    position: [ 1.9,  0.4,  0.4],
+    rotation: [0, 0, -0.06],
+    scale: .75,
+    title: "We've treated over 10,000 cases.",
+    tag: "Proven Results"
+  },
+  {
+    position: [ 5.6, -0.1, -0.2],
+    rotation: [0, 0, 0.14],
+    scale: .75,
+    title: "Optional fourth card (matches the Coinbase one in the ref).",
+    tag: "Bonus"
+  }
+];
 
   return (
     <>
+    <NeonShaderBackground />
+      {/* <div className="absolute inset-0 -z-10">
+        <Canvas
+          orthographic
+          camera={{ zoom: 1, position: [0, 0, 1] }}
+          className="w-full h-full"
+        >
+          <ShaderBackground />
+        </Canvas>
+      </div> */}
       {/* <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black "> */}
 
 <section className="relative min-h-screen flex flex-col">
   <div className="flex flex-col md:flex-row justify-between items-start px-8 md:px-16 gap-12">
     {/* Left */}
         <div className="relative pt-[33vh]">
-           <p className="leading-[1.3] font-canelathin text-[17px] md:text-[17px] text-[#0f172a] max-w-md">
-  The science of Invisalign is not in the clear aligners, but in overall design and prescription for tooth movement by our doctors based on the full facial evaluation to craft the smile that is perfect for you. Our experienced doctors are top experts and providers in clear aligner treatment.
+           <p className="leading-[1.4] font-canelathin text-[.95em] md:text-[.95em] max-w-md">
+            The power of Invisalign lies not just in the clear aligners, but in the precision of digitally guided treatment planning. Each case is custom-designed by our doctors using comprehensive, board-eligible diagnostic records. It represents a departure from conventional orthodontics—never before have we been able to prescribe such targeted and controlled tooth movements.
+  {/* The science of Invisalign is not in the clear aligners, but in overall design and prescription for tooth movement by our doctors based on the full facial evaluation to craft the smile that is perfect for you. Our experienced doctors are top experts and providers in clear aligner treatment. */}
           </p>
-<div className="font-canelathin text-[26px] flex justify-center pt-[10vh]">
-  Experience that matters
+<div className="font-canelathin text-[24px] flex justify-center pt-[10vh]">
+  experience that matters 
 </div>
 
     {/* <h2 className="text-5xl md:text-6xl leading-tight text-[#0f172a]">
@@ -1399,599 +1428,30 @@ useEffect(() => {
   </div>
 </section>
 
-<div style={{ width: "100vw", height: "100vh" }}>
-<Canvas
-  camera={{ position: [0, 0, 8], fov: 35 }}
-  gl={{
-    toneMapping: THREE.ACESFilmicToneMapping,
-    toneMappingExposure: 1.25,
-  }}
->
-  <ambientLight intensity={1.2} />
-  <directionalLight intensity={1.6} position={[5, 5, 5]} />
+{/* <div style={{ width: "100vw", height: "100vh" }}>
+<Canvas>
+    <ambientLight intensity={0.3} />  
+    <directionalLight position={[5, 5, 5]} intensity={0.5} />  
 
-
-  <Environment preset="studio" />
-
-<GlassPanel rotation={[0, -0.1, 0.02]} position={[0, 0, 0]} />
-</Canvas>
-</div>
+    <pointLight position={[-2, 2, -1]} intensity={0.8} color="#ffaa00" distance={10} decay={2} />
+    
+{panes.map((pane, i) => (
+  <GlassPanel
+    key={i}
+    position={pane.position}
+    scale={pane.scale}
+    rotation={pane.rotation}
+    title={pane.title}
+    tag={pane.tag}
+    envMapIndex={i}
+  />
+))}
+  </Canvas>
+</div> */}
       {/* <div className="fixed inset-0 bg-black/10 -z-10"></div> */}
 
 
-      <div className="max-w-7xl mx-auto h-full grid grid-cols-1 md:grid-cols-2 gap-12 px-6 md:px-12">
-        
 
-
-{/* <style>{`
-        :root {
-          --foreground: #7fff00;
-
-          --speed: 4.5s;
-          --ease-out: cubic-bezier(0.68, -0.6, 0.32, 1.6);
-          --ease-in: cubic-bezier(0.68, -0.6, 0.32, 1.6);
-          --v0: 3%;
-          --v1: 4%;
-          --v2: 5%;
-          --v3: 6%;
-          --v4: 7%;
-          --v5: 8%;
-          --v6: 9%;
-          --v7: 10%;
-          --vmax: 10%;
-          --h0: 3%;
-          --h1: 4%;
-          --h2: 5%;
-          --h3: 6%;
-          --h4: 7%;
-          --h5: 8%;
-          --h6: 9%;
-          --h7: 10%;
-          --hmax: 6.66%;
-        }
-
-
-        #checkered {
-          position: relative;
-        }
-
-        #checkered::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 10;
-          background: var(--foreground);
-          mix-blend-mode: screen;
-        }
-
-        #fill {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 100;
- 
-          mix-blend-mode: multiply;
-        }
-
-        .layer {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          display: flex;
-          justify-content: center;
-          align-content: center;
-          align-items: center;
-        }
-
-        .layer > div {
-          width: 10%;
-          height: 100%;
-          background: white;
-          position: relative;
-          display: block;
-          backface-visibility: hidden;
-        }
-
-        .layer > div:nth-of-type(odd) {
-          background: black;
-        }
-
-        #vert {
-          flex-wrap: nowrap;
-          text-align: center;
-        }
-
-        #horz {
-          flex-wrap: wrap;
-          mix-blend-mode: difference;
-        }
-
-        #horz > div {
-          height: 6.66%;
-          flex-basis: 100%;
-        }
-
-        @keyframes center0 {
-          0% {
-            width: var(--v0);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            width: var(--v0);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            width: var(--v0);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes center1 {
-          0% {
-            width: var(--v1);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            width: var(--v1);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            width: var(--v1);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes center2 {
-          0% {
-            width: var(--v2);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            width: var(--v2);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            width: var(--v2);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes center3 {
-          0% {
-            width: var(--v3);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            width: var(--v3);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            width: var(--v3);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes center4 {
-          0% {
-            width: var(--v4);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            width: var(--v4);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            width: var(--v4);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes center5 {
-          0% {
-            width: var(--v5);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            width: var(--v5);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            width: var(--v5);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes center6 {
-          0% {
-            width: var(--v6);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            width: var(--v6);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            width: var(--v6);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes center7 {
-          0% {
-            width: var(--v7);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            width: var(--v7);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            width: var(--vmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            width: var(--v7);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes centerH0 {
-          0% {
-            height: var(--h0);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            height: var(--h0);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            height: var(--h0);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes centerH1 {
-          0% {
-            height: var(--h1);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            height: var(--h1);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            height: var(--h1);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes centerH2 {
-          0% {
-            height: var(--h2);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            height: var(--h2);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            height: var(--h2);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes centerH3 {
-          0% {
-            height: var(--h3);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            height: var(--h3);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            height: var(--h3);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes centerH4 {
-          0% {
-            height: var(--h4);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            height: var(--h4);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            height: var(--h4);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes centerH5 {
-          0% {
-            height: var(--h5);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            height: var(--h5);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            height: var(--h5);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes centerH6 {
-          0% {
-            height: var(--h6);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            height: var(--h6);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            height: var(--h6);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        @keyframes centerH7 {
-          0% {
-            height: var(--h7);
-            animation-timing-function: var(--ease-out);
-          }
-          20% {
-            height: var(--h7);
-            animation-timing-function: var(--ease-out);
-          }
-          50% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          70% {
-            height: var(--hmax);
-            animation-timing-function: var(--ease-in);
-          }
-          100% {
-            height: var(--h7);
-            animation-timing-function: var(--ease-out);
-          }
-        }
-
-        .center-0 {
-          animation: center0 var(--speed) infinite;
-        }
-
-        .center-1 {
-          animation: center1 var(--speed) infinite 0.1s;
-        }
-
-        .center-2 {
-          animation: center2 var(--speed) infinite 0.2s;
-        }
-
-        .center-3 {
-          animation: center3 var(--speed) infinite 0.3s;
-        }
-
-        .center-4 {
-          animation: center4 var(--speed) infinite 0.4s;
-        }
-
-        .center-5 {
-          animation: center5 var(--speed) infinite 0.5s;
-        }
-
-        .center-6 {
-          animation: center6 var(--speed) infinite 0.6s;
-        }
-
-        .center-7 {
-          animation: center7 var(--speed) infinite 0.7s;
-        }
-
-        #horz .center-0 {
-          animation-name: centerH0;
-        }
-
-        #horz .center-1 {
-          animation-name: centerH1;
-        }
-
-        #horz .center-2 {
-          animation-name: centerH2;
-        }
-
-        #horz .center-3 {
-          animation-name: centerH3;
-        }
-
-        #horz .center-4 {
-          animation-name: centerH4;
-        }
-
-        #horz .center-5 {
-          animation-name: centerH5;
-        }
-
-        #horz .center-6 {
-          animation-name: centerH6;
-        }
-
-        #horz .center-7 {
-          animation-name: centerH7;
-        }
-      `}</style>
-      <div
-        id="checkered"
-        className="absolute z-[10000] top-1/2 left-1/2 w-[75vmin] h-[75vmin] -translate-x-1/2 -translate-y-1/2 overflow-hidden"
-      >
-        <div id="vert" className="layer flex-nowrap items-center justify-center">
-          <div className="center-7"></div>
-          <div className="center-6"></div>
-          <div className="center-5"></div>
-          <div className="center-4"></div>
-          <div className="center-3"></div>
-          <div className="center-2"></div>
-          <div className="center-1"></div>
-          <div className="center-0"></div>
-          <div className="center-1"></div>
-          <div className="center-2"></div>
-          <div className="center-3"></div>
-          <div className="center-4"></div>
-          <div className="center-5"></div>
-          <div className="center-6"></div>
-          <div className="center-7"></div>
-        </div>
-        <div id="horz" className="layer flex-wrap items-center justify-center mix-blend-difference">
-          <div className="center-7 h-[6.66%] flex-basis-full"></div>
-          <div className="center-6 h-[6.66%] flex-basis-full"></div>
-          <div className="center-5 h-[6.66%] flex-basis-full"></div>
-          <div className="center-4 h-[6.66%] flex-basis-full"></div>
-          <div className="center-3 h-[6.66%] flex-basis-full"></div>
-          <div className="center-2 h-[6.66%] flex-basis-full"></div>
-          <div className="center-1 h-[6.66%] flex-basis-full"></div>
-          <div className="center-0 h-[6.66%] flex-basis-full"></div>
-          <div className="center-1 h-[6.66%] flex-basis-full"></div>
-          <div className="center-2 h-[6.66%] flex-basis-full"></div>
-          <div className="center-3 h-[6.66%] flex-basis-full"></div>
-          <div className="center-4 h-[6.66%] flex-basis-full"></div>
-          <div className="center-5 h-[6.66%] flex-basis-full"></div>
-          <div className="center-6 h-[6.66%] flex-basis-full"></div>
-          <div className="center-7 h-[6.66%] flex-basis-full"></div>
-        </div>
-        <div id="fill"></div>
-      </div> */}
-   
-      </div>
 
 
         {/* <Canvas
@@ -2024,9 +1484,8 @@ useEffect(() => {
      
       {/* </div> */}
       <div className="relative">
-        <section className="mt-[20vh] z-10 relative min-h-screen">
-
-
+        <section className="mt-[20vh] relative min-h-screen">
+          <div className="flex justify-start px-10 font-canelathin text-[18px]">Accolades</div>
             <div
               ref={containerRef}
               className="mt-[10vh] w-full max-w-7xl mx-auto text-[11px] relative"
@@ -2036,82 +1495,43 @@ useEffect(() => {
                 className="absolute top-0 left-0 right-0 h-[1px] bg-gray-300 origin-left"
               />
 
-              <div className="font-neuehaas45 flex border-b border-gray-300">
-                <div className="w-1/3 p-5">
-                  <p className="uppercase font-neuehaas45 text-[13px]">Accolades</p>
-                </div>
-                <div className="flex-1 flex flex-col justify-center text-[1.2em]">
-                  {[
-                    ["6x Winner Best Orthodontist", "Best of the Valley"],
-                    [
-                      "5x Winner Best Orthodontist",
-                      "Readers' Choice The Morning Call",
-                    ],
-                    ["Nationally Recognized Top Orthodontist", "Top Dentists"],
-                  ].map(([left, right], i) => (
-                    <div
-                      key={i}
-                      className="flex py-4 items-center px-5 relative"
-                    >
-                      {i < 2 && (
-                        <div
-                          ref={addToLineRefs}
-                          className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-300 origin-left"
-                        />
-                      )}
-                      <div ref={addToTextRefs} className="flex-1">
-                        {left}
-                      </div>
-                      <div
-                        ref={addToTextRefs}
-                        className="w-[350px] text-left text-black pr-6"
-                      >
-                        {right}
-                      </div>
-                      <div ref={addToTextRefs} className="w-[80px] text-right">
-                        DATE
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+         <div className="font-canelathin  flex-1 flex flex-col justify-center text-[1.2em]">
+  {[
+    ["6x Winner Best Orthodontist", "Best of the Valley"],
+    ["5x Winner Best Orthodontist", "Readers' Choice The Morning Call"],
+    ["Nationally Recognized Top Orthodontist", "Top Dentists"],
+    ["Invisalign", "25+ Years of Experience"],
+    ["Invisalign Teen", "5000+ Cases Treated"],
+    ["Diamond Plus", "Top 1% of All Providers"],
+  ].map(([left, right], i) => (
+    <div key={i} className="flex py-4 items-center px-5 relative">
 
-              <div className="font-neuehaas45 flex">
-                <div className="w-1/3 p-5">
-                  <p className="uppercase font-neuehaas45 text-[13px]">Expertise</p>
-                </div>
-                <div className="flex-1 flex flex-col justify-center text-[1.2em]">
-                  {[
-                    ["Invisalign", "25+ Years of Experience"],
-                    ["Invisalign Teen", "5000+ Cases Treated"],
-                    ["Diamond Plus", "Top 1% of All Providers"],
-                  ].map(([left, right], i) => (
-                    <div
-                      key={i}
-                      className="flex py-4 items-center px-5 relative"
-                    >
-                      {i < 2 && (
-                        <div
-                          ref={addToLineRefs}
-                          className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-300 origin-left"
-                        />
-                      )}
-                      <div ref={addToTextRefs} className="flex-1">
-                        {left}
-                      </div>
-                      <div
-                        ref={addToTextRefs}
-                        className="w-[350px] text-left text-black pr-6"
-                      >
-                        {right}
-                      </div>
-                      <div ref={addToTextRefs} className="w-[80px] text-right">
-                        DATE
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+      {i < 5 && (
+        <div
+          ref={addToLineRefs}
+          className="absolute inset-x-0 bottom-0 h-[1px] bg-gray-300 origin-center"
+          style={{
+            transform: "scaleX(0)",
+            transformOrigin: "center center",
+          }}
+        />
+      )}
+
+      <div ref={addToTextRefs} className="flex-1 pr-8">
+        {left}
+      </div>
+      <div ref={addToTextRefs} className="w-[350px] text-left text-black pr-6">
+        {right}
+      </div>
+      <div ref={addToTextRefs} className="w-[80px] text-right opacity-50">
+        DATE
+      </div>
+    </div>
+  ))}
+</div>
+   
+
+
 
               <div
                 ref={addToSectionLineRefs}
@@ -2287,9 +1707,9 @@ With over 40 years of combined experience, our doctors were the first in the reg
 
  
 <section ref={sectionRef} className="relative w-full overflow-hidden">
-<div ref={sphereRef} className="absolute top-0 left-0 w-full h-[600px] pointer-events-none z-0">
+{/* <div ref={sphereRef} className="absolute top-0 left-0 w-full h-[600px] pointer-events-none z-0">
         <MorphingSphere sectionRef={sectionRef} />
-      </div>
+      </div> */}
 
 
 <div className="z-10">
@@ -2664,16 +2084,243 @@ Treatment Duration
 };
 
 export default Invisalign;
-function GlassPanel(props) {
-  const hdri = useLoader(RGBELoader, "/images/industrial_sunset_puresky_4k.hdr");
 
-  hdri.mapping = THREE.EquirectangularReflectionMapping;
 
-  const scene = useThree((state) => state.scene);
+const vertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = vec4(position, 1.0);
+  }
+`;
+
+
+const fragmentShader = `
+  uniform vec2 uResolution;   
+  uniform float uTime;      
+  uniform vec2 uMouse;  
+  varying vec2 vUv;  
+
+  #define PI 3.14159265359
+
+  mat2 rot(float a) {
+    float s = sin(a), c = cos(a);
+    return mat2(c, -s, s, c);
+  }
+
+  //sin wave of ribbon
+  float wave(vec2 p, float phase, float freq) {
+    return sin(p.x * freq + phase) * 0.3 * sin(p.y * freq * 0.5 + phase * 0.7);
+  }
+
+  // glow falloff
+  float glowLine(float dist, float thickness, float intensity) {
+    return intensity * thickness / (abs(dist) + thickness * 0.5);
+  }
+
+  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+
+  float snoise(vec2 v) {
+    const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                        -0.577350269189626, 0.024390243902439);
+    vec2 i  = floor(v + dot(v, C.yy));
+    vec2 x0 = v - i + dot(i, C.xx);
+    vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    vec4 x12 = x0.xyxy + C.xxzz;
+    x12.xy -= i1;
+    i = mod289(i);
+    vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0))
+                   + i.x + vec3(0.0, i1.x, 1.0));
+    vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+    m = m*m; m = m*m;
+    vec3 x = 2.0 * fract(p * C.www) - 1.0;
+    vec3 h = abs(x) - 0.5;
+    vec3 ox = floor(x + 0.5);
+    vec3 a0 = x - ox;
+    m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+    vec3 g;
+    g.x  = a0.x * x0.x + h.x * x0.y;
+    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+    return 130.0 * dot(m, g);
+  }
+
+  // random values per ribbon instance
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+  float rand1(float n) { return fract(sin(n * 91.3458) * 47453.5453); }
+
+
+  float ribbonBody(float yDist) { return smoothstep(1.2, 0.0, abs(yDist)); }
+
+  void main() {
+
+    vec2 worldUV = (vUv - 0.5) * 2.0; 
+    worldUV.x *= uResolution.x / uResolution.y;       
+    vec2 uv = worldUV;
+    vec2 uv0 = worldUV;
+
+
+    vec3 coldBlue  = vec3(0.72, 0.85, 0.95);
+    vec3 softGreen = vec3(0.82, 0.92, 0.98);
+    vec3 warmWhite = vec3(0.94, 0.98, 1.0);
+
+    float t = smoothstep(0.0, 1.0, vUv.x);
+    vec3 bg = mix(coldBlue, softGreen, t * 0.6);
+    bg = mix(bg, warmWhite, t * 0.4);
+
+    float fog = snoise(uv0 * 0.6 + uTime * 0.03) * 0.1;
+    bg += fog;
+
+    float centerGlow = exp(-length(uv0) * 2.0);
+    vec3 softGlowCol = vec3(0.85, 0.92, 0.97);
+    bg += softGlowCol * centerGlow * 0.08;
+
+    vec3 col = bg;
+
+  
+    //  Mouse interaction
+  
+    vec2 mouse_uv = (uMouse - 0.5) * 2.0;
+    mouse_uv.x *= uResolution.x / uResolution.y;
+    float mouseDist = length(uv - mouse_uv);
+
+    uv += (mouse_uv - uv) * (0.3 / (mouseDist + 0.5));  // warp space toward cursor
+
+    float mouseGlow = 0.1 / (mouseDist + 0.1);
+    mouseGlow *= (sin(uTime * 1.5) * 0.5 + 0.5) * 0.7 + 0.3;
+    col += mouseGlow * vec3(1.0, 0.8, 1.0) * 0.15;
+
+
+    vec2 uvNoise = uv * rot(uTime * 0.05);
+    float waveNoise = snoise(uvNoise * 2.0 + uTime * 0.2) * 0.1;
+
+    // Ribbon colors
+    vec3 icy1 = vec3(0.82, 0.90, 0.97);
+    vec3 icy2 = vec3(0.72, 0.84, 0.96);
+    vec3 icy3 = vec3(0.62, 0.78, 0.92);
+
+
+    float segLen = 10.0;  // lifetime of ribbon
+
+    for (int i = 0; i < 2; i++) {
+      float slotIndex = float(i);
+      float slotTime = uTime + slotIndex * 3.17;           // offset ribbon
+      float lifeIndex = floor(slotTime / segLen);
+      float tNorm = fract(slotTime / segLen);  
+
+      // starts above screen, falls below
+      float centerY = mix(2.4, -2.4, tNorm);
+      float yRel = worldUV.y - centerY;
+
+      // Fade out when ribbon is far off-screen 
+      float bodyMask = 1.0 - smoothstep(1.4, 1.8, abs(yRel));
+      float timeMask = smoothstep(0.05, 0.15, tNorm) * (1.0 - smoothstep(0.85, 0.95, tNorm));
+      float visibility = bodyMask * timeMask;
+
+      if (visibility > 0.001) {
+        float seed = lifeIndex + slotIndex * 23.71;
+        float xCenter = mix(-0.9, 0.9, rand1(seed * 1.3));
+        float freq    = mix(0.4, 0.9, rand1(seed * 2.1));
+        float phase   = rand1(seed * 3.7) * 6.28318;
+        float ampMod  = mix(0.7, 1.2, rand1(seed * 4.9));
+
+        float waveVal = wave(vec2(worldUV.y * ampMod + phase, worldUV.y * 0.5),
+                             uTime * 1.2 + phase, freq);
+        waveVal += waveNoise * 0.6;  // shared turbulence
+
+        float distX = (worldUV.x - xCenter) - waveVal;
+
+        // ribbon glow
+        float thickness = 0.030;
+        float intensity = 0.04;
+        float core = glowLine(distX, thickness, intensity) * visibility;
+        float haze = exp(-abs(distX) * 18.0) * 0.04 * visibility;
+
+        vec3 ribbonColor = (i == 0)
+          ? mix(icy1, vec3(1.0), 0.55)
+          : mix(icy2, vec3(1.0), 0.65);
+
+        col += ribbonColor * core * 0.55;
+        col += ribbonColor * haze;
+      }
+    }
+    col = pow(col, vec3(0.95));
+    gl_FragColor = vec4(col, 1.0);
+  }
+`;
+
+function ShaderPlane() {
+  const materialRef = useRef();
+  const mouse = useRef(new THREE.Vector2(0.5, 0.5));
+  const targetMouse = useRef(new THREE.Vector2(0.5, 0.5));
+
   useEffect(() => {
-    scene.environment = hdri;
-    scene.background = hdri;
-  }, [hdri]);
+    const handleMove = (e) => {
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) / window.innerWidth;
+      const y = 1 - (e.touches ? e.touches[0].clientY : e.clientY) / window.innerHeight;
+      targetMouse.current.set(x, y);
+    };
+
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('touchmove', handleMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('touchmove', handleMove);
+    };
+  }, []);
+
+  useFrame((state) => {
+    if (!materialRef.current) return;
+    mouse.current.lerp(targetMouse.current, 0.05);
+
+    materialRef.current.uniforms.uTime.value = state.clock.getElapsedTime();
+    materialRef.current.uniforms.uMouse.value.copy(mouse.current);
+
+    const { width, height } = state.size;
+    materialRef.current.uniforms.uResolution.value.set(
+      width * state.viewport.dpr,
+      height * state.viewport.dpr
+    );
+  });
+
+  return (
+    <mesh>
+      <planeGeometry args={[2, 2]} />
+      <shaderMaterial
+        ref={materialRef}
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={{
+          uTime: { value: 0 },
+          uResolution: { value: new THREE.Vector2() },      // ← Vector2
+          uMouse: { value: new THREE.Vector2(0.5, 0.5) },   // ← Vector2
+        }}
+      />
+    </mesh>
+  );
+}
+
+ function NeonShaderBackground() {
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1 }}>
+      <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 1] }}>
+        <ShaderPlane />
+      </Canvas>
+    </div>
+  );
+}
+
+
+function GlassPanel(props) {
+  const hdri = useLoader(RGBELoader, "/images/industrial_sunset_puresky_4k.hdr")
+  hdri.mapping = THREE.EquirectangularReflectionMapping
+
+  const scene = useThree((state) => state.scene)
+  useEffect(() => {
+    scene.environment = hdri
+    scene.background = hdri
+  }, [hdri])
 
   const material = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
@@ -2696,16 +2343,42 @@ function GlassPanel(props) {
     attenuationDistance: 200,
     transparent: true,
     opacity: 1.0,
-  });
+  })
 
   return (
-<mesh material={material} {...props}
-     rotation={[-0.25, 0.25, -0.05]}>
-<boxGeometry args={[3, 3, 0.3]} />
-    </mesh>
-  );
-}
+    <group {...props}>
 
+      <mesh material={material}>
+        <boxGeometry args={[3, 3, 0.3]} />
+      </mesh>
+
+      <Text
+        position={[0, 0.6, 0.16]}
+        fontSize={0.14}
+        color="#0f172a"
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={2.6}
+        lineHeight={0.9}
+        textAlign="center"
+        font="/fonts/Neue Haas Grotesk Display Pro 45 Light.ttf"
+      >
+        {props.title}
+      </Text>
+
+      <Text
+        position={[0, 1.2, 0.16]}
+        fontSize={0.14}
+        color="#475569"
+        anchorX="center"
+        anchorY="top"
+        font="/fonts/Neue Haas Grotesk Display Pro 45 Light.ttf"
+      >
+        {props.tag}
+      </Text>
+    </group>
+  )
+} 
 // const BulgeGallery = ({ slides }) => {
 //   const canvasWrapperRef = useRef();
 
