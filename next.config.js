@@ -25,6 +25,15 @@ const nextConfig = {
     ],
   },
   turbopack: {},
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        destination: '/book-now',
+        permanent: true,
+      }
+    ]
+  }
 };
 
 module.exports = nextConfig;
