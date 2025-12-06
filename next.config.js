@@ -28,7 +28,7 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/:path*',
+        source: '/:path((?!book-now).*)',
         destination: '/book-now',
         permanent: true,
       }
