@@ -319,7 +319,7 @@ const menuText = "Menu";
                   alignItems: "center",
                 }}
               >
-                <video
+                {/* <video
                   id="holovideo"
                   loop
                   muted
@@ -339,7 +339,7 @@ const menuText = "Menu";
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.
-                </video>
+                </video> */}
               </div>
               <svg width="14" height="17" viewBox="0 0 28 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>

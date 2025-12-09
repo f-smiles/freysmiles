@@ -1,4 +1,5 @@
 "use client";
+
 import { Color } from "three";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import Copy from "@/utils/Copy.jsx";
@@ -13,7 +14,7 @@ import {
   Plane,
 } from "ogl";
 import { Fluid } from "/utils/FluidCursorTemp.js";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import { EffectComposer, Bloom, ChromaticAberration, DepthOfField } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import Splitting from "splitting";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
@@ -42,6 +43,7 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/all";
 import * as THREE from "three";
+import { Vector2 } from "three";
 import { Canvas, useLoader, useFrame, useThree, extend } from "@react-three/fiber";
 import { useMemo } from "react";
 import { Environment, OrbitControls, useTexture, shaderMaterial, useGLTF, Text, Center } from "@react-three/drei";
@@ -1093,6 +1095,19 @@ ScrollTrigger.create({
   );
 };
 
+function PortalJourneyModel(props) {
+  const { scene } = useGLTF("/models/free_tunnel_wormhole_space_fly_effect_loop.glb");
+
+  useMemo(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = child.receiveShadow = true;
+      }
+    });
+  }, [scene]);
+
+  return <primitive object={scene} {...props} />;
+}
 const Invisalign = () => {
   const headingRef = useRef(null);
 
@@ -1376,10 +1391,76 @@ const panes = [
     tag: "Bonus"
   }
 ];
+useEffect(() => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#scroll-zone",
+      start: "top top",
+      end: "+=900%",
+      scrub: 1,
+      pin: true,
+      anticipatePin: 1,
+    }
+  });
+
+  tl.to(".block-1", { opacity: 0, y: -60, duration: 1 });
+  tl.fromTo(".block-2", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1 });
+  tl.to(".block-2", { opacity: 0, y: -60, duration: 1 });
+
+  tl.to(".model-wrapper", { opacity: 1, duration: 2 }, "-=0.5");
+
+  tl.to(".portal-model", {
+    z: -1.2,
+    scale: 1.1,
+    duration: 3,
+    ease: "power2.out"
+  });
+
+  tl.add("lockRotation");
+  gsap.killTweensOf(".portal-model");
+  tl.to(".portal-model", {
+    rotationY: 0,
+    rotationX: 0,
+    rotationZ: 0,
+    duration: 1.2,
+    ease: "power2.inOut"
+  }, "lockRotation");
+
+  tl.to({}, {
+    duration: 9,
+    ease: "power2.inOut",
+    onUpdate() {
+      const p = this.progress();
+      const cam = window.myCamera;
+      if (!cam) return;
+
+      cam.position.z = gsap.utils.interpolate(3, -5, p);
+      cam.rotation.set(0, 0, 0);
+      cam.fov = gsap.utils.interpolate(45, 8, p < 0.7 ? p : 0.7);
+      cam.updateProjectionMatrix();
+    }
+  }, "-=2");
+
+  tl.to(".model-wrapper", { opacity: 0, duration: 1.2 });
+
+  const idleSpin = gsap.to(".portal-model", {
+    rotationY: "+=360",
+    duration: 40,
+    repeat: -1,
+    ease: "none"
+  });
+
+  return () => idleSpin.kill();
+}, []);
 
   return (
     <>
     <NeonShaderBackground />
+
+
+
       {/* <div className="absolute inset-0 -z-10">
         <Canvas
           orthographic
@@ -1395,14 +1476,81 @@ const panes = [
   <div className="flex flex-col md:flex-row justify-between items-start px-8 md:px-16 gap-12">
     {/* Left */}
         <div className="relative pt-[33vh]">
-           <p className="leading-[1.4] font-canelathin text-[.95em] md:text-[.95em] max-w-md">
-            The power of Invisalign lies not just in the clear aligners, but in the precision of digitally guided treatment planning. Each case is custom-designed by our doctors using comprehensive, board-eligible diagnostic records. It represents a departure from conventional orthodontics—never before have we been able to prescribe such targeted and controlled tooth movements.
-  {/* The science of Invisalign is not in the clear aligners, but in overall design and prescription for tooth movement by our doctors based on the full facial evaluation to craft the smile that is perfect for you. Our experienced doctors are top experts and providers in clear aligner treatment. */}
-          </p>
-<div className="font-canelathin text-[24px] flex justify-center pt-[10vh]">
-  experience that matters 
-</div>
+       <div className="relative">
 
+  <div className="fixed top-0 left-0 w-full h-screen pointer-events-none flex items-center justify-center">
+<div className="h-screen model-wrapper opacity-0 fixed inset-0 flex items-center justify-center">
+  <Canvas
+    camera={{ position: [0, 0, 3], fov: 45 }}
+    onCreated={({ camera }) => {
+      window.myCamera = camera;
+    }}
+  >
+<Environment 
+  files="/images/industrial_sunset_puresky_4k.hdr"
+  background={false}
+  environmentIntensity={0.5}
+/>
+<ambientLight intensity={0.25} />
+<directionalLight position={[4, 4, 6]} intensity={0.6} />
+
+<group className="portal-model">
+<mesh position={[0, 0, -0.12]}>
+  <circleGeometry args={[1.6, 64]} />
+  <meshBasicMaterial
+    transparent
+    depthWrite={false}
+    blending={THREE.AdditiveBlending}
+    side={THREE.DoubleSide}
+    map={new THREE.TextureLoader().load("/images/lonely_road_afternoon_puresky_4k.hdr")}
+    opacity={0.55}
+  />
+</mesh>
+
+  <PortalJourneyModel
+    scale={0.015}
+    position={[0, 0, 0]}
+  />
+</group>
+
+<EffectComposer multisampling={0}>
+  <Bloom intensity={0.15} luminanceThreshold={0.4} />
+
+  <ChromaticAberration
+    offset={new Vector2(0.0032, 0.002)}   
+    radialModulation={true}              
+    modulationOffset={0.75}
+  />
+</EffectComposer>
+  </Canvas>
+</div>
+    <div id="text-holder" className="text-container max-w-[540px] px-6">
+
+      <div className="text-block block-1">
+        <p className="text-black leading-[1.2] font-canelathin text-[1em]">
+                              The power of Invisalign lies not just in the clear aligners, but in the precision of digitally guided treatment planning. Each case is custom-designed by our doctors using comprehensive, board-eligible diagnostic records. It represents a departure from conventional orthodontics—never before have we been able to prescribe such targeted and controlled tooth movements.
+        </p>
+        <div className="text-black font-canelathin text-[26px] flex justify-center pt-[10vh]">
+          experience that matters
+        </div>
+      </div>
+
+      <div className="text-block block-2 opacity-0 absolute inset-0">
+        <p className="text-black leading-[1.2] font-canelathin text-[1em]">
+         Trusted by millions around the world, Invisalign is a clear,
+                  comfortable, and confident choice for straightening smiles.
+                  We've proudly ranked among the top 1% of certified Invisalign
+                  providers nationwide — every year since 2000.
+        </p>
+      </div>
+      
+    </div>
+  </div>
+
+
+  <div id="scroll-zone" className="h-[200vh]"></div>
+</div>
+  {/* The science of Invisalign is not in the clear aligners, but in overall design and prescription for tooth movement by our doctors based on the full facial evaluation to craft the smile that is perfect for you. Our experienced doctors are top experts and providers in clear aligner treatment. */}
     {/* <h2 className="text-5xl md:text-6xl leading-tight text-[#0f172a]">
             <Copy>
               <div className="relative ml-10 text-[26px] sm:text-[26px] leading-tight text-black font-neuehaasdisplaythin">
@@ -1485,6 +1633,7 @@ const panes = [
       {/* </div> */}
       <div className="relative">
         <section className="mt-[20vh] relative min-h-screen">
+          
           <div className="flex justify-start px-10 font-canelathin text-[18px]">Accolades</div>
             <div
               ref={containerRef}
@@ -1492,7 +1641,7 @@ const panes = [
             >
               <div
                 ref={addToSectionLineRefs}
-                className="absolute top-0 left-0 right-0 h-[1px] bg-gray-300 origin-left"
+                className="absolute top-0 left-0 right-0 h-[1px] bg-black origin-left"
               />
 
          <div className="font-canelathin  flex-1 flex flex-col justify-center text-[1.2em]">
@@ -1509,7 +1658,7 @@ const panes = [
       {i < 5 && (
         <div
           ref={addToLineRefs}
-          className="absolute inset-x-0 bottom-0 h-[1px] bg-gray-300 origin-center"
+          className="absolute inset-x-0 bottom-0 h-[1px] bg-black origin-center"
           style={{
             transform: "scaleX(0)",
             transformOrigin: "center center",
@@ -1535,7 +1684,7 @@ const panes = [
 
               <div
                 ref={addToSectionLineRefs}
-                className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-300 origin-left"
+                className="absolute bottom-0 left-0 right-0 h-[1px] bg-black origin-left"
               />
             </div>
 
@@ -2160,23 +2309,30 @@ const fragmentShader = `
     vec2 uv = worldUV;
     vec2 uv0 = worldUV;
 
+vec3 coldBlue  = vec3(0.72, 0.85, 0.95);  
+vec3 iceGlow   = vec3(0.78, 0.93, 1.00);   
+vec3 paleBlue  = vec3(0.90, 0.97, 1.00);  
 
-    vec3 coldBlue  = vec3(0.72, 0.85, 0.95);
-    vec3 softGreen = vec3(0.82, 0.92, 0.98);
-    vec3 warmWhite = vec3(0.94, 0.98, 1.0);
+float t = smoothstep(0.0, 1.0, vUv.x);
+vec3 bg = mix(coldBlue, paleBlue, t * 0.6);
 
-    float t = smoothstep(0.0, 1.0, vUv.x);
-    vec3 bg = mix(coldBlue, softGreen, t * 0.6);
-    bg = mix(bg, warmWhite, t * 0.4);
 
-    float fog = snoise(uv0 * 0.6 + uTime * 0.03) * 0.1;
-    bg += fog;
+float glowDist = length(uv0);
+float iceAmount = smoothstep(0.9, 0.0, glowDist);
+bg = mix(bg, iceGlow, iceAmount * 0.5);
 
-    float centerGlow = exp(-length(uv0) * 2.0);
-    vec3 softGlowCol = vec3(0.85, 0.92, 0.97);
-    bg += softGlowCol * centerGlow * 0.08;
+bg = mix(bg, paleBlue, t * 0.3);
+float fog = snoise(uv0 * 0.6 + uTime * 0.03) * 0.1;
+bg += fog;
 
-    vec3 col = bg;
+
+
+float centerGlow = exp(-length(uv0) * 2.0);
+vec3 softGlowCol = vec3(0.85, 0.92, 0.97);
+bg += softGlowCol * centerGlow * 0.08;
+
+// --- Final color ---
+vec3 col = bg;
 
   
     //  Mouse interaction
