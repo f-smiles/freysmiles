@@ -694,7 +694,7 @@ useEffect(() => {
 <div
   className="
      text-[14px] lg:text-[16px]
-    font-neuehaas35 leading-relaxed
+    font-neuehaas45 leading-relaxed
     absolute top-[72%] right-8 z-10 text-left
     -translate-y-1/2
   "

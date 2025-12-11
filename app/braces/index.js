@@ -1618,7 +1618,7 @@ void main() {
   return (
     <>
 
-    {/* <LandscapeBackground /> */}
+    <LandscapeBackground />
 <section className="relative w-full h-screen overflow-hidden pointer-events-none">
 
 
@@ -2321,8 +2321,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
             vec3 dir = vec3(ro.x, 1, path(ro.z).y - T);
             vec3 rd = R(uv, ro, dir, 1.);
             
-// Sky base color (dusty pink tone)
-col = vec3(0.95, 0.78, 0.75); // soft desert pink
+// Sky base color 
+col = vec3(0.92, 0.86, 0.98);
 
 // Slight gradient darkening near top of sky
 col -= max(rd.y, 0.0) * 0.7;
@@ -2535,14 +2535,16 @@ void main() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
     gl.uniform1i(iChannel2Loc, 2);
+const resizeCanvas = () => {
+  const { clientWidth, clientHeight } = canvas;
+  const dpr = window.devicePixelRatio || 1;
 
-    const resizeCanvas = () => {
-      const { clientWidth, clientHeight } = canvas;
-      canvas.width = clientWidth;
-      canvas.height = clientHeight;
-      gl.viewport(0, 0, clientWidth, clientHeight);
-      gl.uniform3f(iResLoc, clientWidth, clientHeight, 1.0);
-    };
+  canvas.width  = clientWidth  * dpr;
+  canvas.height = clientHeight * dpr;
+
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.uniform3f(iResLoc, canvas.width, canvas.height, 1.0);
+};
 
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
