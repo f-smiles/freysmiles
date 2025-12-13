@@ -6,15 +6,15 @@
 
 @font-face {
   font-family: "NeueHaasDisplay35";
-  src: url("/fonts/Neue-Haas-Grotesk-Display-Pro-35-ExtraLight.ttf") format("truetype");
+  src: url("/public/fonts/Neue-Haas-Grotesk-Display-Pro-35-ExtraLight.ttf") format("truetype");
 }
 @font-face {
   font-family: "NeueHaasGroteskDisplayPro45Light";
-  src: url("/fonts/Neue-Haas-Grotesk-Display-Pro-45-Light.ttf") format("truetype");
+  src: url("/public/fonts/Neue-Haas-Grotesk-Display-Pro-45-Light.ttf") format("truetype");
 }
 @font-face {
   font-family: "Seaword2";
-  src: url("/fonts/Seaword2.ttf") format("truetype");
+  src: url("/public/fonts/Seaword2.ttf") format("truetype");
 }
 
 html {
