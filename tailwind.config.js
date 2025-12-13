@@ -9,9 +9,9 @@ module.exports = {
   theme: {
   	extend: {
 			fontFamily: {
-				neuehaas35:'NeueHaasDisplay35',
-				neuehaas45: 'NeueHaasGroteskDisplayPro45Light',
-				seaword: 'Seaword2',
+				'neuehaas35':'NeueHaasDisplay35',
+				'neuehaas45': 'NeueHaasGroteskDisplayPro45Light',
+				'seaword': 'Seaword2',
 			},
   		borderRadius: {
   			lg: 'var(--radius)',
