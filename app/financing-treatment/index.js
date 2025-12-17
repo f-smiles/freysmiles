@@ -2658,9 +2658,9 @@ function createMedia({
 const lerp = (a, b, t) => a + (b - a) * t;
 
 const images = [
-  "/images/background_min.png",
-  "/images/background_min.png",
-  "/images/background_min.png",
+  "/images/ajomockupchair.png",
+  "/images/ajomockupchair.png",
+  "/images/ajomockupchair.png",
   "/images/background_min.png",
   "/images/background_min.png",
   "/images/background_min.png",

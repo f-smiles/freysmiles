@@ -16,7 +16,7 @@ import * as THREE from "three";
 
 
 const Marquee = () => {
-  const text = "Our gift cards can be used toward any part of treatment—and they never expire. Send one digitally or choose a physical card.";
+  const text = "Reserve an appointment now to experience our year end holiday courtesy of up to 700 dollars off full treatment.";
   const repeatCount = 12;
 
   return (
@@ -49,41 +49,24 @@ const Marquee = () => {
 };
 
 function DentalModel() {
-  const { nodes } = useGLTF("/models/flower_button.glb");
+  const { nodes } = useGLTF("/models/space_boi.glb");
   const groupRef = useRef();
 
-useFrame((state, delta) => {
+  useFrame((state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.5;  
-      groupRef.current.rotation.x += delta * 0.2;  
+      groupRef.current.rotation.y += delta * 0.5;
+      groupRef.current.rotation.x += delta * 0.2;
     }
   });
 
   return (
     <group
       ref={groupRef}
-  rotation={[Math.PI / 3, 0, 0]} 
+      rotation={[Math.PI / 3, 0, 0]}
       scale={0.23}
       position={[-1, 0, 0]}
     >
-      <mesh geometry={nodes.Object_2.geometry}>
-       <meshPhysicalMaterial
-  transmission={0.9}         
-  roughness={0.25}     
-  thickness={2.0}               
-  clearcoat={0.6}            
-  clearcoatRoughness={0.15}     
-  metalness={0.0}
-  reflectivity={0.5}           
-  ior={1.3}                 
-  attenuationDistance={1.8}
-  attenuationColor="#B6D0E2" 
-  color="#BDB6D7"        
-  sheen={0.3}
-  sheenTint="#c7b7ff"        
-  sheenRoughness={0.6}
-/>
-      </mesh>
+
     </group>
   );
 }
@@ -92,7 +75,7 @@ const Hero: React.FC = () => {
   return (
     <section> 
          
-      {/* <Marquee /> */}
+      <Marquee />
 
       <AnimatedBackground />
 <div className="relative min-h-screen overflow-hidden">
@@ -115,10 +98,10 @@ const Hero: React.FC = () => {
   </div>
 
   <div className="flex items-center justify-center text-center lg:text-left">
-    <h1 className="text-[clamp(24px,4vw,48px)] font-canelathin leading-tight text-[#4a484b]">
-      welcome to the dental shop. <br />
-     buy something - or don’t. <br />
-      but don't forget to floss.
+    <h1 className="text-[clamp(24px,3vw,32px)] font-neuehaas35 leading-none text-[#4a484b]">
+      <span className="font-canelathin">welcome</span> to the dental shop . <br />
+     buy something - or <span className="font-canelathin">don’t</span>. <br />
+      just don't forget to floss.
     </h1>
   </div>
 </section>

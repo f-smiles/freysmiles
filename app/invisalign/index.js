@@ -1097,7 +1097,7 @@ ScrollTrigger.create({
 };
 
 function PortalJourneyModel(props) {
-  const { scene } = useGLTF("/models/aligners_upper_final.glb");
+  const { scene, nodes } = useGLTF("/models/girl_bust.glb");
   const groupRef = useRef();
 
   const material = useMemo(
@@ -1126,7 +1126,10 @@ function PortalJourneyModel(props) {
   //   groupRef.current.rotation.y += delta * 0.35;
 
   // });
-
+useEffect(() =>{
+console.log("GLB nodes:", nodes);
+}
+)
   useMemo(() => {
     scene.traverse((child) => {
       if (child.isMesh) {
@@ -1522,16 +1525,16 @@ useEffect(() => {
   camera={{ position: [0, 0, 3], fov: 45 }}
   onCreated={({ camera }) => (window.myCamera = camera)}
 >
-  {/* <EffectComposer>
+  <EffectComposer>
   <Bloom intensity={0.2} luminanceThreshold={0.4} />
   <ChromaticAberration
     offset={new THREE.Vector2(0.0015, 0.001)}
     radialModulation={true}
     modulationOffset={0.75}
   />
-</EffectComposer> */}
+</EffectComposer>
 <Environment
-  files="/images/qwantani_dusk_2_puresky_4k.hdr"
+  files="/images/studio_small_08_4k.hdr"
   background={false}
  
 />
@@ -1547,9 +1550,9 @@ useEffect(() => {
   color="#d9d4ff"  
 />
 <PortalJourneyModel
-  scale={.2}
+  scale={0.25}
   position={[0, 0, 0]}
- 
+  rotation={[0, -Math.PI / 2.5, 0]} 
 />
 </Canvas>
 </div>
@@ -1557,10 +1560,10 @@ useEffect(() => {
     <div id="text-holder" className="text-container max-w-[500px] px-6">
 
       <div className="text-block block-1">
-        <p className="text-[#353839] leading-[1.2] font-neuehaas35 text-[.83em]">
+        <p className="text-[#353839]/90 leading-[1.2] font-neuehaas35 text-[.83em]">
                               The power of Invisalign lies not just in the clear aligners, but in the precision of digitally guided treatment planning. Each case is custom-designed by our doctors using comprehensive, board-eligible diagnostic records. It represents a departure from conventional orthodontics—never before have we been able to prescribe such targeted and controlled tooth movements.
         </p>
-        <div className="text-[#353839] font-neuehaas35 text-[26px] flex justify-center pt-[10vh]">
+        <div className="text-[#353839]/70 font-neuehaas35 text-[26px] flex justify-center pt-[10vh]">
           experience that matters
         </div>
       </div>
@@ -2380,9 +2383,9 @@ fragmentShader: `
         float sparkle = rand(gl_PointCoord + time * 0.3) * 0.4 + 0.6;
 
         // Tiny white hotspot in the center
-vec3 whiteHot = vec3(1.1, 1.1, 1.15) * core * 0.12;
+vec3 whiteHot = vec3(1.1, 1.1, 1.15) * core * 0.1;
 
-        vec3 coloredHalo = vColor * outer * 1.6 * sparkle;
+        vec3 coloredHalo = vColor * outer * 1.2 * sparkle;
 
         vec3 finalColor = coloredHalo + whiteHot;
 
@@ -2682,7 +2685,7 @@ float wave(vec2 p, float phase, float freq) {
 
 vec3 warmPearl     = vec3(0.90, 0.86, 0.88);
 vec3 softLavender  = vec3(0.86, 0.88, 0.95);
-vec3 glassNeutral  = vec3(0.88, 0.82, 0.76);
+vec3 glassNeutral = vec3(0.90, 0.88, 0.86);
 
 vec3 pearlGlow     = vec3(0.94, 0.92, 0.90);
 vec3 mistLavender  = vec3(0.88, 0.88, 0.94);
@@ -2762,10 +2765,16 @@ vec3 ribbonLight   = vec3(0.86, 0.84, 0.90);
         float distX = (worldUV.x - xCenter) - waveVal;
 
         // ribbon glow
-float thickness = 0.12;   
-float intensity = 0.03;     
-        float core = glowLine(distX, thickness, intensity) * visibility;
-float haze = exp(-abs(distX) * 10.0) * 0.05 * visibility;
+float thickness = 0.5;   
+float intensity = 0.13;     
+// base core (keep it tight)
+float core = glowLine(distX, thickness, intensity) * visibility;
+
+// secondary soft body (this adds volume without spikes)
+float body = glowLine(distX, thickness * 2.4, intensity * 0.25) * visibility;
+
+// gentle atmospheric haze
+float haze = exp(-abs(distX) * 7.0) * 0.035 * visibility;
 
 float grad = smoothstep(-0.25, 0.25, distX);
 grad = pow(grad, 1.1);     // soften
