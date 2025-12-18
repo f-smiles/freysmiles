@@ -64,6 +64,32 @@ main {
 .circle-3 { animation-timing-function: cubic-bezier(0.48, 0, 0.52, 1); }
 .circle-4 { animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
 
+.marquee {
+  display: flex;
+  overflow: hidden;
+  user-select: none;
+}
+
+.marqueegroup {
+  display: flex;
+  flex-shrink: 0;
+  min-width: 100%;
+  animation: scroll 400s linear infinite;
+}
+
+.marquee:hover .marqueegroup {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
 
 
 @layer base {
