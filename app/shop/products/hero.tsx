@@ -1,5 +1,5 @@
 "use client";
-
+import { EffectComposer, Bloom, Selection, Select } from "@react-three/postprocessing";
 import { gsap } from "gsap";
 import { useRef, useEffect, useMemo } from "react";
 import { useFrame, extend, useThree, Canvas } from "@react-three/fiber";
@@ -11,6 +11,8 @@ import {
   MeshTransmissionMaterial,
   Environment,
   shaderMaterial,
+  Center,
+  useAnimations
 } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -47,26 +49,41 @@ const Marquee = () => {
 </div>
   );
 };
-
 function DentalModel() {
-  const { nodes } = useGLTF("/models/space_boi.glb");
-  const groupRef = useRef();
+  const { scene, animations } = useGLTF("/models/moonjelly.glb");
+  const animatedRef = useRef<THREE.Group>(null);
+  const { actions } = useAnimations(animations, animatedRef);
+useEffect(() => {
+  console.log("Animations array:", animations);
+  console.log("Actions map:", actions);
+}, [animations, actions]);
+useEffect(() => {
+  const action = actions["Loop-400"];
+  if (!action) {
+    console.warn("Action '400' not found", actions);
+    return;
+  }
 
-  useFrame((state, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.5;
-      groupRef.current.rotation.x += delta * 0.2;
+  action.reset();
+  action.setLoop(THREE.LoopRepeat, Infinity);
+  action.timeScale = 0.6;
+  action.play();
+
+  return () => action.stop();
+}, [actions]);
+useEffect(() => {
+  scene.traverse((child: any) => {
+    if (child.isMesh && !child.isSkinnedMesh) {
+      child.visible = false;
     }
   });
-
+}, [scene]);
   return (
-    <group
-      ref={groupRef}
-      rotation={[Math.PI / 3, 0, 0]}
-      scale={0.23}
-      position={[-1, 0, 0]}
-    >
-
+ 
+    <group scale={0.6}       rotation={[0, Math.PI / 2, 0]} >
+      <group ref={animatedRef}>
+        <primitive object={scene} />
+      </group>
     </group>
   );
 }
@@ -78,25 +95,18 @@ const Hero: React.FC = () => {
       <Marquee />
 
       <AnimatedBackground />
-<div className="relative min-h-screen overflow-hidden">
-<section className="grid grid-cols-1 lg:grid-cols-2 min-h-screen items-center px-6 py-20">
+<div className="relative min-h-screen">
+<section className="grid grid-cols-1 lg:grid-cols-2 min-h-screen px-6 py-20">
 
-  <div className="flex justify-end pr-[-50px] lg:pr-[-100px] xl:pr-[-120px]">
-<div className="translate-x-[30%] h-[200px]">
   <Canvas
-    camera={{ position: [0, 0.5, 6], fov: 40 }}
-    className="w-full h-full"
+    className="absolute inset-0"
+camera={{ position: [0, 0.6, 3.2], fov: 45 }}
   >
-    <ambientLight intensity={0.4} />
-    <directionalLight position={[2, 2, 2]} intensity={0.8} />
-    <pointLight position={[0, 0, -3]} intensity={1.5} color="#e5f2e9" />
-    <DentalModel />
-    <Environment preset="dawn" background={false} />
-    <OrbitControls enableZoom={false} />
-  </Canvas>
-</div>
-  </div>
+    <Environment files="/images/studio_small_03_4k.hdr"/>
 
+ <DentalModel />
+    <OrbitControls enableZoom={false} enablePan={false} />
+  </Canvas>
   <div className="flex items-center justify-center text-center lg:text-left">
     <h1 className="text-[clamp(24px,3vw,32px)] font-neuehaas35 leading-none text-[#4a484b]">
       <span className="font-canelathin">welcome</span> to the dental shop . <br />

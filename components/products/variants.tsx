@@ -135,7 +135,7 @@ className="card-anim relative rounded-[16px] h-[460px] will-change-transform gro
 
 <div className="absolute inset-0 z-[0] p-5">
 
-  <div className="relative h-full w-full bg-transparent border border-white p-4">
+  <div className="relative h-full w-full bg-transparent border border-[#F2F2F4] p-4">
 
     <div
       className="relative h-[75%] w-full overflow-hidden"
@@ -165,24 +165,8 @@ className="card-anim relative rounded-[16px] h-[460px] will-change-transform gro
   href={`/shop/products/${variant.id}?id=${variant.id}&title=${variant.product.title}&variant=${variant.variantName}&prodId=${variant.productID}`}
   className="relative z-[10] flex flex-col h-full px-5 pt-5 pb-6"
 >
-  {/* top right icon only */}
-  <div className="flex justify-end mb-3">
-    <div className="w-6 h-6 rounded-full bg-white/60 flex items-center justify-center shadow-sm">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#111"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="w-4 h-4 transition-transform duration-500 group-hover:-translate-y-[1.5px] group-hover:rotate-[5deg]"
-      >
-        <path d="M6 8h12l-1.5 12h-9L6 8z" />
-        <path d="M9 8a3 3 0 0 1 6 0" />
-      </svg>
-    </div>
-  </div>
+
+
 
 
   <figure className="flex-1 flex items-center justify-center">
@@ -196,28 +180,29 @@ className="card-anim relative rounded-[16px] h-[460px] will-change-transform gro
     />
   </figure>
 
-
-  <h3 className="mt-6 text-[12px] px-2 font-neuehaas45 tracking-wide text-black">
+<div className="mt-auto px-2 py-3 flex items-center justify-between gap-4">
+  <h3 className="text-[12px] font-neuehaas45 tracking-wide text-black">
     {variant.product.title}
   </h3>
 
+  <button className="relative text-[12px] font-neuehaas45">
+    ${Number(variant.product.price).toFixed(2)}
+  </button>
+</div>
+
   {/* bottom row */}
+ 
+
   <div className="text-zinc-600 tracking-wide font-neuehaas45 mt-auto pt-6 py-3 px-2 flex items-end justify-between gap-4">
     <span className="text-[12px] leading-tight">
       {variant.variantName}
     </span>
+  <div className="flex justify-end">
+    <div className="text-[12px] ">
+     Add to Cart
+    </div>
+  </div>
 
-<button
-  className="
-    relative px-7 text-[12px] font-neuehaas45 
-     bg-transparent
-    overflow-visible
-  "
->
-  <span className="relative z-10">
-   ${Number(variant.product.price).toFixed(2)}
-  </span>
-</button>
   </div>
 </Link>
 </div>
@@ -234,19 +219,19 @@ export default function Variants({ variants }: ProductVariantsProps) {
   const groupedVariants = [
     {
       id: "devices",
-      prefix: "Optimizing Treatment,",
+      prefix: "Optimizing Treatment",
       label: "Devices",
       variants: row4,
     },
     {
       id: "floss",
-      prefix: "Our #1 Floss Pick,",
+      prefix: "Our #1 Floss Pick",
       label: "Floss",
       variants: row2,
     },
     {
       id: "whitening",
-      prefix: "For a Brighter Smile,",
+      prefix: "For a Brighter Smile",
       label: "Whitening Gel",
       variants: row3,
     },
@@ -523,7 +508,7 @@ useLayoutEffect(() => {
       className="space-y-4"
     >
       <div className="flex items-start gap-2">
-        <div className="text-[16px] text-zinc-500 tracking-wide font-canelathin">
+        <div className="text-[16px] text-zinc-600 font-canelathin">
           {group.prefix}
           <br />
         </div>
