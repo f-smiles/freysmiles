@@ -4,6 +4,7 @@ import "./globals.css";
 import "@/public/styles/uploadthing.css";
 import "@/public/styles/index.css";
 import Logo from "@/components/logo";
+import { HolidayMarquee } from "@/components/holiday-banner";
 
 export const metadata: Metadata = {
   title: {
@@ -23,6 +24,7 @@ export default async function RootLayout({
       <body suppressHydrationWarning>
         <Logo className="absolute top-5 left-5 h-8 w-auto fill-zinc-50/80 z-[999]" />
         <main>
+          <HolidayMarquee />
           {children}
         </main>
       </body>
