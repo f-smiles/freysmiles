@@ -1,32 +1,35 @@
 export const HolidayMarquee = () => {
-  const text = "Reserve an appointment now to experience our year end holiday courtesy of up to 700 dollars off full treatment.";
+  const text =
+    "Reserve an appointment now to experience our year end holiday courtesy of up to 700 dollars off full treatment.";
   const repeatCount = 12;
 
   return (
-    <div className="relative overflow-hidden w-full bg-[#F0EF59]">
-      <div className="marquee flex">
+    <div className="relative w-full overflow-hidden bg-[#F0EF59]">
+      <div className="marquee">
         <div className="marqueegroup">
-          {[...Array(repeatCount)].map((_, i) => (
-            <span
-              key={i}
-              className="px-6 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide"
-            >
-              {text}
-            </span>
+          {Array.from({ length: repeatCount }).map((_, i) => (
+            <div key={`a-${i}`} className="flex items-center">
+              <span className="px-6 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide">
+                {text}
+              </span>
+
+              <span className="mx-4 text-[12px] font-light opacity-50">+</span>
+            </div>
           ))}
         </div>
 
-        <div className="marqueegroup" aria-hidden="true">
-          {[...Array(repeatCount)].map((_, i) => (
-            <span
-              key={i}
-              className="px-8 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide"
-            >
-              {text}
-            </span>
+        <div className="marqueegroup">
+          {Array.from({ length: repeatCount }).map((_, i) => (
+            <div key={`a-${i}`} className="flex items-center">
+              <span className="px-6 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide">
+                {text}
+              </span>
+
+              <span className="mx-4 text-[12px] font-light opacity-50">+</span>
+            </div>
           ))}
         </div>
       </div>
     </div>
   );
-}
+};

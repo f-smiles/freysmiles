@@ -22,7 +22,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning>
-        <Logo className="absolute top-5 left-5 h-8 w-auto fill-zinc-50/80 z-[999]" />
+        <Logo className="absolute top-12 left-5 h-6 w-auto fill-zinc-50/80 z-[999] xl:h-7" />
         <main>
           <HolidayMarquee />
           {children}
