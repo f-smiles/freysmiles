@@ -172,7 +172,19 @@ const menuText = "Menu";
 >
 
 <motion.div
-  className="w-12 h-12 rounded-full backdrop-blur-lg bg-white/40 border border-[#808080]/10 flex items-center justify-center z-10"
+className="
+  relative w-12 h-12 rounded-full
+  backdrop-blur-md
+  bg-gradient-to-b from-white/30 to-white/10
+  shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]
+  flex items-center justify-center
+  z-10
+  before:absolute before:inset-[1px]
+  before:rounded-full
+  before:bg-gradient-to-b before:from-white/55 before:to-transparent
+  before:opacity-30
+  before:pointer-events-none
+"
   style={{ position: "absolute", left: 0, transformOrigin: "right center" }}
   initial={{ scaleX: 0, scaleY: 0.3, opacity: 0 }}
   animate={{
@@ -187,19 +199,24 @@ const menuText = "Menu";
   }}
   aria-hidden="true"
 >
-<svg
-  fill="#000000"
-  viewBox="0 0 256 256"
-  id="Flat"
-  xmlns="http://www.w3.org/2000/svg"
-  style={{ width: "50%", height: "50%" }}
->
-  <path d="M218.82812,130.82812l-72,72a3.99957,3.99957,0,0,1-5.65625-5.65625L206.34326,132H40a4,4,0,0,1,0-8H206.34326L141.17187,58.82812a3.99957,3.99957,0,0,1,5.65625-5.65625l72,72A3.99854,3.99854,0,0,1,218.82812,130.82812Z" />
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" className="w-5 h-5">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
 </svg>
+
 </motion.div>
-<motion.div className={`relative ml-12 flex items-center  backdrop-blur-lg bg-white/40  border border-[#808080]/10 rounded-full h-14 overflow-hidden
-              transition-all duration-300 ease-[cubic-bezier(0.16,0.3,0.3,1)]
-              ${hovered ? "w-[380px] md:w-[400px] px-6" : "w-[86px] px-6"}`}
+<motion.div
+  className={`relative ml-12 flex items-center rounded-full h-14 overflow-hidden
+    transition-all duration-300 ease-[cubic-bezier(0.16,0.3,0.3,1)]
+    backdrop-blur-md
+    bg-gradient-to-b from-white/30 to-white/10
+    shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]
+    before:absolute before:inset-[1px]
+    before:rounded-full
+    before:bg-gradient-to-b before:from-white/55 before:to-transparent
+    before:opacity-30
+    before:pointer-events-none
+    ${hovered ? "w-[380px] md:w-[400px] px-6" : "w-[86px] px-6"}
+  `}
 >
     <motion.span
       className="absolute left-6 tracking-[0.06em] text-black text-[12px] font-neuehaas45 whitespace-nowrap flex"
@@ -265,21 +282,28 @@ const menuText = "Menu";
   </motion.div>
 
   <motion.div
-    className="w-12 h-12 rounded-full backdrop-blur-lg bg-white/40  border border-[#808080]/10 flex items-center justify-center z-10"
+  className="
+    relative w-12 h-12 rounded-full
+    backdrop-blur-md
+    bg-gradient-to-b from-white/35 to-white/10
+    shadow-[inset_0_0_0_1px_rgba(255,255,255,0.18)]
+    flex items-center justify-center
+    z-10
+    before:absolute before:inset-[1px]
+    before:rounded-full
+    before:bg-gradient-to-b before:from-white/60 before:to-transparent
+    before:opacity-30
+    before:pointer-events-none
+  "
     initial={{ scaleY: 1, opacity: 1 }}
     animate={{ scaleY: hovered ? 0 : 1, opacity: hovered ? 0 : 1 }}
     transition={{ duration: 0.5, ease: [0.16, 0.3, 0.3, 1] }}
     aria-hidden={hovered}
   >
-<svg
-  fill="#000000"
-  viewBox="0 0 256 256"
-  id="Flat"
-  xmlns="http://www.w3.org/2000/svg"
-  style={{ width: "50%", height: "50%", transform: "scaleX(-1)" }}
->
-  <path d="M218.82812,130.82812l-72,72a3.99957,3.99957,0,0,1-5.65625-5.65625L206.34326,132H40a4,4,0,0,1,0-8H206.34326L141.17187,58.82812a3.99957,3.99957,0,0,1,5.65625-5.65625l72,72A3.99854,3.99854,0,0,1,218.82812,130.82812Z" />
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" className="w-5 h-5">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
 </svg>
+
   </motion.div>
 </div>
 

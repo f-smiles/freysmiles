@@ -1,10 +1,10 @@
 "use client";
-import { EffectComposer, Bloom, Selection, Select } from "@react-three/postprocessing";
+import { EffectComposer, Bloom, Selection, Select, ChromaticAberration } from "@react-three/postprocessing";
 import { gsap } from "gsap";
 import { useRef, useEffect, useMemo } from "react";
 import { useFrame, extend, useThree, Canvas } from "@react-three/fiber";
 import FlutedGlassEffect from "../../../utils/glass";
-
+import { Vector2 } from "three";
 import {
   OrbitControls,
   useGLTF,
@@ -18,69 +18,100 @@ import * as THREE from "three";
 
 
 const Marquee = () => {
-  const text = "Reserve an appointment now to experience our year end holiday courtesy of up to 700 dollars off full treatment.";
+  const text =
+    "Reserve an appointment to experience our year end holiday courtesy of up to 700 dollars off full treatment";
   const repeatCount = 12;
 
   return (
- <div className="relative overflow-hidden w-full bg-[#F0EF59]">
-  <div className="marquee">
-    <div className="marquee__group">
-      {[...Array(repeatCount)].map((_, i) => (
-        <span
-          key={i}
-          className="px-6 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide"
-        >
-          {text}
-        </span>
-      ))}
-    </div>
+    <div className="relative w-full overflow-hidden bg-[#F0EF59]">
+      <div className="marquee">
+<div className="marquee__group">
+  {Array.from({ length: repeatCount }).map((_, i) => (
+    <div
+      key={`a-${i}`}
+      className="flex items-center"
+    >
+      <span className="px-6 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide">
+        {text}
+      </span>
 
-    <div className="marquee__group" aria-hidden="true">
-      {[...Array(repeatCount)].map((_, i) => (
-        <span
-          key={i}
-          className="px-8 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide"
-        >
-          {text}
-        </span>
-      ))}
+
+<span className="mx-4 text-[12px] font-light opacity-70">+</span>
     </div>
-  </div>
+  ))}
 </div>
+
+<div className="marquee__group">
+  {Array.from({ length: repeatCount }).map((_, i) => (
+    <div
+      key={`a-${i}`}
+      className="flex items-center"
+    >
+      <span className="px-6 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide">
+        {text}
+      </span>
+
+
+<span className="mx-4 text-[12px] font-light opacity-70">+</span>
+    </div>
+  ))}
+</div>
+      </div>
+    </div>
   );
 };
+
+
 function DentalModel() {
-  const { scene, animations } = useGLTF("/models/moonjelly.glb");
+  const { scene, animations } = useGLTF("/models/art_gallery_test.glb");
   const animatedRef = useRef<THREE.Group>(null);
   const { actions } = useAnimations(animations, animatedRef);
-useEffect(() => {
-  console.log("Animations array:", animations);
-  console.log("Actions map:", actions);
-}, [animations, actions]);
-useEffect(() => {
-  const action = actions["Loop-400"];
-  if (!action) {
-    console.warn("Action '400' not found", actions);
-    return;
+
+
+  useEffect(() => {
+    console.log("end mesh");
+scene.traverse((child: any) => {
+  if (!child.isMesh || !child.material) return;
+
+  const mat = child.material as THREE.MeshStandardMaterial;
+
+  if (mat.name.includes("Wall")) {
+    mat.color.set("#f2f2f2");
+    mat.roughness = 0.9;
   }
 
-  action.reset();
-  action.setLoop(THREE.LoopRepeat, Infinity);
-  action.timeScale = 0.6;
-  action.play();
+  if (mat.name.includes("Floor")) {
+    mat.color.set("#e6e6e6");
+    mat.roughness = 0.6;
+  }
 
-  return () => action.stop();
-}, [actions]);
-useEffect(() => {
-  scene.traverse((child: any) => {
-    if (child.isMesh && !child.isSkinnedMesh) {
-      child.visible = false;
-    }
-  });
-}, [scene]);
+  if (mat.name.includes("Ceiling")) {
+    mat.color.set("#fafafa");
+    mat.roughness = 1.0;
+  }
+
+  mat.needsUpdate = true;
+});
+
+    console.log("end mesh");
+  }, [scene]);
+
+
+  useEffect(() => {
+    if (!actions) return;
+
+    const firstAction = Object.values(actions)[0];
+    if (!firstAction) return;
+
+    firstAction.reset();
+    firstAction.setLoop(THREE.LoopRepeat, Infinity);
+    firstAction.play();
+
+    return () => firstAction.stop();
+  }, [actions]);
+
   return (
- 
-    <group scale={0.6}       rotation={[0, Math.PI / 2, 0]} >
+    <group rotation={[0, 0, 0]} scale={1}>
       <group ref={animatedRef}>
         <primitive object={scene} />
       </group>
@@ -98,22 +129,52 @@ const Hero: React.FC = () => {
 <div className="relative min-h-screen">
 <section className="grid grid-cols-1 lg:grid-cols-2 min-h-screen px-6 py-20">
 
-  <Canvas
-    className="absolute inset-0"
-camera={{ position: [0, 0.6, 3.2], fov: 45 }}
-  >
-    <Environment files="/images/studio_small_03_4k.hdr"/>
+<Canvas camera={{ position: [4, 3, 6], fov: 45 }}>
+  <Environment files="/images/studio_small_03_4k.hdr" />
 
- <DentalModel />
-    <OrbitControls enableZoom={false} enablePan={false} />
-  </Canvas>
-  <div className="flex items-center justify-center text-center lg:text-left">
-    <h1 className="text-[clamp(24px,3vw,32px)] font-neuehaas35 leading-none text-[#4a484b]">
-      <span className="font-canelathin">welcome</span> to the dental shop . <br />
-     buy something - or <span className="font-canelathin">don’t</span>. <br />
-      just don't forget to floss.
-    </h1>
-  </div>
+
+<ambientLight intensity={0.4} />
+
+<directionalLight
+  position={[5, 8, 5]}
+  intensity={1.2}
+  castShadow
+/>
+
+<directionalLight
+  position={[-5, 4, -5]}
+  intensity={0.6}
+/>
+
+
+  <DentalModel />
+
+  <OrbitControls enableZoom={false} enablePan={false} />
+</Canvas>
+
+<div className="flex items-center justify-center text-center lg:text-left">
+<div className="text-gsap-contain">
+  <h1 className="text-[clamp(24px,3vw,32px)] font-neuehaas35">
+    <div className="gsap-line">
+      <span className="line-inner">
+        <span className="font-canelathin">shop</span> your smile.
+      </span>
+    </div>
+
+    <div className="gsap-line">
+      <span className="line-inner">
+        buy something — or <span className="font-canelathin">don’t</span>.
+      </span>
+    </div>
+
+    <div className="gsap-line">
+      <span className="line-inner">
+        just don't forget to floss.
+      </span>
+    </div>
+  </h1>
+</div>
+</div>
 </section>
 </div>
     </section>
@@ -240,14 +301,20 @@ void main() {
   float lines = cos((st.x * 0.3 + n * 0.25 + mouse.x + 0.2) * PI);
 
 
-vec3 colorA = vec3(1.0, 1.0, 1.0);           // brighter pure white
+vec3 colorA = vec3(.92, .95, 1.0);     
 vec3 colorB = vec3(0.4, 0.6, 1.0);   
 
 
   float wave = bounceIn(lines * 0.5 + 0.5);
-  float fade = smoothstep(0.2, 1.0, uv.x);
+float fade = smoothstep(0.0, 1.0, uv.x);
 
-  vec3 col = mix(colorA, colorB, wave * fade * 0.8);
+
+float blueBase = 0.15;
+
+// final blend
+float mixAmt = blueBase + wave * fade * 0.6;
+
+vec3 col = mix(colorA, colorB, mixAmt);
 
   fragColor = vec4(col, 1.0);
 }

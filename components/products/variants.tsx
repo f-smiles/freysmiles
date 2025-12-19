@@ -135,10 +135,10 @@ className="card-anim relative rounded-[16px] h-[460px] will-change-transform gro
 
 <div className="absolute inset-0 z-[0] p-5">
 
-  <div className="relative h-full w-full bg-transparent border border-[#F2F2F4] p-4">
+  <div className="relative h-full w-full bg-transparent border border-[#EBECF0] p-4">
 
     <div
-      className="relative h-[75%] w-full overflow-hidden"
+      className="relative h-[90%] w-full overflow-hidden"
       style={{
         clipPath: "polygon(0 0, 100% 0, 100% 92%, 92% 100%, 0 100%)",
       }}

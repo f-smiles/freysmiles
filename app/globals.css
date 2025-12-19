@@ -1902,18 +1902,13 @@ header h1 {
 .marquee {
   display: flex;
   overflow: hidden;
-  user-select: none;
 }
 
 .marquee__group {
   display: flex;
   flex-shrink: 0;
-  min-width: 100%;
   animation: scroll 400s linear infinite;
-}
-
-.marquee:hover .marquee__group {
-  animation-play-state: paused;
+  pointer-events: none; /* 👈 THIS FIXES HOVER */
 }
 
 @keyframes scroll {
@@ -1921,8 +1916,12 @@ header h1 {
     transform: translateX(0);
   }
   to {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
+}
+
+.marquee:hover .marquee__group {
+  animation-play-state: paused;
 }
 .logo-grid {
   display: grid;
@@ -6302,3 +6301,20 @@ body,
 .circle-3 { animation-timing-function: cubic-bezier(0.48, 0, 0.52, 1); }
 .circle-4 { animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
 
+.text-gsap-contain {
+  width: 70%;
+  margin-left: auto;
+}
+
+.gsap-line {
+  width: 70%;
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 0.1em;
+}
+
+.gsap-line .line-inner {
+  display: inline-block;
+  font-size: 2rem;
+  line-height: 1; 
+}
