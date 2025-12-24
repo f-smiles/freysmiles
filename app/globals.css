@@ -11,7 +11,7 @@
 }
 @font-face {
   font-family: "NeueHaasGroteskDisplayPro45Light";
-  src: url("../public/fonts/Neue-Haas-Grotesk-Display-Pro-45-Light.ttf") format("truetype");
+  src: url("../public/fonts/NeueHaasGroteskDisplay-45Light-Web.woff2") format("woff2");
   font-display: swap;
 }
 @font-face {
@@ -23,7 +23,6 @@
 html {
   scroll-behavior: smooth;
 }
-
 
 body {
   overscroll-behavior-y: none;
