@@ -1,4 +1,5 @@
 'use client'
+import './style.css'
 import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import ScrambleTextPlugin from 'gsap/ScrambleTextPlugin'
@@ -153,7 +154,7 @@ export default function ScrollList() {
         <span className='text-sm text-gray-300'>●</span>
         <h3 className='mt-1 max-w-2xl text-sm/6'>Read the reviews</h3>
       </div>
-      <div className='bg-gray-100 mt-6 border-t border-gray-100 dark:border-white/10'>
+      <div className='mt-6 border-t border-gray-100 dark:border-white/10'>
         <dl className='divide-y divide-gray-100 dark:divide-white/10'>
           {patients.map((_, i) => (
             <div key={`${i}-${_.name}`} className='px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0' onMouseEnter={() => handleHover(i, _.name, _.duration)}>
