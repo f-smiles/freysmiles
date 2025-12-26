@@ -3,125 +3,80 @@ import './style.css'
 import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import ScrambleTextPlugin from 'gsap/ScrambleTextPlugin'
-
-const patients = [
-  {
-    name: 'Lainie',
-    image: '../images/testimonials/laniepurple.png',
-    duration: '20 months',
-  },
-  {
-    name: 'Ron L.',
-    image: '../images/testimonials/Ron_Lucien.jpg',
-    duration: 'INVISALIGN',
-  },
-  {
-    name: 'Elizabeth',
-    image: '../images/testimonials/elizabethpatient.jpeg',
-    duration: 'INVISALIGN, GROWTH APPLIANCE',
-  },
-  {
-    name: 'Kinzie',
-    image: '../images/testimonials/kinzie1.jpg',
-    duration: 'BRACES, 24 months',
-  },
-  { name: 'Kasprenski',
-    image: '../images/testimonials/kasprenski.jpg',
-    duration: '',
-  },
-  {
-    name: 'Leanne',
-    image: '../images/testimonials/leanne.png',
-    duration: '12 months',
-  },
-  {
-    name: 'Harold',
-    image: '../images/testimonials/Narvaez.jpg',
-    duration: 'Invisalign',
-  },
-  { name: 'Rosie & Grace',
-    image: '../images/testimonials/Rosiegrace.png',
-    duration: '',
-  },
-  {
-    name: 'Keith',
-    image: '../images/testimonials/hobsonblue.png',
-    duration: '',
-  },
-  {
-    name: 'Justin',
-    image: '../images/testimonials/hurlburt.jpeg',
-    duration: 'Invisalign, 2 years',
-  },
-  { name: 'Kara',
-    image: '../images/testimonials/Kara.jpeg',
-    duration: '',
-  },
-  {
-    name: 'Sophia',
-    image: '../images/testimonials/Sophia_Lee.jpg',
-    duration: '2 years, Braces',
-  },
-  { name: 'Brynn',
-    image: '../images/testimonials/brynnportrait.png',
-    duration: '',
-  },
-  { name: 'Emma',
-    image: '../images/testimonials/Emma.png',
-    duration: '',
-  },
-  {
-    name: 'Brooke',
-    image: '../images/testimonials/Brooke_Walker.jpg',
-    duration: '2 years, Braces',
-  },
-  {
-    name: 'Nilaya',
-    image: '../images/testimonials/nilaya.jpeg',
-    duration: 'Braces',
-  },
-  { name: 'Maria A.',
-    image: '../images/testimonials/Maria_Anagnostou.jpg',
-    duration: '',
-  },
-  {
-    name: 'Natasha K.',
-    image: '../images/testimonials/Natasha_Khela.jpg',
-    duration: '',
-  },
-  {
-    name: 'James C.',
-    image: '../images/testimonials/James_Cipolla.jpg',
-    duration: 'Invisalign, 2 years',
-  },
-  {
-    name: 'Devika K.',
-    image: '../images/testimonials/Devika_Knafo.jpg',
-    duration: '',
-  },
-  {
-    name: 'Ibis S.',
-    image: '../images/testimonials/Ibis_Subero.jpg',
-    duration: 'Invisalign, 1 year',
-  },
-  { name: 'Abigail',
-    image: '../images/testimonials/abigail.png',
-    duration: '',
-  },
-  { name: 'Emma',
-    image: '../images/testimonials/EmmaF.png',
-    duration: '',
-  },
-  {
-    name: 'Karoun G',
-    image: '../images/test/base.jpg',
-    duration: 'Motion Appliance, Invisalign',
-  },
-]
+import { patients } from './patients'
+import { BounceLine } from './bounce-line'
 
 gsap.registerPlugin(ScrambleTextPlugin)
 
 export default function ScrollList() {
+  const awardRef = useRef(null)
+  const awardCardArea = useRef(null)
+  const awardCardItem = useRef(null)
+  const awardItem = useRef(null)
+
+  return (
+    <div ref={awardRef} className='award'>
+      <div ref={awardCardArea} className='award-card-area'>
+        {patients.map((patient, i) => (
+          <div
+            key={`${i}-${patient.name}`}
+            ref={awardCardItem}
+            className='award-card-item'
+          >
+            <CardAward {...patient} />
+          </div>
+        ))}
+      </div>
+
+      <div className='award-bg'>
+        <div className='award-inner'>
+          <div className='l-container'>
+            <span className='award-title-read-area'>
+              <AppReadTitle />
+            </span>
+            <div className='award-list-wrapper'>
+              <div className='award-list'>
+                {patients.map((patient, i) => (
+                  <div
+                    key={`${patient.name}-${i}`}
+                    ref={awardItem}
+                    className='award-item'
+                  >
+                    <BounceLine />
+                    <p className='award-group'>{patient.name}</p>
+                    <p className='award-title'>{patient.duration}</p>
+                  </div>
+                ))}
+                <div className='award-list-bottom-line'>
+                  <BounceLine />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const CardAward = () => {
+  return (
+    <div className='w-full h-full'>CardAward</div>
+  )
+}
+
+const AppReadTitle = () => {
+  return (
+    <div className='flex justify-center items-center gap-4 tracking-wider px-4 sm:px-0'>
+      <span className='text-xs'>●</span>
+      <h3 className='text-sm/6'>Our patient results</h3>
+      <span className='text-xs text-gray-300'>●</span>
+      <h3 className='mt-1 max-w-2xl text-sm/6'>Read the reviews</h3>
+    </div>
+  )
+}
+
+function OldScrollList() {
   const headingRefs = useRef([])
   const descriptionRefs = useRef([])
 
