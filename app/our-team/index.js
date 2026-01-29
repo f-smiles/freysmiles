@@ -730,7 +730,7 @@ if (scroller) {
               className="bg-[#000] w-screen h-screen grid grid-cols-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed"
             >
               <div className="absolute inset-0">
-                      <JanusFace />
+                      {/* <JanusFace /> */}
 
               </div>
         

@@ -82,6 +82,131 @@ if (typeof window !== "undefined") {
   );
 }
 
+function createTextTexture(text, width = 1024, height = 512) {
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+
+  // ctx.fillStyle = "#111";
+  // ctx.fillRect(0, 0, width, height);
+
+  ctx.fillStyle = "#fff";
+ctx.font = "550 96px 'NeueHaasGroteskDisplayPro45Light'";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  const lines = text.split("\n");
+  lines.forEach((line, i) => {
+    ctx.fillText(line, width / 2, height / 2 + i * 110 - (lines.length - 1) * 55);
+  });
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+}
+
+const vertex = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}`
+
+const fragment = `
+uniform sampler2D uTexture;
+uniform vec2 uMouse;
+uniform float uRadius;
+uniform float uStrength;
+uniform vec2 uPlaneSize;
+
+varying vec2 vUv;
+
+void main() {
+  vec2 uv = vUv;
+  vec2 center = uMouse;
+
+  // Convert UV to plane-relative coordinates
+  vec2 tc = (uv - center) * uPlaneSize;
+  float dist = length(tc);
+
+if (dist < uRadius) {
+  float percent = (uRadius - dist) / uRadius;
+  float theta = percent * percent * uStrength;
+
+  float s = sin(theta);
+  float c = cos(theta);
+
+  // SWIRL
+  tc = vec2(
+    tc.x * c - tc.y * s,
+    tc.x * s + tc.y * c
+  );
+
+  // RADIAL STRETCH
+  vec2 dir = normalize(tc + 0.0001);
+  float stretch = percent * 0.6;
+  tc += dir * stretch * dist;
+
+  // BULGE
+  float bulge = percent * percent * 0.45;
+  tc *= 1.0 + bulge * 0.6;
+
+  // MICRO LETTER WARP
+  float micro = sin(tc.x * 18.0 + tc.y * 12.0) * 0.008;
+  tc += dir * micro * percent;
+}
+
+  // Convert back to UV space
+  vec2 finalUV = tc / uPlaneSize + center;
+  vec4 color = texture2D(uTexture, finalUV);
+  gl_FragColor = color;
+}
+`
+function SwirlTextPlane({ text }) {
+  const meshRef = useRef();
+
+  const texture = useMemo(() => createTextTexture(text), [text]);
+
+  const planeSize = useMemo(() => new THREE.Vector2(20, 10), []);
+
+  const uniforms = useMemo(() => ({
+    uTexture: { value: texture },
+    uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+    uRadius: { value: 0.0 },
+    uStrength: { value: 0.0 },
+    uPlaneSize: { value: planeSize },
+  }), [texture, planeSize]);
+
+  const onPointerMove = (e) => {
+    const uv = e.uv;
+    uniforms.uMouse.value.copy(uv);
+
+    gsap.to(uniforms.uRadius, { value: 2.5, duration: 0.4 });   // world units now
+    gsap.to(uniforms.uStrength, { value: 3.0, duration: 0.4 });
+  };
+
+  const onPointerOut = () => {
+    gsap.to(uniforms.uRadius, { value: 0.0, duration: 0.6 });
+    gsap.to(uniforms.uStrength, { value: 0.0, duration: 0.6 });
+  };
+
+  return (
+    <mesh
+      ref={meshRef}
+      onPointerMove={onPointerMove}
+      onPointerOut={onPointerOut}
+    >
+      <planeGeometry args={[20, 10]} />
+      <shaderMaterial
+        uniforms={uniforms}
+        vertexShader={vertex}
+        fragmentShader={fragment}
+        transparent
+      />
+    </mesh>
+  );
+}
 const FluidSimulation = () => {
   const canvasRef = useRef(null);
 
@@ -1598,9 +1723,19 @@ export default function WhyChooseUs() {
 
       <div className="relative ">
         <Hero />
+ {/* <section className="relative w-screen h-screen bg-[#000]">
+  <Canvas
+    orthographic
+    camera={{ position: [0, 0, 5], zoom: 50 }}
+  >
+    <SwirlTextPlane
+      text={`GOOD IS NOT\nWHERE WE\nSTOP IT'S WHERE\nWE BEGIN`}
+    />
+  </Canvas>
+  </section> */}
 {/* <MoreThanSmiles /> */}
 
-<LivingLine />
+{/* <LivingLine /> */}
              {/* <FluidSimulation /> */}
 
           {/* <div className="relative w-full h-screen" style={{ zIndex: 1 }}>
@@ -1619,17 +1754,14 @@ export default function WhyChooseUs() {
               <RibbonAroundSphere />
             </Canvas>
           </div> */}
-
-            <div>
-              <ScrollPanels />
-            </div>
+        <CardStack />
 
            <StackCards />
          
-          <CardStack />
+  
           <WorkGrid />
           {/* <MoreThanSmiles /> */}
-          <CircleReveal />
+          {/* <CircleReveal /> */}
           {/* <About /> */}
          
           <Marquee />
@@ -1649,9 +1781,8 @@ const vertexShader = `
 `;
 
 const fragmentShader = `
- uniform float uProgress;
+uniform float uProgress;
 uniform vec2 uResolution;
-uniform vec3 uColor;
 uniform float uSpread;
 varying vec2 vUv;
 
@@ -1686,49 +1817,45 @@ void main() {
   float aspect = uResolution.x / uResolution.y;
   vec2 centeredUv = (uv - 0.5) * vec2(aspect, 1.0);
 
+  // --- Creamy texture ---
   float fineNoise = fbm(centeredUv * 30.0);
   float mediumNoise = fbm(centeredUv * 15.0);
   float largeNoise = fbm(centeredUv * 5.0);
-  
   float creamyTexture = largeNoise * 0.4 + mediumNoise * 0.3 + fineNoise * 0.3;
 
+  // --- Organic wave ---
   float wave = sin(centeredUv.x * 12.0 + uProgress * 8.0) * 0.08;
   wave += cos(centeredUv.y * 7.0 + uProgress * 5.0) * 0.05;
-  
+
   float dissolveEdge = uv.y - uProgress * 1.1 + wave;
+  float d = dissolveEdge + creamyTexture * uSpread * 0.8;
 
-  float textureInfluence = creamyTexture * uSpread * 0.8;
+  // --- Soft glass edge ---
+  float alpha = 1.0 - smoothstep(-0.08, 0.08, d);
+  alpha = pow(alpha, 0.65);              // softer transparency
+  alpha = mix(alpha, 1.0, 0.15);         // milky density
 
+  // --- Milky glass white color ---
+  vec3 milkBase = vec3(0.97, 0.98, 1.0); // lavender-white
+  vec3 highlight = vec3(1.0);
 
-  float d = dissolveEdge + textureInfluence;
+  vec3 milkColor = mix(
+    milkBase,
+    highlight,
+    creamyTexture * 0.18                 // subtle bloom
+  );
 
-  float softEdge = smoothstep(-0.1, 0.1, d);
-  float hardEdge = step(0.0, d + creamyTexture * 0.1);
-  
-  // Blend between edge types
-  float edgeBlend = mix(softEdge, hardEdge, 0.3);
-  float alpha = 1.0 - edgeBlend;
+  // slight chroma warmth
+  milkColor.r *= 1.01;
+  milkColor.b *= 1.02;
 
-  alpha = pow(alpha, 0.7);
-  
-
-  vec3 baseMilk = uColor;
-  
-
-  float colorVariation = 0.9 + creamyTexture * 0.1;
-  vec3 milkColor = baseMilk * colorVariation;
-  
-
-  milkColor.r *= 1.02;
-  milkColor.g *= 1.01;
-  
   gl_FragColor = vec4(milkColor, alpha);
 }
 `;
 
 
 const CONFIG = {
-  color: "#000", 
+  color: "#FFF", 
   spread: 0.5,
   speed: 2,
 };
@@ -1760,7 +1887,7 @@ function Hero() {
   const animationIdRef = useRef(null);
   const splitTextRef = useRef(null);
   const resizeTimeoutRef = useRef(null);
-
+const placeholderRef = useRef(null);
   useEffect(() => {
 
     const lenis = new Lenis({
@@ -1903,10 +2030,8 @@ function Hero() {
       }
     };
 
-    // Initialize Three.js after a short delay
     const threeJSTimeout = setTimeout(initThreeJS, 100);
 
-    // Initialize text animation - KEEPING THE ORIGINAL LOGIC
     const initTextAnimation = () => {
       if (!heroContentRef.current || !heroH2Ref.current) {
         console.warn('Hero content elements not found');
@@ -1922,37 +2047,47 @@ function Hero() {
         const words = split.words;
 
         gsap.set(words, { opacity: 0 });
+gsap.set(placeholderRef.current, { opacity: 0 });
+ ScrollTrigger.create({
+  trigger: heroContentRef.current,
+  start: "top 25%",
+  end: "bottom 100%",
+  onUpdate: (self) => {
+    const progress = self.progress;
 
-        ScrollTrigger.create({
-          trigger: heroContentRef.current,
-          start: "top 25%",
-          end: "bottom 100%",
-          onUpdate: (self) => {
-            const progress = self.progress;
-            const totalWords = words.length;
+    // === PLACEHOLDER FADE ===
+    gsap.to(placeholderRef.current, {
+      opacity: Math.min(progress * 1.2, 1),
+      duration: 0.1,
+      overwrite: true,
+      ease: "none",
+    });
 
-            words.forEach((word, index) => {
-              const wordProgress = index / totalWords;
-              const nextWordProgress = (index + 1) / totalWords;
+    // === TEXT REVEAL (unchanged) ===
+    const totalWords = words.length;
 
-              let opacity = 0;
+    words.forEach((word, index) => {
+      const wordProgress = index / totalWords;
+      const nextWordProgress = (index + 1) / totalWords;
 
-              if (progress >= nextWordProgress) {
-                opacity = 1;
-              } else if (progress >= wordProgress) {
-                const fadeProgress =
-                  (progress - wordProgress) / (nextWordProgress - wordProgress);
-                opacity = fadeProgress;
-              }
+      let opacity = 0;
 
-              gsap.to(word, {
-                opacity: opacity,
-                duration: 0.1,
-                overwrite: true,
-              });
-            });
-          },
-        });
+      if (progress >= nextWordProgress) {
+        opacity = 1;
+      } else if (progress >= wordProgress) {
+        const fadeProgress =
+          (progress - wordProgress) / (nextWordProgress - wordProgress);
+        opacity = fadeProgress;
+      }
+
+      gsap.to(word, {
+        opacity,
+        duration: 0.1,
+        overwrite: true,
+      });
+    });
+  },
+});
       } catch (error) {
         console.warn('SplitText initialization error:', error);
       }
@@ -1983,39 +2118,230 @@ function Hero() {
       }
     };
   }, []);
+  const containerRef = useRef();
+  const lineRefs = useRef([]);
+  const textRefs = useRef([]);
+  const sectionLineRefs = useRef([]);
 
+  const addToLineRefs = (el) => el && lineRefs.current.push(el);
+  const addToTextRefs = (el) => el && textRefs.current.push(el);
+  const addToSectionLineRefs = (el) => el && sectionLineRefs.current.push(el); 
+  
+useEffect(() => {
+  gsap.set([...lineRefs.current, ...sectionLineRefs.current], {
+    scaleX: 0,
+    transformOrigin: "center center", 
+  });
+
+  gsap.set(textRefs.current, { y: 20, opacity: 0 });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: containerRef.current,
+      start: "top 80%",
+      toggleActions: "play none none none",
+    },
+  });
+
+
+  sectionLineRefs.current.forEach((line) => {
+    tl.to(line, {
+      scaleX: 1,
+      duration: 1.6,
+      ease: "power3.out",
+    }, 0);
+  });
+
+
+  lineRefs.current.forEach((line, i) => {
+    tl.to(line, {
+      scaleX: 1,
+      duration: 1.3,
+      ease: "power3.out",          
+    }, 0.4 + i * 0.12);   
+  });
+
+
+  textRefs.current.forEach((text, i) => {
+    tl.to(text, {
+      y: 0,
+      opacity: 1,
+      duration: 0.9,
+      ease: "power2.out",
+    }, 0.6 + i * 0.08);
+  });
+
+  return () => ScrollTrigger.getAll().forEach(t => t.kill());
+}, []);
   return (
     <>
-         <section className="morphsection" ref={heroRef}>
+         <section className="bg-[#111] morphsection" ref={heroRef}>
 
-      <div className="morph-split-container">
+<div className="w-full h-full morph-split-container">
 
-        <div className="hero-left">
-          <div className="hero-header">
-            <h1>Morphogenesis</h1>
-            <p>Solid form gives way to liquid movement.</p>
-          </div>
-        </div>
-        
+<div className="w-1/2 flex pt-40 justify-center">
+  <div className="hero-header max-w-lg">
+    <h1 className="text-xs tracking-widest text-gray-300 uppercase font-neuehaas45">
+      Backed By over 60 Years Of <br /> Combined Orthodontic Experience
+    </h1>
 
-        <div className="hero-right">
-          <div className="hero-img">
-            <img src="/images/aafe.png" alt="" />
-          </div>
-        </div>
+
+  </div>
+</div>
+
+<div className="w-1/2 relative h-screen flex items-center justify-center">
+  <img
+    className="h-[70%] w-auto object-contain"
+    src="/images/since77.png"
+    alt=""
+  />
+</div>
       </div>
 
 
       <canvas className="hero-canvas" ref={canvasRef}></canvas>
 
-      <div className="hero-content" ref={heroContentRef}>
-        <h2 ref={heroH2Ref}>
-          An underlying field of motion pushes and pulls the image across its
-          surface, redistributing pixels in a way that feels organic and
-          constantly in flux.
-        </h2>
-      </div>
+<div className="morph-content" ref={heroContentRef}>
+  <div className="morph-split">
+
+<div className="morph-left">
+  <div ref={placeholderRef} className="placeholder" />
+</div>
+
+    {/* RIGHT — text */}
+    <div className="morph-right">
+      <h2
+        ref={heroH2Ref}
+        className="font-neuehaas35 max-w-[650px] text-[20px] leading-snug tracking-wide"
+      >
+        Our doctors rank in the top 1% nationally and have completed thousands of Invisalign cases.
+        As Diamond Plus providers, we focus on precision — in planning, execution, and results that last.
+      </h2>
+    </div>
+
+  </div>
+</div>
+
     </section>
+    <div  className=" w-full overflow-x-hidden">
+
+ <div className="min-h-screen text-[#222] font-light">
+
+
+      <main className="grid grid-cols-2 gap-16 px-12 pt-10 pb-16">
+
+
+        <div className="flex flex-col justify-between">
+
+
+          <div className="mt-12 ">
+            <p className="text-lg leading-relaxed">
+                            {/* <div>
+                        Our office was the first in the region to go fully digital—
+                leveraging iTero 3D scanning and in-house printing to lead a new
+                era of appliance design and fabrication.
+              </div> */}
+             <h1 className="text-xs tracking-widest text-gray-600 uppercase font-neuehaas45 mb-4">
+                Board-Driven Diagnostic Standards
+                </h1>
+                      <div className="mb-16">
+
+              <h2 className="max-w-4xl font-neuehaas45 text-[19px] leading-tight">
+                Our doctors are fully invested in treatment planning your case correctly. Guided by board-certified standards and decades of clinical practice, we approach every case with the same rigor demanded in academic orthodontics.
+              </h2>
+
+            </div>
+            </p>
+          </div>
+
+
+          <div className="flex justify-between text-xs tracking-wider uppercase text-black/70 mt-24">
+           
+              <p className="font-neuehaas45">Invisalign since 2002</p>
+        
+          </div>
+
+       
+          <div className="mt-16 relative">
+            <img
+              src="/images/ajomockupchairupdated.png"
+              className="w-full object-cover rounded-sm"
+            />
+            <button className="absolute bottom-4 left-4 px-5 py-2 rounded-full bg-white text-xs shadow-sm">
+              ...
+            </button>
+          </div>
+
+        </div>
+
+
+        <div className="relative">
+          <img
+            src="/images/signonmetalrack.png"
+            className="w-full h-full object-cover"
+          />
+          <button className="absolute bottom-4 left-4 px-5 py-2 rounded-full bg-white text-xs shadow-sm">
+           ...
+          </button>
+        </div>
+
+      </main>
+    </div>
+
+
+    </div>
+     <div className="accolades-section">
+  <div className="flex justify-start px-10 font-canelathin text-[18px]">
+    Accolades
+  </div>
+
+  <div
+    ref={containerRef}
+    className="mt-[10vh] w-full max-w-7xl mx-auto text-[11px] relative"
+  >
+    <div
+      ref={addToSectionLineRefs}
+      className="absolute top-0 left-0 right-0 h-[.5px] bg-black origin-left"
+    />
+
+    <div className="font-canelathin tracking-wide flex flex-col text-[1.25em]">
+      {[
+        ["6x Winner Best Orthodontist", "Best of the Valley"],
+        ["5x Winner Best Orthodontist", "Readers' Choice The Morning Call"],
+        ["Nationally Recognized Top Orthodontist", "Top Dentists"],
+        ["Invisalign", "25+ Years of Experience"],
+        ["Invisalign Teen", "5000+ Cases Treated"],
+        ["Diamond Plus", "Top 1% of All Providers"],
+      ].map(([left, right], i) => (
+        <div key={i} className="flex py-4 items-center px-5 relative">
+          {i < 5 && (
+            <div
+              ref={addToLineRefs}
+              className="absolute inset-x-0 bottom-0 h-[.5px] bg-black origin-center"
+              style={{ transform: "scaleX(0)" }}
+            />
+          )}
+
+          <div ref={addToTextRefs} className="flex-1 pr-8">
+            {left}
+          </div>
+          <div ref={addToTextRefs} className="w-[350px] pr-6">
+            {right}
+          </div>
+          <div ref={addToTextRefs} className="w-[80px] text-right opacity-50">
+            DATE
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div
+      ref={addToSectionLineRefs}
+      className="absolute bottom-0 left-0 right-0 h-[.5px] bg-black origin-left"
+    />
+  </div>
+</div>
+
     </>
   );
 }
@@ -2454,16 +2780,7 @@ function WorkGrid() {
           </div>
           
       <VideoAnimation />
-               <div className="mb-16">
-              <p className="font-neuehaas45 text-xs tracking-widest text-gray-600 uppercase mb-4">
-                Pioneering Digital Orthodontics
-              </p>
-              <h2 className="max-w-3xl font-neuehaas45 text-[26px] leading-tight">
-                Our office was the first in the region to go fully digital—
-                leveraging iTero 3D scanning and in-house printing to lead a new
-                era of appliance design and fabrication.
-              </h2>
-            </div>
+         
 
     </div>
 
@@ -2577,176 +2894,7 @@ void main(void) {
 }
 
 
-function ScrollPanels() {
-  useEffect(() => {
-    gsap.to(".textslide", {
-      y: "0%",
-      duration: 1,
-      stagger: 0.2,
-      ease: "none",
-    });
-  }, []);
-  const sectionRef = useRef(null);
-  const imgRef = useRef(null);
-  const heroRef = useRef(null);
-  const standardRef = useRef(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        imgRef.current,
-        { 
-          scale: 0.35, 
-          y: "-100vh" 
-        },
-        {
-          scale: .85,
-          y: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroRef.current,
-            start: "top top",
-            endTrigger: standardRef.current,
-            end: "top center",
-            scrub: 1, 
-          },
-        }
-      );
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-
-
-  return (
-    <div ref={sectionRef} className="bg-[#F9F9F9] w-full overflow-x-hidden">
-
- <div className="min-h-screen bg-[#ECECEC] text-[#222] font-light">
-
-
-      <main className="grid grid-cols-2 gap-16 px-12 pt-10 pb-16">
-
-
-        <div className="flex flex-col justify-between">
-
-
-          <div className="mt-12 max-w-sm">
-            <p className="text-lg leading-relaxed">
-             <h1 className="text-xs tracking-widest text-gray-600 uppercase font-neuehaas45">
-                  Backed By over 60 Years Of <br /> Combined Orthodontic Experience
-                </h1>
-            </p>
-          </div>
-
-          {/* Info Row */}
-          <div className="flex justify-between text-xs tracking-wider uppercase text-black/70 mt-24">
-            <div>
-           
-     
-            </div>
-            <div>
-           
-           
-            </div>
-            <div className="self-end">
-              <p>Invisalign since 2005</p>
-            </div>
-          </div>
-
-          {/* Bottom image */}
-          <div className="mt-16 relative">
-            <img
-              src="/images/table_mockup.jpg"
-              className="w-full object-cover rounded-sm"
-            />
-            <button className="absolute bottom-4 left-4 px-5 py-2 rounded-full bg-white text-xs shadow-sm">
-              Our projects ↗
-            </button>
-          </div>
-
-        </div>
-
-        {/* RIGHT COLUMN */}
-        <div className="relative">
-          <img
-            src="/images/excellence.png"
-            className="w-full h-full object-cover"
-          />
-          <button className="absolute bottom-4 left-4 px-5 py-2 rounded-full bg-white text-xs shadow-sm">
-            Explore products ↗
-          </button>
-        </div>
-
-      </main>
-    </div>
-
-
-      <div className="relative">
-        <section ref={heroRef} className="w-full h-screen text-black flex flex-col justify-between font-neuehaas35 relative ">
-          <div className="flex justify-between px-8 md:px-16 pt-8 h-full relative">
-            <div className="flex flex-col justify-between w-1/2 relative">
-              <div className="absolute top-[65%] left-0 -translate-y-1/2 text-left">
-                <h1 className="text-xs tracking-widest text-gray-600 uppercase font-neuehaas45">
-                  Backed By over 60 Years Of <br /> Combined Orthodontic Experience
-                </h1>
-              </div>
-            </div>
-
-            <div className="flex flex-col w-1/2 relative">
-              <div className="max-w-[500px] absolute top-[50%] right-0 -translate-y-1/2 text-left">
-                 <h1 className="text-[15px] tracking-wider text-gray-600 font-canelathinstraight">
-Our doctors rank in the top 1% nationally and have completed thousands of Invisalign cases. As Diamond Plus providers, we focus on precision — in planning, execution, and results that last.
-
-                </h1>
-              </div>
-            </div>
-          </div>
-
-          <footer className="absolute bottom-[8%] left-0 w-full px-4 md:px-16 flex items-center justify-between text-xs tracking-widest text-gray-600 uppercase">
-            <span>Welcome</span>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex w-4 h-4">
-
-</span>
-              <span>Scroll to Explore</span>
-            </div>
-            <span className="w-[4px] h-auto">
-     
-              </span>
-          </footer>
-        </section>
-        
-
-
-
-
-        {/* <div className="image-grid px-16 grid grid-cols-1 md:grid-cols-2 ">
-  {images.map((img, i) => (
-    <div
-      key={i}
-      className="relative w-full overflow-hidden"
-      style={{
-        height: i % 2 === 0 ? '550px' : '500px', 
-        marginTop: i % 4 === 0 || i % 4 === 3 ? '0px' : '60px',
-      }}
-    >
-      <img
-        src={img.src}
-        alt={img.alt}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-        }}
-      />
-    </div>
-  ))}
-</div> */}
-      </div>
-    </div>
-  );
-}
 
 const ImageGrid = () => {
   const headerRef = useRef(null);
@@ -3488,56 +3636,61 @@ const CardStack = () => {
 
   return (
     <>
-      <div className="bg-[#F9F9F9]">
+
         <div className="l-wrapper ">
           <div className="list1" id="list1" ref={list1Ref}>
             <ul className="card-list list">
-              <li className="list-child bg-[#c3531d] ">
+              <li className="list-child bg-[#D9CA51] ">
                 <div className="card-inner">
-                  <h2 className="card-title">Tech-Savvy Teeth Things</h2>
-                  <p className="card-subtitle">Goopless</p>
-                  <div className="card-caption-box">
-                    3D iTero scanning /<br />
-                    low-dose Radiographs /<br />
-                    3D printing
+                  <h2 className="card-title text-[#D9CA51]">Tech-Savvy Teeth Things</h2>
+                  <p className="card-subtitle text-[#D9CA51]">Goopless</p>
+                  <div className="text-[#B55E00] card-caption-box">
+                  <span>3D iTero scanning</span>
+  <span>Low-dose radiographs</span>
+  <span>3D printing</span>
                   </div>
                 </div>
               </li>
-              <li className="list-child text-type1 bg-[#8dca9c]">
-                <div className="card-inner">
-                  <h2 className="card-title">Outcomes</h2>
-                  <p className="card-subtitle">Over 25,000 patients</p>
-                  <div className="card-caption-box">
-                    Web Design & Dev /<br />
-                    Art Direction /<br />
-                    Illustration
-                  </div>
-                </div>
-              </li>
-              <li className="list-child text-type1 bg-[#E5AB38]">
-                <div className="card-inner">
-                  <h2 className="card-title">Specialists, not generalists</h2>
-                  <p className="card-subtitle">
+              <li className="list-child text-type1 bg-[#DBE9E7]">
+                                <div className="card-inner">
+                  <h2 className="card-title text-[#DBE9E7]">Specialists, not generalists</h2>
+                  <p className="card-subtitle text-[#DBE9E7]">
                     You wouldn’t hire a generalist surgeon
                   </p>
-                  <div className="card-caption-box">
-                    Board certified /<br />
-                    ABO certified /<br />
-                    Combined 50+ years experience
+                  <div className="card-caption-box text-[#86986C]">
+                   <span>Board certified</span> 
+                   <span> ABO certified</span>
+                   <span>Combined 50+ years experience</span> 
                   </div>
                 </div>
+          
               </li>
-              <li className="list-child text-type1 bg-[#D6B6D1]">
+                            <li className="list-child text-type1 bg-[#DDC3F3]">
                 <div className="card-inner">
-                  <h2 className="card-title">4 Locations</h2>
-                  <p className="card-subtitle">IRL + URL</p>
+                  <h2 className="card-title text-[#DDC3F3]">4 Locations</h2>
+                  <p className="card-subtitle text-[#DDC3F3]">IRL + URL</p>
+                       <div className="card-caption-box text-[#FE6F42]">
+                     <span>Bethlehem</span> 
+                   <span>Allentown</span>
+                   <span>Lehighton</span> 
+                  </div>
               
                 </div>
               </li>
+              <li className="list-child text-type1 bg-[#A7C6FD]">
+      <div className="card-inner">
+                  <h2 className="card-title text-[#A7C6FD]">Outcomes</h2>
+                  <p className="card-subtitle text-[#A7C6FD]">Over 25,000 patients</p>
+                  <div className="card-caption-box text-[#A7C6FD]">
+               
+                  </div>
+                </div>
+              </li>
+
             </ul>
           </div>
         </div>
-      </div>
+
     </>
   );
 };
@@ -3709,7 +3862,7 @@ function StackCards() {
       attr: {
         r: (i) => [4, 1.5][i],
 
-        fill: (i) => ["#C8BC40", "#6D423E "][i],
+        fill: (i) => ["#0472C5", "#F8E9D7"][i],
       },
     });
 
@@ -3741,11 +3894,34 @@ function StackCards() {
   };
 
 
+const blocks = [
+  {
+    title: "ABO Treatment Standards",
+    content:
+      "We strive to attain finished results consistent with the American Board of Orthodontics (ABO) qualitative standards. Our doctors place great priority on the certification and recertification process, ensuring that all diagnostic records adhere to ABO standards.",
+  },
+  {
+    title: "Board Certification Process",
+    content: "Lorem",
+  },
+  {
+    title: "Diagnostic Record Accuracy",
+    content:
+      "To complement our use of cutting-edge diagnostic technology, we uphold the highest standards for our records, ensuring accuracy and precision throughout the treatment process.",
+  },
+  {
+    title: "Trusted Expertise",
+    content:
+      "Our office holds the distinction of being the longest-standing, active board-certified orthodontic office in the area. With four offices in the Lehigh Valley, we have been providing unparalleled orthodontic care for over four decades.",
+  },
+];
+
+
 
   return (
     <>
 
-<div className="bg-[#F9F9F9] w-full flex justify-center">
+<div className=" w-full flex justify-center">
 
             <div className="flex flex-row gap-x-12 items-center">
             
@@ -3806,7 +3982,7 @@ function StackCards() {
                 margin: 0,
                 padding: 0,
                 overflow: "hidden",
-                background: "#6D423E",
+                background: "#F8E9D7",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -3852,47 +4028,23 @@ function StackCards() {
           </p>
         </div> */}
 
- 
-        <div className="mt-20 font-neuehaas45 text-gray-600 uppercase min-h-screen leading-none px-2">
-          {[
-            {
-              title: "ABO Treatment Standards",
-              content:
-                "We strive to attain finished results consistent with the American Board of Orthodontics (ABO) qualitative standards. Our doctors place great priority on the certification and recertification process, ensuring that all diagnostic records adhere to ABO standards.",
-            },
-            {
-              title: "Board Certification Process",
-              content:
-                "Currently, Dr. Gregg Frey is a certified orthodontist and is preparing cases for recertification. Dr. Daniel Frey is in the final stages of obtaining his initial certification.",
-            },
-            {
-              title: "Diagnostic Record Accuracy",
-              content:
-                "To complement our use of cutting-edge diagnostic technology, we uphold the highest standards for our records, ensuring accuracy and precision throughout the treatment process.",
-            },
-            {
-              title: "Trusted Expertise",
-              content:
-                "Our office holds the distinction of being the longest-standing, active board-certified orthodontic office in the area. With four offices in the Lehigh Valley, we have been providing unparalleled orthodontic care for over four decades.",
-            },
-          ].map((block, i) => (
-            <div key={i} className="w-full border-t border-black">
-              <div
-                className="relative grid grid-cols-4 gap-x-10 px-10 py-16 overflow-hidden bg-black card-block"
-                style={{ "--br": "0px" }}
-              >
-                <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[#F9F9F9] before:transition-none before:rounded-[var(--br)]" />
-                <div className="tracking-wider text-[12px] relative z-10 flex items-center justify-center col-span-1 text-[#fe019a]">
-                  {block.title}
-                </div>
-                <div className="tracking-widest text-[11px] relative z-10 col-span-3 max-w-4xl text-black leading-relaxed">
-                  <div>{block.content}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-          <div className="w-full border-b border-black" />
+
+<div className="reveal-wrapper font-neuehaas45 text-gray-600 leading-none">
+  <section className="reveal-section">
+    <div className="reveal-window" />
+
+    <div className="reveal-track">
+      {blocks.map((block, i) => (
+        <div key={i} className="reveal-row">
+          <div className="reveal-title">{block.title}</div>
+          <div className="reveal-content">{block.content}</div>
         </div>
+      ))}
+    </div>
+  </section>
+
+
+</div>
 
     </>
   );

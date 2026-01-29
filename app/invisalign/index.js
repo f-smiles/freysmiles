@@ -1536,7 +1536,7 @@ useEffect(() => {
       </filter>
     </defs>
 
-    {/* Static background line */}
+
     <path
       d="M1.00003 1332L1.00006 726.469C1.00007 691.615 18.8257 659.182 48.25 640.5V640.5C77.6744 621.818 95.5 589.385 95.5 554.531L95.5 0"
       stroke="black"
@@ -1544,7 +1544,7 @@ useEffect(() => {
       strokeWidth="1"
     />
 
-    {/* Animated glowing line - using motion.path for animation */}
+
     <motion.path
       d="M1.00003 1332L1.00006 726.469C1.00007 691.615 18.8257 659.182 48.25 640.5V640.5C77.6744 621.818 95.5 589.385 95.5 554.531L95.5 0"
       stroke="white"
@@ -1723,7 +1723,6 @@ preset="studio"
       {/* </div> */}
       <div className="relative">
         <section className="mt-[20vh] relative min-h-screen">
-          
           <div className="flex justify-start px-10 font-canelathin text-[18px]">Accolades</div>
             <div
               ref={containerRef}

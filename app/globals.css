@@ -3641,7 +3641,6 @@ img:nth-child(6) {
   z-index: 3;
   grid-column-gap: 1rem;
   grid-row-gap: 1rem;
-  text-align: center;
   flex-flow: column;
   align-items: center;
   display: flex;
@@ -4998,7 +4997,6 @@ a {
   justify-content: center;
   padding: 2rem;
   text-align: left;
-  font-family: "NeueHaasDisplay35", serif;
   color: #121212;
 }
 
@@ -5011,37 +5009,44 @@ a {
 }
 
 .card-title {
-  font-family: "SaolDisplay-LightItalic", serif;
-  font-size: 2rem;
-  font-weight: 700;
+  font-family: "KHTekaTrial-Light", monospace;
+  font-size: 1.4em;
+    text-transform: uppercase;
   margin-bottom: 0.25rem;
 }
 
 .card-subtitle {
-  font-size: 1.5rem;
-  font-weight: 400;
+  font-size: 1rem;
+  /* font-weight: 400; */
+  text-transform: uppercase;
   line-height: 1.2;
-  font-family: "NeueHaasGroteskDisplayPro45Light";
+  font-family: "KHTekaTrial-Light", monospace;
 }
-
-.card-caption {
-  font-size: 0.75rem;
-  font-family: "chivomono";
-  align-self: flex-end;
-  opacity: 0.8;
+.card-title {
+  text-shadow:
+    -0.6px -0.6px 0 rgba(0, 0, 0, 0.28),
+     0.6px  0.6px 0 rgba(255, 255, 255, 0.4);
+}
+.card-subtitle,
+.card-caption-box {
+  text-shadow:
+    -0.35px -0.35px 0 rgba(0, 0, 0, 0.22),
+     0.35px  0.35px 0 rgba(255, 255, 255, 0.45);
 }
 
 .card-caption-box {
+  display: flex;
+  gap: 1.25rem;          
   font-size: 0.75rem;
-  font-family: "chivomono";
-  line-height: 1.3;
-  padding: 0.5rem;
-  border: 1px dashed #000;
-  width: fit-content;
+  font-family: "KHTekaTrial-Light";
+  line-height: 1.2;
+  text-transform: uppercase;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
   align-self: flex-end;
   margin-top: auto;
+  justify-content: space-between; 
 }
-
 .repeat-title {
   margin: 20vh 0 0 0;
   display: flex;
@@ -6875,7 +6880,6 @@ body,
   position: relative;
   width: 100%;
   height: 175svh;
-  color: var(--base-200);
   overflow: hidden;
 }
 
@@ -6886,42 +6890,8 @@ body,
   height: 100%;
   display: flex;
   z-index: 1;
+
 }
-
-.hero-left {
-  flex: 1;
-  padding: 4rem 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.hero-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-
-.hero-right {
-  flex: 1;
-  position: relative;
-  height: 100%;
-}
-
-.hero-img {
-  position: absolute;
-  width: 80%;
-  height: 80%;
-}
-
-.hero-img img {
-  width: auto;
-  height: 80%;
-  object-fit: contain;
-  display: block;
-}
-
 
 .hero-canvas {
   position: absolute;
@@ -6934,26 +6904,45 @@ body,
 }
 
 
-.hero-content {
+.morph-content {
   position: absolute;
   bottom: 0;
   width: 100%;
   height: 125svh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  z-index: 3; 
-  pointer-events: none; 
-}
-
-.hero-content h2 {
-  width: 75%;
-  font-size: 1.5rem;
-  line-height: 1.4;
-  font-weight: 300;
+  z-index: 3;
   pointer-events: none;
 }
+
+
+.morph-split {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+
+.morph-left {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.morph-right {
+  width: 50%;
+  display: flex;
+  align-items: center;  
+  justify-content: flex-start;
+  padding-right: 8vw;
+}
+
+.placeholder {
+  width: 200px;
+  height: 200px;
+  border: 1px dashed rgba(0,0,0,0.2);
+}
+
 
 .word {
   display: inline-block;
@@ -6965,12 +6954,7 @@ body,
   .morph-split-container {
     flex-direction: column;
   }
-  
-  .hero-left {
-    padding: 2rem 1rem;
-    height: 50%;
-  }
-  
+
   
   .hero-right {
     height: 50%;
@@ -6984,4 +6968,60 @@ body,
     width: calc(100% - 2rem);
     font-size: 1.2rem;
   }
+}
+
+.reveal-wrapper {
+  position: relative;
+}
+.reveal-row {
+  display: flex;
+  gap: 4rem;
+  padding: 3.5rem 0;
+}
+
+.reveal-title {
+  flex: 0 0 220px; 
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+
+.reveal-content {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.5;
+
+}
+.reveal-section {
+  position: relative;
+  min-height: 100vh;
+  background: #fff;
+}
+
+.reveal-track {
+  padding: 0 6vw;
+  color: rgba(0,0,0,0.45);
+}
+
+.reveal-window {
+  position: sticky;
+  top: 6rem;
+
+  height: 120px;
+  margin: 0 4vw;
+
+  pointer-events: none;
+  z-index: 5;
+
+  background: transparent;
+
+
+  border: 1px solid rgba(254, 106, 58, 0.45);
+  border-radius: 24px;
+}
+
+.reveal-section {
+  --reveal-color: #fe6a3a;
 }

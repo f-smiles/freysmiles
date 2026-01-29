@@ -489,7 +489,7 @@ const testimonials = [
   },
   {
     name: "Kinzie",
-    image: "../images/testimonials/kinzielandscape.png",
+    image: "../images/testimonials/kinzie.jpg",
     type: "Braces, 24 months",
     project: "Kinzie",
 
