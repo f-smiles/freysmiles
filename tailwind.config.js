@@ -60,7 +60,22 @@ module.exports = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
-  		}
+  		},
+			keyframes: {
+				"left-right": {
+					"0%, 100%": {
+						"transform": "translateX(-25%)",
+						"animation-timing-function": "cubic-bezier(0.8,0,1,1)",
+					},
+					"50%": {
+						"transform": "none",
+						"animation-timing-function": "cubic-bezier(0,0,0.2,1)",
+					},
+				},
+			},
+			animation: {
+				"left-right": "left-right 1s infinite",
+			},
   	}
   },
   plugins: [require("tailwindcss-animate")],
