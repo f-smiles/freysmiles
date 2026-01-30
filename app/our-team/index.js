@@ -450,6 +450,26 @@ if (scroller) {
 
   return () => ctx.revert();
 }, []);
+// useLayoutEffect(() => {
+// const lenis = new Lenis({
+//   duration: 0.5,
+//   easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+// })
+
+//   function raf(time) {
+//     lenis.raf(time)
+//     ScrollTrigger.update()
+//     requestAnimationFrame(raf)
+//   }
+
+//   requestAnimationFrame(raf)
+
+//   lenis.on("scroll", ScrollTrigger.update)
+
+//   ScrollTrigger.refresh()
+
+//   return () => lenis.destroy()
+// }, [])
   const lines = [
     "Our experience spans over 50 years—a testament to the ",
     "precision, accuracy, and relevance of our vision, demonstrating",
@@ -730,7 +750,7 @@ if (scroller) {
               className="bg-[#000] w-screen h-screen grid grid-cols-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed"
             >
               <div className="absolute inset-0">
-                      {/* <JanusFace /> */}
+                      <JanusFace />
 
               </div>
         
