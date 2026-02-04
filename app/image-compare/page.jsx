@@ -9,7 +9,7 @@ export default function Page() {
     <>
       <div className="w-full h-screen" />
       <SectionOne />
-      {/* <div className="w-full h-screen" /> */}
+      <div className="w-full h-screen" />
       <SectionTwo />
       <div className="w-full h-screen" />
     </>
@@ -34,7 +34,7 @@ const SectionOne = () => {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top+=200",
-          end: "bottom+=1000 top+=200",
+          end: "bottom+=1500 bottom",
           // end: "+=1000",
           scrub: 1,
           pin: true,
@@ -57,6 +57,7 @@ const SectionOne = () => {
       0)
       tl.fromTo(afterDiv.current, { xPercent: 100, x: 0 }, { xPercent: 0 }, 1)
         .fromTo(afterImg.current, { xPercent: -100, x: 0 }, { xPercent: 0 }, 1)
+        .to(afterDiv.current, { borderLeft: "0px" }, 1.5)
     }, sectionRef.current)
 
     return () => ctx.revert()
@@ -105,7 +106,7 @@ const SectionTwo = () => {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top+=200",
-          end: "bottom+=1000 top+=200",
+          end: "bottom+=1500 bottom",
           // end: "+=1000",
           scrub: 1,
           pin: true,
@@ -128,6 +129,7 @@ const SectionTwo = () => {
       0)
       tl.fromTo(afterDiv.current, { xPercent: 100, x: 0 }, { xPercent: 0 }, 1)
         .fromTo(afterImg.current, { xPercent: -100, x: 0 }, { xPercent: 0 }, 1)
+        .to(afterDiv.current, { borderLeft: "0px" }, 1.5)
     }, sectionRef.current)
 
     return () => ctx.revert()

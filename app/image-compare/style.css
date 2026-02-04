@@ -1,10 +1,17 @@
 .ImageCompare__Section {
-  width: 100%;
+  position: relative;
   max-width: 900px;
-  aspect-ratio: 4 / 3;
-  /* border-radius: 10px; */
-  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  /* border: 1px solid #333; */
+  border-radius: 10px;
   margin: 0 auto;
+  overflow: hidden;
+}
+
+.ImageCompare__Before-Div,
+.ImageCompare__After-Div {
+  aspect-ratio: 16 / 9;
 }
 
 .ImageCompare__After-Div {
