@@ -83,6 +83,7 @@ main {
   flex-shrink: 0;
   min-width: 100%;
   animation: scroll 400s linear infinite;
+  padding-bottom: 4px;
 }
 
 .marquee:hover .marqueegroup {
