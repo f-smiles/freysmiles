@@ -94,11 +94,13 @@ export default function BookNow() {
             <div className="flex items-center justify-between rounded-full border border-zinc-50/50 pr-1">
               <CopyButton content={telephone} className="w-full rounded-full px-3 py-2 bg-transparent tracking-wider hover:bg-transparent">
                 <p>{telephone}</p>
+                <span className="sr-only">Copy FreySmiles phone number to clipboard: {telephone}</span>
               </CopyButton>
             </div>
             <div className="flex items-center justify-between rounded-full border border-zinc-50/50 pr-1">
               <CopyButton content={email} className="w-full rounded-full px-3 py-2 bg-transparent tracking-wider hover:bg-transparent">
                 <p>{email}</p>
+                <span className="sr-only">Copy FreySmiles e-mail to clipboard: {email}</span>
               </CopyButton>
             </div>
             <div className="font-neuehaas45 py-2 px-4 z-10">
@@ -640,7 +642,10 @@ function JoinOurTeam() {
                                   name="contactInfo"
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                                      <FormLabel
+                                        className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                                        htmlFor="form-applicant-contact-method"
+                                      >
                                         Best way to reach you
                                       </FormLabel>
                                       <FormControl>
@@ -649,6 +654,7 @@ function JoinOurTeam() {
                                             defaultValue="email"
                                             value={contactInfoSelect}
                                             onValueChange={handleContactInfoSelectChange}
+                                            id="form-applicant-contact-method"
                                             className="w-full bg-transparent border border-white/20 rounded-lg 
                                                     px-4 py-3 
                                                     text-[12px] leading-relaxed
@@ -658,7 +664,10 @@ function JoinOurTeam() {
                                                     focus:outline-none focus:border-white/60
                                                     transition-colors"
                                           >
-                                            <SelectTrigger className="w-max text-xs border border-white/20 data-[placeholder]:text-white/85">
+                                            <SelectTrigger
+                                              className="w-max text-xs border border-white/20 data-[placeholder]:text-white/85"
+                                              id="form-applicant-contact-method"
+                                            >
                                               <SelectValue placeholder="" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -705,7 +714,10 @@ function JoinOurTeam() {
                                   name="highSchoolGraduationYear"
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                                      <FormLabel
+                                        className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                                        htmlFor="form-applicant-high-school-graduation-year"
+                                      >
                                         High School Graduation Year
                                       </FormLabel>
                                       <FormControl>
@@ -723,7 +735,10 @@ function JoinOurTeam() {
                                                     transition-colors"
                                           {...field}
                                         >
-                                          <SelectTrigger className="border border-white/20 data-[placeholder]:text-white/85">
+                                          <SelectTrigger
+                                            className="border border-white/20 data-[placeholder]:text-white/85"
+                                            id="form-applicant-high-school-graduation-year"
+                                          >
                                             <SelectValue placeholder="Select year" />
                                           </SelectTrigger>
                                           <SelectContent>
@@ -753,7 +768,10 @@ function JoinOurTeam() {
                                   name="priorDentistryExperience"
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                                      <FormLabel
+                                        className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                                        htmlFor="form-applicant-prior-experience-in-dentistry"
+                                      >
                                         Do you have experience working in dentistry or orthodontics?
                                       </FormLabel>
                                       <FormControl>
@@ -771,7 +789,10 @@ function JoinOurTeam() {
                                                     transition-colors"
                                           {...field}
                                         >
-                                          <SelectTrigger className="border border-white/20 data-[placeholder]:text-white/85">
+                                          <SelectTrigger
+                                            className="border border-white/20 data-[placeholder]:text-white/85"
+                                            id="form-applicant-prior-experience-in-dentistry"
+                                          >
                                             <SelectValue placeholder="Select yes or no" />
                                           </SelectTrigger>
                                           <SelectContent>
@@ -801,7 +822,10 @@ function JoinOurTeam() {
                                   name="positionOfInterest"
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                                      <FormLabel
+                                        className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                                        htmlFor="form-applicant-position-of-interest"
+                                      >
                                         Position you're interested in
                                       </FormLabel>
                                       <FormControl>
@@ -819,7 +843,10 @@ function JoinOurTeam() {
                                                     transition-colors"
                                           {...field}
                                         >
-                                          <SelectTrigger className="border border-white/20 data-[placeholder]:text-white/85">
+                                          <SelectTrigger
+                                            className="border border-white/20 data-[placeholder]:text-white/85"
+                                            id="form-applicant-position-of-interest"
+                                          >
                                             <SelectValue placeholder="Select role" />
                                           </SelectTrigger>
                                           <SelectContent>
@@ -850,7 +877,10 @@ function JoinOurTeam() {
                                   name="heardFrom"
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                                      <FormLabel
+                                        className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                                        htmlFor="form-applicant-how-did-you-hear-about-us"
+                                      >
                                         How did you hear about us?
                                       </FormLabel>
                                       <FormControl>
@@ -868,7 +898,10 @@ function JoinOurTeam() {
                                                     transition-colors"
                                           {...field}
                                         >
-                                          <SelectTrigger className="border border-white/20 data-[placeholder]:text-white/85">
+                                          <SelectTrigger
+                                            className="border border-white/20 data-[placeholder]:text-white/85"
+                                            id="form-applicant-how-did-you-hear-about-us"
+                                          >
                                             <SelectValue placeholder="Select source" />
                                           </SelectTrigger>
                                           <SelectContent>
@@ -906,7 +939,7 @@ function JoinOurTeam() {
                                       <FormControl>
                                         <Input
                                           required
-                                          placeholder="Immediately, in 2 weeks, next month..."
+                                          placeholder="Immediately, in 2 weeks, next month, etc..."
                                           className="text-[12px] leading-relaxed
                                                       text-white/85
                                                       placeholder:text-white/35 opacity-70  
@@ -932,7 +965,10 @@ function JoinOurTeam() {
                                   name="availabilityLocations"
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                                      <FormLabel
+                                        className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                                        htmlFor="form-applicant-available-to-work-all-4-locations-allentown-bethlehem-lehighton-schnecksville"
+                                      >
                                         {`Would you be available to work all 4 of our locations? (Allentown, Bethlehem, Lehighton, Schnecksville)`}
                                       </FormLabel>
                                       <FormControl>
@@ -950,7 +986,10 @@ function JoinOurTeam() {
                                                     transition-colors"
                                           {...field}
                                         >
-                                          <SelectTrigger className="border border-white/20 data-[placeholder]:text-white/85">
+                                          <SelectTrigger 
+                                            className="border border-white/20 data-[placeholder]:text-white/85"
+                                            id="form-applicant-available-to-work-all-4-locations-allentown-bethlehem-lehighton-schnecksville"
+                                          >
                                             <SelectValue placeholder="Select yes or no" />
                                           </SelectTrigger>
                                           <SelectContent>
@@ -987,7 +1026,10 @@ function JoinOurTeam() {
                                 name="resume"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                                    <FormLabel
+                                      className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                                      htmlFor="form-applicant-resume-pdf-preferred-accept-doc-docx"
+                                    >
                                       {`Resume (PDF Preferred)`}
                                     </FormLabel>
                                     <FormControl>
@@ -995,6 +1037,7 @@ function JoinOurTeam() {
                                         type="file"
                                         accept=".pdf,.doc,.docx"
                                         required
+                                        id="form-applicant-resume-pdf-preferred-accept-doc-docx"
                                         className="text-[12px] leading-relaxed
                                                   opacity-70 file:text-white/85
                                                 text-white/85 placeholder:text-white/35
