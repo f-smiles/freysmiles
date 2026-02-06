@@ -13,8 +13,9 @@ import {
   useLoader,
   extend,
 } from "@react-three/fiber";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import {
-  OrbitControls,
+  // OrbitControls,
   useGLTF,
   MeshTransmissionMaterial,
   Environment,
@@ -130,43 +131,52 @@ void main() {
   vec2 uv = vUv;
   vec2 center = uMouse;
 
-  // Convert UV to plane-relative coordinates
+  // Convert UV to plane-relative space
   vec2 tc = (uv - center) * uPlaneSize;
   float dist = length(tc);
 
-if (dist < uRadius) {
-  float percent = (uRadius - dist) / uRadius;
-  float theta = percent * percent * uStrength;
+  // Slightly larger interaction zone (≈ +10%)
+  float radius = uRadius * 1.4;
 
-  float s = sin(theta);
-  float c = cos(theta);
+  if (dist < radius) {
 
-  // SWIRL
-  tc = vec2(
-    tc.x * c - tc.y * s,
-    tc.x * s + tc.y * c
-  );
+    // Normalized falloff (soft edge)
+    float percent = (radius - dist) / radius;
+    percent = clamp(percent, 0.0, 1.0);
 
-  // RADIAL STRETCH
-  vec2 dir = normalize(tc + 0.0001);
-  float stretch = percent * 0.6;
-  tc += dir * stretch * dist;
+    // Swirl angle (stronger toward center)
+    float theta = percent * percent * uStrength;
 
-  // BULGE
-  float bulge = percent * percent * 0.45;
-  tc *= 1.0 + bulge * 0.6;
+    float s = sin(theta);
+    float c = cos(theta);
 
+    // --- PURE ROTATIONAL SWIRL (circular, no oval bias) ---
+    tc = vec2(
+      tc.x * c - tc.y * s,
+      tc.x * s + tc.y * c
+    );
 
-  float micro = sin(tc.x * 18.0 + tc.y * 12.0) * 0.008;
-  tc += dir * micro * percent;
-}
+    // --- INWARD RADIAL PULL (replaces bulging stretch) ---
+    vec2 dir = normalize(tc + 0.0001);
+    float pull = pow(percent, 2.0) * 0.45;
+    tc -= dir * pull;
+
+    // --- VERY SUBTLE BULGE (kept symmetric + restrained) ---
+    float bulge = percent * percent * 0.18;
+    tc *= 1.0 + bulge;
+
+    // --- MICRO TYPO WARP (organic, non-circular noise) ---
+    float micro = sin(tc.x * 14.0 + tc.y * 9.0) * 0.004;
+    tc += dir * micro * percent;
+  }
 
   // Convert back to UV space
   vec2 finalUV = tc / uPlaneSize + center;
+
   vec4 color = texture2D(uTexture, finalUV);
   gl_FragColor = color;
 }
-`
+`;
 function SwirlTextPlane({ text }) {
   const meshRef = useRef();
 
@@ -1809,7 +1819,7 @@ function useImageTextures() {
   ])
 }
 
-function ImagePlane({ texture, index }) {
+function ImagePlane({ texture, index, active }) {
   const meshRef = useRef()
   const materialRef = useRef()
   const { viewport } = useThree()
@@ -1820,52 +1830,47 @@ function ImagePlane({ texture, index }) {
     uSize: { value: new THREE.Vector2(1, 1) },
   })
 
-useEffect(() => {
-  if (!texture?.image) return
+  useEffect(() => {
+    if (!texture?.image) return
 
-  texture.minFilter = THREE.LinearFilter
-  texture.magFilter = THREE.LinearFilter
-  texture.generateMipmaps = true
-  texture.anisotropy = 16
+    texture.minFilter = THREE.LinearFilter
+    texture.magFilter = THREE.LinearFilter
+    texture.generateMipmaps = true
+    texture.anisotropy = 16
+    texture.needsUpdate = true
 
-  uniforms.current.uTexture.value = texture
-  uniforms.current.uSize.value.set(
-    texture.image.width,
-    texture.image.height
-  )
-}, [texture])
+    uniforms.current.uTexture.value = texture
+    uniforms.current.uSize.value.set(texture.image.width, texture.image.height)
+  }, [texture])
 
   useEffect(() => {
-    if (!materialRef.current) return
+    if (!active || !materialRef.current) return
+
     gsap.fromTo(
       materialRef.current.uniforms.uProgress,
       { value: 0 },
-      { value: 1, duration: 2.5, ease: 'power2.out' }
+      { value: 1, duration: 2.5, ease: "power2.out" }
     )
-  }, [])
+  }, [active])
 
   const aspect = texture.image.width / texture.image.height
   const baseHeight = viewport.height * 0.65
   const baseWidth = baseHeight * aspect
 
-let scale = 1.0
+  let scale = 1.0
+  if (index === 0) scale = 0.8
+  if (index === 1) scale = 1.25
 
-if (index === 0) scale = 0.8 
-if (index === 1) scale = 1.25 
   const planeHeight = baseHeight * scale
   const planeWidth = baseWidth * scale
 
-const maxScale = 1.25
-const referenceHeight = baseHeight * maxScale
+  useFrame(() => {
+    if (!active || !meshRef.current) return
 
-useFrame(() => {
-  const gap = viewport.width * 0.05
-  const centerOffset = baseWidth * 0.2
-  meshRef.current.position.x =
-    (index - 0.5) * (baseWidth + gap) + centerOffset
-  meshRef.current.position.y =
-    -(referenceHeight - planeHeight) / 2
-})
+    const gap = viewport.width * 0.05
+    const centerOffset = baseWidth * 0.2
+    meshRef.current.position.x = (index - 0.5) * (baseWidth + gap) + centerOffset
+  })
 
   return (
     <mesh ref={meshRef}>
@@ -1878,31 +1883,6 @@ useFrame(() => {
         transparent
       />
     </mesh>
-  )
-}
-
-function Scene() {
-  const textures = useImageTextures()
-
-  return (
-    <group position={[-.5, 0, 0]}>
-      {textures.map((tex, i) => (
-        <ImagePlane key={i} texture={tex} index={i} />
-      ))}
-    </group>
-  )
-}
-function Morph() {
-  return (
-<Canvas
-  dpr={[1, Math.min(window.devicePixelRatio, 2)]}
-  camera={{ position: [0, 0, 18], fov: 35 }}
-  style={{ width: '100%', height: '100vh' }}
->
-      <Suspense fallback={null}>
-        <Scene />
-      </Suspense>
-    </Canvas>
   )
 }
 
@@ -1933,6 +1913,35 @@ function useInView(options = {}) {
 
   return [ref, inView]
 }
+function Scene({ active }) {
+  const textures = useImageTextures()
+
+  return (
+    <group position={[-0.5, 0, 0]}>
+      {textures.map((tex, i) => (
+        <ImagePlane key={i} texture={tex} index={i} active={active} />
+      ))}
+    </group>
+  )
+}
+function Morph() {
+  const [sectionRef, inView] = useInView({ threshold: 0.35 });
+
+  return (
+    <div ref={sectionRef} style={{ height: "100vh" }}>
+      <Canvas
+        dpr={[1, Math.min(window.devicePixelRatio, 2)]}
+        camera={{ position: [0, 0, 18], fov: 35 }}
+        style={{ width: "100%", height: "100vh" }}
+      >
+        <Suspense fallback={null}>
+          <Scene active={inView} />
+        </Suspense>
+      </Canvas>
+    </div>
+  );
+}
+
 export default function WhyChooseUs() {
   const imageRef = useRef();
   const [isMobile, setIsMobile] = useState(false);
@@ -1946,10 +1955,14 @@ export default function WhyChooseUs() {
 
   return (
     <> 
+    <div className="z-10">
 
-      <div className="relative ">
+        <ParticleAnimation />
+    </div>
 
-        <Hero />
+
+
+        {/* <Hero /> */}
 
 {/* <MoreThanSmiles /> */}
 
@@ -1998,7 +2011,7 @@ export default function WhyChooseUs() {
          
           <Marquee />
 
-      </div>
+
     </>
   );
 }
@@ -2123,7 +2136,7 @@ const placeholderRef = useRef(null);
   useEffect(() => {
 
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
     lenisRef.current = lenis;
@@ -2287,7 +2300,7 @@ gsap.set(placeholderRef.current, { opacity: 0 });
   onUpdate: (self) => {
     const progress = self.progress;
 
-    // === PLACEHOLDER FADE ===
+
     gsap.to(placeholderRef.current, {
       opacity: Math.min(progress * 1.2, 1),
       duration: 0.1,
@@ -2295,7 +2308,7 @@ gsap.set(placeholderRef.current, { opacity: 0 });
       ease: "none",
     });
 
-    // === TEXT REVEAL (unchanged) ===
+
     const totalWords = words.length;
 
     words.forEach((word, index) => {
@@ -2407,11 +2420,41 @@ useEffect(() => {
 }, []);
   return (
     <>
-         <section className="bg-[#111] morphsection" ref={heroRef}>
+      <section
+  ref={heroRef}
+  className="bg-[#111] morphsection relative overflow-hidden"
+>
 
-<div className="w-full h-full morph-split-container">
+<div className="w-full h-full morph-split-container flex items-end">
+<div className="w-1/3 flex h-2/3 justify-center">
+  <div className="hero-header max-w-lg">
+    <h1 className="text-xs tracking-widest text-gray-300 uppercase font-neuehaas45">
+      Backed By over 60 Years Of <br /> Combined Orthodontic Experience
+    </h1>
 
-<div className="w-1/2 flex pt-40 justify-center">
+
+  </div>
+</div>
+<div className="w-1/3 flex h-2/3 justify-center">
+<ul className="flex flex-col text-xs uppercase tracking-widest text-white/70 space-y-2 font-neuehaas45">
+  {[
+    "Over 5,000 Invisalign Cases",
+    "Diamond Plus Invisalign Provider",
+    "Top 1% Nationwide",
+    "Board-Driven Diagnostic Standards",
+    "Decades of Clinical Experience",
+    "Thousands of Successful Outcomes",
+  ].map((item) => (
+    <li
+      key={item}
+
+    >
+      {item}
+    </li>
+  ))}
+</ul>
+</div>
+<div className="w-1/3 flex h-2/3 justify-center">
   <div className="hero-header max-w-lg">
     <h1 className="text-xs tracking-widest text-gray-300 uppercase font-neuehaas45">
       Backed By over 60 Years Of <br /> Combined Orthodontic Experience
@@ -2421,13 +2464,6 @@ useEffect(() => {
   </div>
 </div>
 
-<div className="w-1/2 relative h-screen flex items-center justify-center">
-  <img
-    className="h-[70%] w-auto object-contain"
-    src="/images/since77.png"
-    alt=""
-  />
-</div>
       </div>
 
 
@@ -2437,9 +2473,16 @@ useEffect(() => {
   <div className="morph-split">
 
 <div className="morph-left">
-  <div ref={placeholderRef} className="placeholder">
+  <div ref={placeholderRef} className="w-1/2 relative h-screen flex items-center justify-center">
+  <img
+    className="h-[100%] w-auto object-contain"
+    src="/images/since77.png"
+    alt=""
+  />
+</div>
+  {/* <div  className="placeholder">
     <div className="diagonal"></div>
-  </div>
+  </div> */}
 </div>
 
 
@@ -2494,6 +2537,7 @@ useEffect(() => {
 
 
     </div>
+
      <div className="accolades-section">
   <div className="flex justify-start px-10 font-canelathin text-[18px]">
     Accolades
@@ -2549,6 +2593,384 @@ useEffect(() => {
     </>
   );
 }
+
+
+
+
+
+const ParticleAnimation = ({ particleCount = 150000, duration = 15 }) => {
+  const containerRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const rendererRef = useRef(null);
+  const controlsRef = useRef(null);
+  const pointsRef = useRef(null);
+  const animationRef = useRef(null);
+  const timeRef = useRef(0);
+  const timeStep = 1/60;
+
+  const pointMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uDuration: { value: duration },
+        uPointSize: { value: 4.0 }
+      },
+      vertexShader: `
+        uniform float uTime;
+        uniform float uDuration;
+        uniform float uPointSize;
+
+        attribute float aOffset;
+        attribute vec3 aStartPosition;
+        attribute vec3 aEndPosition;
+        attribute vec3 aColor;
+
+        varying vec3 vColor;
+        varying float vFade;
+        varying float vCoreDist;
+
+        void main() {
+          vColor = aColor;
+
+          float t = fract((uTime + aOffset) / uDuration);
+
+          float fadeIn  = smoothstep(0.0, 0.08, t);
+          float fadeOut = 1.0 - smoothstep(0.92, 1.0, t);
+          vFade = clamp(fadeIn * fadeOut, 0.0, 1.0);
+
+          float easedT = smoothstep(0.0, 1.0, t);
+          float centerT = easedT - 0.5;
+
+          float vCurve = -pow(centerT * 2.0, 2.0) + 1.0;
+          float volumeCurve = smoothstep(0.0, 0.25, vCurve);
+
+          vec3 position = mix(aStartPosition, aEndPosition, easedT);
+
+          position.y -= vCurve * 220.0;
+
+          float angle = position.x * 0.0025;
+          float c = cos(angle);
+          float s = sin(angle);
+
+          float y = position.y;
+          float z = position.z;
+
+          position.y = y * c - z * s * 0.25;
+          position.z = y * s * 0.25 + z * c;
+
+          position.y *= mix(1.35, 1.65, volumeCurve);
+          position.z *= mix(1.15, 1.30, volumeCurve);
+
+          vCoreDist = clamp(abs(position.y) / 220.0, 0.0, 1.0);
+
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+
+          float size = uPointSize * (300.0 / max(length(mvPosition.xyz), 50.0));
+          gl_PointSize = clamp(size, 2.0, 8.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        varying float vFade;
+        varying float vCoreDist;
+
+        void main() {
+          vec2 coord = gl_PointCoord - vec2(0.5);
+          float dist = length(coord);
+
+          if (dist > 0.5) discard;
+
+          float alpha = (1.0 - smoothstep(0.4, 0.5, dist)) * vFade;
+
+          float aberr = vCoreDist * 0.6;
+
+          vec3 col;
+          col.r = vColor.r * (1.0 - aberr);
+          col.g = vColor.g * (1.0 - aberr * 0.6);
+          col.b = vColor.b * (1.0 + aberr);
+
+          float glow = exp(-dist * 4.0) * 0.25 * vFade;
+          col += glow;
+
+          col = clamp(col, 0.0, 1.0);
+
+          gl_FragColor = vec4(col, alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      depthTest: true,
+      blending: THREE.AdditiveBlending,
+    });
+  }, [duration]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    initTHREE();
+    initControls();
+    initParticleSystem();
+    
+    animationRef.current = requestAnimationFrame(tick);
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      window.removeEventListener('resize', handleResize);
+      
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+      }
+      
+      if (pointMaterial) {
+        pointMaterial.dispose();
+      }
+      
+      if (pointsRef.current?.geometry) {
+        pointsRef.current.geometry.dispose();
+      }
+    };
+  }, [pointMaterial]);
+
+const initTHREE = () => {
+  if (rendererRef.current) return;
+
+  rendererRef.current = new THREE.WebGLRenderer({ 
+    antialias: true,
+    alpha: true,
+    preserveDrawingBuffer: true 
+  });
+
+  rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+  rendererRef.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  containerRef.current.appendChild(rendererRef.current.domElement);
+
+  cameraRef.current = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    10000
+  );
+  cameraRef.current.position.set(0, 300, 800);
+  cameraRef.current.lookAt(0, 0, 0);
+
+  sceneRef.current = new THREE.Scene();
+  sceneRef.current.background = new THREE.Color(0x000011);
+};
+
+  const initControls = () => {
+    try {
+      controlsRef.current = new OrbitControls(
+        cameraRef.current,
+        rendererRef.current.domElement
+      );
+      controlsRef.current.enableDamping = true;
+      controlsRef.current.dampingFactor = 0.05;
+      controlsRef.current.minDistance = 100;
+      controlsRef.current.maxDistance = 2000;
+      controlsRef.current.maxPolarAngle = Math.PI;
+    } catch (error) {
+      console.error('Error initializing controls:', error);
+    }
+  };
+
+const initParticleSystem = () => {
+  try {
+    console.log('Initializing particle system with', particleCount, 'particles');
+
+    const gaussianRandom = (mean = 0, stdDev = 1) => {
+      let u = 0, v = 0;
+      while (u === 0) u = Math.random();
+      while (v === 0) v = Math.random();
+      return mean + stdDev * Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    };
+
+    const positions      = new Float32Array(particleCount * 3);
+    const offsets        = new Float32Array(particleCount);
+    const startPositions = new Float32Array(particleCount * 3);
+    const endPositions   = new Float32Array(particleCount * 3);
+    const colors         = new Float32Array(particleCount * 3);
+
+    const COLOR_DEEP_BLUE      = new THREE.Color('#0a1a3a');
+    const COLOR_MID_BLUE       = new THREE.Color('#1e3a8a');
+    const COLOR_BABY_BLUE      = new THREE.Color('#4a6fa8');
+    const COLOR_AMBER          = new THREE.Color('#ffaa33');
+    const COLOR_WARM_WHITE     = new THREE.Color('#f5e6d3');
+    const COLOR_BURNT_ORANGE   = new THREE.Color('#cc5500');
+    const COLOR_VIBRANT_ORANGE = new THREE.Color('#ff6600');
+    const COLOR_RED_ORANGE     = new THREE.Color('#ff3300');
+
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+      const t  = i / particleCount;
+
+      positions[i3] = positions[i3 + 1] = positions[i3 + 2] = 0;
+
+      offsets[i] = (t + gaussianRandom(0.0, 0.18)) * duration;
+
+      const spineY  = Math.sin(t * Math.PI * 1.2) * 160;
+      const spreadY = gaussianRandom(0, 90);
+      const spreadZ = gaussianRandom(0, 160);
+
+      startPositions[i3]     = -900;
+      startPositions[i3 + 1] = spineY + spreadY;
+      startPositions[i3 + 2] = spreadZ;
+
+      const endSpineY = Math.sin((t + 0.15) * Math.PI * 1.2) * 160;
+
+      endPositions[i3]     = 900;
+      endPositions[i3 + 1] = endSpineY + gaussianRandom(0, 90);
+      endPositions[i3 + 2] = gaussianRandom(0, 160);
+
+      const yDist = Math.abs(spreadY);
+      const yNorm = THREE.MathUtils.clamp(yDist / 220, 0, 1);
+      const zNorm = THREE.MathUtils.clamp(Math.abs(spreadZ) / 160, 0, 1);
+
+      const coreIntensity     = Math.pow(1.0 - yNorm, 3.5);
+      const innerGlowIntensity= Math.pow(1.0 - yNorm, 2.5);
+      const midLayerIntensity = Math.exp(-Math.pow(yNorm * 1.8, 2.0));
+      const outerLayerIntensity = Math.pow(yNorm, 1.8);
+
+      const depthEffect = Math.pow(zNorm, 0.7) * 0.3;
+
+      const finalColor = new THREE.Color(0, 0, 0);
+      
+      const deepBlue = COLOR_DEEP_BLUE.clone().multiplyScalar(outerLayerIntensity * 0.4);
+      finalColor.add(deepBlue);
+      
+      const midBlue = COLOR_MID_BLUE.clone().multiplyScalar(outerLayerIntensity * 0.6);
+      finalColor.add(midBlue);
+      
+      const babyBlue = COLOR_BABY_BLUE.clone().multiplyScalar(midLayerIntensity * 0.8);
+      finalColor.add(babyBlue);
+      
+      const amber = COLOR_AMBER.clone().multiplyScalar(innerGlowIntensity * 0.8);
+      finalColor.add(amber);
+      
+      const warmWhite = COLOR_WARM_WHITE.clone().multiplyScalar(innerGlowIntensity * 0.5);
+      finalColor.add(warmWhite);
+      
+      const burntOrange = COLOR_BURNT_ORANGE.clone().multiplyScalar(innerGlowIntensity * 0.9);
+      finalColor.add(burntOrange);
+      
+      const vibrantOrange = COLOR_VIBRANT_ORANGE.clone().multiplyScalar(coreIntensity * 1.1);
+      finalColor.add(vibrantOrange);
+      
+      const redOrange = COLOR_RED_ORANGE.clone().multiplyScalar(coreIntensity * 1.0);
+      finalColor.add(redOrange);
+
+      finalColor.lerp(COLOR_MID_BLUE, depthEffect);
+
+      const hsl = {};
+      finalColor.getHSL(hsl);
+      hsl.s = Math.min(1.0, hsl.s * 1.1);
+      hsl.l = Math.min(1.0, hsl.l * 1.05);
+      finalColor.setHSL(hsl.h, hsl.s, hsl.l);
+
+      finalColor.r = Math.min(1.0, Math.max(0.0, finalColor.r));
+      finalColor.g = Math.min(1.0, Math.max(0.0, finalColor.g));
+      finalColor.b = Math.min(1.0, Math.max(0.0, finalColor.b));
+
+      colors[i3]     = finalColor.r;
+      colors[i3 + 1] = finalColor.g;
+      colors[i3 + 2] = finalColor.b;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position',        new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('aOffset',         new THREE.BufferAttribute(offsets, 1));
+    geometry.setAttribute('aStartPosition',  new THREE.BufferAttribute(startPositions, 3));
+    geometry.setAttribute('aEndPosition',    new THREE.BufferAttribute(endPositions, 3));
+    geometry.setAttribute('aColor',          new THREE.BufferAttribute(colors, 3));
+    geometry.computeBoundingSphere();
+
+    pointsRef.current = new THREE.Points(geometry, pointMaterial);
+    pointsRef.current.position.set(-300, 150, 0);
+    pointsRef.current.frustumCulled = false;
+    sceneRef.current.add(pointsRef.current);
+
+    console.log('Particle system ready');
+
+  } catch (err) {
+    console.error('Particle init failed:', err);
+  }
+};
+
+  const tick = () => {
+    try {
+      update();
+      render();
+      
+      timeRef.current += timeStep;
+      timeRef.current %= duration;
+      
+      animationRef.current = requestAnimationFrame(tick);
+    } catch (error) {
+      console.error('Error in animation loop:', error);
+    }
+  };
+
+  const update = () => {
+    try {
+      controlsRef.current?.update();
+      
+      if (pointMaterial) {
+        pointMaterial.uniforms.uTime.value = timeRef.current;
+      }
+      
+      if (cameraRef.current && !controlsRef.current?.enabled) {
+        const time = timeRef.current;
+        cameraRef.current.position.x = Math.sin(time * 0.1) * 800;
+        cameraRef.current.position.z = Math.cos(time * 0.1) * 800;
+        cameraRef.current.lookAt(0, 0, 0);
+      }
+    } catch (error) {
+      console.error('Error in update:', error);
+    }
+  };
+
+  const render = () => {
+    try {
+      if (sceneRef.current && cameraRef.current && rendererRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    } catch (error) {
+      console.error('Error in render:', error);
+    }
+  };
+
+  const handleResize = () => {
+    try {
+      if (!cameraRef.current || !rendererRef.current) return;
+      
+      cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+    } catch (error) {
+      console.error('Error in resize handler:', error);
+    }
+  };
+
+  return (
+    <div 
+      ref={containerRef} 
+      style={{ 
+        width: '100%', 
+        height: '100vh',
+        backgroundColor: '#000011',
+        position: 'relative',
+        display: 'block'
+      }}
+    />
+  );
+};
+
+
 function CircleReveal() {
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -2959,10 +3381,10 @@ function WorkGrid() {
   return (
     <>
     <div className="h-screen">
-<div className="scale-[65%] w-full overflow-hidden">
+<div className="scale-[55%] w-full overflow-hidden">
   <FlutedGlassEffect
     className="w-full h-full"
-    src="/images/foo1.png"
+    src="/images/foo.png"
   />
 </div>
     </div>
@@ -2991,12 +3413,9 @@ function WorkGrid() {
               <sup className="text-xs align-super">(8)</sup>
             </span>
           </div>
-          
-      <VideoAnimation />
       
-
     </div>
-
+      <VideoAnimation />
        <div className="min-h-screen bg-[#F9F9F9] text-[#0f0f0f] font-[Manrope] overflow-x-hidden">
       <section
         ref={workRef}
@@ -3020,9 +3439,35 @@ function WorkGrid() {
           className="work-item-link flex flex-col gap-3 text-[#0f0f0f] no-underline hover:opacity-90 transition"
         >
           <div className="work-item-img aspect-[4/3] overflow-hidden">
+          
             <img
               src={proj.img}
               alt={proj.name}
+                  style={{
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      clipPath: `polygon(
+        16px 0%,
+        calc(100% - 16px) 0%,
+        calc(100% - 16px) 16px,
+        calc(100% - 16px) 32px,
+        100% 32px,
+        100% calc(100% - 48px),
+        calc(100% - 16px) calc(100% - 48px),
+        calc(100% - 16px) calc(100% - 32px),
+        100% calc(100% - 32px),
+        100% calc(100% - 16px),
+        calc(100% - 16px) calc(100% - 16px),
+        calc(100% - 32px) calc(100% - 16px),
+        calc(100% - 32px) calc(100% - 32px),
+        calc(100% - 16px) calc(100% - 32px),
+        calc(100% - 16px) 100%,
+        0% 100%,
+        0% 16px,
+        16px 16px
+      )`
+    }}
               className="w-full h-full object-cover scale-90"
             />
           </div>
@@ -3219,43 +3664,90 @@ function VideoAnimation() {
       }
     });
 
-    tl.fromTo(
-      inset.current,
-      { x: 0, y: 0, r: 50 },
-      {
-        x: 25,
-        y: 18,
-        r: 80,
-        onUpdate() {
-          video.style.clipPath = `inset(${
-            Math.round((inset.current.x * w) / 200)
-          }px ${
-            Math.round((inset.current.y * h) / 200)
-          }px round ${snap(inset.current.r)}px)`;
-        },
-      }
-    );
+
 
     return () => {
       window.removeEventListener("resize", handleResize);
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
   }, []);
+useEffect(() => {
+  if (!videoRef.current || !wrapperRef.current) return;
+
+  gsap.fromTo(
+    videoRef.current,
+    {
+      clipPath: "inset(0% 0% 0% 0%)",
+      WebkitClipPath: "inset(0% 0% 0% 0%)",
+    },
+    {
+      clipPath: "url(#videoClip)",
+      WebkitClipPath: "url(#videoClip)",
+      scrollTrigger: {
+        trigger: wrapperRef.current,
+        start: "top bottom",
+        end: "top top",
+        scrub: true,
+      },
+      ease: "none",
+    }
+  );
+}, []);
 
   return (
-    <div
-      ref={wrapperRef}
-      className="bg-[#F9F9F9]"
-      style={{ margin: "5vh 0", height: "100vh" }}
-    >
-      <video
-        ref={videoRef}
-        src="/videos/cbctscan.mp4"
-        autoPlay
-        loop
-        muted
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+<div
+  ref={wrapperRef}
+  style={{
+    position: "relative",
+    width: "100vw",
+    height: "100vh",
+    overflow: "hidden",
+  }}
+>
+
+<svg
+  aria-hidden
+  style={{
+    position: "absolute",
+    width: "1px",
+    height: "1px",
+    overflow: "hidden",
+  }}
+>
+  <defs>
+    <clipPath id="videoClip" clipPathUnits="objectBoundingBox">
+      <path
+        d="
+          M0 0
+          L0.156 0
+          Q0.167 0.002 0.183 0.018
+          Q0.194 0.022 0.806 0.022
+          Q0.817 0.018 0.833 0.004
+          Q0.844 0 1 0
+          L1 1
+          L0 1
+          Z
+        "
       />
+    </clipPath>
+  </defs>
+</svg>
+
+<video
+  ref={videoRef}
+  src="/videos/cbctscan.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    clipPath: "url(#videoClip)",
+    WebkitClipPath: "url(#videoClip)",
+  }}
+/>
     </div>
   );
 }

@@ -1,15 +1,17 @@
 "use client";
+
 import { createPortal } from "react-dom";
 import { Renderer, Program, Mesh, Plane, Uniform } from "wtc-gl";
 import { Vec2, Mat2 } from "wtc-math";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
-import React, { useRef, useEffect, useState, useMemo, useLayoutEffect } from "react";
+import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import "tw-elements";
 import gsap from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import { Text, OrbitControls } from "@react-three/drei";
+import {Environment, Text, OrbitControls, useGLTF, Center, useAnimations } from "@react-three/drei";
+
 import { useThree, useFrame, extend, Canvas } from "@react-three/fiber";
 import * as THREE from "three";
 import { NormalBlending } from 'three';
@@ -631,8 +633,23 @@ const [resumeName, setResumeName] = useState("");
 
   return (
     <>
+    <div style={{height: '100vh', width: '100vw'}}>
+<Canvas camera={{ position: [0, 1.5, 4], fov: 45 }}>
+  <ambientLight intensity={0.5} />
 
-<App />
+  <directionalLight position={[4, 6, 4]} intensity={1.4} />
+  <directionalLight position={[-3, 2, 2]} intensity={0.9} color="#fff4ee" />
+  <directionalLight position={[0, 3, -6]} intensity={1.1} />
+
+  <Environment files='/images/studio_small_03_4k.hdr' />
+
+  <Suspense fallback={null}>
+    <PortalJourneyModel position={[0, -0.6, 0]} scale={0.5} />
+  </Suspense>
+</Canvas>
+    </div>
+
+{/* <App /> */}
 
  {/* <div className="absolute inset-0 -z-10">
     <Canvas
@@ -1267,8 +1284,104 @@ transition={{
     </>
   );
 }
+function PortalJourneyModel(props) {
+  const groupRef = useRef();
+  const { scene, animations } = useGLTF("/models/robot.glb");
+  const { actions } = useAnimations(animations, groupRef);
+
+  useEffect(() => {
+    if (actions && actions["Take 001"]) {
+      actions["Take 001"].reset().play();
+    }
+  }, [actions]);
+
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh && child.material?.name === "M_Pantalla2") {
+        console.log("🎯 Found screen mesh");
+        
+
+        const originalMat = child.material;
+        
+        // Convert the original material to a ShaderMaterial
+        // while keeping all its internal properties
+        originalMat.onBeforeCompile = (shader) => {
+
+          shader.vertexShader = shader.vertexShader.replace(
+            'void main() {',
+            `
+            varying vec2 vUv;
+            uniform float uTime;
+            void main() {
+              vUv = uv;
+            `
+          );
+          
+
+          shader.fragmentShader = shader.fragmentShader.replace(
+            'void main() {',
+            `
+            varying vec2 vUv;
+            uniform float uTime;
+            void main() {
+            `
+          ).replace(
+            '#include <dithering_fragment>',
+            `
+           
+            vec2 grid = floor(vUv * 32.0);
+            float blink = step(0.5, fract(uTime + grid.x * 0.1 + grid.y * 0.13));
+            vec3 onColor = vec3(0.7, 0.6, 1.0);
+            vec3 offColor = vec3(0.1);
+            vec3 pixelEffect = mix(offColor, onColor, blink);
+            
+    
+            gl_FragColor.rgb = mix(gl_FragColor.rgb, pixelEffect, 0.8);
+            
+            #include <dithering_fragment>
+            `
+          );
+          
+
+          shader.uniforms.uTime = { value: 0 };
+
+          originalMat.userData.shader = shader;
+        };
+        
+
+        originalMat.needsUpdate = true;
+
+      }
+    });
+  }, [scene]);
+
+  useFrame(({ clock }) => {
+
+    scene.traverse((child) => {
+      if (child.isMesh && child.material?.name === "M_Pantalla2") {
+        const material = child.material;
+        if (material.userData.shader) {
+          material.userData.shader.uniforms.uTime.value = clock.elapsedTime;
+        }
+      }
+    });
+  });
 
 
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh && child.material?.name === "M_Suelo") {
+        child.visible = false;
+      }
+    });
+  }, [scene]);
+
+  return (
+    <group ref={groupRef} {...props}>
+      <primitive object={scene} />
+    </group>
+  );
+}
 const CanvasBallsAnimation = () => {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
