@@ -1,291 +1,220 @@
-import { useRef, useEffect, useState } from "react";
-import * as THREE from "three";
+import { useRef, useEffect } from "react"
+import * as THREE from "three"
 
 const vertexShader = `
 varying vec2 vUv;
 void main() {
   vUv = uv;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
-`;
+`
 
 const fragmentShader = `
-precision mediump float;
 uniform sampler2D uTexture;
-uniform vec4 resolution;
+uniform vec2 uResolution;
+uniform vec2 uTextureSize;
+uniform vec2 uMouse;
+uniform float uParallaxStrength;
+uniform float uDistortionMultiplier;
+uniform float uGlassStrength;
+uniform float ustripesFrequency;
+uniform float uglassSmoothness;
+uniform float uEdgePadding;
+
 varying vec2 vUv;
-uniform float uImageAspect;
-uniform vec3 uOverlayColor;
-uniform vec3 uOverlayColorWhite;
-uniform float uMotionValue;
-uniform float uRotation;
-uniform float uSegments;
-uniform float uOverlayOpacity;
+
+vec2 getCoverUV(vec2 uv, vec2 textureSize) {
+  if (textureSize.x < 1.0 || textureSize.y < 1.0) return uv;
+
+  vec2 s = uResolution / textureSize;
+  float scale = min(s.x, s.y);
+
+  vec2 scaledSize = textureSize * scale;
+  vec2 offset = (uResolution - scaledSize) * 0.5;
+
+  return (uv * uResolution - offset) / scaledSize;
+}
+
+float displacement(float x, float num_stripes, float strength) {
+  float modulus = 1.0 / num_stripes;
+  return mod(x, modulus) * strength;
+}
+
+float fractalGlass(float x) {
+  float d = 0.0;
+  for (int i = -5; i <= 5; i++) {
+    d += displacement(x + float(i) * uglassSmoothness, ustripesFrequency, uGlassStrength);
+  }
+  d = d / 11.0;
+  return x + d;
+}
+
+float smoothEdge(float x, float padding) {
+  float edge = padding;
+  if (x < edge) return smoothstep(0.0, edge, x);
+  if (x > 1.0 - edge) return smoothstep(1.0, 1.0 - edge, x);
+  return 1.0;
+}
 
 void main() {
-    float canvasAspect = resolution.x / resolution.y;
-    float numSlices = uSegments;
-    float rotationRadians = uRotation * (3.14159265 / 180.0); 
+  vec2 uv = vUv;
 
+  float originalX = uv.x;
+  float edgeFactor = smoothEdge(originalX, uEdgePadding);
 
-    vec2 scaledUV = vUv;
-    if (uImageAspect > canvasAspect) {
-        float scale = canvasAspect / uImageAspect;
-        scaledUV.x = (vUv.x - 0.5) * scale + 0.5;
-    } else {
-        float scale = uImageAspect / canvasAspect;
-        scaledUV.y = (vUv.y - 0.5) * scale + 0.5;
-    }
+  float distortedX = fractalGlass(originalX);
+  uv.x = mix(originalX, distortedX, edgeFactor);
 
+  float distortionFactor = uv.x - originalX;
+  float parallaxDirection = -sign(0.5 - uMouse.x);
 
-    vec2 rotatedUV = vec2(
-        cos(rotationRadians) * (scaledUV.x - 0.5) - sin(rotationRadians) * (scaledUV.y - 0.5) + 0.5,
-        sin(rotationRadians) * (scaledUV.x - 0.5) + cos(rotationRadians) * (scaledUV.y - 0.5) + 0.5
-    );
+  vec2 parallaxOffset = vec2(
+    parallaxDirection * abs(uMouse.x - 0.5) * uParallaxStrength * (1.0 + abs(distortionFactor) * uDistortionMultiplier),
+    0.0
+  );
 
-    float sliceProgress = fract(rotatedUV.x * numSlices + uMotionValue);
-    float amplitude = 0.015; // The amplitude of the sine wave
-    rotatedUV.x += amplitude * sin(sliceProgress * 3.14159265 * 2.0) * (1.0 - 0.5 * abs(sliceProgress - 0.5));
+  parallaxOffset *= edgeFactor;
+  
 
-    vec2 finalUV = vec2(
-        cos(-rotationRadians) * (rotatedUV.x - 0.5) - sin(-rotationRadians) * (rotatedUV.y - 0.5) + 0.5,
-        sin(-rotationRadians) * (rotatedUV.x - 0.5) + cos(-rotationRadians) * (rotatedUV.y - 0.5) + 0.5
-    );
+  uv += parallaxOffset;
+  
+  vec2 coverUV = getCoverUV(uv, uTextureSize);
 
-vec2 clampedUV = clamp(finalUV, 0.0, 1.0);
-vec4 color = texture2D(uTexture, clampedUV);
+  coverUV = clamp(coverUV, 0.0, 1.0);
 
+  vec4 color = texture2D(uTexture, coverUV);
 
-    if (uOverlayOpacity > 0.0) {
-        // Apply overlays with the specified opacity
-        float blackOverlayAlpha = 0.05 * (1.0 - abs(sin(sliceProgress * 3.14159265 * 0.5 + 1.57))) * (uOverlayOpacity / 100.0);
-        color.rgb *= (1.0 - blackOverlayAlpha);
+color.rgb *= 1.35;
 
-        float whiteOverlayAlpha = 0.15 * (1.0 - abs(sin(sliceProgress * 3.14159265 * 0.7 - 0.7))) * (uOverlayOpacity / 100.0);
-        color.rgb = mix(color.rgb, uOverlayColorWhite, whiteOverlayAlpha);
-    }
+// compress contrast toward highlights (prevents muddy mids)
+color.rgb = mix(color.rgb, vec3(1.0), 0.12);
 
-    gl_FragColor = color;
+color.rgb = pow(color.rgb, vec3(0.85));
+
+color.rgb = mix(color.rgb, vec3(0.97, 0.98, 1.0), 0.08);
+
+gl_FragColor = color;
 }
-`;
+`
 
-const FlutedGlassEffect = ({
-  imageUrl,
-  mode = "static",
-  motionFactor = -50,
-  rotationAngle = 0,
-  segments = 80,
-  overlayOpacity = 0,
-  style = {},
-  className = ""
-}) => {
-  const containerRef = useRef(null);
-  const [imageAspect, setImageAspect] = useState(1);
-  const mouse = useRef(new THREE.Vector2(0.5, 0.5));
-  const scene = useRef(new THREE.Scene());
-  const camera = useRef(null);
-  const renderer = useRef(null);
-  const material = useRef(null);
-  const plane = useRef(null);
-  const animationId = useRef(null);
-  const texture = useRef(null);
+const config = {
+  lerpFactor: 0.035,
+  parallaxStrength: 0.1,
+  distortionMultiplier: 10,
+  glassStrength: 2.0,
+  glassSmoothness: 0.0001,
+  stripesFrequency: 35,
+  edgePadding: 0.1,
+}
 
+export default function FlutedGlassEffect({ src, className = "" }) {
+  const containerRef = useRef(null)
+const BASE_WIDTH = 1799.6
+const BASE_HEIGHT = 1071.5
 
-  const init = () => {
-    const container = containerRef.current;
-    
-    const position = window.getComputedStyle(container).position;
-    if (!['relative', 'absolute', 'fixed', 'sticky'].includes(position)) {
-      container.style.position = 'relative';
-    }
+useEffect(() => {
+  const container = containerRef.current
+  if (!container) return
 
-    const width = container.offsetWidth;
-    const height = container.offsetHeight;
+  container.innerHTML = ""
 
 
-    renderer.current = new THREE.WebGLRenderer({ antialias: true });
-    renderer.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.current.setSize(width, height);
-    renderer.current.setClearColor(0xeeeeee, 1);
-    
+  const scene = new THREE.Scene()
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 10)
+  camera.position.z = 1
 
-    const rendererElement = renderer.current.domElement;
-    rendererElement.style.position = 'absolute';
-    rendererElement.style.top = '0';
-    rendererElement.style.left = '0';
-    container.appendChild(rendererElement);
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.setClearColor(0x000000, 0)
+  container.appendChild(renderer.domElement)
 
 
-    const frustumSize = 1;
-    camera.current = new THREE.OrthographicCamera(
-      frustumSize / -2,
-      frustumSize / 2,
-      frustumSize / 2,
-      frustumSize / -2,
-      -1000,
-      1000
-    );
-    camera.current.position.set(0, 0, 2);
+  renderer.setSize(BASE_WIDTH, BASE_HEIGHT, false)
+
+  renderer.domElement.style.width = "100%"
+  renderer.domElement.style.height = "100%"
+  renderer.domElement.style.display = "block"
+
+  const mouse = new THREE.Vector2(0.5, 0.5)
+  const targetMouse = new THREE.Vector2(0.5, 0.5)
+  const lerp = (a, b, t) => a + (b - a) * t
+
+  const textureSize = new THREE.Vector2(1, 1)
+
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uTexture: { value: null },
+      uResolution: { value: new THREE.Vector2(BASE_WIDTH, BASE_HEIGHT) },
+      uTextureSize: { value: textureSize },
+      uMouse: { value: mouse },
+      uParallaxStrength: { value: config.parallaxStrength },
+      uDistortionMultiplier: { value: config.distortionMultiplier },
+      uGlassStrength: { value: config.glassStrength },
+      ustripesFrequency: { value: config.stripesFrequency },
+      uglassSmoothness: { value: config.glassSmoothness },
+      uEdgePadding: { value: config.edgePadding },
+    },
+    vertexShader,
+    fragmentShader,
+  })
+
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material)
+  scene.add(mesh)
+
+  const loader = new THREE.TextureLoader()
+  const tex = loader.load(src, (t) => {
+    t.colorSpace = THREE.SRGBColorSpace
+    t.minFilter = THREE.LinearFilter
+    t.magFilter = THREE.LinearFilter
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy()
+
+    const img = t.image
+    textureSize.set(img.naturalWidth || img.width, img.naturalHeight || img.height)
+    material.uniforms.uTexture.value = t
+  })
 
 
-    const img = new Image();
-    img.onload = () => {
-      const aspect = img.naturalWidth / img.naturalHeight;
-      setImageAspect(aspect);
-      texture.current = new THREE.Texture(img);
-      texture.current.needsUpdate = true;
-      
-      if (material.current) {
-        material.current.uniforms.uTexture.value = texture.current;
-        material.current.uniforms.uImageAspect.value = aspect;
-      }
-    };
-    img.src = imageUrl;
+  const onMouseMove = (e) => {
+    const rect = container.getBoundingClientRect()
+    targetMouse.x = (e.clientX - rect.left) / rect.width
+    targetMouse.y = 1.0 - (e.clientY - rect.top) / rect.height
+  }
 
-    material.current = new THREE.ShaderMaterial({
-      extensions: {
-        derivatives: "#extension GL_OES_standard_derivatives : enable"
-      },
-      side: THREE.DoubleSide,
-      uniforms: {
-        resolution: { value: new THREE.Vector4(width, height, 1, 1) },
-        uTexture: { value: null },
-        uMotionValue: { value: 0.5 },
-        uRotation: { value: rotationAngle },
-        uSegments: { value: segments },
-        uOverlayColor: { value: new THREE.Vector3(0.0, 0.0, 0.0) },
-        uOverlayColorWhite: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
-        uImageAspect: { value: imageAspect },
-        uOverlayOpacity: { value: overlayOpacity }
-      },
-      vertexShader: vertexShader,
-      fragmentShader: fragmentShader,
-    });
+  const onResize = () => {
+    renderer.domElement.style.width = `${container.clientWidth}px`
+    renderer.domElement.style.height = `${container.clientHeight}px`
+  }
 
+  container.addEventListener("mousemove", onMouseMove)
+  window.addEventListener("resize", onResize)
 
-    const geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
-    plane.current = new THREE.Mesh(geometry, material.current);
-    scene.current.add(plane.current);
-
-
-    animate();
-  };
-
+  let raf = 0
   const animate = () => {
-    animationId.current = requestAnimationFrame(animate);
-    renderer.current.render(scene.current, camera.current);
-  };
+    raf = requestAnimationFrame(animate)
+    mouse.lerp(targetMouse, config.lerpFactor)
+    material.uniforms.uMouse.value.copy(mouse)
+    renderer.render(scene, camera)
+  }
 
-  const handleResize = () => {
-    const container = containerRef.current;
-    const width = container.offsetWidth;
-    const height = container.offsetHeight;
+  animate()
 
-    if (renderer.current) {
-      renderer.current.setSize(width, height);
-    }
-
-    if (camera.current) {
-      camera.current.aspect = width / height;
-      camera.current.updateProjectionMatrix();
-    }
-
-    if (material.current) {
-      material.current.uniforms.resolution.value.x = width;
-      material.current.uniforms.resolution.value.y = height;
-    }
-  };
-
-
-  const handleMouseMove = (event) => {
-    if (mode !== 'mouse' || !material.current) return;
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-    mouse.current.x = x;
-    material.current.uniforms.uMotionValue.value = 0.5 + x * motionFactor * 0.1;
-    
-    mouse.current.y = 1.0 - event.clientY / window.innerHeight;
-    material.current.uniforms.uMotionValue.value = 0.5 + mouse.current.x * motionFactor * 0.1;
-  };
-
-  // Handle scroll
-  const handleScroll = () => {
-    if (mode !== 'scroll' || !material.current) return;
-    
-    const container = containerRef.current;
-    const rect = container.getBoundingClientRect();
-    const elemTop = rect.top;
-    const elemBottom = rect.bottom;
-
-
-    const isInViewport = elemTop < window.innerHeight && elemBottom >= 0;
-
-    if (isInViewport) {
-      const totalHeight = window.innerHeight + container.offsetHeight;
-      const scrolled = window.innerHeight - elemTop;
-      const progress = scrolled / totalHeight;
-      const maxMovement = 0.2;
-      material.current.uniforms.uMotionValue.value = progress * maxMovement * motionFactor;
-    }
-  };
-
-
-  useEffect(() => {
-    const container = containerRef.current;
-    
-    if (mode === 'mouse') {
-      window.addEventListener('mousemove', handleMouseMove);
-    }
-    
-    if (mode === 'scroll') {
-      window.addEventListener('scroll', handleScroll);
-    }
-    
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      if (mode === 'mouse') {
-        window.removeEventListener('mousemove', handleMouseMove);
-      }
-      
-      if (mode === 'scroll') {
-        window.removeEventListener('scroll', handleScroll);
-      }
-      
-      window.removeEventListener('resize', handleResize);
-      
-      if (animationId.current) {
-        cancelAnimationFrame(animationId.current);
-      }
-      
-      if (renderer.current && container.contains(renderer.current.domElement)) {
-        container.removeChild(renderer.current.domElement);
-      }
-    };
-  }, [mode]);
-
-
-  useEffect(() => {
-    init();
-  }, []);
-
-
-  useEffect(() => {
-    if (material.current) {
-      material.current.uniforms.uRotation.value = rotationAngle;
-      material.current.uniforms.uSegments.value = segments;
-      material.current.uniforms.uOverlayOpacity.value = overlayOpacity;
-    }
-  }, [rotationAngle, segments, overlayOpacity]);
+  return () => {
+    cancelAnimationFrame(raf)
+    container.removeEventListener("mousemove", onMouseMove)
+    window.removeEventListener("resize", onResize)
+    tex?.dispose?.()
+    material.dispose()
+    mesh.geometry.dispose()
+    renderer.dispose()
+    container.removeChild(renderer.domElement)
+  }
+}, [src])
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className={className}
-      style={{ width: '100%', height: '100%', ...style }}
+      style={{ width: "100%", height: "100vh", position: "relative" }}
     />
-  );
-};
-
-export default FlutedGlassEffect;
+  )
+}

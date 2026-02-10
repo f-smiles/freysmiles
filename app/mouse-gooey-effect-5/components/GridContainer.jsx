@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useRef, useLayoutEffect} from 'react'
+import React, { useEffect, useRef, useLayoutEffect, forwardRef, useImperativeHandle} from 'react'
 import gsap from 'gsap'
 import { LinearFilter, Mesh, OrthographicCamera, PlaneGeometry, Scene, ShaderMaterial, TextureLoader, Vector2, WebGLRenderer } from 'three'
 import ScrollTrigger from 'gsap/ScrollTrigger'
@@ -9,43 +9,46 @@ export const items = [
   {
     // src: '/images/members/edit/adriana-blurry-distortion-effect-1920px-1.jpg',
     // hoverSrc: '/images/members/orig/adriana.png',
-    src: '/images/team_members/Adriana-Photoroom.jpg',
-    hoverSrc: '/images/test/hover.jpg',
+    src: '/images/team_members/adrianaportrait.png',
+    hoverSrc: '/images/test/adrianagooey.png',
     role: 'Insurance Coordinator',
     name: 'Adriana',
   },
   {
     // src: '/images/members/edit/alyssa-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/alyssa.png',
-    src: '/images/team_members/alyssascan.png',
-    hoverSrc: '/images/test/hover.jpg',
+    src: '/images/team_members/alyssaportrait.png',
+    hoverSrc: '/images/test/alyssagooey.png',
     role: 'Treatment Coordinator',
     name: 'Alyssa',
   },
   {
     // src: '/images/members/edit/elizabeth-blurry-distortion-effect-1.jpg',
     // hoverSrc: '/images/members/orig/elizabeth.png',
-   src: '/images/team_members/stefhany.png',
-    hoverSrc: '/images/test/hover.jpg',
+   src: '/images/team_members/stefhanyportrait.png',
+    hoverSrc: '/images/test/stefhanygooey.png',
     role: 'Specialized Orthodontic Assistant',
     name: 'Stefhany',
   },
   {
     // src: '/images/members/edit/lexi-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/lexi.png',
-    src: '/images/team_members/lexiworking.png',
-    hoverSrc: '/images/test/hover.jpg',
+    src: '/images/team_members/lexiportrait.png',
+    hoverSrc: '/images/test/lexigooey.png',
     role: 'Treatment Coordinator',
     name: 'Lexi',
   },
   {
     // src: '/images/members/edit/nicole-blurry-distortion-effect.jpg',
     // hoverSrc: '/images/members/orig/nicolle.png',
-    src: '/images/team_members/alexisbg.png',
-    hoverSrc: '/images/test/hover.jpg',
+    src: '/images/team_members/alexisportrait.png',
+    hoverSrc: '/images/test/alexisgooey.png',
     role: 'Records Technician',
     name: 'Alexis',
   },
+   
+
+
 ]
 
 const vertexShader = `
@@ -202,9 +205,11 @@ const fragmentShader = `
   }
 `
 
-const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
+const ImageCanvas = ({ className, member, imgSrc, hoverSrc ,  src,       
+  hover, }) => {
   const containerRef = useRef(null)
-
+const baseSrc = imgSrc || src;
+const baseHoverSrc = hoverSrc || hover || baseSrc;
   const config = {
     maskRadius: 0.35,
     maskSpeed: 0.75,
@@ -265,10 +270,10 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
       activeContainers.add(container)
 
       const loader = new TextureLoader()
-      Promise.all([
-        loader.loadAsync(imgSrc),
-        loader.loadAsync(hoverSrc),
-      ]).then(([baseTexture, hoverTexture]) => {
+Promise.all([
+  loader.loadAsync(baseSrc),
+  loader.loadAsync(baseHoverSrc),
+]).then(([baseTexture, hoverTexture]) => {
         setupScene(baseTexture, hoverTexture)
         setupEventListeners()
       })
@@ -277,7 +282,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
         texture.minFilter = LinearFilter
         texture.magFilter = LinearFilter
         texture.anisotropy = 8
-        texture.generateMipmaps = false
+        texture.generateMipmaps = true
         container.scene = new Scene()
         container.camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1)
         container.uniforms = {
@@ -306,7 +311,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
           powerPreference: 'high-performance',
           alpha: true,
         })
-        container.renderer.setPixelRatio(1)
+        container.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
         container.renderer.setSize(container.clientWidth, container.clientHeight)
         container.appendChild(container.renderer.domElement)
 
@@ -337,7 +342,7 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
             mouseMoveTimeout = setTimeout(() => {
               updateCursorState(lastMouseX, lastMouseY)
               mouseMoveTimeout = null
-            }, 16) // ~60fps
+            }, 16) 
           }
         }
 
@@ -390,15 +395,15 @@ const ImageCanvas = ({ className, member, imgSrc, hoverSrc }) => {
     }
 
     initHoverEffect(containerRef.current)
-  }, [imgSrc, hoverSrc])
+}, [baseSrc, baseHoverSrc])
 
   return (
     <div ref={containerRef} className={`inversion-lens ${className}`}>
-      <img src={imgSrc} data-hover={hoverSrc} alt={member} />
+<img src={baseSrc} data-hover={baseHoverSrc} alt={member || ""} />
     </div>
   )
 }
-
+export { ImageCanvas };
 const MemberCard = ({ member, className = '' }) => {
   return (
     <div className={`member-slot ${className} flex flex-col justify-between h-full w-full p-8`}>
@@ -428,29 +433,36 @@ const MemberCard = ({ member, className = '' }) => {
 };
 
 export { MemberCard };
-export default function GridContainer() {
 
 
+export default forwardRef(function GridContainer(props, ref) {
+  const cardsRef = useRef([]);
+  const membersRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    getCards: () => cardsRef.current.filter(Boolean),
+    getScroller: () => membersRef.current,   //  expose the container
+  }));
 
   return (
-<section className="layout">
+    <section className="layout">
+      <div className="grid-container-wrapper">
+        <div className="font-canelathin grid-copy">
+          <h3><span></span>Our team at Frey Smiles is built around care, clarity, and craft.</h3>
+          <p className="font-khteka uppercase text-[12px]">
+            Behind every visit is a group of people who care deeply about how things feel, how they flow, and how you’re treated.
+            We’re here to make every visit feel smooth, personal, and easy from start to finish.
+          </p>
+        </div>
 
-  {/* <div className="intro-section">
-    <div className="intro-card">
-      <h2 className="intro-heading">
-        Entrust your smile's transformation to our handpicked team of orthodontic specialists.
-      </h2>
-      <p className="intro-subtext">
-        From national certifications to hands-on trainings, we’re always leveling up.
-        The systems, the flow, the details — all dialed in so your visits stay smooth start to finish.
-      </p>
-    </div>
-  </div> */}
-
-
-  <div className="members-section">
+    <div ref={membersRef} className="members-section">
+  <div className="members-track">
     {items.map((item, i) => (
-      <div key={item.name} className="member-card">
+      <div
+        key={item.name}
+        ref={(el) => (cardsRef.current[i] = el)}
+        className="member-card"
+      >
         <div className="image-wrapper">
           <ImageCanvas
             className={`item-${i + 1}`}
@@ -466,6 +478,8 @@ export default function GridContainer() {
       </div>
     ))}
   </div>
-</section>
+</div>
+      </div>
+    </section>
   );
-}
+});

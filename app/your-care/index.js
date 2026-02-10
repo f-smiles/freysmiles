@@ -51,24 +51,16 @@ const totalWidth = slideCount * (slideWidth + gap);
 const slideUnit = slideWidth + gap;
 
 
-const Slide = ({ index, currentPosition, distortionFactor }) => {
+const Slide = ({ index, images, currentPosition, distortionFactor }) => {
   const meshRef = useRef();
   const geometryRef = useRef();
   const [originalVertices, setOriginalVertices] = useState([]);
   
-  const imagePaths = [
-    "/images/blobnew.png",
-    "/images/fscards.png",
-    "/images/sch.png",
-    "/images/fsstickers.png",
-    "/images/futuresmiles.png",
-    "/images/iteromockupnoborder.png",
-    
-  ];
-  
-  const imageIndex = index % imagePaths.length;
 
-  const texture = useTexture(imagePaths[imageIndex]);
+const imageIndex = images?.length ? index % images.length : 0;
+const texture = useTexture(
+  images?.length ? images[imageIndex] : "/images/blobnew.png"
+);
   
   useEffect(() => {
     if (geometryRef.current) {
@@ -156,7 +148,7 @@ const Slide = ({ index, currentPosition, distortionFactor }) => {
   );
 };
 
-const SlidesContainer = () => {
+const SlidesContainer = ({ images }) => {
   const [currentPosition, setCurrentPosition] = useState(0);
   const [targetPosition, setTargetPosition] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -303,12 +295,12 @@ const SlidesContainer = () => {
   return (
     <>
       {Array.from({ length: slideCount }).map((_, i) => (
-        <Slide 
-          key={i} 
-          index={i} 
-          currentPosition={currentPosition} 
-          distortionFactor={currentDistortionFactor} 
-        />
+     <Slide
+  index={i}
+  images={images}
+  currentPosition={currentPosition}
+  distortionFactor={currentDistortionFactor}
+/>
       ))}
     </>
   );
@@ -353,7 +345,8 @@ const ThumbnailStrip = () => {
   );
 };
 
-const YourCare = () => {
+const YourCare = ({ images }) => {
+    console.log("YourCare images:", images);
   return (
     <>
     {/* <div className="w-full h-screen">
@@ -374,7 +367,7 @@ const YourCare = () => {
       }}
     >
       <SliderScene />
-      <SlidesContainer />
+      <SlidesContainer images={images} />
     </Canvas>
 
         <div className="absolute bottom-0 w-full h-[15%] z-10">
