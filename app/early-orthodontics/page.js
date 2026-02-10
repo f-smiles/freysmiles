@@ -348,7 +348,7 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-between MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--brown)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--brightgreen)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">03</span>
                   <h3 className="MainSectionItem-contentTitle AppTitle-3">The Airway Equation</h3>
@@ -372,10 +372,10 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-between MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--green)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--eggshellgrey)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">04</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Future-Proof</h3>
+                   <h3 className="MainSectionItem-contentTitle AppTitle-3">Future Frey Smiles</h3>
                   <div className="MainSectionItem-contentText">
                     <div className="AppText-12">
                       <p className="AppParagraph">Timely intervention makes it possible to manage many cases more comfortably with clear aligners which gently guide growth while also functioning as protective mouth guards during sports or severe dental protrustion. Through proactive, individualized treatment we're able to minimize disruption, improve oral hygiene, reduce enamel damage, and help children avoid the physical and emotional burden of bulky appliances later on.</p>
@@ -385,17 +385,8 @@ export default function Page() {
                 <div className="MainSectionItem-imageContainer">
                   <div className="MainSectionItem-imageContainerInner">
                     <div className="AppImage MainSectionItem-image">
-                      <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/videos/retaintracing.mp4')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
-<img
-  src="/images/bluewave.gif"
-  alt="Retain tracing animation"
-  loading="lazy"
-  style={{
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover'
-  }}
-/>
+                     <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/Image0001.jpg')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
+                      <img src="/images/ffscard.jpg" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
                     </div>
                   </div>
                 </div>
@@ -405,10 +396,11 @@ export default function Page() {
           <div className="MainSectionItem MainSection-item">
             <div className="--index-between MainSectionItem-inner">
               <div className="MainSectionItem-innerSticky">
-                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--grey)', }} />
+                <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--hotpink)', }} />
                 <div className="MainSectionItem-content">
                   <span className="MainSectionItem-index">05</span>
-                  <h3 className="MainSectionItem-contentTitle AppTitle-3">Future Frey Smiles</h3>
+                   <h3 className="MainSectionItem-contentTitle AppTitle-3">Future-Proof</h3>
+                 
                   <div className="MainSectionItem-contentText">
                     <div className="AppText-12">
                       <p className="AppParagraph">Once you visit us, we take care of the rest. If no treatment is needed right away, we'll place your child on a customized Growth & Guidance schedule—part of our Frey Smiles Club—our way of keeping an eye on how things are progressing until treatment is indicated. </p>
@@ -419,7 +411,21 @@ export default function Page() {
                   <div className="MainSectionItem-imageContainerInner">
                     <div className="AppImage MainSectionItem-image">
                       <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/Image0001.jpg')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
-                      <img src="/images/ffscard.jpg" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
+                     <video
+  src="https://cdn.prod.website-files.com/678671a66edd3849bbcac5e3%2F678a1ef8f7108323f84eecda_4990242-sd_960_540_30fps-transcode.mp4"
+  width="480"
+  height="348"
+  autoPlay
+  loop
+  muted
+  playsInline
+  preload="metadata"
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+  }}
+/>
                     </div>
                   </div>
                 </div>
