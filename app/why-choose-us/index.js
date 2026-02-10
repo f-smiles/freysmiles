@@ -5,8 +5,7 @@ import Copy from "@/utils/Copy.jsx";
 import * as PIXI from "pixi.js";
 import { Application, Filter, Graphics, Rectangle } from "pixi.js";
 import FlutedGlassEffect from "/utils/glass";
-import { TextureLoader, Vector2, MathUtils } from 'three';
-import { Flip } from "gsap/Flip";
+import { TextureLoader, Vector2, MathUtils } from 'three'
 import {
   Canvas,
   useFrame,
@@ -82,8 +81,7 @@ if (typeof window !== "undefined") {
     ScrollTrigger,
     SplitText,
     DrawSVGPlugin,
-    useGSAP,
-    Flip
+    useGSAP
   );
 }
 
@@ -1974,6 +1972,7 @@ export default function WhyChooseUs() {
 useEffect(() => {
   const [topLine, bottomLine] = sectionLineRefs.current;
 
+  // INITIAL STATE
   gsap.set([topLine, bottomLine, ...lineRefs.current], {
     scaleX: 0,
     transformOrigin: "center center",
@@ -2043,121 +2042,54 @@ useEffect(() => {
 
 
 
-const swirlRef = useRef(null);
-
+const swirlRef = useRef();
 useLayoutEffect(() => {
-  let ctx;
-  let rafId;
-  let attempts = 0;
+  if (!swirlRef.current?.uniforms) return;
 
-  const init = () => {
-    if (!swirlRef.current?.uniforms) {
-      attempts += 1;
-
-      // hard stop after ~1 second
-      if (attempts > 60) return;
-
-      rafId = requestAnimationFrame(init);
-      return;
-    }
-
-ctx = gsap.context(() => {
   const blocks = gsap.utils.toArray(".section-a-block");
   const { uniforms } = swirlRef.current;
-
-  // 🔒 HARD RESET (important)
-  gsap.set(blocks, { scale: 1, opacity: 1 });
-  gsap.set(uniforms.uOpacity, { value: 1 });
 
   const tl = gsap.timeline({
     scrollTrigger: {
       trigger: "#section-a",
       start: "top top",
-      end: "+=140%",
+      end: "+=120%",
       scrub: true,
       pin: true,
       anticipatePin: 1,
     },
   });
 
-  // 1️⃣ HOLD — absorbs early scrub movement
-  tl.to({}, { duration: 0.35 });
+  // 1) fade WebGL text
+  tl.to(uniforms.uOpacity, {
+    value: 0,
+    duration: 0.35,
+    ease: "power2.out",
+  });
 
-  // 2️⃣ FADE TEXT (now safely after lock)
-  tl.fromTo(
-    uniforms.uOpacity,
-    { value: 1 },
-    {
-      value: 0,
-      duration: 0.3,
-      ease: "power2.out",
-      immediateRender: false, // 👈 CRITICAL
-    }
-  );
-
-  // 3️⃣ PUNCH BLOCKS
+  // 2) punch out Section A
   tl.to(blocks, {
     scale: 0,
     opacity: 0,
-    stagger: 0.02,
-    duration: 1,
+    stagger: {
+      grid: "auto",
+      from: "random",
+      amount: 1.2,
+    },
     ease: "power3.inOut",
+    duration: 1,
   });
-});
-  };
-
-  init();
 
   return () => {
-    cancelAnimationFrame(rafId);
-    ctx && ctx.revert();
+    tl.scrollTrigger?.kill();
+    tl.kill();
   };
 }, []);
 
-//  const particleRef = useRef(null);
-//   const loaderRef = useRef(null);
-//   const [entered, setEntered] = useState(false);
-
-//   useEffect(() => {
-//     // auto-enter after delay (or replace with scroll / click)
-//     const t = setTimeout(() => enterMain(), 1400);
-//     return () => clearTimeout(t);
-//   }, []);
-
-//   const enterMain = () => {
-//     if (entered) return;
-//     setEntered(true);
-
-//     const particle = particleRef.current;
-//     const target = document.querySelector(".particle-slot");
-
-//     const state = Flip.getState(particle);
-
-//     // move SAME element into grid
-//     target.appendChild(particle);
-
-//     Flip.from(state, {
-//       duration: 1.2,
-//       ease: "power3.inOut",
-//       absolute: true,
-//       onComplete: () => {
-//         particle.style.position = "relative";
-//         particle.style.inset = "auto";
-//       },
-//     });
-
-//     // fade loader UI
-//     gsap.to(loaderRef.current, {
-//       opacity: 0,
-//       duration: 0.4,
-//       delay: 0.6,
-//       pointerEvents: "none",
-//     });
-//   };
 
   return (
     <> 
-        {/* <div className="bg-[#f6f3ee] text-black">
+        <div className="bg-[#f6f3ee] text-black">
       <header className="relative h-[260px] px-12 py-10">
 
 <nav className="absolute left-0 right-0 top-[90px] overflow-hidden pointer-events-none">
@@ -2193,53 +2125,12 @@ ctx = gsap.context(() => {
   <ParticleAnimation />
 
 <div className="font-neuehaas45 absolute top-10 left-1/2 -translate-x-1/2 text-white/80 text-[28px] tracking-[0.1em] uppercase mix-blend-difference">
-  MANIFESTO
+  OUR APPROACH
 </div>
 </section>
-    </div> */}
+    </div>
           
- <div className="page-root">
-      {/* LOADER */}
-      {/* <section ref={loaderRef} className="loader">
-        <div ref={particleRef} className="particle-wrapper">
-          <ParticleAnimation />
-        </div>
 
-        <div className="manifesto-label">
-          MANIFESTO
-        </div>
-      </section> */}
-
-<section className="main">
-    <div className="bento-background">
-    <img src="/images/3dprinting.png" />
-  </div>
-
-  <div className="bento-grid">
-
-
-    <div className="bento-col bento-col--large">
-      <div className="bento-cell hero" />
-      <div className="bento-cell wide" />
-      <div className="bento-cell" />
-    </div>
-
-    <div className="bento-col bento-col--small">
-      <div className="bento-cell" />
-      <div className="bento-cell tall" />
-      <div className="bento-cell" />
-    </div>
-
-
-    <div className="bento-col bento-col--small">
-      <div className="bento-cell" />
-      <div className="bento-cell" />
-      <div className="bento-cell" />
-    </div>
-
-  </div>
-</section>
-    </div>
       <main className="h-[200vh]">
           <div className="mt-12 grid grid-cols-2 gap-16 px-12 pt-10">
             <p className="text-lg leading-relaxed">
@@ -2328,12 +2219,8 @@ ctx = gsap.context(() => {
 <div className="bg-[#373030]">
    <CardStack />
            <StackCards />
-<div className="relative w-screen h-[200vh]">
-
-<section
-  id="section-a"
-  className="relative w-screen h-screen"
->
+         
+<section className="relative w-screen h-screen bg-[#373030]" id="section-a">
   <Canvas
     className="absolute inset-0 z-30"
     orthographic
@@ -2351,31 +2238,25 @@ APPLIANCE ENGINEERING.`}
     />
   </Canvas>
 
-    <div className="section-a-grid absolute inset-0 z-20">
-      {Array.from({ length: 200 }).map((_, i) => (
-        <div
-          key={i}
-          className={`section-a-block ${
-            i % 3 === 0 ? "block-square" : "block-rect"
-          }`}
-        />
-      ))}
-    </div>
+<div className="section-a-grid absolute inset-0 z-20">
+  {Array.from({ length: 200 }).map((_, i) => {
+    const isSquare = i % 3 === 0;
 
+    return (
+      <div
+        key={i}
+        className={`section-a-block ${
+          isSquare ? "block-square" : "block-rect"
+        }`}
+      />
+    );
+  })}
+</div>
 </section>
 
-  {/* This provides scroll height */}
-  <div className="h-screen" />
-
-  {/* This is what you reveal */}
-  <section
-    id="section-b"
-    className="absolute inset-0 flex items-center justify-center"
-  >
-    NEXT SECTION
-  </section>
-         </div>
-
+<section id="section-b" class="relative h-screen">
+BLAH BLAH BLAH
+</section>
           <WorkGrid />
           {/* <MoreThanSmiles /> */}
           {/* <CircleReveal /> */}
