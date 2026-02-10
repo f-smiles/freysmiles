@@ -9,7 +9,7 @@ export default function Navbar({ user }) {
     <div className="relative">
       <DesktopNav user={user} />
       <MobileNav user={user} />
-      <ThemeButtons />
+      {/* <ThemeButtons /> */}
     </div>
   )
 }
