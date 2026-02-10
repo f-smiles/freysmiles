@@ -7515,8 +7515,8 @@ top: 55%;
   /* font-family: "NeueHaasGroteskDisplayPro45Light", sans-serif; */
   font-weight: 500;
   line-height: 0.9;
-  font-size: clamp(1.25rem, 2.25vw, 2.5rem);
-  width: 40%;
+font-size: clamp(1.125rem, 2.025vw, 2.25rem);
+  width: 32%;
   color: black
 }
 

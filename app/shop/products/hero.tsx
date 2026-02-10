@@ -31,7 +31,6 @@ const AnimatedBackground = () => {
 
     const gl = canvas.getContext('webgl2');
     if (!gl) {
-      console.error('WebGL2 not supported');
       return;
     }
 
@@ -941,27 +940,27 @@ const CircleGridMouseFollow = () => {
     camera.position.set(0, 0, 12);
     cameraRef.current = camera;
 
-    // Set renderer to be transparent
+
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true,
-      alpha: true // Enable alpha channel
+      alpha: true 
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     
-    // Clear to transparent
-    renderer.setClearColor(0x000000, 0); // Black with 0 opacity
+
+    renderer.setClearColor(0x000000, 0); 
     
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Create circle grid
+
     const width = 0.5;
     const geometry = new THREE.CircleGeometry(width, 64);
     const material = new THREE.MeshBasicMaterial({ 
       color: 0xffffff,
-      transparent: true, // Enable transparency for circles if needed
-      opacity: 1.0 // Set opacity as needed
+      transparent: true, 
+      opacity: 1.0
     });
 
     const meshes = [];
@@ -983,16 +982,13 @@ const CircleGridMouseFollow = () => {
       }
     }
     meshesRef.current = meshes;
-
-    // Raycasting setup
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     const targetPosition = new THREE.Vector3();
     
-    // Create invisible plane for intersection
+
     const hitPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -1.5);
 
-    // Mouse movement handler
     const handleMouseMove = (event) => {
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -1017,7 +1013,6 @@ const CircleGridMouseFollow = () => {
       }
     };
 
-    // Animation loop
     const animate = () => {
       animationIdRef.current = requestAnimationFrame(animate);
       
@@ -1198,11 +1193,11 @@ const Hero: React.FC = () => {
 
       {/* <Marquee /> */}
 <HeroSection />
-<div className="relative min-h-screen">
+{/* <div className="relative min-h-screen">
 
 <section className="grid grid-cols-1 lg:grid-cols-2 min-h-screen px-6 py-20">
 
-{/* <Canvas camera={{ position: [4, 3, 6], fov: 45 }}>
+<Canvas camera={{ position: [4, 3, 6], fov: 45 }}>
   <Environment files="/images/studio_small_03_4k.hdr" />
 
 
@@ -1223,10 +1218,10 @@ const Hero: React.FC = () => {
   <DentalModel />
 
   <OrbitControls enableZoom={false} enablePan={false} />
-</Canvas> */}
+</Canvas>
 
 </section>
-</div>
+</div> */}
     </section>
   );
 };

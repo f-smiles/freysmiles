@@ -311,6 +311,12 @@ useLayoutEffect(() => {
       duration: 1,
     }, "start")
 
+    phase2Tl.to(row3El, {
+      y: 0,
+      ease: "power2.out",
+      duration: 0.8,
+    }, "start+=0.3")
+
     phase2Tl.to(row3Items, {
       y: 0,
       opacity: 1,
@@ -320,7 +326,7 @@ useLayoutEffect(() => {
       },
       ease: "power2.out",
       duration: 0.8,
-    }, "start+=0.3")
+    }, "start+=0.5")
 
     gsap.timeline({
       scrollTrigger: {
@@ -337,6 +343,7 @@ useLayoutEffect(() => {
 
   return () => ctx.revert()
 }, [])
+
   return (
     <div ref={containerRef} className="relative bg-white">
       {rows.map((row, rowIndex) => (
@@ -347,8 +354,7 @@ useLayoutEffect(() => {
           }}
           className="h-screen"
         >
-  
-          <div className="grid grid-cols-4 h-full divide-x divide-[#EBECF0]">
+<div className="grid grid-cols-4 h-full divide-x divide-[#EBECF0] border-r border-[#EBECF0]">
             {row.variants.slice(0, 4).map((variant, itemIndex) => (
               <div
                 key={variant.id}
@@ -358,7 +364,7 @@ useLayoutEffect(() => {
                   if (rowIndex === 1) row2ItemRefs.current[itemIndex] = el
                   if (rowIndex === 2) row3ItemRefs.current[itemIndex] = el
                 }}
-                className="px-4 py-1 flex items-start justify-center"
+                className="px-4 flex items-start justify-center"
               >
                 <ProductCard
                   variant={variant}
