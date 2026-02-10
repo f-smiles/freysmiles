@@ -7590,11 +7590,11 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
 }
 
 .wheelloader svg .orbit-text {
-  fill: #0f0f0f;
+  fill: #857B79;
   text-transform: uppercase;
   font-size: 2.75rem;
-  font-weight: 500;
-  font-family: "Canela-ThinStraight"
+  /* font-weight: 500; */
+  font-family: "IBMPlexMono-Light"
 }
 
 @media (max-width: 1000px) {

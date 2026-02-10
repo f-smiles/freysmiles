@@ -13,9 +13,6 @@ import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-mo
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin)
 
 
-
-
-
 type ProductVariantsProps = {
   variants: VariantsWithProductImagesTags[]
 }
@@ -166,15 +163,13 @@ style={{
   className="relative z-[10] flex flex-col h-full px-5 pt-5 pb-6"
 >
 
-
-
 <figure className="flex items-center justify-center h-[300px] w-full px-6">
   <Image
     src={variant.variantImages[0].url}
     alt={`${variant.product.title} - ${variant.variantName}`}
     width={500}
     height={500}
-    className="max-h-full max-w-full object-contain"
+    className="max-h-full object-contain"
     priority
   />
 </figure>
@@ -213,19 +208,6 @@ export default function Variants({ variants }: ProductVariantsProps) {
   const row3ItemRefs = useRef<HTMLDivElement[]>([])
   const row4ItemRefs = useRef<HTMLDivElement[]>([])
 
-  // Scroll animation setup
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  })
-
-  // Smooth scroll progress
-  const smoothScroll = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  })
-
   const row1 = variants.filter(v => v.productID === 1)
   const row2 = variants.filter(v => v.productID === 2)
   const row3 = variants.filter(v => v.productID === 3 || v.productID === 4)
@@ -238,48 +220,18 @@ export default function Variants({ variants }: ProductVariantsProps) {
     { id: 'cases', variants: row1 },
   ]
 
-  // Card animation variants
-  const cardVariants = {
-    hidden: {
-      y: 20,
-      opacity: 0,
-      scale: 0.95
-    },
-    visible: (custom: number) => ({
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      transition: {
-        delay: custom * 0.1, // Staggered animation
-        duration: 0.6,
-        ease: [0.22, 1, 0.36, 1], // Smooth easing
-        y: {
-          type: "spring",
-          stiffness: 100,
-          damping: 15
-        }
-      }
-    }),
-    float: {
-      y: [0, -10, 0], // Float up and down
-      transition: {
-        duration: 3,
-        repeat: Infinity,
-        repeatType: "reverse",
-        ease: "easeInOut"
-      }
-    }
-  }
 
   return (
     <div ref={containerRef} className="relative bg-white">
       {rows.map((row, rowIndex) => {
         const rowRef = useRef<HTMLDivElement>(null)
-        const isInView = useInView(rowRef, {
-          once: false, // Animation triggers every time it comes into view
-          amount: 0.2 // 20% of the element visible triggers animation
-        })
-        
+
+
+const isInView = useInView(rowRef, {
+  once: true,
+  amount: 0.2,
+});
+
         return (
           <section
             key={row.id}
@@ -290,51 +242,65 @@ export default function Variants({ variants }: ProductVariantsProps) {
                 rowRef.current = el
               }
             }}
-            className="relative"
+           className="relative overflow-hidden"
           >
-            <div className="grid grid-cols-4 h-full border-r border-black/10">
-              {row.variants.slice(0, 4).map((variant, itemIndex) => (
-                <motion.div
-                  key={variant.id}
-                  ref={el => {
-                    if (!el) return
-                    if (rowIndex === 0) row1ItemRefs.current[itemIndex] = el
-                    if (rowIndex === 1) row2ItemRefs.current[itemIndex] = el
-                    if (rowIndex === 2) row3ItemRefs.current[itemIndex] = el
-                    if (rowIndex === 3) row4ItemRefs.current[itemIndex] = el
-                  }}
-                  className="px-4 flex items-start justify-center relative"
-                  // Initial animation when entering viewport
-                  initial="hidden"
-                  animate={isInView ? ["visible", "float"] : "hidden"}
-                  variants={cardVariants}
-                  custom={itemIndex} // For staggered delay
-                  whileHover={{
-                    y: -15,
-                    scale: 1.02,
-                    transition: { duration: 0.2 }
-                  }}
-                >
-                  <ProductCard
-                    variant={variant}
-                    backgroundUrl="/images/_mesh_gradients/metallicdream.png"
-                  />
-                  
-                  {/* Optional floating shadow effect */}
-                  <motion.div 
-                    className="absolute inset-0 -z-10 bg-black/5 blur-xl rounded-3xl"
-                    animate={isInView ? {
-                      y: [0, -20, 0],
-                      opacity: [0.1, 0.2, 0.1]
-                    } : {}}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      repeatType: "reverse"
-                    }}
-                  />
-                </motion.div>
-              ))}
+            <div className="grid grid-cols-4 h-full w-full border-r border-black/10">
+        {row.variants.slice(0, 4).map((variant, itemIndex) => (
+  <motion.div
+    key={variant.id}
+    ref={el => {
+      if (!el) return
+      if (rowIndex === 0) row1ItemRefs.current[itemIndex] = el
+      if (rowIndex === 1) row2ItemRefs.current[itemIndex] = el
+      if (rowIndex === 2) row3ItemRefs.current[itemIndex] = el
+      if (rowIndex === 3) row4ItemRefs.current[itemIndex] = el
+    }}
+    className="px-4 flex items-start justify-center relative"
+    initial={{ y: "45vh", opacity: 0, scale: 0.92 }}
+    animate={isInView ? { y: 0, opacity: 1, scale: 1 } : {}}
+    transition={{
+      delay: itemIndex * 0.12,
+      duration: 1.4,
+      ease: [0.22, 1, 0.36, 1],
+    }}
+  >
+
+    <motion.div
+      whileHover={{
+        y: -15,
+        scale: 1.02,
+        transition: { duration: 0.25 },
+      }}
+      animate={isInView ? { y: [0, -18, 0] } : {}}
+      transition={{
+        duration: 3.8,
+        repeat: Infinity,
+        repeatType: "mirror",
+        ease: "easeInOut",
+      }}
+    className="relative w-full max-w-[360px]" 
+    >
+      <ProductCard
+        variant={variant}
+        backgroundUrl="/images/_mesh_gradients/metallicdream.png"
+      />
+
+
+      <motion.div
+        className="absolute inset-0 -z-10 bg-black/5 blur-xl rounded-3xl"
+        animate={isInView ? {
+          y: [0, -20, 0],
+          opacity: [0.1, 0.2, 0.1],
+        } : {}}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          repeatType: "reverse",
+        }}
+      />
+    </motion.div>
+  </motion.div>
+))}
             </div>
           </section>
         )

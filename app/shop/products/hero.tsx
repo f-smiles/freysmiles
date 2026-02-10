@@ -422,6 +422,7 @@ const Preloader = () => {
 
   return (
     <>
+    
       <div
         style={{
           position: "fixed",
@@ -432,8 +433,27 @@ const Preloader = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#fff",
-          color: "#0f0f0f",
+background: `
+  radial-gradient(
+    70% 60% at 35% 45%,
+    rgba(247, 200, 235, 0.35) 0%,
+    rgba(247, 200, 235, 0.15) 40%,
+    rgba(247, 200, 235, 0.0) 70%
+  ),
+  radial-gradient(
+    65% 55% at 65% 50%,
+    rgba(255, 215, 240, 0.3) 0%,
+    rgba(255, 215, 240, 0.12) 45%,
+    rgba(255, 215, 240, 0.0) 75%
+  ),
+  linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f2f3f9 50%,
+    #ffffff 100%
+  )
+`,
+          color: "#857B79",
           willChange: "opacity",
           zIndex: 9999,
         }}
@@ -828,7 +848,7 @@ const initTextAnimation = () => {
   ScrollTrigger.create({
     trigger: heroContentRef.current,
     start: "top 25%",
-    end: "bottom 100%",
+    end: "bottom 120%",
     onUpdate: (self) => {
       const progress = self.progress;
       const totalWords = words.length;
@@ -956,10 +976,9 @@ const initTextAnimation = () => {
 
       <div className="scroll-effect__hero-content" ref={heroContentRef}>
         <h2 className="font-neuehaas35 scroll-effect__hero-subtitle">
-          shop your smile. buy{" "}
-          <span className="font-canelathin">something</span> – or don&apos;t.
+          shop your smile. buy something <span className="font-canelathin">or</span> –  don&apos;t.
           <br />
-          just don&apos;t forget to floss
+          just don&apos;t <span className="font-canelathin">forget</span> to floss
         </h2>
 
         <div className="dot-grid-wrapper" ref={dotGridWrapperRef}>
@@ -991,6 +1010,7 @@ const CircleGridMouseFollow = () => {
     );
     camera.position.set(0, 0, 12);
     cameraRef.current = camera;
+    
     const resizeToContainer = () => {
       if (!containerRef.current) return;
 
@@ -1000,6 +1020,7 @@ const CircleGridMouseFollow = () => {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
     };
+    
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -1011,18 +1032,34 @@ const CircleGridMouseFollow = () => {
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    const width = 0.9;
+    const width = 0.85;
     const geometry = new THREE.CircleGeometry(width, 64);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xD9F856,
+    
+    const material = new THREE.MeshPhongMaterial({
+      color: 0xEBFA84,
+      emissive: 0xEBFA84,
+      emissiveIntensity: 0.6,
       transparent: true,
       opacity: 1.0,
+      shininess: 120, 
+      specular: 0x000000,
     });
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    keyLight.position.set(3, 4, 6);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0xEBFA84, 1.2);
+    rimLight.position.set(-4, 0, -6);
+    scene.add(rimLight);
 
     const meshes = [];
     const gridX = 10;
     const gridY = 5;
-  const gap = width * 0.1
+    const gap = width * 0.1;
     const widthWithGap = width + gap;
 
     for (let i = 0; i < gridX; i++) {
@@ -1033,11 +1070,15 @@ const CircleGridMouseFollow = () => {
           (j - (gridY - 1) / 2) * widthWithGap * 2,
           0,
         );
+        
+        mesh.userData.originalRotation = mesh.rotation.clone();
+        
         scene.add(mesh);
         meshes.push(mesh);
       }
     }
     meshesRef.current = meshes;
+    
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     const targetPosition = new THREE.Vector3();
@@ -1073,17 +1114,41 @@ const CircleGridMouseFollow = () => {
 
       if (meshesRef.current.length > 0) {
         meshesRef.current.forEach((mesh) => {
-       mesh.lookAt(lerpedPositionRef.current);
+          const toMouse = new THREE.Vector3()
+            .subVectors(lerpedPositionRef.current, mesh.position);
+          
+          const distance = toMouse.length();
+          toMouse.normalize();
+          
+          const targetRotation = new THREE.Euler();
+          
+          targetRotation.x = -toMouse.y * 0.7;
+          targetRotation.y = toMouse.x * 0.7;
+          
+          mesh.rotation.x += (targetRotation.x - mesh.rotation.x) * 0.1;
+          mesh.rotation.y += (targetRotation.y - mesh.rotation.y) * 0.1;
 
-
-const dir = new THREE.Vector3()
-  .subVectors(lerpedPositionRef.current, mesh.position)
-  .normalize();
-
-const facing = Math.abs(dir.x); 
-const scaleX = THREE.MathUtils.lerp(0.75, 1.0, facing);
-
-mesh.scale.set(scaleX, 1, 1);
+          const influenceRadius = 6.0;
+          const distanceFactor = THREE.MathUtils.clamp(
+            1.0 - distance / influenceRadius,
+            0,
+            1
+          );
+          
+          const circleNormal = new THREE.Vector3(0, 0, 1);
+          circleNormal.applyEuler(mesh.rotation);
+          const facingCamera = Math.abs(circleNormal.dot(new THREE.Vector3(0, 0, 1)));
+          
+          const minOpacity = 0.3;
+          const targetOpacity = minOpacity + (1 - minOpacity) * facingCamera;
+          
+          mesh.material.opacity += (targetOpacity - mesh.material.opacity) * 0.1;
+          
+          const scaleBase = 0.95;
+          const scaleEffect = 0.1 * distanceFactor;
+          const finalScale = scaleBase + scaleEffect;
+          
+          mesh.scale.set(finalScale, finalScale, 1);
         });
       }
 
@@ -1094,6 +1159,7 @@ mesh.scale.set(scaleX, 1, 1);
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("resize", handleResize);
+    
     function handleResize() {
       resizeToContainer();
     }
