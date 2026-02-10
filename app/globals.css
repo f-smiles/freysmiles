@@ -7504,10 +7504,32 @@ top: 55%;
   bottom: 0;
   width: 100%;
   height: 125svh;
+
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
+}
+
+
+.scroll-effect__hero-subtitle {
+  margin-bottom: 48px;
+}
+
+
+.dot-grid-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+}
+
+.dot-grid-canvas {
+  width: 100%;
+  max-width: 1200px;
+  height: 420px;
+  pointer-events: all;
 }
 
 .scroll-effect__hero-subtitle {

@@ -9,7 +9,7 @@ import { useSearchParams } from "next/navigation"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { MotionPathPlugin } from "gsap/MotionPathPlugin"
-
+import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion'
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin)
 
 
@@ -211,7 +211,21 @@ export default function Variants({ variants }: ProductVariantsProps) {
   const row1ItemRefs = useRef<HTMLDivElement[]>([])
   const row2ItemRefs = useRef<HTMLDivElement[]>([])
   const row3ItemRefs = useRef<HTMLDivElement[]>([])
-  
+  const row4ItemRefs = useRef<HTMLDivElement[]>([])
+
+  // Scroll animation setup
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  })
+
+  // Smooth scroll progress
+  const smoothScroll = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  })
+
   const row1 = variants.filter(v => v.productID === 1)
   const row2 = variants.filter(v => v.productID === 2)
   const row3 = variants.filter(v => v.productID === 3 || v.productID === 4)
@@ -224,157 +238,107 @@ export default function Variants({ variants }: ProductVariantsProps) {
     { id: 'cases', variants: row1 },
   ]
 
-useLayoutEffect(() => {
-  if (!containerRef.current) return
-
-  const ctx = gsap.context(() => {
-    const row1El = rowRefs.current[0]
-    const row2El = rowRefs.current[1]
-    const row3El = rowRefs.current[2]
-
-    if (!row1El || !row2El || !row3El) return
-
-    const row1Items = row1ItemRefs.current
-    const row2Items = row2ItemRefs.current
-    const row3Items = row3ItemRefs.current
-
-    const row1Height = row1El.offsetHeight
-    const row2Height = row2El.offsetHeight
-    const row3Height = row3El.offsetHeight
-
-    gsap.set(row1Items, { y: 120, opacity: 0 })
-    gsap.set(row2Items, { 
-      y: row1Height,
-      opacity: 0 
-    })
-    
-    gsap.set(row3El, {
-      y: row2Height
-    })
-
-    gsap.set(row3Items, {
-      y: 120,
-      opacity: 0
-    })
-
-    const row1Tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: row1El,
-        start: "top top",
-        end: `+=${row1Height * 1.5}`,
-        scrub: true,
-        pin: true,
-        pinSpacing: false,
-        anticipatePin: 1,
-      }
-    })
-
-    row1Tl.to(row1Items, {
-      y: 0,
-      opacity: 1,
-      stagger: 0.15,
-      ease: "power2.out",
-    })
-
-    row1Tl.to(row2Items, {
-      y: 0,
-      opacity: 1,
-      stagger: 0.15,
-      ease: "power2.out",
-    }, "-=0.3")
-
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: row2El,
-        start: `top-=${row1Height * 0.5} top`,
-        end: `+=${row2Height}`,
-        scrub: false,
-        pin: true,
-        pinSpacing: false,
-      }
-    })
-
-    const phase2Tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: row2El,
-        start: `bottom top`,
-        end: `+=${row3Height}`,
-        scrub: true,
-        anticipatePin: 1,
-      }
-    })
-
-    phase2Tl.to([row1Items, row2Items], {
-      y: -(row1Height + row2Height),
+  // Card animation variants
+  const cardVariants = {
+    hidden: {
+      y: 20,
       opacity: 0,
-      ease: "power2.inOut",
-      duration: 1,
-    }, "start")
-
-    phase2Tl.to(row3El, {
-      y: 0,
-      ease: "power2.out",
-      duration: 0.8,
-    }, "start+=0.3")
-
-    phase2Tl.to(row3Items, {
+      scale: 0.95
+    },
+    visible: (custom: number) => ({
       y: 0,
       opacity: 1,
-      stagger: {
-        each: 0.2,
-        from: "start"
-      },
-      ease: "power2.out",
-      duration: 0.8,
-    }, "start+=0.5")
-
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: row3El,
-        start: `top top`,
-        end: `+=${row3Height * 0.5}`,
-        scrub: false,
-        pin: true,
-        pinSpacing: false,
+      scale: 1,
+      transition: {
+        delay: custom * 0.1, // Staggered animation
+        duration: 0.6,
+        ease: [0.22, 1, 0.36, 1], // Smooth easing
+        y: {
+          type: "spring",
+          stiffness: 100,
+          damping: 15
+        }
       }
-    })
-
-  }, containerRef)
-
-  return () => ctx.revert()
-}, [])
+    }),
+    float: {
+      y: [0, -10, 0], // Float up and down
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        repeatType: "reverse",
+        ease: "easeInOut"
+      }
+    }
+  }
 
   return (
     <div ref={containerRef} className="relative bg-white">
-      {rows.map((row, rowIndex) => (
-        <section
-          key={row.id}
-          ref={el => {
-            if (el) rowRefs.current[rowIndex] = el
-          }}
-          className="h-screen"
-        >
-<div className="grid grid-cols-4 h-full divide-x divide-[#EBECF0] border-r border-[#EBECF0]">
-            {row.variants.slice(0, 4).map((variant, itemIndex) => (
-              <div
-                key={variant.id}
-                ref={el => {
-                  if (!el) return
-                  if (rowIndex === 0) row1ItemRefs.current[itemIndex] = el
-                  if (rowIndex === 1) row2ItemRefs.current[itemIndex] = el
-                  if (rowIndex === 2) row3ItemRefs.current[itemIndex] = el
-                }}
-                className="px-4 flex items-start justify-center"
-              >
-                <ProductCard
-                  variant={variant}
-                  backgroundUrl="/images/_mesh_gradients/metallicdream.png"
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-      ))}
+      {rows.map((row, rowIndex) => {
+        const rowRef = useRef<HTMLDivElement>(null)
+        const isInView = useInView(rowRef, {
+          once: false, // Animation triggers every time it comes into view
+          amount: 0.2 // 20% of the element visible triggers animation
+        })
+        
+        return (
+          <section
+            key={row.id}
+            ref={el => {
+              if (el) {
+                rowRefs.current[rowIndex] = el
+
+                rowRef.current = el
+              }
+            }}
+            className="relative"
+          >
+            <div className="grid grid-cols-4 h-full border-r border-black/10">
+              {row.variants.slice(0, 4).map((variant, itemIndex) => (
+                <motion.div
+                  key={variant.id}
+                  ref={el => {
+                    if (!el) return
+                    if (rowIndex === 0) row1ItemRefs.current[itemIndex] = el
+                    if (rowIndex === 1) row2ItemRefs.current[itemIndex] = el
+                    if (rowIndex === 2) row3ItemRefs.current[itemIndex] = el
+                    if (rowIndex === 3) row4ItemRefs.current[itemIndex] = el
+                  }}
+                  className="px-4 flex items-start justify-center relative"
+                  // Initial animation when entering viewport
+                  initial="hidden"
+                  animate={isInView ? ["visible", "float"] : "hidden"}
+                  variants={cardVariants}
+                  custom={itemIndex} // For staggered delay
+                  whileHover={{
+                    y: -15,
+                    scale: 1.02,
+                    transition: { duration: 0.2 }
+                  }}
+                >
+                  <ProductCard
+                    variant={variant}
+                    backgroundUrl="/images/_mesh_gradients/metallicdream.png"
+                  />
+                  
+                  {/* Optional floating shadow effect */}
+                  <motion.div 
+                    className="absolute inset-0 -z-10 bg-black/5 blur-xl rounded-3xl"
+                    animate={isInView ? {
+                      y: [0, -20, 0],
+                      opacity: [0.1, 0.2, 0.1]
+                    } : {}}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      repeatType: "reverse"
+                    }}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        )
+      })}
     </div>
   )
 }
