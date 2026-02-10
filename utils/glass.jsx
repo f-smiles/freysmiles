@@ -10,7 +10,6 @@ void main() {
 `
 
 const fragmentShader = `
-// (KEEP YOUR EXACT fragmentShader HERE)
 uniform sampler2D uTexture;
 uniform vec2 uResolution;
 uniform vec2 uTextureSize;
@@ -76,28 +75,22 @@ void main() {
 
   parallaxOffset *= edgeFactor;
   
-  // Apply parallax to UV before cover calculation
+
   uv += parallaxOffset;
   
   vec2 coverUV = getCoverUV(uv, uTextureSize);
-  
-  // CLAMP the UV coordinates (this is important!)
+
   coverUV = clamp(coverUV, 0.0, 1.0);
 
   vec4 color = texture2D(uTexture, coverUV);
 
-/* --- LIGHT PASTEL GRADE --- */
-
-// strong exposure lift
 color.rgb *= 1.35;
 
 // compress contrast toward highlights (prevents muddy mids)
 color.rgb = mix(color.rgb, vec3(1.0), 0.12);
 
-// gentle gamma lift (key for darkness issue)
 color.rgb = pow(color.rgb, vec3(0.85));
 
-// slight pastel milkiness
 color.rgb = mix(color.rgb, vec3(0.97, 0.98, 1.0), 0.08);
 
 gl_FragColor = color;

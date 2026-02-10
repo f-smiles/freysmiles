@@ -1097,57 +1097,6 @@ ScrollTrigger.create({
   );
 };
 
-function PortalJourneyModel(props) {
-  const { scene, nodes } = useGLTF("/models/dancerpose.glb");
-  const groupRef = useRef();
-
-const material = useMemo(
-  () =>
-    new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color(0.92, 0.93, 0.95),
-
-      metalness: 1.0,
-      roughness: 0.18,
-
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.06,
-
-      specularIntensity: 1.0,
-      specularColor: new THREE.Color(1, 1, 1),
-
-
-      envMapIntensity: 1.4,
-      flatShading: false,
-    }),
-  []
-);
-
-// useFrame((state, delta) => {
-  //   if (!groupRef.current) return;
-  //   groupRef.current.rotation.y += delta * 0.35;
-
-  // });
-useEffect(() =>{
-console.log("GLB nodes:", nodes);
-}
-)
-  useMemo(() => {
-scene.traverse((child) => {
-  if (child.isMesh) {
-    child.geometry.computeVertexNormals();
-  }
-});
-  }, [scene, material]);
-
-  return (
-    <group ref={groupRef} {...props}>
-      <Center>
-        <primitive object={scene} />
-      </Center>
-    </group>
-  );
-}
-
 const Invisalign = () => {
   const headingRef = useRef(null);
 
@@ -1404,7 +1353,7 @@ useEffect(() => {
 const panes = [
   {
     position: [-5.2,  0.3,  1.6],
-    rotation: [0, 0, -0.12],   // only Z rotation → feels hand-placed, not tilted back
+    rotation: [0, 0, -0.12], 
     scale: .75,
     title: "With over 40 years of combined experience, our doctors were the first in the region to offer Invisalign—setting the benchmark well before it became the industry standard.",
     tag: "Expertise"
@@ -1498,7 +1447,7 @@ useEffect(() => {
   return (
     <>
 
-
+{/* 
 <section className="mind-mapped">
 
   <div className="mind-mapped__layout">
@@ -1575,22 +1524,22 @@ useEffect(() => {
   </div>
 
   <div className="orb orb--right" />
-</section>
+</section> */}
 
-    {/* <Scene />
-    <NeonShaderBackground /> */}
+    <Scene />
+    <NeonShaderBackground />
 
 
 
-      {/* <div className="absolute inset-0 -z-10">
-        <Canvas
+      <div className="absolute inset-0 -z-10">
+        {/* <Canvas
           orthographic
           camera={{ zoom: 1, position: [0, 0, 1] }}
           className="w-full h-full"
         >
           <ShaderBackground />
-        </Canvas>
-      </div> */}
+        </Canvas> */}
+      </div>
       {/* <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black "> */}
 
 <section className="relative min-h-screen flex flex-col">
@@ -1600,42 +1549,7 @@ useEffect(() => {
        <div className="relative">
 
   <div className="fixed top-0 left-0 w-full h-screen pointer-events-none flex items-center justify-center">
-<div className="h-screen model-wrapper opacity-0 fixed inset-0 flex items-center justify-center">
-<Canvas
-  camera={{ position: [0, 0, 3], fov: 45 }}
-  onCreated={({ camera }) => (window.myCamera = camera)}
->
 
-<Environment
-preset="studio"
-  // files="/images/studio_small_08_4k.hdr"
-  background={false}
- 
-/>
-<ambientLight intensity={0.5} />
-<directionalLight
-  position={[3, 2, 4]}
-  intensity={1}
-  color="#ffffff"
-/>
-<directionalLight
-  position={[-3, 1, -2]}
-  intensity={1}
-  color="#d9d4ff"  
-/>
-<OrbitControls
-  enablePan={false}
-  enableZoom={false}
-  enableDamping
-  dampingFactor={0.08}
-/>
-<PortalJourneyModel
-  scale={0.1}
-  position={[0, 0, 0]}
-  rotation={[Math.PI / 2, 0, 0]} 
-/>
-</Canvas>
-</div>
 {/* 
     <div id="text-holder" className="text-container max-w-[500px] px-6">
 
@@ -2513,10 +2427,10 @@ for (let r = 0; r < 8; r++) {
     ringRand[i3 + 2] = Math.random() * 2 - 1;
 
 
-    const PINK =  [  "#7fb8ff", // true baby blue (anchor)
-  "#8fc4ff", // airy but chromatic
-  "#9fcfff", // soft sky
-  "#6faeff", // deeper glass blue
+    const PINK =  [  "#7fb8ff", 
+  "#8fc4ff", 
+  "#9fcfff", 
+  "#6faeff",
   "#84bfff", ];
 
     const t = i / ringCount;
@@ -2604,7 +2518,7 @@ const sunRef = useRef();
       </group>
       
       {/* <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} /> */}
-      <OrbitControls enableDamping dampingFactor={0.04} rotateSpeed={0.6} minDistance={10} maxDistance={50} />
+      {/* <OrbitControls enableDamping dampingFactor={0.04} rotateSpeed={0.6} minDistance={10} maxDistance={50} /> */}
 
       <EffectComposer>
 <Bloom

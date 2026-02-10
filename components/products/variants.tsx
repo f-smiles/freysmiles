@@ -120,7 +120,7 @@ const holoOverlayStyle: React.CSSProperties = {
   return (
 <div
   ref={cardRef}
-className="card-anim relative rounded-[16px] h-[460px] will-change-transform group bg-transparent"
+className="card-anim relative rounded-[16px] h-[440px] will-change-transform group bg-transparent"
   style={{
     transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
     transformStyle: "preserve-3d",
@@ -168,17 +168,16 @@ style={{
 
 
 
-
-  <figure className="flex-1 flex items-center justify-center">
-    <Image
-      className="object-contain w-[60%] max-h-[210px]"
-      src={variant.variantImages[0].url}
-      alt={`${variant.product.title} - ${variant.variantName}`}
-      width={400}
-      height={600}
-      priority
-    />
-  </figure>
+<figure className="flex items-center justify-center h-[300px] w-full px-6">
+  <Image
+    src={variant.variantImages[0].url}
+    alt={`${variant.product.title} - ${variant.variantName}`}
+    width={500}
+    height={500}
+    className="max-h-full max-w-full object-contain"
+    priority
+  />
+</figure>
 
 <div className="mt-auto px-2 py-3 flex items-center justify-between gap-4">
   <h3 className="text-[12px] font-neuehaas45 tracking-wide text-black">
@@ -189,9 +188,7 @@ style={{
     ${Number(variant.product.price).toFixed(2)}
   </button>
 </div>
-
-  {/* bottom row */}
- 
+{/*  
 
   <div className="text-zinc-600 tracking-wide font-neuehaas45 mt-auto pt-6 py-3 px-2 flex items-end justify-between gap-4">
     <span className="text-[12px] leading-tight">
@@ -203,383 +200,175 @@ style={{
     </div>
   </div>
 
-  </div>
+  </div> */}
 </Link>
 </div>
   );
 }
-
 export default function Variants({ variants }: ProductVariantsProps) {
-  const searchParams = useSearchParams()
-  const row1 = variants.filter((v) => v.productID === 1);
-  const row2 = variants.filter((v) => v.productID === 2);
-  const row3 = variants.filter((v) => v.productID === 3 || v.productID === 4);
-  const row4 = variants.filter((v) => v.productID === 5 || v.productID === 6 || v.productID === 7);
+  const containerRef = useRef<HTMLDivElement>(null)
+  const rowRefs = useRef<HTMLDivElement[]>([])
+  const row1ItemRefs = useRef<HTMLDivElement[]>([])
+  const row2ItemRefs = useRef<HTMLDivElement[]>([])
+  const row3ItemRefs = useRef<HTMLDivElement[]>([])
   
-  const groupedVariants = [
-    {
-      id: "devices",
-      prefix: "Optimizing Treatment",
-      label: "Devices",
-      variants: row4,
-    },
-    {
-      id: "floss",
-      prefix: "Our #1 Floss Pick",
-      label: "Floss",
-      variants: row2,
-    },
-    {
-      id: "whitening",
-      prefix: "For a Brighter Smile",
-      label: "Whitening Gel",
-      variants: row3,
-    },
-    {
-      id: "cases",
-      prefix: "Backups",
-      label: "Cases",
-      variants: row1,
-    },
-  ];
-  
-  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const [currentIndices, setCurrentIndices] = useState<Record<string, number>>(() => 
-    groupedVariants.reduce((acc, group) => ({ ...acc, [group.id]: 0 }), {})
-  );
-  const [steps, setSteps] = useState<Record<string, number>>({});
-  
-  const asideRef = useRef<HTMLDivElement>(null)
-  const sectionContainerRef = useRef<HTMLDivElement>(null)
-  const filterContainerRef = useRef<HTMLDivElement>(null)
-  
+  const row1 = variants.filter(v => v.productID === 1)
+  const row2 = variants.filter(v => v.productID === 2)
+  const row3 = variants.filter(v => v.productID === 3 || v.productID === 4)
+  const row4 = variants.filter(v => v.productID === 5 || v.productID === 6 || v.productID === 7)
 
-  useEffect(() => {
-    const filter = searchParams?.get('filter');
-    if (filter) {
-      const sectionIndex = groupedVariants.findIndex(group => group.id === filter.toLowerCase());
-      if (sectionIndex !== -1 && sectionRefs.current[sectionIndex]) {
-        setTimeout(() => {
-          sectionRefs.current[sectionIndex]?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }, 100); 
-      }
-    }
-  }, [searchParams]);
-
-  useLayoutEffect(() => {
-    if (!asideRef.current || !sectionContainerRef.current || !filterContainerRef.current) return
-
-    const ctx = gsap.context(() => {
-      const initialOffset = filterContainerRef.current?.offsetTop || 0
-    
-      ScrollTrigger.create({
-        trigger: asideRef.current,
-        start: `top ${32 + initialOffset}px`, 
-        end: () => `+=${sectionContainerRef.current?.offsetHeight}`,
-        onEnter: () => {
-          gsap.to(filterContainerRef.current, {
-            y: 0,
-            duration: 0.3,
-            ease: "power2.out"
-          })
-        },
-        onLeaveBack: () => {
-          gsap.to(filterContainerRef.current, {
-            y: initialOffset,
-            duration: 0.3,
-            ease: "power2.out"
-          })
-        },
-        pin: asideRef.current,
-        pinSpacing: false,
-      })
-
-      gsap.set(filterContainerRef.current, { y: initialOffset })
-    })
-
-    return () => ctx.revert()
-  }, [])
-
-  useEffect(() => {
-    const images = document.querySelectorAll("img")
-
-    let loaded = 0
-    images.forEach((img) => {
-      if (img.complete) {
-        loaded++
-      } else {
-        img.addEventListener("load", handleLoad)
-      }
-    })
-
-    function handleLoad() {
-      loaded++
-      if (loaded === images.length) {
-        ScrollTrigger.refresh()
-      }
-    }
-
-    if (loaded === images.length) {
-      ScrollTrigger.refresh()
-    }
-
-    return () => {
-      images.forEach((img) => img.removeEventListener("load", handleLoad))
-    }
-  }, [])
-
-  useEffect(() => {
-    const handleResize = () => {
-      const newSteps: Record<string, number> = {};
-      Object.keys(itemRefs.current).forEach((id) => {
-        const item = itemRefs.current[id];
-        if (!item || !item.parentNode) return;
-        const parent = item.parentNode as HTMLElement;
-        const gap = parseFloat(getComputedStyle(parent).gap) || 24;
-        const itemW = item.offsetWidth;
-        newSteps[id] = itemW + gap;
-      });
-      setSteps(newSteps);
-    };
-
-
-    setTimeout(handleResize, 0); 
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [groupedVariants]);
-
-  const handleFilterClick = (filterId: string) => {
-    const sectionIndex = groupedVariants.findIndex(group => group.id === filterId);
-    if (sectionIndex !== -1 && sectionRefs.current[sectionIndex]) {
-      sectionRefs.current[sectionIndex]?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-      
-      window.history.replaceState({}, '', `?filter=${filterId}`);
-    }
-  };
-
-  const handlePrev = (groupId: string, maxIndex: number) => {
-    setCurrentIndices((prev) => ({
-      ...prev,
-      [groupId]: Math.max(0, prev[groupId] - 1),
-    }));
-  };
-
-  const handleNext = (groupId: string, maxIndex: number) => {
-    setCurrentIndices((prev) => ({
-      ...prev,
-      [groupId]: Math.min(maxIndex, prev[groupId] + 1),
-    }));
-  };
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-  }, []);
+  const rows = [
+    { id: 'devices', variants: row4 },
+    { id: 'floss', variants: row2 },
+    { id: 'whitening', variants: row3 },
+    { id: 'cases', variants: row1 },
+  ]
 
 useLayoutEffect(() => {
-  if (!sectionContainerRef.current) return;
+  if (!containerRef.current) return
 
   const ctx = gsap.context(() => {
-    const rows = gsap.utils.toArray<HTMLElement>(
-      sectionContainerRef.current.querySelectorAll(".products-row")
-    );
+    const row1El = rowRefs.current[0]
+    const row2El = rowRefs.current[1]
+    const row3El = rowRefs.current[2]
 
-    rows.forEach((row) => {
-      const cards = gsap.utils.toArray<HTMLElement>(
-        row.querySelectorAll(".card-anim")
-      );
+    if (!row1El || !row2El || !row3El) return
 
- 
-      gsap.set(cards, {
-        opacity: 0,
-        y: 200,
-        force3D: true,
-        willChange: "transform, opacity",
-      });
+    const row1Items = row1ItemRefs.current
+    const row2Items = row2ItemRefs.current
+    const row3Items = row3ItemRefs.current
 
-      ScrollTrigger.create({
-        trigger: row,
-        start: "top 90%",
-        once: true,
-        onEnter: () => {
-          gsap.set(row, { overflow: "visible" });
+    const row1Height = row1El.offsetHeight
+    const row2Height = row2El.offsetHeight
+    const row3Height = row3El.offsetHeight
 
-          gsap.to(cards, {
-            y: 0,
-            opacity: 1,
-            duration: 1.1,
-            ease: "power3.out",
-            stagger: {
-              each: 0.12,
-              from: "start",
-            },
-            onComplete: () => {
-              gsap.set(row, { overflow: "hidden" });
-            },
-          });
-        },
-      });
-    });
-  }, sectionContainerRef);
+    gsap.set(row1Items, { y: 120, opacity: 0 })
+    gsap.set(row2Items, { 
+      y: row1Height,
+      opacity: 0 
+    })
+    
+    gsap.set(row3El, {
+      y: row2Height
+    })
 
-  return () => ctx.revert();
-}, []);
+    gsap.set(row3Items, {
+      y: 120,
+      opacity: 0
+    })
 
+    const row1Tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: row1El,
+        start: "top top",
+        end: `+=${row1Height * 1.5}`,
+        scrub: true,
+        pin: true,
+        pinSpacing: false,
+        anticipatePin: 1,
+      }
+    })
+
+    row1Tl.to(row1Items, {
+      y: 0,
+      opacity: 1,
+      stagger: 0.15,
+      ease: "power2.out",
+    })
+
+    row1Tl.to(row2Items, {
+      y: 0,
+      opacity: 1,
+      stagger: 0.15,
+      ease: "power2.out",
+    }, "-=0.3")
+
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: row2El,
+        start: `top-=${row1Height * 0.5} top`,
+        end: `+=${row2Height}`,
+        scrub: false,
+        pin: true,
+        pinSpacing: false,
+      }
+    })
+
+    const phase2Tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: row2El,
+        start: `bottom top`,
+        end: `+=${row3Height}`,
+        scrub: true,
+        anticipatePin: 1,
+      }
+    })
+
+    phase2Tl.to([row1Items, row2Items], {
+      y: -(row1Height + row2Height),
+      opacity: 0,
+      ease: "power2.inOut",
+      duration: 1,
+    }, "start")
+
+    phase2Tl.to(row3Items, {
+      y: 0,
+      opacity: 1,
+      stagger: {
+        each: 0.2,
+        from: "start"
+      },
+      ease: "power2.out",
+      duration: 0.8,
+    }, "start+=0.3")
+
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: row3El,
+        start: `top top`,
+        end: `+=${row3Height * 0.5}`,
+        scrub: false,
+        pin: true,
+        pinSpacing: false,
+      }
+    })
+
+  }, containerRef)
+
+  return () => ctx.revert()
+}, [])
   return (
-    <>
-      <div className="grid grid-cols-12 gap-8 relative">
-        
-        <aside ref={asideRef} className="col-span-3 -ml-2">
-          <div 
-            ref={filterContainerRef}
-            className="pt-12 space-y-8 will-change-transform pl-2" 
-          >
-            <div className="space-y-4 space-x-6">
-              <h3 className="text-[11px] font-neuehaas45 text-gray-400 pl-6">Filters</h3>
-        
-              <div className="space-y-2">
-                <h4 className="text-[11px] font-neuehaas45  text-gray-400">Range</h4>
-                {groupedVariants.map((group) => (
-                  <button 
-                    key={group.id}
-                    onClick={() => handleFilterClick(group.id)}
-                    className="block text-left text-[11px] font-neuehaas45 text-gray-400 hover:underline"
-                  >
-                    {group.label}
-                  </button>
-                ))}
-                <button 
-                  onClick={() => handleFilterClick('gift-card')}
-                  className="block text-left text-[11px] font-neuehaas45 text-gray-400 hover:underline"
-                >
-                  Gift Card
-                </button>
-              </div>
-        
-              <div className="border-t w-[70%] pt-4 space-y-2">
-                <h4 className="text-[11px] font-neuehaas45 text-gray-400">Price</h4>
-                <div className="block text-left text-[11px] text-gray-400 font-neuehaas45 hover:underline">Low to high</div>
-                <div className="block text-left text-[11px] text-gray-400 font-neuehaas45 hover:underline">High to low</div>
-              </div>
-            </div>
-          </div>
-        </aside>
-      
-      <section ref={sectionContainerRef} className="col-span-9 space-y-8">
-{groupedVariants.map((group, index) => {
-  const maxIndex = Math.max(0, group.variants.length - 3);
-  const translateX = group.variants.length <= 3 
-    ? 0 
-    : -currentIndices[group.id] * (steps[group.id] || 0);
-  const showArrows = group.variants.length > 3;
-  const currentIndex = currentIndices[group.id];
-
-  let backgroundUrl = "/images/_mesh_gradients/metallicdream.png";
-
-  switch (group.id) {
-    case "devices":
-      backgroundUrl = "/images/_mesh_gradients/wavyrainbow.png";
-      break;
-    case "floss":
-      backgroundUrl = "/images/_mesh_gradients/wavyrainbow.png";
-      break;
-    case "whitening":
-      backgroundUrl = "/images/_mesh_gradients/metallicblue.png";
-      break;
-    case "cases":
-      backgroundUrl = "/images/_mesh_gradients/metallicblue.png";
-      break;
-  }
-
-  return (
-    <div
-      key={group.id}
-      ref={(el) => (sectionRefs.current[index] = el)}
-      id={group.id}
-      className="space-y-4"
-    >
-      <div className="flex items-start gap-2">
-        <div className="text-[16px] text-zinc-600 font-canelathin">
-          {group.prefix}
-          <br />
-        </div>
-        {showArrows && (
-     <div className="flex items-center gap-2">
-<button
-  onClick={() => handlePrev(group.id, maxIndex)}
-  disabled={currentIndex === 0}
-  className={`p-1 transition-opacity duration-200 ${
-    currentIndex === 0
-      ? "opacity-30 cursor-default"
-      : "opacity-80 hover:opacity-100"
-  }`}
->
-  <img
-    src="/images/arrow-left.svg"
-    alt="Previous"
-    className="w-3 h-3"
-  />
-</button>
-
-<button
-  onClick={() => handleNext(group.id, maxIndex)}
-  disabled={currentIndex >= maxIndex}
-  className={`p-1 transition-opacity duration-200 ${
-    currentIndex >= maxIndex
-      ? "opacity-30 cursor-default"
-      : "opacity-80 hover:opacity-100"
-  }`}
->
-  <img
-    src="/images/arrow-right.svg"
-    alt="Next"
-    className="w-3 h-3"
-  />
-</button>
-</div>
-        )}
-      </div>
-
-      <div className="relative products-row overflow-hidden px-4 sm:px-6 -ml-[18px] sm:-ml-[34px]">
-        <div 
-          className="flex gap-6 transition-transform duration-300 ease-in-out"
-          style={{ 
-            transform: `translateX(${translateX}px)`,
-            width: 'calc(100%)'
+    <div ref={containerRef} className="relative bg-white">
+      {rows.map((row, rowIndex) => (
+        <section
+          key={row.id}
+          ref={el => {
+            if (el) rowRefs.current[rowIndex] = el
           }}
+          className="h-screen"
         >
-          {group.variants.map((variant, idx) => (
-            <div
-              key={variant.id}
-              ref={
-                showArrows && idx === 0 
-                  ? (el) => { itemRefs.current[group.id] = el; } 
-                  : null
-              }
-              className="flex-shrink-0 min-w-0 w-full sm:w-1/2 lg:w-1/3 max-w-[calc(33.333%-1rem)]"
-            >
-              <ProductCard
-                variant={variant}
-                backgroundUrl={backgroundUrl}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+  
+          <div className="grid grid-cols-4 h-full divide-x divide-[#EBECF0]">
+            {row.variants.slice(0, 4).map((variant, itemIndex) => (
+              <div
+                key={variant.id}
+                ref={el => {
+                  if (!el) return
+                  if (rowIndex === 0) row1ItemRefs.current[itemIndex] = el
+                  if (rowIndex === 1) row2ItemRefs.current[itemIndex] = el
+                  if (rowIndex === 2) row3ItemRefs.current[itemIndex] = el
+                }}
+                className="px-4 py-1 flex items-start justify-center"
+              >
+                <ProductCard
+                  variant={variant}
+                  backgroundUrl="/images/_mesh_gradients/metallicdream.png"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
-  );
-})}
-      </section>
-      </div>
-    </>
-  );
+  )
 }

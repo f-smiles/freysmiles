@@ -633,7 +633,7 @@ const [resumeName, setResumeName] = useState("");
 
   return (
     <>
-    <div style={{height: '100vh', width: '100vw'}}>
+    {/* <div style={{height: '100vh', width: '100vw'}}>
 <Canvas camera={{ position: [0, 1.5, 4], fov: 45 }}>
   <ambientLight intensity={0.5} />
 
@@ -647,9 +647,9 @@ const [resumeName, setResumeName] = useState("");
     <PortalJourneyModel position={[0, -0.6, 0]} scale={0.5} />
   </Suspense>
 </Canvas>
-    </div>
+    </div> */}
 
-{/* <App /> */}
+<App />
 
  {/* <div className="absolute inset-0 -z-10">
     <Canvas

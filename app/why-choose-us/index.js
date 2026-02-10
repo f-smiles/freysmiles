@@ -5,7 +5,8 @@ import Copy from "@/utils/Copy.jsx";
 import * as PIXI from "pixi.js";
 import { Application, Filter, Graphics, Rectangle } from "pixi.js";
 import FlutedGlassEffect from "/utils/glass";
-import { TextureLoader, Vector2, MathUtils } from 'three'
+import { TextureLoader, Vector2, MathUtils } from 'three';
+import { Flip } from "gsap/Flip";
 import {
   Canvas,
   useFrame,
@@ -51,6 +52,7 @@ import React, {
   Suspense,
   forwardRef,
   useReducer,
+  useImperativeHandle
 } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -80,7 +82,8 @@ if (typeof window !== "undefined") {
     ScrollTrigger,
     SplitText,
     DrawSVGPlugin,
-    useGSAP
+    useGSAP,
+    Flip
   );
 }
 
@@ -124,6 +127,7 @@ uniform vec2 uMouse;
 uniform float uRadius;
 uniform float uStrength;
 uniform vec2 uPlaneSize;
+uniform float uOpacity;
 
 varying vec2 vUv;
 
@@ -175,28 +179,38 @@ void main() {
 
   vec4 color = texture2D(uTexture, finalUV);
   gl_FragColor = color;
+  gl_FragColor.a *= uOpacity;
 }
 `;
-function SwirlTextPlane({ text }) {
+const SwirlTextPlane = forwardRef(function SwirlTextPlane({ text }, ref) {
   const meshRef = useRef();
 
   const texture = useMemo(() => createTextTexture(text), [text]);
-
   const planeSize = useMemo(() => new THREE.Vector2(20, 12), []);
 
-  const uniforms = useMemo(() => ({
-    uTexture: { value: texture },
-    uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-    uRadius: { value: 0.0 },
-    uStrength: { value: 0.0 },
-    uPlaneSize: { value: planeSize },
-  }), [texture, planeSize]);
+  const uniforms = useMemo(
+    () => ({
+      uOpacity: { value: 1 },
+      uTexture: { value: texture },
+      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+      uRadius: { value: 0.0 },
+      uStrength: { value: 0.0 },
+      uPlaneSize: { value: planeSize },
+    }),
+    [texture, planeSize]
+  );
+
+  // expose to parent
+  useImperativeHandle(ref, () => ({
+    uniforms,
+    mesh: meshRef.current,
+  }));
 
   const onPointerMove = (e) => {
-    const uv = e.uv;
-    uniforms.uMouse.value.copy(uv);
+    if (!e.uv) return; // safety
+    uniforms.uMouse.value.copy(e.uv);
 
-    gsap.to(uniforms.uRadius, { value: 2.5, duration: 0.4 });   // world units now
+    gsap.to(uniforms.uRadius, { value: 2.5, duration: 0.4 });
     gsap.to(uniforms.uStrength, { value: 3.0, duration: 0.4 });
   };
 
@@ -206,11 +220,7 @@ function SwirlTextPlane({ text }) {
   };
 
   return (
-    <mesh
-      ref={meshRef}
-      onPointerMove={onPointerMove}
-      onPointerOut={onPointerOut}
-    >
+    <mesh ref={meshRef} onPointerMove={onPointerMove} onPointerOut={onPointerOut}>
       <planeGeometry args={[20, 10]} />
       <shaderMaterial
         uniforms={uniforms}
@@ -220,7 +230,7 @@ function SwirlTextPlane({ text }) {
       />
     </mesh>
   );
-}
+});
 const FluidSimulation = () => {
   const canvasRef = useRef(null);
 
@@ -1952,17 +1962,431 @@ export default function WhyChooseUs() {
     window.addEventListener("resize", checkSize);
     return () => window.removeEventListener("resize", checkSize);
   }, []);
+  const containerRef = useRef();
+  const lineRefs = useRef([]);
+  const textRefs = useRef([]);
+  const sectionLineRefs = useRef([]);
+
+  const addToLineRefs = (el) => el && lineRefs.current.push(el);
+  const addToTextRefs = (el) => el && textRefs.current.push(el);
+  const addToSectionLineRefs = (el) => el && sectionLineRefs.current.push(el); 
+
+useEffect(() => {
+  const [topLine, bottomLine] = sectionLineRefs.current;
+
+  gsap.set([topLine, bottomLine, ...lineRefs.current], {
+    scaleX: 0,
+    transformOrigin: "center center",
+  });
+
+  gsap.set(textRefs.current, {
+    opacity: 0,
+    y: 40,
+  });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: containerRef.current,
+      start: "top 75%",
+      toggleActions: "play none none none",
+    },
+  });
+
+  tl.to(topLine, {
+    scaleX: 1,
+    duration: 1.9,      
+    ease: "power3.inOut",
+  });
+
+  tl.to(
+    lineRefs.current,
+    {
+      scaleX: 1,
+      duration: 1.9,            
+      ease: "power3.inOut",
+      stagger: {
+        amount: 0.65,           
+      },
+    },
+    "-=1.45"            
+  );
+
+
+  tl.to(
+    bottomLine,
+    {
+      scaleX: 1,
+      duration: 1.9,
+      ease: "power3.inOut",
+    },
+    "-=1.45"
+  );
+
+  tl.addPause("+=0.08");       
+
+  tl.to(
+    textRefs.current,
+    {
+      opacity: 1,
+      y: 0,
+      duration: .5,  
+      ease: "power3.out",
+      stagger: 0.06,            
+    },
+    "-=1.4"
+  );
+
+  return () => {
+    ScrollTrigger.getAll().forEach((t) => t.kill());
+  };
+}, []);
+
+
+
+const swirlRef = useRef(null);
+
+useLayoutEffect(() => {
+  let ctx;
+  let rafId;
+  let attempts = 0;
+
+  const init = () => {
+    if (!swirlRef.current?.uniforms) {
+      attempts += 1;
+
+      // hard stop after ~1 second
+      if (attempts > 60) return;
+
+      rafId = requestAnimationFrame(init);
+      return;
+    }
+
+ctx = gsap.context(() => {
+  const blocks = gsap.utils.toArray(".section-a-block");
+  const { uniforms } = swirlRef.current;
+
+  // 🔒 HARD RESET (important)
+  gsap.set(blocks, { scale: 1, opacity: 1 });
+  gsap.set(uniforms.uOpacity, { value: 1 });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#section-a",
+      start: "top top",
+      end: "+=140%",
+      scrub: true,
+      pin: true,
+      anticipatePin: 1,
+    },
+  });
+
+  // 1️⃣ HOLD — absorbs early scrub movement
+  tl.to({}, { duration: 0.35 });
+
+  // 2️⃣ FADE TEXT (now safely after lock)
+  tl.fromTo(
+    uniforms.uOpacity,
+    { value: 1 },
+    {
+      value: 0,
+      duration: 0.3,
+      ease: "power2.out",
+      immediateRender: false, // 👈 CRITICAL
+    }
+  );
+
+  // 3️⃣ PUNCH BLOCKS
+  tl.to(blocks, {
+    scale: 0,
+    opacity: 0,
+    stagger: 0.02,
+    duration: 1,
+    ease: "power3.inOut",
+  });
+});
+  };
+
+  init();
+
+  return () => {
+    cancelAnimationFrame(rafId);
+    ctx && ctx.revert();
+  };
+}, []);
+
+//  const particleRef = useRef(null);
+//   const loaderRef = useRef(null);
+//   const [entered, setEntered] = useState(false);
+
+//   useEffect(() => {
+//     // auto-enter after delay (or replace with scroll / click)
+//     const t = setTimeout(() => enterMain(), 1400);
+//     return () => clearTimeout(t);
+//   }, []);
+
+//   const enterMain = () => {
+//     if (entered) return;
+//     setEntered(true);
+
+//     const particle = particleRef.current;
+//     const target = document.querySelector(".particle-slot");
+
+//     const state = Flip.getState(particle);
+
+//     // move SAME element into grid
+//     target.appendChild(particle);
+
+//     Flip.from(state, {
+//       duration: 1.2,
+//       ease: "power3.inOut",
+//       absolute: true,
+//       onComplete: () => {
+//         particle.style.position = "relative";
+//         particle.style.inset = "auto";
+//       },
+//     });
+
+//     // fade loader UI
+//     gsap.to(loaderRef.current, {
+//       opacity: 0,
+//       duration: 0.4,
+//       delay: 0.6,
+//       pointerEvents: "none",
+//     });
+//   };
 
   return (
     <> 
-    <div className="z-10">
+        {/* <div className="bg-[#f6f3ee] text-black">
+      <header className="relative h-[260px] px-12 py-10">
 
-        <ParticleAnimation />
+<nav className="absolute left-0 right-0 top-[90px] overflow-hidden pointer-events-none">
+  <div className="marquee">
+    <div className="marquee-content">
+      <span className="marquee-track font-neuehaas35 text-[11px] tracking-[0.25em] uppercase text-black/70">
+        Over 5,000 Invisalign Cases &nbsp;•&nbsp;
+        Diamond Plus Invisalign Provider &nbsp;•&nbsp;
+        Top 1% Nationwide &nbsp;•&nbsp;
+        Board-Driven Diagnostic Standards &nbsp;•&nbsp;
+        Decades of Clinical Experience &nbsp;•&nbsp;
+        Thousands of Successful Outcomes &nbsp;•&nbsp;
+      </span>
+      <span className="marquee-track font-neuehaas35 text-[11px] tracking-[0.25em] uppercase text-black/70" aria-hidden="true">
+        Over 5,000 Invisalign Cases &nbsp;•&nbsp;
+        Diamond Plus Invisalign Provider &nbsp;•&nbsp;
+        Top 1% Nationwide &nbsp;•&nbsp;
+        Board-Driven Diagnostic Standards &nbsp;•&nbsp;
+        Decades of Clinical Experience &nbsp;•&nbsp;
+        Thousands of Successful Outcomes
+      </span>
+    </div>
+  </div>
+</nav>
+
+        <div className="absolute tracking-tight font-neuehaas35 right-12 bottom-8 text-left font-serif text-[20px] leading-tight text-black/70">
+          <div>Backed By Over 60 Years of </div>
+          <div>Combined  Orthodontic <em className="font-canelathin">Experience.</em></div>
+
+        </div>
+      </header>
+<section className="relative min-h-screen w-full bg-[#373030]">
+  <ParticleAnimation />
+
+<div className="font-neuehaas45 absolute top-10 left-1/2 -translate-x-1/2 text-white/80 text-[28px] tracking-[0.1em] uppercase mix-blend-difference">
+  MANIFESTO
+</div>
+</section>
+    </div> */}
+          
+ <div className="page-root">
+      {/* LOADER */}
+      {/* <section ref={loaderRef} className="loader">
+        <div ref={particleRef} className="particle-wrapper">
+          <ParticleAnimation />
+        </div>
+
+        <div className="manifesto-label">
+          MANIFESTO
+        </div>
+      </section> */}
+
+<section className="main">
+    <div className="bento-background">
+    <img src="/images/3dprinting.png" />
+  </div>
+
+  <div className="bento-grid">
+
+
+    <div className="bento-col bento-col--large">
+      <div className="bento-cell hero" />
+      <div className="bento-cell wide" />
+      <div className="bento-cell" />
+    </div>
+
+    <div className="bento-col bento-col--small">
+      <div className="bento-cell" />
+      <div className="bento-cell tall" />
+      <div className="bento-cell" />
     </div>
 
 
+    <div className="bento-col bento-col--small">
+      <div className="bento-cell" />
+      <div className="bento-cell" />
+      <div className="bento-cell" />
+    </div>
 
-        {/* <Hero /> */}
+  </div>
+</section>
+    </div>
+      <main className="h-[200vh]">
+          <div className="mt-12 grid grid-cols-2 gap-16 px-12 pt-10">
+            <p className="text-lg leading-relaxed">
+     
+             <h1 className="font-neuehaas35 text-[11px] tracking-[0.1em] uppercase text-black/70 mb-4">
+                Board-Driven Diagnostic Standards
+                </h1>
+
+              <h2 className="max-w-[550px] font-neuehaas45 text-black/70 text-[17px] leading-tight">
+                Our doctors are fully invested in treatment planning your case correctly. Guided by board-certified standards and decades of clinical practice, we approach every case with the same rigor demanded in academic orthodontics.
+              </h2>
+
+  
+            </p>
+          </div>
+    <div className="relative -mt-36">
+  <Morph />
+</div>
+     <div className="accolades-section">
+  <div className="flex justify-start px-10 font-canelathin text-[18px]">
+    Accolades
+  </div>
+
+  <div
+    ref={containerRef}
+    className="mt-[6vh] w-full max-w-7xl mx-auto text-[11px] relative"
+  >
+    <div
+      ref={addToSectionLineRefs}
+      className="absolute top-0 left-0 right-0 h-[.5px] bg-black origin-left"
+    />
+
+    <div className="font-canelathin tracking-wide flex flex-col text-[1.25em]">
+      {[
+        ["6× Winner Best Orthodontist", "Best of the Valley"],
+        ["5× Winner Best Orthodontist", "Readers' Choice The Morning Call"],
+         ["10× Cover Feature", "American Journal of Orthodontics & Dentofacial Orthopedics"],
+        ["Nationally Recognized Top Orthodontist", "Top Dentists"],
+        ["Invisalign", "25+ Years of Experience"],
+        ["Invisalign Teen", "5000+ Cases Treated"],
+        ["Diamond Plus", "Top 1% of All Providers"],
+      ].map(([left, right], i) => (
+        <div key={i} className="flex py-3.5 items-center px-5 relative">
+          {i < 6 && (
+            <div
+              ref={addToLineRefs}
+              className="absolute inset-x-0 bottom-0 h-[.5px] bg-black origin-center"
+              style={{ transform: "scaleX(0)" }}
+            />
+          )}
+
+
+<div className="flex-1 pr-8 overflow-hidden">
+  <div ref={addToTextRefs}>
+    {left}
+  </div>
+</div>
+
+
+<div className="w-[350px] pr-6 overflow-hidden">
+  <div ref={addToTextRefs}>
+    {right}
+  </div>
+</div>
+
+<div className="w-[80px] text-right opacity-50 overflow-hidden">
+  <div ref={addToTextRefs}>
+    Date
+  </div>
+</div>
+        </div>
+      ))}
+    </div>
+
+    <div
+      ref={addToSectionLineRefs}
+      className="absolute bottom-0 left-0 right-0 h-[.5px] bg-black origin-left"
+    />
+  </div>
+</div>
+      </main>
+
+
+ {/* <Hero /> */}
+
+<div className="bg-[#373030]">
+   <CardStack />
+           <StackCards />
+<div className="relative w-screen h-[200vh]">
+
+<section
+  id="section-a"
+  className="relative w-screen h-screen"
+>
+  <Canvas
+    className="absolute inset-0 z-30"
+    orthographic
+    camera={{ position: [0, 0, 5], zoom: 50 }}
+  >
+    <SwirlTextPlane
+        ref={swirlRef}
+      text={`WE WERE THE FIRST IN 
+THE REGION TO GO FULLY
+DIGITAL—LEVERAGING 
+ITERO 3D SCANNING AND
+IN-HOUSE PRINTING TO
+LEAD A NEW ERA OF
+APPLIANCE ENGINEERING.`}
+    />
+  </Canvas>
+
+    <div className="section-a-grid absolute inset-0 z-20">
+      {Array.from({ length: 200 }).map((_, i) => (
+        <div
+          key={i}
+          className={`section-a-block ${
+            i % 3 === 0 ? "block-square" : "block-rect"
+          }`}
+        />
+      ))}
+    </div>
+
+</section>
+
+  {/* This provides scroll height */}
+  <div className="h-screen" />
+
+  {/* This is what you reveal */}
+  <section
+    id="section-b"
+    className="absolute inset-0 flex items-center justify-center"
+  >
+    NEXT SECTION
+  </section>
+         </div>
+
+          <WorkGrid />
+          {/* <MoreThanSmiles /> */}
+          {/* <CircleReveal /> */}
+          {/* <About /> */}
+         
+          <Marquee />
+
+</div>
+
+
+
 
 {/* <MoreThanSmiles /> */}
 
@@ -1985,32 +2409,7 @@ export default function WhyChooseUs() {
               <RibbonAroundSphere />
             </Canvas>
           </div> */}
-        <CardStack />
-
-           <StackCards />
-         
-   <section className="relative w-screen h-screen bg-[#212121]">
-  <Canvas
-    orthographic
-    camera={{ position: [0, 0, 5], zoom: 50 }}
-  >
-                                     {/* <div>
-                        Our office was the first in the region to go fully digital—
-                leveraging iTero 3D scanning and in-house printing to lead a new
-                era of appliance design and fabrication.
-              </div> */}
-<SwirlTextPlane
-  text={`WE WERE THE FIRST IN \n THE REGION TO GO FULLY\nDIGITAL—LEVERAGING \nITERO 3D SCANNING AND\n IN-HOUSE PRINTING TO\n LEAD A NEW ERA OF\nAPPLIANCE ENGINEERING.`}
-/>
-  </Canvas>
-  </section>
-          <WorkGrid />
-          {/* <MoreThanSmiles /> */}
-          {/* <CircleReveal /> */}
-          {/* <About /> */}
-         
-          <Marquee />
-
+     
 
     </>
   );
@@ -2270,7 +2669,7 @@ const placeholderRef = useRef(null);
         };
 
       } catch (error) {
-        console.error('Error initializing Three.js:', error);
+
         return () => {};
       }
     };
@@ -2425,7 +2824,10 @@ useEffect(() => {
   className="bg-[#111] morphsection relative overflow-hidden"
 >
 
-<div className="w-full h-full morph-split-container flex items-end">
+  <div className="w-full h-full morph-split-container relative flex items-end z-10">
+  <div className="particle-layer">
+      <ParticleAnimation />
+    </div>
 <div className="w-1/3 flex h-2/3 justify-center">
   <div className="hero-header max-w-lg">
     <h1 className="text-xs tracking-widest text-gray-300 uppercase font-neuehaas45">
@@ -2608,7 +3010,7 @@ const ParticleAnimation = ({ particleCount = 150000, duration = 15 }) => {
   const animationRef = useRef(null);
   const timeRef = useRef(0);
   const timeStep = 1/60;
-
+const timeScale = 0.35; 
   const pointMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
@@ -2640,31 +3042,49 @@ const ParticleAnimation = ({ particleCount = 150000, duration = 15 }) => {
           vFade = clamp(fadeIn * fadeOut, 0.0, 1.0);
 
           float easedT = smoothstep(0.0, 1.0, t);
+          
           float centerT = easedT - 0.5;
 
-          float vCurve = -pow(centerT * 2.0, 2.0) + 1.0;
-          float volumeCurve = smoothstep(0.0, 0.25, vCurve);
+float x = centerT * 2.0;
 
-          vec3 position = mix(aStartPosition, aEndPosition, easedT);
+// Tight Gaussian valley
+float vCurve = exp(-x * x * 7.5);
+float volumeCurve = smoothstep(0.0, 0.25, vCurve);
+vec3 position = mix(aStartPosition, aEndPosition, easedT);
 
-          position.y -= vCurve * 220.0;
+// Vertical-first gravity
+float fall = pow(easedT, 1.8);
 
-          float angle = position.x * 0.0025;
-          float c = cos(angle);
-          float s = sin(angle);
+// How long we stay mostly vertical
+float verticalPhase = 1.0 - smoothstep(0.22, 0.52, easedT);
 
-          float y = position.y;
-          float z = position.z;
 
-          position.y = y * c - z * s * 0.25;
-          position.z = y * s * 0.25 + z * c;
+float gravityFadeOut = 1.0 - smoothstep(0.65, 0.95, easedT);
+position.y -= fall * 380.0 * gravityFadeOut;
+
+// Suppress horizontal motion early
+position.x += fall * 80.0 * (1.0 - verticalPhase)
+              * sign(aEndPosition.x - aStartPosition.x);
+
+// Steep but smooth bend
+position.y -= vCurve * 220.0;
+
+// Gentle cohesion
+float centerBias = smoothstep(0.0, 1.0, vCurve);
+position.y -= centerBias * mix(40.0, 90.0, volumeCurve);
+
+// Narrow only at the deepest point
+float pinch = pow(vCurve, 2.2);
+position.x *= mix(1.0, 0.8, pinch);
+
 
           position.y *= mix(1.35, 1.65, volumeCurve);
           position.z *= mix(1.15, 1.30, volumeCurve);
 
           vCoreDist = clamp(abs(position.y) / 220.0, 0.0, 1.0);
-
+position.y += 220.0;
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          
           gl_Position = projectionMatrix * mvPosition;
 
           float size = uPointSize * (300.0 / max(length(mvPosition.xyz), 50.0));
@@ -2735,32 +3155,42 @@ const ParticleAnimation = ({ particleCount = 150000, duration = 15 }) => {
       }
     };
   }, [pointMaterial]);
+const resizeToContainer = () => {
+  const el = containerRef.current;
+  if (!el || !rendererRef.current || !cameraRef.current) return;
 
+  const { width, height } = el.getBoundingClientRect();
+  if (width === 0 || height === 0) return;
+
+  rendererRef.current.setSize(width, height, false);
+  cameraRef.current.aspect = width / height;
+  cameraRef.current.updateProjectionMatrix();
+};
 const initTHREE = () => {
   if (rendererRef.current) return;
 
-  rendererRef.current = new THREE.WebGLRenderer({ 
+  rendererRef.current = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true,
-    preserveDrawingBuffer: true 
   });
 
-  rendererRef.current.setSize(window.innerWidth, window.innerHeight);
   rendererRef.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
   containerRef.current.appendChild(rendererRef.current.domElement);
 
-  cameraRef.current = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    10000
-  );
-  cameraRef.current.position.set(0, 300, 800);
-  cameraRef.current.lookAt(0, 0, 0);
+  rendererRef.current.domElement.style.width = "100%";
+  rendererRef.current.domElement.style.height = "100%";
+  rendererRef.current.domElement.style.display = "block";
 
   sceneRef.current = new THREE.Scene();
-  sceneRef.current.background = new THREE.Color(0x000011);
+
+// cameraRef.current = new THREE.PerspectiveCamera(34, 1, 0.1, 10000);
+// cameraRef.current.position.set(0, 220, 2600);
+// cameraRef.current.lookAt(0, 0, 0);
+cameraRef.current = new THREE.PerspectiveCamera(34, 1, 0.1, 10000);
+cameraRef.current.position.set(0, 210, 1600);
+cameraRef.current.lookAt(0, 0, 0);
+  resizeToContainer();
+  window.addEventListener("resize", resizeToContainer);
 };
 
   const initControls = () => {
@@ -2774,6 +3204,7 @@ const initTHREE = () => {
       controlsRef.current.minDistance = 100;
       controlsRef.current.maxDistance = 2000;
       controlsRef.current.maxPolarAngle = Math.PI;
+      
     } catch (error) {
       console.error('Error initializing controls:', error);
     }
@@ -2781,7 +3212,7 @@ const initTHREE = () => {
 
 const initParticleSystem = () => {
   try {
-    console.log('Initializing particle system with', particleCount, 'particles');
+    console.log(particleCount, 'particles');
 
     const gaussianRandom = (mean = 0, stdDev = 1) => {
       let u = 0, v = 0;
@@ -2814,7 +3245,7 @@ const initParticleSystem = () => {
       offsets[i] = (t + gaussianRandom(0.0, 0.18)) * duration;
 
       const spineY  = Math.sin(t * Math.PI * 1.2) * 160;
-      const spreadY = gaussianRandom(0, 90);
+   const spreadY = gaussianRandom(0, 50) * Math.pow(Math.random(), 1.8);
       const spreadZ = gaussianRandom(0, 160);
 
       startPositions[i3]     = -900;
@@ -2832,7 +3263,7 @@ const initParticleSystem = () => {
       const zNorm = THREE.MathUtils.clamp(Math.abs(spreadZ) / 160, 0, 1);
 
       const coreIntensity     = Math.pow(1.0 - yNorm, 3.5);
-      const innerGlowIntensity= Math.pow(1.0 - yNorm, 2.5);
+const innerGlowIntensity = Math.pow(1.0 - yNorm, 1.2);
       const midLayerIntensity = Math.exp(-Math.pow(yNorm * 1.8, 2.0));
       const outerLayerIntensity = Math.pow(yNorm, 1.8);
 
@@ -2840,14 +3271,17 @@ const initParticleSystem = () => {
 
       const finalColor = new THREE.Color(0, 0, 0);
       
-      const deepBlue = COLOR_DEEP_BLUE.clone().multiplyScalar(outerLayerIntensity * 0.4);
+      const deepBlue = COLOR_DEEP_BLUE.clone().multiplyScalar(outerLayerIntensity * 0.25);
       finalColor.add(deepBlue);
       
-      const midBlue = COLOR_MID_BLUE.clone().multiplyScalar(outerLayerIntensity * 0.6);
+      const midBlue = COLOR_MID_BLUE.clone().multiplyScalar(outerLayerIntensity * 0.35);
       finalColor.add(midBlue);
       
-      const babyBlue = COLOR_BABY_BLUE.clone().multiplyScalar(midLayerIntensity * 0.8);
-      finalColor.add(babyBlue);
+const midMix = COLOR_BABY_BLUE.clone()
+  .lerp(COLOR_AMBER, 0.35)
+  .multiplyScalar(midLayerIntensity * 0.85);
+
+finalColor.add(midMix);
       
       const amber = COLOR_AMBER.clone().multiplyScalar(innerGlowIntensity * 0.8);
       finalColor.add(amber);
@@ -2858,19 +3292,19 @@ const initParticleSystem = () => {
       const burntOrange = COLOR_BURNT_ORANGE.clone().multiplyScalar(innerGlowIntensity * 0.9);
       finalColor.add(burntOrange);
       
-      const vibrantOrange = COLOR_VIBRANT_ORANGE.clone().multiplyScalar(coreIntensity * 1.1);
+      const vibrantOrange = COLOR_VIBRANT_ORANGE.clone().multiplyScalar(coreIntensity * 1.4);
       finalColor.add(vibrantOrange);
       
-      const redOrange = COLOR_RED_ORANGE.clone().multiplyScalar(coreIntensity * 1.0);
+      const redOrange = COLOR_RED_ORANGE.clone().multiplyScalar(coreIntensity * 1.25);
       finalColor.add(redOrange);
 
-      finalColor.lerp(COLOR_MID_BLUE, depthEffect);
+const depthDarken = 1.0 - depthEffect * 0.35;
+finalColor.multiplyScalar(depthDarken);
 
-      const hsl = {};
-      finalColor.getHSL(hsl);
-      hsl.s = Math.min(1.0, hsl.s * 1.1);
-      hsl.l = Math.min(1.0, hsl.l * 1.05);
-      finalColor.setHSL(hsl.h, hsl.s, hsl.l);
+const hsl = {};
+finalColor.getHSL(hsl);
+hsl.s *= 1.0 - depthEffect * 0.25;
+finalColor.setHSL(hsl.h, hsl.s, hsl.l);
 
       finalColor.r = Math.min(1.0, Math.max(0.0, finalColor.r));
       finalColor.g = Math.min(1.0, Math.max(0.0, finalColor.g));
@@ -2890,23 +3324,27 @@ const initParticleSystem = () => {
     geometry.computeBoundingSphere();
 
     pointsRef.current = new THREE.Points(geometry, pointMaterial);
-    pointsRef.current.position.set(-300, 150, 0);
+    pointsRef.current.position.set(-300, 220, 0);
     pointsRef.current.frustumCulled = false;
     sceneRef.current.add(pointsRef.current);
 
-    console.log('Particle system ready');
+
 
   } catch (err) {
-    console.error('Particle init failed:', err);
+    console.error(err);
   }
 };
 
+function smoothstep(min, max, value) {
+  const x = Math.max(0, Math.min(1, (value - min) / (max - min)));
+  return x * x * (3 - 2 * x);
+}
   const tick = () => {
     try {
       update();
       render();
       
-      timeRef.current += timeStep;
+timeRef.current += timeStep * timeScale;
       timeRef.current %= duration;
       
       animationRef.current = requestAnimationFrame(tick);
@@ -2915,25 +3353,15 @@ const initParticleSystem = () => {
     }
   };
 
-  const update = () => {
-    try {
-      controlsRef.current?.update();
-      
-      if (pointMaterial) {
-        pointMaterial.uniforms.uTime.value = timeRef.current;
-      }
-      
-      if (cameraRef.current && !controlsRef.current?.enabled) {
-        const time = timeRef.current;
-        cameraRef.current.position.x = Math.sin(time * 0.1) * 800;
-        cameraRef.current.position.z = Math.cos(time * 0.1) * 800;
-        cameraRef.current.lookAt(0, 0, 0);
-      }
-    } catch (error) {
-      console.error('Error in update:', error);
-    }
-  };
+const update = () => {
+  controlsRef.current?.update();
 
+  if (pointMaterial) {
+    pointMaterial.uniforms.uTime.value = timeRef.current;
+  }
+
+
+};
   const render = () => {
     try {
       if (sceneRef.current && cameraRef.current && rendererRef.current) {
@@ -2947,27 +3375,18 @@ const initParticleSystem = () => {
   const handleResize = () => {
     try {
       if (!cameraRef.current || !rendererRef.current) return;
-      
-      cameraRef.current.aspect = window.innerWidth / window.innerHeight;
-      cameraRef.current.updateProjectionMatrix();
-      rendererRef.current.setSize(window.innerWidth, window.innerHeight);
+
     } catch (error) {
       console.error('Error in resize handler:', error);
     }
   };
 
-  return (
-    <div 
-      ref={containerRef} 
-      style={{ 
-        width: '100%', 
-        height: '100vh',
-        backgroundColor: '#000011',
-        position: 'relative',
-        display: 'block'
-      }}
-    />
-  );
+return (
+  <div
+    ref={containerRef}
+    className="particle-layer"
+  />
+);
 };
 
 
@@ -4344,24 +4763,24 @@ const CardStack = () => {
         <div className="l-wrapper ">
           <div className="list1" id="list1" ref={list1Ref}>
             <ul className="card-list list">
-              <li className="list-child bg-[#D9CA51] ">
+              <li className="list-child bg-[#9DA3BD] ">
                 <div className="card-inner">
-                  <h2 className="card-title text-[#D9CA51]">Tech-Savvy Teeth Things</h2>
-                  <p className="card-subtitle text-[#D9CA51]">Goopless</p>
-                  <div className="text-[#B55E00] card-caption-box">
+                  <h2 className="card-title text-[#9DA3BD]">Tech That Slaps</h2>
+                  <p className="card-subtitle text-[#9DA3BD]">Zero goop energy</p>
+                  <div className="text-[#F2F8EA] card-caption-box">
                   <span>3D iTero scanning</span>
   <span>Low-dose radiographs</span>
   <span>3D printing</span>
                   </div>
                 </div>
               </li>
-              <li className="list-child text-type1 bg-[#C9942C]">
+              <li className="list-child text-type1 bg-[#C46436]">
                                 <div className="card-inner">
-                  <h2 className="card-title text-[#C9942C]">Specialists, not generalists</h2>
-                  <p className="card-subtitle text-[#C9942C]">
+                  <h2 className="card-title text-[#D35530]">This Is All We Do</h2>
+                  <p className="card-subtitle text-[#D35530]">
                     You wouldn’t hire a generalist surgeon
                   </p>
-                  <div className="card-caption-box text-[#EAF84B]">
+                  <div className="card-caption-box text-[#A6DAAC]">
                    <span>Board certified</span> 
                    <span> ABO certified</span>
                    <span>Combined 50+ years experience</span> 
@@ -4369,11 +4788,11 @@ const CardStack = () => {
                 </div>
           
               </li>
-                            <li className="list-child text-type1 bg-[#32232B]">
+                            <li className="list-child text-type1 bg-[#F1E2D3]">
                 <div className="card-inner">
-                  <h2 className="card-title text-[#32232B]">4 Locations</h2>
-                  <p className="card-subtitle text-[#32232B]">IRL + URL</p>
-                       <div className="card-caption-box text-[#00AFFE]">
+                  <h2 className="card-title text-[#F1E2D3]">4 Locations</h2>
+                  <p className="card-subtitle text-[#F1E2D3]">IRL + URL</p>
+                       <div className="card-caption-box text-[#1895FF]">
                      <span>Bethlehem</span> 
                    <span>Allentown</span>
                                       <span>Schnecksville</span> 
@@ -4382,10 +4801,10 @@ const CardStack = () => {
               
                 </div>
               </li>
-              <li className="list-child text-type1 bg-[#989EC0]">
+              <li className="list-child text-type1 bg-[#C5AD4B]">
       <div className="card-inner">
-                  <h2 className="card-title text-[#989EC0]">Outcomes</h2>
-                  <p className="card-subtitle text-[#989EC0]">Over 25,000 patients</p>
+                  <h2 className="card-title text-[#C5AD4B]">Proof {'>'} Promises</h2>
+                  <p className="card-subtitle text-[#C5AD4B]">Over 25,000 patients</p>
                   <div className="card-caption-box text-[#A7C6FD]">
                
                   </div>
