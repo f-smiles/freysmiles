@@ -646,23 +646,29 @@ className="
 </div>
               {/* RIGHT */}
          <div className="flex flex-col justify-center w-1/2 gap-8 text-[14px] text-center font-neuehaas35">
-  <div>
-    <p className="mb-2 text-[14px] font-neuehaas35 opacity-70">
+
+
+     
+       <Link href="/concierge" > 
+        Concierge
+       </Link>
+
+    {/* <p className="mb-2 text-[14px] font-neuehaas35 opacity-70">
       Email:
     </p>
  <div className="flex flex-col gap-1 underline underline-offset-2 tracking-wide">
       <a href="mailto:info@email.com">info@freysmiles.com</a>
-    </div>
-  </div>
+    </div> */}
 
-  <div>
+
+  {/* <div>
     <p className="mb-2 text-[14px] font-neuehaas45 opacity-70">
       Telephone:
     </p>
     <div className="flex flex-col gap-1">
       <p className="text-[14px] font-neuehaas45 tracking-wide">(610) 437-4748</p>
     </div>
-  </div>
+  </div> */}
 
   <div>
     <p className="mb-2 text-[14px] font-neuehaas45 opacity-70">Social</p>

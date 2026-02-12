@@ -1590,7 +1590,7 @@ function App() {
     <>
 
     <OfficeChat />
-    <OfficeMessage />
+    {/* <OfficeMessage /> */}
       {/* <div className="creativity-main-wrapper" ref={mainRef}>
 <ContactHero />
       </div> */}
@@ -1880,6 +1880,7 @@ const OfficeChat = () => {
   const [contactValue, setContactValue] = useState("");
   const [showScheduler, setShowScheduler] = useState(false);
   const chatContainerRef = useRef(null);
+  const [moderationMessage, setModerationMessage] = useState(null);
 const [showTeamForm, setShowTeamForm] = useState(false);
   useEffect(() => {
     if (!chatContainerRef.current) return;
@@ -1892,22 +1893,22 @@ const [showTeamForm, setShowTeamForm] = useState(false);
       });
     });
 
-  }, [step, typing, questionStep, intent, contactMethod, contactValue,]);
+  }, [step, typing, questionStep, intent, contactMethod, contactValue, moderationMessage]);
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 600);
     return () => clearTimeout(t);
   }, []);
   
-  useEffect(() => {
-    if (step !== 1) return;
-    setTyping(true);
-    const t = setTimeout(() => {
-      setTyping(false);
-      setStep(2);
-    }, 900);
-    return () => clearTimeout(t);
-  }, [step]);
+  // useEffect(() => {
+  //   if (step !== 1) return;
+  //   setTyping(true);
+  //   const t = setTimeout(() => {
+  //     setTyping(false);
+  //     setStep(2);
+  //   }, 900);
+  //   return () => clearTimeout(t);
+  // }, [step]);
 
 const handleIntentSelect = (selectedIntent) => {
   setIntent(selectedIntent);
@@ -1932,7 +1933,7 @@ const handleIntentSelect = (selectedIntent) => {
     }, 900);
   }
   
-  if (selectedIntent === "Ask a question") {
+  if (selectedIntent === "Ask you a question") {
     setTyping(true);
     setTimeout(() => {
       setTyping(false);
@@ -1940,23 +1941,43 @@ const handleIntentSelect = (selectedIntent) => {
     }, 900);
   }
 };
-  const handleQuestionSubmit = () => {
-    if (!question.trim()) return;
-    
-    setTyping(true);
+const handleQuestionSubmit = async () => {
+  if (!question.trim()) return;
+  console.log("Submitting question:", question);
+  const res = await fetch("/api/moderate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text: question })
+  });
+
+  const data = await res.json();
+  console.log("Moderation response:", data);
+
+  if (data.flagged) {
+    setModerationMessage(
+      "Let's keep it respectful. Mind rephrasing that?"
+    );
+    return;
+  }
+
+
+  setModerationMessage(null);
+
+  setTyping(true);
+
+  setTimeout(() => {
+    setTyping(false);
+    setQuestionStep(2);
+
     setTimeout(() => {
-      setTyping(false);
-      setQuestionStep(2); // Show contact prompt
-      
+      setTyping(true);
       setTimeout(() => {
-        setTyping(true);
-        setTimeout(() => {
-          setTyping(false);
-          setQuestionStep(3); 
-        }, 900);
-      }, 600);
-    }, 900);
-  };
+        setTyping(false);
+        setQuestionStep(3);
+      }, 900);
+    }, 600);
+  }, 900);
+};
 
   const handleContactSubmit = () => {
     if (!contactValue.trim()) return;
@@ -2028,14 +2049,24 @@ const handleIntentSelect = (selectedIntent) => {
                 name={name}
                 setName={setName}
                 submitted={step >= 1}
-                onSubmit={() => {
-                  if (!name.trim()) return;
-                  setTyping(true);
-                  setTimeout(() => {
-                    setTyping(false);
-                    setStep(1);
-                  }, 900);
-                }}
+              onSubmit={() => {
+  if (!name.trim()) return;
+
+  setTyping(true);
+
+  setTimeout(() => {
+    setTyping(false);
+
+    // Show greeting
+    setStep(1);
+
+    // Then show dropdown
+    setTimeout(() => {
+      setStep(2);
+    }, 900);
+
+  }, 900);
+}}
               />
             </div>
             
@@ -2052,40 +2083,54 @@ const handleIntentSelect = (selectedIntent) => {
               </div>
             )}
             
-            {/* Dropdown */}
-            {step >= 2 && !showScheduler && !showTeamForm &&  (
-              <div className="flex justify-start">
-                <OfficeFollowUp 
-                  intent={intent} 
-                  setIntent={handleIntentSelect}
-                />
-              </div>
-            )}
 
-            {intent === "Ask a question" && questionStep >= 1 && !showScheduler && !showTeamForm && (
-              <div className="flex justify-start">
-                <OfficeQuestionPrompt />
-              </div>
-            )}
-            
-
-            {intent === "Ask a question" && questionStep >= 1 && !showScheduler && !showTeamForm&& (
-              <div className="flex justify-end">
-                <UserQuestion
-                  question={question}
-                  setQuestion={setQuestion}
-                  onSubmit={handleQuestionSubmit}
-                  isSubmitted={questionStep >= 2}
-                />
-              </div>
-            )}
+{step >= 2  && !showScheduler && !showTeamForm && (
+  <div className="flex justify-start">
+    <OfficeFollowUp 
+      intent={intent} 
+      setIntent={handleIntentSelect}
+    />
+  </div>
+)}
 
 
-            {questionStep >= 2 && !showScheduler && !showTeamForm&& (
-              <div className="flex justify-start">
-                <OfficeContactPrompt name={name} />
-              </div>
-            )}
+{intent === "Ask you a question" &&
+ questionStep >= 1 &&
+ !showScheduler &&
+ 
+ !showTeamForm && (
+  <>
+    <div className="flex justify-start">
+      <OfficeQuestionPrompt />
+    </div>
+
+    <div className="flex justify-end">
+      <UserQuestion
+        question={question}
+        setQuestion={setQuestion}
+        setModerationMessage={setModerationMessage}
+        onSubmit={handleQuestionSubmit}
+        isSubmitted={questionStep >= 2}
+      />
+    </div>
+
+    {moderationMessage && (
+      <div className="flex justify-start mt-4">
+        <OfficeMessage customText={moderationMessage} />
+      </div>
+    )}
+  </>
+)}
+
+
+{intent === "Ask you a question" &&
+ questionStep >= 2 &&
+ !showScheduler &&
+ !showTeamForm && (
+  <div className="flex justify-start">
+    <OfficeContactPrompt name={name} />
+  </div>
+)}
 
             {questionStep >= 3 && !showScheduler && !showTeamForm&& (
               <div className="flex justify-end">
@@ -2150,7 +2195,8 @@ const handleIntentSelect = (selectedIntent) => {
       </div>
   <button
     type="button"
-    onClick={() => setShowScheduler(false)}
+    onClick={() =>{ setShowScheduler(false);  setIntent(null);
+  setQuestionStep(0);}}
     className="
       absolute right-12 top-1/2 font-canelathin "
   >
@@ -2180,7 +2226,11 @@ const handleIntentSelect = (selectedIntent) => {
         <div className="relative ">
                       <button
           type="button"
-          onClick={() => setShowTeamForm(false)}
+          onClick={() => {
+  setShowTeamForm(false);
+  setIntent(null);
+  setQuestionStep(0);
+}}
           className="absolute top-[25%] right-8 text-sm opacity-70 hover:opacity-100 
                      transition-opacity focus:outline-none rounded px-2 py-1 text-[#EDE5D7] z-10"
         >
@@ -2428,7 +2478,7 @@ const handleIntentSelect = (selectedIntent) => {
 
 
 
-const UserQuestion = ({ question, setQuestion, onSubmit, isSubmitted }) => {
+const UserQuestion = ({ question, setQuestion,  setModerationMessage, onSubmit, isSubmitted }) => {
   return (
     <div className="w-[420px]">
       <div className="bg-white rounded-[32px] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.05)]">
@@ -2439,14 +2489,18 @@ const UserQuestion = ({ question, setQuestion, onSubmit, isSubmitted }) => {
           <input
             type="text"
             value={question}
-            onChange={(e) => setQuestion(e.target.value)}
+              onChange={(e) => {
+    setQuestion(e.target.value);
+    setModerationMessage(null);
+  }}
+
             onKeyDown={(e) => {
               if (e.key === "Enter" && !isSubmitted) onSubmit();
             }}
             placeholder={isSubmitted ? "Question sent" : "Type your question here..."}
             disabled={isSubmitted}
             className={`
-              w-full bg-neutral-100 rounded-full px-4 py-3 font-ibmplex text-[12px] outline-none
+              w-full bg-neutral-100 rounded-full px-4 py-3 font-neuehaas45 text-[13px] outline-none
               ${isSubmitted 
                 ? 'text-neutral-500 placeholder:text-neutral-400 cursor-default' 
                 : 'placeholder:text-neutral-400'
@@ -2504,7 +2558,7 @@ const UserContact = ({
               onClick={() => !isSubmitted && setContactMethod(option.value)}
               disabled={isSubmitted}
               className={`
-                flex-1 px-3 py-2 rounded-full text-[11px] font-ibmplex
+                flex-1 px-3 py-2 rounded-full text-[11px] font-neuehaas45
                 transition-all duration-200
                 ${isSubmitted && contactMethod === option.value
                   ? 'bg-neutral-900 text-white'
@@ -2534,7 +2588,7 @@ const UserContact = ({
             }
             disabled={isSubmitted}
             className={`
-              w-full bg-neutral-100 rounded-full px-4 py-3 font-ibmplex text-[12px] outline-none
+              w-full bg-neutral-100 rounded-full px-4 py-3 font-neuehaas45 text-[13px] outline-none
               ${isSubmitted 
                 ? 'text-neutral-500 placeholder:text-neutral-400 cursor-default' 
                 : 'placeholder:text-neutral-400'
@@ -2568,7 +2622,10 @@ const UserContact = ({
 const OfficeContactPrompt = ({ name }) => {
   return (
     <div className="max-w-[520px]">
-      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-ibmplex text-[12px] leading-snug">
+        <div className="text-sm font-canelathin text-neutral-500 mb-2">
+        <strong className="text-neutral-800">Concierge</strong>, Frey Smiles
+      </div>
+      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-neuehaas45 text-[13px] leading-snug">
         Got it{name ? `, ${name}` : ""}! 🤍<br />
         How should we reach you — email or phone?
       </div>
@@ -2589,7 +2646,10 @@ const OfficeFinalThankYou = ({ name, contactMethod }) => {
 
   return (
     <div className="max-w-[520px]">
-      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-ibmplex text-[12px] leading-snug">
+        <div className="text-sm font-canelathin text-neutral-500 mb-2">
+        <strong className="text-neutral-800">Concierge</strong>, Frey Smiles
+      </div>
+      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-neuehaas45 text-[12px] leading-snug">
         Perfect{name ? `, ${name}` : ""}! {getContactEmoji()}<br />
         We'll be in touch within 24 hours. 👋
       </div>
@@ -2602,16 +2662,17 @@ const OfficeFollowUp = ({ intent, setIntent }) => {
   const options = [
     "Book an appointment",
     "Apply for a job",
-    "Ask a question",
+    "Ask you a question",
+    "Send a message to the office"
   ];
 
   return (
     <div className="w-[520px]">
       <div className="bg-white rounded-[36px] px-8 py-7 shadow-[0_18px_45px_rgba(0,0,0,0.06)]">
-        <div className="text-[12px] font-ibmplex mb-6">
+        <div className="text-[13px] font-neuehaas45 mb-6">
           I would like to…
         </div>
-        <div className="font-ibmplex text-[12px] flex flex-col gap-5">
+        <div className="font-neuehaas45 text-[13px] flex flex-col gap-5">
           {options.map((option) => (
             <button
               key={option}
@@ -2639,9 +2700,10 @@ const OfficeQuestionPrompt = () => {
   return (
     <div className="max-w-[520px]">
             <div className="text-sm font-canelathin text-neutral-500 mb-2">
-        <strong className="text-neutral-800">Smile Coordinator</strong>, Office
+        <strong className="text-neutral-800">Concierge</strong>, Frey Smiles
       </div>
-      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-ibmplex text-[12px] leading-snug">
+      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-neuehaas45
+       text-[13px] leading-snug">
         What's on your mind?
       </div>
     </div>
@@ -2652,9 +2714,9 @@ const OfficeGreeting = ({ name }) => {
   return (
     <div className="max-w-[520px]">
             <div className="text-sm font-canelathin text-neutral-500 mb-2">
-        <strong className="text-neutral-800">Smile Coordinator</strong>, Office
+        <strong className="text-neutral-800">Concierge</strong>, Frey Smiles
       </div>
-      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-ibmplex text-[12px] leading-snug">
+      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-neuehaas45 text-[13px] leading-snug">
         Hi{name ? `, ${name}` : ""}! 👽 
         <br />
         What can we do for you today?
@@ -2663,14 +2725,16 @@ const OfficeGreeting = ({ name }) => {
   );
 };
 
-const OfficeMessage = () => {
+const OfficeMessage = ({ customText }) => {
+  const text = customText ?? "Hey there 👋 what should we call you?";
+
   return (
     <div className="max-w-[520px]">
       <div className="text-sm font-canelathin text-neutral-500 mb-2">
-        <strong className="text-neutral-800">Smile Coordinator</strong>, Office
+        <strong className="text-neutral-800">Concierge</strong>, Frey Smiles
       </div>
-      <div className="font-ibmplex bg-white rounded-full px-6 py-4 text-[12px] leading-snug shadow-[0_12px_30px_rgba(0,0,0,0.04)]">
-        Hey there 👋 what should we call you?
+      <div className="font-neuehaas45 bg-white rounded-full px-6 py-4 text-[13px] leading-snug shadow-[0_12px_30px_rgba(0,0,0,0.04)]">
+        {text}
       </div>
     </div>
   );
@@ -2694,7 +2758,7 @@ const UserResponse = ({ name, setName, onSubmit }) => {
               if (e.key === "Enter") onSubmit();
             }}
             placeholder="Your name"
-            className="w-full bg-neutral-100 rounded-full px-4 py-3 font-ibmplex text-[12px] outline-none placeholder:text-neutral-400"
+            className="w-full bg-neutral-100 rounded-full px-4 py-3 font-neuehaas45 text-[13px] outline-none placeholder:text-neutral-400"
           />
           <button
             onClick={onSubmit}

@@ -53,69 +53,7 @@ import { TextureLoader, CubeTextureLoader } from "three";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
-const RepeatText = ({ text = "FSF", totalLayers = 7 }) => {
-  const containerRef = useRef();
 
-  useEffect(() => {
-    const containers = gsap.utils.toArray(".stack-word-layer");
-
-    containers.forEach((el, i) => {
-      const inner = el.querySelector(".stack-word-inner");
-
-      gsap.fromTo(
-        inner,
-        { yPercent: 0 },
-        {
-          yPercent: 140,
-          ease: "none",
-          scrollTrigger: {
-            trigger: el,
-            start: `top center`,
-            end: "bottom top+=30%",
-            scrub: true,
-          },
-        }
-      );
-    });
-  }, []);
-
-  return (
-    <section
-      className="relative w-full bg-[#FAFAFA] overflow-hidden"
-      data-animation="stack-words"
-      ref={containerRef}
-    >
-      {new Array(totalLayers).fill(0).map((_, i) => {
-        const isLast = i === totalLayers - 1;
-
-        return (
-          <div
-            key={i}
-            className="overflow-hidden stack-word-layer"
-            style={{
-              height: isLast ? "20vw" : `${5 + i * 1.25}vw`,
-              marginTop: i === 0 ? 0 : "-.5vw",
-            }}
-          >
-            <div
-              className="stack-word-inner will-change-transform flex justify-center overflow-visible"
-              style={{ height: "100%" }}
-            >
-              <span
-                className="text-[48vw] font-bold text-black leading-none block"
-                style={{
-                  transform: `translateY(calc(-65% + ${i * 1.5}px))`,
-                }}
-              >
-                {text}
-              </span>
-            </div>
-          </div>
-        );
-      })}
-    </section>
-  );
-};
 
 const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
   const ref = useRef();
@@ -143,241 +81,7 @@ const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
   );
 };
 
-// const SmileyFace = ({ position = [0, 0, 0] }) => {
-//   const groupRef = useRef();
 
-//   useFrame(() => {
-//     if (groupRef.current) {
-//       groupRef.current.rotation.y += 0.003;
-//     }
-//   });
-
-//   const texture = useLoader(
-//     THREE.TextureLoader,
-//     "https://cdn.zajno.com/dev/codepen/cicada/texture.png"
-//   );
-//   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-
-//   const generateNoiseTexture = (size = 512) => {
-//     const canvas = document.createElement("canvas");
-//     canvas.width = size;
-//     canvas.height = size;
-//     const ctx = canvas.getContext("2d");
-//     const imageData = ctx.getImageData(0, 0, size, size);
-//     const data = imageData.data;
-
-//     for (let i = 0; i < data.length; i += 4) {
-//       const value = Math.random() * 255;
-//       data[i] = value;
-//       data[i + 1] = value;
-//       data[i + 2] = value;
-//       data[i + 3] = 255;
-//     }
-
-//     ctx.putImageData(imageData, 0, 0);
-
-//     const tex = new THREE.CanvasTexture(canvas);
-//     tex.repeat.set(5, 5);
-//     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-//     tex.anisotropy = 16;
-
-//     return tex;
-//   };
-
-//   const noiseTexture = useMemo(() => generateNoiseTexture(), []);
-
-//   // const material = useMemo(() => new THREE.MeshPhysicalMaterial({
-//   //   color: new THREE.Color('#fdf6ec'),
-//   //   map: noiseTexture,
-//   //   metalness: 0.3,
-//   //   roughness: 0.1,
-//   //   transmission: 1,
-//   //   thickness: 1.5,
-//   //   transparent: true,
-//   //   clearcoat: 1,
-//   //   clearcoatRoughness: 0.05,
-//   //   iridescence: 1,
-//   //   iridescenceIOR: 1.6,
-//   //   iridescenceThicknessRange: [100, 300],
-//   //   sheen: 1,
-//   //   sheenRoughness: 0.05,
-//   // }), [noiseTexture]);
-//   const material = useMemo(
-//     () =>
-//       new THREE.MeshPhysicalMaterial({
-//         color: new THREE.Color("#fdf6ec"),
-//         metalness: 0.3,
-//         roughness: 0.1,
-//         transmission: 1,
-//         thickness: 1.5,
-//         transparent: true,
-//         clearcoat: 1,
-//         clearcoatRoughness: 0.05,
-//         iridescence: 1,
-//         iridescenceIOR: 1.6,
-//         iridescenceThicknessRange: [100, 300],
-//         sheen: 1,
-//         sheenRoughness: 0.05,
-//         roughnessMap: noiseTexture,
-//         bumpMap: noiseTexture,
-//         bumpScale: 0.05,
-//       }),
-//     [noiseTexture]
-//   );
-
-//   const { ring, smile, leftEye, rightEye } = useMemo(() => {
-//     const arcSegments = 100;
-
-//     const ringCurve = new THREE.ArcCurve(0, 0, 5.6, 0, Math.PI * 2, false);
-//     const ringPoints = ringCurve
-//       .getPoints(arcSegments)
-//       .map((p) => new THREE.Vector3(p.x, p.y, 0));
-//     const ringPath = new THREE.CatmullRomCurve3(ringPoints, true);
-
-//     const ringRect = new THREE.Shape();
-//     const rw = 0.4;
-//     const rh = 0.6;
-//     ringRect.moveTo(-rw / 2, -rh / 2);
-//     ringRect.lineTo(rw / 2, -rh / 2);
-//     ringRect.lineTo(rw / 2, rh / 2);
-//     ringRect.lineTo(-rw / 2, rh / 2);
-//     ringRect.lineTo(-rw / 2, -rh / 2);
-
-//     const ringGeo = new THREE.ExtrudeGeometry(ringRect, {
-//       steps: arcSegments,
-//       bevelEnabled: false,
-//       extrudePath: ringPath,
-//     });
-
-//     const smilePath = new THREE.CurvePath();
-//     const smileCurve = new THREE.ArcCurve(0, -1.5, 2.4, Math.PI, 0, false);
-
-//     const smilePoints = smileCurve
-//       .getPoints(50)
-//       .map((p) => new THREE.Vector3(p.x, p.y, 0));
-//     const smileCatmull = new THREE.CatmullRomCurve3(smilePoints);
-
-//     const rectShape = new THREE.Shape();
-//     const w = 0.4;
-//     const h = 0.6;
-//     rectShape.moveTo(-w / 2, -h / 2);
-//     rectShape.lineTo(w / 2, -h / 2);
-//     rectShape.lineTo(w / 2, h / 2);
-//     rectShape.lineTo(-w / 2, h / 2);
-//     rectShape.lineTo(-w / 2, -h / 2);
-
-//     const smileGeo = new THREE.ExtrudeGeometry(rectShape, {
-//       steps: 50,
-//       bevelEnabled: false,
-//       extrudePath: smileCatmull,
-//     });
-
-//     const makeEye = (x, y) => {
-//       const geo = new THREE.CylinderGeometry(0.5, 0.5, 0.6, 32);
-//       geo.rotateX(Math.PI / 2);
-//       geo.translate(x, y, 0);
-//       return geo;
-//     };
-
-//     return {
-//       ring: ringGeo,
-//       smile: smileGeo,
-//       leftEye: makeEye(-2, 1),
-//       rightEye: makeEye(2, 1),
-//     };
-//   }, []);
-
-//   return (
-//     <group ref={groupRef} position={position} scale={[0.3, 0.3, 0.3]}>
-//       <mesh geometry={ring} material={material} />
-//       <mesh geometry={smile} material={material} />
-//       <mesh geometry={leftEye} material={material} />
-//       <mesh geometry={rightEye} material={material} />
-//     </group>
-//   );
-// };
-
-const WavePlane = forwardRef(({ uniformsRef }, ref) => {
-  const texture = useTexture("/images/mockup_c.png");
-  const gl = useThree((state) => state.gl);
-  useMemo(() => {
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = Math.min(16, gl.capabilities.getMaxAnisotropy());
-    texture.needsUpdate = true;
-  }, [texture, gl]);
-
-//   const image = useRef();
-//   const meshRef = ref || useRef();
-//   // const { amplitude, waveLength } = useControls({
-//   //   amplitude: { value: 0.1, min: 0, max: 2, step: 0.1 },
-//   //   waveLength: { value: 5, min: 0, max: 20, step: 0.5 },
-//   // });
-
-//   const amplitude = 0.2;
-//   const waveLength = 5;
-
-//   const uniforms = useRef({
-//     uTime: { value: 0 },
-//     uAmplitude: { value: amplitude },
-//     uWaveLength: { value: waveLength },
-//     uTexture: { value: texture },
-//   });
-
-//   useFrame(() => {
-//     uniforms.current.uTime.value += 0.04;
-//     // uniforms.current.uAmplitude.value = amplitude;
-//     uniforms.current.uWaveLength.value = waveLength;
-//   });
-
-//   const vertexShader = `
-// uniform float uTime;
-// uniform float uAmplitude;
-// uniform float uWaveLength;
-// varying vec2 vUv;
-// void main() {
-//     vUv = uv;
-//     vec3 newPosition = position;
-
-// float wave   = uAmplitude * sin(position.y * uWaveLength + uTime);
-// float ripple = uAmplitude * 0.01 * sin((position.y + position.x) * 10.0 + uTime * 2.0);
-// float bulge  = uAmplitude * 0.05 * sin(position.y * 5.0 + uTime) *
-//                                       cos(position.x * 5.0 + uTime * 1.5);
-// newPosition.z += wave + ripple + bulge;
-
-//     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-// }
-//   `;
-
-//   const fragmentShader = `
-//   uniform sampler2D uTexture; 
-//   varying vec2 vUv; 
-//     void main() {
-//   gl_FragColor = texture2D(uTexture, vUv);
-//     }
-//   `;
-//   useEffect(() => {
-//     if (uniformsRef) {
-//       uniformsRef.current = uniforms.current;
-//     }
-//   }, [uniformsRef]);
-
-  return (
-    <mesh
-      ref={meshRef}
-      position={[0, 0, 1]}
-      scale={[2, 2, 1]}
-      rotation={[-Math.PI * 0.4, 0.3, Math.PI / 2]}
-    >
-      <planeGeometry args={[1.5, 2, 100, 200]} />
-      <shaderMaterial
-        wireframe={false}
-        fragmentShader={fragmentShader}
-        vertexShader={vertexShader}
-        uniforms={uniforms.current}
-      />
-    </mesh>
-  );
-});
 
 const MorphingSphere = ({sectionRef}) => {
   const canvasRef = useRef(null);
@@ -1098,39 +802,6 @@ ScrollTrigger.create({
 };
 
 const Invisalign = () => {
-  const headingRef = useRef(null);
-
-  useEffect(() => {
-    gsap.killTweensOf(".lineChild, .lineParent");
-
-    const split = new SplitText(headingRef.current, {
-      type: "lines",
-      linesClass: "lineChild",
-    });
-    new SplitText(headingRef.current, {
-      type: "lines",
-      linesClass: "lineParent",
-    });
-
-    var tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: headingRef.current,
-        start: "top bottom",
-        toggleActions: "restart pause resume pause",
-      },
-    });
-    tl.from(".lineChild", {
-      y: 50,
-      duration: 0.75,
-      stagger: 0.25,
-      autoAlpha: 0,
-    });
-
-    return () => {
-      split.revert();
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-    };
-  }, []);
 
   const controls = useAnimation();
 
@@ -1225,84 +896,6 @@ const Invisalign = () => {
     { normal: "Proven", italic: "Results" },
   ];
 
-  const imageRef = useRef(null);
-
-  useEffect(() => {
-    if (!imageRef.current) return;
-
-    gsap.fromTo(
-      imageRef.current,
-      { scale: 1 },
-      {
-        scale: 0.7,
-        scrollTrigger: {
-          trigger: imageRef.current,
-          start: "top bottom",
-          end: "top top",
-          scrub: true,
-        },
-        transformOrigin: "center center",
-        ease: "none",
-      }
-    );
-  }, []);
-
-  const containerRef = useRef();
-  const lineRefs = useRef([]);
-  const textRefs = useRef([]);
-  const sectionLineRefs = useRef([]);
-
-  const addToLineRefs = (el) => el && lineRefs.current.push(el);
-  const addToTextRefs = (el) => el && textRefs.current.push(el);
-  const addToSectionLineRefs = (el) => el && sectionLineRefs.current.push(el); 
-  
-useEffect(() => {
-  gsap.set([...lineRefs.current, ...sectionLineRefs.current], {
-    scaleX: 0,
-    transformOrigin: "center center", 
-  });
-
-  gsap.set(textRefs.current, { y: 20, opacity: 0 });
-
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: containerRef.current,
-      start: "top 80%",
-      toggleActions: "play none none none",
-    },
-  });
-
-
-  sectionLineRefs.current.forEach((line) => {
-    tl.to(line, {
-      scaleX: 1,
-      duration: 1.6,
-      ease: "power3.out",
-    }, 0);
-  });
-
-
-  lineRefs.current.forEach((line, i) => {
-    tl.to(line, {
-      scaleX: 1,
-      duration: 1.3,
-      ease: "power3.out",          
-    }, 0.4 + i * 0.12);   
-  });
-
-
-  textRefs.current.forEach((text, i) => {
-    tl.to(text, {
-      y: 0,
-      opacity: 1,
-      duration: 0.9,
-      ease: "power2.out",
-    }, 0.6 + i * 0.08);
-  });
-
-  return () => ScrollTrigger.getAll().forEach(t => t.kill());
-}, []);
-  
   const sectionRef = useRef(null);
   const sphereRef = useRef(null);
 
@@ -1323,63 +916,6 @@ useEffect(() => {
     return () => ctx.revert();
   }, []);
 
-  const sectionsRef = useRef([]);
-useEffect(() => {
-  let ctx = gsap.context(() => {
-    sectionsRef.current.forEach((section) => {
-      const numberEl = section.querySelector(".big-number");
-
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.5,
-          pin: true,       
-          pinSpacing: true, 
-        }
-      })
-      .fromTo(
-        numberEl,
-        { fontSize: "170px", y: 0 },
-        { fontSize: "30px", y: -20, ease: "power2.out" }
-      );
-    });
-  });
-
-  return () => ctx.revert();
-}, []);
-
-const panes = [
-  {
-    position: [-5.2,  0.3,  1.6],
-    rotation: [0, 0, -0.12], 
-    scale: .75,
-    title: "With over 40 years of combined experience, our doctors were the first in the region to offer Invisalign—setting the benchmark well before it became the industry standard.",
-    tag: "Expertise"
-  },
-  {
-    position: [-1.8, -0.2,  0.9],
-    rotation: [0, 0, 0.08],
-    scale: .75,
-    title: "We've proudly ranked among the top 1% of certified Invisalign providers nationwide — every year since 2000.",
-    tag: "Recognition"
-  },
-  {
-    position: [ 1.9,  0.4,  0.4],
-    rotation: [0, 0, -0.06],
-    scale: .75,
-    title: "We've treated over 10,000 cases.",
-    tag: "Proven Results"
-  },
-  {
-    position: [ 5.6, -0.1, -0.2],
-    rotation: [0, 0, 0.14],
-    scale: .75,
-    title: "Optional fourth card (matches the Coinbase one in the ref).",
-    tag: "Bonus"
-  }
-];
 useEffect(() => {
   gsap.registerPlugin(ScrollTrigger);
 
@@ -1527,7 +1063,7 @@ useEffect(() => {
 </section> */}
 
     <Scene />
-    <NeonShaderBackground />
+    <AtmosphereBackground />
 
 
 
@@ -1594,17 +1130,9 @@ useEffect(() => {
           </h2> */}
         </div>
 
-    {/* Right */}
-    <div className="flex-1 space-y-6 max-w-md">
-     <div className="pt-[33vh] flex flex-col space-y-6">
 
-        </div>
-    </div>
   </div>
 </section>
-
-
-
 
         {/* <Canvas
           className="pointer-events-none"
@@ -1637,60 +1165,6 @@ useEffect(() => {
       {/* </div> */}
       <div className="relative">
         <section className="mt-[20vh] relative min-h-screen">
-          <div className="flex justify-start px-10 font-canelathin text-[18px]">Accolades</div>
-            <div
-              ref={containerRef}
-              className="mt-[10vh] w-full max-w-7xl mx-auto text-[11px] relative"
-            >
-              <div
-                ref={addToSectionLineRefs}
-                className="absolute top-0 left-0 right-0 h-[1px] bg-black origin-left"
-              />
-
-         <div className="font-canelathin  flex-1 flex flex-col justify-center text-[1.2em]">
-  {[
-    ["6x Winner Best Orthodontist", "Best of the Valley"],
-    ["5x Winner Best Orthodontist", "Readers' Choice The Morning Call"],
-    ["Nationally Recognized Top Orthodontist", "Top Dentists"],
-    ["Invisalign", "25+ Years of Experience"],
-    ["Invisalign Teen", "5000+ Cases Treated"],
-    ["Diamond Plus", "Top 1% of All Providers"],
-  ].map(([left, right], i) => (
-    <div key={i} className="flex py-4 items-center px-5 relative">
-
-      {i < 5 && (
-        <div
-          ref={addToLineRefs}
-          className="absolute inset-x-0 bottom-0 h-[1px] bg-black origin-center"
-          style={{
-            transform: "scaleX(0)",
-            transformOrigin: "center center",
-          }}
-        />
-      )}
-
-      <div ref={addToTextRefs} className="flex-1 pr-8">
-        {left}
-      </div>
-      <div ref={addToTextRefs} className="w-[350px] text-left text-black pr-6">
-        {right}
-      </div>
-      <div ref={addToTextRefs} className="w-[80px] text-right opacity-50">
-        DATE
-      </div>
-    </div>
-  ))}
-</div>
-   
-
-
-
-              <div
-                ref={addToSectionLineRefs}
-                className="absolute bottom-0 left-0 right-0 h-[1px] bg-black origin-left"
-              />
-            </div>
-
 
             {/* <div className="py-20 relative flex flex-col items-center w-full">
 <div className="relative w-[75%]">
@@ -1851,7 +1325,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
 </div> */}
 
               {/* <img
-                ref={imageRef}
+             
                 src="/images/ipadmockup.png"
                 className="max-w-[90%] sm:max-w-[90%] lg:max-w-[90%] h-auto"
                 alt="Man holding laptop"
@@ -1877,7 +1351,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
                 </p>
               </Copy>
             </div>
-<div         ref={(el) => (sectionsRef.current[0] = el)} className="relative border-t border-gray-300">
+<div   className="relative border-t border-gray-300">
 <div className="relative py-8 md:py-10">
     <div aria-hidden className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12 text-[90px] md:text-[140px] lg:text-[170px] leading-none font-neuehaas45 text-black select-none z-0">
       1
@@ -1895,7 +1369,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
     </div>
   </div>
 </div>
- <div ref={(el) => (sectionsRef.current[1] = el)}  className="relative border-t border-gray-300">
+ <div  className="relative border-t border-gray-300">
   <div className="relative py-8 md:py-10">
 
     <div
@@ -1925,7 +1399,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
     </div>
   </div>
 </div>
-      <div ref={(el) => (sectionsRef.current[2] = el)}  className="relative border-t border-gray-300">
+      <div className="relative border-t border-gray-300">
   <div className="relative py-8 md:py-10">
 
     <div
@@ -1959,7 +1433,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
     </div>
   </div>
 </div>
-      <div ref={(el) => (sectionsRef.current[3] = el)}   className="relative border-t border-gray-300">
+      <div  className="relative border-t border-gray-300">
   <div className="relative py-8 md:py-10">
 
     <div
@@ -1990,7 +1464,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
     </div>
   </div>
 </div>
-      <div ref={(el) => (sectionsRef.current[4] = el)} className="relative border-t border-gray-300">
+      <div className="relative border-t border-gray-300">
   <div className="relative py-8 md:py-10">
 
     <div
@@ -2018,7 +1492,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
     </div>
   </div>
 </div>
-                <div ref={(el) => (sectionsRef.current[5] = el)} className="relative border-t border-gray-300">
+                <div className="relative border-t border-gray-300">
   <div className="relative py-8 md:py-10">
 
     <div
@@ -2052,10 +1526,10 @@ Treatment Duration
             </div>
       </section>
             <div className="flex justify-center gap-6 p-6">
-              {/* <img
+              <img
                 src="/images/manholdinglaptop.png"
                 className="max-w-[45%] h-auto rounded-md"
-              /> */}
+              />
 
             </div>
 
@@ -2146,13 +1620,7 @@ Treatment Duration
    
         </section>
 
-        <section className="relative w-full flex flex-col min-h-screen ">
-          {/* 
-            <div className="relative">
-          
-              <RepeatText />
-            </div> */}
-        </section>
+    
         {/* <div className="min-h-screen relative">
             <div className="font-neuehaas45 perspective-1500 text-[#0414EA]">
               <div className="flip-wrapper">
@@ -2202,19 +1670,7 @@ Treatment Duration
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        {/* <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-            <div className="w-[800px] h-[800px]">
-            <Canvas>
-              <ambientLight intensity={0.5} />
-              <pointLight color="#ffe9c4" intensity={2} position={[0, 0, -2]} />
 
-              <SmileyFace position={[0, 0, 0]} />
-              <Environment preset="sunset" />
-
-              <OrbitControls enableZoom={false} />
-            </Canvas>
-          </div>
-          </div> */}
         {/* <Suspense fallback={null}>
           <BulgeGallery
             slides={[
@@ -2223,13 +1679,7 @@ Treatment Duration
             ]}
           />
         </Suspense> */}
-        {/* <section className="pointer-events-none canvas-section relative h-[100vh] z-10">
-          <Canvas camera={{ position: [0, 0, 4] }}>
-            <ambientLight intensity={0.5} />
-            <WavePlane ref={meshRef} uniformsRef={uniformsRef} />
-            <OrbitControls enableZoom={false} />
-          </Canvas>
-        </section> */}
+     
       </div>
     </>
   );
@@ -2559,7 +2009,7 @@ function Scene() {
 
   return (
     <div style={{ width: "100vw", height: "300vh" }}>
-      <div
+      {/* <div
         style={{
           position: "fixed",
           inset: 0,
@@ -2572,7 +2022,7 @@ function Scene() {
             scrollProgress={scrollProgress}
           />
         </Canvas>
-      </div>
+      </div> */}
 
       <div
       className="font-neuehaas45"
@@ -2664,42 +2114,72 @@ float wave(vec2 p, float phase, float freq) {
     worldUV.x *= uResolution.x / uResolution.y;       
     vec2 uv = worldUV;
     vec2 uv0 = worldUV;
+// -------------------------------------------------
+// BASE GRAY (keep this foundation)
+// -------------------------------------------------
 
-vec3 coolPearl     = vec3(0.82, 0.86, 0.92); // blue-gray
-vec3 mistBlue      = vec3(0.78, 0.83, 0.90); // foggy blue
-vec3 glassNeutral  = vec3(0.86, 0.87, 0.90); // aluminum gray
-vec3 babyBlueCore = vec3(0.86, 0.92, 0.97); // luminous cyan-blue
-vec3 lavenderMist = vec3(0.80, 0.82, 0.90);
-vec3 pearlGlow     = vec3(0.92, 0.94, 0.96); // cold light
-vec3 mistHighlight = vec3(0.84, 0.88, 0.92);
+vec3 baseGray = vec3(0.72, 0.74, 0.76);
+vec3 softGray = vec3(0.68, 0.70, 0.72);
 
-float t = smoothstep(0.0, 1.0, vUv.x);
+// Start with neutral gray gradient
+vec3 bg = mix(softGray, baseGray, vUv.x);
 
-vec3 bg = mix(coolPearl, mistBlue, t);
 
-bg = mix(bg, glassNeutral, t * 0.25);
+// -------------------------------------------------
+// ETHEREAL BLUE DRIFT (large curved sweep)
+// -------------------------------------------------
 
-// radial pearl glow - REDUCED SPREAD
-float glowDist = length(uv0);
-float glowAmt = smoothstep(0.9, 0.0, glowDist);
-bg = mix(bg, pearlGlow, glowAmt * 0.25); // Reduced from 0.4
-bg = mix(bg, mistHighlight, t * 0.25);
+vec3 etherealBlue = vec3(0.78, 0.84, 0.90);   // light cool drift
+vec3 creamEdge    = vec3(0.88, 0.92, 0.96);   // near-white lift
 
-// fog noise
-float fog = snoise(uv0 * 0.6 + uTime * 0.03) * 0.08;
+float arc = smoothstep(
+    1.35,
+    0.15,
+    length(vec2(uv0.x * 0.75 - 0.35, uv0.y * 1.15))
+);
+
+bg = mix(bg, etherealBlue, arc * 0.35);
+
+
+// -------------------------------------------------
+// VERTICAL LUMINOUS BAND (soft column)
+// -------------------------------------------------
+
+float verticalBand = exp(-abs(uv0.x - 0.12) * 4.0);
+bg = mix(bg, creamEdge, verticalBand * 0.24);
+
+
+// -------------------------------------------------
+// SOFT TOP DIFFUSION (light atmospheric lift)
+// -------------------------------------------------
+
+float verticalFalloff = smoothstep(1.0, -0.5, uv0.y);
+bg = mix(bg, vec3(0.80, 0.83, 0.87), verticalFalloff * 0.12);
+
+
+// -------------------------------------------------
+// SUBTLE NOISE
+// -------------------------------------------------
+
+float fog = snoise(uv0 * 0.35 + uTime * 0.02) * 0.025;
 bg += fog;
 
-// TIGHTER CENTER GLOW to reduce bloom
-float centerGlow = exp(-length(uv0) * 2.0); // Increased from 1.2 to 2.0
-// Diffuse milky density (NOT glow)
-float density = exp(-length(uv0) * 1.4); // softer falloff
-density = pow(density, 1.6);             // flatten peak
 
-vec3 milkBlue = vec3(0.78, 0.86, 0.94);  // desaturated baby blue
-bg = mix(bg, milkBlue, density * 0.25);
+// -------------------------------------------------
+// GENTLE DESATURATION (avoid powder look)
+// -------------------------------------------------
+
+float luma = dot(bg, vec3(0.299, 0.587, 0.114));
+bg = mix(vec3(luma), bg, 0.95);
+
+
+// -------------------------------------------------
+// LIGHT EXPOSURE LIFT
+// -------------------------------------------------
+
+bg *= 1.04;
 
 vec3 col = bg;
-  
     //  Mouse interaction
   
     vec2 mouse_uv = (uMouse - 0.5) * 2.0;
@@ -2713,16 +2193,16 @@ vec3 col = bg;
     vec2 uvNoise = uv * rot(uTime * 0.05);
     float waveNoise = snoise(uvNoise * 2.0 + uTime * 0.2) * 0.1;
 
-vec3 ribbonDark      = vec3(0.42, 0.58, 0.74);
-vec3 ribbonMid       = vec3(0.64, 0.78, 0.92);
-vec3 ribbonLight     = vec3(0.78, 0.86, 0.96);
-vec3 ribbonCoreGlow  = vec3(0.52, 0.74, 0.94);
+vec3 ribbonDark     = vec3(0.30, 0.55, 0.85);
+vec3 ribbonMid      = vec3(0.40, 0.70, 1.00);
+vec3 ribbonLight    = vec3(0.65, 0.85, 1.00);
+vec3 ribbonCoreGlow = vec3(0.55, 0.90, 1.00);
 
     float segLen = 10.0;  // lifetime of ribbon
 
     for (int i = 0; i < 2; i++) {
       float slotIndex = float(i);
-      float slotTime = uTime + slotIndex * 3.17;           // offset ribbon
+      float slotTime = uTime + slotIndex * 5.17;           // offset ribbon
       float lifeIndex = floor(slotTime / segLen);
       float tNorm = fract(slotTime / segLen);  
 
@@ -2738,31 +2218,32 @@ vec3 ribbonCoreGlow  = vec3(0.52, 0.74, 0.94);
       if (visibility > 0.001) {
         float seed = lifeIndex + slotIndex * 23.71;
         float xCenter = mix(-0.9, 0.9, rand1(seed * 1.3));
-        float freq    = mix(0.4, 0.9, rand1(seed * 2.1));
+       float freq = mix(0.25, 0.55, rand1(seed * 2.1));
         float phase   = rand1(seed * 3.7) * 6.28318;
         float ampMod  = mix(0.7, 1.2, rand1(seed * 4.9));
 
         float waveVal = wave(vec2(worldUV.y * ampMod + phase, worldUV.y * 0.5),
                              uTime * 1.2 + phase, freq);
-        waveVal += waveNoise * 0.6;  // shared turbulence
+      waveVal += waveNoise * 0.35;
 
         float distX = (worldUV.x - xCenter) - waveVal;
 
-        // ribbon glow - TIGHTER to reduce spread
-        float thickness = 0.4;   // Reduced from 0.5  
-        float intensity = 0.11;  // Reduced from 0.13     
+float thickness = 0.2;  // slightly tighter
+float intensity = 0.18;  // much brighter
         
         // base core (keep it tight)
 float core = smoothstep(thickness, 0.0, abs(distX)) * intensity * visibility;
 
         // secondary soft body (reduced to prevent spread)
-float body = smoothstep(thickness * 2.0, 0.0, abs(distX)) * (intensity * 0.20) * visibility;
+float body = exp(-pow(distX / (thickness * 1.4), 2.0))
+             * intensity * 0.7 * visibility;
 
         // gentle atmospheric haze (reduced)
         float haze = exp(-abs(distX) * 8.0) * 0.025 * visibility; // Tighter
 
         // inner core glow (more intense but tighter)
-        float innerCore = glowLine(distX, thickness * 0.3, intensity * 0.6) * visibility;
+float innerCore = exp(-pow(distX / (thickness * 0.45), 2.0)) 
+                  * intensity * 0.9 * visibility;
 
         float grad = smoothstep(-0.25, 0.25, distX);
         grad = pow(grad, 1.1);     // soften
@@ -2775,9 +2256,9 @@ float body = smoothstep(thickness * 2.0, 0.0, abs(distX)) * (intensity * 0.20) *
         vec3 ribbonColor = mix(coreTone, ribbonLight, edge * 0.8);
 
         // Add the inner core glow with the special glow color
-        col += ribbonCoreGlow * innerCore * 0.2; // Reduced from 0.25
-        col += ribbonColor * core * 0.4;
-        col += ribbonColor * haze * 0.8; // Reduced
+  col += ribbonCoreGlow * innerCore * 0.35;
+col += ribbonColor * body * 0.6;
+col += ribbonColor * haze * 0.4;
         
         // Add a subtle blue tint to the entire ribbon area
         float ribbonArea = max(core, body) * 0.5; // Reduced from 0.7
@@ -2793,7 +2274,7 @@ float body = smoothstep(thickness * 2.0, 0.0, abs(distX)) * (intensity * 0.20) *
   }
 `;
 
-function ShaderPlane() {
+function Atmosphere() {
   const materialRef = useRef();
   const mouse = useRef(new THREE.Vector2(0.5, 0.5));
   const targetMouse = useRef(new THREE.Vector2(0.5, 0.5));
@@ -2844,11 +2325,11 @@ function ShaderPlane() {
   );
 }
 
- function NeonShaderBackground() {
+ function AtmosphereBackground() {
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1 }}>
       <Canvas orthographic camera={{ zoom: 1, position: [0, 0, 1] }}>
-        <ShaderPlane />
+        <Atmosphere />
       </Canvas>
     </div>
   );
