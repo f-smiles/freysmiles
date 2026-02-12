@@ -1,7 +1,6 @@
 "use client";
 
 import { Flip } from 'gsap/Flip';
-import MouseTrail from "./mouse.jsx";
 import { Renderer, Program, Color, Mesh, Triangle, Vec2 } from "ogl";
 import {
   motion,

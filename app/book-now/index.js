@@ -1,5 +1,5 @@
 "use client";
-
+import MouseTrail from "../book-now/mouse.jsx";
 import { createPortal } from "react-dom";
 import { Renderer, Program, Mesh, Plane, Uniform } from "wtc-gl";
 import { Vec2, Mat2 } from "wtc-math";
@@ -1588,12 +1588,15 @@ function App() {
 
   return (
     <>
-      <div className="creativity-main-wrapper" ref={mainRef}>
+
+    <OfficeChat />
+    <OfficeMessage />
+      {/* <div className="creativity-main-wrapper" ref={mainRef}>
 <ContactHero />
-      </div>
+      </div> */}
 
 
-      <footer className="creativity-footer" ref={footerRef}>
+      {/* <footer className="creativity-footer" ref={footerRef}>
 
            
                 <div className="absolute inset-0">
@@ -1617,6 +1620,7 @@ function App() {
   </div>
         
 <div className="creativity-footer__marquee">
+  
   <div className="creativity-footer__marquee-track" ref={marqueeContentRef}>
   <div className="creativity-footer__marquee-group">
       <span className="creativity-marquee-item">The</span>
@@ -1762,7 +1766,7 @@ function App() {
     <a href="#" className="creativity-footer__link"> Lehighton </a>
   </div>
 </div>
-      </footer>
+      </footer> */}
 
     </>
   );
@@ -1839,7 +1843,6 @@ function ContactHero() {
 
 </div>
 
-    {/* Submit button */}
     <div className="mt-10">
       <button className="w-20 h-20 rounded-full border border-white/50 flex items-center justify-center text-white text-3xl hover:bg-white/10 transition">
         ↗
@@ -1847,7 +1850,6 @@ function ContactHero() {
     </div>
   </div>
 
-  {/* RIGHT SIDE: Acuity */}
   <div className="w-1/2 h-full p-10 flex items-center justify-center acuity-font">
     <div className="w-full h-full rounded-2xl overflow-hidden backdrop-blur-xl border border-white/20 shadow-lg">
       <iframe
@@ -1865,3 +1867,957 @@ function ContactHero() {
     </section>
   );
 }
+
+const OfficeChat = () => {
+  const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState(0);
+  const [name, setName] = useState("");
+  const [intent, setIntent] = useState(null);
+  const [typing, setTyping] = useState(false);
+  const [questionStep, setQuestionStep] = useState(0);
+  const [question, setQuestion] = useState("");
+  const [contactMethod, setContactMethod] = useState("");
+  const [contactValue, setContactValue] = useState("");
+  const [showScheduler, setShowScheduler] = useState(false);
+  const chatContainerRef = useRef(null);
+const [showTeamForm, setShowTeamForm] = useState(false);
+  useEffect(() => {
+    if (!chatContainerRef.current) return;
+
+    requestAnimationFrame(() => {
+      const container = chatContainerRef.current;
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth"
+      });
+    });
+
+  }, [step, typing, questionStep, intent, contactMethod, contactValue,]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 600);
+    return () => clearTimeout(t);
+  }, []);
+  
+  useEffect(() => {
+    if (step !== 1) return;
+    setTyping(true);
+    const t = setTimeout(() => {
+      setTyping(false);
+      setStep(2);
+    }, 900);
+    return () => clearTimeout(t);
+  }, [step]);
+
+const handleIntentSelect = (selectedIntent) => {
+  setIntent(selectedIntent);
+  
+  if (selectedIntent === "Book an appointment") {
+    setTyping(true);
+    setTimeout(() => {
+      setTyping(false);
+      setTimeout(() => {
+        setShowScheduler(true);
+      }, 500);
+    }, 900);
+  }
+  
+  if (selectedIntent === "Apply for a job") {
+    setTyping(true);
+    setTimeout(() => {
+      setTyping(false);
+      setTimeout(() => {
+        setShowTeamForm(true);
+      }, 500);
+    }, 900);
+  }
+  
+  if (selectedIntent === "Ask a question") {
+    setTyping(true);
+    setTimeout(() => {
+      setTyping(false);
+      setQuestionStep(1);
+    }, 900);
+  }
+};
+  const handleQuestionSubmit = () => {
+    if (!question.trim()) return;
+    
+    setTyping(true);
+    setTimeout(() => {
+      setTyping(false);
+      setQuestionStep(2); // Show contact prompt
+      
+      setTimeout(() => {
+        setTyping(true);
+        setTimeout(() => {
+          setTyping(false);
+          setQuestionStep(3); 
+        }, 900);
+      }, 600);
+    }, 900);
+  };
+
+  const handleContactSubmit = () => {
+    if (!contactValue.trim()) return;
+    
+    setTyping(true);
+    setTimeout(() => {
+      setTyping(false);
+      setQuestionStep(4); 
+    }, 900);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-white overflow-hidden">
+      <MouseTrail
+        images={[
+          "../images/mousetrail/flame.png",
+          "../images/mousetrail/cat.png",
+          "../images/mousetrail/pixelstar.png",
+          "../images/mousetrail/avocado.png",
+          "../images/mousetrail/ghost.png",
+          "../images/mousetrail/pacman.png",
+          "../images/mousetrail/evilrobot.png",
+          "../images/mousetrail/thirdeye.png",
+          "../images/mousetrail/alientcat.png",
+          "../images/mousetrail/gotcha.png",
+          "../images/mousetrail/karaokekawaii.png",
+          "../images/mousetrail/mushroom.png",
+          "../images/mousetrail/pixelcloud.png",
+          "../images/mousetrail/pineapple.png",
+          "../images/mousetrail/pixelsun.png",
+          "../images/mousetrail/cherries.png",
+          "../images/mousetrail/watermelon.png",
+          "../images/mousetrail/dolphins.png",
+          "../images/mousetrail/jellyfish.png",
+          "../images/mousetrail/nyancat.png",
+          "../images/mousetrail/donut.png",
+          "../images/mousetrail/controller.png",
+          "../images/mousetrail/dinosaur.png",
+          "../images/mousetrail/headphones.png",
+          "../images/mousetrail/porsche.png",
+        ]}
+      />  
+ {visible && (
+    <div className="relative w-full h-full">
+   
+      <div
+        className={`
+          absolute inset-0
+          transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]
+             ${showScheduler || showTeamForm 
+            ? "opacity-0 translate-y-6 pointer-events-none"
+            : "opacity-100 translate-y-0"
+          }
+        `}
+      >
+        <div
+          className="w-full h-full px-[12vw] pt-[10vh] pb-[15vh] overflow-y-auto scroll-smooth"
+          ref={chatContainerRef}
+        >
+          <div className="flex flex-col gap-8 max-w-3xl min-h-full">
+
+            <div className="flex justify-start">
+              <OfficeMessage />
+            </div>
+            
+
+            <div className="flex justify-end">
+              <UserResponse
+                name={name}
+                setName={setName}
+                submitted={step >= 1}
+                onSubmit={() => {
+                  if (!name.trim()) return;
+                  setTyping(true);
+                  setTimeout(() => {
+                    setTyping(false);
+                    setStep(1);
+                  }, 900);
+                }}
+              />
+            </div>
+            
+  
+            {typing && !showScheduler && !showTeamForm && (
+              <div className="flex justify-start">
+                <OfficeTyping />
+              </div>
+            )}
+            
+            {step >= 1 && !showScheduler && !showTeamForm && (
+              <div className="flex justify-start">
+                <OfficeGreeting name={name} />
+              </div>
+            )}
+            
+            {/* Dropdown */}
+            {step >= 2 && !showScheduler && !showTeamForm &&  (
+              <div className="flex justify-start">
+                <OfficeFollowUp 
+                  intent={intent} 
+                  setIntent={handleIntentSelect}
+                />
+              </div>
+            )}
+
+            {intent === "Ask a question" && questionStep >= 1 && !showScheduler && !showTeamForm && (
+              <div className="flex justify-start">
+                <OfficeQuestionPrompt />
+              </div>
+            )}
+            
+
+            {intent === "Ask a question" && questionStep >= 1 && !showScheduler && !showTeamForm&& (
+              <div className="flex justify-end">
+                <UserQuestion
+                  question={question}
+                  setQuestion={setQuestion}
+                  onSubmit={handleQuestionSubmit}
+                  isSubmitted={questionStep >= 2}
+                />
+              </div>
+            )}
+
+
+            {questionStep >= 2 && !showScheduler && !showTeamForm&& (
+              <div className="flex justify-start">
+                <OfficeContactPrompt name={name} />
+              </div>
+            )}
+
+            {questionStep >= 3 && !showScheduler && !showTeamForm&& (
+              <div className="flex justify-end">
+                <UserContact
+                  contactMethod={contactMethod}
+                  setContactMethod={setContactMethod}
+                  contactValue={contactValue}
+                  setContactValue={setContactValue}
+                  onSubmit={handleContactSubmit}
+                  isSubmitted={questionStep >= 4}
+                />
+              </div>
+            )}
+
+    
+            {questionStep >= 4 && !showScheduler && !showTeamForm && (
+              <div className="flex justify-start">
+                <OfficeFinalThankYou 
+                  name={name} 
+                  contactMethod={contactMethod} 
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+
+<div
+  className={`
+    absolute inset-0 z-40
+    transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]
+    ${showScheduler
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-6 pointer-events-none"}
+  `}
+>
+
+  <div className="w-full h-full px-[6vw] py-[4vh] flex flex-col">
+
+      <div className="flex flex-1 items-center justify-center">
+   <div
+  className="
+    relative
+    w-full max-w-[1100px]
+    h-[90vh]
+    rounded-2xl overflow-hidden
+    backdrop-blur-xl border border-white/20 shadow-lg
+    bg-white/60
+  "
+>
+  <iframe
+    src="https://app.acuityscheduling.com/schedule.php?owner=37690830"
+    title="Schedule Appointment"
+    className="w-full h-full"
+    frameBorder="0"
+    allow="payment"
+  />
+
+
+</div>
+      </div>
+  <button
+    type="button"
+    onClick={() => setShowScheduler(false)}
+    className="
+      absolute right-12 top-1/2 font-canelathin "
+  >
+     Back to chat
+  </button>
+
+  </div>
+</div>
+
+<div
+  className={`
+    absolute inset-0 z-50
+    transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]
+    ${showTeamForm 
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-6 pointer-events-none"
+    }
+  `}
+>
+  <div className="w-full h-full overflow-y-auto">
+
+    <div className="font-neuehaas45 w-full h-full">
+      <div className="relative w-full h-full bg-gradient-to-br from-[#4E5353] via-[#505456] to-[#3E4243] text-[#EDE5D7] overflow-y-auto p-12 md:p-20 shadow-[0_18px_45px_rgba(0,0,0,0.06)]">
+        
+
+        <div className="absolute inset-0 pointer-events-none opacity-[0.05] bg-noise z-[2]" />
+        <div className="relative ">
+                      <button
+          type="button"
+          onClick={() => setShowTeamForm(false)}
+          className="absolute top-[25%] right-8 text-sm opacity-70 hover:opacity-100 
+                     transition-opacity focus:outline-none rounded px-2 py-1 text-[#EDE5D7] z-10"
+        >
+          ✕ Close
+        </button>
+          <h2 className="text-[28px] font-canelathin mb-10">
+            Start Your Application
+            <span className="opacity-50 font-canelathin mx-2">—</span>
+            <span className="text-[14px] tracking-wide opacity-70 align-middle font-neuehaas45 text-[#FEB44A]">
+              For open positions at Frey Smiles
+            </span>
+          </h2>
+          
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setTyping(true);
+              setTimeout(() => {
+                setTyping(false);
+                setShowTeamForm(false);
+              }, 900);
+            }}
+            className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-8"
+          >
+
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                    Full Name
+                  </label>
+                  <input
+                    name="name"
+                    required
+                    placeholder="Jane Doe"
+                    className="w-full bg-transparent border border-white/20 rounded-lg 
+                             px-4 py-3 text-[12px] leading-relaxed text-white/85
+                             placeholder:text-white/35 tracking-[0.01em]
+                             focus:outline-none focus:border-white/60 transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                    Best way to reach you
+                  </label>
+                  <input
+                    name="contact"
+                    required
+                    placeholder="Email or phone number"
+                    className="w-full bg-transparent border border-white/20 rounded-lg 
+                             px-4 py-3 text-[12px] leading-relaxed text-white/85
+                             placeholder:text-white/35 tracking-[0.01em]
+                             focus:outline-none focus:border-white/60 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                    High school graduation year
+                  </label>
+                  <select
+                    name="gradYear"
+                    required
+                    className="w-full bg-transparent border border-white/20 rounded-lg 
+                             px-4 py-3 text-[12px] leading-relaxed text-white/85
+                             placeholder:text-white/35 tracking-[0.01em]
+                             focus:outline-none focus:border-white/60 transition-colors"
+                  >
+                    <option value="">Select year</option>
+                    {Array.from({ length: 40 }, (_, i) => {
+                      const year = 2027 - i;
+                      return (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                    Do you have experience working in dentistry or orthodontics?
+                  </label>
+                  <select
+                    name="experience"
+                    required
+                    className="w-full bg-transparent border border-white/20 rounded-lg 
+                             px-4 py-3 text-[12px] leading-relaxed text-white/85
+                             placeholder:text-white/35 tracking-[0.01em]
+                             focus:outline-none focus:border-white/60 transition-colors"
+                  >
+                    <option value="">Select</option>
+                    <option value="no">No</option>
+                    <option value="yes-dentistry">Yes — Dentistry</option>
+                    <option value="yes-ortho">Yes — Orthodontics</option>
+                    <option value="yes-both">Yes — Both</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                    Position you're interested in
+                  </label>
+                  <select
+                    name="role"
+                    required
+                    className="w-full bg-transparent border border-white/20 rounded-lg 
+                             px-4 py-3 text-[12px] leading-relaxed text-white/85
+                             placeholder:text-white/35 tracking-[0.01em]
+                             focus:outline-none focus:border-white/60 transition-colors"
+                  >
+                    <option value="">Select role</option>
+                    <option value="assistant">Clinical Assistant</option>
+                    <option value="front-desk">Front Desk / Admin</option>
+                    <option value="coordinator">Treatment Coordinator</option>
+                    <option value="sterilization">Sterilization / Lab</option>
+                    <option value="open">Open / Unsure</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                    How did you hear about us?
+                  </label>
+                  <select
+                    name="source"
+                    required
+                    className="w-full bg-transparent border border-white/20 rounded-lg 
+                             px-4 py-3 text-[12px] leading-relaxed text-white/85
+                             placeholder:text-white/35 tracking-[0.01em]
+                             focus:outline-none focus:border-white/60 transition-colors"
+                  >
+                    <option value="">Select source</option>
+                    <option value="website">Website</option>
+                    <option value="social">Social Media</option>
+                    <option value="friend">Friend / Employee</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                  When would you be available to start?
+                </label>
+                <input
+                  name="availability"
+                  required
+                  placeholder="Immediately, in 2 weeks, next month…"
+                  className="text-[12px] leading-relaxed text-white/85
+                           placeholder:text-white/35 opacity-70  
+                           w-full bg-transparent border border-white/20 rounded-lg 
+                           px-4 py-3 focus:outline-none focus:border-white/60
+                           transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-8">
+              <div>
+                <label className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                  Resume (PDF preferred)
+                </label>
+                <label className="flex items-center justify-center border border-white/30 
+                                  rounded-lg px-6 py-4 cursor-pointer 
+                                  hover:border-white transition-colors">
+                  <input
+                    type="file"
+                    name="resume"
+                    accept=".pdf,.doc,.docx"
+                    className="hidden"
+                    onChange={(e) => {
+                    }}
+                  />
+                  <span className="text-[12px] leading-relaxed text-white/85 opacity-70">
+                    Click to add resume
+                  </span>
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                  What interests you about working with our practice?
+                </label>
+                <textarea
+                  name="motivation"
+                  maxLength={300}
+                  rows={5}
+                  required
+                  placeholder="max 300 characters"
+                  className="text-[12px] leading-relaxed text-white/85
+                           placeholder:text-white/35 opacity-70  
+                           w-full bg-transparent border border-white/20 rounded-lg 
+                           px-4 py-3 focus:outline-none focus:border-white/60 
+                           resize-none transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                  Is there anything else you'd like us to know?
+                </label>
+                <textarea
+                  name="notes"
+                  rows={4}
+                  placeholder="Optional"
+                  className="text-[12px] leading-relaxed text-white/85
+                           placeholder:text-white/35 opacity-70  
+                           w-full bg-transparent border border-white/20 rounded-lg 
+                           px-4 py-3 focus:outline-none focus:border-white/60 
+                           resize-none transition-colors"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="submit"
+                  className="border text-[13px] uppercase tracking-widest 
+                           border-white/20 rounded-lg px-10 py-5 
+                           transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
+                           hover:border-white/60"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  )}
+    </div>
+  );
+};
+
+
+
+const UserQuestion = ({ question, setQuestion, onSubmit, isSubmitted }) => {
+  return (
+    <div className="w-[420px]">
+      <div className="bg-white rounded-[32px] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.05)]">
+        <div className="text-sm font-canelathin text-neutral-700 mb-3">
+          My question is...
+        </div>
+        <div className="relative">
+          <input
+            type="text"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !isSubmitted) onSubmit();
+            }}
+            placeholder={isSubmitted ? "Question sent" : "Type your question here..."}
+            disabled={isSubmitted}
+            className={`
+              w-full bg-neutral-100 rounded-full px-4 py-3 font-ibmplex text-[12px] outline-none
+              ${isSubmitted 
+                ? 'text-neutral-500 placeholder:text-neutral-400 cursor-default' 
+                : 'placeholder:text-neutral-400'
+              }
+            `}
+          />
+          <button
+            onClick={onSubmit}
+            disabled={isSubmitted || !question.trim()}
+            className={`
+              absolute right-1 top-1/2 -translate-y-1/2 
+              w-10 h-10 rounded-full 
+              flex items-center justify-center text-lg
+              transition-all duration-200
+              ${isSubmitted || !question.trim()
+                ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
+                : 'bg-white shadow hover:shadow-md text-neutral-900'
+              }
+            `}
+          >
+            {isSubmitted ? '✓' : '→'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+const UserContact = ({ 
+  contactMethod, 
+  setContactMethod, 
+  contactValue, 
+  setContactValue, 
+  onSubmit,
+  isSubmitted 
+}) => {
+  const contactOptions = [
+    { value: "email", label: "📧 Email", placeholder: "your@email.com" },
+    { value: "phone", label: "📱 Phone", placeholder: "(123) 456-7890" },
+    { value: "other", label: "🕊️ Other", placeholder: "Instagram, LinkedIn, etc." }
+  ];
+
+  return (
+    <div className="w-[420px]">
+      <div className="bg-white rounded-[32px] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.05)]">
+        <div className="text-sm font-canelathin text-neutral-700 mb-3">
+          You can reach me via...
+        </div>
+        
+        <div className="flex gap-2 mb-4">
+          {contactOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => !isSubmitted && setContactMethod(option.value)}
+              disabled={isSubmitted}
+              className={`
+                flex-1 px-3 py-2 rounded-full text-[11px] font-ibmplex
+                transition-all duration-200
+                ${isSubmitted && contactMethod === option.value
+                  ? 'bg-neutral-900 text-white'
+                  : contactMethod === option.value 
+                    ? 'bg-neutral-900 text-white' 
+                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                }
+                ${isSubmitted ? 'cursor-default opacity-80' : ''}
+              `}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative">
+          <input
+            type="text"
+            value={contactValue}
+            onChange={(e) => !isSubmitted && setContactValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !isSubmitted) onSubmit();
+            }}
+            placeholder={isSubmitted 
+              ? "Contact info saved!" 
+              : (contactOptions.find(opt => opt.value === contactMethod)?.placeholder || "How can we reach you?")
+            }
+            disabled={isSubmitted}
+            className={`
+              w-full bg-neutral-100 rounded-full px-4 py-3 font-ibmplex text-[12px] outline-none
+              ${isSubmitted 
+                ? 'text-neutral-500 placeholder:text-neutral-400 cursor-default' 
+                : 'placeholder:text-neutral-400'
+              }
+            `}
+          />
+          <button
+            onClick={onSubmit}
+            disabled={isSubmitted || !contactMethod || !contactValue.trim()}
+            className={`
+              absolute right-1 top-1/2 -translate-y-1/2 
+              w-10 h-10 rounded-full 
+              flex items-center justify-center text-lg
+              transition-all duration-200
+              ${isSubmitted || !contactMethod || !contactValue.trim()
+                ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
+                : 'bg-white shadow hover:shadow-md text-neutral-900'
+              }
+            `}
+          >
+            {isSubmitted ? '✓' : '→'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
+const OfficeContactPrompt = ({ name }) => {
+  return (
+    <div className="max-w-[520px]">
+      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-ibmplex text-[12px] leading-snug">
+        Got it{name ? `, ${name}` : ""}! 🤍<br />
+        How should we reach you — email or phone?
+      </div>
+    </div>
+  );
+};
+
+
+
+const OfficeFinalThankYou = ({ name, contactMethod }) => {
+  const getContactEmoji = () => {
+    switch(contactMethod) {
+      case 'email': return '📧';
+      case 'phone': return '📱';
+      default: return '🕊️';
+    }
+  };
+
+  return (
+    <div className="max-w-[520px]">
+      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-ibmplex text-[12px] leading-snug">
+        Perfect{name ? `, ${name}` : ""}! {getContactEmoji()}<br />
+        We'll be in touch within 24 hours. 👋
+      </div>
+    </div>
+  );
+};
+
+
+const OfficeFollowUp = ({ intent, setIntent }) => {
+  const options = [
+    "Book an appointment",
+    "Apply for a job",
+    "Ask a question",
+  ];
+
+  return (
+    <div className="w-[520px]">
+      <div className="bg-white rounded-[36px] px-8 py-7 shadow-[0_18px_45px_rgba(0,0,0,0.06)]">
+        <div className="text-[12px] font-ibmplex mb-6">
+          I would like to…
+        </div>
+        <div className="font-ibmplex text-[12px] flex flex-col gap-5">
+          {options.map((option) => (
+            <button
+              key={option}
+              onClick={() => setIntent(option)}
+              className="flex items-center justify-between text-left text-neutral-500 hover:text-neutral-800 transition-colors"
+            >
+              <span>{option}</span>
+              <span className={`
+                w-4 h-4 rounded-full border flex items-center justify-center
+                ${intent === option ? "border-neutral-900" : "border-neutral-300"}
+              `}>
+                {intent === option && (
+                  <span className="w-2 h-2 rounded-full bg-neutral-900" />
+                )}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const OfficeQuestionPrompt = () => {
+  return (
+    <div className="max-w-[520px]">
+            <div className="text-sm font-canelathin text-neutral-500 mb-2">
+        <strong className="text-neutral-800">Smile Coordinator</strong>, Office
+      </div>
+      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-ibmplex text-[12px] leading-snug">
+        What's on your mind?
+      </div>
+    </div>
+  );
+};
+
+const OfficeGreeting = ({ name }) => {
+  return (
+    <div className="max-w-[520px]">
+            <div className="text-sm font-canelathin text-neutral-500 mb-2">
+        <strong className="text-neutral-800">Smile Coordinator</strong>, Office
+      </div>
+      <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] font-ibmplex text-[12px] leading-snug">
+        Hi{name ? `, ${name}` : ""}! 👽 
+        <br />
+        What can we do for you today?
+      </div>
+    </div>
+  );
+};
+
+const OfficeMessage = () => {
+  return (
+    <div className="max-w-[520px]">
+      <div className="text-sm font-canelathin text-neutral-500 mb-2">
+        <strong className="text-neutral-800">Smile Coordinator</strong>, Office
+      </div>
+      <div className="font-ibmplex bg-white rounded-full px-6 py-4 text-[12px] leading-snug shadow-[0_12px_30px_rgba(0,0,0,0.04)]">
+        Hey there 👋 what should we call you?
+      </div>
+    </div>
+  );
+};
+
+
+
+const UserResponse = ({ name, setName, onSubmit }) => {
+  return (
+    <div className="w-[420px]">
+      <div className="bg-white rounded-[32px] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.05)]">
+        <div className="text-sm font-canelathin text-neutral-700 mb-3">
+          I go by...
+        </div>
+        <div className="relative">
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onSubmit();
+            }}
+            placeholder="Your name"
+            className="w-full bg-neutral-100 rounded-full px-4 py-3 font-ibmplex text-[12px] outline-none placeholder:text-neutral-400"
+          />
+          <button
+            onClick={onSubmit}
+            className="absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow flex items-center justify-center text-lg"
+          >
+            →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const OfficeTyping = () => {
+  return (
+    <div className="bg-white rounded-full px-6 py-4 shadow-[0_12px_30px_rgba(0,0,0,0.04)] flex gap-2 items-center">
+      <Dot delay="0ms" />
+      <Dot delay="150ms" />
+      <Dot delay="300ms" />
+    </div>
+  );
+};
+
+const Dot = ({ delay }) => (
+  <span
+    className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce"
+    style={{ animationDelay: delay }}
+  />
+);
+
+
+
+class MousePointer {
+  constructor() {
+    this.x = window.innerWidth * 0.5;
+    this.y = window.innerHeight * 0.5;
+    this.normal = { x: 0, y: 0 };
+    this.isDown = false;
+
+    this._setupListeners();
+  }
+
+  _setupListeners() {
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    const target = document.querySelector(".l-canvas") || window;
+
+    if (isTouch) {
+      target.addEventListener("touchstart", (e) => this._handleStart(e));
+      target.addEventListener("touchend", () => this._handleEnd());
+      target.addEventListener("touchmove", (e) => this._handleMove(e), {
+        passive: false,
+      });
+    } else {
+      window.addEventListener("mousedown", (e) => this._handleStart(e));
+      window.addEventListener("mouseup", () => this._handleEnd());
+      window.addEventListener("mousemove", (e) => this._handleMove(e));
+    }
+  }
+
+  _handleStart(e) {
+    this.isDown = true;
+    this._updatePosition(e);
+  }
+
+  _handleEnd() {
+    this.isDown = false;
+  }
+
+  _handleMove(e) {
+    this._updatePosition(e);
+  }
+
+  _updatePosition(e) {
+    const pos = this._getEventPosition(e);
+    this.x = pos.x;
+    this.y = pos.y;
+
+    this.normal.x = this.x / window.innerWidth;
+    this.normal.y = this.y / window.innerHeight;
+  }
+
+  _getEventPosition(e) {
+    if (e.touches) {
+      return {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+    }
+    return {
+      x: e.clientX,
+      y: e.clientY,
+    };
+  }
+}
+
+const mousePointer = new MousePointer();
+
+const map = (num, toMin, toMax, fromMin, fromMax) => {
+  if (num <= fromMin) return toMin;
+  if (num >= fromMax) return toMax;
+  const p = (toMax - toMin) / (fromMax - fromMin);
+  return (num - fromMin) * p + toMin;
+};
+
+const useWindowSize = () => {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return size;
+};
+
+     

@@ -174,7 +174,7 @@ export default function Page() {
     <div ref={mainSection} className="EarlyOrthodontics-section MainSection` --dark --in-view" style={{ backgroundColor: 'var(--blue)', '--91c5acce': 5, }}>
       <div className="MainSection-wrap">
         <div className="MainSection-head">
-          <h2 className="SplitText AnimatedSplitText --anim-title MainSection-headTitle AppTitle-1 --in-view" style={{ opacity: 1, visibility: "inherit" }}>
+          <h2 className="font-canelathin SplitText AnimatedSplitText --anim-title MainSection-headTitle AppTitle-1 --in-view" style={{ opacity: 1, visibility: "inherit" }}>
             {"Early Orthodontics".split(" ").map((word, i) => (
               <div key={word} style={{ display: "block", textAlign: "start", position: "relative" }} className={`head-lines head-lines${i + 1}`}>
                 {word.split("").map((char, j) => (
@@ -259,7 +259,7 @@ export default function Page() {
 
 
   <img
-    src="/images/dentaltest.png"
+    src="/images/age7.png"
     alt="Facial silhouette"
     loading="lazy"
     className="profile-image"
@@ -362,7 +362,21 @@ export default function Page() {
                   <div className="MainSectionItem-imageContainerInner">
                     <div className="AppImage MainSectionItem-image">
                       <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/checkeredheatmap.png')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
-                      <img src="/images/checkeredheatmap.png" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
+                       <video
+  src="/videos/airway.mp4"
+  width="480"
+  height="348"
+  autoPlay
+  loop
+  muted
+  playsInline
+  preload="metadata"
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+  }}
+/>
                     </div>
                   </div>
                 </div>
@@ -378,7 +392,7 @@ export default function Page() {
                    <h3 className="MainSectionItem-contentTitle AppTitle-3">Future Frey Smiles</h3>
                   <div className="MainSectionItem-contentText">
                     <div className="AppText-12">
-                      <p className="AppParagraph">Timely intervention makes it possible to manage many cases more comfortably with clear aligners which gently guide growth while also functioning as protective mouth guards during sports or severe dental protrustion. Through proactive, individualized treatment we're able to minimize disruption, improve oral hygiene, reduce enamel damage, and help children avoid the physical and emotional burden of bulky appliances later on.</p>
+                        <p className="AppParagraph">Once you visit us, we take care of the rest. If no treatment is needed right away, we'll place your child on a customized Growth & Guidance schedule—part of our Frey Smiles Club—our way of keeping an eye on how things are progressing until treatment is indicated. </p>
                     </div>
                   </div>
                 </div>
@@ -403,7 +417,8 @@ export default function Page() {
                  
                   <div className="MainSectionItem-contentText">
                     <div className="AppText-12">
-                      <p className="AppParagraph">Once you visit us, we take care of the rest. If no treatment is needed right away, we'll place your child on a customized Growth & Guidance schedule—part of our Frey Smiles Club—our way of keeping an eye on how things are progressing until treatment is indicated. </p>
+                                            <p className="AppParagraph">Timely intervention makes it possible to manage many cases more comfortably with clear aligners which gently guide growth while also functioning as protective mouth guards during sports or severe dental protrustion. Through proactive, individualized treatment we're able to minimize disruption, improve oral hygiene, reduce enamel damage, and help children avoid the physical and emotional burden of bulky appliances later on.</p>
+                   
                     </div>
                   </div>
                 </div>
@@ -449,7 +464,7 @@ export default function Page() {
                   <div className="MainSectionItem-imageContainerInner">
                     <div className="AppImage MainSectionItem-image">
                       <div className="AppImage-image --placeholder --lazy --loaded" style={{ objectFit: 'cover', backgroundImage: "url('/images/test/hover.jpg')", backgroundSize: 'cover', backgroundPosition: 'center center', }} ></div>
-                      <img src="/images/firstmeeting.jpg" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
+                      <img src="/images/benchmockup.png" width="480" height="348" alt="Video of a landscape" loading="lazy" style={{ objectFit: 'cover' }}></img>
                     </div>
                   </div>
                 </div>

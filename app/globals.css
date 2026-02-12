@@ -6820,7 +6820,7 @@ top: 55%;
   justify-content: space-between;
   width: 100%;
   flex-wrap: wrap;
-  gap: 0; /* Remove gap, we'll use flex spacing */
+  gap: 0; 
 }
 
 .creativity-footer__link {
@@ -7467,3 +7467,5 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
     font-size: 3rem;
   }
 }
+
+
