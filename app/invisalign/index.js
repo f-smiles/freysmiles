@@ -887,15 +887,6 @@ const Invisalign = () => {
   }, []);
 
   const uniformsRef = useRef();
-
-  const services = [
-    { normal: "Nearly ", italic: "Invisible" },
-    { normal: "Designed for Comfort" },
-    { normal: "Tailored to", italic: "You" },
-    { normal: "Removable", italic: "& Flexible" },
-    { normal: "Proven", italic: "Results" },
-  ];
-
   const sectionRef = useRef(null);
   const sphereRef = useRef(null);
 
@@ -1066,16 +1057,6 @@ useEffect(() => {
     <AtmosphereBackground />
 
 
-
-      <div className="absolute inset-0 -z-10">
-        {/* <Canvas
-          orthographic
-          camera={{ zoom: 1, position: [0, 0, 1] }}
-          className="w-full h-full"
-        >
-          <ShaderBackground />
-        </Canvas> */}
-      </div>
       {/* <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black "> */}
 
 <section className="relative min-h-screen flex flex-col">
@@ -1353,9 +1334,7 @@ With over 40 years of combined experience, our doctors were the first in the reg
             </div>
 <div   className="relative border-t border-gray-300">
 <div className="relative py-8 md:py-10">
-    <div aria-hidden className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12 text-[90px] md:text-[140px] lg:text-[170px] leading-none font-neuehaas45 text-black select-none z-0">
-      1
-    </div>
+
     <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
       <div className="hidden md:block md:col-span-6 lg:col-span-7" />
       <div className="col-span-12 md:col-span-6 lg:col-span-5 justify-self-end max-w-[760px] pt-8 md:pt-10">
@@ -1371,15 +1350,6 @@ With over 40 years of combined experience, our doctors were the first in the reg
 </div>
  <div  className="relative border-t border-gray-300">
   <div className="relative py-8 md:py-10">
-
-    <div
-      aria-hidden
-      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
-                 text-[90px] md:text-[140px] lg:text-[170px]
-                 leading-none font-neuehaas45 text-black select-none z-0"
-    >
-      2
-    </div>
 
  
     <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
@@ -1402,14 +1372,6 @@ With over 40 years of combined experience, our doctors were the first in the reg
       <div className="relative border-t border-gray-300">
   <div className="relative py-8 md:py-10">
 
-    <div
-      aria-hidden
-      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
-                 text-[90px] md:text-[140px] lg:text-[170px]
-                 leading-none font-neuehaas45 text-black select-none z-0"
-    >
-      3
-    </div>
 
  
     <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
@@ -1436,14 +1398,6 @@ With over 40 years of combined experience, our doctors were the first in the reg
       <div  className="relative border-t border-gray-300">
   <div className="relative py-8 md:py-10">
 
-    <div
-      aria-hidden
-      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
-                 text-[90px] md:text-[140px] lg:text-[170px]
-                 leading-none font-neuehaas45 text-black select-none z-0"
-    >
-      4
-    </div>
 
  
     <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
@@ -1467,14 +1421,6 @@ With over 40 years of combined experience, our doctors were the first in the reg
       <div className="relative border-t border-gray-300">
   <div className="relative py-8 md:py-10">
 
-    <div
-      aria-hidden
-      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
-                 text-[90px] md:text-[140px] lg:text-[170px]
-                 leading-none font-neuehaas45 text-black select-none z-0"
-    >
-      5
-    </div>
 
  
     <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
@@ -1494,15 +1440,6 @@ With over 40 years of combined experience, our doctors were the first in the reg
 </div>
                 <div className="relative border-t border-gray-300">
   <div className="relative py-8 md:py-10">
-
-    <div
-      aria-hidden
-      className="big-number absolute left-6 md:left-10 lg:left-16 top-10 md:top-12
-                 text-[90px] md:text-[140px] lg:text-[170px]
-                 leading-none font-neuehaas45 text-black select-none z-0"
-    >
-      6
-    </div>
 
  
     <div className="grid grid-cols-12 gap-6 px-6 md:px-10 lg:px-16">
@@ -2042,7 +1979,9 @@ function Scene() {
     </div>
   );
 }
-const vertexShader = `
+
+function Atmosphere() {
+  const vertexShader = `
 attribute float randomAmp;
   varying vec2 vUv;
   void main() {
@@ -2114,23 +2053,15 @@ float wave(vec2 p, float phase, float freq) {
     worldUV.x *= uResolution.x / uResolution.y;       
     vec2 uv = worldUV;
     vec2 uv0 = worldUV;
-// -------------------------------------------------
-// BASE GRAY (keep this foundation)
-// -------------------------------------------------
 
 vec3 baseGray = vec3(0.72, 0.74, 0.76);
 vec3 softGray = vec3(0.68, 0.70, 0.72);
 
-// Start with neutral gray gradient
 vec3 bg = mix(softGray, baseGray, vUv.x);
 
 
-// -------------------------------------------------
-// ETHEREAL BLUE DRIFT (large curved sweep)
-// -------------------------------------------------
-
-vec3 etherealBlue = vec3(0.78, 0.84, 0.90);   // light cool drift
-vec3 creamEdge    = vec3(0.88, 0.92, 0.96);   // near-white lift
+vec3 etherealBlue = vec3(0.78, 0.84, 0.90);  
+vec3 creamEdge    = vec3(0.88, 0.92, 0.96);  
 
 float arc = smoothstep(
     1.35,
@@ -2141,54 +2072,31 @@ float arc = smoothstep(
 bg = mix(bg, etherealBlue, arc * 0.35);
 
 
-// -------------------------------------------------
-// VERTICAL LUMINOUS BAND (soft column)
-// -------------------------------------------------
-
 float verticalBand = exp(-abs(uv0.x - 0.12) * 4.0);
 bg = mix(bg, creamEdge, verticalBand * 0.24);
 
 
-// -------------------------------------------------
-// SOFT TOP DIFFUSION (light atmospheric lift)
-// -------------------------------------------------
 
 float verticalFalloff = smoothstep(1.0, -0.5, uv0.y);
 bg = mix(bg, vec3(0.80, 0.83, 0.87), verticalFalloff * 0.12);
 
 
-// -------------------------------------------------
-// SUBTLE NOISE
-// -------------------------------------------------
-
 float fog = snoise(uv0 * 0.35 + uTime * 0.02) * 0.025;
 bg += fog;
 
 
-// -------------------------------------------------
-// GENTLE DESATURATION (avoid powder look)
-// -------------------------------------------------
-
 float luma = dot(bg, vec3(0.299, 0.587, 0.114));
 bg = mix(vec3(luma), bg, 0.95);
-
-
-// -------------------------------------------------
-// LIGHT EXPOSURE LIFT
-// -------------------------------------------------
 
 bg *= 1.04;
 
 vec3 col = bg;
-    //  Mouse interaction
   
     vec2 mouse_uv = (uMouse - 0.5) * 2.0;
     mouse_uv.x *= uResolution.x / uResolution.y;
     float mouseDist = length(uv - mouse_uv);
 
     uv += (mouse_uv - uv) * (0.3 / (mouseDist + 0.5));  // warp space toward cursor
-
-
 
     vec2 uvNoise = uv * rot(uTime * 0.05);
     float waveNoise = snoise(uvNoise * 2.0 + uTime * 0.2) * 0.1;
@@ -2202,7 +2110,7 @@ vec3 ribbonCoreGlow = vec3(0.55, 0.90, 1.00);
 
     for (int i = 0; i < 2; i++) {
       float slotIndex = float(i);
-      float slotTime = uTime + slotIndex * 5.17;           // offset ribbon
+      float slotTime = uTime + slotIndex * 5.17;       
       float lifeIndex = floor(slotTime / segLen);
       float tNorm = fract(slotTime / segLen);  
 
@@ -2210,7 +2118,6 @@ vec3 ribbonCoreGlow = vec3(0.55, 0.90, 1.00);
       float centerY = mix(2.4, -2.4, tNorm);
       float yRel = worldUV.y - centerY;
 
-      // Fade out when ribbon is far off-screen 
       float bodyMask = 1.0 - smoothstep(1.4, 1.8, abs(yRel));
       float timeMask = smoothstep(0.05, 0.15, tNorm) * (1.0 - smoothstep(0.85, 0.95, tNorm));
       float visibility = bodyMask * timeMask;
@@ -2231,17 +2138,14 @@ vec3 ribbonCoreGlow = vec3(0.55, 0.90, 1.00);
 float thickness = 0.2;  // slightly tighter
 float intensity = 0.18;  // much brighter
         
-        // base core (keep it tight)
+
 float core = smoothstep(thickness, 0.0, abs(distX)) * intensity * visibility;
 
-        // secondary soft body (reduced to prevent spread)
 float body = exp(-pow(distX / (thickness * 1.4), 2.0))
              * intensity * 0.7 * visibility;
 
-        // gentle atmospheric haze (reduced)
         float haze = exp(-abs(distX) * 8.0) * 0.025 * visibility; // Tighter
 
-        // inner core glow (more intense but tighter)
 float innerCore = exp(-pow(distX / (thickness * 0.45), 2.0)) 
                   * intensity * 0.9 * visibility;
 
@@ -2249,10 +2153,8 @@ float innerCore = exp(-pow(distX / (thickness * 0.45), 2.0))
         grad = pow(grad, 1.1);     // soften
         float edge = smoothstep(0.15, 0.75, abs(distX));
 
-        // core color: dark → mid with more blue emphasis
         vec3 coreTone = mix(ribbonDark, ribbonMid, grad * 1.2);
 
-        // final ribbon color: core → bright edge with blue emphasis
         vec3 ribbonColor = mix(coreTone, ribbonLight, edge * 0.8);
 
         // Add the inner core glow with the special glow color
@@ -2260,21 +2162,17 @@ float innerCore = exp(-pow(distX / (thickness * 0.45), 2.0))
 col += ribbonColor * body * 0.6;
 col += ribbonColor * haze * 0.4;
         
-        // Add a subtle blue tint to the entire ribbon area
         float ribbonArea = max(core, body) * 0.5; // Reduced from 0.7
         col = mix(col, mix(col, vec3(0.75, 0.88, 0.98), 0.1), ribbonArea); // Reduced
       }
     }
     
-    
-    // Final tightening of overall brightness
     col = clamp(col, 0.0, 1.0);
     col = pow(col, vec3(0.97)); // Slightly less contrast
     gl_FragColor = vec4(col, 1.0);
   }
 `;
 
-function Atmosphere() {
   const materialRef = useRef();
   const mouse = useRef(new THREE.Vector2(0.5, 0.5));
   const targetMouse = useRef(new THREE.Vector2(0.5, 0.5));
@@ -2317,8 +2215,8 @@ function Atmosphere() {
         fragmentShader={fragmentShader}
         uniforms={{
           uTime: { value: 0 },
-          uResolution: { value: new THREE.Vector2() },      // ← Vector2
-          uMouse: { value: new THREE.Vector2(0.5, 0.5) },   // ← Vector2
+          uResolution: { value: new THREE.Vector2() },      //  Vector2
+          uMouse: { value: new THREE.Vector2(0.5, 0.5) },   // Vector2
         }}
       />
     </mesh>
