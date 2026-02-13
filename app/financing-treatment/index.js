@@ -11,7 +11,7 @@ import {
 } from "ogl";
 import {
   Canvas,
-  useFrame,
+  ,
   useThree,
   useLoader,
   extend,

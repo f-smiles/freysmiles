@@ -1055,17 +1055,31 @@ useEffect(() => {
 
     <Scene />
     <AtmosphereBackground />
+<div className="h-screen w-full">
+<div className="absolute inset-0">
+  <Canvas
+  camera={{ fov: 50, position: [0, 0, 18] }}
+  gl={{
+    toneMapping: THREE.ACESFilmicToneMapping,
+    outputColorSpace: THREE.SRGBColorSpace,
+  }}
+>
+    <ExposureControl exposure={2} />
+  <EnvMap />
 
+  <ambientLight intensity={0.3} />
+  <PortalJourneyModel />
+</Canvas>
+</div>
+
+
+</div>
 
       {/* <div className=" font-neuehaas35 min-h-screen px-8 pt-32 relative text-black "> */}
 
 <section className="relative min-h-screen flex flex-col">
   <div className="flex flex-col md:flex-row justify-between items-start px-8 md:px-16 gap-12">
-    {/* Left */}
-        <div className="relative pt-[33vh]">
-       <div className="relative">
 
-  <div className="fixed top-0 left-0 w-full h-screen pointer-events-none flex items-center justify-center">
 
 {/* 
     <div id="text-holder" className="text-container max-w-[500px] px-6">
@@ -1089,11 +1103,10 @@ useEffect(() => {
       </div>
       
     </div> */}
-  </div>
 
 
   {/* <div id="scroll-zone" className="h-[200vh]"></div> */}
-</div>
+
   {/* The science of Invisalign is not in the clear aligners, but in overall design and prescription for tooth movement by our doctors based on the full facial evaluation to craft the smile that is perfect for you. Our experienced doctors are top experts and providers in clear aligner treatment. */}
     {/* <h2 className="text-5xl md:text-6xl leading-tight text-[#0f172a]">
             <Copy>
@@ -1109,7 +1122,7 @@ useEffect(() => {
               </div>
             </Copy>
           </h2> */}
-        </div>
+
 
 
   </div>
@@ -1624,7 +1637,163 @@ Treatment Duration
 
 export default Invisalign;
 
+function ExposureControl({ exposure = 1.2 }) {
+  const { gl } = useThree()
 
+  useEffect(() => {
+    gl.toneMappingExposure = exposure
+  }, [gl, exposure])
+
+  return null
+}
+
+function EnvMap() {
+  const { scene, gl } = useThree()
+  const texture = useLoader(THREE.TextureLoader, "/images/environment-map.jpg")
+
+  useEffect(() => {
+    const pmrem = new THREE.PMREMGenerator(gl)
+    pmrem.compileEquirectangularShader()
+
+    const envMap = pmrem.fromEquirectangular(texture).texture
+
+    scene.environment = envMap
+
+    texture.dispose()
+    pmrem.dispose()
+  }, [texture, scene, gl])
+
+  return null
+}
+function PortalJourneyModel() {
+  const { scene } = useGLTF("/models/human.glb")
+  const { camera } = useThree()
+  const groupRef =useRef(null)
+
+
+
+  // useFrame((state, delta) => {
+  //   if (groupRef.current) {
+  //     groupRef.current.rotation.y += delta * 0.4; 
+  //   }
+  // });
+  useEffect(() => {
+    scene.updateMatrixWorld(true)
+
+    const box = new THREE.Box3().setFromObject(scene)
+    const center = box.getCenter(new THREE.Vector3())
+    const size = box.getSize(new THREE.Vector3())
+
+
+scene.position.x -= center.x
+scene.position.z -= center.z
+scene.position.y -= center.y - size.y * 0.1
+
+scene.traverse((child) => {
+  if (child.isMesh) {
+    const material = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      metalness: 1,
+      roughness: 0.48,
+      transmission: 0.0,
+      envMapIntensity: 1.5,
+      clearcoat: 0.4,
+      clearcoatRoughness: 0.5,
+    })
+
+    material.onBeforeCompile = (shader) => {
+
+      shader.uniforms.uTime = { value: 0 }
+
+      shader.fragmentShader =
+        `
+        uniform float uTime;
+
+        mat4 rotationMatrix(vec3 axis, float angle) {
+          axis = normalize(axis);
+          float s = sin(angle);
+          float c = cos(angle);
+          float oc = 1.0 - c;
+
+          return mat4(
+            oc * axis.x * axis.x + c,
+            oc * axis.x * axis.y - axis.z * s,
+            oc * axis.z * axis.x + axis.y * s,
+            0.0,
+
+            oc * axis.x * axis.y + axis.z * s,
+            oc * axis.y * axis.y + c,
+            oc * axis.y * axis.z - axis.x * s,
+            0.0,
+
+            oc * axis.z * axis.x - axis.y * s,
+            oc * axis.y * axis.z + axis.x * s,
+            oc * axis.z * axis.z + c,
+            0.0,
+
+            0.0, 0.0, 0.0, 1.0
+          );
+        }
+
+        vec3 rotate(vec3 v, vec3 axis, float angle) {
+          mat4 m = rotationMatrix(axis, angle);
+          return (m * vec4(v, 1.0)).xyz;
+        }
+        ` + shader.fragmentShader
+
+      shader.fragmentShader = shader.fragmentShader.replace(
+        '#include <envmap_physical_pars_fragment>',
+        `
+        #include <envmap_physical_pars_fragment>
+        `
+      )
+
+shader.fragmentShader = shader.fragmentShader.replace(
+  '#include <normal_fragment_maps>',
+  `
+  #include <normal_fragment_maps>
+
+  vec3 transformedNormal = rotate(
+    normal,
+    vec3(0.0, 1.0, 0.0),
+    uTime * 0.1
+  );
+
+  normal = transformedNormal;
+  `
+)
+
+      material.userData.shader = shader
+    }
+
+    child.material = material
+  }
+})
+
+    const desiredHeight = 13
+    const scaleFactor = desiredHeight / size.y
+    scene.scale.setScalar(scaleFactor)
+
+    camera.fov = 50
+    camera.position.set(0, 0, 18) 
+    camera.lookAt(0, 0, 0)
+
+    camera.updateProjectionMatrix()
+  }, [scene, camera])
+
+useFrame((state) => {
+  scene.traverse((child) => {
+    if (child.isMesh && child.material.userData.shader) {
+      child.material.userData.shader.uniforms.uTime.value = state.clock.elapsedTime
+    }
+  })
+})
+  return(
+  <group ref={groupRef}>
+  <primitive object={scene} />
+  </group> 
+  )
+}
 const SUNSET_THEME = {
   sphere: [
     "#e6f1f7", 
