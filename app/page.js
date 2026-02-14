@@ -81,80 +81,7 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils";
 extend({ MeshLambertMaterial: THREE.MeshLambertMaterial });
 
 
-function DoorModel() {
-  const { scene, animations } = useGLTF("/models/openingclosingdoor3d.glb");
-  const mixer = useRef();
-  const actionRef = useRef();
-  const scroll = useThreeScroll();
 
-  useEffect(() => {
-    const textureLoader = new THREE.TextureLoader();
-    const matcap = textureLoader.load("/images/matcap-green-yellow-pink.png");
-    scene.traverse((child) => {
-      if (child.isMesh) {
-        child.material = new THREE.MeshMatcapMaterial({ matcap });
-        child.material.needsUpdate = true;
-      }
-    });
-  }, [scene]);
-
-  useEffect(() => {
-    if (!animations.length) return;
-
-    mixer.current = new THREE.AnimationMixer(scene);
-
-    const relevantClips = animations.filter(
-      (a) => a.name === "Action" || a.name === "Curve.006Action"
-    );
-
-    relevantClips.forEach((clip) => {
-      const action = mixer.current.clipAction(clip);
-      action.reset();
-      action.paused = true;
-      action.play();
-      action.time = 0;
-    });
-
-    actionRef.current = relevantClips.map((clip) =>
-      mixer.current.clipAction(clip)
-    );
-    mixer.current.update(0);
-  }, [animations, scene]);
-
-  useFrame((_, delta) => {
-    if (!mixer.current || !actionRef.current) return;
-  
-    const offset = scroll.offset;
-  
-    actionRef.current.forEach((action) => {
-      const clip = action.getClip();
-      const clipStart = 0;
-      const clipEnd = clip.duration * 0.68;
-  
-      // Door starts opening at t = 0.15, finishes at t = 0.4
-      const openStart = 0.15;
-      const openEnd = 0.4;
-  
-      const openProgress = THREE.MathUtils.clamp(
-        (offset - openStart) / (openEnd - openStart),
-        0,
-        1
-      );
-  
-      const clampedTime = THREE.MathUtils.lerp(clipStart, clipEnd, openProgress);
-  
-      action.time = THREE.MathUtils.damp(action.time, clampedTime, 100, delta);
-    });
-  
-    mixer.current.update(delta);
-  });
-
-  return (
-    <group position={[0, -0.5, -5]} rotation={[0, Math.PI, 0]} scale={6.25}>
-      <primitive object={scene} />
-    </group>
-  );
-}
 
 
 function Tunnel() {
@@ -280,7 +207,80 @@ function PortalScene() {
 //   return null;
 // }
 
+function DoorModel() {
+  const { scene, animations } = useGLTF("/models/openingclosingdoor3d.glb");
+  const mixer = useRef();
+  const actionRef = useRef();
+  const scroll = useThreeScroll();
 
+  useEffect(() => {
+    const textureLoader = new THREE.TextureLoader();
+    const matcap = textureLoader.load("/images/matcap-green-yellow-pink.png");
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material = new THREE.MeshMatcapMaterial({ matcap });
+        child.material.needsUpdate = true;
+      }
+    });
+  }, [scene]);
+
+  useEffect(() => {
+    if (!animations.length) return;
+
+    mixer.current = new THREE.AnimationMixer(scene);
+
+    const relevantClips = animations.filter(
+      (a) => a.name === "Action" || a.name === "Curve.006Action"
+    );
+
+    relevantClips.forEach((clip) => {
+      const action = mixer.current.clipAction(clip);
+      action.reset();
+      action.paused = true;
+      action.play();
+      action.time = 0;
+    });
+
+    actionRef.current = relevantClips.map((clip) =>
+      mixer.current.clipAction(clip)
+    );
+    mixer.current.update(0);
+  }, [animations, scene]);
+
+  useFrame((_, delta) => {
+    if (!mixer.current || !actionRef.current) return;
+  
+    const offset = scroll.offset;
+  
+    actionRef.current.forEach((action) => {
+      const clip = action.getClip();
+      const clipStart = 0;
+      const clipEnd = clip.duration * 0.68;
+  
+      // Door starts opening at t = 0.15, finishes at t = 0.4
+      const openStart = 0.15;
+      const openEnd = 0.4;
+  
+      const openProgress = THREE.MathUtils.clamp(
+        (offset - openStart) / (openEnd - openStart),
+        0,
+        1
+      );
+  
+      const clampedTime = THREE.MathUtils.lerp(clipStart, clipEnd, openProgress);
+  
+      action.time = THREE.MathUtils.damp(action.time, clampedTime, 100, delta);
+    });
+  
+    mixer.current.update(delta);
+  });
+
+  return (
+    <group position={[0, -0.5, -5]} rotation={[0, Math.PI, 0]} scale={6.25}>
+      <primitive object={scene} />
+    </group>
+  );
+}
 const OceanScene = () => {
   useFrame((state) => {
     state.gl.setClearColor(0x000000, 0);

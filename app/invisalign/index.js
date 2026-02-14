@@ -32,7 +32,7 @@ import Link from "next/link";
 // import DotPattern from "../svg/DotPattern";
 import {
   motion,
-  useScroll,
+  // useScroll,
   useSpring,
   useAnimation,
   useTransform,
@@ -47,7 +47,7 @@ import * as THREE from "three";
 import { Vector2 } from "three";
 import { Canvas, useLoader, useFrame, useThree, extend } from "@react-three/fiber";
 import { useMemo } from "react";
-import { Environment, OrbitControls, useTexture, shaderMaterial, useGLTF, Text, Center, Stars,
+import { Environment, OrbitControls, useTexture, shaderMaterial, useGLTF, Text, Center, Stars, ScrollControls, useScroll
 } from "@react-three/drei";
 import { TextureLoader, CubeTextureLoader } from "three";
 
@@ -80,8 +80,6 @@ const DistortedImage = ({ imageSrc, xOffset = 0, yOffset = 0 }) => {
     </mesh>
   );
 };
-
-
 
 const MorphingSphere = ({sectionRef}) => {
   const canvasRef = useRef(null);
@@ -1053,25 +1051,28 @@ useEffect(() => {
   <div className="orb orb--right" />
 </section> */}
 
-    <Scene />
+
     <AtmosphereBackground />
+
+
 <div className="h-screen w-full">
-<div className="absolute inset-0">
-  <Canvas
-  camera={{ fov: 50, position: [0, 0, 18] }}
+
+
+    <Canvas
+  camera={{ fov: 42, position: [0, 0, 12] }}
   gl={{
     toneMapping: THREE.ACESFilmicToneMapping,
     outputColorSpace: THREE.SRGBColorSpace,
   }}
 >
-    <ExposureControl exposure={2} />
-  <EnvMap />
-
+  <ExposureControl exposure={2} />
+  <Environment files="/images/qwantani_dusk_2_puresky_4k.hdr" />
   <ambientLight intensity={0.3} />
-  <PortalJourneyModel />
-</Canvas>
-</div>
 
+  <ScrollControls pages={3} damping={0.1}>
+    <PortalJourneyModel />
+  </ScrollControls>
+</Canvas>
 
 </div>
 
@@ -1637,7 +1638,7 @@ Treatment Duration
 
 export default Invisalign;
 
-function ExposureControl({ exposure = 1.2 }) {
+function ExposureControl({ exposure = 2 }) {
   const { gl } = useThree()
 
   useEffect(() => {
@@ -1666,147 +1667,264 @@ function EnvMap() {
   return null
 }
 function PortalJourneyModel() {
-  const { scene } = useGLTF("/models/human.glb")
-  const { camera } = useThree()
-  const groupRef =useRef(null)
+  const { scene } = useGLTF("/models/femalehead.glb")
+  const { camera, gl } = useThree()
+  const anomalyRef = useRef()
+  const groupRef = useRef(null)
+  const materialRef = useRef(null)
 
-
-
-  // useFrame((state, delta) => {
-  //   if (groupRef.current) {
-  //     groupRef.current.rotation.y += delta * 0.4; 
-  //   }
-  // });
   useEffect(() => {
     scene.updateMatrixWorld(true)
+  scene.position.set(0, 0, 0)
+  scene.scale.set(1, 1, 1)
 
     const box = new THREE.Box3().setFromObject(scene)
     const center = box.getCenter(new THREE.Vector3())
     const size = box.getSize(new THREE.Vector3())
 
+    scene.position.x -= center.x
+    scene.position.z -= center.z
+    scene.position.y -= center.y
 
-scene.position.x -= center.x
-scene.position.z -= center.z
-scene.position.y -= center.y - size.y * 0.1
+    const desiredHeight = 14; 
+    const scaleFactor = desiredHeight / size.y;
+    scene.scale.setScalar(scaleFactor);
 
-scene.traverse((child) => {
-  if (child.isMesh) {
-    const material = new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      metalness: 1,
-      roughness: 0.48,
-      transmission: 0.0,
-      envMapIntensity: 1.5,
-      clearcoat: 0.4,
-      clearcoatRoughness: 0.5,
-    })
+    scene.position.y = -5;
+scene.updateMatrixWorld(true)
 
-    material.onBeforeCompile = (shader) => {
+const finalBox = new THREE.Box3().setFromObject(scene)
+const finalCenter = finalBox.getCenter(new THREE.Vector3())
+const finalSize = finalBox.getSize(new THREE.Vector3())
 
-      shader.uniforms.uTime = { value: 0 }
+console.log("FINAL CENTER", finalCenter)
+console.log("FINAL SIZE", finalSize)
+  if (anomalyRef.current) {
+    anomalyRef.current.position.set(
+      finalCenter.x - finalSize.x * 0.2,
+      finalCenter.y + finalSize.y * 0.26,
+      finalCenter.z - finalSize.z * -.1
+    )
 
-      shader.fragmentShader =
-        `
-        uniform float uTime;
-
-        mat4 rotationMatrix(vec3 axis, float angle) {
-          axis = normalize(axis);
-          float s = sin(angle);
-          float c = cos(angle);
-          float oc = 1.0 - c;
-
-          return mat4(
-            oc * axis.x * axis.x + c,
-            oc * axis.x * axis.y - axis.z * s,
-            oc * axis.z * axis.x + axis.y * s,
-            0.0,
-
-            oc * axis.x * axis.y + axis.z * s,
-            oc * axis.y * axis.y + c,
-            oc * axis.y * axis.z - axis.x * s,
-            0.0,
-
-            oc * axis.z * axis.x - axis.y * s,
-            oc * axis.y * axis.z + axis.x * s,
-            oc * axis.z * axis.z + c,
-            0.0,
-
-            0.0, 0.0, 0.0, 1.0
-          );
-        }
-
-        vec3 rotate(vec3 v, vec3 axis, float angle) {
-          mat4 m = rotationMatrix(axis, angle);
-          return (m * vec4(v, 1.0)).xyz;
-        }
-        ` + shader.fragmentShader
-
-      shader.fragmentShader = shader.fragmentShader.replace(
-        '#include <envmap_physical_pars_fragment>',
-        `
-        #include <envmap_physical_pars_fragment>
-        `
-      )
-
-shader.fragmentShader = shader.fragmentShader.replace(
-  '#include <normal_fragment_maps>',
-  `
-  #include <normal_fragment_maps>
-
-  vec3 transformedNormal = rotate(
-    normal,
-    vec3(0.0, 1.0, 0.0),
-    uTime * 0.1
-  );
-
-  normal = transformedNormal;
-  `
-)
-
-      material.userData.shader = shader
-    }
-
-    child.material = material
+    anomalyRef.current.scale.setScalar(finalSize.y * 0.025)
   }
-})
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        
+        if (!child.geometry.attributes.normal) {
+          child.geometry.computeVertexNormals();
+        }
 
-    const desiredHeight = 13
-    const scaleFactor = desiredHeight / size.y
-    scene.scale.setScalar(scaleFactor)
+        const material = new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: 0 },
+            viewVector: { value: camera.position.clone() },
+            
+            baseColorVec: { value: new THREE.Color(0xFFF5FA) }, // Pale pinkish white
+            fresnelColorVec: { value: new THREE.Color(0xC8B3FF) }, // Soft Violet/Blue
+            rimColorVec: { value: new THREE.Color(0xFFCD80) }, // Warm Orange/Yellow
+            
 
-    camera.fov = 50
-    camera.position.set(0, 0, 18) 
-    camera.lookAt(0, 0, 0)
+            iridIntensity: { value: 0.2 },
+            iridMix: { value: 0.7 },
+            fresnelPower: { value: 3.0 },
+            fresnelMix: { value: 1.5 },
+            rimPower: { value: 4.0 },
+            rimMix: { value: 0.8 },
+            timeSpeed: { value: 0.2 },
+            rotationSpeed: { value: 0.01 },
+          },
+          
+          vertexShader: `
+            uniform float time;
+            uniform float rotationSpeed;
+            
+            varying vec3 vNormal;
+            varying vec3 vViewPosition;
+            varying vec3 vWorldPosition;
+            varying vec3 vPosition;
+            varying vec3 vOriginalNormal;
 
-    camera.updateProjectionMatrix()
-  }, [scene, camera])
+            // Rotation matrix functions
+            mat3 rotationX(float angle) {
+              float s = sin(angle);
+              float c = cos(angle);
+              return mat3(
+                1.0, 0.0, 0.0,
+                0.0, c, -s,
+                0.0, s, c
+              );
+            }
 
+            mat3 rotationY(float angle) {
+              float s = sin(angle);
+              float c = cos(angle);
+              return mat3(
+                c, 0.0, s,
+                0.0, 1.0, 0.0,
+                -s, 0.0, c
+              );
+            }
+
+            mat3 rotationZ(float angle) {
+              float s = sin(angle);
+              float c = cos(angle);
+              return mat3(
+                c, -s, 0.0,
+                s, c, 0.0,
+                0.0, 0.0, 1.0
+              );
+            }
+
+            void main() {
+                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                vViewPosition = -mvPosition.xyz;
+                vec3 objectNormal = normal;      
+         float angle = time * 0.05;
+mat3 rotation = rotationY(angle);
+vec3 rotatedNormal = rotation * normal;
+vNormal = normalize(normalMatrix * rotatedNormal);
+                vOriginalNormal = normalize(normalMatrix * objectNormal);
+                vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+                vPosition = position;
+                gl_Position = projectionMatrix * mvPosition;
+            }
+          `,
+          
+          fragmentShader: `
+            uniform float time;
+            uniform float timeSpeed;
+            uniform vec3 viewVector;
+
+            uniform vec3 baseColorVec;
+            uniform float iridIntensity;
+            uniform float iridMix;
+
+            uniform vec3 fresnelColorVec;
+            uniform float fresnelPower;
+            uniform float fresnelMix;
+
+            uniform vec3 rimColorVec;
+            uniform float rimPower;
+            uniform float rimMix;
+
+            uniform float rotationSpeed;
+
+            varying vec3 vNormal;
+            varying vec3 vViewPosition;
+            varying vec3 vWorldPosition;
+            varying vec3 vPosition;
+            varying vec3 vOriginalNormal;
+
+            void main() {
+                // Normalize inputs - use the rotated normal from vertex shader
+                vec3 normal = normalize(vNormal);
+                vec3 viewDir = normalize(vViewPosition);
+                
+                float dotNV = abs(dot(normal, viewDir));
+                dotNV = clamp(dotNV, 0.0, 1.0);
+                
+                float posVariation = sin(vPosition.x * 10.0 + time * 2.0) * 
+                                    cos(vPosition.y * 8.0 + time * 1.5) * 0.15;
+
+                vec3 hueShift = 0.5 + 0.5 * cos(
+                    time * timeSpeed + 
+                    dotNV * 8.0 + 
+                    vec3(0.0, 2.0, 4.0) 
+                );
+                
+                vec3 irid = baseColorVec + hueShift * iridIntensity;
+                
+                vec3 finalColor = irid * iridMix;
+                
+                // Fresnel edge glow - will now shift and flow across the surface
+                float fresnel = pow(1.0 - dotNV, fresnelPower);
+                finalColor += fresnel * fresnelColorVec * fresnelMix;
+                
+                // Rim lighting - will create flowing highlights
+                float rim = pow(1.0 - dotNV, rimPower);
+                finalColor += rim * rimColorVec * rimMix;
+                
+                finalColor += posVariation * 0.2;
+                
+                float normalShift = sin(normal.x * 5.0 + time) * 
+                                   cos(normal.y * 5.0 + time * 0.8) * 
+                                   sin(normal.z * 5.0 + time * 1.2);
+                finalColor += vec3(normalShift * 0.1, normalShift * 0.05, normalShift * 0.15);
+                
+                finalColor = max(finalColor, vec3(0.0));
+                
+                gl_FragColor = vec4(finalColor, 1.0);
+            }
+          `,
+          side: THREE.DoubleSide,
+        });
+
+        child.material = material;
+        materialRef.current = material;
+      
+        material.needsUpdate = true;
+      }
+    });
+
+    camera.position.set(-22, 2, 10);
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+
+  }, [scene, camera]);
+
+
+const scroll = useScroll()
+const camStart = new THREE.Vector3(-22, 2, 10)
+const camNearSkull = new THREE.Vector3(-8, 1.5, 8)
+const camInside = new THREE.Vector3(0, 0, -2)
 useFrame((state) => {
+  const t = scroll.offset
+
   scene.traverse((child) => {
-    if (child.isMesh && child.material.userData.shader) {
-      child.material.userData.shader.uniforms.uTime.value = state.clock.elapsedTime
+    if (child.isMesh && child.material.uniforms?.time) {
+      child.material.uniforms.time.value = state.clock.elapsedTime
     }
   })
-})
-  return(
-  <group ref={groupRef}>
-  <primitive object={scene} />
-  </group> 
-  )
-}
-const SUNSET_THEME = {
-  sphere: [
-    "#e6f1f7", 
-    "#d9ecf5",
-    "#cfdff0",
-    "#e4dcf4",
-    "#f0f4fa", 
-  ],
-  hdr: 'https://www.spacespheremaps.com/wp-content/uploads/HDR_silver_and_gold_nebulae.hdr',
-};
 
-const pointMaterialShader = {
-  vertexShader: `
+  if (t < 0.5) {
+    const ease = Math.pow(t / 0.5, 0.9)
+
+    camera.position.lerpVectors(
+      camStart,
+      camNearSkull,
+      ease
+    )
+
+    camera.lookAt(0, 0, 0)
+  } else {
+    const ease = (t - 0.5) / 0.5
+
+    camera.position.lerpVectors(
+      camNearSkull,
+      camInside,
+      ease
+    )
+
+    camera.lookAt(0, 0, -3)
+  }
+})
+  return (
+<group ref={groupRef}>
+  <primitive object={scene} />
+  <group ref={anomalyRef}>
+    <CosmicField />
+  </group>
+</group>
+  );
+}
+const createPointMaterial = (mouseRef) => {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      time: { value: 0 },
+      uMouse: { value: new THREE.Vector2(-10, -10) }
+    },
+    vertexShader: `
       attribute float size;
       attribute vec3 randomDir;
       varying vec3 vColor;
@@ -1814,7 +1932,6 @@ const pointMaterialShader = {
       varying float vMouseEffect;
       uniform float time;
       uniform vec2 uMouse;
-      uniform float uExplode;
       
       vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
       vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -1822,332 +1939,321 @@ const pointMaterialShader = {
       vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
       
       float snoise(vec3 v) {
-          const vec2 C = vec2(1.0/6.0, 1.0/3.0);
-          const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
-          vec3 i = floor(v + dot(v, C.yyy));
-          vec3 x0 = v - i + dot(i, C.xxx);
-          vec3 g = step(x0.yzx, x0.xyz);
-          vec3 l = 1.0 - g;
-          vec3 i1 = min(g.xyz, l.zxy);
-          vec3 i2 = max(g.xyz, l.zxy);
-          vec3 x1 = x0 - i1 + C.xxx;
-          vec3 x2 = x0 - i2 + C.yyy;
-          vec3 x3 = x0 - D.yyy;
-          i = mod289(i);
-          vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));
-          float n_ = 0.142857142857;
-          vec3 ns = n_ * D.wyz - D.xzx;
-          vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
-          vec4 x_ = floor(j * ns.z);
-          vec4 y_ = floor(j - 7.0 * x_);
-          vec4 x = x_ * ns.x + ns.yyyy;
-          vec4 y = y_ * ns.x + ns.yyyy;
-          vec4 h = 1.0 - abs(x) - abs(y);
-          vec4 b0 = vec4(x.xy, y.xy);
-          vec4 b1 = vec4(x.zw, y.zw);
-          vec4 s0 = floor(b0)*2.0 + 1.0;
-          vec4 s1 = floor(b1)*2.0 + 1.0;
-          vec4 sh = -step(h, vec4(0.0));
-          vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
-          vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
-          vec3 p0 = vec3(a0.xy,h.x);
-          vec3 p1 = vec3(a0.zw,h.y);
-          vec3 p2 = vec3(a1.xy,h.z);
-          vec3 p3 = vec3(a1.zw,h.w);
-          vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
-          p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
-          vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
-          m = m * m;
-          return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+        const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+        const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+        vec3 i = floor(v + dot(v, C.yyy));
+        vec3 x0 = v - i + dot(i, C.xxx);
+        vec3 g = step(x0.yzx, x0.xyz);
+        vec3 l = 1.0 - g;
+        vec3 i1 = min(g.xyz, l.zxy);
+        vec3 i2 = max(g.xyz, l.zxy);
+        vec3 x1 = x0 - i1 + C.xxx;
+        vec3 x2 = x0 - i2 + C.yyy;
+        vec3 x3 = x0 - D.yyy;
+        i = mod289(i);
+        vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+        float n_ = 0.142857142857;
+        vec3 ns = n_ * D.wyz - D.xzx;
+        vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+        vec4 x_ = floor(j * ns.z);
+        vec4 y_ = floor(j - 7.0 * x_);
+        vec4 x = x_ * ns.x + ns.yyyy;
+        vec4 y = y_ * ns.x + ns.yyyy;
+        vec4 h = 1.0 - abs(x) - abs(y);
+        vec4 b0 = vec4(x.xy, y.xy);
+        vec4 b1 = vec4(x.zw, y.zw);
+        vec4 s0 = floor(b0)*2.0 + 1.0;
+        vec4 s1 = floor(b1)*2.0 + 1.0;
+        vec4 sh = -step(h, vec4(0.0));
+        vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+        vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+        vec3 p0 = vec3(a0.xy,h.x);
+        vec3 p1 = vec3(a0.zw,h.y);
+        vec3 p2 = vec3(a1.xy,h.z);
+        vec3 p3 = vec3(a1.zw,h.w);
+        vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+        p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+        vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+        m = m * m;
+        return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
       }
       void main() {
-          vColor = color;
-          
-          float explodeAmount = uExplode * 35.0;
-          float turbulence = snoise(position * 0.4 + randomDir * 2.0 + time * 0.8) * 10.0 * uExplode;
-          vec3 explodedPos = position + randomDir * (explodeAmount + turbulence);
-          vec3 mixedPos = mix(position, explodedPos, uExplode);
-          
-          vec4 projectedVertex = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          vec2 screenPos = projectedVertex.xy / projectedVertex.w;
-          float mouseDist = distance(screenPos, uMouse);
-          float mouseEffect = 1.0 - smoothstep(0.0, 0.05, mouseDist);
-          vMouseEffect = mouseEffect;
-          
-          float noiseFrequency = 0.4;
-          float noiseAmplitude = (0.6 + mouseEffect * 0.3) * (1.0 - uExplode);
-          vec3 noiseInput = mixedPos * noiseFrequency + time * 0.5;
-          vec3 displacement = vec3(snoise(noiseInput), snoise(noiseInput + vec3(10.0)), snoise(noiseInput + vec3(20.0)));
-          vec3 finalPos = mixedPos + displacement * noiseAmplitude;
-          float pulse = sin(time + length(position)) * 0.1 + 1.0;
-          
-          vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
-          vDistance = -mvPosition.z;
-          gl_PointSize = size * (400.0 / -mvPosition.z) * pulse * (1.0 + vMouseEffect * 0.5);
-          gl_Position = projectionMatrix * mvPosition;
+        vColor = color;
+        
+        float noiseFrequency = 0.7;
+        float noiseAmplitude = (0.8 + vMouseEffect * 3.5);
+        vec3 noiseInput = position * noiseFrequency + time * 0.15;
+        vec3 displacement = vec3(snoise(noiseInput), snoise(noiseInput + vec3(10.0)), snoise(noiseInput + vec3(20.0)));
+        vec3 finalPos = position + displacement * noiseAmplitude;
+        
+        vec4 projectedVertex = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        vec2 screenPos = projectedVertex.xy / projectedVertex.w;
+        float mouseDist = distance(screenPos, uMouse);
+        float mouseEffect = 1.0 - smoothstep(0.0, 0.25, mouseDist);
+        vMouseEffect = mouseEffect;
+        
+        float pulse = sin(time + length(position)) * 0.1 + 1.0;
+        
+        vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
+        vDistance = -mvPosition.z;
+        gl_PointSize = size * (400.0 / -mvPosition.z) * pulse * (1.0 + vMouseEffect * 0.5);
+        gl_Position = projectionMatrix * mvPosition;
       }
-  `,
-fragmentShader: `
-    varying vec3 vColor;
-    varying float vMouseEffect;
-      varying float vDistance;
-    uniform float time;
-    uniform float uExplode;
-
-    float rand(vec2 co){
-        return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-    }
-
-    void main() {
+    `,
+    fragmentShader: `
+      varying vec3 vColor;
+      varying float vMouseEffect;
+      uniform float time;
+      
+      float rand(vec2 co){ return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453); }
+      void main() {
         vec2 cxy = 2.0 * gl_PointCoord - 1.0;
         float r = dot(cxy, cxy);
         if (r > 1.0) discard;
-
-  float core = exp(-r * 55.0);  
-
-float outer = exp(-r * 6.5);
-outer = pow(outer, 1.2);  
-
-   float sparkleShift = rand(gl_PointCoord + time * 0.7) * 0.15;
-vec3 sparkleTint = vec3(
-  1.0,
-  0.95 - sparkleShift,
-  1.05
-);
-
-vec3 blueCore = vec3(0.55, 0.72, 1.0);
-vec3 coreGlow = blueCore * pow(core, 0.7) * 0.08;
-vec3 coloredHalo = vColor * sparkleTint * outer * 0.9;
-
-vec3 finalColor = coloredHalo + coreGlow;
-float depthSat = smoothstep(6.0, 2.0, vDistance);
-finalColor = mix(
-  vec3(dot(finalColor, vec3(0.333))),
-  finalColor,
-  depthSat * 0.85
-);
-float alpha = core * 0.05 + outer * 0.18;
-        gl_FragColor = vec4(finalColor, alpha);
-    }
-`
-};
-function CosmicScene({ scrollProgress, mouse }) {
-  const ringsRef = useRef();
-  const lightRef = useRef();
-  const { scene } = useThree();
-
-  useEffect(() => {
-    const loader = new RGBELoader();
-    loader.load(SUNSET_THEME.hdr, (texture) => {
-      texture.mapping = THREE.EquirectangularReflectionMapping;
-      scene.background = texture;
-      scene.environment = texture;
-    });
-  }, [scene]);
-
-  const ringsGroup = useMemo(() => {
-    const group = new THREE.Group();
-    const vs = pointMaterialShader.vertexShader;
-    const fs = pointMaterialShader.fragmentShader;
-
-    if (!vs || !fs) return group;
-
-for (let r = 0; r < 8; r++) {
-  const ringCount = 4000;
-
-  const ringGeo  = new THREE.BufferGeometry();
-  const ringPos  = new Float32Array(ringCount * 3);
-  const ringCol  = new Float32Array(ringCount * 3);
-  const ringSize = new Float32Array(ringCount);
-  const ringRand = new Float32Array(ringCount * 3);
-
-  for (let i = 0; i < ringCount; i++) {
-    const i3 = i * 3;
-    const angle = (i / ringCount) * Math.PI * 2;
-
-    const baseRadius = 5.5 + r * 0.6;
-    const jitter = (Math.random() - 0.5) * 1.5;
-    const ellipseBias = 1.0 + Math.sin(i * 0.5) * 0.2;
-
-    const radius = baseRadius * ellipseBias + jitter;
-    const vertical = (Math.random() - 0.5) * (0.4 + r * 0.05);
-
-    ringPos[i3]     = Math.cos(angle) * radius;
-    ringPos[i3 + 1] = vertical;
-    ringPos[i3 + 2] = Math.sin(angle) * radius;
-
-    ringSize[i] = Math.random() * 0.15 + 0.08;
-
-    ringRand[i3]     = Math.random() * 2 - 1;
-    ringRand[i3 + 1] = Math.random() * 2 - 1;
-    ringRand[i3 + 2] = Math.random() * 2 - 1;
-
-
-    const PINK =  [  "#7fb8ff", 
-  "#8fc4ff", 
-  "#9fcfff", 
-  "#6faeff",
-  "#84bfff", ];
-
-    const t = i / ringCount;
-    const idx = Math.floor(t * (PINK.length - 1));
-
-    const c1 = new THREE.Color(PINK[idx]);
-    const c2 = new THREE.Color(PINK[Math.min(idx + 1, PINK.length - 1)]);
-    const f = (t * (PINK.length - 1)) % 1;
-
-    const col = c1.clone().lerp(c2, f);
-
-    ringCol[i3]     = col.r;
-    ringCol[i3 + 1] = col.g;
-    ringCol[i3 + 2] = col.b;
-  }
-
-  ringGeo.setAttribute("position", new THREE.BufferAttribute(ringPos, 3));
-  ringGeo.setAttribute("color",    new THREE.BufferAttribute(ringCol, 3));
-  ringGeo.setAttribute("size",     new THREE.BufferAttribute(ringSize, 1));
-  ringGeo.setAttribute("randomDir",new THREE.BufferAttribute(ringRand, 3));
-
-  const material = new THREE.ShaderMaterial({
-  uniforms: {
-    time: { value: 0 },
-    uMouse: { value: new THREE.Vector2() },
-    uExplode: { value: 0 },
-  },
-  vertexShader: vs,
-  fragmentShader: fs,
-  vertexColors: true,
-  transparent: true,
-  depthWrite: false,
-
+        
+        float glow = exp(-r * 3.5) + vMouseEffect * 0.5;
+        float twinkle = rand(gl_PointCoord + time) * 0.5 + 0.5;
+        
+        vec3 finalColor = vColor * (1.1 + sin(time * 0.8) * 0.2 + vMouseEffect * 0.5) * glow * twinkle;
+        gl_FragColor = vec4(finalColor, smoothstep(0.0, 1.0, glow));
+      }
+    `,
+    vertexColors: true,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
   });
+};
 
-  const ring = new THREE.Points(ringGeo, material);
+const defaultTheme = {
+  sphere: [
+    new THREE.Color().setHSL(0.45, 0.8, 0.6), 
+    new THREE.Color().setHSL(0.50, 0.8, 0.6), 
+    new THREE.Color().setHSL(0.55, 0.8, 0.6), 
+    new THREE.Color().setHSL(0.60, 0.8, 0.6), 
+    new THREE.Color().setHSL(0.65, 0.8, 0.6), 
+  ],
+  rings: (i, count, j, pCount) => {
+    const baseHue = 0.45 + (i / count) * 0.15; 
+    const variation = (j / pCount) * 0.03; 
+    const hue = Math.min(baseHue + variation, 0.65);
+    return new THREE.Color().setHSL(hue, 0.8, 0.6);
+  }
+};
 
-  ring.rotation.x = Math.random() * Math.PI;
-  ring.rotation.y = Math.random() * Math.PI;
+const LensflareSprite = () => {
+  const texture = useTexture('https://threejs.org/examples/textures/lensflare/lensflare0.png');
+  
+  return (
+    <sprite position={[0, 0, 0]} scale={[2, 2, 1]}>
+      <spriteMaterial 
+        map={texture} 
+        blending={THREE.AdditiveBlending} 
+        depthWrite={false}
+        transparent
+        opacity={0.8}
+      />
+    </sprite>
+  );
+};
 
-  group.add(ring);
-}
+const SpiralSphere = ({ mouseRef }) => {
+  const pointsRef = useRef();
+  const materialRef = useRef(createPointMaterial(mouseRef));
+  
+  const [geometry] = useMemo(() => {
+    const particleCount = 40000;
+    const radius = 5;
+    
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+    const sizes = new Float32Array(particleCount);
+    const randomDirs = new Float32Array(particleCount * 3).fill(0);
 
-    return group;
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+      const phi = Math.acos(-1 + (2 * i) / particleCount);
+      const theta = Math.sqrt(particleCount * Math.PI) * phi;
+      
+      positions[i3] = radius * Math.cos(theta) * Math.sin(phi);
+      positions[i3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
+      positions[i3 + 2] = radius * Math.cos(phi);
+      
+      sizes[i] = Math.random() * 0.2 + 0.1;
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+      const colorPos = (i / particleCount) * (defaultTheme.sphere.length - 1);
+      const c1 = defaultTheme.sphere[Math.floor(colorPos)];
+      const c2 = defaultTheme.sphere[Math.min(Math.floor(colorPos) + 1, defaultTheme.sphere.length - 1)];
+      const color = new THREE.Color().copy(c1).lerp(c2, colorPos - Math.floor(colorPos));
+      
+      colors[i3] = color.r;
+      colors[i3 + 1] = color.g;
+      colors[i3 + 2] = color.b;
+    }
+
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geom.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    geom.setAttribute('randomDir', new THREE.BufferAttribute(randomDirs, 3));
+
+    return [geom];
   }, []);
-
-  useEffect(() => {
-    if (!ringsRef.current) return;
-    ringsGroup.children.forEach((child) => ringsRef.current.add(child));
-  }, [ringsGroup]);
-
-  const sceneGroupRef = useRef();
 
   useFrame((state) => {
-    sceneGroupRef.current.scale.setScalar(0.5);
-    const t = state.clock.getElapsedTime();
-    const explodeAmount = THREE.MathUtils.smoothstep(scrollProgress, 0, 1);
-
-    ringsRef.current.rotation.y = t * 0.0001;
-
-    // expand + move rings toward camera
-    ringsRef.current.scale.setScalar(1 + scrollProgress * 3);
-    ringsRef.current.position.z = -scrollProgress * 6.0;
-
-    ringsRef.current.children.forEach((ring, i) => {
-      ring.rotation.z += 0.001 * (i + 1);
-      ring.rotation.x += 0.0003 * (i + 1);
-
-      const m = ring.material.uniforms;
-      m.time.value = t;
-      m.uMouse.value.copy(mouse);
-      m.uExplode.value = explodeAmount;
-    });
+    if (materialRef.current) {
+      materialRef.current.uniforms.time.value = state.clock.elapsedTime;
+      materialRef.current.uniforms.uMouse.value.copy(mouseRef.current);
+    }
+    if (pointsRef.current) {
+      const breathe = 1 + Math.sin(state.clock.elapsedTime * 1.5) * 0.05;
+      pointsRef.current.scale.set(breathe, breathe, breathe);
+    }
   });
 
-const sunRef = useRef();
   return (
-    <>
-      <fog attach="fog" args={["#000", 10, 100]} />
-      <ambientLight intensity={0.3} />
-      <pointLight ref={lightRef} position={[0, 0, 0]} intensity={2} />
-      
-      <group ref={sceneGroupRef}>
-        <group ref={ringsRef} />
-      </group>
-      
-      {/* <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} /> */}
-      {/* <OrbitControls enableDamping dampingFactor={0.04} rotateSpeed={0.6} minDistance={10} maxDistance={50} /> */}
-
-      <EffectComposer>
-<Bloom
-  luminanceThreshold={0.28}
-  luminanceSmoothing={0.85}
-  intensity={0.25}
-  radius={0.45}
-/>
-      </EffectComposer>
-    </>
+    <points ref={pointsRef} geometry={geometry} material={materialRef.current} />
   );
-}
+};
 
-function Scene() {
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const mouse = useRef(new THREE.Vector2(-10, -10));
+const OrbitRings = ({ mouseRef }) => {
+  const groupRef = useRef();
+  const materialsRef = useRef([]);
+
+  const rings = useMemo(() => {
+    const rings = [];
+    const count = 8;
+    const radius = 7.5;
+    const thickness = 0.6;
+
+    for (let i = 0; i < count; i++) {
+      const particleCount = 4000;
+      const positions = new Float32Array(particleCount * 3);
+      const colors = new Float32Array(particleCount * 3);
+      const sizes = new Float32Array(particleCount);
+      const randomDirs = new Float32Array(particleCount * 3);
+      const randomVec = new THREE.Vector3();
+
+      for (let j = 0; j < particleCount; j++) {
+        const j3 = j * 3;
+        const angle = (j / particleCount) * Math.PI * 2;
+        const radiusVariation = radius + (Math.random() - 0.5) * thickness;
+        
+        positions[j3] = Math.cos(angle) * radiusVariation;
+        positions[j3 + 1] = (Math.random() - 0.5) * (thickness * 0.5);
+        positions[j3 + 2] = Math.sin(angle) * radiusVariation;
+        
+        sizes[j] = Math.random() * 0.15 + 0.08;
+        
+        randomVec.set(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize();
+        randomDirs[j3] = randomVec.x;
+        randomDirs[j3 + 1] = randomVec.y;
+        randomDirs[j3 + 2] = randomVec.z;
+
+        const color = defaultTheme.rings(i, count, j, particleCount);
+        colors[j3] = color.r;
+        colors[j3 + 1] = color.g;
+        colors[j3 + 2] = color.b;
+      }
+
+      const geom = new THREE.BufferGeometry();
+      geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geom.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+      geom.setAttribute('randomDir', new THREE.BufferAttribute(randomDirs, 3));
+
+      const material = createPointMaterial(mouseRef);
+      materialsRef.current.push(material);
+
+      rings.push(
+        <points 
+          key={i} 
+          geometry={geom} 
+          material={material}
+          rotation={[Math.random() * Math.PI, Math.random() * Math.PI, 0]}
+        />
+      );
+    }
+    return rings;
+  }, [mouseRef]);
+
+  useFrame((state) => {
+    const time = state.clock.elapsedTime;
+    materialsRef.current.forEach(mat => {
+      mat.uniforms.time.value = time;
+      mat.uniforms.uMouse.value.copy(mouseRef.current);
+    });
+
+    if (groupRef.current) {
+      groupRef.current.children.forEach((ring, index) => {
+        const speed = 0.0005 * (index + 1);
+        ring.rotation.z += speed;
+        ring.rotation.x += speed * 0.3;
+        ring.rotation.y += speed * 0.2;
+        ring.scale.y = 1.0 + Math.sin(time * 3.0 + index * 0.5) * 0.2;
+      });
+    }
+  });
+
+  return <group ref={groupRef}>{rings}</group>;
+};
+
+const CosmicField = ({ 
+  mouseRef: externalMouseRef,
+  enableBloom = true,
+  enableFog = true,
+  enableRotation = true 
+}) => {
+  const internalMouseRef = useRef(new THREE.Vector2(-10, -10));
+  const groupRef = useRef();
+  const { scene } = useThree();
+
+  const mouseRef = externalMouseRef || internalMouseRef;
 
   useEffect(() => {
-    const updateScroll = () => {
-      const scrollY = window.scrollY;
-      const maxScroll = document.body.scrollHeight - window.innerHeight;
-      setScrollProgress(Math.min(scrollY / maxScroll, 1));
-    };
-
-    const updateMouse = (e) => {
-      mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    };
-
-    window.addEventListener("scroll", updateScroll);
-    window.addEventListener("mousemove", updateMouse);
+    if (enableFog) {
+      scene.fog = new THREE.FogExp2(0x000000, 0.008);
+    }
 
     return () => {
-      window.removeEventListener("scroll", updateScroll);
-      window.removeEventListener("mousemove", updateMouse);
+      if (enableFog) {
+        scene.fog = null;
+      }
     };
-  }, []);
+  }, [scene, enableFog]);
+
+  useEffect(() => {
+    if (!externalMouseRef) {
+      const handleMouseMove = (event) => {
+        mouseRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouseRef.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      return () => window.removeEventListener('mousemove', handleMouseMove);
+    }
+  }, [externalMouseRef, mouseRef]);
+
+  useFrame(() => {
+    if (enableRotation && groupRef.current) {
+      groupRef.current.rotation.y += 0.0005;
+    }
+  });
 
   return (
-    <div style={{ width: "100vw", height: "300vh" }}>
-      {/* <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          pointerEvents: "none",
-        }}
-      >
-        <Canvas gl={{ alpha: true }} style={{ background: "transparent" }}>
-          <CosmicScene
-            mouse={mouse.current}
-            scrollProgress={scrollProgress}
-          />
-        </Canvas>
-      </div> */}
+    <group ref={groupRef}>
+      <SpiralSphere mouseRef={mouseRef} />
+      <OrbitRings mouseRef={mouseRef} />
 
-      <div
-      className="font-neuehaas45"
-        style={{
-          position: "fixed",
-          bottom: 30,
-          left: "50%",
-          transform: "translateX(-50%)",
-          color: "white",
-          opacity: scrollProgress < 0.9 ? 1 : 0,
-          transition: "opacity 0.8s",
-          pointerEvents: "none",
-        }}
-      >
-        Scroll to explore
-      </div>
-    </div>
+      
+      <pointLight position={[0, 0, 0]} intensity={2} distance={0} />
+      {/* <LensflareSprite /> */}
+    </group>
   );
-}
+};
 
 function Atmosphere() {
   const vertexShader = `
