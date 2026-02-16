@@ -35,18 +35,20 @@ export default function ProductCarousel({ variants }: { variants: VariantsWithIm
           variant.variantName === selectedVariant &&
           variant.variantImages.map((img, index) => {
             return (
-              <CarouselItem key={img.url} className="bg-[#FCFAF5] flex flex-col justify-center">
-                {img.url ? (
-                  <Image
-                    priority
-                    className="w-full h-auto rounded-md"
-                    width={1280}
-                    height={720}
-                    src={img.url}
-                    alt={img.name}
-                  />
-                ) : null}
-              </CarouselItem>
+  <CarouselItem
+  key={img.url}
+  className="bg-[#FCFAF5] flex justify-center items-center"
+>
+  <div className="relative w-full aspect-[4/3]">
+    <Image
+      fill
+      priority
+      className="object-cover"
+      src={img.url}
+      alt={img.name}
+    />
+  </div>
+</CarouselItem>
             )
         }))}
       </CarouselContent>

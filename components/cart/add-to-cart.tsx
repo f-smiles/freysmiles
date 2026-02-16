@@ -27,26 +27,36 @@ export default function AddToCart({ price, image }: { price: number, image: stri
     <>
 <div className="flex gap-2 mb-4">
 
-  <div className="flex flex-1 gap-2">
-    <Button
-      className="w-1/4 h-12"
+<div className="mb-6">
+
+
+  <div className="flex items-center justify-between w-48 h-12 px-6 border border-gray-200 bg-white">
+    <button
       onClick={() => quantity > 1 && setQuantity(quantity - 1)}
       disabled={quantity <= 1}
+      className="text-xl text-gray-500 hover:text-black transition disabled:opacity-30"
     >
-      <MinusIcon className="w-4 h-4" />
-    </Button>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+</svg>
 
-    <div className="w-1/2 h-12 flex items-center justify-center rounded-sm border border-gray-200 bg-gray-100 text-[12px]">
-      QUANTITY: {quantity}
-    </div>
+    </button>
 
-    <Button
-      className="w-1/4 h-12"
+    <span className="text-base font-neuehaas45 text-black">
+      {quantity}
+    </span>
+
+    <button
       onClick={() => setQuantity(quantity + 1)}
+      className="text-xl text-gray-500 hover:text-black transition"
     >
-      <PlusIcon className="w-4 h-4" />
-    </Button>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+</svg>
+
+    </button>
   </div>
+</div>
 
 
   <button

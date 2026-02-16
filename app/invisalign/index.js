@@ -1064,13 +1064,19 @@ useEffect(() => {
     toneMapping: THREE.ACESFilmicToneMapping,
     outputColorSpace: THREE.SRGBColorSpace,
   }}
+        onCreated={({ scene }) => {
+        // Set up fog exactly like the original
+        scene.fog = new THREE.FogExp2(0x000000, 0.001);
+      }}
 >
   <ExposureControl exposure={2} />
+  
   <Environment files="/images/qwantani_dusk_2_puresky_4k.hdr" />
   <ambientLight intensity={0.3} />
 
   <ScrollControls pages={3} damping={0.1}>
     <PortalJourneyModel />
+    
   </ScrollControls>
 </Canvas>
 
@@ -1915,6 +1921,7 @@ useFrame((state) => {
   <group ref={anomalyRef}>
     <CosmicField />
   </group>
+  
 </group>
   );
 }

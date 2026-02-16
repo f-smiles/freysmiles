@@ -648,11 +648,11 @@ className="
          <div className="flex flex-col justify-center w-1/2 gap-8 text-[14px] text-center font-neuehaas35">
 
 
-     
+     <div className="tracking-wide">
        <Link href="/concierge" > 
-        Concierge
+        Chat with Concierge
        </Link>
-
+</div>
     {/* <p className="mb-2 text-[14px] font-neuehaas35 opacity-70">
       Email:
     </p>

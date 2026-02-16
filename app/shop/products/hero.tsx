@@ -967,11 +967,11 @@ const initTextAnimation = () => {
         /> */}
       </div>
 
-      <div className="scroll-effect__hero-header">
+      {/* <div className="scroll-effect__hero-header">
         <p className="scroll-effect__hero-description">
           <Preloader />
         </p>
-      </div>
+      </div> */}
 
       <canvas className="scroll-effect__hero-canvas" ref={canvasRef} />
 

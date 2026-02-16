@@ -1271,14 +1271,7 @@ transition={{
     </Canvas>
   </div> */}
 
-        <div className="relative z-10 ">
-          
-          <div
-            className="flex justify-between w-full p-10 lg:p-20">
 
-
-          </div>
-        </div>
       </section>
 
     </>
@@ -2185,23 +2178,23 @@ const handleQuestionSubmit = async () => {
   <iframe
     src="https://app.acuityscheduling.com/schedule.php?owner=37690830"
     title="Schedule Appointment"
-    className="w-full h-full"
+    className="w-full h-full z-10"
     frameBorder="0"
     allow="payment"
   />
 
-
-</div>
-      </div>
   <button
     type="button"
     onClick={() =>{ setShowScheduler(false);  setIntent(null);
   setQuestionStep(0);}}
     className="
-      absolute right-12 top-1/2 font-canelathin "
+      absolute right-12 top-24 font-canelathin text-white z-50"
   >
      Back to chat
   </button>
+</div>
+      </div>
+
 
   </div>
 </div>
