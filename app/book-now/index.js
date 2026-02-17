@@ -2224,7 +2224,7 @@ const handleQuestionSubmit = async () => {
   setIntent(null);
   setQuestionStep(0);
 }}
-          className="absolute top-[25%] right-8 text-sm opacity-70 hover:opacity-100 
+          className="absolute top-[1%] right-8 text-sm opacity-70 hover:opacity-100 
                      transition-opacity focus:outline-none rounded px-2 py-1 text-[#EDE5D7] z-10"
         >
           ✕ Close

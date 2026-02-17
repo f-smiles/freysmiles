@@ -1073,9 +1073,10 @@ function Background() {
 const fragment = `
 precision highp float;
 
-uniform vec3 uColor1;   // peach glow
-uniform vec3 uColor2;   // powder lavender blue
-uniform vec3 uColor3;   // slate lavender
+uniform vec3 uColor1;
+uniform vec3 uColor2;  
+uniform vec3 uColor3;  
+uniform vec3 uColor4; 
 uniform float uTime;
 uniform float uScroll;
 
@@ -1124,23 +1125,19 @@ float fbm(vec2 p){
 }
 
 
-// Special pearlescent FBM for the cloud layer
 float pearlCloudFbm(vec2 p, float time) {
   float a = 0.0;
   float w = 0.5;
   float freq = 1.0;
-  
-  // Layer 1: Large, smooth pearlescent waves
+
   a += w * cnoise(p * 0.8 + vec2(time * 0.02, 0.0));
   w *= 0.65;
   freq *= 1.8;
   
-  // Layer 2: Medium detail
   a += w * cnoise(p * freq + vec2(time * 0.03, time * 0.01));
   w *= 0.6;
   freq *= 2.2;
   
-  // Layer 3: Fine pearlescent detail
   a += w * cnoise(p * freq + vec2(time * 0.05, time * 0.02));
   
   return a * 0.5 + 0.5; // Normalize to 0-1
@@ -1179,11 +1176,19 @@ float pearlShimmer(vec2 uv) {
 void main() {
   float n = cnoise(vUv + uScroll + sin(uTime * 0.1));
   float t = 0.5 + 0.5 * n;
-  t = pow(t, 0.25);
+  t = pow(t, 0.5);
   t = mix(t, 1.0, 0.1);
 
-  vec3 color = mix(uColor1, uColor2, t);
+vec3 peachToBlue = mix(uColor1, uColor2, t);
 
+float neutralZone = smoothstep(0.25, 0.75, t);
+neutralZone *= 1.0 - abs(t - 0.5) * 1.6;
+
+vec3 color = mix(peachToBlue, uColor4, neutralZone * 0.22);
+float lavenderBand = smoothstep(0.55, 0.72, t) * 
+                     (1.0 - smoothstep(0.72, 0.88, t));
+
+color = mix(color, uColor2, lavenderBand * 0.15);
   float vign = smoothstep(0.68, 1.10, distance(vUv, vec2(0.5)));
   float cornerMask = smoothstep(0.0, 0.35, distance(vUv, vec2(0.92, 0.06)));
   vign *= cornerMask;
@@ -1191,7 +1196,25 @@ void main() {
 
   float valley = smoothstep(0.50, 0.28, t);
   color = mix(color, uColor3, valley * 0.08);
+float overlap = smoothstep(0.4, 0.65, t) *
+                (1.0 - smoothstep(0.65, 0.9, t));
 
+float grayTopLeft = 1.0 - smoothstep(
+    0.0, 0.8,
+    distance(vUv, vec2(0.15, 0.85))
+);
+
+float grayBottomRight = 1.0 - smoothstep(
+    0.0, 0.9,
+    distance(vUv, vec2(0.85, 0.15))
+);
+
+vec3 coolGray = vec3(0.88, 0.90, 0.93);
+
+color = mix(color, coolGray, grayTopLeft * 0.55);
+color = mix(color, coolGray, grayBottomRight * 0.45);
+vec3 butter = vec3(1.0, 0.98, 0.90);
+color = mix(color, butter, overlap * 0.12);
   float pearlClouds = pearlCloudFbm(
     vUv * 0.8 + 
     vec2(uScroll * 0.15, 0.0) + 
@@ -1204,12 +1227,11 @@ void main() {
   float cloudLayer2 = pearlCloudFbm(vUv * 1.2 + vec2(uTime * 0.02), uTime * 0.7);
 
   float combinedClouds = (cloudLayer1 * 0.6 + cloudLayer2 * 0.4);
-  
 
   float cloudMask = smoothstep(0.4, 0.85, combinedClouds);
 
   float cloudShimmer = pearlShimmer(vUv * 2.0 + vec2(uTime * 0.03));
-  cloudMask *= (1.0 + cloudShimmer * 0.15); // Gentle shimmer enhancement
+cloudMask *= (1.0 + cloudShimmer * 0.06);
 
   vec3 pearlyCloudColor = pearlColor(combinedClouds);
   
@@ -1225,45 +1247,56 @@ void main() {
   pearlyHighlights = smoothstep(0.5, 0.9, pearlyHighlights);
   
   vec3 highlightColor = pearlColor(pearlyHighlights);
-  color = mix(color, highlightColor, pearlyHighlights * 0.15 * (t + 0.3));
+  color = mix(color, highlightColor, pearlyHighlights * 0.08 * (t + 0.2));
   
   vec2 liftCenter = vec2(0.92, 0.06);
   float r = distance(vUv, liftCenter);
   float localLift = 1.0 - smoothstep(0.30, 0.95, r);
   localLift = pow(localLift, 1.4);
   
-  // Pearly lift effect
   vec3 pearlyLift = pearlColor(localLift);
   color = mix(color, pearlyLift, localLift * 0.25);
   
-  // White field with pearlescent quality
   float whiteField = fbm(vUv * 0.55 + uTime * 0.01);
   whiteField = smoothstep(0.35, 0.75, 0.5 + 0.5 * whiteField);
   whiteField *= (1.0 - localLift * 0.65);
-  
 
   color += pearlColor(whiteField) * whiteField * 0.1;
   
-
   vec2 glowCenter = vec2(0.08, 0.92);
   float glow = 1.0 - smoothstep(0.0, 0.8, distance(vUv, glowCenter));
   
   vec3 pearlyGlow = mix(uColor1, pearlColor(glow), 0.6);
   color += pearlyGlow * glow * 0.07;
   
-  float peachMask = max(uColor1.r, uColor1.g * 0.9);
-  vec3 peachBoost = color * vec3(1.05, 1.03, 1.0); // Red/Orange channels boosted ~10%
-  color = mix(color, peachBoost, peachMask * 0.4);
-  
+float peachMask = max(uColor1.r, uColor1.g * 0.9);
+vec3 peachBoost = color * vec3(1.05, 1.03, 1.0);
 
-  color = pow(color, vec3(0.96)); // Slight contrast
-  color = clamp(color, 0.0, 1.0);
-  
+color = mix(color, peachBoost, peachMask * 0.25);
 
-  float overallSheen = (sin(uTime * 0.05) * 0.5 + 0.5) * 0.03;
-  color += vec3(0.01, 0.01, 0.015) * overallSheen;
-  
-  gl_FragColor = vec4(color, 1.0);
+float luma = dot(color, vec3(0.299, 0.587, 0.114));
+color = mix(color, vec3(luma), 0.12);
+color = pow(color, vec3(1.06));
+
+float brightness = dot(color, vec3(0.299,0.587,0.114));
+color += vec3(1.0) * pow(brightness, 2.5) * 0.04;
+
+float milkNoise = fbm(vUv * 0.35 + uTime * 0.01);
+milkNoise = smoothstep(0.2, 0.9, milkNoise);
+
+vec3 milk = vec3(0.98, 0.985, 0.995);
+color = mix(color, milk, 0.12 + milkNoise * 0.18);
+float grayField = fbm(vUv * 0.45 + vec2(0.0, uTime * 0.008));
+grayField = smoothstep(0.45, 0.8, grayField);
+
+vec3 softGray = vec3(0.92, 0.93, 0.95);
+color = mix(color, softGray, grayField * 0.12);
+color = clamp(color, 0.0, 1.0);
+
+float overallSheen = (sin(uTime * 0.05) * 0.5 + 0.5) * 0.03;
+color += vec3(0.01, 0.01, 0.015) * overallSheen;
+
+gl_FragColor = vec4(color, 1.0);
 }
 `;
 
@@ -1277,9 +1310,11 @@ void main() {
       uniforms: {
         uTime: { value: 0 },
         uScroll: { value: 0 },
-        uColor1: { value: new Color("#E48B74") }, 
+        uColor1: { value: new Color("#F68128") }, 
         uColor2: { value: new Color("#AAAEC3") }, 
         uColor3: { value: new Color("#ADB1C2") }, 
+         uColor4: { value: new Color("#E3E1DD") },
+        
         uResolution: { value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight) },
       }
     });
@@ -1631,7 +1666,7 @@ useLayoutEffect(() => {
         text-[#685AFF]
       "
     >
-  <svg 
+  {/* <svg 
   className="bg-lines background background--cover background--top svg-fix is-hidden--sm-down
     -translate-x-[10%]
      translate-y-[2%]
@@ -1664,7 +1699,7 @@ useLayoutEffect(() => {
     data-reveal-old="line block" 
     style={{ "--line-length": "1877.288467343321px" }}
   />
-  {/* <path 
+  <path 
     vectorEffect="non-scaling-stroke"
   
     d="M1450.05 840.084V613.435C1450.05 577.982 1447.75 458.521 1353.83 382.22C1277.45 320.165 1182.94 300.524 1080.55 300.524C978.172 300.524 883.659 320.165 807.279 382.22C713.364 458.521 711.055 577.982 711.055 613.435V793" 
@@ -1683,7 +1718,7 @@ useLayoutEffect(() => {
      className="bg-line glow"
     data-reveal-old="line block" 
     style={{ "--line-length": "1604.3412038055833px" }}
-  /> */}
+  />
   <defs>
     <linearGradient 
       id="paint0_linear_5002_247" 
@@ -1693,8 +1728,8 @@ useLayoutEffect(() => {
       y2="351.857" 
       gradientUnits="userSpaceOnUse"
     >
-      <stop offset="0" stopColor="#685AFF" />
-      <stop offset="1" stopColor="#685AFF" stopOpacity="0" />
+      <stop offset="0" stopColor="#D6D5DB" />
+      <stop offset="1" stopColor="#D6D5DB" stopOpacity="0" />
     </linearGradient>
     <linearGradient 
       id="paint1_linear_5002_247" 
@@ -1704,8 +1739,8 @@ useLayoutEffect(() => {
       y2="670.931" 
       gradientUnits="userSpaceOnUse"
     >
-      <stop offset="0" stopColor="#685AFF" />
-      <stop offset="1" stopColor="#685AFF" stopOpacity="0" />
+      <stop offset="0" stopColor="#D6D5DB" />
+      <stop offset="1" stopColor="#D6D5DB" stopOpacity="0" />
     </linearGradient>
   </defs>
 </svg>
@@ -1774,9 +1809,9 @@ className="
      <stop offset="1" stopColor="currentColor" stopOpacity="0" />
     </linearGradient>
   </defs>
-</svg>
+</svg> */}
   
-      <svg
+      {/* <svg
         className="bg-lines hidden md:block absolute top-0 left-1/2 -translate-x-1/2"
         width="1420"
         height="480"
@@ -1831,8 +1866,8 @@ className="
             y2="147.534"
             gradientUnits="userSpaceOnUse"
           >
-           <stop offset="0" stopColor="#3585C1" />
-      <stop offset="1" stopColor="#3585C1" stopOpacity="0" />
+           <stop offset="0" stopColor="#D6D5DB" />
+      <stop offset="1" stopColor="#D6D5DB" stopOpacity="0" />
           </linearGradient>
 
           <linearGradient
@@ -1843,11 +1878,11 @@ className="
             y2="392.615"
             gradientUnits="userSpaceOnUse"
           >
-         <stop offset="0" stopColor="#3585C1" />
-      <stop offset="1" stopColor="#3585C1" stopOpacity="0" />
+         <stop offset="0" stopColor="#D6D5DB" />
+      <stop offset="1" stopColor="#D6D5DB" stopOpacity="0" />
           </linearGradient>
         </defs>
-      </svg>
+      </svg> */}
 
     
     </div>

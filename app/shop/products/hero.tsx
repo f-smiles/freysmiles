@@ -626,7 +626,6 @@ background: `
               objectFit: "contain",
             }}
           />
-          
         </div>
       </section>
     </>

@@ -37,13 +37,13 @@ export default function ProductCarousel({ variants }: { variants: VariantsWithIm
             return (
   <CarouselItem
   key={img.url}
-  className="bg-[#FCFAF5] flex justify-center items-center"
+  className="bg-[#F2F2F2] flex justify-center items-center"
 >
-  <div className="relative w-full aspect-[4/3]">
+  <div className="relative w-full aspect-[1.25]">
     <Image
       fill
       priority
-      className="object-cover"
+      className="object-contain"
       src={img.url}
       alt={img.name}
     />

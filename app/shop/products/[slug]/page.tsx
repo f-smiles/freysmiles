@@ -52,20 +52,20 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   if (variant) {
     return (
-      <section className="flex flex-col w-full max-w-6xl min-h-screen px-4 mx-auto font-neue-montreal md:flex-row md:gap-8 lg:gap-12 sm:px-6 lg:px-8 lg:py-28">
+      <section className="flex flex-col w-full max-w-6xl min-h-screen px-4 mx-auto  md:flex-row md:gap-8 lg:gap-12 sm:px-6 lg:px-8 lg:py-28">
         <div className="flex-1">
           <ProductCarousel variants={variant.product.productVariants} />
         </div>
 
-        <div className="flex flex-col flex-1 gap-2 pb-16 space-y-4">
-          <div className="space-y-1">
+        <div className="flex flex-col flex-1 gap-2  space-y-4">
+          <div className=" flex flex-row justify-between items-center">
             <h1 className="text-[14px] font-neuehaas45 ">{variant?.product.title}</h1>
             <VariantName variants={variant.product.productVariants} />
           </div>
 
           <Separator />
 
-          <h1 className="text-xl text-gray-900 u font-neuehaas45">{formatPrice(variant?.product.price)}</h1>
+          <h1 className="text-[14px] text-gray-900 font-neuehaas45">{formatPrice(variant?.product.price)}</h1>
           <div
   className="[&_*]:!font-neuehaas45 [&_*]:!text-[13px]"
   dangerouslySetInnerHTML={{ __html: variant?.product.description }}
