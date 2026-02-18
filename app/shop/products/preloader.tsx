@@ -149,7 +149,9 @@ const Preloader = ({ onComplete }) => {
             opacity: 0,
             duration: 1,
 onComplete: () => {
-  onComplete(); 
+  requestAnimationFrame(() => {
+    onComplete();
+  });
 }
           });
 

@@ -46,6 +46,7 @@ import {
   MeshTransmissionMaterial,
   Environment,
   shaderMaterial,
+  Text
 } from "@react-three/drei";
 import * as THREE from "three";
 import { useControls } from "leva";
@@ -1176,7 +1177,7 @@ float pearlShimmer(vec2 uv) {
 void main() {
   float n = cnoise(vUv + uScroll + sin(uTime * 0.1));
   float t = 0.5 + 0.5 * n;
-  t = pow(t, 0.5);
+  t = pow(t, 0.4);
   t = mix(t, 1.0, 0.1);
 
 vec3 peachToBlue = mix(uColor1, uColor2, t);
@@ -1185,10 +1186,22 @@ float neutralZone = smoothstep(0.25, 0.75, t);
 neutralZone *= 1.0 - abs(t - 0.5) * 1.6;
 
 vec3 color = mix(peachToBlue, uColor4, neutralZone * 0.22);
+
 float lavenderBand = smoothstep(0.55, 0.72, t) * 
                      (1.0 - smoothstep(0.72, 0.88, t));
 
-color = mix(color, uColor2, lavenderBand * 0.15);
+// stronger lavender presence
+vec3 lavenderMix = mix(color, uColor2 * 1.1, lavenderBand * 0.32);
+
+// controlled saturation lift
+float lavenderLuma = dot(lavenderMix, vec3(0.299, 0.587, 0.114));
+vec3 saturatedLavender = mix(vec3(lavenderLuma), lavenderMix, 1.12);
+
+color = saturatedLavender;
+
+// subtle lavender halo glow (pearl not neon)
+vec3 lavenderHalo = vec3(0.96, 0.92, 1.0);
+color += lavenderHalo * lavenderBand * 0.07;
   float vign = smoothstep(0.68, 1.10, distance(vUv, vec2(0.5)));
   float cornerMask = smoothstep(0.0, 0.35, distance(vUv, vec2(0.92, 0.06)));
   vign *= cornerMask;
@@ -1209,10 +1222,16 @@ float grayBottomRight = 1.0 - smoothstep(
     distance(vUv, vec2(0.85, 0.15))
 );
 
-vec3 coolGray = vec3(0.88, 0.90, 0.93);
+// slightly cooler gray
+vec3 coolGray = vec3(0.83, 0.85, 0.92);
 
-color = mix(color, coolGray, grayTopLeft * 0.55);
-color = mix(color, coolGray, grayBottomRight * 0.45);
+// subtle texture in the gray so it doesn't look flat
+float grayTexture = fbm(vUv * 0.8 + uTime * 0.005);
+grayTexture = smoothstep(0.45, 0.75, grayTexture);
+
+// apply textured gray
+color = mix(color, coolGray, grayTopLeft * 0.65 * grayTexture);
+color = mix(color, coolGray, grayBottomRight * 0.55 * grayTexture);
 vec3 butter = vec3(1.0, 0.98, 0.90);
 color = mix(color, butter, overlap * 0.12);
   float pearlClouds = pearlCloudFbm(
@@ -1299,10 +1318,6 @@ color += vec3(0.01, 0.01, 0.015) * overallSheen;
 gl_FragColor = vec4(color, 1.0);
 }
 `;
-
-
-
-
     
     const program = new Program(gl, {
       vertex,
@@ -1312,8 +1327,8 @@ gl_FragColor = vec4(color, 1.0);
         uScroll: { value: 0 },
         uColor1: { value: new Color("#F68128") }, 
         uColor2: { value: new Color("#AAAEC3") }, 
-        uColor3: { value: new Color("#ADB1C2") }, 
-         uColor4: { value: new Color("#E3E1DD") },
+ uColor3: { value: new Color("#CFC8BE") },
+         uColor4: { value: new Color("#E9E4DC") },
         
         uResolution: { value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight) },
       }
@@ -2224,6 +2239,8 @@ useEffect(() => {
 
   return () => observer.disconnect();
 }, [onInteractionChange]);
+
+
   return (
     <div className="testimonialsPage">
 
@@ -2244,6 +2261,7 @@ useEffect(() => {
           "
         >
           <TerminalPreloader />
+
         </div>
       </div>
     </div>
@@ -2251,11 +2269,17 @@ useEffect(() => {
 </section>
       <section className="testimonials" ref={testimonialsSectionRef}>
 <div className="flex flex-col items-center text-center mb-10 gap-1">
-  <div className="flex items-baseline gap-2">
-    <p className="text-[19px] tracking-wide font-neuehaas35">Select Cases</p>
+    <div className="flex items-baseline gap-2">
+
+     <SlidingText 
+        text="Select Cases"
+        effect="2"
+        totalCells={4}
+      />
+
 
   </div>
-
+        
   <span className="text-[15px] font-canelathin opacity-60">
     A visual archive of selected treatment outcomes
   </span>
@@ -2333,6 +2357,135 @@ useEffect(() => {
     </div>
   );
 };
+const SlidingText = ({
+  text = "Select Cases",
+  totalCells = 4,
+}) => {
+  const containerRef = useRef(null);
+  const innerRefs = useRef([]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !innerRefs.current.length) return;
+
+    const setLayout = () => {
+      const firstInner = innerRefs.current[0];
+      const textWidth = firstInner.scrollWidth;
+
+      // Update CSS variables
+      container.style.setProperty("--text-width", `${textWidth}px`);
+      container.style.setProperty("--gsplits", totalCells);
+
+      // Calculate offset and position each slice
+      const offset = textWidth / totalCells;
+      
+      innerRefs.current.forEach((inner, i) => {
+        gsap.set(inner, { 
+          x: -i * offset,
+        });
+      });
+    };
+
+    setLayout();
+    window.addEventListener("resize", setLayout);
+
+    return () => {
+      window.removeEventListener("resize", setLayout);
+    };
+  }, [totalCells]);
+
+useEffect(() => {
+  const el = containerRef.current;
+  if (!el || !innerRefs.current.length) return;
+
+  // First, set up the layout measurements
+  const setLayout = () => {
+    const firstInner = innerRefs.current[0];
+    const textWidth = firstInner.scrollWidth;
+    
+    el.style.setProperty("--text-width", `${textWidth}px`);
+    el.style.setProperty("--gsplits", totalCells);
+
+    const offset = textWidth / totalCells;
+    
+    innerRefs.current.forEach((inner, i) => {
+      gsap.set(inner, { 
+        x: -i * offset,
+      });
+    });
+  };
+
+  setLayout();
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (!entry.isIntersecting) return;
+
+      observer.disconnect();
+      const textWidth = parseFloat(el.style.getPropertyValue("--text-width"));
+      const offset = textWidth / totalCells;
+
+      gsap.fromTo(
+        innerRefs.current,
+        {
+          x: (i) => -i * offset + (i % 2 === 0 ? -40 : 40),
+          opacity: 0,
+        },
+        {
+          x: (i) => -i * offset,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.03,
+          ease: "power2.out",
+        }
+      );
+    },
+    { threshold: 0.7 }
+  );
+
+  gsap.set(innerRefs.current, { opacity: 0 });
+  
+  observer.observe(el);
+
+
+  const handleResize = () => {
+    setLayout();
+ 
+    if (!observer) {
+      gsap.set(innerRefs.current, { opacity: 0 });
+    }
+  };
+
+  window.addEventListener('resize', handleResize);
+
+  return () => {
+    observer.disconnect();
+    window.removeEventListener('resize', handleResize);
+    gsap.killTweensOf(innerRefs.current);
+  };
+}, [totalCells]);
+
+  return (
+    <h3
+      ref={containerRef}
+      className="gtext font-neuehaasdisplaythin"
+    >
+      {Array.from({ length: totalCells }).map((_, i) => (
+        <span key={i} className="gtext__box">
+          <span
+            className="gtext__box-inner"
+            ref={(el) => (innerRefs.current[i] = el)}
+          >
+            {text}
+          </span>
+        </span>
+      ))}
+    </h3>
+  );
+};
+
+
+
 
 
   const reviews = [

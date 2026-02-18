@@ -106,7 +106,6 @@ if (dist > radius) {
   velocities[i + 1] -= 2 * dot * ny;
   velocities[i + 2] -= 2 * dot * nz;
 
-  // optional damping
   velocities[i] *= 0.6;
   velocities[i + 1] *= 0.6;
   velocities[i + 2] *= 0.6;
@@ -140,41 +139,34 @@ if (distance > 0 && distance < MOUSE_RADIUS) {
           itemSize={3}
         />
       </bufferGeometry>
-      <pointsMaterial
-  color={0xff33cc} 
-  size={2.6}
+<pointsMaterial
+  color={0xff66ff}
+  size={2.4}
   sizeAttenuation
   transparent
-  opacity={0.4}
+  // opacity={0.9}
   depthWrite={false}
-  blending={NormalBlending}
+  blending={THREE.AdditiveBlending}
 />
-
     </points>
   );
 };
-
 const Scene = () => {
   return (
     <>
       <ParticleSystem />
-      {/* <OrbitControls 
-        enableDamping 
-        dampingFactor={0.25} 
-        screenSpacePanning={false} 
-        maxPolarAngle={Math.PI / 2} 
-      /> */}
-      <EffectComposer>
-        <Bloom
-          luminanceThreshold={0}
-          luminanceSmoothing={0.9}
-          intensity={1.5}
-          height={300}
-        />
-      </EffectComposer>
+
+<EffectComposer>
+<Bloom
+  luminanceThreshold={0.75}
+  luminanceSmoothing={0.2}
+  intensity={2.2}
+  radius={0.35}
+/>
+</EffectComposer>
     </>
-  );
-};
+  )
+}
 
 const ScrambleText = ({
   text,
@@ -1846,7 +1838,7 @@ function ContactHero() {
   <div className="w-1/2 h-full p-10 flex items-center justify-center acuity-font">
     <div className="w-full h-full rounded-2xl overflow-hidden backdrop-blur-xl border border-white/20 shadow-lg">
       <iframe
-        src="https://app.acuityscheduling.com/schedule.php?owner=37690830"
+        src="https://freysmilesappointments.as.me/"
         title="Schedule Appointment"
         className="w-full h-full"
         frameBorder="0"

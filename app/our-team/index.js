@@ -3,6 +3,9 @@ import "../mouse-gooey-effect-5/css/style.css";
 import { Item } from "../../utils/Item";
 import Image from "next/image";
 import Lenis from "@studio-freight/lenis";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass"
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass"
 import { OrbitControls, Environment } from "@react-three/drei";
 import React, {
   useEffect,
@@ -19,6 +22,7 @@ import ArrowLeftIcon from "../_components/ui/ArrowLeftIcon";
 import ArrowRightIcon from "../_components/ui/ArrowRightIcon";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { NormalBlending } from 'three';
 import {
   TextureLoader,
   CubeCamera,
@@ -35,6 +39,7 @@ import GridContainer, {
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
 }
+
 
 function Grid() {
   const cellsRef = useRef([]);
@@ -750,7 +755,23 @@ if (scroller) {
               className="bg-[#000] w-screen h-screen grid grid-cols-3 text-[#333] font-neuehaas45 text-[14px] leading-relaxed"
             >
               <div className="absolute inset-0">
-                      <JanusFace />
+                      <Canvas
+                camera={{ position: [0, 0, 1000], fov: 75 }}
+          gl={{ antialias: true, alpha: true }}
+            onCreated={({ gl }) => {
+    gl.setClearColor(0x000000, 0) // fully transparent
+  }}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 0,
+                }}
+              >
+                <Scene />
+              </Canvas>
 
               </div>
         
@@ -922,6 +943,149 @@ if (scroller) {
   );
 }
 
+const ParticleSystem = () => {
+  const particlesCount = 27000;
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const particlesRef = useRef();
+
+  const positions = useMemo(() => new Float32Array(particlesCount * 3), []);
+  const velocities = useMemo(() => new Float32Array(particlesCount * 3), []);
+
+  const createSphere = (count, radius) => {
+    for (let i = 0; i < count; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = radius * Math.cbrt(Math.random());
+
+      const x = r * Math.sin(phi) * Math.cos(theta);
+      const y = r * Math.sin(phi) * Math.sin(theta);
+      const z = r * Math.cos(phi);
+
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
+
+      velocities[i * 3] = (Math.random() - 0.5) * 0.5;
+      velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.5;
+      velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+    }
+  };
+
+  useEffect(() => {
+    createSphere(particlesCount, 400);
+    if (particlesRef.current) {
+      particlesRef.current.geometry.attributes.position.needsUpdate = true;
+    }
+  }, []);
+
+  const { size, gl } = useThree();
+  const boundsRef = useRef();
+
+  useEffect(() => {
+    const canvasEl = gl.domElement;
+    const handleMove = (e) => {
+      const rect = canvasEl.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      mouseRef.current.x = x;
+      mouseRef.current.y = y;
+    };
+    window.addEventListener("pointermove", handleMove);
+    return () => window.removeEventListener("pointermove", handleMove);
+  }, [gl]);
+
+  useFrame(() => {
+    if (!particlesRef.current) return;
+    const pos = particlesRef.current.geometry.attributes.position.array;
+
+    for (let i = 0; i < pos.length; i += 3) {
+      pos[i] += velocities[i];
+      pos[i + 1] += velocities[i + 1];
+      pos[i + 2] += velocities[i + 2];
+
+      const dist = Math.sqrt(pos[i] ** 2 + pos[i + 1] ** 2 + pos[i + 2] ** 2);
+      const radius = 400;
+if (dist > radius) {
+  const nx = pos[i] / dist;
+  const ny = pos[i + 1] / dist;
+  const nz = pos[i + 2] / dist;
+
+  // snap to surface
+  pos[i] = nx * radius;
+  pos[i + 1] = ny * radius;
+  pos[i + 2] = nz * radius;
+
+  // reflect velocity inward
+  const dot =
+    velocities[i] * nx +
+    velocities[i + 1] * ny +
+    velocities[i + 2] * nz;
+
+  velocities[i] -= 2 * dot * nx;
+  velocities[i + 1] -= 2 * dot * ny;
+  velocities[i + 2] -= 2 * dot * nz;
+
+  velocities[i] *= 0.6;
+  velocities[i + 1] *= 0.6;
+  velocities[i + 2] *= 0.6;
+}
+const dx = mouseRef.current.x - pos[i];
+const dy = -mouseRef.current.y - pos[i + 1];
+const distance = Math.sqrt(dx * dx + dy * dy);
+
+const MOUSE_RADIUS = 120;
+const MOUSE_STRENGTH = 0.04;
+
+if (distance > 0 && distance < MOUSE_RADIUS) {
+  const force =
+    (1 - distance / MOUSE_RADIUS) * MOUSE_STRENGTH;
+
+  velocities[i] -= (dx / distance) * force;
+  velocities[i + 1] -= (dy / distance) * force;
+}
+    }
+
+    particlesRef.current.geometry.attributes.position.needsUpdate = true;
+  });
+
+  return (
+    <points ref={particlesRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          array={positions}
+          count={particlesCount}
+          itemSize={3}
+        />
+      </bufferGeometry>
+<pointsMaterial
+  color={0xff66ff}
+  size={2.4}
+  sizeAttenuation
+  transparent
+  // opacity={0.9}
+  depthWrite={false}
+  blending={THREE.AdditiveBlending}
+/>
+    </points>
+  );
+};
+const Scene = () => {
+  return (
+    <>
+      <ParticleSystem />
+
+<EffectComposer>
+<Bloom
+  luminanceThreshold={0.75}
+  luminanceSmoothing={0.2}
+  intensity={2.2}
+  radius={0.35}
+/>
+</EffectComposer>
+    </>
+  )
+}
 
 function createTextTexture(text, width = 1024, height = 512) {
   const canvas = document.createElement("canvas");

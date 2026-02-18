@@ -7313,4 +7313,30 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
   }
 }
 
+.gtext {
+  display: grid;
+  font-size: 22px;
+  white-space: nowrap;
+  width: max-content;
+  --text-width: 100px;
+  --gsplits: 4;
 
+  grid-template-columns: repeat(
+    var(--gsplits),
+    calc(var(--text-width) / var(--gsplits))
+  );
+}
+
+.gtext__box {
+  overflow: hidden;
+  position: relative;
+
+}
+
+.gtext__box-inner {
+  width: max-content;
+  display: block;
+  position: relative;
+  will-change: transform;
+
+}
