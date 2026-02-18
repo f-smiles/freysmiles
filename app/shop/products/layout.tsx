@@ -1,14 +1,19 @@
-import Hero from "./hero";
+"use client"
+
+import { useState } from "react"
+import Preloader from "./preloader"
 
 export default function ProductsLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
+  const [ready, setReady] = useState(false)
+
   return (
     <>
-      <Hero />
+      {!ready && <Preloader onComplete={() => setReady(true)} />}
       {children}
     </>
-  );
+  )
 }

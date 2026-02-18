@@ -244,6 +244,7 @@ vec3 col = mix(colorA, colorB, mixAmt);
 };
 
 CustomEase.create("hop", "0.9, 0, 0.1, 1");
+
 const Preloader = () => {
   const loaderRef = useRef(null);
   const svgRef = useRef(null);
@@ -614,7 +615,7 @@ const Preloader = () => {
   alt="bottom oval"
 /> */}
 
-          <video
+          {/* <video
             src="/videos/whitewaves.mp4"
             autoPlay
             loop
@@ -626,7 +627,7 @@ const Preloader = () => {
               height: "100%",
               objectFit: "contain",
             }}
-          />
+          /> */}
         </div>
       </section>
     </>
@@ -713,7 +714,7 @@ void main() {
 }
 `;
 
-const HeroSection = () => {
+const HeroSection = ({ isReady }) => {
   const canvasRef = useRef(null);
   const heroRef = useRef(null);
   const heroContentRef = useRef(null);
@@ -726,6 +727,28 @@ const HeroSection = () => {
   const animationIdRef = useRef(null);
   const scrollProgressRef = useRef(0);
   const dotGridWrapperRef = useRef(null);
+    const heroBgRef = useRef(null)
+
+  useEffect(() => {
+    if (!isReady) return
+
+    gsap.to(heroBgRef.current, {
+      scale: 1,
+      duration: 2,
+      ease: "hop"
+    })
+
+    gsap.fromTo(
+      ".hero-copy p .word",
+      { y: "100%" },
+      {
+        y: 0,
+        duration: 2,
+        stagger: 0.1,
+        ease: "hop"
+      }
+    )
+  }, [isReady])
   useEffect(() => {
     const initThree = () => {
       const canvas = canvasRef.current;
@@ -968,9 +991,46 @@ const initTextAnimation = () => {
       </div>
 
       <div className="scroll-effect__hero-header">
-        <p className="scroll-effect__hero-description">
-          <Preloader />
-        </p>
+        <section
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100svh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          className="wheelhero-bg"
+          ref={heroBgRef}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            width: "100%",
+            height: "50%",
+            transform: "translate(-50%, -50%) scale(1.25)",
+            overflow: "hidden",
+          }}
+        >
+
+          <video
+            src="/videos/whitewaves.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+      </section>
       </div>
 
       <canvas className="scroll-effect__hero-canvas" ref={canvasRef} />
@@ -1189,141 +1249,11 @@ const CircleGridMouseFollow = () => {
 
   return <div ref={containerRef} className="dot-grid-canvas" />;
 };
-const Marquee = () => {
-  const text =
-    "Reserve an appointment to experience our year end holiday courtesy of up to 700 dollars off full treatment";
-  const repeatCount = 12;
 
-  return (
-    <div className="relative w-full overflow-hidden bg-[#F0EF59]">
-      <div className="marquee">
-        <div className="marquee__group">
-          {Array.from({ length: repeatCount }).map((_, i) => (
-            <div key={`a-${i}`} className="flex items-center">
-              <span className="px-6 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide">
-                {text}
-              </span>
-
-              <span className="mx-4 text-[12px] font-light opacity-70">+</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="marquee__group">
-          {Array.from({ length: repeatCount }).map((_, i) => (
-            <div key={`a-${i}`} className="flex items-center">
-              <span className="px-6 py-2 text-[12px] font-neuehaas45 whitespace-nowrap tracking-wide">
-                {text}
-              </span>
-
-              <span className="mx-4 text-[12px] font-light opacity-70">+</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-function DentalModel() {
-  const { scene, animations } = useGLTF("/models/art_gallery_test.glb");
-  const animatedRef = useRef<THREE.Group>(null);
-  const { actions } = useAnimations(animations, animatedRef);
-
-  useEffect(() => {
-    console.log("end mesh");
-    scene.traverse((child: any) => {
-      if (!child.isMesh || !child.material) return;
-
-      const mat = child.material as THREE.MeshStandardMaterial;
-
-      if (mat.name.includes("Wall")) {
-        mat.color.set("#f2f2f2");
-        mat.roughness = 0.9;
-      }
-
-      if (mat.name.includes("Floor")) {
-        mat.color.set("#e6e6e6");
-        mat.roughness = 0.6;
-      }
-
-      if (mat.name.includes("Ceiling")) {
-        mat.color.set("#fafafa");
-        mat.roughness = 1.0;
-      }
-
-      mat.needsUpdate = true;
-    });
-
-    console.log("end mesh");
-  }, [scene]);
-
-  useEffect(() => {
-    const tl = gsap.timeline({ delay: 1 });
-
-    tl.from(".line-inner", {
-      y: 100,
-      skewY: 7,
-      duration: 1.8,
-      ease: "power4.out",
-      stagger: 0.15,
-    });
-  }, []);
-  useEffect(() => {
-    if (!actions) return;
-
-    const firstAction = Object.values(actions)[0];
-    if (!firstAction) return;
-
-    firstAction.reset();
-    firstAction.setLoop(THREE.LoopRepeat, Infinity);
-    firstAction.play();
-
-    return () => firstAction.stop();
-  }, [actions]);
-
-  return (
-    <group rotation={[0, 0, 0]} scale={1}>
-      <group ref={animatedRef}>
-        <primitive object={scene} />
-      </group>
-    </group>
-  );
-}
 const Hero: React.FC = () => {
   return (
     <section>
-      {/* <Marquee /> */}
       <HeroSection />
-      {/* <div className="relative min-h-screen">
-
-<section className="grid grid-cols-1 lg:grid-cols-2 min-h-screen px-6 py-20">
-
-<Canvas camera={{ position: [4, 3, 6], fov: 45 }}>
-  <Environment files="/images/studio_small_03_4k.hdr" />
-
-
-<ambientLight intensity={0.4} />
-
-<directionalLight
-  position={[5, 8, 5]}
-  intensity={1.2}
-  castShadow
-/>
-
-<directionalLight
-  position={[-5, 4, -5]}
-  intensity={0.6}
-/>
-
-
-  <DentalModel />
-
-  <OrbitControls enableZoom={false} enablePan={false} />
-</Canvas>
-
-</section>
-</div> */}
     </section>
   );
 };
