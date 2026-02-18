@@ -2256,8 +2256,8 @@ useEffect(() => {
 
   </div>
 
-  <span className="text-[14px] font-canelathin opacity-60">
-    A visual archive of selected treatment outcomes.
+  <span className="text-[15px] font-canelathin opacity-60">
+    A visual archive of selected treatment outcomes
   </span>
 </div>
 <div className="flex items-center justify-between w-full">

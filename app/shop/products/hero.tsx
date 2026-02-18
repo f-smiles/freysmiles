@@ -433,27 +433,28 @@ const Preloader = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-background: `
+          background: `
   radial-gradient(
-    70% 60% at 35% 45%,
-    rgba(247, 200, 235, 0.35) 0%,
-    rgba(247, 200, 235, 0.15) 40%,
-    rgba(247, 200, 235, 0.0) 70%
+    60% 50% at 30% 40%,
+    rgba(246, 193, 229, 0.55) 0%,
+    rgba(246, 193, 229, 0.25) 35%,
+    rgba(246, 193, 229, 0.0) 65%
   ),
   radial-gradient(
-    65% 55% at 65% 50%,
-    rgba(255, 215, 240, 0.3) 0%,
-    rgba(255, 215, 240, 0.12) 45%,
-    rgba(255, 215, 240, 0.0) 75%
+    55% 45% at 70% 55%,
+    rgba(252, 210, 235, 0.45) 0%,
+    rgba(252, 210, 235, 0.2) 40%,
+    rgba(252, 210, 235, 0.0) 70%
   ),
-  linear-gradient(
-    180deg,
-    #ffffff 0%,
-    #f2f3f9 50%,
+  radial-gradient(
+    80% 65% at 50% 30%,
+    #f9f9ff 0%,
+    #eceef7 45%,
+    #e6e8f3 70%,
     #ffffff 100%
   )
 `,
-          color: "#857B79",
+          color: "#0f0f0f",
           willChange: "opacity",
           zIndex: 9999,
         }}
@@ -956,7 +957,7 @@ const initTextAnimation = () => {
   }, []);
 
   return (
-    <section className="scroll-effect__hero-section" ref={heroRef}>
+    <section className="scroll-effect__hero-section bg-[#F2F2F2]" ref={heroRef}>
       <div className="scroll-effect__hero-image">
         {/* <AnimatedBackground /> */}
 
@@ -966,11 +967,11 @@ const initTextAnimation = () => {
         /> */}
       </div>
 
-      {/* <div className="scroll-effect__hero-header">
+      <div className="scroll-effect__hero-header">
         <p className="scroll-effect__hero-description">
           <Preloader />
         </p>
-      </div> */}
+      </div>
 
       <canvas className="scroll-effect__hero-canvas" ref={canvasRef} />
 

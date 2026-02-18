@@ -1,7 +1,6 @@
 import { db } from "@/server/db"
 import Variants from "@/components/products/variants"
 import Banner from "./banner"
-import Hero from "./hero"
 
 export const revalidate = 60 * 60
 
@@ -17,14 +16,9 @@ export default async function ProductsPage() {
 
   
   return (
-    <div className="bg-[#F1F2F5]" >
-      {/* <Banner /> */}
-      <Hero />
-      <section className="flex items-start justify-center w-full h-full min-h-screen ">
-        <div className="">
-          <Variants variants={data} />
-        </div>
+  <div className="bg-[#F1F2F5]">
+      <section className="flex items-start justify-center w-full min-h-screen">
+        <Variants variants={data} />
       </section>
-    </div>
-  )
+    </div>  )
 }

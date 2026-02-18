@@ -6437,6 +6437,9 @@ body,
   height: 60px;
   overflow: hidden;
   cursor: pointer;
+
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   border-bottom: .5px solid rgba(89, 82, 82, 0.2);
 }
 
@@ -7296,7 +7299,7 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
   text-transform: uppercase;
   font-size: 2.75rem;
   /* font-weight: 500; */
-  font-family: "IBMPlexMono-Light"
+  font-family: "Canela-ThinStraight"
 }
 
 @media (max-width: 1000px) {

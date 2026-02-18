@@ -440,7 +440,7 @@ if (scroller) {
         ease: "none",
         duration: 1.5,
       },
-      "teamReveal+=1.2" //  delay until vertical reveal finishes
+      "teamReveal+=1.2" 
     );
   }
 }

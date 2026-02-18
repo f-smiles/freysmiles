@@ -29,12 +29,11 @@ export default function AddToCart({ price, image }: { price: number, image: stri
 
 <div className="mb-6">
 
-
   <div className="flex items-center justify-between w-48 h-12 px-6 border border-gray-200 bg-white">
     <button
       onClick={() => quantity > 1 && setQuantity(quantity - 1)}
       disabled={quantity <= 1}
-      className="text-xl text-gray-500 hover:text-black transition disabled:opacity-30"
+      className="text-[12px] text-gray-500 hover:text-black transition disabled:opacity-30"
     >
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-4 h-4">
   <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
@@ -48,7 +47,7 @@ export default function AddToCart({ price, image }: { price: number, image: stri
 
     <button
       onClick={() => setQuantity(quantity + 1)}
-      className="text-xl text-gray-500 hover:text-black transition"
+      className="text-[12px] text-gray-500 hover:text-black transition"
     >
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-4 h-4">
   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -70,7 +69,7 @@ export default function AddToCart({ price, image }: { price: number, image: stri
         image,
       })
     }}
-    className="flex-1 h-12 bg-[#A7EEB3] text-black text-[12px] font-semibold uppercase tracking-wide hover:bg-green-300 transition"
+    className="flex-1 h-12 bg-[#A7EEB3] text-black text-[11px] font-neuehaas45 uppercase tracking-wider hover:bg-green-300 transition"
   >
     Add to Cart
   </button>

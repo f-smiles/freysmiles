@@ -1875,6 +1875,11 @@ const OfficeChat = () => {
   const chatContainerRef = useRef(null);
   const [moderationMessage, setModerationMessage] = useState(null);
 const [showTeamForm, setShowTeamForm] = useState(false);
+const [messageStep, setMessageStep] = useState(0);
+const [officeMessage, setOfficeMessage] = useState("");
+const [officeEmail, setOfficeEmail] = useState("");
+const [officePhone, setOfficePhone] = useState("");
+
   useEffect(() => {
     if (!chatContainerRef.current) return;
 
@@ -1906,7 +1911,7 @@ const [showTeamForm, setShowTeamForm] = useState(false);
 const handleIntentSelect = (selectedIntent) => {
   setIntent(selectedIntent);
   
-  if (selectedIntent === "Book an appointment") {
+  if (selectedIntent === "book") {
     setTyping(true);
     setTimeout(() => {
       setTyping(false);
@@ -1916,7 +1921,7 @@ const handleIntentSelect = (selectedIntent) => {
     }, 900);
   }
   
-  if (selectedIntent === "Apply for a job") {
+  if (selectedIntent === "job") {
     setTyping(true);
     setTimeout(() => {
       setTyping(false);
@@ -1926,13 +1931,21 @@ const handleIntentSelect = (selectedIntent) => {
     }, 900);
   }
   
-  if (selectedIntent === "Ask you a question") {
+  if (selectedIntent === "ai") {
     setTyping(true);
     setTimeout(() => {
       setTyping(false);
       setQuestionStep(1);
     }, 900);
   }
+
+  if (selectedIntent === "message") {
+  setTyping(true);
+  setTimeout(() => {
+    setTyping(false);
+    setMessageStep(1);
+  }, 900);
+}
 };
 const handleQuestionSubmit = async () => {
   if (!question.trim()) return;
@@ -1971,7 +1984,28 @@ const handleQuestionSubmit = async () => {
     }, 600);
   }, 900);
 };
+const handleOfficeMessageSubmit = async () => {
+  const emailValid =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(officeEmail);
 
+  const phoneValid =
+    officePhone.replace(/\D/g, "").length >= 10;
+
+  if (
+    !officeMessage.trim() ||
+    !emailValid ||
+    !phoneValid
+  ) {
+    return;
+  }
+
+  setTyping(true);
+
+  setTimeout(() => {
+    setTyping(false);
+    setMessageStep(2);
+  }, 900);
+};
   const handleContactSubmit = () => {
     if (!contactValue.trim()) return;
     
@@ -2049,11 +2083,7 @@ const handleQuestionSubmit = async () => {
 
   setTimeout(() => {
     setTyping(false);
-
-    // Show greeting
     setStep(1);
-
-    // Then show dropdown
     setTimeout(() => {
       setStep(2);
     }, 900);
@@ -2087,7 +2117,7 @@ const handleQuestionSubmit = async () => {
 )}
 
 
-{intent === "Ask you a question" &&
+{intent === "ai" &&
  questionStep >= 1 &&
  !showScheduler &&
  
@@ -2116,13 +2146,36 @@ const handleQuestionSubmit = async () => {
 )}
 
 
-{intent === "Ask you a question" &&
+{intent === "ai" &&
  questionStep >= 2 &&
  !showScheduler &&
  !showTeamForm && (
   <div className="flex justify-start">
     <OfficeContactPrompt name={name} />
   </div>
+)}
+{intent === "message" &&
+ messageStep >= 1 &&
+ !showScheduler &&
+ !showTeamForm && (
+  <>
+    <div className="flex justify-start">
+      <OfficeMessage customText="This goes straight to our team. Leave us a note and we’ll personally follow up." />
+    </div>
+
+    <div className="flex justify-end">
+<UserMessage
+  message={officeMessage}
+  setMessage={setOfficeMessage}
+  email={officeEmail}
+  setEmail={setOfficeEmail}
+  phone={officePhone}
+  setPhone={setOfficePhone}
+  onSubmit={handleOfficeMessageSubmit}
+  isSubmitted={messageStep >= 2}
+/>
+    </div>
+  </>
 )}
 
             {questionStep >= 3 && !showScheduler && !showTeamForm&& (
@@ -2609,7 +2662,89 @@ const UserContact = ({
     </div>
   );
 };
+const UserMessage = ({
+  message,
+  setMessage,
+  email,
+  setEmail,
+  phone,
+  setPhone,
+  onSubmit,
+  isSubmitted
+}) => {
+const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const phoneValid = phone.replace(/\D/g, "").length >= 10;
 
+const isValid =
+  message.trim() &&
+  emailValid &&
+  phoneValid;
+  return (
+    <div className="w-[520px]">
+      <div className="bg-white rounded-[36px] p-8 shadow-[0_18px_45px_rgba(0,0,0,0.06)]">
+
+        <div className="text-sm font-canelathin text-neutral-700 mb-6">
+          My message is…
+        </div>
+
+
+        <div className="flex flex-col gap-4 mb-6">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Your email"
+            disabled={isSubmitted}
+            className="w-full font-neuehaas45 bg-neutral-100 rounded-full px-5 py-3 text-[12px] outline-none"
+          />
+
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Your phone number"
+            disabled={isSubmitted}
+            className="w-full font-neuehaas45 bg-neutral-100 rounded-full px-5 py-3 text-[12px] outline-none"
+          />
+        </div>
+
+
+        <div className="relative">
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={4}
+            disabled={isSubmitted}
+            placeholder={
+              isSubmitted
+                ? "Message sent"
+                : "Type your message here..."
+            }
+            className="w-full font-neuehaas45 bg-neutral-100 rounded-[24px] px-5 py-4 text-[12px] outline-none resize-none"
+          />
+
+          <button
+            onClick={onSubmit}
+            disabled={!isValid || isSubmitted}
+            className={`
+              absolute right-3 bottom-3
+              w-11 h-11 rounded-full
+              flex items-center justify-center text-lg
+              transition-all duration-200
+              ${
+                !isValid || isSubmitted
+                  ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                  : "bg-white shadow hover:shadow-md text-neutral-900"
+              }
+            `}
+          >
+            {isSubmitted ? "✓" : "→"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 
 const OfficeContactPrompt = ({ name }) => {
@@ -2652,12 +2787,26 @@ const OfficeFinalThankYou = ({ name, contactMethod }) => {
 
 
 const OfficeFollowUp = ({ intent, setIntent }) => {
-  const options = [
-    "Book an appointment",
-    "Apply for a job",
-    "Ask you a question",
-    "Send a message to the office"
-  ];
+const options = [
+  {
+    id: "book",
+    label: "Book an appointment",
+  },
+  {
+    id: "job",
+    label: "Apply for a job",
+  },
+  {
+    id: "ai",
+    label: "Ask our AI Smile Assistant",
+    description: "Instant answers about treatment"
+  },
+  {
+    id: "message",
+    label: "Send a message to the office",
+    description: "For patient-specific or urgent questions"
+  }
+];
 
   return (
     <div className="w-[520px]">
@@ -2666,23 +2815,31 @@ const OfficeFollowUp = ({ intent, setIntent }) => {
           I would like to…
         </div>
         <div className="font-neuehaas45 text-[13px] flex flex-col gap-5">
-          {options.map((option) => (
-            <button
-              key={option}
-              onClick={() => setIntent(option)}
-              className="flex items-center justify-between text-left text-neutral-500 hover:text-neutral-800 transition-colors"
-            >
-              <span>{option}</span>
-              <span className={`
-                w-4 h-4 rounded-full border flex items-center justify-center
-                ${intent === option ? "border-neutral-900" : "border-neutral-300"}
-              `}>
-                {intent === option && (
-                  <span className="w-2 h-2 rounded-full bg-neutral-900" />
-                )}
-              </span>
-            </button>
-          ))}
+      {options.map((option) => (
+  <button
+    key={option.id}
+    onClick={() => setIntent(option.id)}
+    className="flex items-start justify-between text-left text-neutral-500 hover:text-neutral-800 transition-colors"
+  >
+    <div className="flex flex-col">
+      <span>{option.label}</span>
+      <span className="text-[11px] text-neutral-400 mt-1">
+        {option.description}
+      </span>
+    </div>
+
+    <span
+      className={`
+        w-4 h-4 rounded-full border flex items-center justify-center mt-1
+        ${intent === option.id ? "border-neutral-900" : "border-neutral-300"}
+      `}
+    >
+      {intent === option.id && (
+        <span className="w-2 h-2 rounded-full bg-neutral-900" />
+      )}
+    </span>
+  </button>
+))}
         </div>
       </div>
     </div>
