@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form"
 import { useAction } from "next-safe-action/hooks"
 
 import { SettingsSchema } from "@/types/settings-schema"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,6 +19,8 @@ import { FormError } from "@/components/auth/form-error"
 import { FormSuccess } from "@/components/auth/form-success"
 import { UploadButton } from "@/app/api/uploadthing/uploadthing"
 import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import DeleteUserButton from "./delete-user-button"
 
 export const SettingsCard = ({ session }: { session: Session }) => {
 
@@ -87,7 +89,7 @@ export const SettingsCard = ({ session }: { session: Session }) => {
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="image"
               render={({ field }) => (
@@ -143,7 +145,7 @@ export const SettingsCard = ({ session }: { session: Session }) => {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormField
               control={form.control}
@@ -246,20 +248,37 @@ export const SettingsCard = ({ session }: { session: Session }) => {
             <FormError message={error} />
             <FormSuccess message={success} />
 
-            <Button
-              type="submit"
-              disabled={status === "executing" || imageUploading}
-            >
-              {status === "executing" ? (
-                <span className="inline-flex items-center">
-                  <svg className="w-5 h-5 mr-3 -ml-1 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Saving...
-                </span>
-              ) : "Save settings"}
-            </Button>
+            <CardFooter className="p-0">
+              <Button
+                type="submit"
+                disabled={status === "executing" || imageUploading}
+              >
+                {status === "executing" ? (
+                  <span className="inline-flex items-center">
+                    <svg className="w-5 h-5 mr-3 -ml-1 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                  </span>
+                ) : "Save settings"}
+              </Button>
+              <Dialog>
+                <DialogTrigger asChild className="ml-4">
+                  <Button variant="destructive">Delete account</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>We're sorry to see you go!</DialogTitle>
+                  <DialogDescription>Before you leave, just a heads-up: deleting your account means you'll lose access to your orders and invoice history. Are you sure?</DialogDescription>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <DeleteUserButton userId={session.user.id} />
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </CardFooter>
           </form>
         </Form>
       </CardContent>
