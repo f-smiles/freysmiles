@@ -2398,7 +2398,6 @@ useEffect(() => {
   const el = containerRef.current;
   if (!el || !innerRefs.current.length) return;
 
-  // First, set up the layout measurements
   const setLayout = () => {
     const firstInner = innerRefs.current[0];
     const textWidth = firstInner.scrollWidth;

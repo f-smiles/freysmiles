@@ -1,17 +1,21 @@
 :root {
   --terra: #b2b5ce;
-  --green: #dd5310;
-  --pink: #FBCF50;
-  --blue: #DEAAFF ;
+  --green: #D7009A;
+  --pink: #DEAAFF;
+  --blue: #B56B46;
   --black: #0e0e0e;
-  --beige: #cfde79;
-  --grey: #f19949;
+  --beige: #D2D84E;
+  --grey: #FD9651;
   --91c5acce: 5;
   --sbw: 0px;
 }
+/* #E04672 */
+/* #D1D7E5 */
+/* #C6D1DD */
+/* #dd5310 */
 /* #CADACF */
-
-
+/* #BDBECF */
+/* #CEC1DA */
 
 @media screen and (max-width: 768px) {
   html {

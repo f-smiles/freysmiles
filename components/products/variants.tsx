@@ -89,15 +89,17 @@ const holoOverlayStyle: React.CSSProperties = {
       rgba(216, 117, 255, 0.55) calc(5% * 6),
       rgba(255, 119, 115, 0.55) calc(5% * 7)
     ),
-    repeating-linear-gradient(
-      133deg,
-      rgba(14, 21, 46, 0.4) 0%,
-      rgba(143, 163, 163, 0.5) 3.8%,
-      rgba(143, 193, 193, 0.5) 4.5%,
-      rgba(143, 163, 163, 0.5) 5.2%,
-      rgba(14, 21, 46, 0.4) 10%,
-      rgba(14, 21, 46, 0.4) 12%
-    ),
+repeating-linear-gradient(
+  133deg,
+  rgba(16, 18, 42, 0.45) 0%,
+
+  rgba(155, 140, 255, 0.48) 3.8%,
+  rgba(140, 190, 255, 0.46) 4.4%,
+  rgba(170, 140, 255, 0.5) 5.0%,
+
+  rgba(16, 18, 42, 0.45) 9%,
+  rgba(16, 18, 42, 0.45) 12%
+),
     radial-gradient(
       farthest-corner circle at var(--mx) var(--my),
       rgb(0 0 0 / 0.05) 10%,
@@ -282,7 +284,7 @@ const isInView = useInView(rowRef, {
     >
       <ProductCard
         variant={variant}
-        backgroundUrl="/images/_mesh_gradients/metallicdream.png"
+        backgroundUrl="/images/_mesh_gradients/purplepeachy.png"
       />
 
 

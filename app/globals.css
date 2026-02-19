@@ -335,6 +335,8 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+      --font-xs: 14px;
+  --font-lg: 32px;
   }
 }
 
@@ -7313,19 +7315,29 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
   }
 }
 
+
+
 .gtext {
   display: grid;
-  font-size: 22px;
   white-space: nowrap;
   width: max-content;
   --text-width: 100px;
   --gsplits: 4;
-
   grid-template-columns: repeat(
     var(--gsplits),
     calc(var(--text-width) / var(--gsplits))
   );
 }
+
+
+.gtext.font-xs {
+  font-size: var(--font-xs);
+}
+
+.gtext.font-lg {
+  font-size: var(--font-lg);
+}
+
 
 .gtext__box {
   overflow: hidden;
@@ -7338,5 +7350,4 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
   display: block;
   position: relative;
   will-change: transform;
-
 }
