@@ -336,6 +336,7 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
       --font-xs: 14px;
+ --font-xxs: 11px;
   --font-lg: 32px;
   }
 }
@@ -7330,12 +7331,15 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
 }
 
 
-.gtext.font-xs {
-  font-size: var(--font-xs);
-}
+.font-xs { font-size: 13px; }
+.font-xxs { font-size: 11px; }
+.font-lg { font-size: 32px; }
 
-.gtext.font-lg {
-  font-size: var(--font-lg);
+.gtext.gray-color {
+color:#8E98A0;
+}
+.gtext.letter-spacing {
+letter-spacing: .1em;
 }
 
 
@@ -7350,4 +7354,20 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
   display: block;
   position: relative;
   will-change: transform;
+}
+
+.glowing-border {
+  animation: move 15s linear infinite;
+  offset-path: rect(0% auto 100% auto);
+  background: radial-gradient(#fff, #f1f5f9, transparent);
+}
+
+@keyframes move {
+  0% {
+    offset-distance: 0%;
+  }
+
+  100% {
+    offset-distance: 100%;
+  }
 }

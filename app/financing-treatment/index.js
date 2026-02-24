@@ -70,95 +70,7 @@ gsap.registerPlugin(
   CustomEase,
 );
 
-const SlidingText = ({ text = "Craft", totalCells = 4, className = "" }) => {
-  const containerRef = useRef(null);
-  const innerRefs = useRef([]);
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !innerRefs.current.length) return;
-
-    const setLayout = () => {
-      const firstInner = innerRefs.current[0];
-      const textWidth = firstInner.scrollWidth;
-
-      container.style.setProperty("--text-width", `${textWidth}px`);
-      container.style.setProperty("--gsplits", totalCells);
-
-      const offset = textWidth / totalCells;
-
-      innerRefs.current.forEach((inner, i) => {
-        gsap.set(inner, {
-          x: -i * offset,
-        });
-      });
-    };
-
-    setLayout();
-    window.addEventListener("resize", setLayout);
-
-    return () => {
-      window.removeEventListener("resize", setLayout);
-    };
-  }, [totalCells]);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el || !innerRefs.current.length) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-
-        observer.disconnect();
-
-        const firstInner = innerRefs.current[0];
-        const textWidth = firstInner.scrollWidth;
-        const offset = textWidth / totalCells;
-
-        gsap.fromTo(
-          innerRefs.current,
-          {
-            x: (i) => -i * offset + (i % 2 === 0 ? -40 : 40),
-            opacity: 0,
-          },
-          {
-            x: (i) => -i * offset,
-            opacity: 1,
-            duration: 0.8,
-            stagger: 0.03,
-            ease: "power2.out",
-          },
-        );
-      },
-      { threshold: 0.7 },
-    );
-
-    gsap.set(innerRefs.current, { opacity: 0 });
-
-    observer.observe(el);
-
-    return () => {
-      observer.disconnect();
-      gsap.killTweensOf(innerRefs.current);
-    };
-  }, [totalCells]);
-
-  return (
-    <h3 ref={containerRef} className={`gtext ${className}`}>
-      {Array.from({ length: totalCells }).map((_, i) => (
-        <span key={i} className="gtext__box">
-          <span
-            className="gtext__box-inner"
-            ref={(el) => (innerRefs.current[i] = el)}
-          >
-            {text}
-          </span>
-        </span>
-      ))}
-    </h3>
-  );
-};
 
 function CrossCursor() {
   const lerp = (a, b, n) => (1 - n) * a + n * b;
@@ -1535,6 +1447,9 @@ const preloaderImages = [
 function Loader() {
   const scrollAwayRef = useRef(null);
 
+  const [isPreloaderComplete, setIsPreloaderComplete] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       const items = gsap.utils.toArray(".work-item");
@@ -1610,6 +1525,7 @@ function Loader() {
 
     return () => ctx.revert();
   }, []);
+
   const preloaderRef = useRef(null);
   const textContainerRef = useRef(null);
   const cosmicRef = useRef(null);
@@ -1626,7 +1542,12 @@ function Loader() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline();
+      const tl = gsap.timeline({
+        onComplete: () => {
+          setIsPreloaderComplete(true);
+        }
+      });
+      
       const images = imagesContainerRef.current.querySelectorAll(
         ".striped-preloader__image",
       );
@@ -1722,6 +1643,7 @@ function Loader() {
         ease: "power3.inOut",
         onComplete: () => {
           preloaderRef.current.style.display = "none";
+          setShowContent(true); // Trigger content visibility
           animateGridAndHero();
           ScrollTrigger.refresh();
         },
@@ -1775,6 +1697,7 @@ function Loader() {
 
     return () => ctx.revert();
   }, []);
+
   useEffect(() => {
     ScrollTrigger.create({
       trigger: ".content-wrapper",
@@ -2092,7 +2015,7 @@ function Loader() {
           color: var(--color-text-secondary);
           margin-bottom: var(--spacing-md);
           transform: translateY(20px);
-          opacity: 0;
+          opacity: ${showContent ? 1 : 0};
           color: var(--color-text-muted);
           text-transform: uppercase;
           letter-spacing: var(--letter-spacing-wide);
@@ -2117,12 +2040,12 @@ function Loader() {
         }
 
         .striped-hero__description {
-          font-size: 1rem;
+          // font-size: 1rem;
           line-height: 1.6;
           color: var(--color-text-secondary);
           max-width: 100%;
           transform: translateY(20px);
-          opacity: 0;
+          opacity: ${showContent ? 1 : 0};
           margin-bottom: var(--spacing-lg);
         }
 
@@ -2135,7 +2058,7 @@ function Loader() {
         }
 
         .striped-hero__meta {
-          font-size: 0.75rem;
+        
           color: var(--color-text-muted);
           text-transform: uppercase;
           letter-spacing: var(--letter-spacing-wide);
@@ -2143,7 +2066,7 @@ function Loader() {
           grid-template-columns: 1fr 1fr;
           gap: 1rem;
           transform: translateY(20px);
-          opacity: 0;
+          opacity: ${showContent ? 1 : 0};
         }
 
         @media (min-width: 768px) {
@@ -2240,31 +2163,43 @@ function Loader() {
               feel naturally your own.
             </p>
             <div
-              className="striped-hero__meta font-neuehaas45 text-[12px]"
+              className="striped-hero__meta font-neuehaas45"
               ref={heroMetaRef}
             >
-              <div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <SlidingText
                   text="CRAFT"
                   effect="2"
                   totalCells={4}
-                  className="font-xs"
+                  className="font-xxs gray-color letter-spacing"
+                  isPreloaderComplete={isPreloaderComplete}
                 />
 
-                <p className="font-neuehaas45 text-[12px]">
-                  Detail-Driven Care
-                </p>
+             <SlidingText
+    text="DETAIL-DRIVEN CARE"
+    effect="2"
+    totalCells={4}
+    className="font-xs gray-color letter-spacing"
+    isPreloaderComplete={isPreloaderComplete}
+  />
               </div>
               <div>
-                <SlidingText
-                  text="PERSPECTIVE"
-                  effect="2"
-                  totalCells={4}
-                  className="font-xs "
-                />
-                <p className="font-neuehaas45 text-[12px]">
-                  Form Meets Function
-                </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+  <SlidingText
+    text="PERSPECTIVE"
+    effect="2"
+    totalCells={4}
+    className="font-xxs gray-color letter-spacing"
+    isPreloaderComplete={isPreloaderComplete}
+  />
+  <SlidingText
+    text="FORM MEETS FUNCTION"
+    effect="2"
+    totalCells={4}
+    className="font-xs gray-color letter-spacing"
+    isPreloaderComplete={isPreloaderComplete}
+  />
+</div>
               </div>
             </div>
           </div>
@@ -2285,22 +2220,6 @@ function Loader() {
             ref={scrollAwayRef}
             className="relative w-screen pt-[60px] overflow-hidden flex flex-col"
           >
-            {/* <div className="relative z-10 w-full px-[10vw] max-w-[900px] mb-[15vh]">
-  <div className="w-fit mb-6 px-6 py-4 backdrop-blur-[10px] bg-[rgba(160,253,208,0.85)] border border-white/10">
-    <div className="text-gray-500 uppercase tracking-widest font-neuehaas45 text-[11px]">
-      First Impressions
-    </div>
-        <div className="text-gray-500 font-neuehaas45 text-[12px]">
-            Your first visit is where it all begins. We’ll get to know you, take
-        digital photos and X-rays, and map out your smile goals together. It’s
-        a simple, one-on-one visit that gives us a clear picture of your
-        orthodontic needs.
-    </div>
-
-  </div>
-
-
-</div> */}
             <section className="relative h-screen flex items-center justify-center">
               <div
                 className="
@@ -2440,6 +2359,130 @@ function Loader() {
     </>
   );
 }
+
+
+const SlidingText = ({ 
+  text = "DEFAULT",
+  totalCells = 4, 
+  className = "",
+  isPreloaderComplete = false
+}) => {
+  const containerRef = useRef(null);
+  const innerRefs = useRef([]);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !innerRefs.current.length) return;
+
+    const setLayout = () => {
+      const firstInner = innerRefs.current[0];
+      
+      // Get more precise measurements
+      const computedStyle = window.getComputedStyle(firstInner);
+      const letterSpacing = parseFloat(computedStyle.letterSpacing) || 0;
+      const fontSize = parseFloat(computedStyle.fontSize);
+      
+      // Get the actual bounding box for more accurate width
+      const rect = firstInner.getBoundingClientRect();
+      const textWidth = rect.width;
+      
+      // Calculate offset with higher precision
+      const offset = textWidth / totalCells;
+
+      container.style.setProperty("--text-width", `${textWidth}px`);
+      container.style.setProperty("--gsplits", totalCells);
+      container.style.setProperty("--offset", `${offset}px`);
+
+      innerRefs.current.forEach((inner, i) => {
+        // Use pixel-perfect positioning
+        gsap.set(inner, {
+          x: Math.round(-i * offset * 100) / 100, // Round to 2 decimal places to avoid sub-pixel issues
+          position: 'relative',
+          display: 'inline-block',
+          willChange: 'transform',
+        });
+      });
+    };
+
+    // Use requestAnimationFrame to ensure DOM is fully painted
+    const initLayout = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(setLayout); // Double rAF for extra reliability
+      });
+    };
+
+    initLayout();
+    window.addEventListener("resize", initLayout);
+
+    return () => {
+      window.removeEventListener("resize", initLayout);
+    };
+  }, [totalCells, text]);
+
+  useEffect(() => {
+    if (!isPreloaderComplete || hasAnimated) return;
+
+    const el = containerRef.current;
+    if (!el || !innerRefs.current.length) return;
+
+    const timer = setTimeout(() => {
+      const firstInner = innerRefs.current[0];
+      const rect = firstInner.getBoundingClientRect();
+      const textWidth = rect.width;
+      const offset = textWidth / totalCells;
+
+      // Use a more precise initial offset calculation
+      gsap.fromTo(
+        innerRefs.current,
+        {
+          x: (i) => {
+            const targetX = -i * offset;
+            // Add offset based on index pattern, but ensure it's consistent
+            const randomOffset = (i % 2 === 0 ? -40 : 40);
+            return targetX + randomOffset;
+          },
+          opacity: 0,
+        },
+        {
+          x: (i) => -i * offset,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.03,
+          ease: "power2.out",
+          clearProps: "position", // Clear any positioning artifacts after animation
+          onComplete: () => setHasAnimated(true),
+        },
+      );
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      gsap.killTweensOf(innerRefs.current);
+    };
+  }, [isPreloaderComplete, hasAnimated, totalCells, text]);
+
+  useEffect(() => {
+    if (!isPreloaderComplete) {
+      gsap.set(innerRefs.current, { opacity: 0 });
+    }
+  }, [isPreloaderComplete]);
+
+  return (
+    <div ref={containerRef} className={`gtext ${className}`}>
+      {Array.from({ length: totalCells }).map((_, i) => (
+        <span key={i} className="gtext__box">
+          <span
+            className="gtext__box-inner"
+            ref={(el) => (innerRefs.current[i] = el)}
+          >
+            {text}
+          </span>
+        </span>
+      ))}
+    </div>
+  );
+};
 function Sky() {
   const ref = useRef();
   const cloud0 = useRef();

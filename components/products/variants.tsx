@@ -91,27 +91,33 @@ const holoOverlayStyle: React.CSSProperties = {
     ),
 repeating-linear-gradient(
   133deg,
-  rgba(16, 18, 42, 0.45) 0%,
+  rgba(16, 18, 42, 0.35) 0%,
 
-  rgba(155, 140, 255, 0.48) 3.8%,
-  rgba(140, 190, 255, 0.46) 4.4%,
-  rgba(170, 140, 255, 0.5) 5.0%,
+  rgba(155, 140, 255, 0.5) 6%,
+  rgba(140, 190, 255, 0.5) 7%,
+  rgba(170, 140, 255, 0.5) 8%,
 
-  rgba(16, 18, 42, 0.45) 9%,
-  rgba(16, 18, 42, 0.45) 12%
+  rgba(16, 18, 42, 0.35) 14%,
+  rgba(16, 18, 42, 0.35) 30%
 ),
-    radial-gradient(
-      farthest-corner circle at var(--mx) var(--my),
-      rgb(0 0 0 / 0.05) 10%,
-      rgb(0 0 0 / 0.12) 25%,
-      rgb(0 0 0 / 0.25) 120%
-    )
+radial-gradient(
+  farthest-corner circle at var(--mx) var(--my),
+  rgba(200, 230, 255, 0.55) 0%,
+  rgba(180, 215, 255, 0.35) 25%,
+  rgba(170, 200, 245, 0.18) 55%,
+  rgba(255, 255, 255, 0.06) 100%
+)
   `,
   backgroundSize: `50%, 200% 700%, 300%, 200%`,
   backgroundPosition: `center, 0% var(--posy), var(--posx) var(--posy), var(--posx) var(--posy)`,
   backgroundBlendMode: `exclusion, hue, hard-light, exclusion`,
   mixBlendMode: "color-dodge",
-  filter: `brightness(calc((var(--hyp) * 0.35) + 0.8)) contrast(1.7) saturate(1.8)`,
+filter: `
+  blur(0.3px)
+  brightness(calc((var(--hyp) * 0.3) + 0.7))
+  contrast(1.5)
+  saturate(1.8)
+`,
   opacity: 0.8,
   transition: "background-position 0.25s ease, filter 0.25s ease",
 };
@@ -224,7 +230,7 @@ export default function Variants({ variants }: ProductVariantsProps) {
 
 
   return (
-    <div ref={containerRef} className="relative bg-white">
+    <div ref={containerRef} className="relative min-h-screen flex flex-col justify-center">
       {rows.map((row, rowIndex) => {
         const rowRef = useRef<HTMLDivElement>(null)
 
@@ -246,7 +252,7 @@ const isInView = useInView(rowRef, {
             }}
            className="relative overflow-hidden"
           >
-            <div className="grid grid-cols-4 h-full w-full border-r border-black/10">
+<div className="grid grid-flow-col auto-cols-max justify-center gap-2 w-full">
         {row.variants.slice(0, 4).map((variant, itemIndex) => (
   <motion.div
     key={variant.id}
@@ -257,7 +263,7 @@ const isInView = useInView(rowRef, {
       if (rowIndex === 2) row3ItemRefs.current[itemIndex] = el
       if (rowIndex === 3) row4ItemRefs.current[itemIndex] = el
     }}
-    className="px-4 flex items-start justify-center relative"
+    className="flex items-start justify-center relative"
     initial={{ y: "45vh", opacity: 0, scale: 0.92 }}
     animate={isInView ? { y: 0, opacity: 1, scale: 1 } : {}}
     transition={{

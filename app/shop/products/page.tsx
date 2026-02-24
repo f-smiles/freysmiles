@@ -19,10 +19,10 @@ export default async function ProductsPage() {
   return (
     <>
           <Hero />
-      <div className="bg-[#F1F2F5]">
-        <section className="flex items-start justify-center w-full min-h-screen">
+      <div className=" flex items-center justify-center w-full min-h-screen">
+
           <Variants variants={data} />
-        </section>
+
       </div>
     </>
       )

@@ -906,7 +906,7 @@ const Invisalign = () => {
   }, []);
 
 useEffect(() => {
-  gsap.registerPlugin(ScrollTrigger);
+
 
   const tl = gsap.timeline({
     scrollTrigger: {
@@ -1065,7 +1065,7 @@ useEffect(() => {
     outputColorSpace: THREE.SRGBColorSpace,
   }}
         onCreated={({ scene }) => {
-        // Set up fog exactly like the original
+
         scene.fog = new THREE.FogExp2(0x000000, 0.001);
       }}
 >
@@ -1833,11 +1833,12 @@ vNormal = normalize(normalMatrix * rotatedNormal);
                 float posVariation = sin(vPosition.x * 10.0 + time * 2.0) * 
                                     cos(vPosition.y * 8.0 + time * 1.5) * 0.15;
 
-                vec3 hueShift = 0.5 + 0.5 * cos(
-                    time * timeSpeed + 
-                    dotNV * 8.0 + 
-                    vec3(0.0, 2.0, 4.0) 
-                );
+             // Mid-range spectral separation (between chrome and pearl)
+vec3 hueShift = 0.5 + 0.5 * cos(
+  time * timeSpeed +
+  dotNV * 6.0 +
+  vec3(0.0, 0.8, 1.6)   // middle ground offsets
+);
                 
                 vec3 irid = baseColorVec + hueShift * iridIntensity;
                 
@@ -2357,8 +2358,6 @@ bg = mix(bg, etherealBlue, arc * 0.35);
 float verticalBand = exp(-abs(uv0.x - 0.12) * 4.0);
 bg = mix(bg, creamEdge, verticalBand * 0.24);
 
-
-
 float verticalFalloff = smoothstep(1.0, -0.5, uv0.y);
 bg = mix(bg, vec3(0.80, 0.83, 0.87), verticalFalloff * 0.12);
 
@@ -2373,7 +2372,53 @@ bg = mix(vec3(luma), bg, 0.95);
 bg *= 1.04;
 
 vec3 col = bg;
-  
+
+float bandNoise = snoise(uv0 * 0.25 + vec2(uTime * 0.01, 0.0));
+bandNoise = bandNoise * 0.5 + 0.5;
+
+float orangeBand = smoothstep(0.2, 0.8, abs(uv0.x + 0.15));
+orangeBand *= smoothstep(0.8, 0.2, abs(uv0.x - 0.4));
+
+float bandMask = bandNoise * orangeBand;
+
+vec3 softPeach = vec3(0.96, 0.78, 0.68);  // desaturated orange
+vec3 mutedApricot = vec3(0.94, 0.72, 0.62);
+
+vec3 orangeTone = mix(softPeach, mutedApricot, bandNoise * 0.4);
+
+
+col = mix(col, orangeTone, bandMask * 0.10);
+
+
+float milkCloud1 = snoise(uv0 * 0.6 + vec2(uTime * 0.01, 0.0));
+float milkCloud2 = snoise(uv0 * 1.2 + vec2(0.0, uTime * 0.015));
+
+float milkCloud = (milkCloud1 * 0.6 + milkCloud2 * 0.4);
+milkCloud = milkCloud * 0.5 + 0.5; // normalize
+
+milkCloud = smoothstep(0.35, 0.85, milkCloud);
+
+float creamField = snoise(uv0 * 0.45 + vec2(uTime * 0.01, 0.0));
+creamField = creamField * 0.5 + 0.5;
+creamField = smoothstep(0.4, 0.8, creamField);
+
+vec3 softCream = vec3(0.98, 0.96, 0.92);
+vec3 warmWhite = vec3(1.0, 0.99, 0.97);
+
+// vertical bias 
+float creamLift = smoothstep(-0.2, 0.8, uv0.y);
+
+vec3 creamTone = mix(softCream, warmWhite, creamLift * 0.5);
+
+col = mix(col, creamTone, creamField * 0.18);
+
+vec3 pearlBase = vec3(0.985, 0.99, 1.0);
+vec3 pearlCool = vec3(0.96, 0.98, 1.0);
+
+float pearlShift = sin(uTime * 0.05) * 0.5 + 0.5;
+vec3 pearlTone = mix(pearlBase, pearlCool, pearlShift * 0.4);
+
+col = mix(col, pearlTone, milkCloud * 0.25);
     vec2 mouse_uv = (uMouse - 0.5) * 2.0;
     mouse_uv.x *= uResolution.x / uResolution.y;
     float mouseDist = length(uv - mouse_uv);
@@ -2389,7 +2434,12 @@ vec3 ribbonLight    = vec3(0.65, 0.85, 1.00);
 vec3 ribbonCoreGlow = vec3(0.55, 0.90, 1.00);
 
     float segLen = 10.0;  // lifetime of ribbon
+float milkLuma = dot(col, vec3(0.299, 0.587, 0.114));
+col = mix(vec3(milkLuma), col, 0.92);
 
+
+float brightness = dot(col, vec3(0.299, 0.587, 0.114));
+col += vec3(1.0) * pow(brightness, 2.2) * 0.035;
     for (int i = 0; i < 2; i++) {
       float slotIndex = float(i);
       float slotTime = uTime + slotIndex * 5.17;       
@@ -2448,7 +2498,29 @@ col += ribbonColor * haze * 0.4;
         col = mix(col, mix(col, vec3(0.75, 0.88, 0.98), 0.1), ribbonArea); // Reduced
       }
     }
-    
+
+
+float orangeField = snoise(uv0 * 0.18 + vec2(uTime * 0.01, 0.0));
+orangeField = orangeField * 0.5 + 0.5;
+
+// bias toward right side
+float rightBias = smoothstep(-0.2, 0.6, uv0.x);
+
+float orangeMask = orangeField * rightBias;
+
+
+vec3 peachTone = vec3(0.98, 0.72, 0.58);
+
+
+col = mix(col, peachTone, orangeMask * 0.18);
+float milkNoise = snoise(vUv * 0.4 + uTime * 0.01);
+milkNoise = milkNoise * 0.5 + 0.5;
+milkNoise = smoothstep(0.3, 0.9, milkNoise);
+
+vec3 babyBlue = mix(ribbonLight, vec3(1.0), 0.8);  
+vec3 iceMilk  = mix(vec3(0.94, 0.97, 1.0), babyBlue, 0.4);
+
+col = mix(col, iceMilk, 0.07 + milkNoise * 0.06);
     col = clamp(col, 0.0, 1.0);
     col = pow(col, vec3(0.97)); // Slightly less contrast
     gl_FragColor = vec4(col, 1.0);

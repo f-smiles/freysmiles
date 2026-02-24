@@ -139,34 +139,41 @@ if (distance > 0 && distance < MOUSE_RADIUS) {
           itemSize={3}
         />
       </bufferGeometry>
-<pointsMaterial
-  color={0xff66ff}
-  size={2.4}
+      <pointsMaterial
+  color={0xff33cc} 
+  size={2.6}
   sizeAttenuation
   transparent
-  // opacity={0.9}
+  opacity={0.4}
   depthWrite={false}
-  blending={THREE.AdditiveBlending}
+  blending={NormalBlending}
 />
+
     </points>
   );
 };
+
 const Scene = () => {
   return (
     <>
       <ParticleSystem />
-
-<EffectComposer>
-<Bloom
-  luminanceThreshold={0.75}
-  luminanceSmoothing={0.2}
-  intensity={2.2}
-  radius={0.35}
-/>
-</EffectComposer>
+      {/* <OrbitControls 
+        enableDamping 
+        dampingFactor={0.25} 
+        screenSpacePanning={false} 
+        maxPolarAngle={Math.PI / 2} 
+      /> */}
+      <EffectComposer>
+        <Bloom
+          luminanceThreshold={0}
+          luminanceSmoothing={0.9}
+          intensity={1.5}
+          height={300}
+        />
+      </EffectComposer>
     </>
-  )
-}
+  );
+};
 
 const ScrambleText = ({
   text,
@@ -436,32 +443,24 @@ const CopyButton = ({ text, label }) => {
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef(null);
 
-useEffect(() => {
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
 
-  if (typeof window === "undefined" || typeof document === "undefined") return;
+    const el = document.createElement("textarea");
+    el.style.position = "fixed";
+    el.style.opacity = "0";
+    el.style.pointerEvents = "none";
+    el.style.zIndex = "-9999";
 
-  const el = document.createElement("textarea");
-  el.style.position = "fixed";
-  el.style.opacity = "0";
-  el.style.pointerEvents = "none";
-  el.style.zIndex = "-9999";
-
-  textareaRef.current = el;
-  
-
-  if (document.body) {
+    textareaRef.current = el;
     document.body.appendChild(el);
-  }
 
-  return () => {
-
-    if (typeof document !== "undefined" && 
-        document.body && 
-        document.body.contains(el)) {
-      document.body.removeChild(el);
-    }
-  };
-}, []);
+    return () => {
+      if (document.body.contains(el)) {
+        document.body.removeChild(el);
+      }
+    };
+  }, []);
 
   const handleCopy = async () => {
     let success = false;
@@ -470,20 +469,14 @@ useEffect(() => {
       try {
         await navigator.clipboard.writeText(text);
         success = true;
-      } catch (err) {
-        console.warn("Clipboard API failed:", err);
-      }
+      } catch {}
     }
 
     if (!success && textareaRef.current) {
       const el = textareaRef.current;
       el.value = text;
-el.setSelectionRange(0, text.length);
-      try {
-        success = document.execCommand("copy");
-      } catch (err) {
-        console.warn("execCommand fallback failed:", err);
-      }
+      el.setSelectionRange(0, text.length);
+      success = document.execCommand("copy");
     }
 
     if (success) {
@@ -495,32 +488,31 @@ el.setSelectionRange(0, text.length);
   return (
     <button
       onClick={handleCopy}
-      className="
-        relative px-5 py-2 rounded-full text-[12px] tracking-wider
-        border-[0.2px] border-white transition-all duration-300
-        text-white bg-transparent
-        overflow-hidden
-      "
+      className="relative w-[280px] h-[48px] rounded-md overflow-hidden group"
     >
 
-      <span
-        className={`
-          transition-opacity duration-300
-          ${copied ? "opacity-0" : "opacity-100"}
-        `}
-      >
-        {label}
-      </span>
+      <div className="absolute inset-0 p-px bg-neutral-600 rounded-md overflow-hidden">
+        <div className="glowing-border absolute inset-0 w-[90px] h-[90px]"></div>
+      </div>
 
-      <span
-        className={`
-          font-neuehaas45 absolute inset-0 flex items-center justify-center
-          transition-opacity duration-300
-          ${copied ? "opacity-100" : "opacity-0"}
-        `}
-      >
-        COPIED
-      </span>
+
+      <div className="absolute inset-[1px] bg-black rounded-md flex items-center justify-center text-[12px] tracking-wider">
+        <span
+          className={`transition-opacity duration-300 ${
+            copied ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          {label}
+        </span>
+
+        <span
+          className={`absolute transition-opacity duration-300 ${
+            copied ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          COPIED
+        </span>
+      </div>
     </button>
   );
 };
@@ -641,7 +633,7 @@ const [resumeName, setResumeName] = useState("");
 </Canvas>
     </div> */}
 
-<App />
+{/* <App /> */}
 
  {/* <div className="absolute inset-0 -z-10">
     <Canvas
@@ -730,45 +722,62 @@ const [resumeName, setResumeName] = useState("");
   </div>
 </div>
 </div> */}
+<section
+  className="
+    bg-black
+    relative
+    z-10
+    w-full lg:w-1/2
+    h-screen
 
-{/* <section
-  className="relative z-10 w-full lg:w-1/2 h-[50vh] lg:h-full 
-             flex flex-col items-center justify-center text-white p-8 overflow-hidden"
+
+
+    text-white
+
+    overflow-hidden
+  "
 >
 
-  <div className="absolute inset-0 -z-10">
-    <Canvas
-      orthographic
-      camera={{ zoom: 1, position: [0, 0, 1] }}
-      className="w-full h-full"
+
+  <div className="flex items-center justify-center">
+  <div className="overflow-hidden pb-[0.1em]">
+    <h1
+      className=" text-[32px] lg:text-[34px] font-canelathin text-center leading-[1.2]"
+      ref={h1Ref}
     >
-      <ShaderBackground />
-    </Canvas>
+website coming soon
+
+    </h1>
+  </div>
   </div>
 
-  <div className="pointer-events-none absolute inset-0 z-0">
-    <div
-      className="
-        absolute 
-        w-[400px] h-[400px]
-        border border-white/35 
-        rounded-full
-        top-[100px]     
-        right-[40px]   
-      "
-    />
-    <div
-      className="
-        absolute 
-        w-[450px] h-[450px]
-        border border-white/30
-        rounded-full
-        bottom-[60px] 
-        left-[0px]    
-      "
-    />
-  </div>
 
+
+  <div className="flex items-start justify-center">
+ <div
+    className="
+      flex flex-col
+      w-[280px]
+      text-center
+      text-[14px] lg:text-[16px]
+      font-neuehaas45 leading-relaxed
+      max-w-[500px]
+      w-full      
+      gap-3
+    "
+  >
+
+    <CopyButton 
+      text="610-437-4748" 
+      label="copy 610-437-4748" 
+    />
+    <CopyButton 
+      text="info" 
+      label="copy email" 
+    />
+
+</div>
+  </div>
 
   <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
     <div className="circle-loader relative">
@@ -783,15 +792,7 @@ const [resumeName, setResumeName] = useState("");
   ref={containerOneRef}
 >
 
-  <div className="overflow-hidden pb-[0.1em]">
-    <h1
-      className=" text-[32px] lg:text-[34px] font-canelathin text-center leading-[1.2]"
-      ref={h1Ref}
-    >
-website coming soon
 
-    </h1>
-  </div>
 </div>
 
       <div className="font-neuehaas45 absolute top-[85%] right-16 py-2 px-4 z-10">
@@ -1228,27 +1229,22 @@ transition={{
   </AnimatePresence>,
   document.getElementById("modal-root")
 )}
-<div
-  className="
-     text-[14px] lg:text-[16px]
-    font-neuehaas45 leading-relaxed
-    absolute top-[72%] right-8 z-10 text-left
-    -translate-y-1/2
-  "
->
-  <div className="flex flex-col gap-3 items-start">
-    <CopyButton 
-      text="610-437-4748" 
-      label="copy 610-437-4748" 
-    />
-    <CopyButton 
-      text="info@freysmiles.com" 
-      label="copy email" 
-    />
-  </div>
-</div>
 
-</section> */}
+
+</section>
+{/* <div className="acuity-font w-full lg:w-1/2 h-[50vh] lg:h-full flex items-center justify-center">
+  <div className="w-full h-full p-[5vh]">
+    <div className="w-full h-full rounded-2xl overflow-hidden">
+      <iframe
+        src="https://app.acuityscheduling.com/schedule.php?owner=37690830"
+        title="Schedule Appointment"
+        className="w-full h-full"
+        frameBorder="0"
+        allow="payment"
+      />
+    </div>
+  </div>
+</div> */}
 <section  className="relative w-full">
   {/* <div style={{ 
     position: 'fixed', 
