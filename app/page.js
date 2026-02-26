@@ -15,6 +15,8 @@ import { Navigation } from "swiper/modules";
 import Link from "next/link";
 import Matter from "matter-js";
 import * as THREE from "three";
+import { RectAreaLight } from 'three'
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js'
 import React, {
   useMemo,
   forwardRef,
@@ -218,8 +220,8 @@ function InfiniteCorridor() {
   const scroll = useThreeScroll()
 
   const segmentCount = 30
-  const segmentDepth = 24 // 16 * 1.5 = 24
-  const yOffset = 12 // 8 * 1.5 = 12
+  const segmentDepth = 24
+  const yOffset = 8
   const depthOffset = -segmentDepth * 0.3
 
   useFrame(() => {
@@ -235,59 +237,91 @@ function InfiniteCorridor() {
         const z = -i * segmentDepth
         const opacity = Math.max(0, 1 - (i / segmentCount) * 1.2)
         
+
+        let panelOffset = 15
+        
+        // Segment 1 
+        if (i === 1) {
+          panelOffset = 20
+        }
+        
+        // Segment 2 
+        if (i === 2) {
+          panelOffset = 13
+        }
+                if (i === 3) {
+          panelOffset = 22
+        }
+
+        let segmentZOffset = 0
+        
+        if (i === 2) {
+
+          segmentZOffset = 6 
+        }
+        
+
+        let bottomYOffset = -8.5 
+        
+        if (i === 1) {
+          bottomYOffset = -9 
+        } else if (i === 2) {
+          bottomYOffset = -9.5 
+        }
+        
         return (
           <group key={i} position={[0, 0, z]}>
             
-
-            <mesh position={[-15, 0, 0]} rotation={[0, Math.PI/2, 0]}>
-              <planeGeometry args={[18, 18]} />
+            {/* left panel */}
+            <mesh position={[-panelOffset, -3, segmentZOffset]} rotation={[0, Math.PI/2, 0]}>
+              <planeGeometry args={[20, 18]} />
               <meshStandardMaterial 
-                color="#4a4a55"
-                emissive="#222222"
-                roughness={0.2}
-                metalness={0.9}
+                color="#d4a5a5"
+                emissive="#222222"   
+                roughness={0.15} 
+                metalness={0.95}
                 transparent
                 opacity={opacity}
                 side={THREE.DoubleSide}
               />
             </mesh>
 
-
-            <mesh position={[15, 0, 0]} rotation={[0, -Math.PI/2, 0]}> 
-              <planeGeometry args={[18, 18]} />
+            {/* Right panel */}
+            <mesh position={[panelOffset, -3, segmentZOffset]} rotation={[0, -Math.PI/2, 0]}> 
+              <planeGeometry args={[20, 18]} />
               <meshStandardMaterial 
                 color="#4a4a55"
-                emissive="#111111"
-                roughness={0.4}
-                metalness={0.7}
+                emissive="#222222" 
+                roughness={0.15}
+                metalness={0.95} 
                 transparent
                 opacity={opacity}
                 side={THREE.DoubleSide}
               />
             </mesh>
 
-
-            <mesh position={[0, 10.5, 0]} rotation={[Math.PI/2, 0, 0]}> 
-              <planeGeometry args={[18, 18]} /> 
+            {/* Top panel  */}
+            <mesh position={[0, 5.5, segmentZOffset]} rotation={[Math.PI/2, 0, 0]}> 
+              <planeGeometry args={[16, 18]} /> 
               <meshStandardMaterial 
                 color="#4a4a55"
-                emissive="#111111"
-                roughness={0.4}
-                metalness={0.7}
+                emissive="#222222" 
+                roughness={0.15}
+                metalness={0.95}
                 transparent
                 opacity={opacity}
                 side={THREE.DoubleSide}
               />
             </mesh>
 
-     
-            <mesh position={[0, -10.5, 0]} rotation={[-Math.PI/2, 0, 0]}>
-              <planeGeometry args={[18, 18]} /> 
+            {/* Bottom Panel */}
+            <mesh position={[0, bottomYOffset, segmentZOffset]} rotation={[-Math.PI/2, 0, 0]}>
+              <planeGeometry args={[20, 18]} /> 
               <meshStandardMaterial 
                 color="#4a4a55"
-                emissive="#111111"
-                roughness={0.4}
-                metalness={0.7}
+                emissive="#222222" 
+                roughness={0.15} 
+                metalness={0.95}
                 transparent
                 opacity={opacity}
                 side={THREE.DoubleSide}
@@ -331,7 +365,11 @@ const OceanScene = () => {
       'https://threejs.org/examples/textures/waternormals.jpg'
     );
     waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
-
+    RectAreaLightUniformsLib.init()
+const rectLight = new THREE.RectAreaLight(0xffd4a8, 5, 40, 40)
+rectLight.position.set(-20, 12, 10)
+rectLight.lookAt(0, 8, 0)
+scene.add(rectLight)
     const water = new Water(new THREE.PlaneGeometry(10000, 10000), {
       textureWidth: 512,
       textureHeight: 512,
@@ -344,6 +382,7 @@ const OceanScene = () => {
     });
 
     water.rotation.x = -Math.PI / 2;
+    water.position.y = -2;
     scene.add(water);
     waterRef.current = water;
 
@@ -361,7 +400,7 @@ const OceanScene = () => {
     const sun = new THREE.Vector3();
 
     const updateSun = () => {
-      const theta = Math.PI * (0.494 - 0.5);
+      const theta = Math.PI * (0.48 - 0.5);
       const phi = 2 * Math.PI * (0.205 - 0.5);
 
       sun.x = Math.cos(phi);
@@ -380,11 +419,11 @@ const OceanScene = () => {
     point.position.set(5, 5, 10);
     scene.add(ambient, point);
 
-    return () => {
-      scene.remove(water, sky, ambient, point);
-      water.geometry.dispose();
-      water.material.dispose();
-    };
+return () => {
+  scene.remove(water, sky, ambient, point, rectLight)
+  water.geometry.dispose()
+  water.material.dispose()
+};
   }, [scene, gl]);
 
   useFrame(() => {
@@ -416,7 +455,7 @@ const OceanScene = () => {
     }
 
     if (waterRef.current) {
-      waterRef.current.material.uniforms.time.value += 1 / 60;
+    waterRef.current.material.uniforms.time.value += 0.003; 
     }
   });
 
