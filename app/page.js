@@ -57,9 +57,9 @@ import {
   shaderMaterial,
   useFBO,
   Line,
-  useTexture
+  useTexture,
 } from "@react-three/drei";
-import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, extend, useLoader } from "@react-three/fiber";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(
@@ -139,74 +139,6 @@ function PortalScene() {
 }
 
 
-
-
-//  function OceanScene() {
-//   const { scene, camera, gl, size } = useThree();
-
-//   // --- BLOOM COMPOSER ---
-//   const composer = useMemo(() => {
-//     const comp = new EffectComposer(gl);
-//     comp.addPass(new RenderPass(scene, camera));
-//     const bloom = new UnrealBloomPass(
-//       new THREE.Vector2(size.width, size.height),
-//       2.4, // strength
-//       0.8, // radius
-//       0.0  // threshold
-//     );
-//     comp.addPass(bloom);
-//     return comp;
-//   }, [scene, camera, gl, size]);
-
-//   // --- CREATE INFINITY CUBE ---
-//   const groupRef = useRef();
-
-//   useEffect(() => {
-//     scene.clear();
-
-//     const baseGeo = new THREE.BoxGeometry(1, 1, 1);
-//     const edgeGeo = new THREE.EdgesGeometry(baseGeo); // no diagonals
-//     const baseMat = new THREE.LineBasicMaterial({
-//       color: 0x00ccff,
-//       toneMapped: false,
-//     });
-
-//     const group = new THREE.Group();
-//     const layers = 8;
-//     const spacing = 0.18;
-//     const scaleStart = 1.0;
-
-//     for (let i = 0; i < layers; i++) {
-//       const line = new THREE.LineSegments(edgeGeo, baseMat.clone());
-//       const scale = scaleStart + i * spacing;
-//       line.scale.set(scale, scale, scale);
-//       line.material.color = new THREE.Color(`hsl(${180 + i * 20}, 100%, 60%)`);
-//       group.add(line);
-//     }
-
-//     group.position.set(0, 0, 0);
-//     scene.add(group);
-//     groupRef.current = group;
-
-//     const light = new THREE.PointLight(0xffffff, 0.5);
-//     light.position.set(3, 3, 5);
-//     scene.add(light);
-
-//     scene.background = new THREE.Color(0x000000);
-//   }, [scene]);
-
-//   useFrame((state) => {
-//     const t = state.clock.getElapsedTime();
-//     if (groupRef.current) {
-//       groupRef.current.rotation.x = t * 0.4;
-//       groupRef.current.rotation.y = t * 0.6;
-//     }
-//     composer.render();
-//   }, 1);
-
-//   return null;
-// }
-
 function DoorModel() {
   const { scene, animations } = useGLTF("/models/openingclosingdoor3d.glb");
   const mixer = useRef();
@@ -281,6 +213,93 @@ function DoorModel() {
     </group>
   );
 }
+function InfiniteCorridor() {
+  const group = useRef()
+  const scroll = useThreeScroll()
+
+  const segmentCount = 30
+  const segmentDepth = 24 // 16 * 1.5 = 24
+  const yOffset = 12 // 8 * 1.5 = 12
+  const depthOffset = -segmentDepth * 0.3
+
+  useFrame(() => {
+    if (group.current) {
+      const progress = scroll.offset * segmentCount * segmentDepth
+      group.current.position.z = progress * 0.8
+    }
+  })
+
+  return (
+    <group ref={group} position={[0, yOffset, 0]}>
+      {Array.from({ length: segmentCount }).map((_, i) => {
+        const z = -i * segmentDepth
+        const opacity = Math.max(0, 1 - (i / segmentCount) * 1.2)
+        
+        return (
+          <group key={i} position={[0, 0, z]}>
+            
+
+            <mesh position={[-15, 0, 0]} rotation={[0, Math.PI/2, 0]}>
+              <planeGeometry args={[18, 18]} />
+              <meshStandardMaterial 
+                color="#4a4a55"
+                emissive="#222222"
+                roughness={0.2}
+                metalness={0.9}
+                transparent
+                opacity={opacity}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+
+
+            <mesh position={[15, 0, 0]} rotation={[0, -Math.PI/2, 0]}> 
+              <planeGeometry args={[18, 18]} />
+              <meshStandardMaterial 
+                color="#4a4a55"
+                emissive="#111111"
+                roughness={0.4}
+                metalness={0.7}
+                transparent
+                opacity={opacity}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+
+
+            <mesh position={[0, 10.5, 0]} rotation={[Math.PI/2, 0, 0]}> 
+              <planeGeometry args={[18, 18]} /> 
+              <meshStandardMaterial 
+                color="#4a4a55"
+                emissive="#111111"
+                roughness={0.4}
+                metalness={0.7}
+                transparent
+                opacity={opacity}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+
+     
+            <mesh position={[0, -10.5, 0]} rotation={[-Math.PI/2, 0, 0]}>
+              <planeGeometry args={[18, 18]} /> 
+              <meshStandardMaterial 
+                color="#4a4a55"
+                emissive="#111111"
+                roughness={0.4}
+                metalness={0.7}
+                transparent
+                opacity={opacity}
+                side={THREE.DoubleSide}
+              />
+            </mesh>
+
+          </group>
+        )
+      })}
+    </group>
+  )
+}
 const OceanScene = () => {
   useFrame((state) => {
     state.gl.setClearColor(0x000000, 0);
@@ -294,19 +313,19 @@ const OceanScene = () => {
 
   const tunnelStart = new THREE.Vector3(
     (68.5 - 150) * 0.05,
-    0,
+    8, 
     (185.5 - 150) * 0.05 - 5
   );
   const tunnelNext = new THREE.Vector3(
     (1 - 150) * 0.05,
-    0,
+    8, 
     (262.5 - 150) * 0.05 - 5
   );
 
   useEffect(() => {
     gl.outputEncoding = THREE.sRGBEncoding;
     gl.toneMapping = THREE.ACESFilmicToneMapping;
-    gl.toneMappingExposure = 0.85;
+    gl.toneMappingExposure = 0.95;
 
     const waterNormals = new THREE.TextureLoader().load(
       'https://threejs.org/examples/textures/waternormals.jpg'
@@ -318,7 +337,7 @@ const OceanScene = () => {
       textureHeight: 512,
       waterNormals,
       sunDirection: new THREE.Vector3(),
-      sunColor: 0xffffff,
+     sunColor: 0xffe6c0,
       waterColor: 0x001e0f,
       distortionScale: 3.7,
       fog: scene.fog !== undefined,
@@ -342,7 +361,7 @@ const OceanScene = () => {
     const sun = new THREE.Vector3();
 
     const updateSun = () => {
-      const theta = Math.PI * (0.48 - 0.5);
+      const theta = Math.PI * (0.494 - 0.5);
       const phi = 2 * Math.PI * (0.205 - 0.5);
 
       sun.x = Math.cos(phi);
@@ -370,12 +389,12 @@ const OceanScene = () => {
 
   useFrame(() => {
     const t = scroll.offset;
-    const camY = 8;
+    const camY = 12; 
 
     if (t < 0.4) {
       const ease = Math.pow(t / 0.4, 0.85);
       const targetZ = THREE.MathUtils.lerp(35, 5, ease);
-      const targetY = THREE.MathUtils.lerp(5, camY, ease);
+      const targetY = THREE.MathUtils.lerp(5, camY, ease); 
       const lookY = THREE.MathUtils.lerp(5, camY, ease);
 
       camera.position.set(0, targetY, targetZ);
@@ -386,9 +405,14 @@ const OceanScene = () => {
 
     if (t >= 0.4 && t < 0.45) {
       const ease = (t - 0.4) / 0.05;
-      const from = new THREE.Vector3(0, camY, 1);
+      const from = new THREE.Vector3(0, camY, 1); 
       camera.position.lerpVectors(from, tunnelStart, ease);
       camera.lookAt(tunnelStart.clone().lerp(tunnelNext, ease));
+    }
+
+    if (t >= 0.45) {
+
+      camera.position.y = camY;
     }
 
     if (waterRef.current) {
@@ -399,8 +423,7 @@ const OceanScene = () => {
   return (
     <>
       <PortalScene active={enteredPortal} intensity={enteredPortal ? 1 : 0} />
-
- <DoorModel />
+      <InfiniteCorridor />
     </>
   );
 };
@@ -414,81 +437,6 @@ const ScrollTracker = ({ onScrollChange }) => {
   return null;
 };
 
-
-
-const vertexShader = `
-  varying vec2 vUv;
-
-  void main() {
-    vUv = uv;  // pass UV coordinates to fragment shader
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-
-const fragmentShader = `
-precision mediump float;
-
-uniform float iTime;
-uniform vec2 iResolution;
-varying vec2 vUv;
-
-
-float gold_noise(in vec2 xy, in float seed) {
-  return fract(sin(dot(xy + seed, vec2(12.9898, 78.233))) * 43758.5453);
-}
-
-void main() {
-
-vec2 jitter = vec2(
-  sin(dot(vUv, vec2(12.9898, 78.233)) + iTime * 0.005),
-  cos(dot(vUv, vec2(93.9898, 67.345)) + iTime * 0.005)
-) * 0.2;
-
-  vec2 xy = (vUv * iResolution) + jitter;
-
-  float seed = fract(iTime);
-
-  vec4 color = vec4(
-    gold_noise(xy, seed + 0.1),
-    gold_noise(xy, seed + 0.2),
-    gold_noise(xy, seed + 0.3),
-    gold_noise(xy, seed + 0.4)
-  );
-
-  gl_FragColor = color;
-}
-`;
-
-
-const LiquidPortalMaterial = shaderMaterial(
-  {
-    iTime: 0,
-    iResolution: new THREE.Vector2(),
-  },
-  vertexShader,
-  fragmentShader
-);
-
-extend({ LiquidPortalMaterial });
-
-
-function LiquidPortalPlane({ position, scale }) {
-  const materialRef = useRef();
-
-  useFrame(({ clock, size }) => {
-    if (materialRef.current) {
-      materialRef.current.iTime = clock.getElapsedTime();
-      materialRef.current.iResolution.set(size.width, size.height);
-    }
-  });
-
-  return (
-    <mesh position={position} scale={scale}>
-      <planeGeometry args={[1, 2]} />
-      <liquidPortalMaterial ref={materialRef} />
-    </mesh>
-  );
-}
 
 
 export default function LandingComponent() {
@@ -521,6 +469,13 @@ export default function LandingComponent() {
       <Canvas camera={{ position: [0, 5, 30], fov: 50 }}>
   <ambientLight intensity={0.5} />
 <pointLight position={[0, 0, 7]} intensity={0.1} color="#ff6b35" />
+    <ambientLight intensity={0.4} />
+    <directionalLight
+  position={[10, 15, 5]}
+  intensity={1.2}
+  color={"#ffe2c4"}  
+  castShadow
+/>
   <ScrollControls pages={5} damping={0.1}>
     <ScrollTracker onScrollChange={setScrollOffset} />
 
