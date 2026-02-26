@@ -12,6 +12,11 @@ export default function Page() {
   const itemsContainer = useRef(null);
 
   useEffect(() => {
+    const items = document.querySelectorAll(".MainSectionItem");
+    const innerItems = document.querySelectorAll(".MainSectionItem-inner");
+    const mediaContainers = document.querySelectorAll(".MainSectionItem-mediaContainer");
+    const mediaContainersInner = document.querySelectorAll(".MainSectionItem-mediaContainerInner");
+    const navProgressBar = document.querySelectorAll(".MainSection-navProgressBar");
     const innerStickies = document.querySelectorAll(".MainSectionItem-innerSticky");
     const medias = document.querySelectorAll(".MainSectionItem-media");
     const headerTitle = document.querySelector(".MainSection-headerTitle");
@@ -46,138 +51,142 @@ export default function Page() {
       },
     });
 
-    const items = document.querySelectorAll(".MainSectionItem");
-    const innerItems = document.querySelectorAll(".MainSectionItem-inner");
-    const mediaContainers = document.querySelectorAll(".MainSectionItem-mediaContainer");
-    const mediaContainersInner = document.querySelectorAll(".MainSectionItem-mediaContainerInner");
-    const navProgressBar = document.querySelectorAll(".MainSection-navProgressBar");
-
     let mm = gsap.matchMedia()
-    mm.add("(max-width: 1439px", () => {
-      innerStickies.forEach((item, i) => {
-        ScrollTrigger.create({
-          trigger: item,
-          start: item.offsetHeight < window.innerHeight ? "top top" : "bottom bottom",
-          endTrigger: innerStickies[i + 1],
-          end: "top top",
-          pin: true,
-          pinSpacing: false,
-          invalidateOnRefresh: true,
-          markers: false,
+
+    mm.add("(max-width: 1439px)", () => {
+      gsap.set(items, { clearProps: 'all' })
+      gsap.set(innerItems, { clearProps: 'all' })
+      gsap.set(mediaContainers, { clearProps: 'all' })
+      gsap.set(mediaContainersInner, { clearProps: 'all' })
+
+      const mobile = gsap.context(() => {
+        innerStickies.forEach((item, i) => {
+          ScrollTrigger.create({
+            trigger: item,
+            start: item.offsetHeight < window.innerHeight ? "top top" : "bottom bottom",
+            endTrigger: innerStickies[i + 1],
+            end: "top top",
+            pin: true,
+            pinSpacing: false,
+            invalidateOnRefresh: true,
+            markers: false,
+          })
         })
-      })
-      return () => {
-        ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-      }
+      }, itemsContainer.current)
+      return () => mobile.revert()
     })
-    mm.add("(min-width: 1440px", () => {
-      let tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: mainSection.current,
-          start: "top top",
-          end: `+=${items.length * 100}%`,
-          pin: true,
-          scrub: 1, // true
-          invalidateOnRefresh: true,
-          markers: false,
-        },
-        defaults: { ease: "none" },
-      });
+
+    mm.add("(min-width: 1440px)", () => {
+      gsap.set(items, { clearProps: 'all' })
+      gsap.set(innerItems, { clearProps: 'all' })
+      gsap.set(mediaContainers, { clearProps: 'all' })
+      gsap.set(mediaContainersInner, { clearProps: 'all' })
       
-      tl.add(() => {
-        tl.addLabel("progress-bar");
-        tl.fromTo(navProgressBar, { xPercent: -85 }, { xPercent: 0, duration: tl.duration(), ease: "none" }, 0);
-      });
+      const desktop = gsap.context(() => {
+        let tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: mainSection.current,
+            start: "top top",
+            end: `+=${items.length * 100}%`,
+            pin: true,
+            scrub: 1, // true
+            invalidateOnRefresh: true,
+            markers: false,
+          },
+          defaults: { ease: "none" },
+        });
+      
+        tl.add(() => {
+          tl.addLabel("progress-bar");
+          tl.fromTo(navProgressBar, { xPercent: -85 }, { xPercent: 0, duration: tl.duration(), ease: "none" }, 0);
+        });
 
-      // --- Phase 1 ---
-      tl.addLabel("phase-1");
-      tl.fromTo(items[0], { xPercent: 0 }, { xPercent: -100 });
-      tl.fromTo(innerItems[0], { xPercent: 0 }, { xPercent: 100 }, "<");
-      tl.fromTo(mediaContainers[0], { xPercent: -60, scale: 1, transformOrigin: "100% 100% 0px" }, { xPercent: -150, scale: 0.8 }, "<");
-      tl.fromTo(mediaContainersInner[0], { xPercent: 0, scale: 1, transformOrigin: "50% 50% 0px" }, { xPercent: -150, scale: 1.2 }, "<");
-      tl.fromTo(items[1], { xPercent: 80 }, { xPercent: 0 }, "<");
-      tl.fromTo(innerItems[1], { xPercent: -80 }, { xPercent: 0 }, "<");
-      tl.fromTo(mediaContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<");
-      tl.fromTo(mediaContainersInner[1], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<");
-      tl.fromTo(items[2], { xPercent: 95 }, { xPercent: 80 }, "<");
-      tl.fromTo(innerItems[2], { xPercent: -95 }, { xPercent: -80 }, "<");
-      tl.fromTo(mediaContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: "100% 100% 0px" }, { xPercent: -15, scale: 0.45 }, "<");
-      tl.fromTo(mediaContainersInner[2], { scale: 1.85, transformOrigin: "50% 50% 0px" }, { scale: 1.55 }, "<");
-      tl.fromTo(items[3], { xPercent: 100 }, { xPercent: 95 }, "<");
-      tl.fromTo(innerItems[3], { xPercent: -100 }, { xPercent: -95 }, "<");
-      tl.fromTo(mediaContainers[3], { scale: 0, transformOrigin: "100% 100% 0px" }, { scale: 0.15 }, "<");
-      tl.fromTo(mediaContainersInner[3], { scale: 2, transformOrigin: "50% 50% 0px" }, { scale: 1.85 }, "<");
+        // --- Phase 1 ---
+        tl.addLabel("phase-1");
+        tl.fromTo(items[0], { xPercent: 0 }, { xPercent: -100 });
+        tl.fromTo(innerItems[0], { xPercent: 0 }, { xPercent: 100 }, "<");
+        tl.fromTo(mediaContainers[0], { xPercent: -60, scale: 1, transformOrigin: "100% 100% 0px" }, { xPercent: -150, scale: 0.8 }, "<");
+        tl.fromTo(mediaContainersInner[0], { xPercent: 0, scale: 1, transformOrigin: "50% 50% 0px" }, { xPercent: -150, scale: 1.2 }, "<");
+        tl.fromTo(items[1], { xPercent: 80 }, { xPercent: 0 }, "<");
+        tl.fromTo(innerItems[1], { xPercent: -80 }, { xPercent: 0 }, "<");
+        tl.fromTo(mediaContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<");
+        tl.fromTo(mediaContainersInner[1], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<");
+        tl.fromTo(items[2], { xPercent: 95 }, { xPercent: 80 }, "<");
+        tl.fromTo(innerItems[2], { xPercent: -95 }, { xPercent: -80 }, "<");
+        tl.fromTo(mediaContainers[2], { xPercent: 0, scale: 0.15, transformOrigin: "100% 100% 0px" }, { xPercent: -15, scale: 0.45 }, "<");
+        tl.fromTo(mediaContainersInner[2], { scale: 1.85, transformOrigin: "50% 50% 0px" }, { scale: 1.55 }, "<");
+        tl.fromTo(items[3], { xPercent: 100 }, { xPercent: 95 }, "<");
+        tl.fromTo(innerItems[3], { xPercent: -100 }, { xPercent: -95 }, "<");
+        tl.fromTo(mediaContainers[3], { scale: 0, transformOrigin: "100% 100% 0px" }, { scale: 0.15 }, "<");
+        tl.fromTo(mediaContainersInner[3], { scale: 2, transformOrigin: "50% 50% 0px" }, { scale: 1.85 }, "<");
         
-      // --- Phase 2 ---
-      tl.addLabel("phase-2", ">");
-      tl.fromTo(items[1], { xPercent: 0 }, { xPercent: -100 });
-      tl.fromTo(innerItems[1], { xPercent: 0 }, { xPercent: 100 }, "<");
-      tl.fromTo(mediaContainers[1], { xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" }, { xPercent: -150, scale: 0.8 }, "<");
-      tl.fromTo(mediaContainersInner[1], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<");
-      tl.fromTo(items[2], { xPercent: 80 }, { xPercent: 0 }, "<");
-      tl.fromTo(innerItems[2], { xPercent: -80 }, { xPercent: 0 }, "<");
-      tl.fromTo(mediaContainers[2], { xPercent: -15, scale: 0.45, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<");
-      tl.fromTo(mediaContainersInner[2],{ scale: 1.55, transformOrigin: "50% 50% 0px" },{ scale: 1.0 },"<");
-      tl.fromTo(items[3], { xPercent: 95 }, { xPercent: 80 }, "<");
-      tl.fromTo(innerItems[3], { xPercent: -95 }, { xPercent: -80 }, "<");
-      tl.fromTo(mediaContainers[3],{ xPercent: 0, scale: 0.15, transformOrigin: "100% 100% 0px" },{ xPercent: -15, scale: 0.45 },"<");
-      tl.fromTo(mediaContainersInner[3],{ scale: 1.85, transformOrigin: "50% 50% 0px" },{ scale: 1.55 },"<");
-      tl.fromTo(items[4], { xPercent: 100 }, { xPercent: 95 }, "<");
-      tl.fromTo(innerItems[4], { xPercent: -100 }, { xPercent: -95 }, "<");
-      tl.fromTo(mediaContainers[4],{ scale: 0, transformOrigin: "100% 100% 0px" },{ scale: 0.15 },"<");
-      tl.fromTo(mediaContainersInner[4],{ scale: 2, transformOrigin: "50% 50% 0px" },{ scale: 1.85 },"<");
+        // --- Phase 2 ---
+        tl.addLabel("phase-2", ">");
+        tl.fromTo(items[1], { xPercent: 0 }, { xPercent: -100 });
+        tl.fromTo(innerItems[1], { xPercent: 0 }, { xPercent: 100 }, "<");
+        tl.fromTo(mediaContainers[1], { xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" }, { xPercent: -150, scale: 0.8 }, "<");
+        tl.fromTo(mediaContainersInner[1], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<");
+        tl.fromTo(items[2], { xPercent: 80 }, { xPercent: 0 }, "<");
+        tl.fromTo(innerItems[2], { xPercent: -80 }, { xPercent: 0 }, "<");
+        tl.fromTo(mediaContainers[2], { xPercent: -15, scale: 0.45, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<");
+        tl.fromTo(mediaContainersInner[2],{ scale: 1.55, transformOrigin: "50% 50% 0px" },{ scale: 1.0 },"<");
+        tl.fromTo(items[3], { xPercent: 95 }, { xPercent: 80 }, "<");
+        tl.fromTo(innerItems[3], { xPercent: -95 }, { xPercent: -80 }, "<");
+        tl.fromTo(mediaContainers[3],{ xPercent: 0, scale: 0.15, transformOrigin: "100% 100% 0px" },{ xPercent: -15, scale: 0.45 },"<");
+        tl.fromTo(mediaContainersInner[3],{ scale: 1.85, transformOrigin: "50% 50% 0px" },{ scale: 1.55 },"<");
+        tl.fromTo(items[4], { xPercent: 100 }, { xPercent: 95 }, "<");
+        tl.fromTo(innerItems[4], { xPercent: -100 }, { xPercent: -95 }, "<");
+        tl.fromTo(mediaContainers[4],{ scale: 0, transformOrigin: "100% 100% 0px" },{ scale: 0.15 },"<");
+        tl.fromTo(mediaContainersInner[4],{ scale: 2, transformOrigin: "50% 50% 0px" },{ scale: 1.85 },"<");
         
-      // --- Phase 3 ---
-      tl.addLabel("phase-3", ">");
-      tl.fromTo(items[2], { xPercent: 0 }, { xPercent: -100 });
-      tl.fromTo(innerItems[2], { xPercent: 0 }, { xPercent: 100 }, "<");
-      tl.fromTo(mediaContainers[2],{ xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" },{ xPercent: -150, scale: 0.8 },"<");
-      tl.fromTo(mediaContainersInner[2], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<");
-      tl.fromTo(items[3], { xPercent: 80 }, { xPercent: 0 }, "<");
-      tl.fromTo(innerItems[3], { xPercent: -80 }, { xPercent: 0 }, "<");
-      tl.fromTo(mediaContainers[3], { xPercent: -15, scale: 0.45, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<");
-      tl.fromTo(mediaContainersInner[3], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<");
-      tl.fromTo(items[4], { xPercent: 95 }, { xPercent: 80 }, "<");
-      tl.fromTo(innerItems[4], { xPercent: -95 }, { xPercent: -80 }, "<");
-      tl.fromTo(mediaContainers[4], { xPercent: 0, scale: 0.15, transformOrigin: "100% 100% 0px" }, { xPercent: -15, scale: 0.45 }, "<");
-      tl.fromTo(mediaContainersInner[4], { scale: 1.85, transformOrigin: "50% 50% 0px" }, { scale: 1.55 }, "<");
-      tl.fromTo(items[5], { xPercent: 100 }, { xPercent: 95 }, "<");
-      tl.fromTo(innerItems[5], { xPercent: -100 }, { xPercent: -95 }, "<");
-      tl.fromTo(mediaContainers[5], { scale: 0, transformOrigin: "100% 100% 0px" }, { scale: 0.15 }, "<");
-      tl.fromTo(mediaContainersInner[5], { scale: 2, transformOrigin: "50% 50% 0px" }, { scale: 1.85 }, "<");
+        // --- Phase 3 ---
+        tl.addLabel("phase-3", ">");
+        tl.fromTo(items[2], { xPercent: 0 }, { xPercent: -100 });
+        tl.fromTo(innerItems[2], { xPercent: 0 }, { xPercent: 100 }, "<");
+        tl.fromTo(mediaContainers[2],{ xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" },{ xPercent: -150, scale: 0.8 },"<");
+        tl.fromTo(mediaContainersInner[2], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<");
+        tl.fromTo(items[3], { xPercent: 80 }, { xPercent: 0 }, "<");
+        tl.fromTo(innerItems[3], { xPercent: -80 }, { xPercent: 0 }, "<");
+        tl.fromTo(mediaContainers[3], { xPercent: -15, scale: 0.45, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<");
+        tl.fromTo(mediaContainersInner[3], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<");
+        tl.fromTo(items[4], { xPercent: 95 }, { xPercent: 80 }, "<");
+        tl.fromTo(innerItems[4], { xPercent: -95 }, { xPercent: -80 }, "<");
+        tl.fromTo(mediaContainers[4], { xPercent: 0, scale: 0.15, transformOrigin: "100% 100% 0px" }, { xPercent: -15, scale: 0.45 }, "<");
+        tl.fromTo(mediaContainersInner[4], { scale: 1.85, transformOrigin: "50% 50% 0px" }, { scale: 1.55 }, "<");
+        tl.fromTo(items[5], { xPercent: 100 }, { xPercent: 95 }, "<");
+        tl.fromTo(innerItems[5], { xPercent: -100 }, { xPercent: -95 }, "<");
+        tl.fromTo(mediaContainers[5], { scale: 0, transformOrigin: "100% 100% 0px" }, { scale: 0.15 }, "<");
+        tl.fromTo(mediaContainersInner[5], { scale: 2, transformOrigin: "50% 50% 0px" }, { scale: 1.85 }, "<");
         
-      // --- Phase 4 ---
-      tl.addLabel("phase-4", ">");
-      tl.fromTo(items[3], { xPercent: 0 }, { xPercent: -100 });
-      tl.fromTo(innerItems[3], { xPercent: 0 }, { xPercent: 100 }, "<");
-      tl.fromTo(mediaContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" }, { xPercent: -150, scale: 0.8 }, "<");
-      tl.fromTo(mediaContainersInner[3], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<");
-      tl.fromTo(items[4], { xPercent: 80 }, { xPercent: 0 }, "<");
-      tl.fromTo(innerItems[4], { xPercent: -80 }, { xPercent: 0 }, "<");
-      tl.fromTo(mediaContainers[4], { xPercent: -15, scale: 0.45, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<");
-      tl.fromTo(mediaContainersInner[4], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<");
-      tl.fromTo(items[5], { xPercent: 95 }, { xPercent: 80 }, "<");
-      tl.fromTo(innerItems[5], { xPercent: -95 }, { xPercent: -80 }, "<");
-      tl.fromTo(mediaContainers[5], { scale: 0.15, transformOrigin: "100% 100% 0px" }, { scale: 0.6 }, "<");
-      tl.fromTo(mediaContainersInner[5], { scale: 1.85, transformOrigin: "50% 50% 0px" }, { scale: 1.55 }, "<");
+        // --- Phase 4 ---
+        tl.addLabel("phase-4", ">");
+        tl.fromTo(items[3], { xPercent: 0 }, { xPercent: -100 });
+        tl.fromTo(innerItems[3], { xPercent: 0 }, { xPercent: 100 }, "<");
+        tl.fromTo(mediaContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" }, { xPercent: -150, scale: 0.8 }, "<");
+        tl.fromTo(mediaContainersInner[3], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<");
+        tl.fromTo(items[4], { xPercent: 80 }, { xPercent: 0 }, "<");
+        tl.fromTo(innerItems[4], { xPercent: -80 }, { xPercent: 0 }, "<");
+        tl.fromTo(mediaContainers[4], { xPercent: -15, scale: 0.45, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<");
+        tl.fromTo(mediaContainersInner[4], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<");
+        tl.fromTo(items[5], { xPercent: 95 }, { xPercent: 80 }, "<");
+        tl.fromTo(innerItems[5], { xPercent: -95 }, { xPercent: -80 }, "<");
+        tl.fromTo(mediaContainers[5], { scale: 0.15, transformOrigin: "100% 100% 0px" }, { scale: 0.6 }, "<");
+        tl.fromTo(mediaContainersInner[5], { scale: 1.85, transformOrigin: "50% 50% 0px" }, { scale: 1.55 }, "<");
         
-      // --- Phase 5 ---
-      tl.addLabel("phase-5", ">");
-      tl.fromTo(items[4], { xPercent: 0 }, { xPercent: -100 });
-      tl.fromTo(innerItems[4], { xPercent: 0 }, { xPercent: 100 }, "<");
-      tl.fromTo(mediaContainers[4], { xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" }, { xPercent: -150, scale: 0.8 }, "<");
-      tl.fromTo(mediaContainersInner[4], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<");
-      tl.fromTo(items[5], { xPercent: 80 }, { xPercent: 0 }, "<");
-      tl.fromTo(innerItems[5], { xPercent: -80 }, { xPercent: 0 }, "<");
-      tl.fromTo(mediaContainers[5], { xPercent: 0, scale: 0.6, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<");
-      tl.fromTo(mediaContainersInner[5], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<");
-
-      return () => {
-        ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-        tl.kill()
-      }
+        // --- Phase 5 ---
+        tl.addLabel("phase-5", ">");
+        tl.fromTo(items[4], { xPercent: 0 }, { xPercent: -100 });
+        tl.fromTo(innerItems[4], { xPercent: 0 }, { xPercent: 100 }, "<");
+        tl.fromTo(mediaContainers[4], { xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" }, { xPercent: -150, scale: 0.8 }, "<");
+        tl.fromTo(mediaContainersInner[4], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<");
+        tl.fromTo(items[5], { xPercent: 80 }, { xPercent: 0 }, "<");
+        tl.fromTo(innerItems[5], { xPercent: -80 }, { xPercent: 0 }, "<");
+        tl.fromTo(mediaContainers[5], { xPercent: 0, scale: 0.6, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<");
+        tl.fromTo(mediaContainersInner[5], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<");
+      }, mainSection.current)
+      return () => desktop.revert()
     })
-    
+
     return () => mm.revert()
   }, [])
 
