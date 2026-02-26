@@ -40,6 +40,11 @@ export default function AdultOrthodontics() {
     let mm = gsap.matchMedia()
 
     mm.add('(max-width: 1439px)', () => {
+      gsap.set(items, { clearProps: 'all' })
+      gsap.set(innerItems, { clearProps: 'all' })
+      gsap.set(mediaContainers, { clearProps: 'all' })
+      gsap.set(mediaContainersInner, { clearProps: 'all' })
+      
       const mobile = gsap.context(() => {
         innerStickies.forEach((item, i) => {
           ScrollTrigger.create({
@@ -58,6 +63,11 @@ export default function AdultOrthodontics() {
     })
 
     mm.add('(min-width: 1440px)', () => {
+      gsap.set(items, { clearProps: 'all' })
+      gsap.set(innerItems, { clearProps: 'all' })
+      gsap.set(mediaContainers, { clearProps: 'all' })
+      gsap.set(mediaContainersInner, { clearProps: 'all' })
+      
       const desktop = gsap.context(() => {
         let tl = gsap.timeline({
           scrollTrigger: {
@@ -65,7 +75,7 @@ export default function AdultOrthodontics() {
             start: 'top top',
             end: `+=${items.length * 100}%`,
             pin: true,
-            scrub: 1, // true
+            scrub: 1,
             invalidateOnRefresh: true,
             markers: false,
           },
@@ -135,7 +145,6 @@ export default function AdultOrthodontics() {
         tl.fromTo(innerItems[4], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[4], { xPercent: 0, scale: 0.6, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
         tl.fromTo(mediaContainersInner[4], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
-        
       }, mainSection.current)
       return () => desktop.revert()
     })
