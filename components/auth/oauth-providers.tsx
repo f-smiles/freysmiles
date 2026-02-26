@@ -10,7 +10,7 @@ import { useParams } from "next/navigation"
 export const OAuthProviders = ({ mode }: { mode: "login" | "signup" | undefined }) => {
   return (
     <Button
-      onClick={() => signIn("google", { redirect: false, callbackUrl: "/" })}
+      onClick={() => signIn("google", { redirect: true, callbackUrl: "/" })}
       variant="outline"
       className="flex items-center w-full gap-2 mt-4"
     >

@@ -1,54 +1,54 @@
-.ImageComparison-container {
+.ImageCompare__Section {
   position: relative;
-  width: 100dvw;
-  height: 100dvh;
-  /* padding-bottom: 56.25%; */
-}
-
-.ImageComparisonItem {
+  max-width: 900px;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16 / 9;
+  /* border: 1px solid #333; */
+  border-radius: 10px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
-.ImageComparisonItem-after {
+.ImageCompare__Before-Div,
+.ImageCompare__After-Div {
+  aspect-ratio: 16 / 9;
+}
+
+.ImageCompare__After-Div {
   position: absolute;
   overflow: hidden;
   top: 0;
-  transform: translate(100%, 0px);
-}
-
-.ImageComparisonItem-after img {
-  transform: translate(-100%, 0px);
-}
-
-.ImageComparisonItem img {
-  position: absolute;
   width: 100%;
-  height: 100%;
-  top: 0;
+  border-left: 1px solid #444;
 }
 
-.ImageComparison-slider,
-.ImageComparisonSlider-dot,
-.ImageComparisonSlider-line {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+/* .ImageCompare__Before-Img {
+  filter: grayscale();
+} */
+
+/* GRAIN OVERLAY */
+.ImageCompare__Before-Div::after,
+.ImageCompare__After-Div::after {
+  position: fixed;  
+  top: -100%;
+  left: -50%;
+  width: 300%;
+  height: 300%;
+  opacity: 0.08;
+  content: "";
+  background-image: url("../../public/images/textures/1k_Dissolve_Noise_Texture.png");
+  animation: grain 8s steps(10) infinite;
 }
-.ImageComparisonSlider-dot {
-  width: 24px;
-  height: 24px;
-  border-radius: 100%;
-  background-color: #fafafa;
-}
-.ImageComparisonSlider-line {
-  width: 2px;
-  height: 100dvh;
-  background-color: #fafafa;
-}
-.ImageComparison-slider:hover,
-.ImageComparisonSlider-dot:hover,
-.ImageComparisonSlider-line:hover {
-  cursor: grab;
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0) }
+  10% { transform: translate(-5%, -10%) }
+  20% { transform: translate(-15%, 5%) }
+  30% { transform: translate(7%, -25%) }
+  40% { transform: translate(-5%, 25%) }
+  50% { transform: translate(-15%, 10%) }
+  60% { transform: translate(15%, 0%) }
+  70% { transform: translate(0%, 15%) }
+  80% { transform: translate(3%, 25%) }
+  90% { transform: translate(-10%, 10%) }
 }

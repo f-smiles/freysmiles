@@ -478,7 +478,6 @@ className="
 </div>
 
 
-
           <motion.div
             variants={opacity}
             animate={!isActive ? "open" : "closed"}
@@ -495,6 +494,7 @@ className="
       Book
     </motion.div>
   </Link> */}
+          <CartComponent />
 
           <Link href="/">
             <motion.div
