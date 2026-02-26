@@ -1,54 +1,48 @@
 'use client'
+import "./theme-buttons.css"
+import { useState } from "react"
 import { useTheme } from "next-themes"
+import { motion} from "motion/react"
+import { MoonIcon, SunIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+
+const tabs = [
+  { id: "light", label: "light" },
+  { id: "dark", label: "dark" },
+]
 
 export default function ThemeButtons() {
   const { theme, setTheme } = useTheme()
+  
+  const [activeTab, setActiveTab] = useState(theme)
 
   return (
-    <div className="fixed flex items-center p-2 bottom-[20px] right-[20px] rounded-[2px] z-50">
-      <Button
-        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className="rounded-full"
-        style={{
-          width: "72px",
-          height: "36px",
-          borderRadius: "9999px",
-          backgroundColor: theme === "dark" ? "#0071e3" : "#ececec",
-          border: theme === "dark" ? "5px solid #353535" : "5px solid #ececec",
-	        boxShadow: 
-            theme === "dark"
-            ? "none"
-            : "-7px -7px 15px rgba(255, 255, 255, 0.65), 7px 7px 15px rgba(70, 70, 70, 0.12), inset -7px -7px 15px rgba(255, 255, 255, 0.65), inset 7px 7px 15px rgba(70, 70, 70, 0.12)",
-          outline: "none",
-          cursor: "pointer",
-        }}
-      >
-        <div
-          className={theme === "dark" ? "right-[14px]" : "left-[14px]"}
-          style={{
-            position: "absolute",
-            width: "24px",
-            height: "24px",
-            borderRadius: "100%",
-            backgroundColor: theme === "dark" ? "#353535" : "#ececec",
-            boxShadow:
-              theme === "dark"
-              ? "none"
-              : "-7px -7px 15px rgba(255, 255, 255, 0.75), 7px 7px 15px rgba(70, 70, 70, 0.12)",
+    <div className={`${theme === "dark" ? "GlassEffect-dark" : "GlassEffect"} fixed overflow-hidden lex items-center space-x-1 p-1.5 bottom-[20px] right-[40px] rounded-full z-50`}>
+      {tabs.map((tab) => (
+        <Button
+          key={tab.id}
+          onClick={() => {
+            setActiveTab(tab.id)
+            setTheme(tab.label)
           }}
-        />
-        <p
-          className={theme === "dark" ? "left-6" : "right-6"}
+          className={`${
+            activeTab === tab.id ? "" : "hover:text-blue-500 dark:hover:text-blue-500"
+          } relative rounded-full bg-transparent px-3 py-1.5 text-sm font-medium text-black outline-sky-400 transition dark:text-white hover:bg-transparent focus-visible:outline-2`}
           style={{
-            position: "absolute",
-            color: theme === "dark" ? "#ececec" : "#52525b",
-            fontSize: "14px",
+            WebkitTapHighlightColor: "transparent",
           }}
         >
-          {theme === "dark" ? "On" : "Off"}
-        </p>
-      </Button>
+          {activeTab === tab.id && (
+            <motion.span
+              layoutId="bubble"
+              className={`${theme === "dark" ? "GlassEffect-dark": "GlassEffect GlassEffect-light"} absolute inset-0 z-10`}
+              style={{ borderRadius: 9999 }}
+              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+            />
+          )}
+          {tab.label === "light" ? <SunIcon className="size-4 transition hover:scale-125" /> : <MoonIcon className="size-4 transition hover:scale-125" />}
+        </Button>
+      ))}
     </div>
   )
 }
