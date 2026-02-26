@@ -12,40 +12,40 @@ export default function EarlyOrthodontics() {
   const itemsContainer = useRef(null)
 
   useEffect(() => {
-    const mm = gsap.matchMedia()
-    mm.add({
-      isDesktop: "(min-width: 1440px)",
-      isMobile: "(max-width: 1439px)",
-    }, (context) => {
-      const { isDesktop, isMobile } = context.conditions
-      
-      const items = document.querySelectorAll('.MainSectionItem')
-      const innerItems = document.querySelectorAll('.MainSectionItem-inner')
-      const innerStickies = document.querySelectorAll('.MainSectionItem-innerSticky')
-      const mediaContainers = document.querySelectorAll('.MainSectionItem-mediaContainer')
-      const mediaContainersInner = document.querySelectorAll('.MainSectionItem-mediaContainerInner')
-      const medias = document.querySelectorAll('.MainSectionItem-media')
-      const headerTitle = document.querySelector('.MainSection-headerTitle')
+    const items = document.querySelectorAll('.MainSectionItem')
+    const innerItems = document.querySelectorAll('.MainSectionItem-inner')
+    const innerStickies = document.querySelectorAll('.MainSectionItem-innerSticky')
+    const mediaContainers = document.querySelectorAll('.MainSectionItem-mediaContainer')
+    const mediaContainersInner = document.querySelectorAll('.MainSectionItem-mediaContainerInner')
+    const medias = document.querySelectorAll('.MainSectionItem-media')
+    const headerTitle = document.querySelector('.MainSection-headerTitle')
 
-      medias.forEach((media) => {
-        gsap.set(media, { aspectRatio: 1.3793103448275863 })
-      })
+    medias.forEach((media) => {
+      gsap.set(media, { aspectRatio: 1.3793103448275863 })
+    })
 
-      let splitheaderTitle = SplitText.create(headerTitle, { type: 'chars, words', charsClass: 'chars' })
-      gsap.from(splitheaderTitle.chars, {
-        y: 50,
-        opacity: 0,
-        transformOrigin: '0% 50% -50',
-        stagger: 0.05,
-        duration: 2,
-        ease: 'none',
-        onComplete: () => {
-          headerTitle.removeAttribute('aria-hidden')
-        }
-      })
+    let splitheaderTitle = SplitText.create(headerTitle, { type: 'chars, words', charsClass: 'chars' })
+    gsap.from(splitheaderTitle.chars, {
+      y: 50,
+      opacity: 0,
+      transformOrigin: '0% 50% -50',
+      stagger: 0.05,
+      duration: 2,
+      ease: 'none',
+      onComplete: () => {
+        headerTitle.removeAttribute('aria-hidden')
+      }
+    })
 
+    let mm = gsap.matchMedia()
     
-      if (isMobile) {
+    mm.add('(max-width: 1439px)', () => {
+      gsap.set(items, { clearProps: 'all' })
+      gsap.set(innerItems, { clearProps: 'all' })
+      gsap.set(mediaContainers, { clearProps: 'all' })
+      gsap.set(mediaContainersInner, { clearProps: 'all' })
+
+      const mobile = gsap.context(() => {
         innerStickies.forEach((item, i) => {
           ScrollTrigger.create({
             trigger: item,
@@ -58,22 +58,30 @@ export default function EarlyOrthodontics() {
             markers: false,
           })
         })
-      }
+      }, itemsContainer.current)
+      return () => mobile.revert()
+    })
+    
+    mm.add('(min-width: 1440px)', () => {
+      gsap.set(items, { clearProps: 'all' })
+      gsap.set(innerItems, { clearProps: 'all' })
+      gsap.set(mediaContainers, { clearProps: 'all' })
+      gsap.set(mediaContainersInner, { clearProps: 'all' })
 
-      if (isDesktop && items.length > 0) {
+      const desktop = gsap.context(() => {
         let tl = gsap.timeline({
           scrollTrigger: {
             trigger: mainSection.current,
             start: 'top top',
             end: `+=${items.length * 100}%`,
             pin: true,
-            scrub: 1, // true
+            scrub: 1,
             invalidateOnRefresh: true,
             markers: false,
           },
           defaults: { ease: 'none' },
         })
-        
+
         // --- Phase 1 ---        
         tl.addLabel('phase-1')
         tl.fromTo(items[0], { xPercent: 0 }, { xPercent: -100 })
@@ -156,13 +164,11 @@ export default function EarlyOrthodontics() {
         tl.fromTo(innerItems[5], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[5], { xPercent: 0, scale: 0.6, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
         tl.fromTo(mediaContainersInner[5], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
-      }
+      }, mainSection.current)
+      return () => desktop.revert()
     })
 
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.refresh())
-      mm.revert()
-    }
+    return () => mm.revert()
   }, [])
   
   return (
