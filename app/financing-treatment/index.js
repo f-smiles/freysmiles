@@ -1643,7 +1643,7 @@ function Loader() {
         ease: "power3.inOut",
         onComplete: () => {
           preloaderRef.current.style.display = "none";
-          setShowContent(true); // Trigger content visibility
+          setShowContent(true); 
           animateGridAndHero();
           ScrollTrigger.refresh();
         },
@@ -2378,16 +2378,13 @@ const SlidingText = ({
     const setLayout = () => {
       const firstInner = innerRefs.current[0];
       
-      // Get more precise measurements
       const computedStyle = window.getComputedStyle(firstInner);
       const letterSpacing = parseFloat(computedStyle.letterSpacing) || 0;
       const fontSize = parseFloat(computedStyle.fontSize);
       
-      // Get the actual bounding box for more accurate width
       const rect = firstInner.getBoundingClientRect();
       const textWidth = rect.width;
-      
-      // Calculate offset with higher precision
+
       const offset = textWidth / totalCells;
 
       container.style.setProperty("--text-width", `${textWidth}px`);
@@ -2395,9 +2392,9 @@ const SlidingText = ({
       container.style.setProperty("--offset", `${offset}px`);
 
       innerRefs.current.forEach((inner, i) => {
-        // Use pixel-perfect positioning
+
         gsap.set(inner, {
-          x: Math.round(-i * offset * 100) / 100, // Round to 2 decimal places to avoid sub-pixel issues
+          x: Math.round(-i * offset * 100) / 100, 
           position: 'relative',
           display: 'inline-block',
           willChange: 'transform',
@@ -2405,10 +2402,9 @@ const SlidingText = ({
       });
     };
 
-    // Use requestAnimationFrame to ensure DOM is fully painted
     const initLayout = () => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(setLayout); // Double rAF for extra reliability
+        requestAnimationFrame(setLayout);
       });
     };
 
@@ -2432,13 +2428,12 @@ const SlidingText = ({
       const textWidth = rect.width;
       const offset = textWidth / totalCells;
 
-      // Use a more precise initial offset calculation
       gsap.fromTo(
         innerRefs.current,
         {
           x: (i) => {
             const targetX = -i * offset;
-            // Add offset based on index pattern, but ensure it's consistent
+
             const randomOffset = (i % 2 === 0 ? -40 : 40);
             return targetX + randomOffset;
           },
@@ -2450,7 +2445,7 @@ const SlidingText = ({
           duration: 0.8,
           stagger: 0.03,
           ease: "power2.out",
-          clearProps: "position", // Clear any positioning artifacts after animation
+          clearProps: "position",
           onComplete: () => setHasAnimated(true),
         },
       );

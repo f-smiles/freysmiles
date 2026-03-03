@@ -1,11 +1,128 @@
 'use client'
 import './style.css'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
+const SlidingText = ({ 
+  text = "DEFAULT",
+  totalCells = 8, 
+  className = ""
+}) => {
+  const containerRef = useRef(null);
+  const innerRefs = useRef([]);
+  const [textWidth, setTextWidth] = useState(0);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !innerRefs.current.length) return;
+
+    const setLayout = () => {
+      const firstInner = innerRefs.current[0];
+      
+
+      const tempSpan = document.createElement('span');
+      tempSpan.style.visibility = 'hidden';
+      tempSpan.style.position = 'absolute';
+      tempSpan.style.whiteSpace = 'nowrap';
+      tempSpan.style.fontSize = window.getComputedStyle(firstInner).fontSize;
+      tempSpan.style.fontFamily = window.getComputedStyle(firstInner).fontFamily;
+      tempSpan.style.letterSpacing = window.getComputedStyle(firstInner).letterSpacing;
+      tempSpan.style.fontWeight = window.getComputedStyle(firstInner).fontWeight;
+      tempSpan.innerText = text;
+      
+      document.body.appendChild(tempSpan);
+      const measuredWidth = tempSpan.getBoundingClientRect().width;
+      document.body.removeChild(tempSpan);
+      
+      // Add more buffer for larger text (20% buffer)
+      const textWidthWithBuffer = measuredWidth * 1.2;
+      setTextWidth(textWidthWithBuffer);
+      
+      const offset = textWidthWithBuffer / totalCells;
+
+      container.style.setProperty("--text-width", `${textWidthWithBuffer}px`);
+      container.style.setProperty("--gsplits", totalCells);
+      container.style.setProperty("--offset", `${offset}px`);
+
+      innerRefs.current.forEach((inner, i) => {
+        gsap.set(inner, {
+          x: Math.round(-i * offset * 100) / 100, 
+          position: 'relative',
+          display: 'inline-block',
+          willChange: 'transform',
+        });
+      });
+    };
+
+    const initLayout = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(setLayout); 
+      });
+    };
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(initLayout);
+    } else {
+      setTimeout(initLayout, 100);
+    }
+    
+    window.addEventListener("resize", initLayout);
+
+    return () => {
+      window.removeEventListener("resize", initLayout);
+    };
+  }, [totalCells, text]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || !innerRefs.current.length || !textWidth) return;
+
+    const offset = textWidth / totalCells;
+
+    gsap.fromTo(
+      innerRefs.current,
+      {
+        x: (i) => {
+          const targetX = -i * offset;
+
+          const randomOffset = (i % 2 === 0 ? -1 : 1) * (textWidth * 0.15);
+          return targetX + randomOffset;
+        },
+        opacity: 0,
+      },
+      {
+        x: (i) => -i * offset,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.03,
+        ease: "power2.out",
+        clearProps: "position",
+      },
+    );
+
+    return () => {
+      gsap.killTweensOf(innerRefs.current);
+    };
+  }, [totalCells, text, textWidth]);
+
+  return (
+    <div ref={containerRef} className={`gtext ${className}`}>
+      {Array.from({ length: totalCells }).map((_, i) => (
+        <span key={i} className="gtext__box">
+          <span
+            className="gtext__box-inner"
+            ref={(el) => (innerRefs.current[i] = el)}
+          >
+            {text}
+          </span>
+        </span>
+      ))}
+    </div>
+  );
+};
 
 export default function EarlyOrthodontics() {
   const mainSection = useRef(null)
@@ -24,18 +141,18 @@ export default function EarlyOrthodontics() {
       gsap.set(media, { aspectRatio: 1.3793103448275863 })
     })
 
-    let splitheaderTitle = SplitText.create(headerTitle, { type: 'chars, words', charsClass: 'chars' })
-    gsap.from(splitheaderTitle.chars, {
-      y: 50,
-      opacity: 0,
-      transformOrigin: '0% 50% -50',
-      stagger: 0.05,
-      duration: 2,
-      ease: 'none',
-      onComplete: () => {
-        headerTitle.removeAttribute('aria-hidden')
-      }
-    })
+    // let splitheaderTitle = SplitText.create(headerTitle, { type: 'chars, words', charsClass: 'chars' })
+    // gsap.from(splitheaderTitle.chars, {
+    //   y: 50,
+    //   opacity: 0,
+    //   transformOrigin: '0% 50% -50',
+    //   stagger: 0.05,
+    //   duration: 2,
+    //   ease: 'none',
+    //   onComplete: () => {
+    //     headerTitle.removeAttribute('aria-hidden')
+    //   }
+    // })
 
     let mm = gsap.matchMedia()
     
@@ -176,25 +293,13 @@ export default function EarlyOrthodontics() {
       <div ref={mainSection} className="MainSection" style={{ backgroundColor: 'var(--white)', }}>
         <div className="MainSection-wrapper">
           <div className="MainSection-header">
-            <h2 className="MainSection-headerTitle">
-              {"Early Orthodontics".split(" ").map((word, i) => (
-                <div key={word} className={`header-lines header-lines${i + 1}`}>
-                  {word.split("").map((char, j) => (
-                    <div key={`${char}-${j}`} className="chars-wrapper">
-                      <span className={`chars chars${j + 1}`}>
-                        {char}
-                      </span>
-                    </div>
-                  ))}
-
-                  {i < "Early Orthodontics".split(" ").length - 1 && (
-                    <div className="chars-wrapper">
-                      <div className="chars">&nbsp;</div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </h2>
+    <SlidingText
+                  text="Early Orthodontics"
+                  effect="2"
+                  totalCells={8}
+                  className="font-lg font-canelathin"
+            
+                />
           </div>
           <div ref={itemsContainer} className="MainSection-items">
             <section className="MainSectionItem MainSection-item">
@@ -359,11 +464,14 @@ export default function EarlyOrthodontics() {
                   <div className="MainSectionItem-mediaContainer">
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
-                        <img
-                          src="/images/ffscard.jpg"
-                          alt="Video of a landscape"
-                          loading="lazy"
-                        />
+                         <video
+                        src="https://cdn.prod.website-files.com/678671a66edd3849bbcac5e3%2F678a1ef8f7108323f84eecda_4990242-sd_960_540_30fps-transcode.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                      />
                       </div>
                     </div>
                   </div>
@@ -386,14 +494,12 @@ export default function EarlyOrthodontics() {
                   <div className="MainSectionItem-mediaContainer">
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
-                      <video
-                        src="https://cdn.prod.website-files.com/678671a66edd3849bbcac5e3%2F678a1ef8f7108323f84eecda_4990242-sd_960_540_30fps-transcode.mp4"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                      />
+                           <img
+                          src="/images/ffscard.jpg"
+                          alt="Video of a landscape"
+                          loading="lazy"
+                        />
+                    
                       </div>
                     </div>
                   </div>
