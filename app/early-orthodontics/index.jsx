@@ -37,7 +37,6 @@ const SlidingText = ({
       const measuredWidth = tempSpan.getBoundingClientRect().width;
       document.body.removeChild(tempSpan);
       
-      // Add more buffer for larger text (20% buffer)
       const textWidthWithBuffer = measuredWidth * 1.2;
       setTextWidth(textWidthWithBuffer);
       
@@ -346,7 +345,7 @@ export default function EarlyOrthodontics() {
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media image-wrapper">
                         <img
-                          src="/images/dentaltest.png"
+                          src="/images/age7.png"
                           alt="Facial silhouette"
                           loading="lazy"
                           className="profile-image"
@@ -455,23 +454,22 @@ export default function EarlyOrthodontics() {
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
                       <span className="MainSectionItem-index">04</span>
-                      <h3>Future Frey Smiles</h3>
+                                         <h3>Future-Proof</h3>
                     </div>
                     <div className="MainSectionItem-contentText">
-                      <p>Timely intervention makes it possible to manage many cases more comfortably with clear aligners which gently guide growth while also functioning as protective mouth guards during sports or severe dental protrustion. Through proactive, individualized treatment we're able to minimize disruption, improve oral hygiene, reduce enamel damage, and help children avoid the physical and emotional burden of bulky appliances later on.</p>
+                            <p>Once you visit us, we take care of the rest. If no treatment is needed right away, we'll place your child on a customized Growth & Guidance schedule—part of our Frey Smiles Club—our way of keeping an eye on how things are progressing until treatment is indicated. </p>
+                 
                     </div>
                   </div>
                   <div className="MainSectionItem-mediaContainer">
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
-                         <video
-                        src="https://cdn.prod.website-files.com/678671a66edd3849bbcac5e3%2F678a1ef8f7108323f84eecda_4990242-sd_960_540_30fps-transcode.mp4"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                      />
+                          <img
+                          src="/images/ffscard.jpg"
+                          alt="Video of a landscape"
+                          loading="lazy"
+                        />
+                       
                       </div>
                     </div>
                   </div>
@@ -482,23 +480,28 @@ export default function EarlyOrthodontics() {
               <div className="--index-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--hotpink)', }} />
+                  
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
                       <span className="MainSectionItem-index">05</span>
-                      <h3>Future-Proof</h3>
+                        <h3>Future Frey Smiles</h3>
+
                     </div>
                     <div className="MainSectionItem-contentText">
-                      <p>Once you visit us, we take care of the rest. If no treatment is needed right away, we'll place your child on a customized Growth & Guidance schedule—part of our Frey Smiles Club—our way of keeping an eye on how things are progressing until treatment is indicated. </p>
+                        <p>Timely intervention makes it possible to manage many cases more comfortably with clear aligners which gently guide growth while also functioning as protective mouth guards during sports or severe dental protrustion. Through proactive, individualized treatment we're able to minimize disruption, improve oral hygiene, reduce enamel damage, and help children avoid the physical and emotional burden of bulky appliances later on.</p>
                     </div>
                   </div>
                   <div className="MainSectionItem-mediaContainer">
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
-                           <img
-                          src="/images/ffscard.jpg"
-                          alt="Video of a landscape"
-                          loading="lazy"
-                        />
+                          <video
+                        src="https://cdn.prod.website-files.com/678671a66edd3849bbcac5e3%2F678a1ef8f7108323f84eecda_4990242-sd_960_540_30fps-transcode.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                      />
                     
                       </div>
                     </div>
