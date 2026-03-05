@@ -1,6 +1,6 @@
 export const BannerMarquee = () => {
   // const text = "Reserve an appointment now to experience our new year courtesy of up to 700 dollars off full treatment.";
-  const texts = ["Two Smiles. One Price.", "Allentown", "Bethlehem", "Lehighton", "Schnecksville", "Book a Consultation."]
+  const texts = ["Allentown", "Bethlehem", "Lehighton", "Schnecksville", "Complimentary Consultation"]
   const repeatCount = 12;
 
   return (
