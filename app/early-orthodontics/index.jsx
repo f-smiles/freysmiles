@@ -345,7 +345,7 @@ export default function EarlyOrthodontics() {
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media image-wrapper">
                         <img
-                          src="/images/age7.png"
+                          src="/images/luckynumber71.png"
                           alt="Facial silhouette"
                           loading="lazy"
                           className="profile-image"

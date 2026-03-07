@@ -1,10 +1,11 @@
 "use client";
+import Link from "next/link";
 import MouseTrail from "../book-now/mouse.jsx";
 import { createPortal } from "react-dom";
 import { Renderer, Program, Mesh, Plane, Uniform } from "wtc-gl";
 import { Vec2, Mat2 } from "wtc-math";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
-import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, Suspense } from "react";
+import React, { useRef, useEffect, useState, useMemo, useLayoutEffect, Suspense, useCallback } from "react";
 import { motion } from "framer-motion";
 import "tw-elements";
 import gsap from "gsap";
@@ -733,7 +734,8 @@ useEffect(() => {
   </div>
 </div>
 </div> */}
-  <section className="w-full h-screen bg-[#f2f2f2] text-black grid grid-rows-[auto_1fr_auto]">
+
+  <section className="w-full h-screen bg-[#f2f2f2] text-black grid grid-rows-[auto_1fr_auto] fixed">
 
       <div className="flex items-center justify-between px-12 pt-6 text-xs tracking-wide">
 
@@ -744,23 +746,34 @@ useEffect(() => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 items-center px-12">
+<div className="grid grid-cols-3 items-center px-12">
+<div className="flex flex-col items-center">
 
-        <div>
-          <h1 className="text-[64px] uppercase font-neuehaas45">
-           Frey Smiles
-          </h1>
-        </div>
+  <h1 className="text-[64px] uppercase font-neuehaas45">
+    FREY SMILES
+  </h1>
 
-        <div className="flex justify-center">
-      <PerlinParticles />
-        </div>
+  <div className="text-[15px] mt-4 flex justify-center gap-12 font-neuehaas45 tracking-[0.015em]">
+    <span>610-437-4748</span>
+    <span>info@smiles.com</span>
+  </div>
 
-        <div className="flex justify-between font-neuehaas45 justify-end text-[14px] tracking-[0.015em]">
-         <span>Early Orthodontics</span><span>Adult Orthodontics</span> <span>Book</span>
-        </div>
+</div>
 
-      </div>
+  <div className="flex justify-center">
+    <PerlinParticles />
+  </div>
+
+  <div className="flex justify-end gap-8 font-neuehaas45 text-[15px] tracking-[0.015em]">
+   <Link href="/book-now"><span>Book Now</span></Link> 
+   <Link href="/early-orthodontics">    <span>Early Orthodontics</span></Link>
+<Link href="/adult-orthodontics">
+    <span>Adult Orthodontics</span>
+</Link>
+
+  </div>
+
+</div>
 
 
       <div className="flex justify-center pb-6 text-xs font-neuehaas35 tracking-widest">
@@ -1311,7 +1324,141 @@ transition={{
     </>
   );
 }
+const SVGVerticalTransition = () => {
+  const overlayPathRef = useRef(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  // SVG paths for vertical transition
+  const paths = {
+    step1: {
+      unfilled: 'M 0 0 h 0 c 0 50 0 50 0 100 H 0 V 0 Z',
+      inBetween: 'M 0 0 h 33 c -30 54 113 65 0 100 H 0 V 0 Z',
+      filled: 'M 0 0 h 100 c 0 50 0 50 0 100 H 0 V 0 Z',
+    },
+    step2: {
+      filled: 'M 100 0 H 0 c 0 50 0 50 0 100 h 100 V 50 Z',
+      inBetween: 'M 100 0 H 50 c 28 43 4 81 0 100 h 50 V 0 Z',
+      unfilled: 'M 100 0 H 100 c 0 50 0 50 0 100 h 0 V 0 Z',
+    }
+  };
+
+  const switchPages = useCallback(() => {
+    const view1 = document.querySelector('.view--1');
+    const view2 = document.querySelector('.view--2');
+    const frame = document.querySelector('.frame');
+
+    if (currentPage === 2) {
+      frame?.classList.add('frame--view-open');
+      view2?.classList.add('view--open');
+    } else {
+      frame?.classList.remove('frame--view-open');
+      view2?.classList.remove('view--open');
+    }
+  }, [currentPage]);
+
+  const pageSwitchTimeline = useCallback(() => {
+    const tl = gsap.timeline({
+      paused: true,
+      onComplete: () => setIsAnimating(false)
+    });
+
+    tl.set(overlayPathRef.current, {
+      attr: { d: paths.step1.unfilled }
+    })
+    .to(overlayPathRef.current, { 
+      duration: 0.8,
+      ease: 'power3.in',
+      attr: { d: paths.step1.inBetween }
+    }, 0)
+    .to(overlayPathRef.current, { 
+      duration: 0.2,
+      ease: 'power1',
+      attr: { d: paths.step1.filled },
+      onComplete: () => switchPages()
+    })
+    .set(overlayPathRef.current, { 
+      attr: { d: paths.step2.filled }
+    })
+    .to(overlayPathRef.current, { 
+      duration: 0.15,
+      ease: 'sine.in',
+      attr: { d: paths.step2.inBetween }
+    })
+    .to(overlayPathRef.current, { 
+      duration: 1,
+      ease: 'power4',
+      attr: { d: paths.step2.unfilled }
+    });
+
+    return tl;
+  }, [switchPages, paths]);
+
+  const reveal = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrentPage(2);
+    
+    const timeline = pageSwitchTimeline();
+    timeline.play(0);
+  }, [isAnimating, pageSwitchTimeline]);
+
+  const unreveal = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrentPage(1);
+    
+    const timeline = pageSwitchTimeline();
+    timeline.play(0);
+  }, [isAnimating, pageSwitchTimeline]);
+
+  return (
+    <main>
+      <div className="frame">
+        <h1 className="frame__title">SVG Vertical Page Transition</h1>
+        <nav className="frame__links">
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+        </nav>
+      </div>
+
+      <div className="view view--1">
+        <button 
+          className="unbutton button button--open" 
+          onClick={reveal}
+          aria-label="Open other view"
+        >
+          Page 2
+        </button>
+      </div>
+
+      <div className="view view--2">
+        <button 
+          className="unbutton button button--close" 
+          onClick={unreveal}
+          aria-label="Close current view"
+        >
+          Page 1
+        </button>
+      </div>
+
+      <svg 
+        className="overlay" 
+        width="100%" 
+        height="100%" 
+        viewBox="0 0 100 100" 
+        preserveAspectRatio="none"
+      >
+        <path 
+          ref={overlayPathRef}
+          className="overlay__path" 
+          vectorEffect="non-scaling-stroke" 
+          d="M 0 0 h 0 c 0 50 0 50 0 100 H 0 V 0 Z" 
+        />
+      </svg>
+    </main>
+  );
+};
 const CanvasBallsAnimation = () => {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
@@ -1458,19 +1605,6 @@ const ballColor = { r: 254, g: 180, b: 74 };
 
 const PerlinParticles = () => {
   const vertexShader = `
-//
-// GLSL textureless classic 3D noise "cnoise",
-// with an RSL-style periodic variant "pnoise".
-// Author:  Stefan Gustavson (stefan.gustavson@liu.se)
-// Version: 2011-10-11
-//
-// Many thanks to Ian McEwan of Ashima Arts for the
-// ideas for permutation and gradient selection.
-//
-// Copyright (c) 2011 Stefan Gustavson. All rights reserved.
-// Distributed under the MIT license. See LICENSE file.
-// https://github.com/ashima/webgl-noise
-//
 
 vec3 mod289(vec3 x)
 {
@@ -1919,15 +2053,11 @@ color *= brightness;
   return (
     <div className="perlin-particles-container">
       <div ref={containerRef} id="container" className="canvas-container" />
-      <div className="text-wrapper">
-        <h2 className="small-text"></h2>
-        <h1 className="text-line">
-        <br />
-       
-        </h1>
+
+ 
         <h2 className="font-canelathin text-[24px]">full site access coming soon</h2>
 
-      </div>
+
     </div>
   );
 };
