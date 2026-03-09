@@ -165,7 +165,7 @@ style={{
 
 <figure className="flex items-center justify-center h-[300px] w-full px-6">
   <Image
-    src={variant.variantImages[0].url}
+    src={variant.variantImages[1].url}
     alt={`${variant.product.title} - ${variant.variantName}`}
     width={500}
     height={500}
