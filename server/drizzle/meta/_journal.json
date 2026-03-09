@@ -43,6 +43,13 @@
       "when": 1730820044191,
       "tag": "0005_hard_iron_man",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1773031588701,
+      "tag": "0006_exotic_killer_shrike",
+      "breakpoints": true
     }
   ]
 }
