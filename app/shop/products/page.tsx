@@ -1,7 +1,13 @@
+import type { Metadata } from "next"
 import { db } from "@/server/db"
 import Variants from "@/components/products/variants"
 import Banner from "./banner"
 import Hero from "./hero"
+
+export const metadata: Metadata = {
+  title: "Shop",
+  description: "Shop recommended dental products to elevate your dental routine.",
+}
 
 export const revalidate = 60 * 60
 

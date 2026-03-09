@@ -1,13 +1,41 @@
+import { Metadata, ResolvingMetadata } from "next"
 import { eq } from "drizzle-orm"
 import { db } from "@/server/db"
 
 import { formatPrice } from "@/lib/format-price"
-import { productVariants } from "@/server/schema"
+import { products, productVariants } from "@/server/schema"
 import { Separator } from "@/components/ui/separator"
 import VariantName from "@/components/products/variant-name"
 import SelectColor from "@/components/products/select-color"
 import ProductCarousel from "@/components/products/product-carousel"
 import AddToCart from "@/components/cart/add-to-cart"
+
+
+type Props = {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  slug: Promise<{ slug: string }>
+}
+
+export async function generateMetadata(
+  { params, searchParams, slug }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+
+  const productVariant = await db.query.productVariants.findFirst({
+    where: eq(productVariants.id, params.slug)
+  })
+
+  const product = await db.query.products.findFirst({
+    where: eq(products.id, productVariant.productID)
+  })
+
+  return {
+    title: `${product?.title} ${productVariant?.variantName}`,
+    description: `${product?.title} - ${productVariant?.variantName}`,
+  }
+}
+
 
 export const revalidate = 60
 
@@ -25,7 +53,7 @@ export async function generateStaticParams() {
 }
 
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page({ params }: Props) {
   const slugID = Number(params.slug)
 
   if (isNaN(slugID)) {
@@ -67,11 +95,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
           <h1 className="text-xl text-gray-900 u font-neuehaas45">{formatPrice(variant?.product.price)}</h1>
           <div
-  className="[&_*]:!font-neuehaas45 [&_*]:!text-[13px]"
-  dangerouslySetInnerHTML={{ __html: variant?.product.description }}
-/>
-
-
+            className="[&_*]:!font-neuehaas45 [&_*]:!text-[13px]"
+            dangerouslySetInnerHTML={{ __html: variant?.product.description }}
+          />
 
           <div className="space-y-2">
             <h3 className="text-[12px] font-neuehaas45 uppercase text-gray-900">Color</h3>
