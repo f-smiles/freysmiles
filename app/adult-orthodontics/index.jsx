@@ -299,8 +299,8 @@ export default function AdultOrthodontics() {
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
                         <video
-                          src="https://www.stephen-wells.com/media/pages/projects/nutiani/fc3e968038-1730620681/taichi_3.3.mp4#t=0.1"
-                          alt="Video of a landscape"
+                          src="/images/adultorthoslide1.mp4"
+                          alt="Video of various adults"
                           loading="lazy"
                           loop
                           autoPlay

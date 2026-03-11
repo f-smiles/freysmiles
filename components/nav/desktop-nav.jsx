@@ -597,47 +597,56 @@ className="
       selectedLink === link.title && (
         <div key={link.title} className="contents">
           {link.sublinks.map((sublink, j) => (
-            <motion.div
-              key={sublink}
-              variants={sublinkVariants}
-              initial="initial"
-              animate="open"
-              exit="closed"
-              custom={j}
-              whileHover="hover"
-              className="relative flex flex-col py-2 overflow-hidden cursor-pointer"
-            >
-              <Link
-                href={link.hrefs[j]}
-                onClick={() => setIsActive(false)}
-                className="contents"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <p className="text-xs font-canelathin italic opacity-60">
-                      {j + 1}.
-                    </p>
-                    <h2 className="text-[16px] tracking-wide font-neuehaas45">
-                      {sublink}
-                    </h2>
-                  </div>
-                </div>
+            <div className="overflow-hidden py-2">
+<motion.div
+  key={sublink}
+  initial="initial"
+  animate="open"
+  exit="closed"
+  custom={j}
+  whileHover="hover"
+  className="relative flex flex-col py-2 cursor-pointer"
+>
+  <Link
+    href={link.hrefs[j]}
+    onClick={() => setIsActive(false)}
+    className="contents"
+  >
 
-                <div className="relative w-full mt-2 h-[1px] bg-neutral-200 overflow-hidden">
-                  <motion.div
-                    className="absolute top-0 left-0 h-full bg-black"
-                    variants={{
-                      initial: { width: 0 },
-                      hover: { width: "100%" },
-                    }}
-                    transition={{
-                      duration: 0.4,
-                      ease: [0.65, 0, 0.35, 1],
-                    }}
-                  />
-                </div>
-              </Link>
-            </motion.div>
+    <div className="overflow-hidden">
+      <motion.div
+        variants={sublinkVariants}
+        className="flex items-center justify-between"
+      >
+        <div className="flex items-center gap-4">
+          <p className="text-xs font-canelathin italic opacity-60">
+            {j + 1}.
+          </p>
+
+          <h2 className="text-[16px] tracking-wide font-neuehaas45">
+            {sublink}
+          </h2>
+        </div>
+      </motion.div>
+    </div>
+
+
+    <div className="relative w-full mt-2 h-[1px] bg-neutral-200 overflow-hidden">
+      <motion.div
+        className="absolute top-0 left-0 h-full bg-black"
+        variants={{
+          initial: { width: 0 },
+          hover: { width: "100%" },
+        }}
+        transition={{
+          duration: 0.4,
+          ease: [0.65, 0, 0.35, 1],
+        }}
+      />
+    </div>
+  </Link>
+</motion.div>
+            </div>
           ))}
           {link.component && link.component(user)}
         </div>
