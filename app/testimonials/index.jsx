@@ -1343,16 +1343,23 @@ gl_FragColor = vec4(color, 1.0);
       program.uniforms.uResolution.value.set(w, h);
     };
 
-    const handleScroll = () => {
-      program.uniforms.uScroll.value = window.scrollY * 0.001;
-    };
+let targetScroll = 0;
+let currentScroll = 0;
+
+const handleScroll = () => {
+  targetScroll = window.scrollY * 0.00015;
+};
 
     let frameId;
-    const loop = (t) => {
-      program.uniforms.uTime.value = t * 0.001;
-      renderer.render({ scene: mesh });
-      frameId = requestAnimationFrame(loop);
-    };
+const loop = (t) => {
+  program.uniforms.uTime.value = t * 0.001;
+
+  currentScroll += (targetScroll - currentScroll) * 0.06;
+  program.uniforms.uScroll.value = currentScroll;
+
+  renderer.render({ scene: mesh });
+  frameId = requestAnimationFrame(loop);
+};
     requestAnimationFrame(loop);
 
     window.addEventListener("resize", handleResize);
@@ -2572,6 +2579,7 @@ useEffect(() => {
       color: "bg-[#49ABA3]",
     },
   ];
+  
 const Testimonials = () => {
 
   const textRef = useRef(null);
@@ -2958,9 +2966,9 @@ useLayoutEffect(() => {
         </div>
       </div>
 
-      {/* <div className="relative z-10 flex items-center justify-center min-h-[80vh]">
+      <div className="relative z-10 flex items-center justify-center min-h-[80vh]">
     <Contents />
-      </div> */}
+      </div>
 {/* <TextSwirl /> */}
 
     </section>
@@ -2989,7 +2997,7 @@ useLayoutEffect(() => {
 
   </defs>
 </svg>
-<StackMotionEffect />
+{/* <StackMotionEffect /> */}
 {reviews.map((t, i) => {
   const clipId = CLIPS[i % CLIPS.length];
 

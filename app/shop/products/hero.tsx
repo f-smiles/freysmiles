@@ -322,7 +322,42 @@ void main() {
   gl_FragColor = vec4(color, alpha);
 }
 `;
+ function ScrollPrompt() {
+  const ref = useRef(null);
 
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  useEffect(() => {
+    const el = ref.current;
+    const finalText = el.innerText;
+    let iteration = 0;
+
+    const interval = setInterval(() => {
+      el.innerText = finalText
+        .split("")
+        .map((letter, index) => {
+          if (index < iteration) return finalText[index];
+          return chars[Math.floor(Math.random() * chars.length)];
+        })
+        .join("");
+
+      if (iteration >= finalText.length) clearInterval(interval);
+
+      iteration += 1 / 2;
+    }, 40);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <p
+      ref={ref}
+      className="fixed bottom-10 left-1/2 -translate-x-1/2 text-[11px] font-neuehaas45 tracking-[0.15em] opacity-70"
+    >
+      SCROLL DOWN
+    </p>
+  );
+}
 const HeroSection = ({ isReady }) => {
   const canvasRef = useRef(null);
   const heroRef = useRef(null);
@@ -585,6 +620,7 @@ const initTextAnimation = () => {
   return (
     <section className="scroll-effect__hero-section bg-[#F2F2F2]" ref={heroRef}>
       <div className="scroll-effect__hero-image">
+    <ScrollPrompt ready={isReady} />
         {/* <AnimatedBackground /> */}
 
         {/* <img 
@@ -620,7 +656,7 @@ const initTextAnimation = () => {
         >
 
           <video
-            src="/videos/whitewaves.mp4"
+            src="/videos/shoploader.mp4"
             autoPlay
             loop
             muted
@@ -856,6 +892,7 @@ const CircleGridMouseFollow = () => {
 const Hero: React.FC = () => {
   return (
     <section>
+ 
       <HeroSection />
     </section>
   );

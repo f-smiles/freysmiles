@@ -525,11 +525,14 @@ export default function EarlyOrthodontics() {
                   <div className="MainSectionItem-mediaContainer">
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
-                        <img
-                          src="/images/firstmeeting.jpg"
-                          alt="Video of a landscape"
-                          loading="lazy"
-                        />
+                           <video
+                        src="/videos/alwayslookingahead.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                      />
                       </div>
                     </div>
                   </div>
