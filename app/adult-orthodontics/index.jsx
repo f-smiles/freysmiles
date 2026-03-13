@@ -427,10 +427,14 @@ export default function AdultOrthodontics() {
                   <div className="MainSectionItem-mediaContainer">
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
-                        <img
-                          src="/images/caredisplay.png"
-                          alt="Video of a landscape"
+                        <video
+                          src="/videos/SC1.mp4"
+                          alt="Video of various adults"
                           loading="lazy"
+                          loop
+                          autoPlay
+                          muted
+                          playsInline
                         />
                       </div>
                     </div>

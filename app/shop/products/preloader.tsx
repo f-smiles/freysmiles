@@ -176,26 +176,22 @@ onComplete: () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          background: `
-  radial-gradient(
-    60% 50% at 30% 40%,
-    rgba(246, 193, 229, 0.55) 0%,
-    rgba(246, 193, 229, 0.25) 35%,
-    rgba(246, 193, 229, 0.0) 65%
-  ),
-  radial-gradient(
-    55% 45% at 70% 55%,
-    rgba(252, 210, 235, 0.45) 0%,
-    rgba(252, 210, 235, 0.2) 40%,
-    rgba(252, 210, 235, 0.0) 70%
-  ),
-  radial-gradient(
-    80% 65% at 50% 30%,
-    #f9f9ff 0%,
-    #eceef7 45%,
-    #e6e8f3 70%,
-    #ffffff 100%
-  )
+       background: `
+radial-gradient(
+  55% 55% at 70% 35%,
+  rgba(255, 255, 0, 0.95) 0%,
+  rgba(255, 255, 0, 0.6) 20%,
+  rgba(255, 255, 0, 0.25) 40%,
+  rgba(255, 255, 0, 0.08) 60%,
+  rgba(255, 255, 0, 0.0) 75%
+),
+radial-gradient(
+  70% 60% at 25% 65%,
+  rgba(255, 255, 160, 0.5) 0%,
+  rgba(255, 255, 160, 0.2) 40%,
+  rgba(255, 255, 160, 0.0) 70%
+),
+#f6f6f2
 `,
           color: "#0f0f0f",
           willChange: "opacity",
@@ -204,6 +200,7 @@ onComplete: () => {
         className="wheelloader"
         ref={loaderRef}
       >
+        
         <svg
           ref={svgRef}
           viewBox="-425 -425 1850 1850"

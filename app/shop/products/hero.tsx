@@ -630,6 +630,7 @@ const initTextAnimation = () => {
       </div>
 
       <div className="scroll-effect__hero-header">
+        <CylinderText />
         <section
         style={{
           position: "relative",
@@ -649,7 +650,7 @@ const initTextAnimation = () => {
             top: "50%",
             left: "50%",
             width: "100%",
-            height: "50%",
+            height: "55%",
             transform: "translate(-50%, -50%) ",
             overflow: "hidden",
           }}
@@ -686,6 +687,131 @@ const initTextAnimation = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+const CylinderText = () => {
+  const bandBackRef = useRef(null);
+  const bandFrontRef = useRef(null);
+  const containerRef = useRef(null);
+  const animationRef = useRef(null);
+  const charsBackRef = useRef([]);
+  const charsFrontRef = useRef([]);
+
+  useEffect(() => {
+    const setupCylinder = () => {
+      const bandBack = bandBackRef.current;
+      const bandFront = bandFrontRef.current;
+      const containerEl = containerRef.current;
+      
+      if (!bandBack || !bandFront || !containerEl) return;
+
+      const baseText = 'SHOP PRODUCTS BELOW';
+      const CHAR_COUNT = 50;
+
+      const targetRadius = Math.min(window.innerWidth, window.innerHeight) * 0.50;
+
+      let currentRadius = 200;
+      const expansionSpeed = 0.01;
+
+      let full = '';
+      while (full.length < CHAR_COUNT) full += baseText;
+      full = full.slice(0, CHAR_COUNT);
+
+      // Clear existing content
+      bandBack.innerHTML = '';
+      bandFront.innerHTML = '';
+
+      charsBackRef.current = [];
+      charsFrontRef.current = [];
+
+      for (let i = 0; i < full.length; i++) {
+        const ch = full[i];
+        const angle = (i / full.length) * 360;
+
+        // Create back character
+        const back = document.createElement('span');
+        back.className = 'char back';
+        back.textContent = ch;
+        back.style.fontSize = '56px';
+        back.style.letterSpacing = '5px';
+        back.style.width = '1ch';
+        charsBackRef.current.push({ el: back, angle: angle });
+        bandBack.appendChild(back);
+
+        // Create front character
+        const front = document.createElement('span');
+        front.className = 'char front';
+        front.textContent = ch;
+        front.style.fontSize = '56px';
+        front.style.letterSpacing = '5px';
+        front.style.width = '1ch';
+        charsFrontRef.current.push({ el: front, angle: angle });
+        bandFront.appendChild(front);
+      }
+
+      // Adjust these values for the tilt effect
+      const baseRotX = -13; // Reduced from -25 to make it more upright
+      const baseRotZ = 10;    // Added rotateZ to tilt right side up (positive = right side higher)
+      // For left side higher, use negative value: const baseRotZ = -5;
+      
+      const autoRotateSpeedDegPerSec = 10;
+      let autoAngleY = 0;
+      let prevTime = performance.now();
+      
+      const animateBands = () => {
+        const now = performance.now();
+        const dt = Math.max(0, (now - prevTime) / 1000);
+        prevTime = now;
+
+        if (currentRadius < targetRadius) {
+          currentRadius += (targetRadius - currentRadius) * expansionSpeed;
+        }
+
+        autoAngleY += autoRotateSpeedDegPerSec * dt;
+
+        charsBackRef.current.forEach(item => {
+          item.el.style.transform = `rotateY(${item.angle}deg) translateZ(${-currentRadius}px) translateY(-50%) translateX(-0.5ch)`;
+        });
+
+        charsFrontRef.current.forEach(item => {
+          item.el.style.transform = `rotateY(${item.angle}deg) translateZ(${currentRadius}px) translateY(-50%) translateX(-0.5ch)`;
+        });
+
+        // Added rotateZ to the transform
+        const transform = `rotateX(${baseRotX}deg) rotateZ(${baseRotZ}deg) rotateY(${autoAngleY}deg)`;
+        bandBack.style.transform = transform;
+        bandFront.style.transform = transform;
+
+        animationRef.current = requestAnimationFrame(animateBands);
+      };
+
+      animateBands();
+    };
+
+    setupCylinder();
+
+    const handleResize = () => {
+      setupCylinder();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return (
+    <div className="cylindercontainer">
+      <div className="cylinder-container" ref={containerRef} id="cylinderContainer1">
+        <div className="cylinder-band band-back" ref={bandBackRef} id="cylinderBandBack1"></div>
+        <div className="cylinder-band band-front" ref={bandFrontRef} id="cylinderBandFront1"></div>
+      </div>
+    </div>
   );
 };
 

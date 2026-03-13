@@ -2274,7 +2274,7 @@ BLAH BLAH BLAH
 {/* <LivingLine /> */}
              {/* <FluidSimulation /> */}
 
-          {/* <div className="relative w-full h-screen" style={{ zIndex: 1 }}>
+          <div className="relative w-full h-screen" style={{ zIndex: 1 }}>
             <Canvas
               className="absolute inset-0"
               camera={{ position: [0, 6, 12], fov: 45 }}
@@ -2289,7 +2289,7 @@ BLAH BLAH BLAH
               />
               <RibbonAroundSphere />
             </Canvas>
-          </div> */}
+          </div>
      
 
     </>

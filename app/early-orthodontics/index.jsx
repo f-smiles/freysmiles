@@ -345,7 +345,7 @@ export default function EarlyOrthodontics() {
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media image-wrapper">
                         <img
-                          src="/images/luckynumber71.png"
+                          src="/images/luckynumber73.png"
                           alt="Facial silhouette"
                           loading="lazy"
                           className="profile-image"
@@ -457,7 +457,7 @@ export default function EarlyOrthodontics() {
                                          <h3>Future-Proof</h3>
                     </div>
                     <div className="MainSectionItem-contentText">
-                            <p>Once you visit us, we take care of the rest. If no treatment is needed right away, we'll place your child on a customized Growth & Guidance schedule—part of our Frey Smiles Club—our way of keeping an eye on how things are progressing until treatment is indicated. </p>
+                            <p>Once you visit us, we take care of the rest. If no treatment is needed right away, we'll place your child on a customized Growth & Guidance schedule—our way of future-proofing your child's smile. </p>
                  
                     </div>
                   </div>
@@ -484,7 +484,7 @@ export default function EarlyOrthodontics() {
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
                       <span className="MainSectionItem-index">05</span>
-                        <h3>Future Frey Smiles</h3>
+                        <h3>Interceptive Treatment</h3>
 
                     </div>
                     <div className="MainSectionItem-contentText">
@@ -494,14 +494,20 @@ export default function EarlyOrthodontics() {
                   <div className="MainSectionItem-mediaContainer">
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
-                          <video
+                           <img
+                          src="/images/luckynumber73.png"
+                          alt="Facial silhouette"
+                          loading="lazy"
+                          className="profile-image"
+                        />
+                          {/* <video
                         src="https://cdn.prod.website-files.com/678671a66edd3849bbcac5e3%2F678a1ef8f7108323f84eecda_4990242-sd_960_540_30fps-transcode.mp4"
                         autoPlay
                         loop
                         muted
                         playsInline
                         preload="metadata"
-                      />
+                      /> */}
                     
                       </div>
                     </div>

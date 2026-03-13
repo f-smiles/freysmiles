@@ -7181,15 +7181,10 @@ top: 55%;
 }
 
 .scroll-effect__hero-header {
-  position: absolute;
+  position: relative;
   width: 100%;
   height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-  text-align: center;
+  overflow: hidden;
 }
 
 
@@ -7371,3 +7366,80 @@ letter-spacing: .1em;
     offset-distance: 100%;
   }
 }
+
+.loader-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      60% 60% at 30% 40%,
+      #ff00a8 0%,
+      #ff2aa8 30%,
+      rgba(255,0,170,0.6) 50%,
+      rgba(255,0,170,0.2) 70%,
+      transparent 85%
+    ),
+    radial-gradient(
+      70% 70% at 70% 60%,
+      #ff2aa8 0%,
+      rgba(255,0,170,0.5) 40%,
+      rgba(255,0,170,0.2) 65%,
+      transparent 85%
+    );
+
+  filter: blur(80px);
+}
+
+
+.cylindercontainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cylinder-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+
+  perspective: 1200px;
+  transform-style: preserve-3d;
+
+  transform: translate(-30%, 20%);
+}
+.cylinder-band {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.cylinder-band.band-back {
+  z-index: 1;
+}
+
+.cylinder-band.band-front {
+  z-index: 3;
+}
+
+.cylinder-band .char {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  white-space: pre;
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
+  display: inline-block;
+  text-align: center;
+  will-change: transform;
+}
+
+
