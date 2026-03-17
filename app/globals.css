@@ -7435,6 +7435,7 @@ letter-spacing: .1em;
   transform-style: preserve-3d;
   white-space: pre;
   pointer-events: none;
+  font-family: 'NeueHaasGroteskDisplayPro45Light', sans-serif;
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
   display: inline-block;

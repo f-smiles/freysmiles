@@ -718,7 +718,6 @@ const CylinderText = () => {
       while (full.length < CHAR_COUNT) full += baseText;
       full = full.slice(0, CHAR_COUNT);
 
-      // Clear existing content
       bandBack.innerHTML = '';
       bandFront.innerHTML = '';
 
@@ -729,7 +728,6 @@ const CylinderText = () => {
         const ch = full[i];
         const angle = (i / full.length) * 360;
 
-        // Create back character
         const back = document.createElement('span');
         back.className = 'char back';
         back.textContent = ch;
@@ -739,7 +737,7 @@ const CylinderText = () => {
         charsBackRef.current.push({ el: back, angle: angle });
         bandBack.appendChild(back);
 
-        // Create front character
+
         const front = document.createElement('span');
         front.className = 'char front';
         front.textContent = ch;
@@ -750,10 +748,10 @@ const CylinderText = () => {
         bandFront.appendChild(front);
       }
 
-      // Adjust these values for the tilt effect
-      const baseRotX = -13; // Reduced from -25 to make it more upright
-      const baseRotZ = 10;    // Added rotateZ to tilt right side up (positive = right side higher)
-      // For left side higher, use negative value: const baseRotZ = -5;
+
+      const baseRotX = -13; 
+      const baseRotZ = 10;  
+
       
       const autoRotateSpeedDegPerSec = 10;
       let autoAngleY = 0;
@@ -778,7 +776,6 @@ const CylinderText = () => {
           item.el.style.transform = `rotateY(${item.angle}deg) translateZ(${currentRadius}px) translateY(-50%) translateX(-0.5ch)`;
         });
 
-        // Added rotateZ to the transform
         const transform = `rotateX(${baseRotX}deg) rotateZ(${baseRotZ}deg) rotateY(${autoAngleY}deg)`;
         bandBack.style.transform = transform;
         bandFront.style.transform = transform;

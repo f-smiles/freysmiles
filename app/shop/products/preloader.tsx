@@ -176,20 +176,20 @@ onComplete: () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-       background: `
+    background: `
 radial-gradient(
   55% 55% at 70% 35%,
-  rgba(255, 255, 0, 0.95) 0%,
-  rgba(255, 255, 0, 0.6) 20%,
-  rgba(255, 255, 0, 0.25) 40%,
-  rgba(255, 255, 0, 0.08) 60%,
-  rgba(255, 255, 0, 0.0) 75%
+  rgba(255, 0, 200, 0.95) 0%,
+  rgba(255, 0, 200, 0.6) 20%,
+  rgba(255, 0, 200, 0.25) 40%,
+  rgba(255, 0, 200, 0.08) 60%,
+  rgba(255, 0, 200, 0.0) 75%
 ),
 radial-gradient(
   70% 60% at 25% 65%,
-  rgba(255, 255, 160, 0.5) 0%,
-  rgba(255, 255, 160, 0.2) 40%,
-  rgba(255, 255, 160, 0.0) 70%
+  rgba(255, 20, 200, 0.5) 0%,
+  rgba(255, 20, 200, 0.2) 40%,
+  rgba(255, 20, 200, 0.0) 70%
 ),
 #f6f6f2
 `,

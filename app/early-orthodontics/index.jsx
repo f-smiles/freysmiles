@@ -202,8 +202,8 @@ export default function EarlyOrthodontics() {
         tl.addLabel('phase-1')
         tl.fromTo(items[0], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[0], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(mediaContainers[0], { xPercent: -60, scale: 1, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(mediaContainersInner[0], { xPercent: 0, scale: 1, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, '<')
+        tl.fromTo(mediaContainers[0], { xPercent: -60, scale: 1, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .55 }, '<')
+        tl.fromTo(mediaContainersInner[0], { xPercent: 0, scale: 1, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2, duration: .5 }, '<')
         tl.fromTo(items[1], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[1], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
@@ -221,8 +221,8 @@ export default function EarlyOrthodontics() {
         tl.addLabel('phase-2', '>')
         tl.fromTo(items[1], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[1], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(mediaContainers[1], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(mediaContainersInner[1], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(mediaContainers[1], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .55 }, '<')
+        tl.fromTo(mediaContainersInner[1], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2, duration: .5 }, '<')
         tl.fromTo(items[2], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[2], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[2], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
@@ -240,8 +240,8 @@ export default function EarlyOrthodontics() {
         tl.addLabel('phase-3', '>')
         tl.fromTo(items[2], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[2], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(mediaContainers[2], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(mediaContainersInner[2], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(mediaContainers[2], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .5 }, '<')
+        tl.fromTo(mediaContainersInner[2], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2, duration: .45 }, '<')
         tl.fromTo(items[3], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[3], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[3], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
@@ -259,8 +259,8 @@ export default function EarlyOrthodontics() {
         tl.addLabel('phase-4', '>')
         tl.fromTo(items[3], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[3], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(mediaContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(mediaContainersInner[3], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(mediaContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .55 }, '<')
+        tl.fromTo(mediaContainersInner[3], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2, duration: .5 }, '<')
         tl.fromTo(items[4], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[4], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[4], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
@@ -274,8 +274,8 @@ export default function EarlyOrthodontics() {
         tl.addLabel('phase-5', '>')
         tl.fromTo(items[4], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[4], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(mediaContainers[4], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(mediaContainersInner[4], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(mediaContainers[4], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .55 }, '<')
+        tl.fromTo(mediaContainersInner[4], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2, duration: .5 }, '<')
         tl.fromTo(items[5], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[5], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[5], { xPercent: 0, scale: 0.6, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
@@ -345,12 +345,12 @@ export default function EarlyOrthodontics() {
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media image-wrapper">
                         <img
-                          src="/images/luckynumber73.png"
+                          src="/images/childsideprofile2.png"
                           alt="Facial silhouette"
                           loading="lazy"
                           className="profile-image"
                         />
-                        {/* <svg
+                        <svg
                           className="overlay-lines"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 100 100"
@@ -413,7 +413,7 @@ export default function EarlyOrthodontics() {
                           fill="#ffffff"
                           vectorEffect="non-scaling-stroke"
                         />
-                        </svg> */}
+                        </svg>
                       </div>
                     </div>
                   </div>
@@ -437,7 +437,7 @@ export default function EarlyOrthodontics() {
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
                         <img
-                          src="/images/checkeredheatmap.png"
+                          src="/images/airwayequation.png"
                           alt="Video of a landscape"
                           loading="lazy"
                         />
@@ -494,12 +494,14 @@ export default function EarlyOrthodontics() {
                   <div className="MainSectionItem-mediaContainer">
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
-                           <img
-                          src="/images/luckynumber73.png"
-                          alt="Facial silhouette"
-                          loading="lazy"
-                          className="profile-image"
-                        />
+                               <video
+                        src="/videos/luckynumber7.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                      />
                           {/* <video
                         src="https://cdn.prod.website-files.com/678671a66edd3849bbcac5e3%2F678a1ef8f7108323f84eecda_4990242-sd_960_540_30fps-transcode.mp4"
                         autoPlay

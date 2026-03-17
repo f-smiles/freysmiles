@@ -202,11 +202,27 @@ export default function AdultOrthodontics() {
         tl.addLabel('phase-1')
         tl.fromTo(items[0], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[0], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(mediaContainers[0], { xPercent: -60, scale: 1, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(mediaContainersInner[0], { xPercent: 0, scale: 1, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2 }, '<')
+tl.fromTo(mediaContainers[0], 
+  { xPercent: -60, scale: 1 }, 
+  { 
+    xPercent: -150, 
+    scale: 0.8,
+    duration: 0.6 
+  }, 
+'<')
+        tl.fromTo(mediaContainersInner[0], { xPercent: 0, scale: 1, transformOrigin: '50% 50% 0px' }, { xPercent: -150, scale: 1.2}, '<')
         tl.fromTo(items[1], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[1], { xPercent: -80 }, { xPercent: 0 }, '<')
-        tl.fromTo(mediaContainers[1], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
+tl.fromTo(
+  mediaContainers[1],
+  { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' },
+  { 
+    xPercent: -60, 
+    scale: 1.0,
+    duration: 0.5 
+  },
+  '<'
+)
         tl.fromTo(mediaContainersInner[1], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
         tl.fromTo(items[2], { xPercent: 95 }, { xPercent: 80 }, '<')
         tl.fromTo(innerItems[2], { xPercent: -95 }, { xPercent: -80 }, '<')
@@ -221,8 +237,8 @@ export default function AdultOrthodontics() {
         tl.addLabel('phase-2', '>')
         tl.fromTo(items[1], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[1], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(mediaContainers[1], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(mediaContainersInner[1], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(mediaContainers[1], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .6 }, '<')
+        tl.fromTo(mediaContainersInner[1], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2, duration: .55 }, '<')
         tl.fromTo(items[2], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[2], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[2], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
@@ -255,8 +271,8 @@ export default function AdultOrthodontics() {
         tl.addLabel('phase-4', '>')
         tl.fromTo(items[3], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[3], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(mediaContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
-        tl.fromTo(mediaContainersInner[3], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(mediaContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .5 }, '<')
+        tl.fromTo(mediaContainersInner[3], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2, duration: .45 }, '<')
         tl.fromTo(items[4], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[4], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[4], { xPercent: 0, scale: 0.6, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
