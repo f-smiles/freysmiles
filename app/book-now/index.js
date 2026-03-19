@@ -627,6 +627,8 @@ useEffect(() => {
   const interval = setInterval(update, 1000);
   return () => clearInterval(interval);
 }, []);
+
+const [showScheduler, setShowScheduler] = useState(false)
   return (
     <>
     {/* <div style={{height: '100vh', width: '100vw'}}>
@@ -765,7 +767,54 @@ useEffect(() => {
   </div>
 
   <div className="flex justify-end gap-8 font-neuehaas45 text-[15px] tracking-[0.015em]">
-   <Link href="/book-now"><span>Book Now</span></Link> 
+<button
+  onClick={() => setShowScheduler(true)}
+  className="cursor-pointer"
+>
+  <span>Book Now</span>
+</button>
+<div
+  className={`
+    fixed inset-0 z-[100]
+    transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]
+    ${showScheduler
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-6 pointer-events-none"}
+  `}
+>
+  <div className="w-full h-full px-[6vw] py-[4vh] flex flex-col">
+
+    <div className="flex flex-1 items-center justify-center">
+      <div
+        className="
+          relative
+          w-full max-w-[1400px]
+          h-[90vh]
+          rounded-2xl overflow-hidden
+          backdrop-blur-xl border border-white/20 shadow-lg
+          bg-white/60
+        "
+      >
+        <iframe
+          src="https://app.acuityscheduling.com/schedule.php?owner=37690830"
+          title="Schedule Appointment"
+          className="w-full h-full z-10"
+          frameBorder="0"
+          allow="payment"
+        />
+
+        <button
+          type="button"
+          onClick={() => setShowScheduler(false)}
+          className="absolute right-12 top-24 font-canelathin text-white z-50"
+        >
+          Back
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
    <Link href="/early-orthodontics">    <span>Early Orthodontics</span></Link>
 <Link href="/adult-orthodontics">
     <span>Adult Orthodontics</span>

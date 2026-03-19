@@ -291,15 +291,16 @@ export default function EarlyOrthodontics() {
     <div className="EarlyOrthodontics">
       <div ref={mainSection} className="MainSection" style={{ backgroundColor: 'var(--white)', }}>
         <div className="MainSection-wrapper">
-          <div className="MainSection-header">
+     <div className="MainSection-header">
+  <div className="w-full flex justify-center items-center min-[1440px]:justify-start">
     <SlidingText
-                  text="Early Orthodontics"
-                  effect="2"
-                  totalCells={8}
-                  className="font-lg font-canelathin"
-            
-                />
-          </div>
+      text="Early Orthodontics"
+      effect="2"
+      totalCells={8}
+      className="block font-lg font-canelathin translate-y-6 min-[1440px]:translate-y-0 text-center min-[1440px]:text-left"
+    />
+  </div>
+</div>
           <div ref={itemsContainer} className="MainSection-items">
             <section className="MainSectionItem MainSection-item">
               <div className="--index-first MainSectionItem-inner">
@@ -345,7 +346,7 @@ export default function EarlyOrthodontics() {
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media image-wrapper">
                         <img
-                          src="/images/childsideprofile2.png"
+                          src="/images/childsideprofile.png"
                           alt="Facial silhouette"
                           loading="lazy"
                           className="profile-image"

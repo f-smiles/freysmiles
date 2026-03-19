@@ -55,7 +55,10 @@
   font-family: "NeueHaasDisplay35";
   letter-spacing: 0.5px;
 }
-
+.MainSection-header {
+  position: relative;
+  z-index: 50;
+}
 
 /********************
  *  MOBILE    *

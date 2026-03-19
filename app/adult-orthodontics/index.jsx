@@ -109,7 +109,7 @@ const SlidingText = ({
   }, [totalCells, text, textWidth]);
 
   return (
-    <div ref={containerRef} className={`gtext ${className}`}>
+    <div ref={containerRef} className={`gtext ${className }`} >
       {Array.from({ length: totalCells }).map((_, i) => (
         <span key={i} className="gtext__box">
           <span
@@ -288,15 +288,16 @@ tl.fromTo(
     <div className="AdultOrthodontics">
       <div ref={mainSection} className="MainSection" style={{ backgroundColor: 'var(--blue)', }}>
         <div className="MainSection-wrapper">
-          <div className="MainSection-header">
-             <SlidingText
-                  text="Adult Orthodontics"
-                  effect="2"
-                  totalCells={8}
-                  className="font-lg font-canelathin"
-            
-                />
-          </div>
+  <div className="MainSection-header">
+  <div className="w-full flex justify-center items-center min-[1440px]:justify-start">
+    <SlidingText
+      text="Adult Orthodontics"
+      effect="2"
+      totalCells={8}
+      className="block font-lg font-canelathin translate-y-6 min-[1440px]:translate-y-0"
+    />
+  </div>
+</div>
           <div ref={itemsContainer} className="MainSection-items">
             <section className="MainSectionItem MainSection-item">
               <div className="--index-first MainSectionItem-inner">
@@ -315,7 +316,7 @@ tl.fromTo(
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
                         <video
-                          src="/images/adultorthoslide1.mp4"
+                          src="/videos/orthoslideshow.mp4"
                           alt="Video of various adults"
                           loading="lazy"
                           loop
