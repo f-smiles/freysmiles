@@ -759,7 +759,7 @@ if (scroller) {
                 camera={{ position: [0, 0, 1000], fov: 75 }}
           gl={{ antialias: true, alpha: true }}
             onCreated={({ gl }) => {
-    gl.setClearColor(0x000000, 0) // fully transparent
+    gl.setClearColor(0x000000, 0)
   }}
                 style={{
                   position: "absolute",

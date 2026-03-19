@@ -271,8 +271,8 @@ tl.fromTo(
         tl.addLabel('phase-4', '>')
         tl.fromTo(items[3], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[3], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(mediaContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .5 }, '<')
-        tl.fromTo(mediaContainersInner[3], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2, duration: .45 }, '<')
+        tl.fromTo(mediaContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .55 }, '<')
+        tl.fromTo(mediaContainersInner[3], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2, duration: .5 }, '<')
         tl.fromTo(items[4], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[4], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[4], { xPercent: 0, scale: 0.6, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
@@ -302,7 +302,10 @@ tl.fromTo(
             <section className="MainSectionItem MainSection-item">
               <div className="--index-first MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
-                  <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--blue)', }} />
+<div
+  className="MainSectionItem-background"
+  style={{ backgroundColor: 'var(--golden)' }}
+/>
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
                       <span className="MainSectionItem-index">01</span>
@@ -315,14 +318,11 @@ tl.fromTo(
                   <div className="MainSectionItem-mediaContainer">
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media">
-                        <video
-                          src="/videos/orthoslideshow.mp4"
-                          alt="Video of various adults"
+                        <img
+                          src="/images/1920x10805.png"
+                          alt="adult"
                           loading="lazy"
-                          loop
-                          autoPlay
-                          muted
-                          playsInline
+                          className="profile-image"
                         />
                       </div>
                     </div>
@@ -333,7 +333,10 @@ tl.fromTo(
             <section className="MainSectionItem MainSection-item">
               <div className="--index-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
-                  <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--pink)', }} />
+<div
+  className="MainSectionItem-background"
+  style={{ backgroundColor: 'var(--dream)' }}
+/>
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
                       <span className="MainSectionItem-index">02</span>
@@ -431,7 +434,10 @@ tl.fromTo(
             <section className="MainSectionItem MainSection-item">
               <div className="--index-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
-                  <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--green)', }} />
+<div
+  className="MainSectionItem-background"
+  style={{ backgroundColor: 'var(--signal)' }}
+/>
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
                       <span className="MainSectionItem-index">03</span>
@@ -446,7 +452,7 @@ tl.fromTo(
                       <div className="MainSectionItem-media">
                         <video
                           src="/videos/SC1.mp4"
-                          alt="Video of various adults"
+                          alt="Video of computer"
                           loading="lazy"
                           loop
                           autoPlay
@@ -462,7 +468,10 @@ tl.fromTo(
             <section className="MainSectionItem MainSection-item">
               <div className="--index-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
-                  <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--beige)', }} />
+   <div
+  className="MainSectionItem-background"
+  style={{ backgroundColor: 'var(--soft)' }}
+/>
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
                       <span className="MainSectionItem-index">04</span>
@@ -477,7 +486,7 @@ tl.fromTo(
                       <div className="MainSectionItem-media">
                         <img
                           src="/images/tabletfacelineart.png"
-                          alt="Video of a landscape"
+                          alt="tablet"
                           loading="lazy"
                         />
                       </div>
@@ -486,10 +495,13 @@ tl.fromTo(
                 </div>
               </div>
             </section>
-            <section className="MainSectionItem --bg-terra MainSection-item">
+            <section className="MainSectionItem --bg-fog MainSection-item">
               <div className="--index-last MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
-                  <div className="MainSectionItem-background" style={{ backgroundColor: 'var(--terra)', }} />
+<div
+  className="MainSectionItem-background"
+  style={{ backgroundColor: 'var(--fog)' }}
+/>
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
                       <span className="MainSectionItem-index">05</span>
@@ -504,7 +516,7 @@ tl.fromTo(
                       <div className="MainSectionItem-media">
                         <img
                           src="/images/aafe.png"
-                          alt="Video of a landscape"
+                          alt="aafe card"
                           loading="lazy"
                         />
                       </div>

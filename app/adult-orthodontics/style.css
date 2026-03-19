@@ -1,11 +1,11 @@
 :root {
-  --terra:  #C6CAD3;
-  --green:  #FCA519;
-  --pink: #CABCE2;
-  --blue: #CDB729;
-  --black: #0e0e0e;
-  --beige:  #DFE4DE;
-  --grey: #666d73;
+  --fog:        #C6CAD3;
+  --signal:     #FCA519;
+  --dream:      #CABCE2;
+  --golden:     #CDB729;
+  --void:       #0e0e0e;
+  --soft:       #DFE4DE;
+  --steel:      #666d73;
 }
 /* #A9D442 */
 /* #94C001 */

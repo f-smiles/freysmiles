@@ -517,7 +517,83 @@ const CopyButton = ({ text, label }) => {
     </button>
   );
 };
+const AnimatedText = ({ 
+  text, 
+  className = "",
+  as: Component = "span",
+  splitType = "chars,words",
+  animationDistance = -100,
+  staggerAmount = 0.4,
+  ease = "power4.inOut",
+  textShadow = true,
+  onClick, 
 
+}) => {
+  const textRef = useRef(null);
+  const splitRef = useRef(null);
+  const charsRef = useRef(null);
+
+  useEffect(() => {
+ 
+    splitRef.current = new SplitText(textRef.current, {
+      type: splitType,
+      wordsClass: "overflow-hidden"
+    });
+
+
+    charsRef.current = splitRef.current.chars;
+
+  
+    return () => {
+      if (splitRef.current) {
+        splitRef.current.revert();
+      }
+    };
+  }, [text, splitType]); 
+
+  const handleMouseEnter = () => {
+    if (!charsRef.current) return;
+    
+    gsap.to(charsRef.current, {
+      yPercent: animationDistance,
+      ease: ease,
+      stagger: {
+        amount: staggerAmount,
+        from: "random"
+      }
+    });
+  };
+
+  const handleMouseLeave = () => {
+    if (!charsRef.current) return;
+    
+    gsap.to(charsRef.current, {
+      yPercent: 0,
+      ease: ease,
+      stagger: {
+        amount: staggerAmount,
+        from: "random"
+      },
+      overwrite: true
+    });
+  };
+
+  const textShadowStyle = textShadow ? { textShadow: '0 1em' } : {};
+
+  return (
+    <Component
+      ref={textRef}
+      className={className}
+      style={textShadowStyle}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={onClick} 
+
+    >
+      {text}
+    </Component>
+  );
+};
 export default function BookNow() {
   
   const fadeUpMaskedVariants = {
@@ -737,99 +813,293 @@ const [showScheduler, setShowScheduler] = useState(false)
 </div>
 </div> */}
 
-  <section className="w-full h-screen bg-[#f2f2f2] text-black grid grid-rows-[auto_1fr_auto] fixed">
+<section 
+  style={{
+    background: `
+      radial-gradient(
+        circle at 70% 20%,
+        rgba(255,255,255,0.7) 0%,
+        rgba(255,255,255,0.4) 20%,
+        rgba(240,240,240,0.6) 40%,
+        rgba(220,220,220,0.8) 100%
+      ),
+      linear-gradient(
+        180deg,
+        #f5f5f5 0%,
+        #e8e8e8 100%
+      )
+    `
+  }}
+  className="w-full h-screen text-black grid grid-rows-[auto_1fr_auto] fixed overflow-y-auto"
+>
+  {/* Modal */}
+  <div
+    className={`fixed inset-0 z-[100] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+      showScheduler
+        ? "opacity-100 translate-y-0"
+        : "opacity-0 translate-y-6 pointer-events-none"
+    }`}
+  >
+    <div className="w-full h-full px-[6vw] py-[4vh] flex flex-col">
+      <div className="flex flex-1 items-center justify-center">
+        <div
+          className="
+            relative
+            w-full max-w-[1100px]
+            h-[90vh]
+            rounded-2xl overflow-hidden
+            backdrop-blur-xl border border-white/20 shadow-lg
+            bg-white/60
+          "
+        >
+          <iframe
+            src="https://app.acuityscheduling.com/schedule.php?owner=37690830"
+            title="Schedule Appointment"
+            className="w-full h-full z-10"
+            frameBorder="0"
+            allow="payment"
+          />
 
-      <div className="flex items-center justify-between px-12 pt-6 text-xs tracking-wide">
-
-        <div className=""></div>
-        <div className="text-right font-neuehaas45">
-         <div>40° 36' N 75° 29' W</div>
-         <div>{time}</div>
+          <button
+            type="button"
+            onClick={() => setShowScheduler(false)}
+            className="absolute right-12 top-24 font-canelathin text-white z-50"
+          >
+            Back
+          </button>
         </div>
       </div>
-
-<div className="grid grid-cols-3 items-center px-12">
-<div className="flex flex-col items-center">
-
-  <h1 className="text-[64px] uppercase font-neuehaas45">
-    FREY SMILES
-  </h1>
-
-  <div className="text-[15px] mt-4 flex justify-center gap-12 font-neuehaas45 tracking-[0.015em]">
-    <span>610-437-4748</span>
-    <span>info@smiles.com</span>
+    </div>
   </div>
 
-</div>
-
-  <div className="flex justify-center">
-    <PerlinParticles />
-  </div>
-
-  <div className="flex justify-end gap-8 font-neuehaas45 text-[15px] tracking-[0.015em]">
-<button
-  onClick={() => setShowScheduler(true)}
-  className="cursor-pointer"
->
-  <span>Book Now</span>
-</button>
-<div
-  className={`
-    fixed inset-0 z-[100]
-    transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]
-    ${showScheduler
-      ? "opacity-100 translate-y-0"
-      : "opacity-0 translate-y-6 pointer-events-none"}
-  `}
->
-  <div className="w-full h-full px-[6vw] py-[4vh] flex flex-col">
-
-    <div className="flex flex-1 items-center justify-center">
+  {/* Mobile Menu - Shows on all screens below 1280px */}
+  <div className="absolute top-6 left-0 right-0 flex justify-center items-center xl:hidden z-50">
+    <div
+      className="
+        relative
+        flex flex-wrap justify-center items-center gap-4
+        px-5 py-3
+        rounded-full
+        text-[11px] font-neuehaas35 tracking-wider uppercase
+        backdrop-blur-xl
+        max-w-[90vw] mx-auto
+      "
+      style={{
+        background: `
+          linear-gradient(
+            180deg,
+            rgba(255,255,255,0.35) 0%,
+            rgba(255,255,255,0.08) 40%,
+            rgba(255,255,255,0.03) 100%
+          )
+        `,
+        backdropFilter: "blur(20px) saturate(140%)",
+      }}
+    >
       <div
-        className="
-          relative
-          w-full max-w-[1400px]
-          h-[90vh]
-          rounded-2xl overflow-hidden
-          backdrop-blur-xl border border-white/20 shadow-lg
-          bg-white/60
-        "
-      >
-        <iframe
-          src="https://app.acuityscheduling.com/schedule.php?owner=37690830"
-          title="Schedule Appointment"
-          className="w-full h-full z-10"
-          frameBorder="0"
-          allow="payment"
-        />
+        className="pointer-events-none absolute inset-0 rounded-full"
+        style={{
+          background: `
+            linear-gradient(
+              180deg,
+              rgba(255,255,255,0.45) 0%,
+              rgba(255,255,255,0.12) 25%,
+              rgba(255,255,255,0.04) 50%,
+              rgba(255,255,255,0.0) 70%,
+              rgba(255,255,255,0.04) 85%,
+              rgba(255,255,255,0.12) 95%,
+              rgba(255,255,255,0.45) 100%
+            ),
+            radial-gradient(
+              circle at 0% 50%,
+              rgba(255,255,255,0.18),
+              transparent 40%
+            ),
+            radial-gradient(
+              circle at 100% 50%,
+              rgba(255,255,255,0.12),
+              transparent 40%
+            )
+          `,
+        }}
+      />
 
-        <button
-          type="button"
-          onClick={() => setShowScheduler(false)}
-          className="absolute right-12 top-24 font-canelathin text-white z-50"
-        >
-          Back
-        </button>
+      <AnimatedText
+        onClick={() => setShowScheduler(true)}
+        text="Book Now"
+        className="text-[11px] tracking-wider uppercase leading-none block"
+      />
+
+      <div className="w-px h-4 bg-white/20" />
+
+      <Link href="/early-orthodontics">
+        <AnimatedText 
+          text="Early Orthodontics"
+          className="text-[11px] tracking-wider uppercase leading-none block"
+        />
+      </Link>
+
+      <div className="w-px h-4 bg-white/20" />
+
+      <Link href="/adult-orthodontics">
+        <AnimatedText 
+          text="Adult Orthodontics"
+          className="text-[11px] tracking-wider uppercase leading-none block"
+        />
+      </Link>
+    </div>
+  </div>
+
+
+  <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none z-0">
+    <div className="relative w-full h-full xl:w-auto xl:h-auto">
+      <Canvas
+        camera={{ position: [0, 0, 1000], fov: 75 }}
+        gl={{ antialias: true, alpha: true }}
+        onCreated={({ gl }) => {
+          gl.setClearColor(0x000000, 0)
+        }}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "150vw",
+          height: "150vh",
+          maxWidth: "800px",
+          maxHeight: "800px",
+          zIndex: 0,
+        }}
+        className="xl:w-full xl:h-full"
+      >
+        <Scene />
+      </Canvas>
+    </div>
+  </div>
+
+  <div className="flex items-center justify-between px-12 pt-6 text-xs tracking-wide relative z-10">
+
+  </div>
+
+
+  <div className="grid grid-cols-1 xl:grid-cols-3 items-center px-4 xl:px-12 gap-8 xl:gap-0 relative z-10">
+
+    <div className="flex flex-col items-center xl:items-center order-2 xl:order-1">
+      <h1 className="text-[24px] font-neuehaas35 xl:text-[24px] text-center xl:text-left">
+       please explore our new site
+      </h1>
+<div className="py-2 text-[13px] font-neuehaas35 tracking-[0.07em]">
+  ...more upgrades in the works
+</div>
+    
+    </div>
+
+
+    <div className="flex justify-center items-center order-1 xl:order-2 h-[300px] xl:h-auto relative">
+  <div className="text-[13px] flex flex-col xl:flex-row justify-center xl:justify-start gap-4 xl:gap-12 font-neuehaas35 tracking-[0.07em] items-center xl:items-start">
+      
+                    <p className="text-[12px] text-black leading-[1.6] font-ibmplex">
+                       <span className="block">
+                      <ScrambleText text="info@freysmiles.com" />
+                   </span>
+                    </p>
+                   <p className="text-[12px] text-black leading-[1.6] font-ibmplex">
+                     <span className="block">
+                                    <ScrambleText text="(610)437-4748" charsType="numbers" />
+                     </span>
+             
+                           </p>
       </div>
     </div>
 
-  </div>
-</div>
-   <Link href="/early-orthodontics">    <span>Early Orthodontics</span></Link>
-<Link href="/adult-orthodontics">
-    <span>Adult Orthodontics</span>
-</Link>
 
-  </div>
+    <div className="hidden xl:flex justify-end order-3">
+      <div
+        className="
+          relative
+          flex items-center gap-6
+          px-5 py-3
+          rounded-full
+          text-[11px] font-neuehaas35 tracking-wider uppercase
+          backdrop-blur-xl
+        "
+        style={{
+          background: `
+            linear-gradient(
+              180deg,
+              rgba(255,255,255,0.35) 0%,
+              rgba(255,255,255,0.08) 40%,
+              rgba(255,255,255,0.03) 100%
+            )
+          `,
+          backdropFilter: "blur(20px) saturate(140%)",
+        }}
+      >
+        <div
+          className="pointer-events-none absolute inset-0 rounded-full"
+          style={{
+            background: `
+              linear-gradient(
+                180deg,
+                rgba(255,255,255,0.45) 0%,
+                rgba(255,255,255,0.12) 25%,
+                rgba(255,255,255,0.04) 50%,
+                rgba(255,255,255,0.0) 70%,
+                rgba(255,255,255,0.04) 85%,
+                rgba(255,255,255,0.12) 95%,
+                rgba(255,255,255,0.45) 100%
+              ),
+              radial-gradient(
+                circle at 0% 50%,
+                rgba(255,255,255,0.18),
+                transparent 40%
+              ),
+              radial-gradient(
+                circle at 100% 50%,
+                rgba(255,255,255,0.12),
+                transparent 40%
+              )
+            `,
+          }}
+        />
 
-</div>
+        <AnimatedText
+          onClick={() => setShowScheduler(true)}
+          text="Book Now"
+          className="relative text-[11px] tracking-wider uppercase leading-none block cursor-pointer"
+        />
+        <div className="w-px h-4 bg-white/20" />
 
+        <Link href="/early-orthodontics">
+          <AnimatedText 
+            text="Early Orthodontics"
+            className="text-[11px] tracking-wider uppercase leading-none block"
+          />
+        </Link>
 
-      <div className="flex justify-center pb-6 text-xs font-neuehaas35 tracking-widest">
-        SCROLL
+        <div className="w-px h-4 bg-white/20" />
+
+        <Link href="/adult-orthodontics">
+          <AnimatedText 
+            text="Adult Orthodontics"
+            className="text-[11px] tracking-wider uppercase leading-none block"
+          />
+        </Link>
       </div>
+    </div>
+  </div>
 
-    </section>
+
+<div
+  className="flex flex-col xl:flex-row justify-center gap-4 xl:gap-8 pb-6 text-xs font-neuehaas35 tracking-widest items-center relative z-10"
+  style={{ fontVariantNumeric: "tabular-nums" }}
+>
+  <div>40° 36' N 75° 29' W</div>
+  <div className="hidden xl:block">•</div>
+  <div>{time}</div>
+</div>
+</section>
+
 {/* <section
   className="
     bg-black
@@ -1378,7 +1648,7 @@ const SVGVerticalTransition = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // SVG paths for vertical transition
+
   const paths = {
     step1: {
       unfilled: 'M 0 0 h 0 c 0 50 0 50 0 100 H 0 V 0 Z',
@@ -1940,34 +2210,30 @@ color *= brightness;
     opacity: 0.5
   });
 
-  // Create scene
+
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Scene setup
+
     const scene = new THREE.Scene();
     scene.background = null;
     sceneRef.current = scene;
 
-    // Camera setup
+
     const aspect = window.innerWidth / window.innerHeight;
     const camera = new THREE.PerspectiveCamera(55, aspect, 1, 1000);
     camera.position.z = options.camera.zoom;
     cameraRef.current = camera;
 
-    // Renderer setup
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Create primitive
+
     createPrimitive();
 
-
-
-    // Handle resize
     const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -1980,11 +2246,9 @@ color *= brightness;
 
     window.addEventListener('resize', handleResize);
 
-    // Start animation
     startTimeRef.current = Date.now();
     animate();
 
-    // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
       if (animationRef.current) {
@@ -1999,7 +2263,6 @@ color *= brightness;
     };
   }, []);
 
-  // Update when options change
   useEffect(() => {
     if (materialRef.current) {
       materialRef.current.uniforms.opacity.value = options.opacity;
@@ -2039,7 +2302,6 @@ color *= brightness;
   const createPrimitive = () => {
     if (!sceneRef.current) return;
 
-    // Remove existing primitive
     if (primitiveRef.current) {
       sceneRef.current.remove(primitiveRef.current);
     }

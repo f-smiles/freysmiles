@@ -240,8 +240,8 @@ export default function EarlyOrthodontics() {
         tl.addLabel('phase-3', '>')
         tl.fromTo(items[2], { xPercent: 0 }, { xPercent: -100 })
         tl.fromTo(innerItems[2], { xPercent: 0 }, { xPercent: 100 }, '<')
-        tl.fromTo(mediaContainers[2], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .5 }, '<')
-        tl.fromTo(mediaContainersInner[2], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2, duration: .45 }, '<')
+        tl.fromTo(mediaContainers[2], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8, duration: .55 }, '<')
+        tl.fromTo(mediaContainersInner[2], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2, duration: .5 }, '<')
         tl.fromTo(items[3], { xPercent: 80 }, { xPercent: 0 }, '<')
         tl.fromTo(innerItems[3], { xPercent: -80 }, { xPercent: 0 }, '<')
         tl.fromTo(mediaContainers[3], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
@@ -320,7 +320,7 @@ export default function EarlyOrthodontics() {
                       <div className="MainSectionItem-media">
                         <img
                           src="/images/7milestone.png"
-                          alt="Video of a landscape"
+                          alt="manual"
                           loading="lazy"
                         />
                       </div>
@@ -346,12 +346,13 @@ export default function EarlyOrthodontics() {
                     <div className="MainSectionItem-mediaContainerInner">
                       <div className="MainSectionItem-media image-wrapper">
                         <img
-                          src="/images/childsideprofile.png"
+                          src="/images/childsideprofile5.png"
                           alt="Facial silhouette"
                           loading="lazy"
                           className="profile-image"
+                          
                         />
-                        <svg
+               {/* <svg
                           className="overlay-lines"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 100 100"
@@ -414,7 +415,7 @@ export default function EarlyOrthodontics() {
                           fill="#ffffff"
                           vectorEffect="non-scaling-stroke"
                         />
-                        </svg>
+                        </svg> */}
                       </div>
                     </div>
                   </div>
@@ -439,7 +440,7 @@ export default function EarlyOrthodontics() {
                       <div className="MainSectionItem-media">
                         <img
                           src="/images/airwayequation.png"
-                          alt="Video of a landscape"
+                          alt="shot of child sitting"
                           loading="lazy"
                         />
                       </div>
@@ -467,7 +468,7 @@ export default function EarlyOrthodontics() {
                       <div className="MainSectionItem-media">
                           <img
                           src="/images/ffscard.jpg"
-                          alt="Video of a landscape"
+                          alt="future smiles"
                           loading="lazy"
                         />
                        
@@ -497,6 +498,7 @@ export default function EarlyOrthodontics() {
                       <div className="MainSectionItem-media">
                                <video
                         src="/videos/luckynumber7.mp4"
+                          alt="7 year old"
                         autoPlay
                         loop
                         muted
@@ -536,6 +538,7 @@ export default function EarlyOrthodontics() {
                       <div className="MainSectionItem-media">
                            <video
                         src="/videos/alwayslookingahead.mp4"
+                        alt="landscape"
                         autoPlay
                         loop
                         muted
