@@ -26,6 +26,7 @@ export default function ProductForm() {
       title: "",
       description: "",
       price: 0,
+      category: "",
     },
     mode: "onChange",
   })
@@ -104,6 +105,20 @@ export default function ProductForm() {
                       className="w-max"
                       {...field}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

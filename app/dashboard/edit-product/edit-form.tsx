@@ -30,6 +30,7 @@ export default function EditProductForm() {
     defaultValues: {
       title: "",
       description: "",
+      category: "",
       price: 0,
     },
     mode: "onChange",
@@ -45,6 +46,7 @@ export default function EditProductForm() {
       form.setValue("title", data.success.title)
       form.setValue("description", data.success.description)
       form.setValue("price", data.success.price)
+      form.setValue("category", data.success.category)
       form.setValue("id", parseInt(productId!))
     }
   }
@@ -121,6 +123,20 @@ export default function EditProductForm() {
                   </span>
                 </FormControl>
                 <FormDescription>Price in USD</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <Input placeholder="" {...field} />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
