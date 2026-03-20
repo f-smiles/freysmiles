@@ -479,7 +479,7 @@ export default function EarlyOrthodontics() {
               <SlidingText
                 text="Early Orthodontics"
                 effect="2"
-                totalCells={8}
+                totalCells={1}
                 className="block font-lg font-canela-italic translate-y-6 min-[1440px]:translate-y-0 text-center min-[1440px]:text-left"
               />
             </div>
