@@ -506,8 +506,8 @@ export default function EarlyOrthodontics() {
                         of permanent teeth. It also helps identify issues such
                         as supernumerary (extra) or missing teeth, assess airway
                         development (including risk factors for sleep apnea),
-                        and detect jaw growth discrepancies. Obstructive habits
-                        like thumb sucking, tongue thrusting, or early
+                        and detect jaw growth discrepancies. Habit reduction is also a part of early treatment. Obstructive habits
+                        like thumb sucking, lip biting, tongue thrusting, or early
                         malocclusion can be addressed early to support optimal
                         jaw and airway development.
                       </p>
@@ -544,18 +544,15 @@ export default function EarlyOrthodontics() {
                     <div className="MainSectionItem-contentText">
                       <p>
                         Key dental landmarks are typically in place: the
-                        permanent first molars are positioned in the dental
-                        arches, and all four upper and lower (eight total)
+                        permanent first molars should be positioned in the dental
+                        arches, and almost all four upper and lower (eight total)
                         permanent incisors are either fully erupted or close to
                         erupting. These markers allow our doctors to accurately
                         assess the width of the arches, the front-to-back
-                        (anterior-posterior) relationship of the jaws, and
-                        identify any crossbites—whether in the front or back of
-                        the mouth. This is also the stage when significant arch
-                        length deficiencies can be detected, giving us the
-                        chance to intervene early to provide room for all
-                        permanent teeth. and guide proper development before
-                        more complex problems arise.
+                        jaw positioning, and identify any crossbites. This is also the stage when significant arch
+                        length deficiencies (crowding) can be detected, giving us the
+                        chance to intervene and provide room for all
+                        permanent teeth. 
                       </p>
                     </div>
                   </div>
@@ -590,13 +587,13 @@ export default function EarlyOrthodontics() {
                     </div>
                     <div className="MainSectionItem-contentText">
                       <p>
-                        We also assess the airway and surrounding structures,
-                        including the tonsils and adenoids. Enlarged tonsils
-                        (tonsillar hypertrophy) and adenoids can restrict
-                        airflow, disrupt breathing during sleep, and negatively
-                        impact how the jaws and arches grow—often contributing
-                        to a condition known as adenoid facies, characterized by
-                        long, narrow facial development and mouth breathing.
+                        We assess the airway and surrounding
+                        structures—including the tonsils—as part of every
+                        evaluation. Using advanced 3D imaging and specialized
+                        training, our doctors design treatment plans that
+                        support optimal airway development and function. Token orthodontic treatment planning can overlook the root cause of airway constriction. Whether we're your first consultation
+                        or you've already had one, a second opinion is
+                        always welcomed.
                       </p>
                     </div>
                   </div>
@@ -633,7 +630,7 @@ export default function EarlyOrthodontics() {
                         Once you visit us, we take care of the rest. If no
                         treatment is needed right away, we'll place your child
                         on a customized Growth & Guidance schedule—our way of
-                        future-proofing your child's smile.{" "}
+                        future-proofing their smile and their youthfulness.{" "}
                       </p>
                     </div>
                   </div>
@@ -669,13 +666,15 @@ export default function EarlyOrthodontics() {
                     <div className="MainSectionItem-contentText">
                       <p>
                         Timely intervention makes it possible to manage many
-                        cases more comfortably with clear aligners which gently
-                        guide growth while also functioning as protective mouth
-                        guards during sports or severe dental protrustion.
-                        Through proactive, individualized treatment we're able
-                        to minimize disruption, improve oral hygiene, reduce
-                        enamel damage, and help children avoid the physical and
-                        emotional burden of bulky appliances later on.
+                        cases seamlessly. Early Orthodontic treatment with us
+                        guides tooth alignment and growth. Orthodontic
+                        appliances do in fact function as a protection in the
+                        case of facial trauma - not to mention Invisalign is a
+                        great mouthguard for sports. Through proactive,
+                        individualized treatment we're able to minimize
+                        appointments, improve oral hygiene and habits, reduce
+                        enamel damage, and help patients avoid the burden of
+                        bulky appliances during life’s special moments.
                       </p>
                     </div>
                   </div>
