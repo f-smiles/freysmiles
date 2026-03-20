@@ -13,7 +13,8 @@ module.exports = {
 				'neuehaas45': ['NeueHaasGroteskDisplayPro45Light', 'sans-serif'],
 				'canela': ['CanelaThin', 'serif'],
 				'canela-italic': ['CanelaThinItalic', 'serif'],
-				'ibmplex-thinItalic': ['IBMPlexMonoThinItalic', 'monospace'],
+				'ibmplex-thin': ['IBMPlexMonoThin', 'monospace'],
+				'ibmplex-extralight': ['IBMPlexMonoExtraLight', 'monospace'],
 			},
   		borderRadius: {
   			lg: 'var(--radius)',
