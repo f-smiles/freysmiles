@@ -335,9 +335,7 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-      --font-xs: 14px;
- --font-xxs: 11px;
-  --font-lg: 32px;
+
   }
 }
 
@@ -4694,37 +4692,7 @@ a {
   }
 }
 
-.gtext {
-  display: flex;
-  line-height: 1;
-  margin: 0;
-  white-space: nowrap;
-  font-weight: 400;
-  justify-content: center;
-}
-.size-xl {
-  --gsize: clamp(5rem, 10vw, 16rem);
-  /* text-transform: uppercase; */
-}
 
-.spaced {
-  margin: 20vh auto;
-}
-
-.gtext__box {
-  overflow: hidden;
-  position: relative;
-  will-change: transform;
-  margin-right: -0.5px;
-}
-
-.gtext__box-inner {
-  padding-right: 0.2em;
-  width: max-content;
-  position: relative;
-  display: block;
-  will-change: transform;
-}
 
 .stroke_wide {
   position: absolute;
@@ -7301,19 +7269,44 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
     font-size: 3rem;
   }
 }
-
-
-
 .gtext {
   display: grid;
   white-space: nowrap;
   width: max-content;
+
   --text-width: 100px;
   --gsplits: 4;
+  --gsize: 1rem;
+
+  font-size: var(--gsize);
+
   grid-template-columns: repeat(
     var(--gsplits),
     calc(var(--text-width) / var(--gsplits))
   );
+}
+
+.size-xl {
+  --gsize: clamp(5rem, 10vw, 16rem);
+}
+
+.spaced {
+  margin: 20vh auto;
+}
+
+.gtext__box {
+  overflow: hidden;
+  position: relative;
+  will-change: transform;
+  margin-right: -0.5px; 
+}
+
+.gtext__box-inner {
+  padding-right: 0.2em;
+  width: max-content;
+  position: relative;
+  display: block;
+  will-change: transform;
 }
 
 
@@ -7322,24 +7315,11 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
 .font-lg { font-size: 32px; }
 
 .gtext.gray-color {
-color:#8E98A0;
+  color: #8E98A0;
 }
+
 .gtext.letter-spacing {
-letter-spacing: .1em;
-}
-
-
-.gtext__box {
-  overflow: hidden;
-  position: relative;
-
-}
-
-.gtext__box-inner {
-  width: max-content;
-  display: block;
-  position: relative;
-  will-change: transform;
+  letter-spacing: 0.1em;
 }
 
 .glowing-border {

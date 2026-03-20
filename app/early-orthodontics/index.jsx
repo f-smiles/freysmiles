@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
+
 const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   const containerRef = useRef(null);
   const innerRefs = useRef([]);
@@ -35,6 +36,7 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
       const measuredWidth = tempSpan.getBoundingClientRect().width;
       document.body.removeChild(tempSpan);
 
+      // Add more buffer for larger text (20% buffer)
       const textWidthWithBuffer = measuredWidth * 1.2;
       setTextWidth(textWidthWithBuffer);
 
@@ -120,7 +122,6 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
     </div>
   );
 };
-
 export default function EarlyOrthodontics() {
   const mainSection = useRef(null);
   const itemsContainer = useRef(null);
@@ -476,7 +477,7 @@ export default function EarlyOrthodontics() {
             <div className="w-full flex justify-center items-center min-[1440px]:justify-start">
               <SlidingText
                 text="Early Orthodontics"
-                effect="2"
+                // effect="2"
                 totalCells={8}
                 className="block font-lg font-canelathin translate-y-6 min-[1440px]:translate-y-0 text-center min-[1440px]:text-left"
               />

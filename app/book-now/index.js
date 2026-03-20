@@ -26,12 +26,22 @@ gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin, SplitText
 extend({ OrbitControls, EffectComposer });
 
 const ParticleSystem = () => {
-  const particlesCount = 27000;
-  const mouseRef = useRef({ x: 0, y: 0 });
+
+  const isMobile = useMemo(() => {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+  }, []);
+  
+  const particlesCount = isMobile ? 20000 : 27000;
+  const mouseRef = useRef({ x: 0, y: 0, vx: 0, vy: 0 });
   const particlesRef = useRef();
+  const lastMousePosRef = useRef({ x: 0, y: 0 });
+  const isTouchingRef = useRef(false);
 
   const positions = useMemo(() => new Float32Array(particlesCount * 3), []);
   const velocities = useMemo(() => new Float32Array(particlesCount * 3), []);
+
+
+  const speedMultiplier = isMobile ? 1.0 : 0.5;
 
   const createSphere = (count, radius) => {
     for (let i = 0; i < count; i++) {
@@ -47,9 +57,9 @@ const ParticleSystem = () => {
       positions[i * 3 + 1] = y;
       positions[i * 3 + 2] = z;
 
-      velocities[i * 3] = (Math.random() - 0.5) * 0.5;
-      velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.5;
-      velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+      velocities[i * 3] = (Math.random() - 0.5) * 0.45 * speedMultiplier;
+      velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.45 * speedMultiplier;
+      velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.45 * speedMultiplier;
     }
   };
 
@@ -58,74 +68,181 @@ const ParticleSystem = () => {
     if (particlesRef.current) {
       particlesRef.current.geometry.attributes.position.needsUpdate = true;
     }
-  }, []);
+  }, [speedMultiplier]);
 
-  const { size, gl } = useThree();
-  const boundsRef = useRef();
+  const { gl } = useThree();
 
   useEffect(() => {
     const canvasEl = gl.domElement;
+    
     const handleMove = (e) => {
+      e.preventDefault();
+      
+      let clientX, clientY;
+      if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      
       const rect = canvasEl.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
+      const x = clientX - rect.left - rect.width / 2;
+      const y = clientY - rect.top - rect.height / 2;
+      
+      const dt = 1 / 60;
+      const vx = (x - lastMousePosRef.current.x) / dt;
+      const vy = (y - lastMousePosRef.current.y) / dt;
+      
+      const maxMouseVel = isMobile ? 30 : 15;
+      mouseRef.current.vx = Math.min(Math.max(vx, -maxMouseVel), maxMouseVel);
+      mouseRef.current.vy = Math.min(Math.max(vy, -maxMouseVel), maxMouseVel);
       mouseRef.current.x = x;
       mouseRef.current.y = y;
+      lastMousePosRef.current.x = x;
+      lastMousePosRef.current.y = y;
     };
-    window.addEventListener("pointermove", handleMove);
-    return () => window.removeEventListener("pointermove", handleMove);
-  }, [gl]);
+    
+    const handleStart = (e) => {
+      e.preventDefault();
+      isTouchingRef.current = true;
+      
+      let clientX, clientY;
+      if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      
+      const rect = canvasEl.getBoundingClientRect();
+      const x = clientX - rect.left - rect.width / 2;
+      const y = clientY - rect.top - rect.height / 2;
+      
+      mouseRef.current.x = x;
+      mouseRef.current.y = y;
+      lastMousePosRef.current.x = x;
+      lastMousePosRef.current.y = y;
+      mouseRef.current.vx = 0;
+      mouseRef.current.vy = 0;
+    };
+    
+    const handleEnd = () => {
+      isTouchingRef.current = false;
+      setTimeout(() => {
+        if (!isTouchingRef.current) {
+          const decay = isMobile ? 0.95 : 0.98;
+          mouseRef.current.vx *= decay;
+          mouseRef.current.vy *= decay;
+        }
+      }, 100);
+    };
+    
+    window.addEventListener("pointermove", handleMove, { passive: false });
+    window.addEventListener("pointerdown", handleStart);
+    window.addEventListener("pointerup", handleEnd);
+    window.addEventListener("pointercancel", handleEnd);
+    
+    canvasEl.addEventListener("touchmove", handleMove, { passive: false });
+    canvasEl.addEventListener("touchstart", handleStart);
+    canvasEl.addEventListener("touchend", handleEnd);
+    canvasEl.addEventListener("touchcancel", handleEnd);
+    
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerdown", handleStart);
+      window.removeEventListener("pointerup", handleEnd);
+      window.removeEventListener("pointercancel", handleEnd);
+      canvasEl.removeEventListener("touchmove", handleMove);
+      canvasEl.removeEventListener("touchstart", handleStart);
+      canvasEl.removeEventListener("touchend", handleEnd);
+      canvasEl.removeEventListener("touchcancel", handleEnd);
+    };
+  }, [gl, isMobile]);
 
   useFrame(() => {
     if (!particlesRef.current) return;
+    
     const pos = particlesRef.current.geometry.attributes.position.array;
-
+    const RADIUS = 400;
+    
+    const MOUSE_RADIUS = isMobile ? 150 : 120;
+    const MOUSE_STRENGTH = isMobile ? 0.035 : 0.018;
+    const MOMENTUM_FACTOR = isMobile ? 0.15 : 0.08;
+    const BOUNDARY_DAMPING = isMobile ? 0.92 : 0.94;
+    const RANDOM_IMPULSE_FREQ = isMobile ? 0.008 : 0.006;
+    const RANDOM_IMPULSE_STRENGTH = isMobile ? 0.12 : 0.08;
+    const MAX_VEL = isMobile ? 1.2 : 0.8;
+    
+    if (!isTouchingRef.current) {
+      mouseRef.current.vx *= 0.98;
+      mouseRef.current.vy *= 0.98;
+    }
+    
     for (let i = 0; i < pos.length; i += 3) {
+
       pos[i] += velocities[i];
       pos[i + 1] += velocities[i + 1];
       pos[i + 2] += velocities[i + 2];
+      
+      const x = pos[i];
+      const y = pos[i + 1];
+      const z = pos[i + 2];
+      const dist = Math.sqrt(x * x + y * y + z * z);
+      
+      if (dist > RADIUS) {
+        const nx = x / dist;
+        const ny = y / dist;
+        const nz = z / dist;
+        
+        pos[i] = nx * RADIUS;
+        pos[i + 1] = ny * RADIUS;
+        pos[i + 2] = nz * RADIUS;
+        
+        const dot = velocities[i] * nx + velocities[i + 1] * ny + velocities[i + 2] * nz;
+        
+        velocities[i] -= 2 * dot * nx;
+        velocities[i + 1] -= 2 * dot * ny;
+        velocities[i + 2] -= 2 * dot * nz;
+        
 
-      const dist = Math.sqrt(pos[i] ** 2 + pos[i + 1] ** 2 + pos[i + 2] ** 2);
-      const radius = 400;
-if (dist > radius) {
-  const nx = pos[i] / dist;
-  const ny = pos[i + 1] / dist;
-  const nz = pos[i + 2] / dist;
+        velocities[i] *= BOUNDARY_DAMPING;
+        velocities[i + 1] *= BOUNDARY_DAMPING;
+        velocities[i + 2] *= BOUNDARY_DAMPING;
+      }
+      
+      const dx = mouseRef.current.x - x;
+      const dy = -mouseRef.current.y - y;
+      const distanceSq = dx * dx + dy * dy;
+      const radiusSq = MOUSE_RADIUS * MOUSE_RADIUS;
+      
+      if (distanceSq > 0 && distanceSq < radiusSq) {
+        const distance = Math.sqrt(distanceSq);
+        const force = (1 - distance / MOUSE_RADIUS) * MOUSE_STRENGTH;
+        const invDistance = 1 / distance;
+        
+        velocities[i] -= dx * invDistance * force;
+        velocities[i + 1] -= dy * invDistance * force;
+        
+        const momentumForce = force * MOMENTUM_FACTOR;
+        velocities[i] += mouseRef.current.vx * momentumForce * 0.5;
+        velocities[i + 1] += mouseRef.current.vy * momentumForce * 0.5;
+      }
+      
 
-  pos[i] = nx * radius;
-  pos[i + 1] = ny * radius;
-  pos[i + 2] = nz * radius;
-
-  // reflect velocity inward
-  const dot =
-    velocities[i] * nx +
-    velocities[i + 1] * ny +
-    velocities[i + 2] * nz;
-
-  velocities[i] -= 2 * dot * nx;
-  velocities[i + 1] -= 2 * dot * ny;
-  velocities[i + 2] -= 2 * dot * nz;
-
-  velocities[i] *= 0.6;
-  velocities[i + 1] *= 0.6;
-  velocities[i + 2] *= 0.6;
-}
-const dx = mouseRef.current.x - pos[i];
-const dy = -mouseRef.current.y - pos[i + 1];
-const distance = Math.sqrt(dx * dx + dy * dy);
-
-const MOUSE_RADIUS = 120;
-const MOUSE_STRENGTH = 0.04;
-
-if (distance > 0 && distance < MOUSE_RADIUS) {
-  const force =
-    (1 - distance / MOUSE_RADIUS) * MOUSE_STRENGTH;
-
-  velocities[i] -= (dx / distance) * force;
-  velocities[i + 1] -= (dy / distance) * force;
-}
+      if (Math.random() < RANDOM_IMPULSE_FREQ) {
+        velocities[i] += (Math.random() - 0.5) * RANDOM_IMPULSE_STRENGTH;
+        velocities[i + 1] += (Math.random() - 0.5) * RANDOM_IMPULSE_STRENGTH;
+        velocities[i + 2] += (Math.random() - 0.5) * RANDOM_IMPULSE_STRENGTH;
+        
+        velocities[i] = Math.min(Math.max(velocities[i], -MAX_VEL), MAX_VEL);
+        velocities[i + 1] = Math.min(Math.max(velocities[i + 1], -MAX_VEL), MAX_VEL);
+        velocities[i + 2] = Math.min(Math.max(velocities[i + 2], -MAX_VEL), MAX_VEL);
+      }
     }
-
+    
     particlesRef.current.geometry.attributes.position.needsUpdate = true;
   });
 
@@ -140,14 +257,14 @@ if (distance > 0 && distance < MOUSE_RADIUS) {
         />
       </bufferGeometry>
       <pointsMaterial
-  color={0xff33cc} 
-  size={2.6}
-  sizeAttenuation
-  transparent
-  opacity={0.4}
-  depthWrite={false}
-  blending={NormalBlending}
-/>
+        color={0xff33cc}
+        size={isMobile ? 2.6 : 2.2}
+        sizeAttenuation
+        transparent
+        opacity={0.5}
+        depthWrite={false}
+        blending={NormalBlending}
+      />
     </points>
   );
 };
@@ -995,7 +1112,7 @@ onClick={(e) => {
   <div className="grid grid-cols-1 xl:grid-cols-3 items-center px-4 xl:px-12 gap-8 xl:gap-0 relative z-10">
 
     <div className="flex flex-col items-center xl:items-center order-2 xl:order-1">
-      <h1 className="text-[24px] font-neuehaas35 tracking-[.02em] xl:text-[24px] text-center xl:text-left">
+      <h1 className="text-[24px] font-neuehaasdisplaythin tracking-[.02em] xl:text-[24px] text-center xl:text-left">
        please explore our new site
       </h1>
 <div className="py-2 text-[13px] font-neuehaas35 tracking-[0.07em]">
