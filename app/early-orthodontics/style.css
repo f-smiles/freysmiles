@@ -18,12 +18,40 @@
   display: grid;
   white-space: nowrap;
   width: max-content;
+
   --text-width: 100px;
   --gsplits: 4;
+  --gsize: 1rem;
+
+  font-size: var(--gsize);
+
   grid-template-columns: repeat(
     var(--gsplits),
     calc(var(--text-width) / var(--gsplits))
   );
+}
+
+.size-xl {
+  --gsize: clamp(5rem, 10vw, 16rem);
+}
+
+.spaced {
+  margin: 20vh auto;
+}
+
+.gtext__box {
+  overflow: hidden;
+  position: relative;
+  will-change: transform;
+  margin-right: -0.5px; 
+}
+
+.gtext__box-inner {
+  padding-right: 0.2em;
+  width: max-content;
+  position: relative;
+  display: block;
+  will-change: transform;
 }
 
 
@@ -32,24 +60,11 @@
 .font-lg { font-size: 32px; }
 
 .gtext.gray-color {
-  color:#8E98A0;
+  color: #8E98A0;
 }
+
 .gtext.letter-spacing {
-  letter-spacing: .1em;
-}
-
-
-.gtextbox {
-  overflow: hidden;
-  position: relative;
-
-}
-
-.gtextbox-inner {
-  width: max-content;
-  display: block;
-  position: relative;
-  will-change: transform;
+  letter-spacing: 0.1em;
 }
 
 

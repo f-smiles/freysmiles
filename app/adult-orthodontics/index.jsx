@@ -429,7 +429,7 @@ export default function AdultOrthodontics() {
               <div className="absolute inset-0 flex justify-center items-start min-[1440px]:justify-start">
                 <SlidingText
                   text="Adult Orthodontics"
-                  totalCells={1}
+                  totalCells={8}
                   className="block font-lg font-canela-italic translate-y-6 min-[1440px]:translate-y-0"
                 />
               </div>
