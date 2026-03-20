@@ -29,8 +29,8 @@
   font-display: swap;
 }
 @font-face {
-	font-family: 'IBMPlexMono';
-	src: url("../public/fonts/IBMPlexMono-Regular.ttf") format("truetype");
+	font-family: 'IBMPlexMonoThinItalic';
+	src: url("../public/fonts/IBMPlexMono-ThinItalic.ttf") format("truetype");
 	font-style: normal;
   font-display: swap;
 }
@@ -47,37 +47,6 @@ main {
   overflow-x: hidden;
   height: 100%;
 }
-
-@keyframes rotate-animation {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.circle-loader {
-  position: relative;
-  width: 12em;
-  height: 12em;
-}
-
-.circle {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  margin-left: -0.3em;
-  width: 0.6em;
-  height: 0.6em;
-  border-radius: 50%;
-  transform-origin: 0.3em 6em;
-  background-color: #ffffffbb;
-  animation: rotate-animation 6.5s infinite;
-  box-shadow: 0 0 0.6em rgba(255, 255, 255, 0.5);
-}
-
-.circle-0 { animation-timing-function: cubic-bezier(0, 0, 1, 1); }
-.circle-1 { animation-timing-function: cubic-bezier(0.16, 0, 0.84, 1); }
-.circle-2 { animation-timing-function: cubic-bezier(0.32, 0, 0.68, 1); }
-.circle-3 { animation-timing-function: cubic-bezier(0.48, 0, 0.52, 1); }
-.circle-4 { animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
 
 .marquee {
   display: flex;
@@ -96,35 +65,6 @@ main {
 .marquee:hover .marqueegroup {
   animation-play-state: paused;
 }
-
-@keyframes scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-100%);
-  }
-}
-
-.up {
-  position: relative;
-  overflow: hidden;
-  color: white;
-}
-
-.up:hover,
-.up:focus {
-  box-shadow: inset 0 -6em 0 0 #e4cb58;
-  color: #000;
-}
-.bg-noise {
-  background-image: url("/images/noiseLUT.png");
-  background-repeat: repeat;
-  background-size: 180px 180px;
-  mix-blend-mode: overlay;
-  filter: contrast(120%) brightness(110%);
-}
-
 
 
 @layer base {
@@ -154,6 +94,9 @@ main {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --font-xs: 14px;
+    --font-xxs: 11px;
+    --font-lg: 32px;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -180,6 +123,9 @@ main {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --font-xs: 14px;
+    --font-xxs: 11px;
+    --font-lg: 32px;
   }
 }
 
