@@ -208,29 +208,27 @@ export default function Variants({ variants }: ProductVariantsProps) {
   const row3ItemRefs = useRef<HTMLDivElement[]>([])
   const row4ItemRefs = useRef<HTMLDivElement[]>([])
 
-  const row1 = variants.filter(v => v.productID === 1)
-  const row2 = variants.filter(v => v.productID === 2)
-  const row3 = variants.filter(v => v.productID === 3 || v.productID === 4)
-  const row4 = variants.filter(v => v.productID === 5 || v.productID === 6 || v.productID === 7)
+  const row1 = variants.filter(v => v.product.category === "devices")
+  const row2 = variants.filter(v => v.product.category === "whitening")
+  const row3 = variants.filter(v => v.product.category === "floss")
+  const row4 = variants.filter(v => v.product.category === "cases")
 
   const rows = [
-    { id: 'devices', variants: row4 },
-    { id: 'floss', variants: row2 },
-    { id: 'whitening', variants: row3 },
-    { id: 'cases', variants: row1 },
+    { id: 'devices', variants: row1 },
+    { id: 'whitening', variants: row2 },
+    { id: 'floss', variants: row3 },
+    { id: 'cases', variants: row4 },
   ]
-
 
   return (
     <div ref={containerRef} className="relative bg-white">
       {rows.map((row, rowIndex) => {
         const rowRef = useRef<HTMLDivElement>(null)
 
-
-const isInView = useInView(rowRef, {
-  once: true,
-  amount: 0.2,
-});
+        const isInView = useInView(rowRef, {
+          once: true,
+          amount: 0.2,
+        });
 
         return (
           <section
@@ -238,69 +236,68 @@ const isInView = useInView(rowRef, {
             ref={el => {
               if (el) {
                 rowRefs.current[rowIndex] = el
-
                 rowRef.current = el
               }
             }}
            className="relative overflow-hidden"
           >
             <div className="grid grid-cols-4 h-full w-full border-r border-black/10">
-        {row.variants.slice(0, 4).map((variant, itemIndex) => (
-  <motion.div
-    key={variant.id}
-    ref={el => {
-      if (!el) return
-      if (rowIndex === 0) row1ItemRefs.current[itemIndex] = el
-      if (rowIndex === 1) row2ItemRefs.current[itemIndex] = el
-      if (rowIndex === 2) row3ItemRefs.current[itemIndex] = el
-      if (rowIndex === 3) row4ItemRefs.current[itemIndex] = el
-    }}
-    className="px-4 flex items-start justify-center relative"
-    initial={{ y: "45vh", opacity: 0, scale: 0.92 }}
-    animate={isInView ? { y: 0, opacity: 1, scale: 1 } : {}}
-    transition={{
-      delay: itemIndex * 0.12,
-      duration: 1.4,
-      ease: [0.22, 1, 0.36, 1],
-    }}
-  >
+              {row.variants.map((variant, itemIndex) => (
+                <motion.div
+                  key={variant.id}
+                  ref={el => {
+                    if (!el) return
+                    if (rowIndex === 0) row1ItemRefs.current[itemIndex] = el
+                    if (rowIndex === 1) row2ItemRefs.current[itemIndex] = el
+                    if (rowIndex === 2) row3ItemRefs.current[itemIndex] = el
+                    if (rowIndex === 3) row4ItemRefs.current[itemIndex] = el
+                  }}
+                  className="px-4 flex items-start justify-center relative"
+                  initial={{ y: "45vh", opacity: 0, scale: 0.92 }}
+                  animate={isInView ? { y: 0, opacity: 1, scale: 1 } : {}}
+                  transition={{
+                    delay: itemIndex * 0.12,
+                    duration: 1.4,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
 
-    <motion.div
-      whileHover={{
-        y: -15,
-        scale: 1.02,
-        transition: { duration: 0.25 },
-      }}
-      animate={isInView ? { y: [0, -18, 0] } : {}}
-      transition={{
-        duration: 3.8,
-        repeat: Infinity,
-        repeatType: "mirror",
-        ease: "easeInOut",
-      }}
-    className="relative w-full max-w-[360px]" 
-    >
-      <ProductCard
-        variant={variant}
-        backgroundUrl="/images/_mesh_gradients/metallicdream.png"
-      />
+                  <motion.div
+                    whileHover={{
+                      y: -15,
+                      scale: 1.02,
+                      transition: { duration: 0.25 },
+                    }}
+                    animate={isInView ? { y: [0, -18, 0] } : {}}
+                    transition={{
+                      duration: 3.8,
+                      repeat: Infinity,
+                      repeatType: "mirror",
+                      ease: "easeInOut",
+                    }}
+                  className="relative w-full max-w-[360px]" 
+                  >
+                    <ProductCard
+                      variant={variant}
+                      backgroundUrl="/images/_mesh_gradients/metallicdream.png"
+                    />
 
 
-      <motion.div
-        className="absolute inset-0 -z-10 bg-black/5 blur-xl rounded-3xl"
-        animate={isInView ? {
-          y: [0, -20, 0],
-          opacity: [0.1, 0.2, 0.1],
-        } : {}}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
-      />
-    </motion.div>
-  </motion.div>
-))}
+                    <motion.div
+                      className="absolute inset-0 -z-10 bg-black/5 blur-xl rounded-3xl"
+                      animate={isInView ? {
+                        y: [0, -20, 0],
+                        opacity: [0.1, 0.2, 0.1],
+                      } : {}}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                      }}
+                    />
+                  </motion.div>
+                </motion.div>
+              ))}
             </div>
           </section>
         )
