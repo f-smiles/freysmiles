@@ -4,7 +4,8 @@ export const BannerMarquee = () => {
   const repeatCount = 12;
 
   return (
-    <div className="relative w-full overflow-hidden bg-[#ABF926]">
+    // Banner colors: #ABF926, #00F0FF, #9bf3f3
+    <div className="relative w-full overflow-hidden bg-[#9bf3f3]">
       <div className="marquee">
         <div className="marqueegroup">
           {Array.from({ length: repeatCount }).map((_, i) => (
