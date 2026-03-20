@@ -830,49 +830,57 @@ const [showScheduler, setShowScheduler] = useState(false)
       )
     `
   }}
-  className="w-full h-screen text-black grid grid-rows-[auto_1fr_auto] fixed overflow-y-auto"
+  className="w-full h-screen  text-black grid grid-rows-[auto_1fr_auto] fixed overflow-y-auto"
 >
-  {/* Modal */}
-  <div
-    className={`fixed inset-0 z-[100] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-      showScheduler
-        ? "opacity-100 translate-y-0"
-        : "opacity-0 translate-y-6 pointer-events-none"
-    }`}
-  >
-    <div className="w-full h-full px-[6vw] py-[4vh] flex flex-col">
-      <div className="flex flex-1 items-center justify-center">
-        <div
-          className="
-            relative
-            w-full max-w-[1100px]
-            h-[90vh]
-            rounded-2xl overflow-hidden
-            backdrop-blur-xl border border-white/20 shadow-lg
-            bg-white/60
-          "
-        >
-          <iframe
-            src="https://app.acuityscheduling.com/schedule.php?owner=37690830"
-            title="Schedule Appointment"
-            className="w-full h-full z-10"
-            frameBorder="0"
-            allow="payment"
-          />
 
-          <button
-            type="button"
-            onClick={() => setShowScheduler(false)}
-            className="absolute right-12 top-24 font-canelathin text-white z-50"
-          >
-            Back
-          </button>
-        </div>
+ {showScheduler && (
+  <div className="fixed inset-0 z-[100]">
+
+    <button
+      type="button"
+      aria-label="Close scheduler"
+      className="absolute inset-0 bg-black/10 backdrop-blur-sm"
+      onClick={() => setShowScheduler(false)}
+    />
+
+
+    <div className="absolute inset-0 pointer-events-none flex items-center justify-center px-[6vw] py-[4vh]">
+
+      <div
+        className="
+          pointer-events-auto
+          relative
+          w-full
+          max-w-[1100px]
+          h-[90vh]
+          rounded-2xl
+          overflow-hidden
+          border border-white/20
+          shadow-lg
+          bg-white/60
+        "
+      >
+        <iframe
+          src="https://freysmilesappointments.as.me/"
+          title="Schedule Appointment"
+          className="absolute inset-0 w-full h-full"
+          frameBorder="0"
+          allow="payment"
+        />
+
+        <button
+          type="button"
+          onClick={() => setShowScheduler(false)}
+          className="absolute right-12 top-24 z-50 font-canelathin text-white"
+        >
+          Back
+        </button>
       </div>
     </div>
   </div>
+)}
 
-  {/* Mobile Menu - Shows on all screens below 1280px */}
+
   <div className="absolute top-6 left-0 right-0 flex justify-center items-center xl:hidden z-50">
     <div
       className="
@@ -985,7 +993,7 @@ const [showScheduler, setShowScheduler] = useState(false)
   <div className="grid grid-cols-1 xl:grid-cols-3 items-center px-4 xl:px-12 gap-8 xl:gap-0 relative z-10">
 
     <div className="flex flex-col items-center xl:items-center order-2 xl:order-1">
-      <h1 className="text-[24px] font-neuehaas35 xl:text-[24px] text-center xl:text-left">
+      <h1 className="text-[24px] font-neuehaas35 tracking-[.02em] xl:text-[24px] text-center xl:text-left">
        please explore our new site
       </h1>
 <div className="py-2 text-[13px] font-neuehaas35 tracking-[0.07em]">
@@ -1089,14 +1097,16 @@ const [showScheduler, setShowScheduler] = useState(false)
     </div>
   </div>
 
-
 <div
   className="flex flex-col xl:flex-row justify-center gap-4 xl:gap-8 pb-6 text-xs font-neuehaas35 tracking-widest items-center relative z-10"
   style={{ fontVariantNumeric: "tabular-nums" }}
 >
   <div>40° 36' N 75° 29' W</div>
   <div className="hidden xl:block">•</div>
-  <div>{time}</div>
+
+  <div className="w-[90px] text-center">
+    {time}
+  </div>
 </div>
 </section>
 

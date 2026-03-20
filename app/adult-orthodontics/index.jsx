@@ -289,14 +289,15 @@ tl.fromTo(
       <div ref={mainSection} className="MainSection" style={{ backgroundColor: 'var(--blue)', }}>
         <div className="MainSection-wrapper">
   <div className="MainSection-header">
-  <div className="w-full flex justify-center items-center min-[1440px]:justify-start">
+<div className="w-full flex justify-center items-center min-[1440px]:justify-start relative">
+  <div className="absolute inset-0 flex justify-center items-start min-[1440px]:justify-start">
     <SlidingText
       text="Adult Orthodontics"
-      effect="2"
       totalCells={8}
       className="block font-lg font-canelathin translate-y-6 min-[1440px]:translate-y-0"
     />
   </div>
+</div>
 </div>
           <div ref={itemsContainer} className="MainSection-items">
             <section className="MainSectionItem MainSection-item">
@@ -308,7 +309,7 @@ tl.fromTo(
 />
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
-                      <span className="MainSectionItem-index">01</span>
+                      <span className="MainSectionItem-index font-neuehaas45">01</span>
                       <h3>Who do we treat?</h3>
                     </div>
                     <div className="MainSectionItem-contentText">
@@ -317,7 +318,7 @@ tl.fromTo(
                   </div>
                   <div className="MainSectionItem-mediaContainer">
                     <div className="MainSectionItem-mediaContainerInner">
-                      <div className="MainSectionItem-media">
+                      <div className="MainSectionItem-media image-wrapper">
                         <img
                           src="/images/1920x10805.png"
                           alt="adult"
@@ -339,7 +340,7 @@ tl.fromTo(
 />
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
-                      <span className="MainSectionItem-index">02</span>
+                      <span className="MainSectionItem-index font-neuehaas45">02</span>
                       <h3>Accelerated Movement</h3>
                     </div>
                     <div className="MainSectionItem-contentText">
@@ -440,7 +441,7 @@ tl.fromTo(
 />
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
-                      <span className="MainSectionItem-index">03</span>
+                      <span className="MainSectionItem-index font-neuehaas45">03</span>
                       <h3>Coordinated Care</h3>
                     </div>
                     <div className="MainSectionItem-contentText">
@@ -474,7 +475,7 @@ tl.fromTo(
 />
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
-                      <span className="MainSectionItem-index">04</span>
+                      <span className="MainSectionItem-index font-neuehaas45">04</span>
                       <h3>Our Philosophy</h3>
                     </div>
                     <div className="MainSectionItem-contentText">
@@ -504,7 +505,7 @@ tl.fromTo(
 />
                   <div className="MainSectionItem-content">
                     <div className="MainSectionItem-contentTitle">
-                      <span className="MainSectionItem-index">05</span>
+                      <span className="MainSectionItem-index font-neuehaas45">05</span>
                       <h3>AAFE</h3>
                     </div>
                     <div className="MainSectionItem-contentText">

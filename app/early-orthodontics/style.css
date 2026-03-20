@@ -1,19 +1,17 @@
 :root {
   --terra: #cf3476;
-  --brightgreen: #7C6265;
-  --purple: #C7C6FE;
-  --white:#FFFAF1;
+  --brightgreen: #7c6265;
+  --purple: #c7c6fe;
+  --white: #fffaf1;
   --black: #0e0e0e;
-  --eggshellgrey:#DEAAFF   ;
-  --hotpink:#E27C46 ;
+  --eggshellgrey: #deaaff;
+  --hotpink: #e27c46;
 }
 
 /* #E4D0DA */
 /* #71BA04 */
 /* #D5DDDD */
 /* #DFE8E6 */
-
-
 
 .image-wrapper {
   position: relative;
@@ -40,7 +38,6 @@
   pointer-events: none;
 }
 
-
 /********************
  *  ==============   *
  ********************/
@@ -63,7 +60,6 @@
   font-family: "NeueHaasDisplay35";
   letter-spacing: 0.5px;
 }
-
 
 /********************
  *  MOBILE    *
@@ -112,12 +108,11 @@
   }
 }
 
-
 /********************
  *  MOBILE ROTATE & TABLET    *
  ********************/
 @media screen and (min-width: 1080px) and (max-width: 1439px) {
-   .MainSection-headerTitle {
+  .MainSection-headerTitle {
     padding: 6rem 2rem 2rem 6rem;
   }
 
@@ -140,7 +135,7 @@
     width: 50%;
     padding: 3rem;
   }
-   .MainSectionItem-contentTitle {
+  .MainSectionItem-contentTitle {
     flex-direction: row;
     justify-content: flex-start;
     margin-bottom: 0.8rem;
@@ -159,7 +154,6 @@
     object-fit: cover;
   }
 }
-
 
 /********************
  *  DESKTOP & LARGER SCREENS    *

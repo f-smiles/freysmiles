@@ -35,20 +35,32 @@ export default function ProductCarousel({ variants }: { variants: VariantsWithIm
           variant.variantName === selectedVariant &&
           variant.variantImages.map((img, index) => {
             return (
-  <CarouselItem
-  key={img.url}
-  className="bg-[#F2F2F2] flex justify-center items-center"
->
-  <div className="relative w-full aspect-[1.25]">
-    <Image
-      fill
-      priority
-      className="object-contain"
-      src={img.url}
-      alt={img.name}
-    />
-  </div>
-</CarouselItem>
+<CarouselItem key={img.url} className="flex flex-col justify-center">
+                {img.url && !img.name.includes(".mp4") ? (
+                  <Image
+                    priority
+                    className="w-full h-auto rounded-md"
+                    width={1280}
+                    height={720}
+                    src={img.url}
+                    alt={img.name}
+                  />
+                ) : (
+                  <video
+                    controls
+                    className={cn(
+                      "rounded-sm transition-all duration-300 ease-in-out cursor-pointer hover:opacity-75 w-full h-full",
+                      index === activeThumbnail[0] ? "opacity-100" : "opacity-50",
+                    )}
+                    width={1280}
+                    height={720}
+                    aria-label={`Video of ${img.name}`}
+                    onClick={() => updatePreview(index)}
+                  >
+                    <source src={img.url} type="video/mp4" />
+                  </video>
+                )}
+              </CarouselItem>
             )
         }))}
       </CarouselContent>
@@ -61,8 +73,8 @@ export default function ProductCarousel({ variants }: { variants: VariantsWithIm
           variant.variantName === selectedVariant &&
           variant.variantImages.map((img, index) => {
             return (
-              <span key={img.url}>
-                {img.url ? (
+              <span className="size-16" key={img.url}>
+               {img.url && !img.name.includes(".mp4") ? (
                   <Image
                     priority
                     className={cn(
@@ -75,7 +87,19 @@ export default function ProductCarousel({ variants }: { variants: VariantsWithIm
                     alt={img.name}
                     onClick={() => updatePreview(index)}
                   />
-                ) : null}
+                ) : (
+                  <video
+                    className={cn(
+                      "rounded-sm transition-all duration-300 ease-in-out cursor-pointer hover:opacity-75 w-full h-full",
+                      index === activeThumbnail[0] ? "opacity-100" : "opacity-50",
+                    )}
+                    width={64}
+                    height={64}
+                    onClick={() => updatePreview(index)}
+                  >
+                    <source src={img.url} type="video/mp4" />
+                  </video>
+                )}
               </span>
             )
         }))}

@@ -7,6 +7,7 @@
   --soft:       #DFE4DE;
   --steel:      #666d73;
 }
+
 /* #A9D442 */
 /* #94C001 */
 /* #BDBECF */
@@ -45,6 +46,10 @@
   gap: 12px;
   font-family: "Canela-ThinItalic";
 }
+.MainSection-header {
+  position: relative;
+  z-index: 50;
+}
 .MainSection-headerTitle .chars-wrapper {
   display: inline-block;
   font-size: clamp(26px, 4vw, 32px);
@@ -55,10 +60,7 @@
   font-family: "NeueHaasDisplay35";
   letter-spacing: 0.5px;
 }
-.MainSection-header {
-  position: relative;
-  z-index: 50;
-}
+
 
 /********************
  *  MOBILE    *
@@ -142,6 +144,7 @@
   }
   .MainSectionItem-index {
     display: none;
+
   }
   .MainSectionItem-mediaContainer {
     width: 50%;
