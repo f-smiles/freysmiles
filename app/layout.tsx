@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import React from "react";
 import "./globals.css";
-import Logo from "@/components/logo";
 import { BannerMarquee } from "@/components/banner-marquee";
+import { Navbar } from "@/components/navbar";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export default async function RootLayout({
         <link rel="icon" href="./icon.svg" type="image/svg+xml" />
       </head>
       <body suppressHydrationWarning>
-        <Logo className="absolute top-12 left-5 h-6 w-auto fill-zinc-50/80 z-[999] xl:h-7" />
+        <Navbar />
         <main>
           <BannerMarquee />
           {children}
