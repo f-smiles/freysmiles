@@ -44,7 +44,7 @@ export default function BookNow() {
           )
         `
       }}
-      className="w-full h-screen overflow-x-hidden text-black grid grid-rows-[auto_1fr_auto] fixed overflow-y-auto"
+      className="w-full min-h-[100dvh] overflow-x-hidden text-black grid grid-rows-[auto_1fr_auto] fixed"
     >
       <div
         className={`
@@ -105,7 +105,7 @@ export default function BookNow() {
             rounded-full
             text-[11px] font-neuehaas35 tracking-wider uppercase
             backdrop-blur-xl
-            max-w-[90vw] mx-auto
+            max-w-[91vw] mx-auto
           "
           style={{
             background: `
@@ -157,7 +157,7 @@ export default function BookNow() {
 
           <a href="/early-orthodontics">
             <AnimatedText 
-              text="Early Orthodontics"
+              text="Early Ortho"
               className="text-[11px] tracking-wider uppercase leading-none block"
             />
           </a>
@@ -166,7 +166,7 @@ export default function BookNow() {
 
           <a href="/adult-orthodontics">
             <AnimatedText 
-              text="Adult Orthodontics"
+              text="Adult Ortho"
               className="text-[11px] tracking-wider uppercase leading-none block"
             />
           </a>
@@ -312,7 +312,7 @@ export default function BookNow() {
       </div>
 
       <div
-        className="flex flex-col xl:flex-row justify-center gap-4 xl:gap-8 pb-6 text-xs font-neuehaas35 tracking-widest items-center relative z-10"
+        className="flex flex-col xl:flex-row justify-center gap-4 xl:gap-8 pb-16 text-xs font-neuehaas35 tracking-widest items-center relative z-10"
         style={{ fontVariantNumeric: "tabular-nums" }}
       >
         <div>40° 36' N 75° 29' W</div>
