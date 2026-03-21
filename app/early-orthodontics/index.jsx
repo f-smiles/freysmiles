@@ -1,6 +1,6 @@
 "use client";
 import "./style.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
@@ -12,7 +12,7 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   const innerRefs = useRef([]);
   const [textWidth, setTextWidth] = useState(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container || !innerRefs.current.length) return;
 

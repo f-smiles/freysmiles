@@ -945,7 +945,7 @@ const [showScheduler, setShowScheduler] = useState(false)
       )
     `
   }}
-  className="w-full h-screen  text-black grid grid-rows-[auto_1fr_auto] fixed overflow-y-auto"
+  className="w-full h-screen text-black grid grid-rows-[auto_1fr_auto] fixed overflow-y-auto"
 >
 
 <div
