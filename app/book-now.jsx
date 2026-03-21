@@ -221,13 +221,13 @@ export default function BookNow() {
 
         <div className="flex justify-center items-center order-1 xl:order-2 h-[300px] xl:h-auto relative">
           <div className="text-[13px] flex flex-col xl:flex-row justify-center xl:justify-start gap-4 xl:gap-12 font-neuehaas35 tracking-[0.07em] items-center xl:items-start">
-            <p className="text-[12px] text-black leading-[1.6] font-ibmplex-thin">
+            <p className="text-[12px] text-black leading-[1.6] font-ibmplex-extralight">
               <a href="mailto:info@freysmiles.com" className="block">
                 <ScrambleText text="info@freysmiles.com" />
               </a>
             </p>
-            <p className="text-[12px] text-black leading-[1.6] font-ibmplex-thin">
-              <a href="tel:+6104374748" className="block">
+            <p className="text-[12px] text-black leading-[1.6] font-ibmplex-extralight">
+              <a href="tel:+16104374748" className="block">
                 <ScrambleText text="(610)437-4748" charsType="numbers" />
               </a>
             </p>
