@@ -428,7 +428,7 @@ export default function AdultOrthodontics() {
                 <SlidingText
                   text="Adult Orthodontics"
                   totalCells={8}
-                  className="block font-lg font-canela-italic translate-y-6 min-[1440px]:translate-y-0"
+                  className="block font-lg font-canela italic translate-y-6 min-[1440px]:translate-y-0"
                 />
               </div>
             </div>

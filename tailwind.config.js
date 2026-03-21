@@ -12,7 +12,6 @@ module.exports = {
 				'neuehaas35':['NeueHaas35', 'sans-serif'],
 				'neuehaas45': ['NeueHaas45', 'sans-serif'],
 				'canela': ['CanelaThin', 'serif'],
-				'canela-italic': ['CanelaThinItalic', 'serif'],
 				'ibmplex-thin': ['IBMPlexMonoThin', 'monospace'],
 				'ibmplex-extralight': ['IBMPlexMonoExtraLight', 'monospace'],
 			},

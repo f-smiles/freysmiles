@@ -6,37 +6,37 @@
 
 @font-face {
   font-family: "NeueHaas35";
-  src: url("../public/fonts/NeueHaasGroteskDisplay-35Thin-Web.woff2") format("woff2");
+  src: url("/fonts/NeueHaasGrotesk35Thin.woff2") format("woff2");
   font-display: swap;
 }
 @font-face {
   font-family: "NeueHaas45";
-  src: url("../public/fonts/NeueHaasGroteskDisplay-45Light-Web.woff2") format("woff2");
+  src: url("/fonts/NeueHaasGrotesk45Light.woff2") format("woff2");
   font-display: swap;
 }
 @font-face {
 	font-family: 'CanelaThin';
-	src: url("../public/fonts/Canela-Thin-Web.woff2") format("woff2");
+	src: url("/fonts/CanelaThin.woff2") format("woff2");
 	font-weight: 100;
 	font-style: normal;
   font-display: swap;
 }
 @font-face {
-	font-family: 'CanelaThinItalic';
-	src: url("../public/fonts/Canela-Thin-Italic-Web.woff2") format("woff2");
+	font-family: 'CanelaThin';
+	src: url("/fonts/CanelaThinItalic.woff2") format("woff2");
 	font-weight: 100;
 	font-style: italic;
   font-display: swap;
 }
 @font-face {
 	font-family: 'IBMPlexMonoThin';
-	src: url("../public/fonts/IBMPlexMono-Thin.ttf") format("truetype");
+	src: url("/fonts/IBMPlexMonoThin.ttf") format("truetype");
 	font-style: normal;
   font-display: swap;
 }
 @font-face {
 	font-family: 'IBMPlexMonoExtraLight';
-	src: url("../public/fonts/IBMPlexMono-ExtraLight.ttf") format("truetype");
+	src: url("/fonts/IBMPlexMonoExtraLight.ttf") format("truetype");
 	font-style: normal;
   font-display: swap;
 }
