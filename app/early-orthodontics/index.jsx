@@ -47,12 +47,10 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
       container.style.setProperty("--offset", `${offset}px`);
 
       innerRefs.current.forEach((inner, i) => {
-        gsap.set(inner, {
-          x: Math.round(-i * offset * 100) / 100,
-          position: "relative",
-          display: "inline-block",
-          willChange: "transform",
-        });
+        inner.style.transform = `translateX(${-i * offset}px)`;
+        inner.style.position = "relative";
+        inner.style.display = "inline-block";
+        inner.style.willChange = "transform";
       });
     };
 
