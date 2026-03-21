@@ -66,7 +66,7 @@ export default function BookNow() {
                       e.stopPropagation()
                       setShowScheduler(false)
                     }}
-                    className="font-canelathin text-white hover:opacity-70 transition-opacity bg-black/20 px-5 py-2 rounded-full backdrop-blur-sm"
+                    className="font-neuehaas35 text-white hover:opacity-70 transition-opacity bg-black/20 px-5 py-2 rounded-full backdrop-blur-sm"
                   >
                     ✕ Close
                   </button>
