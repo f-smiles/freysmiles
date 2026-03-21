@@ -54,8 +54,8 @@ export default function BookNow() {
         `}
       >
         <div className="relative">
-          <div className="bg-white/95 backdrop-blur-md shadow-2xl rounded-b-2xl overflow-hidden">
-            <div className="relative w-full h-[90vh]">
+          <div className="bg-white/95 backdrop-blur-md shadow-2xl overflow-hidden">
+            <div className="relative w-full h-[100vh]">
 
               <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/40 to-transparent z-40 pointer-events-none">
                 <div className="flex justify-end p-6 pointer-events-auto">
@@ -66,7 +66,7 @@ export default function BookNow() {
                       e.stopPropagation()
                       setShowScheduler(false)
                     }}
-                    className="font-neuehaas35 text-white hover:opacity-70 transition-opacity bg-black/20 px-5 py-2 rounded-full backdrop-blur-sm"
+                    className="font-neuehaas35 text-[14px] xl:text-[16px] tracking-wide text-white hover:opacity-70 transition-opacity bg-black/20 px-5 py-2 rounded-full backdrop-blur-sm"
                   >
                     ✕ Close
                   </button>
