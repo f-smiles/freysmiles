@@ -5692,7 +5692,7 @@ background-size: 75px 75px;
   }
 }
 
-.grid-overlay {
+/* .grid-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -5701,8 +5701,8 @@ background-size: 75px 75px;
   pointer-events: none;
   z-index: 0;
   background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.5"/><line x1="0" y1="100" x2="100" y2="0" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.5"/><line x1="0" y1="50" x2="100" y2="50" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.5"/><line x1="50" y1="0" x2="50" y2="100" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.5"/><line x1="0" y1="25" x2="100" y2="25" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.3"/><line x1="0" y1="75" x2="100" y2="75" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.3"/><line x1="25" y1="0" x2="25" y2="100" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.3"/><line x1="75" y1="0" x2="75" y2="100" stroke="%23d2ff8c" stroke-width="0.1" opacity="0.3"/></svg>');
-  /* opacity: 0.8; */
-}
+  opacity: 0.8;
+} */
 
 .text-heading h1 {
   font-family: "NeueHaasGroteskDisplayPro45Light";
@@ -7361,61 +7361,140 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
 }
 
 
-.cylindercontainer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.cylinder-container {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-
-  perspective: 1200px;
-  transform-style: preserve-3d;
-
-  transform: translate(-30%, 20%);
-}
-.cylinder-band {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-  pointer-events: none;
-}
-
-.cylinder-band.band-back {
-  z-index: 1;
-}
-
-.cylinder-band.band-front {
-  z-index: 3;
-}
-
-.cylinder-band .char {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform-origin: center;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform-style: preserve-3d;
-  white-space: pre;
-  pointer-events: none;
-  font-family: 'NeueHaasGroteskDisplayPro45Light', sans-serif;
-  color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
-  display: inline-block;
-  text-align: center;
-  will-change: transform;
-}
 
 .nav-char {
   display: inline-block;
   transform: translateY(0%);
   will-change: transform;
+}
+
+.hover-img {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  aspect-ratio: 7 / 5;
+  overflow: hidden;
+}
+
+.hover-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.grid-block {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a1a;
+  color: #e3e3db;
+  font-family: "IBM Plex Mono", monospace;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.grid-block.active {
+  opacity: 1;
+}
+
+.grid-block {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #E5249E;
+  color: #e3e3db;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 20px;
+  font-weight: 400;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.grid-block.active {
+  opacity: 1;
+}
+
+.masktext-root {
+  background: #0e1116;
+  color: #e6e6e6;
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.masktext-row {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.masktext-text {
+  font-size: clamp(60px, 8vw, 140px);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.masktext-nowrap {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.masktext-row-top {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.masktext-row-mask {
+  align-items: center;
+}
+
+.masktext-row-left {
+  align-items: center;
+}
+
+.masktext-row-bottom {
+  justify-content: flex-end;
+}
+
+.masktext-mask {
+  display: flex;
+  align-items: center;
+  height: 80px;
+  gap: 10px;
+  flex: 1;
+}
+
+.masktext-mask-bar {
+  flex: 1;
+  height: 100%;
+  min-width: 1px;
+  max-width: 60px;
+  background: black;
+  transform-origin: center;
+}
+
+.masktext-strip {
+  height: 80px;
+  background: black;
+  flex-shrink: 0;
+}
+
+.masktext-strip-left-bottom {
+  width: 620px;
+  margin-left: auto;
+}
+
+.masktext-strip-left {
+  width: 260px;
 }

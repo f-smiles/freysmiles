@@ -142,17 +142,14 @@ void main() {
 
   if (dist < radius) {
 
-    // Normalized falloff (soft edge)
     float percent = (radius - dist) / radius;
     percent = clamp(percent, 0.0, 1.0);
 
-    // Swirl angle (stronger toward center)
     float theta = percent * percent * uStrength;
 
     float s = sin(theta);
     float c = cos(theta);
 
-    // --- PURE ROTATIONAL SWIRL (circular, no oval bias) ---
     tc = vec2(
       tc.x * c - tc.y * s,
       tc.x * s + tc.y * c
@@ -163,16 +160,14 @@ void main() {
     float pull = pow(percent, 2.0) * 0.45;
     tc -= dir * pull;
 
-    // --- VERY SUBTLE BULGE (kept symmetric + restrained) ---
     float bulge = percent * percent * 0.18;
     tc *= 1.0 + bulge;
 
-    // --- MICRO TYPO WARP (organic, non-circular noise) ---
     float micro = sin(tc.x * 14.0 + tc.y * 9.0) * 0.004;
     tc += dir * micro * percent;
   }
 
-  // Convert back to UV space
+
   vec2 finalUV = tc / uPlaneSize + center;
 
   vec4 color = texture2D(uTexture, finalUV);
@@ -2060,14 +2055,14 @@ useLayoutEffect(() => {
     },
   });
 
-  // 1) fade WebGL text
+
   tl.to(uniforms.uOpacity, {
     value: 0,
     duration: 0.35,
     ease: "power2.out",
   });
 
-  // 2) punch out Section A
+
   tl.to(blocks, {
     scale: 0,
     opacity: 0,
