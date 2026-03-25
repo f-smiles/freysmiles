@@ -80,7 +80,251 @@ function Grid() {
     </div>
   );
 }
+function AsciiInstanced() {
+  const containerRef = useRef(null);
 
+  useEffect(() => {
+    if (!containerRef.current) return;
+    containerRef.current.style.position = "absolute";
+    containerRef.current.style.top = "50%";
+    containerRef.current.style.left = "50%";
+    containerRef.current.style.transform = "translate(-50%, -50%)";
+    containerRef.current.style.width = "85vw";
+    containerRef.current.style.height = "85vh";
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      containerRef.current.clientWidth / containerRef.current.clientHeight,
+      0.1,
+      100,
+    );
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(
+      containerRef.current.clientWidth,
+      containerRef.current.clientHeight,
+    );
+    containerRef.current.appendChild(renderer.domElement);
+
+    const video = document.createElement("video");
+    video.src = "/videos/mchammer.mp4";
+    video.crossOrigin = "anonymous";
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.play();
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const vertex = `
+      attribute float instanceScale;
+
+      varying vec2 vUv;
+      varying float vScale;
+
+      void main() {
+        vUv = uv;
+        vScale = instanceScale;
+
+        gl_Position =
+          projectionMatrix *
+          modelViewMatrix *
+          instanceMatrix *
+          vec4(position, 1.0);
+      }
+    `;
+
+    const fragment = `
+      uniform sampler2D chars;
+      uniform float charCount;
+
+      varying vec2 vUv;
+      varying float vScale;
+
+      void main() {
+
+        float size = charCount;
+
+        float index = floor(vScale * (size - 1.0));
+
+        vec2 newUV = vec2(
+          vUv.x / size + index / size,
+          vUv.y
+        );
+
+        vec4 charSample = texture2D(chars, newUV);
+
+        float mask = charSample.r;
+
+gl_FragColor = vec4(vec3(mask * vScale), 1.0);
+      }
+    `;
+
+    let width = 120;
+    let height = 120;
+    let total = width * height;
+
+    const geometry = new THREE.PlaneGeometry(0.12, 0.14);
+
+    const scales = new Float32Array(total);
+
+    geometry.setAttribute(
+      "instanceScale",
+      new THREE.InstancedBufferAttribute(scales, 1),
+    );
+
+    function createAsciiAtlas(charCount = 32) {
+      const density =
+        " .'`^\",:;Il!i~+_-?][}{1)(|\\/*tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+
+      const chars = [];
+      const maxIndex = density.length - 1;
+
+      for (let i = 0; i < charCount; i++) {
+        const t = i / (charCount - 1);
+        const idx = Math.round(t * maxIndex);
+        chars.push(density[idx]);
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = charCount * 64;
+      canvas.height = 64;
+
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "white";
+      ctx.font = "48px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      chars.forEach((char, i) => {
+        ctx.fillText(char, i * 64 + 32, 32);
+      });
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.NearestFilter;
+      texture.magFilter = THREE.NearestFilter;
+      texture.wrapS = THREE.ClampToEdgeWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+
+      return texture;
+    }
+
+    const chars = createAsciiAtlas(32);
+
+    const material = new THREE.ShaderMaterial({
+      vertexShader: vertex,
+      fragmentShader: fragment,
+      uniforms: {
+        chars: { value: chars },
+        charCount: { value: 32.0 },
+      },
+    });
+
+    const mesh = new THREE.InstancedMesh(geometry, material, total);
+
+    scene.add(mesh);
+
+    mesh.scale.set(0.55, 0.55, 1);
+    const dummy = new THREE.Object3D();
+    let index = 0;
+
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        dummy.position.set((x - width / 2) * 0.14, (y - height / 2) * 0.14, 0);
+        dummy.updateMatrix();
+        mesh.setMatrixAt(index++, dummy.matrix);
+      }
+    }
+
+    mesh.instanceMatrix.needsUpdate = true;
+
+    let frameId;
+    canvas.width = width;
+    canvas.height = height;
+
+    const animate = () => {
+      frameId = requestAnimationFrame(animate);
+
+      if (video.readyState >= 2) {
+        ctx.save();
+
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+
+        ctx.rotate(Math.PI / 2);
+
+        ctx.drawImage(
+          video,
+          -canvas.height / 2,
+          -canvas.width / 2,
+          canvas.height,
+          canvas.width,
+        );
+
+        ctx.restore();
+
+        const frame = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+        //  convert to brightness
+        for (let i = 0; i < total; i++) {
+          const r = frame[i * 4 + 0];
+          const g = frame[i * 4 + 1];
+          const b = frame[i * 4 + 2];
+
+          let brightness = (r + g + b) / 3 / 255;
+          brightness = 1.0 - brightness;
+          brightness = Math.pow(brightness, 1.8);
+
+          scales[i] = scales[i] * 0.85 + brightness * 0.15;
+        }
+
+        geometry.attributes.instanceScale.needsUpdate = true;
+      }
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    const handleResize = () => {
+      const w = containerRef.current.clientWidth;
+      const h = containerRef.current.clientHeight;
+
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener("resize", handleResize);
+
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+
+      containerRef.current.removeChild(renderer.domElement);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        width: "85vw",
+        height: "85vh",
+        margin: "auto",
+      }}
+    />
+  );
+}
 export default function OurTeam() {
   const [showContent, setShowContent] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -259,6 +503,7 @@ export default function OurTeam() {
       );
     });
   }, []);
+
   useLayoutEffect(() => {
     if (
       !pinRef.current ||
@@ -483,6 +728,9 @@ export default function OurTeam() {
 
   return (
     <>
+      <div className="h-screen w-screen">
+        <AsciiInstanced />
+      </div>
       <div
         ref={pinRef}
         className="relative w-full h-screen overflow-hidden bg-[#17181C]"
@@ -550,7 +798,6 @@ export default function OurTeam() {
                   <section>
                     <div className="flex justify-center gap-6 overflow-hidden ">
                       <div className="w-[275px] mr-10">
-                      
                         <figure className="relative w-full aspect-[3/4] overflow-hidden">
                           <HoverImage
                             ref={largeGreggRef}
@@ -558,14 +805,13 @@ export default function OurTeam() {
                             alt="Gregg Frey"
                             className="absolute inset-0 w-full h-full object-cover"
                           />
-                        
+
                           <HoverImage
                             ref={largeDanRef}
                             src="../../images/team_members/DanFrey.png"
                             alt="Gregg Frey"
                             className="absolute inset-0 w-full h-full object-cover"
                           />
-                    
                         </figure>
                         <figcaption className="mt-3 relative h-[3em]">
                           <div className="relative h-[1.4em]">
@@ -1529,12 +1775,12 @@ function MaskText() {
           each: 0.05,
           from: "center",
         },
-        ease: "none", 
+        ease: "none",
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 75%",
           end: "top 30%",
-          scrub: 1, 
+          scrub: 1,
         },
       });
     }, containerRef);
@@ -1543,38 +1789,38 @@ function MaskText() {
   }, []);
 
   return (
-   <section ref={containerRef} className="masktext-root">
-  {/* ROW 1 */}
-  <div className="masktext-row masktext-row-top">
-    <h1 className="masktext-text">Unusual attention</h1>
-    <div className="masktext-strip masktext-strip-right" />
-  </div>
+    <section ref={containerRef} className="masktext-root">
+      {/* ROW 1 */}
+      <div className="masktext-row masktext-row-top">
+        <h1 className="masktext-text">Unusual attention</h1>
+        <div className="masktext-strip masktext-strip-right" />
+      </div>
 
-  {/* ROW 2 */}
-  <div className="masktext-row masktext-row-mask">
-    <span className="masktext-text masktext-nowrap">to detail</span>
-    <div className="masktext-mask">
-      {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={i}
-          ref={(el) => (maskBarsRef.current[i] = el)}
-          className="masktext-mask-bar"
-        />
-      ))}
-    </div>
-  </div>
+      {/* ROW 2 */}
+      <div className="masktext-row masktext-row-mask">
+        <span className="masktext-text masktext-nowrap">to detail</span>
+        <div className="masktext-mask">
+          {Array.from({ length: count }).map((_, i) => (
+            <div
+              key={i}
+              ref={(el) => (maskBarsRef.current[i] = el)}
+              className="masktext-mask-bar"
+            />
+          ))}
+        </div>
+      </div>
 
-  {/* ROW 3 */}
-  <div className="masktext-row masktext-row-left">
-    <div className="masktext-strip masktext-strip-left" />
-    <span className="masktext-text masktext-nowrap">in a distracted</span>
-  </div>
+      {/* ROW 3 */}
+      <div className="masktext-row masktext-row-left">
+        <div className="masktext-strip masktext-strip-left" />
+        <span className="masktext-text masktext-nowrap">in a distracted</span>
+      </div>
 
-  {/* ROW 4 */}
-  <div className="masktext-row masktext-row-bottom">
-    <h1 className="masktext-text"> world</h1>
-    <div className="masktext-strip masktext-strip-left-bottom" />
-  </div>
-</section>
+      {/* ROW 4 */}
+      <div className="masktext-row masktext-row-bottom">
+        <h1 className="masktext-text"> world</h1>
+        <div className="masktext-strip masktext-strip-left-bottom" />
+      </div>
+    </section>
   );
 }
