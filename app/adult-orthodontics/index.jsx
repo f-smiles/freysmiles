@@ -419,18 +419,16 @@ export default function AdultOrthodontics() {
       <div
         ref={mainSection}
         className="MainSection"
-        style={{ backgroundColor: "var(--blue)" }}
+        style={{ backgroundColor: "var(--golden)" }}
       >
         <div className="MainSection-wrapper">
           <div className="MainSection-header">
-            <div className="w-full flex justify-center items-center min-[1440px]:justify-start relative">
-              <div className="absolute inset-0 flex justify-center items-start min-[1440px]:justify-start">
-                <SlidingText
-                  text="Adult Orthodontics"
-                  totalCells={8}
-                  className="block font-lg font-canela italic translate-y-6 min-[1440px]:translate-y-0"
-                />
-              </div>
+            <div className="w-full flex justify-center items-center min-[1537px]:justify-start">
+              <SlidingText
+                text="Adult Orthodontics"
+                totalCells={8}
+                className="block font-lg font-canela italic translate-y-6 min-[1537px]:translate-y-0"
+              />
             </div>
           </div>
           <div ref={itemsContainer} className="MainSection-items">

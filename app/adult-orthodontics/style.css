@@ -12,6 +12,12 @@
 /* #94C001 */
 /* #BDBECF */
 
+@media screen and (max-width: 1536px) {
+  .gtext {
+    margin: 0 auto;
+  }
+}
+
 .gtext {
   display: grid;
   white-space: nowrap;
@@ -97,11 +103,11 @@
 /********************
  *  ==============   *
  ********************/
-.MainSection-headerTitle {
+/* .MainSection-headerTitle {
   display: flex;
   gap: 12px;
   font-family: "Canela-ThinItalic";
-}
+} */
 .MainSection-header {
   position: relative;
   z-index: 50;
@@ -122,9 +128,9 @@
  *  MOBILE    *
  ********************/
 @media screen and (max-width: 1079px) {
-  .MainSection-headerTitle {
+  /* .MainSection-headerTitle {
     padding: 6rem 2rem 2rem 2rem;
-  }
+  } */
 
   .MainSectionItem-inner.--inner-first {
     height: 200vh;
@@ -171,9 +177,9 @@
  *  MOBILE ROTATE & TABLET    *
  ********************/
 @media screen and (min-width: 1080px) and (max-width: 1536px) {
-   .MainSection-headerTitle {
+   /* .MainSection-headerTitle {
     padding: 6rem 2rem 2rem 6rem;
-  }
+  } */
 
   .MainSectionItem-innerSticky {
     position: relative;
