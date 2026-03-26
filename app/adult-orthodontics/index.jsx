@@ -160,7 +160,7 @@ export default function AdultOrthodontics() {
 
     let mm = gsap.matchMedia();
 
-    mm.add("(max-width: 1439px)", () => {
+    mm.add("(max-width: 1536px)", () => {
       gsap.set(items, { clearProps: "all" });
       gsap.set(innerItems, { clearProps: "all" });
       gsap.set(mediaContainers, { clearProps: "all" });
@@ -186,7 +186,7 @@ export default function AdultOrthodontics() {
       return () => mobile.revert();
     });
 
-    mm.add("(min-width: 1440px)", () => {
+    mm.add("(min-width: 1537px)", () => {
       gsap.set(items, { clearProps: "all" });
       gsap.set(innerItems, { clearProps: "all" });
       gsap.set(mediaContainers, { clearProps: "all" });

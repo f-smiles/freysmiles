@@ -159,7 +159,7 @@ export default function EarlyOrthodontics() {
 
     let mm = gsap.matchMedia();
 
-    mm.add("(max-width: 1439px)", () => {
+    mm.add("(max-width: 1536px)", () => {
       gsap.set(items, { clearProps: "all" });
       gsap.set(innerItems, { clearProps: "all" });
       gsap.set(mediaContainers, { clearProps: "all" });
@@ -185,7 +185,7 @@ export default function EarlyOrthodontics() {
       return () => mobile.revert();
     });
 
-    mm.add("(min-width: 1440px)", () => {
+    mm.add("(min-width: 1537px)", () => {
       gsap.set(items, { clearProps: "all" });
       gsap.set(innerItems, { clearProps: "all" });
       gsap.set(mediaContainers, { clearProps: "all" });
@@ -473,13 +473,15 @@ export default function EarlyOrthodontics() {
       >
         <div className="MainSection-wrapper">
           <div className="MainSection-header">
-            <div className="w-full flex justify-center items-center min-[1440px]:justify-start">
-              <SlidingText
-                text="Early Orthodontics"
-                effect="2"
-                totalCells={8}
-                className="block font-lg font-canela italic translate-y-6 min-[1440px]:translate-y-0 text-center min-[1440px]:text-left"
-              />
+            <div className="w-full flex justify-center items-center min-[1440px]:justify-start relative">
+              <div className="absolute inset-0 flex justify-center items-start min-[1440px]:justify-start">              
+                <SlidingText
+                  text="Early Orthodontics"
+                  effect="2"
+                  totalCells={8}
+                  className="block font-lg font-canela italic translate-y-6 min-[1440px]:translate-y-0 text-center min-[1440px]:text-left"
+                />
+              </div>
             </div>
           </div>
           <div ref={itemsContainer} className="MainSection-items">

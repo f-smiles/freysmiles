@@ -168,7 +168,7 @@
 /********************
  *  MOBILE ROTATE & TABLET    *
  ********************/
-@media screen and (min-width: 1080px) and (max-width: 1439px) {
+@media screen and (min-width: 1080px) and (max-width: 1536px) {
   .MainSection-headerTitle {
     padding: 6rem 2rem 2rem 6rem;
   }
@@ -215,7 +215,7 @@
 /********************
  *  DESKTOP & LARGER SCREENS    *
  ********************/
-@media screen and (min-width: 1440px) {
+@media screen and (min-width: 1537px) {
   .MainSection {
     position: relative;
   }
