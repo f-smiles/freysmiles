@@ -115,7 +115,7 @@
 /********************
  *  MOBILE    *
  ********************/
-@media screen and (max-width: 1023px) {
+@media screen and (max-width: 896px) {
   .MainSectionItem-inner.--inner-first {
     height: 200vh;
     z-index: 10;
@@ -159,7 +159,7 @@
 /********************
  *  MOBILE ROTATE & TABLET    *
  ********************/
-@media screen and (min-width: 1024px) and (max-width: 1279px) {
+@media screen and (min-width: 897px) and (max-width: 1279px) {
   .MainSectionItem-innerSticky {
     position: relative;
     display: flex;
