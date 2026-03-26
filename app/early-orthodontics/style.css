@@ -102,19 +102,9 @@
 /********************
  *  ==============   *
  ********************/
-/* .MainSection-headerTitle {
-  display: flex;
-  gap: 12px;
-  font-family: "Canela-ThinItalic";
-} */
 .MainSection-header {
   position: relative;
   z-index: 50;
-}
-.MainSection-headerTitle .chars-wrapper {
-  display: inline-block;
-  font-size: clamp(26px, 4vw, 32px);
-  line-height: clamp(96px, 4vw, 100px);
 }
 .MainSectionItem-contentTitle > h3,
 .MainSectionItem-contentText > p {
@@ -126,10 +116,6 @@
  *  MOBILE    *
  ********************/
 @media screen and (max-width: 1079px) {
-  /* .MainSection-headerTitle {
-    padding: 6rem 2rem 2rem 2rem;
-  } */
-
   .MainSectionItem-inner.--inner-first {
     height: 200vh;
     z-index: 10;
@@ -174,10 +160,6 @@
  *  MOBILE ROTATE & TABLET    *
  ********************/
 @media screen and (min-width: 1080px) and (max-width: 1536px) {
-  /* .MainSection-headerTitle {
-    padding: 6rem 2rem 2rem 6rem;
-  } */
-
   .MainSectionItem-innerSticky {
     position: relative;
     display: flex;

@@ -142,21 +142,6 @@ export default function EarlyOrthodontics() {
       gsap.set(media, { aspectRatio: 1.3793103448275863 });
     });
     
-    // const headerTitle = document.querySelector(".MainSection-headerTitle");
-    
-    // let splitheaderTitle = SplitText.create(headerTitle, { type: 'chars, words', charsClass: 'chars' })
-    // gsap.from(splitheaderTitle.chars, {
-    //   y: 50,
-    //   opacity: 0,
-    //   transformOrigin: '0% 50% -50',
-    //   stagger: 0.05,
-    //   duration: 2,
-    //   ease: 'none',
-    //   onComplete: () => {
-    //     headerTitle.removeAttribute('aria-hidden')
-    //   }
-    // })
-
     let mm = gsap.matchMedia();
 
     mm.add("(max-width: 1536px)", () => {
