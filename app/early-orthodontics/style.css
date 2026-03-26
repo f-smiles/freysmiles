@@ -13,7 +13,7 @@
 /* #D5DDDD */
 /* #DFE8E6 */
 
-@media screen and (max-width: 1536px) {
+@media screen and (max-width: 1279px) {
   .gtext {
     margin: 0 auto;
   }
@@ -115,7 +115,7 @@
 /********************
  *  MOBILE    *
  ********************/
-@media screen and (max-width: 1079px) {
+@media screen and (max-width: 1023px) {
   .MainSectionItem-inner.--inner-first {
     height: 200vh;
     z-index: 10;
@@ -159,7 +159,7 @@
 /********************
  *  MOBILE ROTATE & TABLET    *
  ********************/
-@media screen and (min-width: 1080px) and (max-width: 1536px) {
+@media screen and (min-width: 1024px) and (max-width: 1279px) {
   .MainSectionItem-innerSticky {
     position: relative;
     display: flex;
@@ -202,7 +202,7 @@
 /********************
  *  DESKTOP & LARGER SCREENS    *
  ********************/
-@media screen and (min-width: 1537px) {
+@media screen and (min-width: 1280px) {
   .MainSection {
     position: relative;
   }

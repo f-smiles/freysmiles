@@ -145,7 +145,7 @@ export default function AdultOrthodontics() {
 
     let mm = gsap.matchMedia();
 
-    mm.add("(max-width: 1536px)", () => {
+    mm.add("(max-width: 1279px)", () => {
       gsap.set(items, { clearProps: "all" });
       gsap.set(innerItems, { clearProps: "all" });
       gsap.set(mediaContainers, { clearProps: "all" });
@@ -171,7 +171,7 @@ export default function AdultOrthodontics() {
       return () => mobile.revert();
     });
 
-    mm.add("(min-width: 1537px)", () => {
+    mm.add("(min-width: 1280px)", () => {
       gsap.set(items, { clearProps: "all" });
       gsap.set(innerItems, { clearProps: "all" });
       gsap.set(mediaContainers, { clearProps: "all" });
@@ -408,11 +408,11 @@ export default function AdultOrthodontics() {
       >
         <div className="MainSection-wrapper">
           <div className="MainSection-header">
-            <div className="w-full flex justify-center items-center min-[1537px]:justify-start">
+            <div className="w-full flex justify-center items-center min-[1280px]:justify-start">
               <SlidingText
                 text="Adult Orthodontics"
                 totalCells={8}
-                className="block font-lg font-canela italic translate-y-6 min-[1537px]:translate-y-0"
+                className="block font-lg font-canela italic translate-y-6 min-[1280px]:translate-y-0 text-center min-[1280px]:text-left"
               />
             </div>
           </div>
