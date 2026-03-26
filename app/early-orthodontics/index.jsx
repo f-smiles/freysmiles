@@ -484,7 +484,7 @@ export default function EarlyOrthodontics() {
           </div>
           <div ref={itemsContainer} className="MainSection-items">
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-first MainSectionItem-inner">
+              <div className="--inner-first MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -528,7 +528,7 @@ export default function EarlyOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-between MainSectionItem-inner">
+              <div className="--inner-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -572,7 +572,7 @@ export default function EarlyOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-between MainSectionItem-inner">
+              <div className="--inner-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -612,7 +612,7 @@ export default function EarlyOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-between MainSectionItem-inner">
+              <div className="--inner-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -649,7 +649,7 @@ export default function EarlyOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-between MainSectionItem-inner">
+              <div className="--inner-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -705,7 +705,7 @@ export default function EarlyOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem --bg-terra MainSection-item">
-              <div className="--index-last MainSectionItem-inner">
+              <div className="--inner-last MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"

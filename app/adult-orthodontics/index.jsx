@@ -174,7 +174,7 @@ export default function AdultOrthodontics() {
               item.offsetHeight < window.innerHeight
                 ? "top top"
                 : "bottom bottom",
-            endTrigger: innerStickies[i + 1],
+            endTrigger: i === innerStickies.length - 1 ? innerStickies[i] : innerStickies[i + 1],
             end: "top top",
             pin: true,
             pinSpacing: false,
@@ -435,7 +435,7 @@ export default function AdultOrthodontics() {
           </div>
           <div ref={itemsContainer} className="MainSection-items">
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-first MainSectionItem-inner">
+              <div className="--inner-first MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -479,7 +479,7 @@ export default function AdultOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-between MainSectionItem-inner">
+              <div className="--inner-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -602,7 +602,7 @@ export default function AdultOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-between MainSectionItem-inner">
+              <div className="--inner-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -650,7 +650,7 @@ export default function AdultOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-between MainSectionItem-inner">
+              <div className="--inner-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -689,7 +689,7 @@ export default function AdultOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem --bg-fog MainSection-item">
-              <div className="--index-last MainSectionItem-inner">
+              <div className="--inner-last MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
