@@ -186,67 +186,64 @@ export default function EarlyOrthodontics() {
   const mainSection = useRef(null);
   const itemsContainer = useRef(null);
 
-  useEffect(() => {
-    const items = document.querySelectorAll(".MainSectionItem");
-    const innerItems = document.querySelectorAll(".MainSectionItem-inner");
-    const innerStickies = document.querySelectorAll(
-      ".MainSectionItem-innerSticky",
-    );
-    const mediaContainers = document.querySelectorAll(
-      ".MainSectionItem-mediaContainer",
-    );
-    const mediaContainersInner = document.querySelectorAll(
-      ".MainSectionItem-mediaContainerInner",
-    );
-    const medias = document.querySelectorAll(".MainSectionItem-media");
-    const headerTitle = document.querySelector(".MainSection-headerTitle");
+useEffect(() => {
+  const height = window.innerHeight;
 
-    medias.forEach((media) => {
-      gsap.set(media, { aspectRatio: 1.3793103448275863 });
-    });
+  document.documentElement.style.setProperty(
+    "--app-height",
+    `${height}px`
+  );
+}, []);
 
-    // let splitheaderTitle = SplitText.create(headerTitle, { type: 'chars, words', charsClass: 'chars' })
-    // gsap.from(splitheaderTitle.chars, {
-    //   y: 50,
-    //   opacity: 0,
-    //   transformOrigin: '0% 50% -50',
-    //   stagger: 0.05,
-    //   duration: 2,
-    //   ease: 'none',
-    //   onComplete: () => {
-    //     headerTitle.removeAttribute('aria-hidden')
-    //   }
-    // })
+useEffect(() => {
+  const items = document.querySelectorAll(".MainSectionItem");
+  const innerItems = document.querySelectorAll(".MainSectionItem-inner");
+  const innerStickies = document.querySelectorAll(
+    ".MainSectionItem-innerSticky",
+  );
+  const mediaContainers = document.querySelectorAll(
+    ".MainSectionItem-mediaContainer",
+  );
+  const mediaContainersInner = document.querySelectorAll(
+    ".MainSectionItem-mediaContainerInner",
+  );
+  const medias = document.querySelectorAll(".MainSectionItem-media");
+  const headerTitle = document.querySelector(".MainSection-headerTitle");
 
-    let mm = gsap.matchMedia();
-
-    mm.add("(max-width: 1439px)", () => {
-      gsap.set(items, { clearProps: "all" });
-      gsap.set(innerItems, { clearProps: "all" });
-      gsap.set(mediaContainers, { clearProps: "all" });
-      gsap.set(mediaContainersInner, { clearProps: "all" });
-
-      const mobile = gsap.context(() => {
- innerStickies.forEach((item, i) => {
-  const section = item.closest(".MainSectionItem");
-  const isLast = i === innerStickies.length - 1;
-
-  ScrollTrigger.create({
-    trigger: section,
-    start: "top top",
-    endTrigger: isLast
-      ? section
-      : innerStickies[i + 1].closest(".MainSectionItem"),
-    end: isLast ? "+=100%" : "top top",
-    pin: item,
-    pinSpacing: false,
-    invalidateOnRefresh: true,
-   
+  medias.forEach((media) => {
+    gsap.set(media, { aspectRatio: 1.3793103448275863 });
   });
+
+  let mm = gsap.matchMedia();
+  let resizeObserver;
+
+mm.add("(max-width: 1439px)", () => {
+  gsap.set(items, { clearProps: "all" });
+  gsap.set(innerItems, { clearProps: "all" });
+  gsap.set(mediaContainers, { clearProps: "all" });
+  gsap.set(mediaContainersInner, { clearProps: "all" });
+
+  const mobile = gsap.context(() => {
+
+    innerStickies.forEach((item, i) => {
+      const section = item.closest(".MainSectionItem");
+      const isLast = i === innerStickies.length - 1;
+
+ScrollTrigger.create({
+  trigger: section,
+  start: "top top",
+  end: isLast ? "+=100%" : "+=100%",
+
+  pin: item,
+  pinSpacing: false,
+  scrub: true,
 });
-      }, itemsContainer.current);
-      return () => mobile.revert();
     });
+
+  }, itemsContainer.current);
+
+  return () => mobile.revert();
+});
 
     mm.add("(min-width: 1440px)", () => {
       gsap.set(items, { clearProps: "all" });

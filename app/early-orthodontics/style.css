@@ -47,7 +47,8 @@
   font-family: "Canela-ThinItalic";
 }
 .MainSection-header {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 50;
 }
 .MainSection-headerTitle .chars-wrapper {
@@ -61,44 +62,52 @@
   letter-spacing: 0.5px;
 }
 
+
 /********************
- *  MOBILE    *
+ *  MOBILE 
  ********************/
 @media screen and (max-width: 1079px) {
+
   .MainSection-headerTitle {
     padding: 6rem 2rem 2rem 2rem;
   }
 
   .MainSectionItem-inner.--inner-first {
-    height: 200vh;
+    height: calc(var(--app-height) * 2);
     z-index: 10;
   }
+
   .MainSectionItem-inner.--inner-between {
-    height: 200vh;
-    margin-top: -100vh;
+    height: calc(var(--app-height) * 2);
+    margin-top: calc(var(--app-height) * -1);
     z-index: 20;
   }
+
   .MainSectionItem-inner.--inner-last {
-    height: 100vh;
-    margin-top: -100vh;
+    height: var(--app-height);
+    margin-top: calc(var(--app-height) * -1);
     z-index: 30;
   }
 
+
   .MainSectionItem-innerSticky {
     position: relative;
+    min-height: var(--app-height);
+
     display: flex;
     flex-direction: column-reverse;
     gap: 2rem;
     padding: 6rem 2rem;
+
+    transform: translate3d(0, 0, 0);
   }
+
   .MainSectionItem-background {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+    inset: 0;
     z-index: -10;
   }
+
   .MainSectionItem-contentTitle {
     display: flex;
     flex-direction: row-reverse;
