@@ -182,6 +182,15 @@ export default function EarlyOrthodontics() {
   const itemsContainer = useRef(null);
 
   useEffect(() => {
+    const height = window.innerHeight;
+
+    document.documentElement.style.setProperty(
+      "--app-height",
+      `${height}px`
+    );
+  }, []);
+
+  useEffect(() => {
     const items = document.querySelectorAll(".MainSectionItem");
     const innerItems = document.querySelectorAll(".MainSectionItem-inner");
     const innerStickies = document.querySelectorAll(
@@ -209,18 +218,17 @@ export default function EarlyOrthodontics() {
 
       const mobile = gsap.context(() => {
         innerStickies.forEach((item, i) => {
+          const section = item.closest(".MainSectionItem");
+          const isLast = i === innerStickies.length - 1;
+
           ScrollTrigger.create({
-            trigger: item,
-            start:
-              item.offsetHeight < window.innerHeight
-                ? "top top"
-                : "bottom bottom",
-            endTrigger: innerStickies[i + 1],
-            end: "top top",
-            pin: true,
+            trigger: section,
+            start: "top top",
+            end: isLast ? "+=100%" : "+=100%",
+
+            pin: item,
             pinSpacing: false,
-            invalidateOnRefresh: true,
-            markers: false,
+            scrub: true,
           });
         });
       }, itemsContainer.current);
