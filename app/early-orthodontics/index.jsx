@@ -515,13 +515,15 @@ export default function EarlyOrthodontics() {
       >
         <div className="MainSection-wrapper">
           <div className="MainSection-header">
-            <div className="w-full flex justify-center items-center min-[1280px]:justify-start">
-              <SlidingText
-                text="Early Orthodontics"
-                effect="2"
-                totalCells={8}
-                className="block font-lg font-canela italic translate-y-6 min-[1280px]:translate-y-0 text-center min-[1280px]:text-left"
-              />
+            <div className="relative w-full flex justify-center items-center min-[1280px]:justify-start">
+              <div className="absolute inset-0 flex justify-center items-start min-[1280px]:justify-start">
+                <SlidingText
+                  text="Early Orthodontics"
+                  effect="2"
+                  totalCells={8}
+                  className="font-lg font-canela italic text-center translate-y-6 min-[1280px]:translate-y-0 min-[1280px]:text-left"
+                />
+              </div>
             </div>
           </div>
           <div ref={itemsContainer} className="MainSection-items">
