@@ -6,6 +6,7 @@
   --black: #0e0e0e;
   --eggshellgrey: #deaaff;
   --hotpink: #e27c46;
+    --app-height: 100vh;
 }
 
 /* #E4D0DA */
@@ -68,9 +69,9 @@
  ********************/
 @media screen and (max-width: 1079px) {
 
-  .MainSection-headerTitle {
+  /* .MainSection-headerTitle {
     padding: 6rem 2rem 2rem 2rem;
-  }
+  } */
 
   .MainSectionItem-inner.--inner-first {
     height: calc(var(--app-height) * 2);
@@ -92,7 +93,7 @@
 
   .MainSectionItem-innerSticky {
     position: relative;
-    min-height: var(--app-height);
+    /* min-height: var(--app-height); */
 
     display: flex;
     flex-direction: column-reverse;
