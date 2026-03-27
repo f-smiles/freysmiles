@@ -1,6 +1,6 @@
 "use client";
 import "./style.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useLayoutEffect} from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
@@ -10,32 +10,31 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   const containerRef = useRef(null);
   const innerRefs = useRef([]);
   const [textWidth, setTextWidth] = useState(0);
+  const [isReady, setIsReady] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container || !innerRefs.current.length) return;
 
     const setLayout = () => {
       const firstInner = innerRefs.current[0];
+      if (!firstInner) return;
+
 
       const tempSpan = document.createElement("span");
       tempSpan.style.visibility = "hidden";
       tempSpan.style.position = "absolute";
       tempSpan.style.whiteSpace = "nowrap";
       tempSpan.style.fontSize = window.getComputedStyle(firstInner).fontSize;
-      tempSpan.style.fontFamily =
-        window.getComputedStyle(firstInner).fontFamily;
-      tempSpan.style.letterSpacing =
-        window.getComputedStyle(firstInner).letterSpacing;
-      tempSpan.style.fontWeight =
-        window.getComputedStyle(firstInner).fontWeight;
+      tempSpan.style.fontFamily = window.getComputedStyle(firstInner).fontFamily;
+      tempSpan.style.letterSpacing = window.getComputedStyle(firstInner).letterSpacing;
+      tempSpan.style.fontWeight = window.getComputedStyle(firstInner).fontWeight;
       tempSpan.innerText = text;
 
       document.body.appendChild(tempSpan);
       const measuredWidth = tempSpan.getBoundingClientRect().width;
       document.body.removeChild(tempSpan);
 
-      // Add more buffer for larger text (20% buffer)
       const textWidthWithBuffer = measuredWidth * 1.2;
       setTextWidth(textWidthWithBuffer);
 
@@ -45,29 +44,44 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
       container.style.setProperty("--gsplits", totalCells);
       container.style.setProperty("--offset", `${offset}px`);
 
+
       innerRefs.current.forEach((inner, i) => {
-        gsap.set(inner, {
-          x: Math.round(-i * offset * 100) / 100,
-          position: "relative",
-          display: "inline-block",
-          willChange: "transform",
-        });
+        if (inner) {
+          gsap.set(inner, {
+            x: -i * offset,
+            position: "relative",
+            display: "inline-block",
+            willChange: "transform",
+            opacity: 0, 
+          });
+        }
+      });
+
+
+      requestAnimationFrame(() => {
+        setIsReady(true);
       });
     };
 
     const initLayout = () => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(setLayout);
-      });
+
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(setLayout);
+        });
+      }, 50);
     };
 
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(initLayout);
     } else {
-      setTimeout(initLayout, 100);
+      initLayout();
     }
 
-    window.addEventListener("resize", initLayout);
+    window.addEventListener("resize", () => {
+      setIsReady(false);
+      initLayout();
+    });
 
     return () => {
       window.removeEventListener("resize", initLayout);
@@ -75,17 +89,19 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   }, [totalCells, text]);
 
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el || !innerRefs.current.length || !textWidth) return;
+    if (!isReady || !containerRef.current || !innerRefs.current.length || !textWidth) return;
 
     const offset = textWidth / totalCells;
+
+
+    gsap.killTweensOf(innerRefs.current);
+
 
     gsap.fromTo(
       innerRefs.current,
       {
         x: (i) => {
           const targetX = -i * offset;
-
           const randomOffset = (i % 2 === 0 ? -1 : 1) * (textWidth * 0.15);
           return targetX + randomOffset;
         },
@@ -97,22 +113,66 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
         duration: 0.8,
         stagger: 0.03,
         ease: "power2.out",
-        clearProps: "position",
-      },
-    );
+        onStart: () => {
 
-    return () => {
-      gsap.killTweensOf(innerRefs.current);
-    };
-  }, [totalCells, text, textWidth]);
+          if (containerRef.current) {
+            containerRef.current.style.visibility = "visible";
+          }
+        },
+      }
+    );
+  }, [totalCells, text, textWidth, isReady]);
+
+
+  if (!isReady) {
+    return (
+      <div 
+        ref={containerRef} 
+        className={`gtext ${className}`}
+        style={{ 
+          visibility: "hidden",
+          position: "relative",
+
+          minHeight: "2em"
+        }}
+      >
+        {Array.from({ length: totalCells }).map((_, i) => (
+          <span key={i} className="gtext__box" style={{ display: "inline-block" }}>
+            <span
+              className="gtext__box-inner"
+              ref={(el) => (innerRefs.current[i] = el)}
+              style={{ 
+                display: "inline-block",
+                whiteSpace: "nowrap",
+                visibility: "hidden"
+              }}
+            >
+              {text}
+            </span>
+          </span>
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div ref={containerRef} className={`gtext ${className}`}>
+    <div 
+      ref={containerRef} 
+      className={`gtext ${className}`}
+      style={{ 
+        visibility: "visible",
+        position: "relative"
+      }}
+    >
       {Array.from({ length: totalCells }).map((_, i) => (
-        <span key={i} className="gtext__box">
+        <span key={i} className="gtext__box" style={{ display: "inline-block" }}>
           <span
             className="gtext__box-inner"
             ref={(el) => (innerRefs.current[i] = el)}
+            style={{ 
+              display: "inline-block",
+              whiteSpace: "nowrap"
+            }}
           >
             {text}
           </span>
@@ -166,21 +226,23 @@ export default function AdultOrthodontics() {
       gsap.set(mediaContainersInner, { clearProps: "all" });
 
       const mobile = gsap.context(() => {
-        innerStickies.forEach((item, i) => {
-          ScrollTrigger.create({
-            trigger: item,
-            start:
-              item.offsetHeight < window.innerHeight
-                ? "top top"
-                : "bottom bottom",
-            endTrigger: innerStickies[i + 1],
-            end: "top top",
-            pin: true,
-            pinSpacing: false,
-            invalidateOnRefresh: true,
-            markers: false,
-          });
-        });
+innerStickies.forEach((item, i) => {
+  const section = item.closest(".MainSectionItem");
+  const isLast = i === innerStickies.length - 1;
+
+  ScrollTrigger.create({
+    trigger: section,
+    start: "top top",
+    endTrigger: isLast
+      ? section
+      : innerStickies[i + 1].closest(".MainSectionItem"),
+    end: isLast ? "+=100%" : "top top",
+    pin: item,
+    pinSpacing: false,
+    invalidateOnRefresh: true,
+   
+  });
+});
       }, itemsContainer.current);
       return () => mobile.revert();
     });
@@ -434,7 +496,7 @@ export default function AdultOrthodontics() {
           </div>
           <div ref={itemsContainer} className="MainSection-items">
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-first MainSectionItem-inner">
+             <div className="--inner-first MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -478,7 +540,7 @@ export default function AdultOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-between MainSectionItem-inner">
+              <div className="--inner-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -601,7 +663,7 @@ export default function AdultOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-between MainSectionItem-inner">
+<div className="--inner-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -649,7 +711,7 @@ export default function AdultOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem MainSection-item">
-              <div className="--index-between MainSectionItem-inner">
+<div className="--inner-between MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"
@@ -688,7 +750,7 @@ export default function AdultOrthodontics() {
               </div>
             </section>
             <section className="MainSectionItem --bg-fog MainSection-item">
-              <div className="--index-last MainSectionItem-inner">
+<div className="--inner-last MainSectionItem-inner">
                 <div className="MainSectionItem-innerSticky">
                   <div
                     className="MainSectionItem-background"

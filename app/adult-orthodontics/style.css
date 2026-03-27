@@ -46,10 +46,10 @@
   gap: 12px;
   font-family: "Canela-ThinItalic";
 }
-.MainSection-header {
+/* .MainSection-header {
   position: relative;
   z-index: 50;
-}
+} */
 .MainSection-headerTitle .chars-wrapper {
   display: inline-block;
   font-size: clamp(26px, 4vw, 32px);

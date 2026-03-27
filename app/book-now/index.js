@@ -1125,12 +1125,12 @@ onClick={(e) => {
     <div className="flex justify-center items-center order-1 xl:order-2 h-[300px] xl:h-auto relative">
   <div className="text-[13px] flex flex-col xl:flex-row justify-center xl:justify-start gap-4 xl:gap-12 font-neuehaas35 tracking-[0.07em] items-center xl:items-start">
       
-                    <p className="text-[12px] text-black leading-[1.6] font-ibmplex">
+                    <p className="text-[14px] text-black leading-[1.6] font-ibmplex">
                        <span className="block">
                       <ScrambleText text="info@freysmiles.com" />
                    </span>
                     </p>
-                   <p className="text-[12px] text-black leading-[1.6] font-ibmplex">
+                   <p className="text-[14px] text-black leading-[1.6] font-ibmplex">
                      <span className="block">
                                     <ScrambleText text="(610)437-4748" charsType="numbers" />
                      </span>
