@@ -84,42 +84,37 @@ function AsciiInstanced() {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    containerRef.current.style.position = "absolute";
-    containerRef.current.style.top = "50%";
-    containerRef.current.style.left = "50%";
-    containerRef.current.style.transform = "translate(-50%, -50%)";
-    containerRef.current.style.width = "85vw";
-    containerRef.current.style.height = "85vh";
+    const container = containerRef.current;
+    if (!container) return;
+
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
       45,
-      containerRef.current.clientWidth / containerRef.current.clientHeight,
+      container.clientWidth / container.clientHeight,
       0.1,
       100,
     );
     camera.position.z = 5;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(
-      containerRef.current.clientWidth,
-      containerRef.current.clientHeight,
-    );
-    containerRef.current.appendChild(renderer.domElement);
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
 
     const video = document.createElement("video");
     video.src = "/videos/mchammer.mp4";
-    video.crossOrigin = "anonymous";
     video.loop = true;
     video.muted = true;
     video.playsInline = true;
-    video.play();
+    video.crossOrigin = "anonymous";
+    video.play().catch(() => {});
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+    const sampleCanvas = document.createElement("canvas");
+    const sampleCtx = sampleCanvas.getContext("2d");
+    if (!sampleCtx) return;
 
-    const vertex = `
+    const vertexShader = `
       attribute float instanceScale;
 
       varying vec2 vUv;
@@ -137,7 +132,7 @@ function AsciiInstanced() {
       }
     `;
 
-    const fragment = `
+    const fragmentShader = `
       uniform sampler2D chars;
       uniform float charCount;
 
@@ -145,40 +140,42 @@ function AsciiInstanced() {
       varying float vScale;
 
       void main() {
-
-        float size = charCount;
-
-        float index = floor(vScale * (size - 1.0));
+        float index = floor(vScale * (charCount - 1.0));
 
         vec2 newUV = vec2(
-          vUv.x / size + index / size,
+          vUv.x / charCount + index / charCount,
           vUv.y
         );
 
         vec4 charSample = texture2D(chars, newUV);
-
         float mask = charSample.r;
 
-gl_FragColor = vec4(vec3(mask * vScale), 1.0);
+        gl_FragColor = vec4(vec3(mask * vScale), 1.0);
       }
     `;
 
-    let width = 120;
-    let height = 120;
-    let total = width * height;
+    const gridWidth = 120;
+    const gridHeight = 120;
+
+    const total = gridWidth * gridHeight;
+    const textGridWidth = 320;
+    const textGridHeight = 180;
+    const textTotal = textGridWidth * textGridHeight;
+    const cellSizeX = 0.14;
+    const cellSizeY = 0.14;
+
+    sampleCanvas.width = gridWidth;
+    sampleCanvas.height = gridHeight;
 
     const geometry = new THREE.PlaneGeometry(0.12, 0.14);
-
     const scales = new Float32Array(total);
-
     geometry.setAttribute(
       "instanceScale",
       new THREE.InstancedBufferAttribute(scales, 1),
     );
 
-    function createAsciiAtlas(charCount = 32) {
-      const density =
-        " .'`^\",:;Il!i~+_-?][}{1)(|\\/*tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+    function createAsciiAtlas(charCount = 48) {
+      const density = [" ", ".", ":", "-", "=", "+", "*", "#", "@"];
 
       const chars = [];
       const maxIndex = density.length - 1;
@@ -189,24 +186,24 @@ gl_FragColor = vec4(vec3(mask * vScale), 1.0);
         chars.push(density[idx]);
       }
 
-      const canvas = document.createElement("canvas");
-      canvas.width = charCount * 64;
-      canvas.height = 64;
+      const atlasCanvas = document.createElement("canvas");
+      atlasCanvas.width = charCount * 64;
+      atlasCanvas.height = 64;
 
-      const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "black";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const atlasCtx = atlasCanvas.getContext("2d");
+      atlasCtx.fillStyle = "black";
+      atlasCtx.fillRect(0, 0, atlasCanvas.width, atlasCanvas.height);
 
-      ctx.fillStyle = "white";
-      ctx.font = "48px monospace";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+      atlasCtx.fillStyle = "white";
+      atlasCtx.font = "48px monospace";
+      atlasCtx.textAlign = "center";
+      atlasCtx.textBaseline = "middle";
 
       chars.forEach((char, i) => {
-        ctx.fillText(char, i * 64 + 32, 32);
+        atlasCtx.fillText(char, i * 64 + 32, 32);
       });
 
-      const texture = new THREE.CanvasTexture(canvas);
+      const texture = new THREE.CanvasTexture(atlasCanvas);
       texture.minFilter = THREE.NearestFilter;
       texture.magFilter = THREE.NearestFilter;
       texture.wrapS = THREE.ClampToEdgeWrapping;
@@ -215,83 +212,237 @@ gl_FragColor = vec4(vec3(mask * vScale), 1.0);
       return texture;
     }
 
-    const chars = createAsciiAtlas(32);
-
     const material = new THREE.ShaderMaterial({
-      vertexShader: vertex,
-      fragmentShader: fragment,
+      vertexShader,
+      fragmentShader,
       uniforms: {
-        chars: { value: chars },
-        charCount: { value: 32.0 },
+        chars: { value: createAsciiAtlas(48) },
+        charCount: { value: 48.0 },
       },
     });
-
+    material.transparent = true;
+    material.opacity = 1;
     const mesh = new THREE.InstancedMesh(geometry, material, total);
-
     scene.add(mesh);
+    const textScales = new Float32Array(textTotal);
 
+    const textGeometry = new THREE.PlaneGeometry(0.12, 0.14);
+    textGeometry.setAttribute(
+      "instanceScale",
+      new THREE.InstancedBufferAttribute(textScales, 1),
+    );
+
+    const textMaterial = material.clone();
+
+    const textMesh = new THREE.InstancedMesh(
+      textGeometry,
+      textMaterial,
+      textTotal,
+    );
+    textMaterial.transparent = true;
+    textMaterial.opacity = 0;
+    textMesh.visible = false;
+    textMesh.scale.set(0.55, 0.55, 1);
+
+    scene.add(textMesh);
     mesh.scale.set(0.55, 0.55, 1);
-    const dummy = new THREE.Object3D();
-    let index = 0;
+    mesh.rotation.z = -Math.PI / 2;
 
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < height; y++) {
-        dummy.position.set((x - width / 2) * 0.14, (y - height / 2) * 0.14, 0);
+    const basePositions = [];
+    const targetPositions = [];
+    const dummy = new THREE.Object3D();
+
+    let instanceIndex = 0;
+    for (let x = 0; x < gridWidth; x++) {
+      for (let y = 0; y < gridHeight; y++) {
+        const px = (x - gridWidth / 2) * cellSizeX;
+        const py = (y - gridHeight / 2) * cellSizeY;
+
+        basePositions.push({ x: px, y: py });
+
+        dummy.position.set(px, py, 0);
         dummy.updateMatrix();
-        mesh.setMatrixAt(index++, dummy.matrix);
+        mesh.setMatrixAt(instanceIndex++, dummy.matrix);
+      }
+    }
+    const textPositions = [];
+
+    let textIndex = 0;
+
+    for (let x = 0; x < textGridWidth; x++) {
+      for (let y = 0; y < textGridHeight; y++) {
+        const px = (x - textGridWidth / 2) * cellSizeX * 0.5;
+        const py = (y - textGridHeight / 2) * cellSizeY * 0.5;
+
+        textPositions.push({ x: px, y: py });
+
+        dummy.position.set(px, py, 0);
+        dummy.updateMatrix();
+        textMesh.setMatrixAt(textIndex++, dummy.matrix);
       }
     }
 
-    mesh.instanceMatrix.needsUpdate = true;
+    textMesh.instanceMatrix.needsUpdate = true;
 
-    let frameId;
-    canvas.width = width;
-    canvas.height = height;
+    function createHighResTextTargets(text) {
+      const canvas = document.createElement("canvas");
+      canvas.width = textGridWidth;
+      canvas.height = textGridHeight;
 
-    const animate = () => {
-      frameId = requestAnimationFrame(animate);
+      const ctx = canvas.getContext("2d");
 
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, textGridWidth, textGridHeight);
+
+      ctx.fillStyle = "white";
+      ctx.font = `${textGridHeight * 0.4}px monospace`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      ctx.fillText(text, textGridWidth / 2, textGridHeight / 2);
+
+      const data = ctx.getImageData(0, 0, textGridWidth, textGridHeight).data;
+
+      const targets = [];
+
+      for (let i = 0; i < textTotal; i++) {
+        const x = i % textGridWidth;
+        const y = Math.floor(i / textGridWidth);
+
+        const idx = (y * textGridWidth + x) * 4;
+        const value = data[idx] / 255;
+
+        if (value > 0.2) {
+          targets.push({
+            x: (x - textGridWidth / 2) * cellSizeX * 0.5,
+            y: (y - textGridHeight / 2) * cellSizeY * 0.5,
+          });
+        }
+      }
+
+      return targets;
+    }
+    const highResTargets = createHighResTextTargets("team");
+
+    const textTargetPositions = [];
+
+    for (let i = 0; i < textTotal; i++) {
+      textTargetPositions.push(highResTargets[i % highResTargets.length]);
+    }
+
+    let rafId = 0;
+    let progress = 0;
+
+    function renderFrame() {
+      rafId = requestAnimationFrame(renderFrame);
+      const time = performance.now() * 0.001;
+      const spreadPhase = Math.min(progress / 0.5, 1);
+      const gatherPhase = Math.max((progress - 0.5) / 0.5, 0);
       if (video.readyState >= 2) {
-        ctx.save();
+        sampleCtx.clearRect(0, 0, gridWidth, gridHeight);
+        sampleCtx.drawImage(video, 0, 0, gridWidth, gridHeight);
 
-        ctx.translate(canvas.width / 2, canvas.height / 2);
+        const frame = sampleCtx.getImageData(0, 0, gridWidth, gridHeight).data;
 
-        ctx.rotate(Math.PI / 2);
-
-        ctx.drawImage(
-          video,
-          -canvas.height / 2,
-          -canvas.width / 2,
-          canvas.height,
-          canvas.width,
-        );
-
-        ctx.restore();
-
-        const frame = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-
-        //  convert to brightness
         for (let i = 0; i < total; i++) {
-          const r = frame[i * 4 + 0];
+          const r = frame[i * 4];
           const g = frame[i * 4 + 1];
           const b = frame[i * 4 + 2];
 
           let brightness = (r + g + b) / 3 / 255;
-          brightness = 1.0 - brightness;
+          brightness = 1 - brightness;
           brightness = Math.pow(brightness, 1.8);
-
           scales[i] = scales[i] * 0.85 + brightness * 0.15;
-        }
 
+          const base = basePositions[i];
+
+          let x = base.x;
+          let y = base.y;
+
+          const nx = base.x * 0.2;
+          const ny = base.y * 0.2;
+
+          const flow =
+            Math.sin(nx * 2.5 + time * 1.2) +
+            Math.cos(ny * 2.0 - time * 1.0) +
+            Math.sin((nx + ny) * 1.5 + time * 0.8);
+
+          const angle = flow;
+          if (progress > 0) {
+            x += Math.cos(angle) * 1.5 * (1 - gatherPhase);
+            y += Math.sin(angle) * 1.5 * (1 - gatherPhase);
+          }
+
+          dummy.position.set(x, y, 0);
+          dummy.updateMatrix();
+          mesh.setMatrixAt(i, dummy.matrix);
+        }
+        for (let i = 0; i < textTotal; i++) {
+          const base = textPositions[i];
+          const target = textTargetPositions[i];
+
+          let x = base.x;
+          let y = base.y;
+
+          const nx = base.x * 0.2;
+          const ny = base.y * 0.2;
+
+          const flow =
+            Math.sin(nx * 2.5 + time * 1.2) +
+            Math.cos(ny * 2.0 - time * 1.0) +
+            Math.sin((nx + ny) * 1.5 + time * 0.8);
+
+          const angle = flow;
+
+          x += Math.cos(angle) * 1.5 * (1 - gatherPhase);
+          y += Math.sin(angle) * 1.5 * (1 - gatherPhase);
+
+          if (gatherPhase > 0) {
+            x = x * (1 - gatherPhase) + target.x * gatherPhase;
+            y = y * (1 - gatherPhase) + target.y * gatherPhase;
+          }
+
+          dummy.position.set(x, y, 0);
+          dummy.updateMatrix();
+          textMesh.setMatrixAt(i, dummy.matrix);
+
+          textScales[i] = gatherPhase;
+        }
+        textMesh.visible = gatherPhase > 0.2;
+        textMaterial.opacity = Math.max(0, (gatherPhase - 0.2) / 0.8);
+        material.opacity = 1.0 - gatherPhase;
+
+        material.transparent = true;
+        textMaterial.transparent = true;
+        textGeometry.attributes.instanceScale.needsUpdate = true;
+        textMesh.instanceMatrix.needsUpdate = true;
         geometry.attributes.instanceScale.needsUpdate = true;
+        mesh.instanceMatrix.needsUpdate = true;
       }
 
       renderer.render(scene, camera);
+    }
+
+    renderFrame();
+
+    const handleClick = () => {
+      const start = performance.now();
+      const duration = 1500;
+
+      function animateProgress(now) {
+        const elapsed = now - start;
+        progress = Math.min(elapsed / duration, 1);
+
+        if (progress < 1) {
+          requestAnimationFrame(animateProgress);
+        }
+      }
+
+      requestAnimationFrame(animateProgress);
     };
 
-    animate();
-
     const handleResize = () => {
+      if (!containerRef.current) return;
       const w = containerRef.current.clientWidth;
       const h = containerRef.current.clientHeight;
 
@@ -300,17 +451,21 @@ gl_FragColor = vec4(vec3(mask * vScale), 1.0);
       camera.updateProjectionMatrix();
     };
 
+    window.addEventListener("click", handleClick);
     window.addEventListener("resize", handleResize);
 
     return () => {
-      cancelAnimationFrame(frameId);
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("click", handleClick);
       window.removeEventListener("resize", handleResize);
 
       geometry.dispose();
       material.dispose();
       renderer.dispose();
 
-      containerRef.current.removeChild(renderer.domElement);
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
     };
   }, []);
 
@@ -318,9 +473,10 @@ gl_FragColor = vec4(vec3(mask * vScale), 1.0);
     <div
       ref={containerRef}
       style={{
-        width: "85vw",
-        height: "85vh",
+        width: "100vw",
+        height: "100vh",
         margin: "auto",
+        overflow: "hidden",
       }}
     />
   );
