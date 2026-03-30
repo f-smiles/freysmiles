@@ -164,9 +164,23 @@
   /* .MainSectionItem-content {
     padding: 0 2rem 2rem 2rem;
   } */
-  /* .MainSectionItem-mediaContainer {
-    padding: 6rem 2rem 0 2rem;
-  } */
+  .MainSectionItem-mediaContainer {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    /* padding: 6rem 2rem 0 2rem; */
+  }
+  .MainSectionItem-media {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .MainSectionItem-media img,
+  .MainSectionItem-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 @media (pointer:coarse) {
   .MainSectionItem-contentText {
