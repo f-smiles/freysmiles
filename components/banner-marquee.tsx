@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 
 export const BannerMarquee = () => {
   // const text = "Reserve an appointment now to experience our new year courtesy of up to 700 dollars off full treatment.";
-  const texts = ["Allentown", "Bethlehem", "Lehighton", "Schnecksville", "Complimentary Consultation"]
+  const texts = ["Allentown", "Bethlehem", "Lehighton", "Schnecksville", "Complimentary Consultation", "Family Plans Available"]
   const repeatCount = 12;
 
   const pathname = usePathname()
