@@ -17,6 +17,7 @@
 @media screen and (max-width: 1279px) {
   .gtext {
     margin: 0 auto;
+    padding-left: 3rem;
   }
 }
 
@@ -165,6 +166,12 @@
   /* .MainSectionItem-mediaContainer {
     padding: 6rem 2rem 0 2rem;
   } */
+}
+@media (pointer:coarse) {
+  .MainSectionItem-contentText {
+    font-size: 15px;
+    line-height: 1.5rem;
+  }
 }
 
 /********************
