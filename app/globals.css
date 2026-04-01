@@ -31,10 +31,7 @@
   font-family: "Seaword2";
   src: url("/fonts/Seaword2.ttf") format("truetype");
 }
-@font-face {
-  font-family: "InterphaseMono";
-  src: url("/fonts/TT Interphases Pro Mono Trial Regular.ttf") format("truetype");
-}
+
 
 @font-face {
   font-family: "ChivoMono";
@@ -232,7 +229,7 @@
 @font-face {
   font-family: "CeraProBold";
   src: url("/fonts/cerapro_bold.woff2") format("woff2"),
-    url("/fonts/cerapro_bold.woff") format("woff");
+
 }
 
 @font-face {

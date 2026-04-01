@@ -82,8 +82,8 @@ function Grid() {
 }
 function AsciiInstanced() {
   const containerRef = useRef(null);
-
-  useEffect(() => {
+  
+useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -135,7 +135,7 @@ function AsciiInstanced() {
     const fragmentShader = `
       uniform sampler2D chars;
       uniform float charCount;
-
+uniform float uBrightness;
       varying vec2 vUv;
       varying float vScale;
 
@@ -150,7 +150,7 @@ function AsciiInstanced() {
         vec4 charSample = texture2D(chars, newUV);
         float mask = charSample.r;
 
-        gl_FragColor = vec4(vec3(mask * vScale), 1.0);
+        gl_FragColor = vec4(vec3(mask * uBrightness), 1.0);
       }
     `;
 
@@ -167,7 +167,9 @@ function AsciiInstanced() {
     sampleCanvas.width = gridWidth;
     sampleCanvas.height = gridHeight;
 
-    const geometry = new THREE.PlaneGeometry(0.12, 0.14);
+const geometry = new THREE.PlaneGeometry(0.12, 0.12);
+
+
     const scales = new Float32Array(total);
     geometry.setAttribute(
       "instanceScale",
@@ -195,7 +197,7 @@ function AsciiInstanced() {
       atlasCtx.fillRect(0, 0, atlasCanvas.width, atlasCanvas.height);
 
       atlasCtx.fillStyle = "white";
-      atlasCtx.font = "48px monospace";
+      atlasCtx.font = "40px Lato";
       atlasCtx.textAlign = "center";
       atlasCtx.textBaseline = "middle";
 
@@ -217,7 +219,8 @@ function AsciiInstanced() {
       fragmentShader,
       uniforms: {
         chars: { value: createAsciiAtlas(48) },
-        charCount: { value: 48.0 },
+        charCount: { value: 48.0 },  
+        uBrightness: { value: 0.5 }, 
       },
     });
     material.transparent = true;
@@ -226,7 +229,7 @@ function AsciiInstanced() {
     scene.add(mesh);
     const textScales = new Float32Array(textTotal);
 
-    const textGeometry = new THREE.PlaneGeometry(0.12, 0.14);
+const textGeometry = new THREE.PlaneGeometry(0.1, 0.1);
     textGeometry.setAttribute(
       "instanceScale",
       new THREE.InstancedBufferAttribute(textScales, 1),
@@ -295,11 +298,27 @@ function AsciiInstanced() {
       ctx.fillRect(0, 0, textGridWidth, textGridHeight);
 
       ctx.fillStyle = "white";
-      ctx.font = `${textGridHeight * 0.4}px monospace`;
+      ctx.font = `${textGridHeight * 0.4}px CeraProRegular`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
-      ctx.fillText(text, textGridWidth / 2, textGridHeight / 2);
+   const lines = Array.isArray(text) ? text : [text];
+
+const fontSize = textGridHeight * 0.3; 
+const lineHeight = fontSize * 0.9;     
+
+ctx.font = `${fontSize}px CeraProRegular`;
+
+const totalHeight = lines.length * lineHeight;
+
+
+lines.forEach((line, i) => {
+  const y =
+    textGridHeight / 2 +
+    (i * lineHeight - totalHeight / 2 + lineHeight / 2);
+
+  ctx.fillText(line, textGridWidth / 2, y);
+});
 
       const data = ctx.getImageData(0, 0, textGridWidth, textGridHeight).data;
 
@@ -315,14 +334,14 @@ function AsciiInstanced() {
         if (value > 0.2) {
           targets.push({
             x: (x - textGridWidth / 2) * cellSizeX * 0.5,
-            y: (y - textGridHeight / 2) * cellSizeY * 0.5,
+            y: -(y - textGridHeight / 2) * cellSizeY * 0.5,
           });
         }
       }
 
       return targets;
     }
-    const highResTargets = createHighResTextTargets("team");
+    const highResTargets = createHighResTextTargets(["our","team"]);
 
     const textTargetPositions = [];
 

@@ -615,7 +615,7 @@ const initTextAnimation = () => {
             top: "50%",
             left: "50%",
             width: "100%",
-            height: "55%",
+            height: "80%",
             transform: "translate(-50%, -50%) ",
             overflow: "hidden",
           }}

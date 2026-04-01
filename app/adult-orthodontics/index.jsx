@@ -236,7 +236,7 @@ innerStickies.forEach((item, i) => {
     endTrigger: isLast
       ? section
       : innerStickies[i + 1].closest(".MainSectionItem"),
-    end: isLast ? "+=100%" : "top top",
+    end: isLast ? "+=" + window.innerHeight * 1.5 : "top top",
     pin: item,
     pinSpacing: false,
     invalidateOnRefresh: true,
