@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import { CustomEase, SplitText} from "gsap/all";
 import Lenis from "@studio-freight/lenis";
 import { useRef, useEffect, useMemo, useLayoutEffect, useState } from "react";
-
+import * as THREE from "three";
 gsap.registerPlugin(CustomEase, SplitText);
 
 // CustomEase.create("hop", "0.9, 0, 0.1, 1");
@@ -322,7 +322,205 @@ gsap.registerPlugin(CustomEase, SplitText);
 //   );
 // };
 // export default Preloader;
+const CircleGridMouseFollow = () => {
+  const containerRef = useRef(null);
+  const sceneRef = useRef(null);
+  const cameraRef = useRef(null);
+  const rendererRef = useRef(null);
+  const meshesRef = useRef([]);
+  const lerpedPositionRef = useRef(new THREE.Vector3());
+  const animationIdRef = useRef(null);
 
+  useEffect(() => {
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+
+    const camera = new THREE.PerspectiveCamera(
+      50,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000,
+    );
+    camera.position.set(0, 0, 12);
+    cameraRef.current = camera;
+    
+    const resizeToContainer = () => {
+      if (!containerRef.current) return;
+
+      const { width, height } = containerRef.current.getBoundingClientRect();
+
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    };
+    
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+    });
+    resizeToContainer();
+
+    renderer.setClearColor(0x000000, 0);
+
+    containerRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+
+    const width = 0.85;
+    const geometry = new THREE.CircleGeometry(width, 64);
+    
+    const material = new THREE.MeshPhongMaterial({
+      color: 0xEBFA84,
+      emissive: 0xEBFA84,
+      emissiveIntensity: 0.6,
+      transparent: true,
+      opacity: 1.0,
+      shininess: 120, 
+      specular: 0x000000,
+    });
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    keyLight.position.set(3, 4, 6);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0xEBFA84, 1.2);
+    rimLight.position.set(-4, 0, -6);
+    scene.add(rimLight);
+
+    const meshes = [];
+    const gridX = 10;
+    const gridY = 5;
+    const gap = width * 0.1;
+    const widthWithGap = width + gap;
+
+    for (let i = 0; i < gridX; i++) {
+      for (let j = 0; j < gridY; j++) {
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(
+          (i - (gridX - 1) / 2) * widthWithGap * 2,
+          (j - (gridY - 1) / 2) * widthWithGap * 2,
+          0,
+        );
+        
+        mesh.userData.originalRotation = mesh.rotation.clone();
+        
+        scene.add(mesh);
+        meshes.push(mesh);
+      }
+    }
+    meshesRef.current = meshes;
+    
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const targetPosition = new THREE.Vector3();
+
+    const hitPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -1.5);
+
+    const handleMouseMove = (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      const intersectionPoint = new THREE.Vector3();
+      const ray = new THREE.Ray();
+      ray.origin.copy(raycaster.ray.origin);
+      ray.direction.copy(raycaster.ray.direction);
+
+      if (ray.intersectPlane(hitPlane, intersectionPoint)) {
+        targetPosition.copy(intersectionPoint);
+
+        gsap.to(lerpedPositionRef.current, {
+          duration: 0.5,
+          x: targetPosition.x,
+          y: targetPosition.y,
+          z: targetPosition.z,
+          ease: "power2.out",
+        });
+      }
+    };
+
+    const animate = () => {
+      animationIdRef.current = requestAnimationFrame(animate);
+
+      if (meshesRef.current.length > 0) {
+        meshesRef.current.forEach((mesh) => {
+          const toMouse = new THREE.Vector3()
+            .subVectors(lerpedPositionRef.current, mesh.position);
+          
+          const distance = toMouse.length();
+          toMouse.normalize();
+          
+          const targetRotation = new THREE.Euler();
+          
+          targetRotation.x = -toMouse.y * 0.7;
+          targetRotation.y = toMouse.x * 0.7;
+          
+          mesh.rotation.x += (targetRotation.x - mesh.rotation.x) * 0.1;
+          mesh.rotation.y += (targetRotation.y - mesh.rotation.y) * 0.1;
+
+          const influenceRadius = 6.0;
+          const distanceFactor = THREE.MathUtils.clamp(
+            1.0 - distance / influenceRadius,
+            0,
+            1
+          );
+          
+          const circleNormal = new THREE.Vector3(0, 0, 1);
+          circleNormal.applyEuler(mesh.rotation);
+          const facingCamera = Math.abs(circleNormal.dot(new THREE.Vector3(0, 0, 1)));
+          
+          const minOpacity = 0.3;
+          const targetOpacity = minOpacity + (1 - minOpacity) * facingCamera;
+          
+          mesh.material.opacity += (targetOpacity - mesh.material.opacity) * 0.1;
+          
+          const scaleBase = 0.95;
+          const scaleEffect = 0.1 * distanceFactor;
+          const finalScale = scaleBase + scaleEffect;
+          
+          mesh.scale.set(finalScale, finalScale, 1);
+        });
+      }
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("resize", handleResize);
+    
+    function handleResize() {
+      resizeToContainer();
+    }
+
+    return () => {
+      cancelAnimationFrame(animationIdRef.current);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", handleResize);
+
+      if (containerRef.current && rendererRef.current) {
+        containerRef.current.removeChild(rendererRef.current.domElement);
+      }
+
+      if (sceneRef.current) {
+        sceneRef.current.traverse((object) => {
+          if (object.isMesh) {
+            object.geometry.dispose();
+            object.material.dispose();
+          }
+        });
+      }
+
+      rendererRef.current.dispose();
+    };
+  }, []);
+
+  return <div ref={containerRef} className="dot-grid-canvas" />;
+};
 gsap.registerPlugin(SplitText, CustomEase);
 CustomEase.create("slideshow-wipe", "0.625, 0.05, 0, 1");
 const PreloaderComponent = () => {
@@ -340,6 +538,7 @@ const PreloaderComponent = () => {
   const mainGroupRef = useRef(null);
   const contentRef = useRef(null);
   const headingContainerRef = useRef(null); 
+    const dotGridWrapperRef = useRef(null);
 
   const slideshowWrapRef = useRef(null);
   const slidesRef = useRef([]);
@@ -349,33 +548,66 @@ const PreloaderComponent = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const animationDuration = 1.5;
 
-  const slidesData = [
+const blindsRefs = useRef([]);
+
+const slidesData = [
+  {
+    id: 1,
+    thumbnail: "/images/poladaymockup.png",
+    full: "/images/shop/poladay95.png",
+    alt: "Close-up of textured green headphones"
+  },
+  {
+    id: 2,
+    thumbnail: "/images/shop/caracarathumb.png",
+    full: "/images/shop/caracocomockupfull.png",
+    alt: "Close-up of a rounded corner of a brown leather phone case"
+  },
+ {
+    id: 3,
+    thumbnail: "/images/shop/15x12cocostrawberry.png",
+    full: "/images/shop/strawberryfull.png",
+    alt: "Close-up view of a rounded corner of a textured object"
+  },
+  {
+    id: 4,
+    thumbnail: "/images/shop/embertaketwo.png",
+    full: "/images/shop/emberfull.png",
+    alt: "Close-up of a curved corner of a sleek, modern device"
+  },
     {
-      id: 1,
-      src: "/images/poladaymockup.png",
-      alt: ""
-    },
+    id: 5,
+    thumbnail: "/images/giftcardmockup.png",
+    full: "/images/shop/giftcardmockupfull.png",
+    alt: "Close-up of a corner of a tablet with a smooth glass screen"
+  },
+ 
     {
-      id: 2,
-      src: "/images/caracocomockup.png",
-      alt: ""
-    },
+    id: 6,
+    thumbnail: "/images/shop/whiteinvisscene.png",
+    full: "/images/shop/whiteinvisscenefull.png",
+    alt: "Close-up view of a rounded corner of a textured object"
+  },
+   {
+    id: 7,
+    thumbnail: "/images/shop/pola35full.png",
+    full: "/images/shop/pola35full.png",
+    alt: "Close-up view of a rounded corner of a textured object"
+  },
+     {
+    id: 8,
+    thumbnail: "/images/shop/15x12cocomint.png",
+    full: "/images/shop/cocomintfull.png",
+    alt: "Close-up view of a rounded corner of a textured object"
+  },
     {
-      id: 3,
-      src: "/images/giftcardmockup.png",
-      alt: ""
-    },
-    {
-      id: 4,
-      src: "/images/shopisopen.png",
-      alt: ""
-    },
-    {
-      id: 5,
-      src: "/images/giftcardmockup.png",
-      alt: ""
-    }
-  ];
+    id: 9,
+    thumbnail: "/images/shop/zimawhitefull.png",
+    full: "/images/shop/zimawhitefull.png",
+    alt: "Close-up view of a rounded corner of a textured object"
+  }
+];
+  const centerIndex = Math.floor(slidesData.length / 2);
 
   useEffect(() => {
     document.fonts.ready.then(() => {
@@ -544,48 +776,66 @@ const PreloaderComponent = () => {
       thumbsRef.current[currentIndex].classList.add('is--current');
     }
   };
+const navigate = (direction, targetIndex = null) => {
+  if (isAnimating) return;
+  setIsAnimating(true);
 
-  const navigate = (direction, targetIndex = null) => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-
-    const previous = currentIndex;
-    const newIndex = targetIndex !== null && targetIndex !== undefined
+  const previous = currentIndex;
+  const newIndex =
+    targetIndex !== null
       ? targetIndex
       : direction === 1
-        ? (currentIndex < slidesData.length - 1 ? currentIndex + 1 : 0)
-        : (currentIndex > 0 ? currentIndex - 1 : slidesData.length - 1);
+      ? (currentIndex + 1) % slidesData.length
+      : (currentIndex - 1 + slidesData.length) % slidesData.length;
 
-    const currentSlide = slidesRef.current[previous];
-    const currentInner = innerRef.current[previous];
-    const upcomingSlide = slidesRef.current[newIndex];
-    const upcomingInner = innerRef.current[newIndex];
+  const currentSlide = slidesRef.current[previous];
+  const upcomingSlide = slidesRef.current[newIndex];
+  const cells = cellsMap.current[newIndex];
 
-    const tl = gsap.timeline({
-      defaults: { duration: animationDuration, ease: 'slideshow-wipe' },
-      onStart() {
-        if (upcomingSlide) upcomingSlide.classList.add('is--current');
-        if (thumbsRef.current[previous]) {
-          thumbsRef.current[previous].classList.remove('is--current');
+  const tl = gsap.timeline({
+    onStart() {
+      gsap.set(upcomingSlide, { zIndex: 2, autoAlpha: 1 });
+      gsap.set(currentSlide, { zIndex: 1, autoAlpha: 1 });
+
+      thumbsRef.current[previous]?.classList.remove("is--current");
+      thumbsRef.current[newIndex]?.classList.add("is--current");
+    },
+    onComplete() {
+      currentSlide?.classList.remove("is--current");
+      setIsAnimating(false);
+      setCurrentIndex(newIndex);
+    },
+  });
+
+  if (cells && cells.length) {
+const cols = 10;
+const rows = Math.ceil(cells.length / cols);
+    const ordered = [];
+
+    for (let x = cols - 1; x >= 0; x--) {
+      const column = [];
+
+      for (let y = 0; y < rows; y++) {
+        const index = y * cols + x;
+        if (cells[index]) {
+          column.push(cells[index]);
         }
-        if (thumbsRef.current[newIndex]) {
-          thumbsRef.current[newIndex].classList.add('is--current');
-        }
-      },
-      onComplete() {
-        if (currentSlide) currentSlide.classList.remove('is--current');
-        setIsAnimating(false);
-        setCurrentIndex(newIndex);
       }
-    });
 
-    if (currentSlide && currentInner && upcomingSlide && upcomingInner) {
-tl.to(currentSlide, { xPercent: -100 }, 0)
-  .to(currentInner, { xPercent: 75 }, 0)
-  .fromTo(upcomingSlide, { xPercent: 100 }, { xPercent: 0 }, 0)
-  .fromTo(upcomingInner, { xPercent: -75 }, { xPercent: 0 }, 0);
+      ordered.push(...gsap.utils.shuffle(column));
     }
-  };
+
+
+    gsap.set(cells, { opacity: 0 });
+
+    tl.to(ordered, {
+      opacity: 1,
+      duration: 0.6,
+      stagger: 0.02,
+      ease: "power3.out",
+    });
+  }
+};
 
 const handleThumbClick = (index) => {
   if (isAnimating) return;
@@ -610,113 +860,183 @@ const handleThumbClick = (index) => {
       sliderNavRef.current.push(el);
     }
   };
+const createCells = (group) => {
+  if (!group) return [];
 
-  return (
-    <>
-      <section ref={containerRef} data-slideshow="wrap" className="crisp-header is--loading is--hidden">
+  group.innerHTML = "";
+const cols = 10;
+const rows = Math.round((viewportDimensions.height / viewportDimensions.width) * cols);
 
-        <div className="crisp-header__slider">
-          <div className="crisp-header__slider-list">
+  const cells = [];
+
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      const rect = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "rect"
+      );
+
+      rect.setAttribute("x", `${(x / cols) * 100}%`);
+      rect.setAttribute("y", `${(y / rows) * 100}%`);
+      rect.setAttribute("width", `${100 / cols}%`);
+      rect.setAttribute("height", `${100 / rows}%`);
+      rect.setAttribute("fill", "white");
+      rect.setAttribute("opacity", 0);
+
+      group.appendChild(rect);
+      cells.push(rect);
+    }
+  }
+
+  return cells;
+};
+const cellsMap = useRef([]);
+
+useEffect(() => {
+  cellsMap.current = blindsRefs.current.map((group) =>
+    createCells(group)
+  );
+}, []);
+
+const [viewportDimensions, setViewportDimensions] = useState({ width: 16, height: 9 });
+
+useEffect(() => {
+  const updateDimensions = () => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    // Use a normalized viewBox that maintains aspect ratio
+    setViewportDimensions({ width: 100, height: (100 * height) / width });
+  };
+  
+  updateDimensions();
+  window.addEventListener('resize', updateDimensions);
+  return () => window.removeEventListener('resize', updateDimensions);
+}, []);
+return (
+  <>
+    <section ref={containerRef} data-slideshow="wrap" className="crisp-header is--loading is--hidden">
+
+      <div className="crisp-header__slider">
+<div className="crisp-header__slider-list">
+  {slidesData.map((slide, index) => (
+    <div
+      key={slide.id}
+      ref={(el) => (slidesRef.current[index] = el)}
+      className="crisp-header__slider-slide"
+    >
+  <svg
+  className="slide-svg"
+  viewBox={`0 0 ${viewportDimensions.width} ${viewportDimensions.height}`}
+  preserveAspectRatio="none"
+>
+  <defs>
+    <mask id={`mask-${index}`}>
+      <rect width="100%" height="100%" fill="black" />
+      <g ref={(el) => (blindsRefs.current[index] = el)} />
+    </mask>
+  </defs>
+
+  <image
+    href={slide.full}
+    x="0"
+    y="0"
+    width="100%"
+    height="100%"
+    preserveAspectRatio="xMidYMid slice"
+    mask={`url(#mask-${index})`}
+  />
+</svg>
+    </div>
+  ))}
+</div>
+      </div>
+
+
+      <div className="crisp-loader">
+        <div className="crisp-loader__wrap">
+          <div className="crisp-loader__groups" ref={loaderGroupsRef}>
+            <div 
+              className="crisp-loader__group is--relative" 
+              ref={mainGroupRef}
+            >
+              {slidesData.map((image, idx) => {
+              const isCenter = idx === centerIndex;
+                return (
+                  <div 
+                    key={`main-${idx}`} 
+                    className={`crisp-loader__single ${isCenter ? 'is--center' : ''}`}
+                  >
+                    <div 
+                      className={`crisp-loader__media ${
+                        isCenter ? 'is--scaling is--radius' : ''
+                      }`}
+                      ref={
+                        isCenter
+                          ? (el) => {
+                              scaleUpMediaRef.current = el;
+                              radiusMediaRef.current = el;
+                            }
+                          : (el) => addToScaleDown(el)
+                      }
+                    >
+                      <img
+                        src={image.thumbnail}
+                        alt={image.alt}
+                        className={`crisp-loader__cover-img ${
+                          !isCenter ? 'is--scale-down' : ''
+                        }`}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="crisp-loader__fade"></div>
+          <div className="crisp-loader__fade is--duplicate"></div>
+        </div>
+      </div>
+
+
+      <div ref={contentRef} className="crisp-header__content">
+            <div className="dot-grid-wrapper" ref={dotGridWrapperRef}>
+          <CircleGridMouseFollow />
+        </div>
+        <div className="crisp-header__center">
+          <div ref={headingContainerRef} className="crisp-header__heading-container">
+            <h1 className="crisp-header__h1" ref={headingRef}>Browse our e-shop</h1>
+          </div>
+        </div>
+        <div className="crisp-header__bottom">
+          <div className="crisp-header__slider-nav">
             {slidesData.map((slide, index) => (
-              <div
+              <button
                 key={slide.id}
-                ref={(el) => (slidesRef.current[index] = el)}
-                data-slideshow="slide"
-                className="crisp-header__slider-slide"
+                ref={(el) => {
+                  if (el) {
+                    thumbsRef.current[index] = el;
+                    addToSliderNav(el);
+                  }
+                }}
+                data-slideshow="thumb"
+                className="crisp-header__slider-nav-btn"
+                onClick={() => handleThumbClick(index)}
+                type="button"
               >
                 <img
-                  ref={(el) => (innerRef.current[index] = el)}
-                  className="crisp-header__slider-slide-inner"
-                  src={slide.src}
+                  loading="eager"
+                  src={slide.thumbnail}
                   alt={slide.alt}
-                  data-slideshow="parallax"
-                  draggable="false"
+                  className="crisp-loader__cover-img"
                 />
-              </div>
+              </button>
             ))}
           </div>
         </div>
-
-        <div className="crisp-loader">
-          <div className="crisp-loader__wrap">
-            <div className="crisp-loader__groups" ref={loaderGroupsRef}>
-              <div 
-                className="crisp-loader__group is--relative" 
-                ref={mainGroupRef}
-              >
-                {slidesData.map((image, idx) => {
-                  const isCenter = idx === 2;
-
-                  return (
-                    <div 
-                      key={`main-${idx}`} 
-                      className={`crisp-loader__single ${isCenter ? 'is--center' : ''}`}
-                    >
-                      <div 
-                        className={`crisp-loader__media ${
-                          isCenter ? 'is--scaling is--radius' : ''
-                        }`}
-                        ref={
-                          isCenter
-                            ? (el) => {
-                                scaleUpMediaRef.current = el;
-                                radiusMediaRef.current = el;
-                              }
-                            : (el) => addToScaleDown(el)
-                        }
-                      >
-                        <img
-                          src={image.src}
-                          alt={image.alt}
-                          className={`crisp-loader__cover-img ${
-                            !isCenter ? 'is--scale-down' : ''
-                          }`}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="crisp-loader__fade"></div>
-            <div className="crisp-loader__fade is--duplicate"></div>
-          </div>
-        </div>
-
-
-        <div ref={contentRef} className="crisp-header__content">
-          <div className="crisp-header__center">
-            <div ref={headingContainerRef} className="crisp-header__heading-container">
-              <h1 className="crisp-header__h1" ref={headingRef}>Browse our e-shop</h1>
-            </div>
-          </div>
-          <div className="crisp-header__bottom">
-            <div className="crisp-header__slider-nav">
-              {slidesData.map((slide, index) => (
-                <div
-                  key={slide.id}
-                  ref={(el) => {
-                    thumbsRef.current[index] = el;
-                    addToSliderNav(el);
-                  }}
-                  data-slideshow="thumb"
-                  className="crisp-header__slider-nav-btn"
-                  onClick={() => handleThumbClick(index)}
-                >
-                  <img
-                    loading="eager"
-                    src={slide.src}
-                    alt={slide.alt}
-                    className="crisp-loader__cover-img"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
-  );
+      </div>
+    </section>
+  </>
+);
 };
 
 export default PreloaderComponent;
