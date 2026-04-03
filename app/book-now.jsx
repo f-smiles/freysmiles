@@ -8,6 +8,7 @@ import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import Logo from "@/components/logo";
+import { JoinOurTeamForm } from "@/components/join-our-team-form";
 
 gsap.registerPlugin(SplitText, ScrambleTextPlugin);
 
@@ -309,6 +310,10 @@ export default function BookNow() {
             </a>
           </div>
         </div>
+      </div>
+
+      <div className="flex flex-col items-center justify-center pb-20 xl:pb-14 z-10">
+        <JoinOurTeamForm />
       </div>
 
       <div
