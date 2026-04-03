@@ -7,13 +7,23 @@ import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
-
-export default function ProductCarousel({ variants }: { variants: VariantsWithImagesTags[] }) {
+type ProductCarouselProps = {
+  variants: any[]
+  initialVariantId: number
+}
+export default function ProductCarousel({
+  variants,
+  initialVariantId,
+}: {
+  variants: VariantsWithImagesTags[]
+  initialVariantId: number
+}) {
   const [api,setApi] = useState<CarouselApi>()
   const [activeThumbnail, setActiveThumbnail] = useState([0])
 
-  const searchParams = useSearchParams()
-  const selectedVariant = searchParams.get("variant") || variants[0].variantName
+const selectedVariant =
+  variants.find(v => v.id === initialVariantId)?.variantName ||
+  variants[0]?.variantName
 
   useEffect(() => {
     if (!api) return
@@ -26,6 +36,8 @@ export default function ProductCarousel({ variants }: { variants: VariantsWithIm
   const updatePreview = (index: number) => {
     api?.scrollTo(index)
   }
+
+
 
 
   return (

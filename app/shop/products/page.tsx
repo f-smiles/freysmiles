@@ -2,7 +2,7 @@ import { db } from "@/server/db"
 import Variants from "@/components/products/variants"
 import Banner from "./banner"
 import Hero from "./hero"
-import Preloader from "./hero"
+import PreloaderComponent from "./preloader"
 export const revalidate = 60 * 60
 
 export default async function ProductsPage() {
@@ -18,12 +18,13 @@ export default async function ProductsPage() {
   
   return (
     <>
-          <Hero />
+<PreloaderComponent variants={data} />
+          {/* <Hero />
       <div className=" flex items-center justify-center w-full min-h-screen">
 
           <Variants variants={data} />
 
-      </div>
+      </div> */}
     </>
       )
 }

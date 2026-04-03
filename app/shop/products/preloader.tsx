@@ -3,9 +3,10 @@ import "./style.css";
 import { gsap } from "gsap";
 import { CustomEase, SplitText} from "gsap/all";
 import Lenis from "@studio-freight/lenis";
-import { useRef, useEffect, useMemo, useLayoutEffect, useState } from "react";
+import { useRef, useEffect, useMemo, useLayoutEffect, useState, useCallback } from "react";
 import * as THREE from "three";
 gsap.registerPlugin(CustomEase, SplitText);
+import { useRouter } from "next/navigation";
 
 // CustomEase.create("hop", "0.9, 0, 0.1, 1");
 
@@ -322,209 +323,345 @@ gsap.registerPlugin(CustomEase, SplitText);
 //   );
 // };
 // export default Preloader;
-const CircleGridMouseFollow = () => {
+const FlameTrail = ({ children }) => {
   const containerRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const rendererRef = useRef(null);
-  const meshesRef = useRef([]);
-  const lerpedPositionRef = useRef(new THREE.Vector3());
-  const animationIdRef = useRef(null);
+  const trailRef = useRef([]);
+  const imagePoolRef = useRef([]);
+  
 
-  useEffect(() => {
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
+  const config = {
+    imageCount: 14,
+    imageLifespan: 600,
+    removalDelay: 16,
+    mouseThreshold: 40,
+    scrollThreshold: 50,
+    inDuration: 600,
+    outDuration: 1200,
+    inEasing: "cubic-bezier(.07,.5,.5,1)",
+    outEasing: "cubic-bezier(.87, 0, .13, 1)",
+    touchImageInterval: 40,
+    minMovementForImage: 5,
+  baseImageSize: 80,    
+  minImageSize: 40,    
+  maxImageSize: 120,  
+    baseRotation: 30,
+    maxRotationFactor: 3,
+    speedSmoothingFactor: 0.25,
+  };
 
-    const camera = new THREE.PerspectiveCamera(
-      50,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000,
-    );
-    camera.position.set(0, 0, 12);
-    cameraRef.current = camera;
-    
-    const resizeToContainer = () => {
-      if (!containerRef.current) return;
+  const images = [
+    "/images/shop/giftcardmockup.png",
+    "/images/shop/caracarathumb.png",
+    "/images/shop/caracocomockup.png",
+    "/images/shop/zimawhite.png",
+    "/images/shop/blackinviscase.png",
+    "/images/shop/15x12cocomint.png",
+    "/images/shopisopen.png",
+    "/images/shoptest1.png",
+    "/images/dentalwax4.png",
+    "/images/fscards.png",
+    "/images/shop/pinkalignercase.png",
+    "/images/shop/greenalignercase.png",
+    "/images/cardsonpalm.png",
+    "/images/shop/caraorange.png"
+  ];
 
-      const { width, height } = containerRef.current.getBoundingClientRect();
+  const mouseState = useRef({
+    x: 0,
+    y: 0,
+    lastX: 0,
+    lastY: 0,
+    prevX: 0,
+    prevY: 0
+  });
+  
+  const flags = useRef({
+    isMoving: false,
+    isCursorInContainer: false,
+    isTouching: false,
+    isScrolling: false,
+    scrollTicking: false
+  });
 
-      renderer.setSize(width, height);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-    };
-    
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-    });
-    resizeToContainer();
+  const timers = useRef({
+    lastRemovalTime: 0,
+    lastTouchImageTime: 0,
+    lastScrollTime: 0,
+    lastMoveTime: Date.now()
+  });
 
-    renderer.setClearColor(0x000000, 0);
+  const speedData = useRef({
+    smoothedSpeed: 0,
+    maxSpeed: 0
+  });
 
-    containerRef.current.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
+  let imageIndex = 0;
 
-    const width = 0.85;
-    const geometry = new THREE.CircleGeometry(width, 64);
-    
-    const material = new THREE.MeshPhongMaterial({
-      color: 0xEBFA84,
-      emissive: 0xEBFA84,
-      emissiveIntensity: 0.6,
-      transparent: true,
-      opacity: 1.0,
-      shininess: 120, 
-      specular: 0x000000,
-    });
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-    scene.add(ambientLight);
-
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
-    keyLight.position.set(3, 4, 6);
-    scene.add(keyLight);
-
-    const rimLight = new THREE.DirectionalLight(0xEBFA84, 1.2);
-    rimLight.position.set(-4, 0, -6);
-    scene.add(rimLight);
-
-    const meshes = [];
-    const gridX = 10;
-    const gridY = 5;
-    const gap = width * 0.1;
-    const widthWithGap = width + gap;
-
-    for (let i = 0; i < gridX; i++) {
-      for (let j = 0; j < gridY; j++) {
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(
-          (i - (gridX - 1) / 2) * widthWithGap * 2,
-          (j - (gridY - 1) / 2) * widthWithGap * 2,
-          0,
-        );
-        
-        mesh.userData.originalRotation = mesh.rotation.clone();
-        
-        scene.add(mesh);
-        meshes.push(mesh);
-      }
-    }
-    meshesRef.current = meshes;
-    
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    const targetPosition = new THREE.Vector3();
-
-    const hitPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -1.5);
-
-    const handleMouseMove = (event) => {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-
-      const intersectionPoint = new THREE.Vector3();
-      const ray = new THREE.Ray();
-      ray.origin.copy(raycaster.ray.origin);
-      ray.direction.copy(raycaster.ray.direction);
-
-      if (ray.intersectPlane(hitPlane, intersectionPoint)) {
-        targetPosition.copy(intersectionPoint);
-
-        gsap.to(lerpedPositionRef.current, {
-          duration: 0.5,
-          x: targetPosition.x,
-          y: targetPosition.y,
-          z: targetPosition.z,
-          ease: "power2.out",
-        });
-      }
-    };
-
-    const animate = () => {
-      animationIdRef.current = requestAnimationFrame(animate);
-
-      if (meshesRef.current.length > 0) {
-        meshesRef.current.forEach((mesh) => {
-          const toMouse = new THREE.Vector3()
-            .subVectors(lerpedPositionRef.current, mesh.position);
-          
-          const distance = toMouse.length();
-          toMouse.normalize();
-          
-          const targetRotation = new THREE.Euler();
-          
-          targetRotation.x = -toMouse.y * 0.7;
-          targetRotation.y = toMouse.x * 0.7;
-          
-          mesh.rotation.x += (targetRotation.x - mesh.rotation.x) * 0.1;
-          mesh.rotation.y += (targetRotation.y - mesh.rotation.y) * 0.1;
-
-          const influenceRadius = 6.0;
-          const distanceFactor = THREE.MathUtils.clamp(
-            1.0 - distance / influenceRadius,
-            0,
-            1
-          );
-          
-          const circleNormal = new THREE.Vector3(0, 0, 1);
-          circleNormal.applyEuler(mesh.rotation);
-          const facingCamera = Math.abs(circleNormal.dot(new THREE.Vector3(0, 0, 1)));
-          
-          const minOpacity = 0.3;
-          const targetOpacity = minOpacity + (1 - minOpacity) * facingCamera;
-          
-          mesh.material.opacity += (targetOpacity - mesh.material.opacity) * 0.1;
-          
-          const scaleBase = 0.95;
-          const scaleEffect = 0.1 * distanceFactor;
-          const finalScale = scaleBase + scaleEffect;
-          
-          mesh.scale.set(finalScale, finalScale, 1);
-        });
-      }
-
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("resize", handleResize);
-    
-    function handleResize() {
-      resizeToContainer();
-    }
-
-    return () => {
-      cancelAnimationFrame(animationIdRef.current);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("resize", handleResize);
-
-      if (containerRef.current && rendererRef.current) {
-        containerRef.current.removeChild(rendererRef.current.domElement);
-      }
-
-      if (sceneRef.current) {
-        sceneRef.current.traverse((object) => {
-          if (object.isMesh) {
-            object.geometry.dispose();
-            object.material.dispose();
-          }
-        });
-      }
-
-      rendererRef.current.dispose();
-    };
+  const isInContainer = useCallback((x, y) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return false;
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
   }, []);
 
-  return <div ref={containerRef} className="dot-grid-canvas" />;
+  const hasMovedEnough = useCallback(() => {
+    const dx = mouseState.current.x - mouseState.current.lastX;
+    const dy = mouseState.current.y - mouseState.current.lastY;
+    return Math.hypot(dx, dy) > config.mouseThreshold;
+  }, []);
+
+  const hasMovedAtAll = useCallback(() => {
+    const dx = mouseState.current.x - mouseState.current.prevX;
+    const dy = mouseState.current.y - mouseState.current.prevY;
+    return Math.hypot(dx, dy) > config.minMovementForImage;
+  }, []);
+
+  const calculateSpeed = useCallback(() => {
+    const now = Date.now();
+    const dt = now - timers.current.lastMoveTime;
+    if (dt <= 0) return 0;
+    
+    const dist = Math.hypot(
+      mouseState.current.x - mouseState.current.prevX,
+      mouseState.current.y - mouseState.current.prevY
+    );
+    const raw = dist / dt;
+    
+    if (raw > speedData.current.maxSpeed) speedData.current.maxSpeed = raw;
+    const norm = Math.min(raw / (speedData.current.maxSpeed || 0.5), 1);
+    
+    speedData.current.smoothedSpeed = 
+      speedData.current.smoothedSpeed * (1 - config.speedSmoothingFactor) + 
+      norm * config.speedSmoothingFactor;
+    
+    timers.current.lastMoveTime = now;
+    return speedData.current.smoothedSpeed;
+  }, []);
+
+
+
+  const createImage = useCallback((speed = 0.5) => {
+    const imageSrc = images[imageIndex % images.length];
+    imageIndex = (imageIndex + 1) % images.length;
+
+    const size = config.minImageSize + (config.maxImageSize - config.minImageSize) * speed;
+    
+    const img = document.createElement("img");
+    img.className = "trail-img";
+    const rotFactor = 1 + speed * (config.maxRotationFactor - 1);
+    const rot = (Math.random() - 0.5) * config.baseRotation * rotFactor;
+
+    img.src = imageSrc;
+    img.width = img.height = size;
+    
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const x = mouseState.current.x - rect.left;
+    const y = mouseState.current.y - rect.top;
+    
+    img.style.left = `${x}px`;
+    img.style.top = `${y}px`;
+    img.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(0)`;
+    img.style.transition = `transform ${config.inDuration}ms ${config.inEasing}`;
+    
+    containerRef.current?.appendChild(img);
+
+    setTimeout(() => {
+      img.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(1)`;
+    }, 10);
+
+    trailRef.current.push({
+      element: img,
+      rotation: rot,
+      removeTime: Date.now() + config.imageLifespan,
+      isFlame: true
+    });
+  }, [config]);
+
+  const createTrailImage = useCallback(() => {
+    if (!flags.current.isCursorInContainer) return;
+    if (flags.current.isMoving && hasMovedEnough() && hasMovedAtAll()) {
+      mouseState.current.lastX = mouseState.current.x;
+      mouseState.current.lastY = mouseState.current.y;
+      const speed = calculateSpeed();
+      createImage(speed);
+      mouseState.current.prevX = mouseState.current.x;
+      mouseState.current.prevY = mouseState.current.y;
+    }
+  }, [hasMovedEnough, hasMovedAtAll, calculateSpeed, createImage]);
+
+  const createTouchTrailImage = useCallback(() => {
+    if (!flags.current.isCursorInContainer || !flags.current.isTouching || !hasMovedAtAll()) return;
+    
+    const now = Date.now();
+    if (now - timers.current.lastTouchImageTime < config.touchImageInterval) return;
+    
+    timers.current.lastTouchImageTime = now;
+    const speed = calculateSpeed();
+    createImage(speed);
+    mouseState.current.prevX = mouseState.current.x;
+    mouseState.current.prevY = mouseState.current.y;
+  }, [hasMovedAtAll, calculateSpeed, createImage]);
+
+  const createScrollTrailImage = useCallback(() => {
+    if (!flags.current.isCursorInContainer || !flags.current.isScrolling) return;
+    
+    mouseState.current.lastX += (config.mouseThreshold + 10) * (Math.random() > 0.5 ? 1 : -1);
+    mouseState.current.lastY += (config.mouseThreshold + 10) * (Math.random() > 0.5 ? 1 : -1);
+    createImage(0.5);
+    mouseState.current.lastX = mouseState.current.x;
+    mouseState.current.lastY = mouseState.current.y;
+  }, [createImage]);
+
+  const removeOldImages = useCallback(() => {
+    const now = Date.now();
+    if (now - timers.current.lastRemovalTime < config.removalDelay || !trailRef.current.length) return;
+    
+    if (now >= trailRef.current[0].removeTime) {
+      const imgObj = trailRef.current.shift();
+      imgObj.element.style.transition = `transform ${config.outDuration}ms ${config.outEasing}`;
+      imgObj.element.style.transform = `translate(-50%, -50%) rotate(${imgObj.rotation + 360}deg) scale(0)`;
+      setTimeout(() => imgObj.element.remove(), config.outDuration);
+      timers.current.lastRemovalTime = now;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const setInitialMousePos = (e) => {
+      mouseState.current.x = mouseState.current.lastX = mouseState.current.prevX = e.clientX;
+      mouseState.current.y = mouseState.current.lastY = mouseState.current.prevY = e.clientY;
+      flags.current.isCursorInContainer = isInContainer(mouseState.current.x, mouseState.current.y);
+      document.removeEventListener("mouseover", setInitialMousePos);
+    };
+    document.addEventListener("mouseover", setInitialMousePos);
+
+
+    const handleMouseMove = (e) => {
+      mouseState.current.prevX = mouseState.current.x;
+      mouseState.current.prevY = mouseState.current.y;
+      mouseState.current.x = e.clientX;
+      mouseState.current.y = e.clientY;
+      flags.current.isCursorInContainer = isInContainer(mouseState.current.x, mouseState.current.y);
+      
+      if (flags.current.isCursorInContainer && hasMovedAtAll()) {
+        flags.current.isMoving = true;
+        clearTimeout(window.moveTimeout);
+        window.moveTimeout = setTimeout(() => {
+          flags.current.isMoving = false;
+        }, 100);
+      }
+    };
+    document.addEventListener("mousemove", handleMouseMove);
+
+
+    const handleTouchStart = (e) => {
+      const touch = e.touches[0];
+      mouseState.current.prevX = mouseState.current.x;
+      mouseState.current.prevY = mouseState.current.y;
+      mouseState.current.x = touch.clientX;
+      mouseState.current.y = touch.clientY;
+      mouseState.current.lastX = mouseState.current.x;
+      mouseState.current.lastY = mouseState.current.y;
+      flags.current.isCursorInContainer = true;
+      flags.current.isTouching = true;
+      timers.current.lastMoveTime = Date.now();
+    };
+    
+    const handleTouchMove = (e) => {
+      const touch = e.touches[0];
+      const dy = Math.abs(touch.clientY - mouseState.current.prevY);
+      mouseState.current.prevX = mouseState.current.x;
+      mouseState.current.prevY = mouseState.current.y;
+      mouseState.current.x = touch.clientX;
+      mouseState.current.y = touch.clientY;
+      flags.current.isCursorInContainer = true;
+      
+      if (dy > Math.abs(touch.clientX - mouseState.current.prevX)) return;
+      createTouchTrailImage();
+    };
+    
+    const handleTouchEnd = () => {
+      flags.current.isTouching = false;
+    };
+    
+    containerRef.current.addEventListener("touchstart", handleTouchStart);
+    containerRef.current.addEventListener("touchmove", handleTouchMove);
+    containerRef.current.addEventListener("touchend", handleTouchEnd);
+
+    const handleScroll = () => {
+      flags.current.isCursorInContainer = isInContainer(mouseState.current.x, mouseState.current.y);
+      if (flags.current.isCursorInContainer) {
+        flags.current.isScrolling = true;
+        clearTimeout(window.scrollTimeout);
+        window.scrollTimeout = setTimeout(() => {
+          flags.current.isScrolling = false;
+        }, 100);
+      }
+    };
+    
+    const handleScrollThrottled = () => {
+      const now = Date.now();
+      if (now - timers.current.lastScrollTime < config.scrollThreshold) return;
+      timers.current.lastScrollTime = now;
+      
+      if (!flags.current.scrollTicking && flags.current.isCursorInContainer) {
+        requestAnimationFrame(() => {
+          if (flags.current.isScrolling) createScrollTrailImage();
+          flags.current.scrollTicking = false;
+        });
+        flags.current.scrollTicking = true;
+      }
+    };
+    
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScrollThrottled, { passive: true });
+
+
+    let animationId;
+    const animate = () => {
+      if (flags.current.isMoving || flags.current.isTouching || flags.current.isScrolling) {
+        createTrailImage();
+      }
+      removeOldImages();
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      document.removeEventListener("mouseover", setInitialMousePos);
+      document.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScrollThrottled);
+      if (containerRef.current) {
+        containerRef.current.removeEventListener("touchstart", handleTouchStart);
+        containerRef.current.removeEventListener("touchmove", handleTouchMove);
+        containerRef.current.removeEventListener("touchend", handleTouchEnd);
+      }
+      clearTimeout(window.moveTimeout);
+      clearTimeout(window.scrollTimeout);
+    };
+  }, [isInContainer, hasMovedAtAll, createTouchTrailImage, createScrollTrailImage, createTrailImage, removeOldImages]);
+
+  return (
+    <div ref={containerRef} className="flame-trail-container">
+      {children}
+    </div>
+  );
 };
-gsap.registerPlugin(SplitText, CustomEase);
+
 CustomEase.create("slideshow-wipe", "0.625, 0.05, 0, 1");
-const PreloaderComponent = () => {
-  const [isLoading, setIsLoading] = useState(true);
+
+const PreloaderComponent = ({ variants }) => {
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window === "undefined") return true
+    return !sessionStorage.getItem("preloaderDone")
+  })
+  const router = useRouter();
+
   const containerRef = useRef(null);
   const headingRef = useRef(null);
   const loaderGroupsRef = useRef(null);
@@ -538,7 +675,7 @@ const PreloaderComponent = () => {
   const mainGroupRef = useRef(null);
   const contentRef = useRef(null);
   const headingContainerRef = useRef(null); 
-    const dotGridWrapperRef = useRef(null);
+  const dotGridWrapperRef = useRef(null);
 
   const slideshowWrapRef = useRef(null);
   const slidesRef = useRef([]);
@@ -547,67 +684,210 @@ const PreloaderComponent = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const animationDuration = 1.5;
+  const hasDismissedHeadingRef = useRef(false);
+  const blindsRefs = useRef([]);
+  
+  // Scroll navigation refs
+  const scrollTimeoutRef = useRef(null);
+  const accumulatedScrollRef = useRef(0);
+  const isScrollingNavRef = useRef(false);
 
-const blindsRefs = useRef([]);
-
-const slidesData = [
-  {
-    id: 1,
-    thumbnail: "/images/poladaymockup.png",
-    full: "/images/shop/poladay95.png",
-    alt: "Close-up of textured green headphones"
-  },
-  {
-    id: 2,
-    thumbnail: "/images/shop/caracarathumb.png",
-    full: "/images/shop/caracocomockupfull.png",
-    alt: "Close-up of a rounded corner of a brown leather phone case"
-  },
- {
-    id: 3,
-    thumbnail: "/images/shop/15x12cocostrawberry.png",
-    full: "/images/shop/strawberryfull.png",
-    alt: "Close-up view of a rounded corner of a textured object"
-  },
-  {
-    id: 4,
-    thumbnail: "/images/shop/embertaketwo.png",
-    full: "/images/shop/emberfull.png",
-    alt: "Close-up of a curved corner of a sleek, modern device"
-  },
+  const slidesData = [
     {
-    id: 5,
-    thumbnail: "/images/giftcardmockup.png",
-    full: "/images/shop/giftcardmockupfull.png",
-    alt: "Close-up of a corner of a tablet with a smooth glass screen"
-  },
- 
+      variantId: 31, 
+      title: "Ember",
+      subtitle: "Light technology",
+      full: "/images/shop/emberfull.png",
+      thumbnail: "/images/shop/embertaketwo.png",
+    },
     {
-    id: 6,
-    thumbnail: "/images/shop/whiteinvisscene.png",
-    full: "/images/shop/whiteinvisscenefull.png",
-    alt: "Close-up view of a rounded corner of a textured object"
-  },
-   {
-    id: 7,
-    thumbnail: "/images/shop/pola35full.png",
-    full: "/images/shop/pola35full.png",
-    alt: "Close-up view of a rounded corner of a textured object"
-  },
-     {
-    id: 8,
-    thumbnail: "/images/shop/15x12cocomint.png",
-    full: "/images/shop/cocomintfull.png",
-    alt: "Close-up view of a rounded corner of a textured object"
-  },
+      variantId: 32,
+      title: "Cocofloss",
+      subtitle: "Cara Cara Orange",
+      description: "Woven Floss • Citrus",
+      full: "/images/shop/caracocomockupfull.png",
+      thumbnail: "/images/shop/caracarathumb.png",
+    },
     {
-    id: 9,
-    thumbnail: "/images/shop/zimawhitefull.png",
-    full: "/images/shop/zimawhitefull.png",
-    alt: "Close-up view of a rounded corner of a textured object"
-  }
-];
+      variantId: 33,
+      title: "Cocofloss",
+      subtitle: "Strawberry",
+      description: "Woven Floss • Sweet Berry",
+      full: "/images/shop/strawberryfull.png",
+      thumbnail: "/images/shop/15x12cocostrawberry.png",
+    },
+    {
+      variantId: 34,
+      title: "Cocofloss",
+      subtitle: "Mint",
+      full: "/images/shop/mintflossfull.png",
+      description: "Woven Floss • Crisp Mint",
+      thumbnail: "/images/shop/mintflossfull.png",
+    },
+    {
+      variant: null, 
+      title: "Gift Card",
+      subtitle: "The perfect gift",
+      description: "Digital Card • Any Amount",
+      full: "/images/shop/giftcardmockupfull.png",
+      thumbnail: "/images/giftcardmockup.png",
+    },
+    {
+      variantId: 43,
+      title: "Poladay 9.5%",
+      subtitle: "At-home whitening",
+      full: "/images/shop/poladay95.png",
+      description: "Hydrogen Peroxide Whitening",
+      thumbnail: "/images/poladaymockup.png",
+    },
+    {
+      variantId: 44,
+      title: "Poladay 35%",
+      subtitle: "Professional strength",
+      full: "/images/shop/pola35full.png",
+      description: "Carbamide Peroxide",
+      thumbnail: "/images/shop/pola35full.png",
+    },
+    {
+      variantId: 37,
+      title: "Aligner Cases",
+      subtitle: "Choose your color",
+      description: "Everyday Case • Color Options",
+      full: "/images/shop/whiteinvisscenefull.png",
+      thumbnail: "/images/shop/whiteinvisscene.png",
+    },
+    {
+      variantId: 41,
+      title: "Zima Dental Pod",
+      subtitle: "Daily Clean • Ultrasonic",
+      description: "A cleaner routine",
+      full: "/images/shop/zimawhitefull.png",
+      thumbnail: "/images/shop/zimawhitefull.png",
+    }
+  ];
+  
+  const allSlides = useMemo(() => {
+    if (!variants?.length) return []
+    return slidesData.map((slide) => {
+      const variant = variants.find(v => v.id === slide.variantId)
+      if (!variant) {
+        console.warn("No match:", slide.variantId)
+      }
+      return { ...slide, variant }
+    })
+  }, [variants])
+  
   const centerIndex = Math.floor(slidesData.length / 2);
+
+
+  useEffect(() => {
+    if (isLoading) return;
+    
+
+    document.body.style.overflow = "auto";
+    document.body.style.height = "100vh";
+    
+
+    const scrollThreshold = 80; 
+    let lastScrollY = window.scrollY;
+    
+    const handleScroll = () => {
+      if (isAnimating || isScrollingNavRef.current) return;
+      
+      const currentScrollY = window.scrollY;
+      const delta = currentScrollY - lastScrollY;
+      
+      if (Math.abs(delta) > 0) {
+
+        accumulatedScrollRef.current += delta;
+        
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+        
+
+        if (Math.abs(accumulatedScrollRef.current) >= scrollThreshold) {
+          const direction = accumulatedScrollRef.current > 0 ? 1 : -1;
+          
+          isScrollingNavRef.current = true;
+          
+
+          navigate(direction);
+          
+          accumulatedScrollRef.current = 0;
+      
+          setTimeout(() => {
+            isScrollingNavRef.current = false;
+          }, animationDuration * 1000);
+        }
+
+        scrollTimeoutRef.current = setTimeout(() => {
+          accumulatedScrollRef.current = 0;
+        }, 200);
+      }
+      
+      lastScrollY = currentScrollY;
+    };
+    
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    
+    window.addEventListener('scroll', throttledScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', throttledScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      document.body.style.overflow = "";
+    };
+  }, [isLoading, isAnimating]);
+
+
+  useEffect(() => {
+    if (isLoading) return;
+    
+    let wheelTimeout = null;
+    let wheelAccumulated = 0;
+    const wheelThreshold = 50;
+    
+    const handleWheel = (e) => {
+      if (isAnimating || isScrollingNavRef.current) return;
+      
+      wheelAccumulated += e.deltaY;
+      
+      if (Math.abs(wheelAccumulated) >= wheelThreshold) {
+        const direction = wheelAccumulated > 0 ? 1 : -1;
+        isScrollingNavRef.current = true;
+        navigate(direction);
+        wheelAccumulated = 0;
+        
+        setTimeout(() => {
+          isScrollingNavRef.current = false;
+        }, animationDuration * 1000);
+      }
+      
+      if (wheelTimeout) clearTimeout(wheelTimeout);
+      wheelTimeout = setTimeout(() => {
+        wheelAccumulated = 0;
+      }, 150);
+    };
+    
+    window.addEventListener('wheel', handleWheel, { passive: true });
+    
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      if (wheelTimeout) clearTimeout(wheelTimeout);
+    };
+  }, [isLoading, isAnimating]);
 
   useEffect(() => {
     document.fonts.ready.then(() => {
@@ -621,7 +901,7 @@ const slidesData = [
     }
   }, [isLoading]);
   
- const initCrispLoadingAnimation = () => {
+  const initCrispLoadingAnimation = () => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -638,8 +918,11 @@ const slidesData = [
     const tl = gsap.timeline({
       defaults: { ease: "expo.inOut" },
       onStart: () => container.classList.remove('is--hidden'),
-      onComplete: () => setIsLoading(false)
-    });
+      onComplete: () => {
+        sessionStorage.setItem("preloaderDone", "true") 
+        setIsLoading(false) 
+      }
+    })
 
     if (heading) {
       if (headingContainer) {
@@ -655,19 +938,17 @@ const slidesData = [
       });
     }
 
-
     if (mainGroup) gsap.set(mainGroup, { xPercent: 100 });
     if (content) gsap.set(content, { scale: 0.8, opacity: 0, yPercent: 20 });
 
     const allLoaderImages = document.querySelectorAll('.crisp-loader__media');
     if (allLoaderImages.length) gsap.set(allLoaderImages, { opacity: 1 });
 
-    // Animation 1: Main group slides in
+    // Animation timeline
     if (mainGroup) {
       tl.to(mainGroup, { xPercent: 0, duration: 2.5 }, 0);
     }
 
-    // Animation 2: Side images scale down
     if (scaleDownImages.length) {
       tl.to(scaleDownImages, {
         scale: 0.5,
@@ -679,7 +960,6 @@ const slidesData = [
       }, "-=1.2");
     }
 
-    // Animation 3: Center image scales up
     if (scaleUpMedia) {
       tl.to(scaleUpMedia, {
         width: "100vw",
@@ -688,7 +968,6 @@ const slidesData = [
       }, "-=1.5");
     }
 
-    // Animation 4: Center image scales back down
     if (scaleUpMedia) {
       tl.to(scaleUpMedia, {
         width: "5em",
@@ -697,7 +976,6 @@ const slidesData = [
       }, "+=0.2");
     }
 
-    // Animation 5: Loader images fade out
     if (allLoaderImages.length) {
       tl.to(allLoaderImages, {
         opacity: 0,
@@ -714,7 +992,6 @@ const slidesData = [
       }, "-=0.1");
     }
 
-    // Animation 6: Content scales up
     if (content) {
       tl.to(content, {
         scale: 1,
@@ -725,7 +1002,6 @@ const slidesData = [
       }, "-=0.4");
     }
 
-    // Animation 7: Heading words slide up
     if (splitInstanceRef.current?.words.length) {
       tl.to(splitInstanceRef.current.words, {
         yPercent: 0,
@@ -736,7 +1012,6 @@ const slidesData = [
       }, "-=0.5");
     }
 
-    // Animation 8: Navigation slides up
     if (sliderNav.length) {
       gsap.set(sliderNav, { yPercent: 150, opacity: 0 });
       tl.to(sliderNav, {
@@ -748,7 +1023,6 @@ const slidesData = [
       }, "-=0.2");
     }
 
-    // Animation 9: Small elements fade in
     if (smallElements.length) {
       tl.from(smallElements, {
         opacity: 0,
@@ -759,6 +1033,7 @@ const slidesData = [
 
     tl.call(() => container.classList.remove('is--loading'), null, "+=0.1");
   };
+  
   const initSlideShow = () => {
     slidesRef.current.forEach((slide, index) => {
       if (slide) slide.setAttribute('data-index', index);
@@ -776,72 +1051,182 @@ const slidesData = [
       thumbsRef.current[currentIndex].classList.add('is--current');
     }
   };
-const navigate = (direction, targetIndex = null) => {
-  if (isAnimating) return;
-  setIsAnimating(true);
+  
+  const navigate = (direction, targetIndex = null) => {
+    if (isAnimating) return;
+    setIsAnimating(true);
 
-  const previous = currentIndex;
-  const newIndex =
-    targetIndex !== null
+    const previous = currentIndex;
+    const newIndex = targetIndex !== null
       ? targetIndex
       : direction === 1
       ? (currentIndex + 1) % slidesData.length
       : (currentIndex - 1 + slidesData.length) % slidesData.length;
 
-  const currentSlide = slidesRef.current[previous];
-  const upcomingSlide = slidesRef.current[newIndex];
-  const cells = cellsMap.current[newIndex];
+    const currentSlide = slidesRef.current[previous];
+    const upcomingSlide = slidesRef.current[newIndex];
+    const cells = cellsMap.current[newIndex];
+    const headingContainer = headingContainerRef.current;
 
-  const tl = gsap.timeline({
-    onStart() {
-      gsap.set(upcomingSlide, { zIndex: 2, autoAlpha: 1 });
-      gsap.set(currentSlide, { zIndex: 1, autoAlpha: 1 });
+    const tl = gsap.timeline({
+      onStart() {
+        gsap.set(upcomingSlide, { zIndex: 2, autoAlpha: 1 });
+        gsap.set(currentSlide, { zIndex: 1, autoAlpha: 1 });
 
-      thumbsRef.current[previous]?.classList.remove("is--current");
-      thumbsRef.current[newIndex]?.classList.add("is--current");
-    },
-    onComplete() {
-      currentSlide?.classList.remove("is--current");
-      setIsAnimating(false);
-      setCurrentIndex(newIndex);
-    },
-  });
+        thumbsRef.current[previous]?.classList.remove("is--current");
+        thumbsRef.current[newIndex]?.classList.add("is--current");
+      },
+      onComplete() {
+        currentSlide?.classList.remove("is--current");
+        setIsAnimating(false);
+        setCurrentIndex(newIndex);
+        hasDismissedHeadingRef.current = true;
+      },
+    });
 
-  if (cells && cells.length) {
-const cols = 10;
-const rows = Math.ceil(cells.length / cols);
-    const ordered = [];
+    const currentContent = currentSlide?.querySelector(".slide-content");
+    const content = upcomingSlide?.querySelector(".slide-content");
 
-    for (let x = cols - 1; x >= 0; x--) {
-      const column = [];
-
-      for (let y = 0; y < rows; y++) {
-        const index = y * cols + x;
-        if (cells[index]) {
-          column.push(cells[index]);
-        }
+    if (currentContent) {
+      const currentTitle = currentContent.querySelector(".slide-title");
+      const currentSub = currentContent.querySelector(".slide-sub");
+      const currentDescription = currentContent.querySelector(".slide-description");
+      
+      if (currentTitle) {
+        const split = new SplitText(currentTitle, { type: "chars" });
+        tl.to(split.chars, {
+          yPercent: -110,
+          opacity: 0,
+          stagger: { each: 0.02, from: "end" },
+          duration: 0.4,
+          ease: "power2.in"
+        }, 0);
       }
 
-      ordered.push(...gsap.utils.shuffle(column));
+      if (currentSub) {
+        const split = new SplitText(currentSub, { type: "chars" });
+        tl.to(split.chars, {
+          yPercent: -110,
+          opacity: 0,
+          stagger: { each: 0.015, from: "end" },
+          duration: 0.35,
+          ease: "power2.in"
+        }, 0);
+      }
+      
+      if (currentDescription) {
+        const split = new SplitText(currentDescription, { type: "chars" });
+        tl.to(split.chars, {
+          yPercent: -110,
+          opacity: 0,
+          stagger: { each: 0.02, from: "end" },
+          duration: 0.4,
+          ease: "power2.in"
+        }, 0);
+      }
     }
 
+    if (content) {
+      const nextTitle = content.querySelector(".slide-title");
+      const nextSub = content.querySelector(".slide-sub");
+      const nextDescription = content.querySelector(".slide-description");
+      
+      if (nextTitle) {
+        const split = new SplitText(nextTitle, { type: "chars" });
+        gsap.set(split.chars, { yPercent: 110, opacity: 0 });
+        tl.to(split.chars, {
+          yPercent: 0,
+          opacity: 1,
+          stagger: { each: 0.02, from: "start" },
+          duration: 0.6,
+          ease: "power3.out"
+        }, "-=0.2");
+      }
 
-    gsap.set(cells, { opacity: 0 });
+      if (nextSub) {
+        const split = new SplitText(nextSub, { type: "chars" });
+        gsap.set(split.chars, { yPercent: 110, opacity: 0 });
+        tl.to(split.chars, {
+          yPercent: 0,
+          opacity: 1,
+          stagger: { each: 0.015, from: "start" },
+          duration: 0.5,
+          ease: "power3.out"
+        }, "-=0.4");
+      }
+      
+      if (nextDescription) {
+        const split = new SplitText(nextDescription, { type: "chars" });
+        gsap.set(split.chars, { yPercent: 110, opacity: 0 });
+        tl.to(split.chars, {
+          yPercent: 0,
+          opacity: 1,
+          stagger: { each: 0.015, from: "start" },
+          duration: 0.5,
+          ease: "power3.out"
+        }, "-=0.4");
+      }
+    }
 
-    tl.to(ordered, {
-      opacity: 1,
-      duration: 0.6,
-      stagger: 0.02,
-      ease: "power3.out",
-    });
-  }
-};
+    if (!hasDismissedHeadingRef.current && splitInstanceRef.current?.words?.length) {
+      tl.to(splitInstanceRef.current.words, {
+        yPercent: 110,
+        opacity: 0,
+        stagger: { each: 0.04, from: "end", ease: "power2.in" },
+        duration: 0.45,
+        ease: "power2.in"
+      }, 0);
 
-const handleThumbClick = (index) => {
-  if (isAnimating) return;
+      if (headingContainer) {
+        tl.to(headingContainer, {
+          y: 40,
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.in"
+        }, 0);
+      }
+    }
 
-  navigate(1, index);
-};
+    if (cells && cells.length) {
+      const cols = 10;
+      const rows = Math.ceil(cells.length / cols);
+      const ordered = [];
+
+      for (let x = cols - 1; x >= 0; x--) {
+        const column = [];
+        for (let y = 0; y < rows; y++) {
+          const index = y * cols + x;
+          if (cells[index]) {
+            column.push(cells[index]);
+          }
+        }
+        ordered.push(...gsap.utils.shuffle(column));
+      }
+
+      gsap.set(cells, { opacity: 0 });
+
+      tl.to(ordered, {
+        opacity: 1,
+        duration: 0.6,
+        stagger: 0.02,
+        ease: "power3.out",
+      }, hasDismissedHeadingRef.current ? 0 : 0.18);
+
+      if (content) {
+        tl.to(content, {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "expo.out"
+        }, "-=0.2");
+      }
+    }
+  };
+
+  const handleThumbClick = (index) => {
+    if (isAnimating) return;
+    navigate(1, index);
+  };
 
   const addToRevealImages = (el) => {
     if (el && !revealImagesRef.current.includes(el)) {
@@ -860,28 +1245,35 @@ const handleThumbClick = (index) => {
       sliderNavRef.current.push(el);
     }
   };
+  const rebuildGrids = () => {
+  cellsMap.current = blindsRefs.current.map((group) => createCells(group));
+};
 const createCells = (group) => {
   if (!group) return [];
 
   group.innerHTML = "";
-const cols = 10;
-const rows = Math.round((viewportDimensions.height / viewportDimensions.width) * cols);
+
+const cols = window.innerWidth < 768 ? 6 : 10;
+
+  const cellSize = window.innerWidth / cols;
+  const rows = Math.ceil(window.innerHeight / cellSize);
 
   const cells = [];
 
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
-      const rect = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "rect"
-      );
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+
+      const overlap = 0.1;
 
       rect.setAttribute("x", `${(x / cols) * 100}%`);
       rect.setAttribute("y", `${(y / rows) * 100}%`);
-      rect.setAttribute("width", `${100 / cols}%`);
-      rect.setAttribute("height", `${100 / rows}%`);
+      rect.setAttribute("width", `${100 / cols + overlap}%`);
+      rect.setAttribute("height", `${100 / rows + overlap}%`);
+
       rect.setAttribute("fill", "white");
       rect.setAttribute("opacity", 0);
+      rect.setAttribute("shape-rendering", "crispEdges");
 
       group.appendChild(rect);
       cells.push(rect);
@@ -890,153 +1282,168 @@ const rows = Math.round((viewportDimensions.height / viewportDimensions.width) *
 
   return cells;
 };
-const cellsMap = useRef([]);
-
-useEffect(() => {
-  cellsMap.current = blindsRefs.current.map((group) =>
-    createCells(group)
-  );
-}, []);
-
-const [viewportDimensions, setViewportDimensions] = useState({ width: 16, height: 9 });
-
-useEffect(() => {
-  const updateDimensions = () => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    // Use a normalized viewBox that maintains aspect ratio
-    setViewportDimensions({ width: 100, height: (100 * height) / width });
-  };
   
-  updateDimensions();
-  window.addEventListener('resize', updateDimensions);
-  return () => window.removeEventListener('resize', updateDimensions);
+  const cellsMap = useRef([]);
+
+  useEffect(() => {
+    cellsMap.current = blindsRefs.current.map((group) => createCells(group));
+  }, []);
+useEffect(() => {
+  rebuildGrids();
+
+  const handleResize = () => {
+    rebuildGrids();
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
 }, []);
-return (
-  <>
-    <section ref={containerRef} data-slideshow="wrap" className="crisp-header is--loading is--hidden">
+  const [viewportDimensions, setViewportDimensions] = useState({ width: 16, height: 9 });
 
-      <div className="crisp-header__slider">
-<div className="crisp-header__slider-list">
-  {slidesData.map((slide, index) => (
-    <div
-      key={slide.id}
-      ref={(el) => (slidesRef.current[index] = el)}
-      className="crisp-header__slider-slide"
-    >
-  <svg
-  className="slide-svg"
-  viewBox={`0 0 ${viewportDimensions.width} ${viewportDimensions.height}`}
-  preserveAspectRatio="none"
->
-  <defs>
-    <mask id={`mask-${index}`}>
-      <rect width="100%" height="100%" fill="black" />
-      <g ref={(el) => (blindsRefs.current[index] = el)} />
-    </mask>
-  </defs>
+  useEffect(() => {
+    const updateDimensions = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      setViewportDimensions({ width: 100, height: (100 * height) / width });
+    };
+    
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+  
+  return (
+    <>
+      <section ref={containerRef} data-slideshow="wrap" className="crisp-header is--loading is--hidden">
+        <div className="crisp-header__slider">
+          <div className="crisp-header__slider-list">
+            {allSlides.map((slide, index) => (
+              <div
+                key={slide.id}
+                ref={(el) => (slidesRef.current[index] = el)}
+                className="crisp-header__slider-slide"
+              >
+                <svg
+                  className="slide-svg"
+                  viewBox={`0 0 ${viewportDimensions.width} ${viewportDimensions.height}`}
+                  preserveAspectRatio="none"
+                  style={{ pointerEvents: "none" }} 
+                >
+                  <defs>
+                    <mask id={`mask-${index}`}>
+                      <rect width="100%" height="100%" fill="black" />
+                      <g ref={(el) => (blindsRefs.current[index] = el)} />
+                    </mask>
+                  </defs>
+                  <image
+                    href={slide.full}
+                    x="0"
+                    y="0"
+                    width="100%"
+                    height="100%"
+                    preserveAspectRatio="xMidYMid slice"
+                    mask={`url(#mask-${index})`}
+                  />
+                </svg>
+                <div
+                  className="slide-content"
+                  onClick={() => {
+                    if (!slide.variant) {
+                      console.warn("No variant for slide:", slide)
+                      return
+                    }
+                    router.push(`/shop/products/${slide.variant.id}`)
+                  }}
+                  style={{
+                    position: "absolute",
+                    zIndex: 10,
+                    pointerEvents: "auto",
+                    cursor: "pointer"
+                  }}
+                >
+                  <h2 className="slide-title">{slide.title}</h2>
+                  <p className="slide-sub">{slide.subtitle}</p>
+                  <p className="slide-description">{slide.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <FlameTrail />
+        </div>
 
-  <image
-    href={slide.full}
-    x="0"
-    y="0"
-    width="100%"
-    height="100%"
-    preserveAspectRatio="xMidYMid slice"
-    mask={`url(#mask-${index})`}
-  />
-</svg>
-    </div>
-  ))}
-</div>
-      </div>
-
-
-      <div className="crisp-loader">
-        <div className="crisp-loader__wrap">
-          <div className="crisp-loader__groups" ref={loaderGroupsRef}>
-            <div 
-              className="crisp-loader__group is--relative" 
-              ref={mainGroupRef}
-            >
-              {slidesData.map((image, idx) => {
-              const isCenter = idx === centerIndex;
-                return (
-                  <div 
-                    key={`main-${idx}`} 
-                    className={`crisp-loader__single ${isCenter ? 'is--center' : ''}`}
-                  >
-                    <div 
-                      className={`crisp-loader__media ${
-                        isCenter ? 'is--scaling is--radius' : ''
-                      }`}
-                      ref={
-                        isCenter
+        <div className="crisp-loader">
+          <div className="crisp-loader__wrap">
+            <div className="crisp-loader__groups" ref={loaderGroupsRef}>
+              <div className="crisp-loader__group is--relative" ref={mainGroupRef}>
+                {allSlides.map((image, idx) => {
+                  const isCenter = idx === centerIndex;
+                  return (
+                    <div key={`main-${idx}`} className={`crisp-loader__single ${isCenter ? 'is--center' : ''}`}>
+                      <div 
+                        className={`crisp-loader__media ${isCenter ? 'is--scaling is--radius' : ''}`}
+                        ref={isCenter
                           ? (el) => {
                               scaleUpMediaRef.current = el;
                               radiusMediaRef.current = el;
                             }
                           : (el) => addToScaleDown(el)
-                      }
-                    >
-                      <img
-                        src={image.thumbnail}
-                        alt={image.alt}
-                        className={`crisp-loader__cover-img ${
-                          !isCenter ? 'is--scale-down' : ''
-                        }`}
-                      />
+                        }
+                      >
+                        <img
+                          src={image.thumbnail}
+                          alt={image.alt}
+                          className={`crisp-loader__cover-img ${!isCenter ? 'is--scale-down' : ''}`}
+                        />
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+            </div>
+            <div className="crisp-loader__fade"></div>
+            <div className="crisp-loader__fade is--duplicate"></div>
+          </div>
+        </div>
+
+        <div ref={contentRef} className="crisp-header__content">
+          <div className="crisp-header__center">
+            <div ref={headingContainerRef} className="crisp-header__heading-container">
+              <h1 className="crisp-header__h1" ref={headingRef}>Browse our e-shop</h1>
             </div>
           </div>
-          <div className="crisp-loader__fade"></div>
-          <div className="crisp-loader__fade is--duplicate"></div>
-        </div>
-      </div>
-
-
-      <div ref={contentRef} className="crisp-header__content">
-            <div className="dot-grid-wrapper" ref={dotGridWrapperRef}>
-          <CircleGridMouseFollow />
-        </div>
-        <div className="crisp-header__center">
-          <div ref={headingContainerRef} className="crisp-header__heading-container">
-            <h1 className="crisp-header__h1" ref={headingRef}>Browse our e-shop</h1>
+          <div className="crisp-header__bottom">
+            <div className="crisp-header__slider-nav">
+              {slidesData.map((slide, index) => (
+                <button
+                  key={slide.id}
+                  ref={(el) => {
+                    if (el) {
+                      thumbsRef.current[index] = el;
+                      addToSliderNav(el);
+                    }
+                  }}
+                  data-slideshow="thumb"
+                  className="crisp-header__slider-nav-btn"
+                  onClick={() => handleThumbClick(index)}
+                  type="button"
+                >
+                  <img
+                    loading="eager"
+                    src={slide.thumbnail}
+                    alt={slide.alt}
+                    className="crisp-loader__cover-img"
+                  />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="crisp-header__bottom">
-          <div className="crisp-header__slider-nav">
-            {slidesData.map((slide, index) => (
-              <button
-                key={slide.id}
-                ref={(el) => {
-                  if (el) {
-                    thumbsRef.current[index] = el;
-                    addToSliderNav(el);
-                  }
-                }}
-                data-slideshow="thumb"
-                className="crisp-header__slider-nav-btn"
-                onClick={() => handleThumbClick(index)}
-                type="button"
-              >
-                <img
-                  loading="eager"
-                  src={slide.thumbnail}
-                  alt={slide.alt}
-                  className="crisp-loader__cover-img"
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  </>
-);
+      </section>
+    </>
+  );
 };
 
 export default PreloaderComponent;
