@@ -232,7 +232,6 @@ export default function EarlyOrthodontics() {
               <div className="absolute inset-0 flex justify-center items-start min-[1280px]:justify-start">
                 <SlidingText
                   text="Early Orthodontics"
-                  effect="2"
                   totalCells={8}
                   className="font-lg font-canela italic text-center translate-y-6 min-[1280px]:translate-y-0 min-[1280px]:text-left"
                 />
@@ -297,7 +296,7 @@ export default function EarlyOrthodontics() {
 
 const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   const containerRef = useRef(null);
-  const innerRefs = useRef([]);
+  const innerRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [textWidth, setTextWidth] = useState(0);
   const [isReady, setIsReady] = useState(false);
 
@@ -423,7 +422,9 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
           <span key={i} className="gtext__box" style={{ display: "inline-block" }}>
             <span
               className="gtext__box-inner"
-              ref={(el) => (innerRefs.current[i] = el)}
+              ref={(el) => { 
+                innerRefs.current[i] = el; 
+              }}
               style={{ 
                 display: "inline-block",
                 whiteSpace: "nowrap",
@@ -451,7 +452,9 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
         <span key={i} className="gtext__box" style={{ display: "inline-block" }}>
           <span
             className="gtext__box-inner"
-            ref={(el) => (innerRefs.current[i] = el)}
+            ref={(el) => { 
+              innerRefs.current[i] = el; 
+            }}
             style={{ 
               display: "inline-block",
               whiteSpace: "nowrap"
