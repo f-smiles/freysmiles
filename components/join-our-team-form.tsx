@@ -70,9 +70,9 @@ export function JoinOurTeamForm() {
     form.clearErrors("contactInfo")
   }
 
-  useEffect(() => {
-    console.log(contactInfoSelect)
-  }, [contactInfoSelect])
+  // useEffect(() => {
+  //   console.log(contactInfoSelect)
+  // }, [contactInfoSelect])
 
   const { execute, status } = useAction(requestJoinTeam, {
     onSuccess({ data }) {
@@ -117,19 +117,7 @@ export function JoinOurTeamForm() {
                 initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
                 animate={{ opacity: 1, backdropFilter: "blur(4px)" }}
                 exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-                transition={{
-                  duration: 1,
-                  ease: [0.22, 1, 0.36, 1],
-                  exit: {
-                    opacity: {
-                      duration: 1.2, 
-                      ease: [0.22, 1, 0.36, 1]
-                    },
-                    backdropFilter: {
-                      duration: 0.4 
-                    }
-                  }
-                }}
+                transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
                 className="fixed inset-0 z-50 bg-black/80 
                           flex items-center justify-center
                           font-neuehaas45 tracking-wide"
@@ -284,19 +272,19 @@ export function JoinOurTeamForm() {
                                             defaultValue="email"
                                             value={contactInfoSelect}
                                             onValueChange={handleContactInfoSelectChange}
-                                            id="form-applicant-contact-method"
-                                            className="w-full bg-transparent border border-white/20 rounded-lg 
-                                                    px-4 py-3 
-                                                    text-[12px] leading-relaxed
-                                                    text-white/85
-                                                    placeholder:text-white/35
-                                                    tracking-[0.01em]
-                                                    focus:outline-none focus:border-white/60
-                                                    transition-colors"
                                           >
                                             <SelectTrigger
                                               className="w-max text-xs border border-white/20 data-[placeholder]:text-white/85"
                                               id="form-applicant-contact-method"
+                                              // id="form-applicant-contact-method"
+                                              // className="w-full bg-transparent border border-white/20 rounded-lg 
+                                              //       px-4 py-3 
+                                              //       text-[12px] leading-relaxed
+                                              //       text-white/85
+                                              //       placeholder:text-white/35
+                                              //       tracking-[0.01em]
+                                              //       focus:outline-none focus:border-white/60
+                                              //       transition-colors"
                                             >
                                               <SelectValue placeholder="" />
                                             </SelectTrigger>
@@ -355,19 +343,19 @@ export function JoinOurTeamForm() {
                                           required
                                           onValueChange={field.onChange}
                                           value={field.value?.toString()}
-                                          className="w-full bg-transparent border border-white/20 rounded-lg 
-                                                    px-4 py-3 
-                                                    text-[12px] leading-relaxed
-                                                    text-white/85
-                                                    placeholder:text-white/35
-                                                    tracking-[0.01em]
-                                                    focus:outline-none focus:border-white/60
-                                                    transition-colors"
-                                          {...field}
+                                          // {...field}
                                         >
                                           <SelectTrigger
                                             className="border border-white/20 data-[placeholder]:text-white/85"
                                             id="form-applicant-high-school-graduation-year"
+                                            // className="w-full bg-transparent border border-white/20 rounded-lg 
+                                            //         px-4 py-3 
+                                            //         text-[12px] leading-relaxed
+                                            //         text-white/85
+                                            //         placeholder:text-white/35
+                                            //         tracking-[0.01em]
+                                            //         focus:outline-none focus:border-white/60
+                                            //         transition-colors"
                                           >
                                             <SelectValue placeholder="Select year" />
                                           </SelectTrigger>
@@ -409,15 +397,15 @@ export function JoinOurTeamForm() {
                                           required
                                           onValueChange={field.onChange}
                                           value={field.value}
-                                          className="w-full bg-transparent border border-white/20 rounded-lg 
-                                                    px-4 py-3 
-                                                    text-[12px] leading-relaxed
-                                                    text-white/85
-                                                    placeholder:text-white/35
-                                                    tracking-[0.01em]
-                                                    focus:outline-none focus:border-white/60
-                                                    transition-colors"
-                                          {...field}
+                                          // className="w-full bg-transparent border border-white/20 rounded-lg 
+                                          //           px-4 py-3 
+                                          //           text-[12px] leading-relaxed
+                                          //           text-white/85
+                                          //           placeholder:text-white/35
+                                          //           tracking-[0.01em]
+                                          //           focus:outline-none focus:border-white/60
+                                          //           transition-colors"
+                                          // {...field}
                                         >
                                           <SelectTrigger
                                             className="border border-white/20 data-[placeholder]:text-white/85"
@@ -463,15 +451,15 @@ export function JoinOurTeamForm() {
                                           required
                                           onValueChange={field.onChange}
                                           value={field.value}
-                                          className="w-full bg-transparent border border-white/20 rounded-lg 
-                                                    px-4 py-3 
-                                                    text-[12px] leading-relaxed
-                                                    text-white/85
-                                                    placeholder:text-white/35
-                                                    tracking-[0.01em]
-                                                    focus:outline-none focus:border-white/60
-                                                    transition-colors"
-                                          {...field}
+                                          // className="w-full bg-transparent border border-white/20 rounded-lg 
+                                          //           px-4 py-3 
+                                          //           text-[12px] leading-relaxed
+                                          //           text-white/85
+                                          //           placeholder:text-white/35
+                                          //           tracking-[0.01em]
+                                          //           focus:outline-none focus:border-white/60
+                                          //           transition-colors"
+                                          // {...field}
                                         >
                                           <SelectTrigger
                                             className="border border-white/20 data-[placeholder]:text-white/85"
@@ -518,15 +506,15 @@ export function JoinOurTeamForm() {
                                           required
                                           onValueChange={field.onChange}
                                           value={field.value}
-                                          className="w-full bg-transparent border border-white/20 rounded-lg 
-                                                    px-4 py-3 
-                                                    text-[12px] leading-relaxed
-                                                    text-white/85
-                                                    placeholder:text-white/35
-                                                    tracking-[0.01em]
-                                                    focus:outline-none focus:border-white/60
-                                                    transition-colors"
-                                          {...field}
+                                          // className="w-full bg-transparent border border-white/20 rounded-lg 
+                                          //           px-4 py-3 
+                                          //           text-[12px] leading-relaxed
+                                          //           text-white/85
+                                          //           placeholder:text-white/35
+                                          //           tracking-[0.01em]
+                                          //           focus:outline-none focus:border-white/60
+                                          //           transition-colors"
+                                          // {...field}
                                         >
                                           <SelectTrigger
                                             className="border border-white/20 data-[placeholder]:text-white/85"
@@ -606,15 +594,15 @@ export function JoinOurTeamForm() {
                                           required
                                           onValueChange={field.onChange}
                                           value={field.value}
-                                          className="w-full bg-transparent border border-white/20 rounded-lg 
-                                                    px-4 py-3 
-                                                    text-[12px] leading-relaxed
-                                                    text-white/85
-                                                    placeholder:text-white/35
-                                                    tracking-[0.01em]
-                                                    focus:outline-none focus:border-white/60
-                                                    transition-colors"
-                                          {...field}
+                                          // className="w-full bg-transparent border border-white/20 rounded-lg 
+                                          //           px-4 py-3 
+                                          //           text-[12px] leading-relaxed
+                                          //           text-white/85
+                                          //           placeholder:text-white/35
+                                          //           tracking-[0.01em]
+                                          //           focus:outline-none focus:border-white/60
+                                          //           transition-colors"
+                                          // {...field}
                                         >
                                           <SelectTrigger 
                                             className="border border-white/20 data-[placeholder]:text-white/85"
