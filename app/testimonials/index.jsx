@@ -2379,11 +2379,9 @@ const SlidingText = ({
       const firstInner = innerRefs.current[0];
       const textWidth = firstInner.scrollWidth;
 
-      // Update CSS variables
       container.style.setProperty("--text-width", `${textWidth}px`);
       container.style.setProperty("--gsplits", totalCells);
 
-      // Calculate offset and position each slice
       const offset = textWidth / totalCells;
       
       innerRefs.current.forEach((inner, i) => {
