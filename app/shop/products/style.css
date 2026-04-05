@@ -351,61 +351,230 @@ main:has(.crisp-header.is--loading) {
 @media (max-width: 768px) {
 
 
-  .mobile-preloader {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-  }
+body {
+  font-family: "NeueHaasGroteskDisplayPro45Light";
+}
 
-  .mobile-strip {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-    transform: translate(-50%, -50%);
+.spotlight h1 {
+  font-size: 2rem;
+  line-height: 1;
+  color: white;
+}
 
-    display: flex;
-    flex-direction: row;
-    gap: 0.5em;
-  }
+.spotlight p {
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1;
+}
 
+section {
+  position: relative;
+  width: 100vw;
+  height: 100svh;
+  overflow: hidden;
+}
 
-  .mobile-strip.is--vertical {
-    left: 0.75em;
-    /* top: 50%;
+.intro,
+.outro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0f0f0f;
+  color: #fff;
+}
 
-    transform: translateY(-50%); */
+.spotlight-intro-text-wrapper {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 0.5rem;
+}
 
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+.spotlight-intro-text {
+  flex: 1;
+  position: relative;
+  will-change: transform;
+  font-family: "NeueHaasGroteskDisplayPro45Light";
+}
 
-  .mobile-item {
-    width: 4em;
-    flex-shrink: 0;
+.spotlight-intro-text:nth-child(1) {
+  display: flex;
+  justify-content: flex-end;
+}
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.spotlight-bg-img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+ filter: grayscale(100%) contrast(100%);
+}
 
-  .mobile-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+.bg-img {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  will-change: transform, opacity;
+}
 
-  .mobile-item p {
-    margin-top: 0.25em;
-    font-size: 0.65rem;
-    text-align: center;
-    line-height: 1.1;
-  }
+.bg-img.current {
+  z-index: 1;
+}
+
+.bg-img.next {
+  z-index: 2;
+  opacity: 0;
+}
+.spotlight-titles-container {
+  position: absolute;
+  inset: 0;
+}
+.spotlight-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.spotlight-mask {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 100%;
+  height: 30px;
+  overflow: hidden;
+}
+
+.spotlight-titles {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.spotlight-titles > div {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.spotlight-lines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.line {
+  position: absolute;
+  width: 120vw;
+  height: 1px;
+  background: white;
+  left: -20vw;
+  top: 50%;
+  transform-origin: left center;
+}
+
+.line-left {
+  transform: rotate(-35deg);
+}
+
+.line-right {
+  transform: rotate(35deg);
+}
+
+.spotlight-label {
+  position: absolute;
+  top: 50%;
+  left: 18vw;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 0.9rem;
+  z-index: 20;
 
 }
 
+.spotlight-titles {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.spotlight-titles > div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 120px; 
+  overflow: hidden;
+}
+
+.spotlight-images {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  min-width: 300px;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+
+.spotlight-img {
+  position: absolute;
+  width: 200px;
+  height: 150px;
+  will-change: transform;
+}
+.spotlight {
+  position: relative;
+height: 100vh; /* fallback */
+  height: 100dvh;
+  overflow: hidden;
+}
+
+
+
+}
+/* @media (max-width: 1000px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  .intro,
+  .outro {
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .spotlight-titles-container {
+    clip-path: none;
+  }
+
+  .spotlight-titles-container::before,
+  .spotlight-titles-container::after {
+    display: none;
+  }
+
+  .spotlight-titles {
+    left: 0;
+  }
+
+  .spotlight-header {
+    display: none;
+  }
+} */
 .crisp-header__slider-nav-btn {
   transition: all 0.3s ease;
 }
@@ -468,7 +637,6 @@ main:has(.crisp-header.is--loading) {
   position: absolute;
   top: 50%;
   right: 4%;
-  transform: translateY(-50%);
   /* padding: 2rem 1.2rem; */
   color: white;
   text-align: right;

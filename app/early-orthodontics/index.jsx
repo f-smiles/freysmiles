@@ -183,17 +183,11 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   );
 };
 export default function EarlyOrthodontics() {
+  
   const mainSection = useRef(null);
   const itemsContainer = useRef(null);
 
-useEffect(() => {
-  const height = window.innerHeight;
 
-  document.documentElement.style.setProperty(
-    "--app-height",
-    `${height}px`
-  );
-}, []);
 
 useEffect(() => {
   const items = document.querySelectorAll(".MainSectionItem");
@@ -222,7 +216,7 @@ mm.add("(max-width: 1439px)", () => {
   gsap.set(innerItems, { clearProps: "all" });
   gsap.set(mediaContainers, { clearProps: "all" });
   gsap.set(mediaContainersInner, { clearProps: "all" });
-
+ScrollTrigger.normalizeScroll(true);
   const mobile = gsap.context(() => {
 
     innerStickies.forEach((item, i) => {
