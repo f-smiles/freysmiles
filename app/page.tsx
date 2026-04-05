@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import BookNow from "./book-now"
+import BookNow from "@/components/book-now/book-now"
 
 export const metadata: Metadata = {
   title: "FreySmiles | Book Now",
