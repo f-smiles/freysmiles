@@ -12,7 +12,7 @@ export const RequestJoinTeamSchema = z.object({
       value: z.string({ message: "Enter a valid 10 digit US phone number" }).length(10).regex(/^\+?[1-9]\d{1,14}$/),
     }),
   ]),
-  highSchoolGraduationYear: z.coerce.number().int().min(1987).max(2027),
+  highSchoolGraduationYear: z.string(),
   priorDentistryExperience: z.string(),
   positionOfInterest: z.string(),
   heardFrom: z.string(),
