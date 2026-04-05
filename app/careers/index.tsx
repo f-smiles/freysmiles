@@ -1,5 +1,4 @@
 "use client"
-import "./style.css"
 import React, { useEffect, useState } from 'react'
 import { motion } from "motion/react";
 import { Controller, useForm } from 'react-hook-form';
