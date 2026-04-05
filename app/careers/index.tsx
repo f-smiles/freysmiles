@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { motion } from "motion/react";
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, Form, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RequestJoinTeamSchema } from '@/types/request-join-team-schema';
 import { useAction } from 'next-safe-action/hooks';
@@ -84,8 +84,8 @@ export default function Index() {
   })
 
   const onSubmit = (values) => {
-    console.log(values)
-    // execute(values)
+    // console.log(values)
+    execute(values)
   }
 
   return (
@@ -180,7 +180,7 @@ export default function Index() {
                             className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
                             htmlFor="form-applicant-contact-method"
                           >
-                              Best way to reach you
+                            Best way to reach you
                           </FieldLabel>
                           <div className="flex items-center gap-2">
                             <Select
@@ -252,7 +252,7 @@ export default function Index() {
                           required
                         >
                           <SelectTrigger
-                            className="border border-white/20 data-[placeholder]:text-white/85"
+                            className="border border-white/20 text-white data-[placeholder]:text-white/85"
                             id="form-applicant-high-school-graduation-year"
                           >
                             <SelectValue placeholder="Select year" />
@@ -295,7 +295,7 @@ export default function Index() {
                           required
                         >
                           <SelectTrigger
-                            className="border border-white/20 data-[placeholder]:text-white/85"
+                            className="border border-white/20 text-white data-[placeholder]:text-white/85"
                             id="form-applicant-prior-experience-in-dentistry"
                           >
                             <SelectValue placeholder="Select yes or no" />
@@ -338,7 +338,7 @@ export default function Index() {
                           required
                         >
                           <SelectTrigger
-                            className="border border-white/20 data-[placeholder]:text-white/85"
+                            className="border border-white/20 text-white data-[placeholder]:text-white/85"
                             id="form-applicant-position-of-interest"
                           >
                             <SelectValue placeholder="Select role" />
@@ -382,7 +382,7 @@ export default function Index() {
                           required
                         >
                           <SelectTrigger
-                            className="border border-white/20 data-[placeholder]:text-white/85"
+                            className="border border-white/20 text-white data-[placeholder]:text-white/85"
                             id="form-applicant-how-did-you-hear-about-us"
                           >
                             <SelectValue placeholder="Select source" />
@@ -458,7 +458,7 @@ export default function Index() {
                           required
                         >
                           <SelectTrigger
-                            className="border border-white/20 data-[placeholder]:text-white/85"
+                            className="border border-white/20 text-white data-[placeholder]:text-white/85"
                             id="form-applicant-available-to-work-all-4-locations-allentown-bethlehem-lehighton-schnecksville"
                           >
                             <SelectValue placeholder="Select yes or no" />
