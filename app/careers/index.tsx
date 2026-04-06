@@ -8,14 +8,14 @@ import { useAction } from 'next-safe-action/hooks';
 import { requestJoinTeam } from '@/server/actions/request-join-team';
 import { toast } from 'sonner';
 
-import { CanvasBallsAnimation } from '@/components/book-now/canvas-balls-animation';
+import { CanvasBallsAnimation } from '@/components/canvas-balls-animation';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 
 
-export default function Index() {
+export default function JoinTeamForm() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("")
   
@@ -89,10 +89,15 @@ export default function Index() {
   }
 
   return (
-    <div className="relative w-full h-screen
-                    bg-gradient-to-br from-[#4E5353] via-[#505456] to-[#3E4243]
-                    flex items-start justify-center
-                    overflow-y-auto overflow-x-hidden"
+    <motion.div
+      initial={{ opacity: 0, y: "-20vh", backdropFilter: "blur(0px)" }}
+      animate={{ opacity: 1, y: 0, backdropFilter: "blur(4px)" }}
+      exit={{ opacity: 0, y: "-100vh", backdropFilter: "blur(0px)" }}
+      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      className="relative w-full h-screen
+                 bg-gradient-to-br from-[#4E5353] via-[#505456] to-[#3E4243]
+                 flex items-start justify-center
+                 overflow-y-auto overflow-x-hidden"
     >
       <div className="absolute inset-0 pointer-events-none z-[1]">
         <CanvasBallsAnimation />
@@ -604,6 +609,6 @@ export default function Index() {
 
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   )
 }
