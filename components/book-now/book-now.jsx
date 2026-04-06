@@ -318,7 +318,7 @@ export default function BookNow() {
         <JoinOurTeam />
       </div> */}
 
-      <a href="/careers" className="flex flex-col items-center justify-center z-10 pb-20 xl:pb-14">
+      <a href="/careers" className="group flex flex-col items-center justify-center z-10 pb-20 xl:pb-14">
         <div className="flex flex-row items-center gap-3">
           <span className="font-neuehaas45 tracking-wide">Join Our Team</span>
           <span className="font-canela italic tracking-wide flex items-center gap-3">
