@@ -88,7 +88,12 @@ export default function EarlyOrthodontics() {
     const innerItems = document.querySelectorAll(".MainSectionItem-inner")
     const mediaContainers = document.querySelectorAll(".MainSectionItem-mediaContainer")
     const mediaContainersInner = document.querySelectorAll(".MainSectionItem-mediaContainerInner")
-    
+    const medias = document.querySelectorAll('.MainSectionItem-media')
+
+    medias.forEach((media) => {
+      gsap.set(media, { aspectRatio: 1.3793103448275863 })
+    })
+
     let mm = gsap.matchMedia()
     
     mm.add("(max-width: 1279px)", () => {
