@@ -9,9 +9,10 @@ import { SplitText } from "gsap/SplitText";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { MoveRightIcon } from "lucide-react";
 import Logo from "@/components/logo";
-import { JoinOurTeam } from "./join-our-team"
+// import { JoinOurTeam } from "./join-our-team";
 
 gsap.registerPlugin(SplitText, ScrambleTextPlugin);
+
 
 export default function BookNow() {
   const [time, setTime] = useState("");

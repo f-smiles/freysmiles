@@ -9,7 +9,7 @@ import { MoveRightIcon } from "lucide-react";
 
 import { RequestJoinTeamSchema } from "@/types/request-join-team-schema";
 import { requestJoinTeam } from "@/server/actions/request-join-team";
-import { CanvasBallsAnimation } from "./canvas-balls-animation";
+import { CanvasBallsAnimation } from "@/components/canvas-balls-animation/index";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
