@@ -75,12 +75,17 @@ export default function AdultOrthodontics() {
   const mainSection = useRef(null);
   const itemsContainer = useRef(null);
 
-    useEffect(() => {
+  useEffect(() => {
     const items = document.querySelectorAll(".MainSection-item")
     const innerItems = document.querySelectorAll(".MainSectionItem-inner")
     const mediaContainers = document.querySelectorAll(".MainSectionItem-mediaContainer")
     const mediaContainersInner = document.querySelectorAll(".MainSectionItem-mediaContainerInner")
-    
+    const medias = document.querySelectorAll('.MainSectionItem-media')
+
+    medias.forEach((media) => {
+      gsap.set(media, { aspectRatio: 1.3793103448275863 })
+    })
+
     let mm = gsap.matchMedia()
     
     mm.add("(max-width: 1279px)", () => {
@@ -164,49 +169,30 @@ export default function AdultOrthodontics() {
         tl.fromTo(mediaContainersInner[4],{ scale: 2, transformOrigin: "50% 50% 0px" },{ scale: 1.85 },"<")
       
         // --- Phase 3 ---
-        tl.addLabel("phase-3", ">")
+        tl.addLabel('phase-3', '>')
         tl.fromTo(items[2], { xPercent: 0 }, { xPercent: -100 })
-        tl.fromTo(innerItems[2], { xPercent: 0 }, { xPercent: 100 }, "<")
-        tl.fromTo(mediaContainers[2],{ xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" },{ xPercent: -150, scale: 0.8 },"<")
-        tl.fromTo(mediaContainersInner[2], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<")
-        tl.fromTo(items[3], { xPercent: 80 }, { xPercent: 0 }, "<")
-        tl.fromTo(innerItems[3], { xPercent: -80 }, { xPercent: 0 }, "<")
-        tl.fromTo(mediaContainers[3], { xPercent: -15, scale: 0.45, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<")
-        tl.fromTo(mediaContainersInner[3], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<")
-        tl.fromTo(items[4], { xPercent: 95 }, { xPercent: 80 }, "<")
-        tl.fromTo(innerItems[4], { xPercent: -95 }, { xPercent: -80 }, "<")
-        tl.fromTo(mediaContainers[4], { xPercent: 0, scale: 0.15, transformOrigin: "100% 100% 0px" }, { xPercent: -15, scale: 0.45 }, "<")
-        tl.fromTo(mediaContainersInner[4], { scale: 1.85, transformOrigin: "50% 50% 0px" }, { scale: 1.55 }, "<")
-        tl.fromTo(items[5], { xPercent: 100 }, { xPercent: 95 }, "<")
-        tl.fromTo(innerItems[5], { xPercent: -100 }, { xPercent: -95 }, "<")
-        tl.fromTo(mediaContainers[5], { scale: 0, transformOrigin: "100% 100% 0px" }, { scale: 0.15 }, "<")
-        tl.fromTo(mediaContainersInner[5], { scale: 2, transformOrigin: "50% 50% 0px" }, { scale: 1.85 }, "<")
+        tl.fromTo(innerItems[2], { xPercent: 0 }, { xPercent: 100 }, '<')
+        tl.fromTo(mediaContainers[2], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(mediaContainersInner[2], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(items[3], { xPercent: 80 }, { xPercent: 0 }, '<')
+        tl.fromTo(innerItems[3], { xPercent: -80 }, { xPercent: 0 }, '<')
+        tl.fromTo(mediaContainers[3], { xPercent: -15, scale: 0.45, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
+        tl.fromTo(mediaContainersInner[3], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
+        tl.fromTo(items[4], { xPercent: 95 }, { xPercent: 80 }, '<')
+        tl.fromTo(innerItems[4], { xPercent: -95 }, { xPercent: -80 }, '<')
+        tl.fromTo(mediaContainers[4], { scale: 0.15, transformOrigin: '100% 100% 0px' }, { scale: 0.6 }, '<')
+        tl.fromTo(mediaContainersInner[4], { scale: 1.85, transformOrigin: '50% 50% 0px' }, { scale: 1.55 }, '<')
         
         // --- Phase 4 ---
-        tl.addLabel("phase-4", ">")
+        tl.addLabel('phase-4', '>')
         tl.fromTo(items[3], { xPercent: 0 }, { xPercent: -100 })
-        tl.fromTo(innerItems[3], { xPercent: 0 }, { xPercent: 100 }, "<")
-        tl.fromTo(mediaContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" }, { xPercent: -150, scale: 0.8 }, "<")
-        tl.fromTo(mediaContainersInner[3], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<")
-        tl.fromTo(items[4], { xPercent: 80 }, { xPercent: 0 }, "<")
-        tl.fromTo(innerItems[4], { xPercent: -80 }, { xPercent: 0 }, "<")
-        tl.fromTo(mediaContainers[4], { xPercent: -15, scale: 0.45, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<")
-        tl.fromTo(mediaContainersInner[4], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<")
-        tl.fromTo(items[5], { xPercent: 95 }, { xPercent: 80 }, "<")
-        tl.fromTo(innerItems[5], { xPercent: -95 }, { xPercent: -80 }, "<")
-        tl.fromTo(mediaContainers[5], { scale: 0.15, transformOrigin: "100% 100% 0px" }, { scale: 0.6 }, "<")
-        tl.fromTo(mediaContainersInner[5], { scale: 1.85, transformOrigin: "50% 50% 0px" }, { scale: 1.55 }, "<")
-      
-        // --- Phase 5 ---
-        tl.addLabel("phase-5", ">")
-        tl.fromTo(items[4], { xPercent: 0 }, { xPercent: -100 })
-        tl.fromTo(innerItems[4], { xPercent: 0 }, { xPercent: 100 }, "<")
-        tl.fromTo(mediaContainers[4], { xPercent: -60, scale: 1.0, transformOrigin: "100% 100% 0px" }, { xPercent: -150, scale: 0.8 }, "<")
-        tl.fromTo(mediaContainersInner[4], { scale: 1.0, transformOrigin: "50% 50% 0px" }, { scale: 1.2 }, "<")
-        tl.fromTo(items[5], { xPercent: 80 }, { xPercent: 0 }, "<")
-        tl.fromTo(innerItems[5], { xPercent: -80 }, { xPercent: 0 }, "<")
-        tl.fromTo(mediaContainers[5], { xPercent: 0, scale: 0.6, transformOrigin: "100% 100% 0px" }, { xPercent: -60, scale: 1.0 }, "<")
-        tl.fromTo(mediaContainersInner[5], { scale: 1.55, transformOrigin: "50% 50% 0px" }, { scale: 1.0 }, "<")
+        tl.fromTo(innerItems[3], { xPercent: 0 }, { xPercent: 100 }, '<')
+        tl.fromTo(mediaContainers[3], { xPercent: -60, scale: 1.0, transformOrigin: '100% 100% 0px' }, { xPercent: -150, scale: 0.8 }, '<')
+        tl.fromTo(mediaContainersInner[3], { scale: 1.0, transformOrigin: '50% 50% 0px' }, { scale: 1.2 }, '<')
+        tl.fromTo(items[4], { xPercent: 80 }, { xPercent: 0 }, '<')
+        tl.fromTo(innerItems[4], { xPercent: -80 }, { xPercent: 0 }, '<')
+        tl.fromTo(mediaContainers[4], { xPercent: 0, scale: 0.6, transformOrigin: '100% 100% 0px' }, { xPercent: -60, scale: 1.0 }, '<')
+        tl.fromTo(mediaContainersInner[4], { scale: 1.55, transformOrigin: '50% 50% 0px' }, { scale: 1.0 }, '<')
       }, mainSection.current)
 
       return () => desktop.revert()
