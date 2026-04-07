@@ -7,12 +7,11 @@ export default function Index() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (loading) {
-      setTimeout(() => {
-        setLoading(false)
-      }, 2400)
-    }
-  }, [loading])
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 2400)
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <>

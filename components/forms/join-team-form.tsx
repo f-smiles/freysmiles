@@ -16,17 +16,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field
 
 
 export default function JoinTeamForm() {
-  const [open, setOpen] = useState(false);
   const [error, setError] = useState("")
-  
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-  }, [open]);
-  
   // const handleClose = (e) => {
   //   e.preventDefault();
   //   e.stopPropagation();
@@ -74,7 +64,6 @@ export default function JoinTeamForm() {
       if (data?.error) setError(data.error)
       if (data?.success) {
         form.reset()
-        setOpen(false)
         toast.success(data.success)
       }
     },

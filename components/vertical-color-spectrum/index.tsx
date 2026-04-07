@@ -2,12 +2,9 @@
 import "./style.css"
 import { useEffect, useRef } from "react"
 import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-
-gsap.registerPlugin(ScrollTrigger)
 
 export default function VerticalColorSpectrum() {
-  const footerContainer = useRef(null)
+  const animationSection = useRef(null)
   const svgContainer = useRef(null)
 
   useEffect(() => {
@@ -32,14 +29,14 @@ export default function VerticalColorSpectrum() {
         },
         1.2
       )
-    }, footerContainer.current)
+      return () => tl.kill()
+    }, animationSection.current)
 
     return () => animation.revert()
   }, [])
 
-
   return (
-    <div className="animation-section">
+    <div ref={animationSection} className="animation-section">
       <div className="footer-container">
         <div ref={svgContainer} className="svg-container">
           <svg className="spectrum-svg" viewBox="0 0 1567 584" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
