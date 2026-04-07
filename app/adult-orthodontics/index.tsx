@@ -258,12 +258,14 @@ export default function AdultOrthodontics() {
                               className={section.mediaClassName2 ? section.mediaClassName2.join() : ""}
                             />
                           ) : null}
-                          {(section?.mediaClassName1 && section?.mediaClassName2) ? (
+                          {(section.mediaClassName1 && section.mediaClassName2) ? (
                             <svg
                               className="overlay-lines"
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 100 100"
                               preserveAspectRatio="none"
+                              width="100%"
+                              height="100%"
                             >
                               {/* Vertical line */}
                               <line 
