@@ -42,7 +42,7 @@ const sections: SECTION[] = [
   {
     index: 3,
     backgroundColor: "signal",
-    heading: "",
+    heading: "Coordinated Care",
     texts: [
       "No referral is needed to consult with us. From your first visit, you'll be paired with a dedicated treatment coordinator—your point person for everything from scheduling to financial planning. If you don't already have a dentist, we'll help you find one. And when treatment involves additional specialists, we guide you toward trusted providers and coordinate care on your behalf. When jaw surgery is part of the plan, we work closely with the region's leading oral and maxillofacial surgeons to ensure continuity and precision. Exceptional care is always a collaborative effort.",
     ],
