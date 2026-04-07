@@ -14,7 +14,8 @@ interface SECTION {
   texts: string[]
   mediaSrc: string
   mediaAlt: string
-  mediaClassName?: string[]
+  mediaClassName1?: string[]
+  mediaClassName2?: string[]
 }
 
 const sections: SECTION[] = [
@@ -37,7 +38,8 @@ const sections: SECTION[] = [
     ],
     mediaSrc: "/images/nasionanolines.png",
     mediaAlt: "Facial silhouette",
-    mediaClassName: ["profile-image"],
+    mediaClassName1: ["image-wrapper"],
+    mediaClassName2: ["profile-image"],
   },
   {
     index: 3,
@@ -246,15 +248,77 @@ export default function AdultOrthodontics() {
                     </div>
                     <div className="MainSectionItem-mediaContainer">
                       <div className="MainSectionItem-mediaContainerInner">
-                        <div className="MainSectionItem-media">
+                        <div className={`MainSectionItem-media ${section.mediaClassName1 ? section.mediaClassName1.join() : ""}`}>
                           {section.mediaSrc.includes(".jpg") ||
                           section.mediaSrc.includes(".png") ? (
                             <img
                               src={section.mediaSrc}
                               alt={section.mediaAlt}
                               loading="lazy"
-                              // className={section.mediaClassName ? section.mediaClassName.join() : ""}
+                              className={section.mediaClassName2 ? section.mediaClassName2.join() : ""}
                             />
+                          ) : null}
+                          {(section?.mediaClassName1 && section?.mediaClassName2) ? (
+                            <svg
+                              className="overlay-lines"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 100 100"
+                              preserveAspectRatio="none"
+                            >
+                              {/* Vertical line */}
+                              <line 
+                                x1="69" y1="30" 
+                                x2="69" y2="73" 
+                                stroke="#ffffff80" 
+                                strokeWidth="0.5"
+                                strokeLinecap="round"
+                                strokeDasharray="2 3"
+                                vectorEffect="non-scaling-stroke"
+                              />
+
+                              {/* Long diagonal */}
+                              <line 
+                                x1="30" y1="38" 
+                                x2="72" y2="75" 
+                                stroke="#ffffff80" 
+                                strokeWidth="0.5" 
+                                strokeLinecap="round" 
+                                strokeDasharray="2 3"
+                                vectorEffect="non-scaling-stroke"
+                              />
+
+                              {/* Upper horizontal */}
+                              <line
+                                x1="55" y1="31"
+                                x2="74" y2="31"
+                                stroke="#ffffff80"
+                                strokeWidth="0.5"
+                                strokeLinecap="round"
+                                strokeDasharray="2 3"
+                                vectorEffect="non-scaling-stroke"
+                              />
+
+                              {/* Lower horizontal */}
+                              <line
+                                x1="47" y1="61"
+                                x2="73" y2="61"
+                                stroke="#ffffff80"
+                                strokeWidth="0.5"
+                                strokeLinecap="round"
+                                strokeDasharray="2 3"
+                                vectorEffect="non-scaling-stroke"
+                              />
+
+                              <line
+                                x1="75" y1="56"
+                                x2="69" y2="73"
+                                stroke="#ffffff80"
+                                strokeWidth="0.5"
+                                strokeLinecap="round"
+                                strokeDasharray="2 3"
+                                vectorEffect="non-scaling-stroke"
+                              />
+                            </svg>
                           ) : null}
                           {section.mediaSrc.includes(".mp4") ||
                           section.mediaSrc.includes(".mkv") ? (
