@@ -330,13 +330,13 @@ import { useRouter } from "next/navigation";
 //   );
 // };
 // export default Preloader;
+
 const FlameTrail = ({ children }) => {
   const containerRef = useRef(null);
   const trailRef = useRef([]);
   const isSpawningRef = useRef(false);
   const activeTimeoutsRef = useRef([]);
 
-  // Only needed for desktop cursor tracking
   const mouseState = useRef({ x: 0, y: 0, lastX: 0, lastY: 0 });
   const flags = useRef({ isMoving: false, isCursorInContainer: false });
   const moveTimeoutRef = useRef(null);
@@ -421,7 +421,6 @@ const FlameTrail = ({ children }) => {
       imageIndex = (imageIndex + 1) % images.length;
 
       const progress = index / totalCount;
-      // Original sizing logic
       let size =
         config.minImageSize +
         (config.maxImageSize - config.minImageSize) * speed;
@@ -437,8 +436,8 @@ const FlameTrail = ({ children }) => {
           Math.sin(progress * Math.PI) * 15 +
           (Math.random() - 0.5) * 10;
       } else {
-        const rotFactor = 1 + speed * 3; // maxRotationFactor was 3
-        rot = (Math.random() - 0.5) * 30 * rotFactor; // baseRotation was 30
+        const rotFactor = 1 + speed * 3;
+        rot = (Math.random() - 0.5) * 30 * rotFactor;
       }
 
       img.src = imageSrc;
@@ -465,7 +464,7 @@ const FlameTrail = ({ children }) => {
 
       containerRef.current.appendChild(img);
 
-      img.offsetHeight; // Force reflow
+      img.offsetHeight;
       requestAnimationFrame(() => {
         img.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(1)`;
       });
@@ -479,7 +478,6 @@ const FlameTrail = ({ children }) => {
     [getEdgeSafePosition],
   );
 
-  // Mobile: Auto flame trail
   const createAutoFlameTrail = useCallback(() => {
     if (isSpawningRef.current || !containerRef.current || !isMobileRef.current)
       return;
@@ -589,7 +587,6 @@ const FlameTrail = ({ children }) => {
     }
   }, []);
 
-  // Setup based on device type
   const setupForDesktop = useCallback(() => {
     if (!containerRef.current) return;
 
@@ -621,7 +618,6 @@ const FlameTrail = ({ children }) => {
   const setupForMobile = useCallback(() => {
     if (spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
 
-    // Start auto-spawning
     setTimeout(() => createAutoFlameTrail(), 500);
     spawnIntervalRef.current = setInterval(
       createAutoFlameTrail,
@@ -636,20 +632,17 @@ const FlameTrail = ({ children }) => {
     if (wasMobile !== isNowMobile) {
       isMobileRef.current = isNowMobile;
 
-      // Clear all trails
       trailRef.current.forEach((t) => t.element?.remove());
       trailRef.current = [];
       activeTimeoutsRef.current.forEach(clearTimeout);
       activeTimeoutsRef.current = [];
       isSpawningRef.current = false;
 
-      // Clear intervals
       if (spawnIntervalRef.current) {
         clearInterval(spawnIntervalRef.current);
         spawnIntervalRef.current = null;
       }
 
-      // Setup new mode
       if (isNowMobile) {
         setupForMobile();
       }
@@ -660,19 +653,14 @@ const FlameTrail = ({ children }) => {
     if (!containerRef.current) return;
 
     isMobileRef.current = checkIsMobile();
-
-    // Setup desktop mouse tracking (always needed for cursor position)
     const cleanupDesktop = setupForDesktop();
 
-    // Setup mobile auto-spawn if needed
     if (isMobileRef.current) {
       setupForMobile();
     }
 
-    // Resize listener for responsive switching
     window.addEventListener("resize", handleResize);
 
-    // Animation loop for cursor trails (only runs on desktop)
     let animationId;
     const animate = () => {
       if (!isMobileRef.current) {
@@ -708,6 +696,7 @@ const FlameTrail = ({ children }) => {
 };
 
 CustomEase.create("slideshow-wipe", "0.625, 0.05, 0, 1");
+
 const slidesData = [
   {
     variantId: 31,
@@ -781,39 +770,25 @@ const slidesData = [
     thumbnail: "/images/shop/zimawhitefull.png",
   },
 ];
+
 const PreloaderComponent = ({ variants }) => {
   const [isLoading, setIsLoading] = useState(() => {
     if (typeof window === "undefined") return true;
     return !sessionStorage.getItem("preloaderDone");
   });
   const router = useRouter();
-
+  const focusStripRef = useRef(null);
   const containerRef = useRef(null);
   const headingRef = useRef(null);
   const loaderGroupsRef = useRef(null);
-  const revealImagesRef = useRef([]);
   const scaleUpMediaRef = useRef(null);
   const scaleDownImagesRef = useRef([]);
-  const radiusMediaRef = useRef(null);
-  const smallElementsRef = useRef([]);
   const sliderNavRef = useRef([]);
   const splitInstanceRef = useRef(null);
   const mainGroupRef = useRef(null);
   const contentRef = useRef(null);
   const headingContainerRef = useRef(null);
 
-  const slideshowWrapRef = useRef(null);
-  const slidesRef = useRef([]);
-  const thumbsRef = useRef([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const animationDuration = 1.5;
-  const hasDismissedHeadingRef = useRef(false);
-  const blindsRefs = useRef([]);
-
-  const scrollTimeoutRef = useRef(null);
-  const accumulatedScrollRef = useRef(0);
-  const isScrollingNavRef = useRef(false);
 
   const allSlides = useMemo(() => {
     if (!variants?.length) return [];
@@ -829,116 +804,10 @@ const PreloaderComponent = ({ variants }) => {
   const centerIndex = Math.floor(slidesData.length / 2);
 
   useEffect(() => {
-    if (isLoading) return;
-
-    document.body.style.overflow = "auto";
-    document.body.style.height = "100vh";
-
-    const scrollThreshold = 80;
-    let lastScrollY = window.scrollY;
-
-    const handleScroll = () => {
-      if (isAnimating || isScrollingNavRef.current) return;
-
-      const currentScrollY = window.scrollY;
-      const delta = currentScrollY - lastScrollY;
-
-      if (Math.abs(delta) > 0) {
-        accumulatedScrollRef.current += delta;
-
-        if (scrollTimeoutRef.current) {
-          clearTimeout(scrollTimeoutRef.current);
-        }
-
-        if (Math.abs(accumulatedScrollRef.current) >= scrollThreshold) {
-          const direction = accumulatedScrollRef.current > 0 ? 1 : -1;
-          isScrollingNavRef.current = true;
-          navigate(direction);
-          accumulatedScrollRef.current = 0;
-
-          setTimeout(() => {
-            isScrollingNavRef.current = false;
-          }, animationDuration * 1000);
-        }
-
-        scrollTimeoutRef.current = setTimeout(() => {
-          accumulatedScrollRef.current = 0;
-        }, 200);
-      }
-
-      lastScrollY = currentScrollY;
-    };
-
-    let ticking = false;
-    const throttledScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", throttledScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", throttledScroll);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-      document.body.style.overflow = "";
-    };
-  }, [isLoading, isAnimating]);
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    let wheelTimeout = null;
-    let wheelAccumulated = 0;
-    const wheelThreshold = 50;
-
-    const handleWheel = (e) => {
-      if (isAnimating || isScrollingNavRef.current) return;
-
-      wheelAccumulated += e.deltaY;
-
-      if (Math.abs(wheelAccumulated) >= wheelThreshold) {
-        const direction = wheelAccumulated > 0 ? 1 : -1;
-        isScrollingNavRef.current = true;
-        navigate(direction);
-        wheelAccumulated = 0;
-
-        setTimeout(() => {
-          isScrollingNavRef.current = false;
-        }, animationDuration * 1000);
-      }
-
-      if (wheelTimeout) clearTimeout(wheelTimeout);
-      wheelTimeout = setTimeout(() => {
-        wheelAccumulated = 0;
-      }, 150);
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: true });
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-      if (wheelTimeout) clearTimeout(wheelTimeout);
-    };
-  }, [isLoading, isAnimating]);
-
-  useEffect(() => {
     document.fonts.ready.then(() => {
       initCrispLoadingAnimation();
     });
   }, []);
-
-  useEffect(() => {
-    if (slideshowWrapRef.current && !isLoading) {
-      initSlideShow();
-    }
-  }, [isLoading]);
 
   const initCrispLoadingAnimation = () => {
     const container = containerRef.current;
@@ -947,7 +816,7 @@ const PreloaderComponent = ({ variants }) => {
     const heading = headingRef.current;
     const scaleUpMedia = scaleUpMediaRef.current;
     const scaleDownImages = scaleDownImagesRef.current;
-    const smallElements = smallElementsRef.current;
+
     const sliderNav = sliderNavRef.current;
     const mainGroup = mainGroupRef.current;
     const content = contentRef.current;
@@ -1118,7 +987,6 @@ const PreloaderComponent = ({ variants }) => {
       gsap.set(sliderNav, {
         yPercent: 120,
         opacity: 0,
-        scale: 0.95,
       });
 
       tl.to(
@@ -1126,7 +994,7 @@ const PreloaderComponent = ({ variants }) => {
         {
           yPercent: 0,
           opacity: 1,
-          scale: 1,
+
           duration: 0.3,
           ease: "none",
           stagger: {
@@ -1140,266 +1008,42 @@ const PreloaderComponent = ({ variants }) => {
       );
     }
 
-    if (smallElements.length) {
-      tl.from(
-        smallElements,
-        {
-          opacity: 0,
-          duration: 0.2,
-          ease: "power1.inOut",
-        },
-        "-=0.2",
-      );
-    }
-
     tl.call(() => container.classList.remove("is--loading"), null, "+=0.1");
-  };
-
-  const initSlideShow = () => {
-    slidesRef.current.forEach((slide, index) => {
-      if (slide) slide.setAttribute("data-index", index);
-    });
-
-    thumbsRef.current.forEach((thumb, index) => {
-      if (thumb) thumb.setAttribute("data-index", index);
-    });
-
-    if (slidesRef.current[currentIndex]) {
-      slidesRef.current[currentIndex].classList.add("is--current");
-    }
-
-    if (thumbsRef.current[currentIndex]) {
-      thumbsRef.current[currentIndex].classList.add("is--current");
-    }
-  };
-
-  const navigate = (direction, targetIndex = null) => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-
-    const previous = currentIndex;
-    const newIndex =
-      targetIndex !== null
-        ? targetIndex
-        : direction === 1
-          ? (currentIndex + 1) % slidesData.length
-          : (currentIndex - 1 + slidesData.length) % slidesData.length;
-
-    const currentSlide = slidesRef.current[previous];
-    const upcomingSlide = slidesRef.current[newIndex];
-    const cells = cellsMap.current[newIndex];
-    const headingContainer = headingContainerRef.current;
-
-    const tl = gsap.timeline({
-      onStart() {
-        gsap.set(upcomingSlide, { zIndex: 2, autoAlpha: 1 });
-        gsap.set(currentSlide, { zIndex: 1, autoAlpha: 1 });
-
-        thumbsRef.current[previous]?.classList.remove("is--current");
-        thumbsRef.current[newIndex]?.classList.add("is--current");
-      },
-      onComplete() {
-        currentSlide?.classList.remove("is--current");
-        setIsAnimating(false);
-        setCurrentIndex(newIndex);
-        hasDismissedHeadingRef.current = true;
-      },
-    });
-
-    const currentContent = currentSlide?.querySelector(".slide-content");
-    const content = upcomingSlide?.querySelector(".slide-content");
-
-    if (currentContent) {
-      const currentTitle = currentContent.querySelector(".slide-title");
-      const currentSub = currentContent.querySelector(".slide-sub");
-      const currentDescription =
-        currentContent.querySelector(".slide-description");
-
-      if (currentTitle) {
-        const split = new SplitText(currentTitle, { type: "chars" });
-        tl.to(
-          split.chars,
-          {
-            yPercent: -110,
-            opacity: 0,
-            stagger: { each: 0.02, from: "end" },
-            duration: 0.4,
-            ease: "power2.in",
-          },
-          0,
-        );
-      }
-
-      if (currentSub) {
-        const split = new SplitText(currentSub, { type: "chars" });
-        tl.to(
-          split.chars,
-          {
-            yPercent: -110,
-            opacity: 0,
-            stagger: { each: 0.015, from: "end" },
-            duration: 0.35,
-            ease: "power2.in",
-          },
-          0,
-        );
-      }
-
-      if (currentDescription) {
-        const split = new SplitText(currentDescription, { type: "chars" });
-        tl.to(
-          split.chars,
-          {
-            yPercent: -110,
-            opacity: 0,
-            stagger: { each: 0.02, from: "end" },
-            duration: 0.4,
-            ease: "power2.in",
-          },
-          0,
-        );
-      }
-    }
-
-    if (content) {
-      const nextTitle = content.querySelector(".slide-title");
-      const nextSub = content.querySelector(".slide-sub");
-      const nextDescription = content.querySelector(".slide-description");
-
-      if (nextTitle) {
-        const split = new SplitText(nextTitle, { type: "chars" });
-        gsap.set(split.chars, { yPercent: 110, opacity: 0 });
-        tl.to(
-          split.chars,
-          {
-            yPercent: 0,
-            opacity: 1,
-            stagger: { each: 0.02, from: "start" },
-            duration: 0.6,
-            ease: "power3.out",
-          },
-          "-=0.2",
-        );
-      }
-
-      if (nextSub) {
-        const split = new SplitText(nextSub, { type: "chars" });
-        gsap.set(split.chars, { yPercent: 110, opacity: 0 });
-        tl.to(
-          split.chars,
-          {
-            yPercent: 0,
-            opacity: 1,
-            stagger: { each: 0.015, from: "start" },
-            duration: 0.5,
-            ease: "power3.out",
-          },
-          "-=0.4",
-        );
-      }
-
-      if (nextDescription) {
-        const split = new SplitText(nextDescription, { type: "chars" });
-        gsap.set(split.chars, { yPercent: 110, opacity: 0 });
-        tl.to(
-          split.chars,
-          {
-            yPercent: 0,
-            opacity: 1,
-            stagger: { each: 0.015, from: "start" },
-            duration: 0.5,
-            ease: "power3.out",
-          },
-          "-=0.4",
-        );
-      }
-    }
-
-    if (
-      !hasDismissedHeadingRef.current &&
-      splitInstanceRef.current?.words?.length
-    ) {
-      tl.to(
-        splitInstanceRef.current.words,
-        {
-          yPercent: 110,
-          opacity: 0,
-          stagger: { each: 0.04, from: "end", ease: "power2.in" },
-          duration: 0.45,
-          ease: "power2.in",
+    tl.call(() => {
+      gsap.to(".crisp-header__slider-nav", {
+        x: -2000, // temp
+        ease: "none",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "+=2000",
+          scrub: true,
         },
-        0,
-      );
-
-      if (headingContainer) {
-        tl.to(
-          headingContainer,
-          {
-            y: 40,
-            opacity: 0,
-            duration: 0.5,
-            ease: "power2.in",
-          },
-          0,
-        );
-      }
-    }
-
-    if (cells && cells.length) {
-      const cols = 10;
-      const rows = Math.ceil(cells.length / cols);
-      const ordered = [];
-
-      for (let x = cols - 1; x >= 0; x--) {
-        const column = [];
-        for (let y = 0; y < rows; y++) {
-          const index = y * cols + x;
-          if (cells[index]) {
-            column.push(cells[index]);
-          }
-        }
-        ordered.push(...gsap.utils.shuffle(column));
-      }
-
-      gsap.set(cells, { opacity: 0 });
-
-      tl.to(
-        ordered,
-        {
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.02,
-          ease: "power3.out",
+      });
+      gsap.to(focusStripRef.current, {
+        x: -2000,
+        ease: "none",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "+=2000",
+          scrub: true,
         },
-        hasDismissedHeadingRef.current ? 0 : 0.18,
-      );
+      });
 
-      if (content) {
-        tl.to(
-          content,
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "expo.out",
-          },
-          "-=0.2",
-        );
-      }
-    }
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top top",
+        end: "+=2000",
+        scrub: true,
+        onUpdate: (self) => {},
+      });
+    });
   };
-
-  const handleThumbClick = (index) => {
-    if (isAnimating) return;
-    navigate(1, index);
+  const handleThumbClick = (slide) => {
+    if (!slide.variant) return;
+    router.push(`/shop/products/${slide.variant.id}`);
   };
-
-  const addToRevealImages = (el) => {
-    if (el && !revealImagesRef.current.includes(el)) {
-      revealImagesRef.current.push(el);
-    }
-  };
-
   const addToScaleDown = (el) => {
     if (el && !scaleDownImagesRef.current.includes(el)) {
       scaleDownImagesRef.current.push(el);
@@ -1412,204 +1056,132 @@ const PreloaderComponent = ({ variants }) => {
     }
   };
 
-  const createCells = (group) => {
-    if (!group) return [];
-    group.innerHTML = "";
-    const cols = 10;
-    const rows = Math.round(
-      (viewportDimensions.height / viewportDimensions.width) * cols,
-    );
-    const cells = [];
-
-    for (let y = 0; y < rows; y++) {
-      for (let x = 0; x < cols; x++) {
-        const rect = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "rect",
-        );
-        const overlap = 0.1;
-        rect.setAttribute("x", `${(x / cols) * 100}%`);
-        rect.setAttribute("y", `${(y / rows) * 100}%`);
-        rect.setAttribute("width", `${100 / cols + overlap}%`);
-        rect.setAttribute("height", `${100 / rows + overlap}%`);
-        rect.setAttribute("fill", "white");
-        rect.setAttribute("opacity", 0);
-        rect.setAttribute("shape-rendering", "crispEdges");
-        group.appendChild(rect);
-        cells.push(rect);
-      }
-    }
-    return cells;
-  };
-
-  const cellsMap = useRef([]);
-
-  useEffect(() => {
-    cellsMap.current = blindsRefs.current.map((group) => createCells(group));
-  }, []);
-
-  const [viewportDimensions, setViewportDimensions] = useState({
-    width: 16,
-    height: 9,
-  });
-
-  useEffect(() => {
-    const updateDimensions = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      setViewportDimensions({ width: 100, height: (100 * height) / width });
-    };
-
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
-  }, []);
-
   return (
     <>
-      <section
-        ref={containerRef}
-        data-slideshow="wrap"
-        className="crisp-header is--loading is--hidden"
-      >
-        <div className="crisp-header__slider">
+      <div style={{ height: "300vh" }}>
+        <section
+          ref={containerRef}
+          data-slideshow="wrap"
+          className="crisp-header is--loading is--hidden"
+        >
+          {/* <div className="crisp-header__slider">
           <div className="crisp-header__slider-list">
-            {allSlides.map((slide, index) => (
-              <div
-                key={slide.id}
-                ref={(el) => (slidesRef.current[index] = el)}
-                className="crisp-header__slider-slide"
-              >
-                <svg
-                  className="slide-svg"
-                  viewBox={`0 0 ${viewportDimensions.width} ${viewportDimensions.height}`}
-                  preserveAspectRatio="xMidYMid slice"
-                  style={{ pointerEvents: "none" }}
-                >
-                  <defs>
-                    <mask id={`mask-${index}`}>
-                      <rect width="100%" height="100%" fill="black" />
-                      <g ref={(el) => (blindsRefs.current[index] = el)} />
-                    </mask>
-                  </defs>
-                  <image
-                    href={slide.full}
-                    x="0"
-                    y="0"
-                    width="100%"
-                    height="100%"
-                    preserveAspectRatio="xMidYMid slice"
-                    mask={`url(#mask-${index})`}
-                  />
-                </svg>
-                <div
-                  className="slide-content"
-                  onClick={() => {
-                    if (!slide.variant) {
-                      // console.warn("no variant", slide);
-                      return;
-                    }
-                    router.push(`/shop/products/${slide.variant.id}`);
-                  }}
-                  style={{
-                    position: "absolute",
-                    zIndex: 10,
-                    pointerEvents: "auto",
-                    cursor: "pointer",
-                  }}
-                >
-                  <h2 className="slide-title">{slide.title}</h2>
-                  <p className="slide-sub">{slide.subtitle}</p>
-                  <p className="slide-description">{slide.description}</p>
-                  <p className="slide-text">View Product</p>
-                </div>
-              </div>
-            ))}
+         {allSlides.map((slide, index) => (
+  <div
+    key={slide.id}
+    ref={(el) => (slidesRef.current[index] = el)}
+    className="crisp-header__slider-slide"
+  >
+
+    <div
+      className="slide-content"
+      onClick={() => {
+        if (!slide.variant) return;
+        router.push(`/shop/products/${slide.variant.id}`);
+      }}
+    >
+      <h2 className="slide-title">{slide.title}</h2>
+      <p className="slide-sub">{slide.subtitle}</p>
+      <p className="slide-description">{slide.description}</p>
+      <p className="slide-text">View Product</p>
+    </div>
+  </div>
+))}
+           
           </div>
           <FlameTrail />
-        </div>
+        </div> */}
 
-        <div className="crisp-loader">
-          <div className="crisp-loader__wrap">
-            <div className="crisp-loader__groups" ref={loaderGroupsRef}>
-              <div
-                className="crisp-loader__group is--relative"
-                ref={mainGroupRef}
-              >
-                {allSlides.map((image, idx) => {
-                  const isCenter = idx === centerIndex;
-                  return (
-                    <div
-                      key={`main-${idx}`}
-                      className={`crisp-loader__single ${isCenter ? "is--center" : ""}`}
-                    >
+          <div className="crisp-loader">
+            <div className="crisp-loader__wrap">
+              <div className="crisp-loader__groups" ref={loaderGroupsRef}>
+                <div
+                  className="crisp-loader__group is--relative"
+                  ref={mainGroupRef}
+                >
+                  {allSlides.map((image, idx) => {
+                    const isCenter = idx === centerIndex;
+                    return (
                       <div
-                        className={`crisp-loader__media ${isCenter ? "is--scaling is--radius" : ""}`}
-                        ref={
-                          isCenter
-                            ? (el) => {
-                                scaleUpMediaRef.current = el;
-                                radiusMediaRef.current = el;
-                              }
-                            : (el) => addToScaleDown(el)
-                        }
+                        key={`main-${idx}`}
+                        className={`crisp-loader__single ${isCenter ? "is--center" : ""}`}
                       >
-                        <img
-                          src={image.thumbnail}
-                          alt={image.alt}
-                          className={`crisp-loader__cover-img ${!isCenter ? "is--scale-down" : ""}`}
-                        />
+                        <div
+                          className={`crisp-loader__media ${isCenter ? "is--scaling" : ""}`}
+                          ref={
+                            isCenter
+                              ? (el) => {
+                                  scaleUpMediaRef.current = el;
+                                }
+                              : (el) => addToScaleDown(el)
+                          }
+                        >
+                          <img
+                            src={image.thumbnail}
+                            alt={image.alt}
+                            className={`crisp-loader__cover-img ${!isCenter ? "is--scale-down" : ""}`}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="crisp-loader__fade"></div>
+              <div className="crisp-loader__fade is--duplicate"></div>
+            </div>
+          </div>
+
+          <div ref={contentRef} className="crisp-header__content">
+            <div className="crisp-header__center">
+              <div
+                ref={headingContainerRef}
+                className="crisp-header__heading-container"
+              >
+                <h1 className="crisp-header__h1" ref={headingRef}>
+                  Browse our e-shop
+                </h1>
               </div>
             </div>
-            <div className="crisp-loader__fade"></div>
-            <div className="crisp-loader__fade is--duplicate"></div>
-          </div>
-        </div>
-
-        <div ref={contentRef} className="crisp-header__content">
-          <div className="crisp-header__center">
-            <div
-              ref={headingContainerRef}
-              className="crisp-header__heading-container"
-            >
-              <h1 className="crisp-header__h1" ref={headingRef}>
-                Browse our e-shop
-              </h1>
+            <div className="crisp-header__bottom">
+              <div className="crisp-header__focus">
+                <div className="focus-mask">
+                  <div className="focus-strip" ref={focusStripRef}>
+                    {slidesData.map((slide) => (
+                      <div key={slide.id} className="focus-item">
+                        <img src={slide.thumbnail} alt={slide.alt} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="crisp-header__slider-nav">
+                {slidesData.map((slide, index) => (
+                  <button
+                    key={slide.id}
+                    ref={(el) => {
+                      if (el) {
+                        addToSliderNav(el);
+                      }
+                    }}
+                    data-slideshow="thumb"
+                    className="crisp-header__slider-nav-btn"
+                    onClick={() => handleThumbClick(index)}
+                    type="button"
+                  >
+                    <img
+                      loading="eager"
+                      src={slide.thumbnail}
+                      alt={slide.alt}
+                      className="crisp-loader__cover-img"
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="crisp-header__bottom">
-            <div className="crisp-header__bottom__header">Select an item</div>
-            <div className="crisp-header__slider-nav">
-              {slidesData.map((slide, index) => (
-                <button
-                  key={slide.id}
-                  ref={(el) => {
-                    if (el) {
-                      thumbsRef.current[index] = el;
-                      addToSliderNav(el);
-                    }
-                  }}
-                  data-slideshow="thumb"
-                  className="crisp-header__slider-nav-btn"
-                  onClick={() => handleThumbClick(index)}
-                  type="button"
-                >
-                  <img
-                    loading="eager"
-                    src={slide.thumbnail}
-                    alt={slide.alt}
-                    className="crisp-loader__cover-img"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </>
   );
 };
@@ -1648,7 +1220,6 @@ const PreloaderComponent = ({ variants }) => {
 
 //   const [slides, setSlides] = useState([]);
 
-
 //  const [showSlideshow, setShowSlideshow] = useState(false);
 //   const hasRunRef = useRef(false);
 
@@ -1671,7 +1242,6 @@ const PreloaderComponent = ({ variants }) => {
 //       sessionStorage.setItem("preloaderDone", "true");
 //     },
 //   });
-
 
 //   tl.fromTo(
 //     strip,
@@ -1725,7 +1295,6 @@ const PreloaderComponent = ({ variants }) => {
 
 //   }, null, "-=0.2");
 // };
-
 
 //   useEffect(() => {
 //     const initTextSplit = () => {
@@ -1877,7 +1446,6 @@ const PreloaderComponent = ({ variants }) => {
 //     };
 //   }, []);
 
-
 //   const createSlideElement = useCallback(
 //     (index) => {
 //       const dataIndex = index % totalSlideCount;
@@ -1893,7 +1461,7 @@ const PreloaderComponent = ({ variants }) => {
 //       stateRef.current.dragDistance < 10 &&
 //       !stateRef.current.hasActuallyDragged
 //     ) {
-//       const id = slideData.variantId; 
+//       const id = slideData.variantId;
 
 //       if (!id) {
 //         console.warn("no variant", slideData);
@@ -1910,9 +1478,8 @@ const PreloaderComponent = ({ variants }) => {
 //   </div>
 // </div>
 //           <div className="slide-caption">
-      
-//             <p className="slide-caption-title">{slideData.title}</p>
 
+//             <p className="slide-caption-title">{slideData.title}</p>
 
 //           </div>
 //         </div>
@@ -2102,7 +1669,6 @@ const PreloaderComponent = ({ variants }) => {
 //     initializeSlides();
 //   }, [initializeSlides]);
 
-
 //   useEffect(() => {
 //     if (!showSlideshow) return;
 
@@ -2198,14 +1764,11 @@ const PreloaderComponent = ({ variants }) => {
 //   );
 // }
 
-
-
 const config = {
   gap: 0.08,
   speed: 0.3,
   arcRadius: 500,
 };
-
 
 const PreloaderMobile: React.FC = () => {
   const spotlightRef = useRef<HTMLElement>(null);
@@ -2222,9 +1785,9 @@ const PreloaderMobile: React.FC = () => {
   const [imageElements, setImageElements] = useState<HTMLDivElement[]>([]);
   const currentActiveIndexRef = useRef(0);
   const isInitializedRef = useRef(false);
-  
+
   ScrollTrigger.normalizeScroll(true);
-  
+
   const getBezierPosition = (t: number) => {
     const containerWidth = window.innerWidth * 0.3;
     const arcStartX = containerWidth - 220;
@@ -2256,14 +1819,14 @@ const PreloaderMobile: React.FC = () => {
 
   useEffect(() => {
     if (!titlesContainerRef.current || !imagesContainerRef.current) return;
-    
+
     if (spotlightBgImgRef.current && spotlightBgImgInnerRef.current) {
       gsap.set(spotlightBgImgRef.current, { scale: 0 });
       gsap.set(spotlightBgImgInnerRef.current, { scale: 1.5 });
     }
-    
-    titlesContainerRef.current.innerHTML = '';
-    imagesContainerRef.current.innerHTML = '';
+
+    titlesContainerRef.current.innerHTML = "";
+    imagesContainerRef.current.innerHTML = "";
 
     const newTitleElements: HTMLHeadingElement[] = [];
     const newImageElements: HTMLDivElement[] = [];
@@ -2295,7 +1858,7 @@ const PreloaderMobile: React.FC = () => {
       newImageElements.push(imgWrapper);
     });
 
-    const titleHeight = 80; 
+    const titleHeight = 80;
 
     newTitleElements.forEach((el, i) => {
       gsap.set(el, {
@@ -2310,7 +1873,11 @@ const PreloaderMobile: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isInitializedRef.current || titleElements.length === 0 || imageElements.length === 0) {
+    if (
+      !isInitializedRef.current ||
+      titleElements.length === 0 ||
+      imageElements.length === 0
+    ) {
       return;
     }
 
@@ -2332,13 +1899,14 @@ const PreloaderMobile: React.FC = () => {
         const progress = self.progress;
         const isMainPhase = progress > 0.25;
         const viewportHeight = window.innerHeight;
-        const lines = titlesContainerElementRef.current?.querySelectorAll(".line");
+        const lines =
+          titlesContainerElementRef.current?.querySelectorAll(".line");
 
         if (!isMainPhase) {
           gsap.set(titlesContainerElementRef.current, { opacity: 0 });
           gsap.set(".spotlight-lines", { opacity: 0 });
         }
-        
+
         if (progress <= 0.2) {
           const p = progress / 0.2;
           const moveDistance = window.innerWidth * 0.6;
@@ -2397,7 +1965,11 @@ const PreloaderMobile: React.FC = () => {
 
         if (progress <= 0.95) {
           const switchProgress = (progress - 0.25) / 0.7;
-          const revealProgress = gsap.utils.clamp(0, 1, (progress - 0.23) / 0.05);
+          const revealProgress = gsap.utils.clamp(
+            0,
+            1,
+            (progress - 0.23) / 0.05,
+          );
 
           gsap.set(titlesContainerElementRef.current, {
             opacity: revealProgress,
@@ -2406,7 +1978,7 @@ const PreloaderMobile: React.FC = () => {
           gsap.set(".spotlight-lines", {
             opacity: revealProgress,
           });
-          
+
           const total = titleElements.length;
           const rawIndex = switchProgress * (total - 1);
           const currentIndex = Math.round(rawIndex);
@@ -2443,30 +2015,38 @@ const PreloaderMobile: React.FC = () => {
                   currentImg.classList.add("next");
                   nextImg.classList.remove("next");
                   nextImg.classList.add("current");
-                  
+
                   gsap.set(currentImg, { clearProps: "all" });
                   gsap.set(nextImg, { clearProps: "all" });
-                }
+                },
               });
 
-              tl.to(currentImg, {
-                scale: 0.6,
-                opacity: 0,
-                duration: 0.9,
-                ease: "none",
-              }, 0);
+              tl.to(
+                currentImg,
+                {
+                  scale: 0.6,
+                  opacity: 0,
+                  duration: 0.9,
+                  ease: "none",
+                },
+                0,
+              );
 
-              tl.to(nextImg, {
-                scale: 1,
-                filter: "blur(0px)",
-                duration: 0.9,
-                ease: "none",
-              }, 0);
+              tl.to(
+                nextImg,
+                {
+                  scale: 1,
+                  filter: "blur(0px)",
+                  duration: 0.9,
+                  ease: "none",
+                },
+                0,
+              );
             }
 
             currentImageIndexRef.current = currentIndex;
           }
-          
+
           gsap.set(spotlightBgImgRef.current, { scale: 1 });
           gsap.set(spotlightBgImgInnerRef.current, { scale: 1 });
 
@@ -2491,7 +2071,8 @@ const PreloaderMobile: React.FC = () => {
           });
 
           const titleHeight = titleElements[0]?.offsetHeight || 80;
-          const totalShift = switchProgress * (titleElements.length - 1) * titleHeight;
+          const totalShift =
+            switchProgress * (titleElements.length - 1) * titleHeight;
 
           titleElements.forEach((el, index) => {
             const baseY = index * titleHeight;
@@ -2510,12 +2091,12 @@ const PreloaderMobile: React.FC = () => {
             duration: 0.3,
           });
         }
-      }
+      },
     });
 
     return () => {
       scrollTrigger.kill();
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       gsap.killTweensOf("*");
       lenis.destroy();
     };
@@ -2531,11 +2112,7 @@ const PreloaderMobile: React.FC = () => {
             alt=""
             ref={spotlightBgImgInnerRef}
           />
-          <img
-            className="bg-img next"
-            src={slidesData[0]?.full}
-            alt=""
-          />
+          <img className="bg-img next" src={slidesData[0]?.full} alt="" />
         </div>
       </div>
 
@@ -2557,7 +2134,10 @@ const PreloaderMobile: React.FC = () => {
           <div className="spotlight-label">Discover</div>
         </div>
 
-        <div className="spotlight-titles-container" ref={titlesContainerElementRef}>
+        <div
+          className="spotlight-titles-container"
+          ref={titlesContainerElementRef}
+        >
           <div className="spotlight-mask">
             <div className="spotlight-titles" ref={titlesRef}>
               <div ref={titlesContainerRef}></div>
