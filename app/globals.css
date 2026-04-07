@@ -49,10 +49,10 @@ body {
   overscroll-behavior-y: none;
 }
 
-main {
+/* main {
   overflow-x: hidden;
   height: 100%;
-}
+} */
 
 .marquee {
   display: flex;
