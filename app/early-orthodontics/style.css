@@ -159,6 +159,20 @@
     position: sticky;
     top: 0;
   }
+  .MainSectionItem-mediaContainer,
+  .MainSectionItem-mediaContainerInner,
+  .MainSectionItem-media {
+    position: relative;
+    aspect-ratio: 448 / 325;
+  }
+  .MainSectionItem-media > img,
+  .MainSectionItem-media > video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   .MainSectionItem-contentText {
     font-size: 14px;
     line-height: 1.25rem;
