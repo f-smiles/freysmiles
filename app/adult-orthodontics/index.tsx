@@ -264,14 +264,26 @@ export default function AdultOrthodontics() {
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 100 100"
                               preserveAspectRatio="none"
-                              width="100%"
-                              height="100%"
                             >
+                              {/* Frankfort horizontal plane */}
+                              <line
+                                x1="13"
+                                y1="52"
+                                x2="78"
+                                y2="44"
+                                stroke="#ffffff80"
+                                strokeWidth="0.5"
+                                strokeLinecap="round"
+                                strokeDasharray="2 3"
+                                vectorEffect="non-scaling-stroke"
+                              />
                               {/* Vertical line */}
-                              <line 
-                                x1="69" y1="30" 
-                                x2="69" y2="73" 
-                                stroke="#ffffff80" 
+                              <line
+                                x1="65"
+                                y1="29"
+                                x2="67"
+                                y2="82"
+                                stroke="#ffffff80"
                                 strokeWidth="0.5"
                                 strokeLinecap="round"
                                 strokeDasharray="2 3"
@@ -279,18 +291,20 @@ export default function AdultOrthodontics() {
                               />
 
                               {/* Long diagonal */}
-                              <line 
-                                x1="30" y1="38" 
-                                x2="72" y2="75" 
-                                stroke="#ffffff80" 
-                                strokeWidth="0.5" 
-                                strokeLinecap="round" 
+                              <line
+                                x1="14"
+                                y1="50"
+                                x2="72"
+                                y2="75"
+                                stroke="#ffffff80"
+                                strokeWidth="0.5"
+                                strokeLinecap="round"
                                 strokeDasharray="2 3"
                                 vectorEffect="non-scaling-stroke"
                               />
 
                               {/* Upper horizontal */}
-                              <line
+                              {/* <line
                                 x1="55" y1="31"
                                 x2="74" y2="31"
                                 stroke="#ffffff80"
@@ -298,22 +312,26 @@ export default function AdultOrthodontics() {
                                 strokeLinecap="round"
                                 strokeDasharray="2 3"
                                 vectorEffect="non-scaling-stroke"
-                              />
+                              /> */}
 
                               {/* Lower horizontal */}
                               <line
-                                x1="47" y1="61"
-                                x2="73" y2="61"
+                                x1="46"
+                                y1="54"
+                                x2="74"
+                                y2="58"
                                 stroke="#ffffff80"
                                 strokeWidth="0.5"
                                 strokeLinecap="round"
-                                strokeDasharray="2 3"
+                                stroke-dasharray="2 3"
                                 vectorEffect="non-scaling-stroke"
                               />
 
                               <line
-                                x1="75" y1="56"
-                                x2="69" y2="73"
+                                x1="75.5"
+                                y1="42"
+                                x2="76"
+                                y2="78"
                                 stroke="#ffffff80"
                                 strokeWidth="0.5"
                                 strokeLinecap="round"
