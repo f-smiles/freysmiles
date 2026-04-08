@@ -207,12 +207,20 @@ main:has(.crisp-header.is--loading) {
   z-index: 2;
   pointer-events: none;
 }
+.focus-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #eaeaea;
 
+  padding: 0 2em;
+  box-sizing: content-box;
+}
 .focus-mask {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border-radius: 16px;
+
 }
 
 .focus-strip {
@@ -245,44 +253,31 @@ main:has(.crisp-header.is--loading) {
 }
 .crisp-header__slider-nav {
   position: absolute;
-  top: 50%;
-  left: 0;
   transform: translateY(-50%);
-
   display: flex;
   gap: 2rem;
-
-  padding: 0;                 /* remove old padding */
-  width: max-content;         /* 🔥 important */
-  
+  padding: 0;                
+  width: max-content;      
   will-change: transform;
   z-index: 1;
 }
 
 .crisp-header__slider-nav-btn {
-  width: 10rem;
-  height: 10rem;
-
-  border-radius: 8px;
+  flex: 0 0 220px; 
+  width: 220px;
+  height: 220px;
+  position: relative;
   overflow: hidden;
-
-  cursor: pointer;
-
-  background: transparent;
-  border: none;
-
-  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .crisp-header__slider-nav-btn img {
-  transform: scale(1) rotate(0.001deg);
-  transition: transform 0.75s cubic-bezier(0.625, 0.05, 0, 1);
-  object-fit: cover;
+  display: block;
   width: 100%;
   height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
+  object-fit: cover;
+
+  transform: scale(1) rotate(0.001deg);
+  transition: transform 0.75s cubic-bezier(0.625, 0.05, 0, 1);
 }
 
 

@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import "./style.css";
 import { gsap } from "gsap";
 import { CustomEase, SplitText, Flip, ScrollTrigger } from "gsap/all";
@@ -783,7 +784,7 @@ const PreloaderComponent = ({ variants }) => {
   const loaderGroupsRef = useRef(null);
   const scaleUpMediaRef = useRef(null);
   const scaleDownImagesRef = useRef([]);
-  const sliderNavRef = useRef([]);
+  const sliderNavRef = useRef(null);
   const splitInstanceRef = useRef(null);
   const mainGroupRef = useRef(null);
   const contentRef = useRef(null);
@@ -803,7 +804,7 @@ const PreloaderComponent = ({ variants }) => {
 
   const centerIndex = Math.floor(slidesData.length / 2);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.fonts.ready.then(() => {
       initCrispLoadingAnimation();
     });
@@ -821,6 +822,8 @@ const PreloaderComponent = ({ variants }) => {
     const mainGroup = mainGroupRef.current;
     const content = contentRef.current;
     const headingContainer = headingContainerRef.current;
+const startX = 120;
+gsap.set(sliderNav, { x: startX });
 
     const images = scaleDownImages
       .map((el) => el?.querySelector("img"))
@@ -1009,36 +1012,75 @@ const PreloaderComponent = ({ variants }) => {
     }
 
     tl.call(() => container.classList.remove("is--loading"), null, "+=0.1");
-    tl.call(() => {
-      gsap.to(".crisp-header__slider-nav", {
-        x: -2000, // temp
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "+=2000",
-          scrub: true,
-        },
-      });
-      gsap.to(focusStripRef.current, {
-        x: -2000,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "+=2000",
-          scrub: true,
-        },
-      });
+tl.call(() => {
+  const container = containerRef.current;
+  const focusStripEl = focusStripRef.current;
+  const navEl = sliderNavRef.current;
 
-      ScrollTrigger.create({
-        trigger: containerRef.current,
-        start: "top top",
-        end: "+=2000",
-        scrub: true,
-        onUpdate: (self) => {},
-      });
-    });
+  if (!container || !focusStripEl || !navEl) return;
+
+  const focusItems = focusStripEl.children;
+  const total = focusItems.length;
+
+  if (!total) return;
+
+  const focusStyles = getComputedStyle(focusStripEl);
+  const focusGap = parseFloat(focusStyles.gap) || 0;
+
+
+  const navItems = navEl.children;
+  const navStyles = getComputedStyle(navEl);
+  const navGap = parseFloat(navStyles.gap) || 0;
+  const navStep = navItems[0].offsetWidth + navGap;
+
+
+  const moveStrip = gsap.quickTo(focusStripEl, "x", {
+    duration: 0.5,
+    ease: "power3.out",
+  });
+
+  ScrollTrigger.create({
+    trigger: container,
+    start: "top top",
+end: "+=" + (total - 1) * navStep,
+    scrub: 1.2,
+
+onUpdate: (self) => {
+  const progress = self.progress;
+
+  const focusStripEl = focusStripRef.current;
+  const navEl = sliderNavRef.current;
+
+  if (!focusStripEl || !navEl) return;
+
+
+  const focusStyles = getComputedStyle(focusStripEl);
+  const focusGap = parseFloat(focusStyles.gap) || 0;
+  const focusStep = focusStripEl.children[0].offsetWidth + focusGap;
+
+  const total = focusStripEl.children.length;
+
+
+  const navStyles = getComputedStyle(navEl);
+  const navGap = parseFloat(navStyles.gap) || 0;
+  const navStep = navEl.children[0].offsetWidth + navGap;
+
+
+  const focusTotalDistance = (total - 1) * focusStep;
+  const focusDistance = progress * focusTotalDistance;
+
+
+  moveStrip(-focusDistance);
+
+  const ratio = navStep / focusStep;
+  const navDistance = focusDistance * ratio;
+
+  gsap.set(navEl, {
+    x: startX - navDistance,
+  });
+}
+  });
+});
   };
   const handleThumbClick = (slide) => {
     if (!slide.variant) return;
@@ -1050,11 +1092,7 @@ const PreloaderComponent = ({ variants }) => {
     }
   };
 
-  const addToSliderNav = (el) => {
-    if (el && !sliderNavRef.current.includes(el)) {
-      sliderNavRef.current.push(el);
-    }
-  };
+
 
   return (
     <>
@@ -1143,9 +1181,11 @@ const PreloaderComponent = ({ variants }) => {
                 </h1>
               </div>
             </div>
-            <div className="crisp-header__bottom">
+            <div className="strip-row">
               <div className="crisp-header__focus">
-                <div className="focus-mask">
+                <div className="focus-layer">
+                   <div className="focus-frame">
+                           <div className="focus-mask">
                   <div className="focus-strip" ref={focusStripRef}>
                     {slidesData.map((slide) => (
                       <div key={slide.id} className="focus-item">
@@ -1154,19 +1194,26 @@ const PreloaderComponent = ({ variants }) => {
                     ))}
                   </div>
                 </div>
+                   </div>
+                           
+                </div>
+
               </div>
-              <div className="crisp-header__slider-nav">
-                {slidesData.map((slide, index) => (
-                  <button
-                    key={slide.id}
-                    ref={(el) => {
-                      if (el) {
-                        addToSliderNav(el);
-                      }
-                    }}
+              <div className="nav-layer">
+<div
+  className="crisp-header__slider-nav"
+  ref={sliderNavRef}
+>
+                {allSlides.map((slide, index) => (
+                  <Link
+                      key={slide.id}
+    href={`/shop/products/${slide.variant?.id}`}
+    prefetch={true}
+                 
+
                     data-slideshow="thumb"
                     className="crisp-header__slider-nav-btn"
-                    onClick={() => handleThumbClick(index)}
+                    onClick={() => handleThumbClick(slide)}
                     type="button"
                   >
                     <img
@@ -1175,9 +1222,11 @@ const PreloaderComponent = ({ variants }) => {
                       alt={slide.alt}
                       className="crisp-loader__cover-img"
                     />
-                  </button>
+                  </Link>
                 ))}
               </div>
+              </div>
+    
             </div>
           </div>
         </section>
