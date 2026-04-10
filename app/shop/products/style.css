@@ -356,206 +356,222 @@ main:has(.crisp-header.is--loading) {
 }
 
 @media (max-width: 768px) {
-
-
-body {
-  font-family: "NeueHaasGroteskDisplayPro45Light";
-}
-
-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.spotlight h1 {
-  font-size: 2rem;
-  line-height: 1;
-  color: white;
-}
-
-.spotlight p {
-  font-size: 1.5rem;
-  font-weight: 500;
-  line-height: 1;
-}
-
-section {
+  body {
+    font-family: "NeueHaasGroteskDisplayPro45Light";
+  }
+.hero-video {
   position: relative;
-  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.video {
+  position: absolute;
+  inset: 20px;
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
+  object-fit: cover;
+  border-radius: 24px;
+}
+
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .spotlight h1 {
+    font-size: 2rem;
+    line-height: 1;
+    color: white;
+  }
+
+  .spotlight p {
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+.hero-video,
+.spotlight {
   height: 100svh;
+  width: 100vw;
+  position: relative;
   overflow: hidden;
 }
 
-.intro,
-.outro {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #0f0f0f;
-  color: #fff;
-}
-
-.spotlight-intro-text-wrapper {
-  position: absolute;
-  width: 100%;
+  .intro,
+  .outro {
+    display: flex;
+    justify-content: center;
     align-items: center;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 0.5rem;
-}
+    background-color: #0f0f0f;
+    color: #fff;
+  }
 
-.spotlight-intro-text {
-  flex: 1;
-  position: relative;
-  will-change: transform;
-  font-family: "NeueHaasGroteskDisplayPro45Light";
-}
+  .spotlight-intro-text-wrapper {
+    position: absolute;
+    width: 100%;
+    align-items: center;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 5;
+  }
 
-.spotlight-intro-text:nth-child(1) {
-  display: flex;
-  justify-content: flex-end;
-}
+  .spotlight-intro-text {
+    flex: 1;
+    position: relative;
+    will-change: transform;
+    font-family: "NeueHaasGroteskDisplayPro45Light";
+  }
 
-.spotlight-bg-img {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
- filter: grayscale(100%) contrast(100%);
-}
+  .spotlight-intro-text:nth-child(1) {
+    display: flex;
+    justify-content: flex-end;
+  }
 
-.bg-img {
-  position: absolute;
-  inset: 0;
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  will-change: transform, opacity;
-}
+  .spotlight-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
 
-.bg-img.current {
-  z-index: 1;
-}
+  .spotlight-bg-img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    filter: grayscale(100%) contrast(100%);
+    will-change: transform;
+  }
 
-.bg-img.next {
-  z-index: 2;
-  opacity: 0;
-}
-.spotlight-titles-container {
-  position: absolute;
-  inset: 0;
-}
-.spotlight-ui {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-}
+  .bg-img {
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    will-change: transform, opacity, filter;
+  }
 
-.spotlight-mask {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 
-  width: 100%;
-  height: 30px;
-  overflow: hidden;
-}
+  .bg-img.current {
+    z-index: 2;
+  }
 
-.spotlight-titles {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  .bg-img.next {
+    z-index: 1;
+  }
+
+  .spotlight-titles-container {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+  }
+
+  .spotlight-ui {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .spotlight-mask {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 80px;
+    overflow: hidden;
+  }
+
+  .spotlight-titles {
+    position: relative;
+    width: 100%;
+    height: 100%;
     text-align: center;
     align-items: center;
-}
+  }
 
-.spotlight-titles > div {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-.spotlight-lines {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 10;
-}
+  .spotlight-titles > div {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
 
-.line {
-  position: absolute;
-  width: 120vw;
-  height: 1px;
-  background: white;
-  left: -20vw;
-  top: 50%;
-  transform-origin: left center;
-}
+  .spotlight-lines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+  }
 
-.line-left {
-  transform: rotate(-35deg);
-}
+  .line {
+    position: absolute;
+    width: 120vw;
+    height: 1px;
+    background: white;
+    left: -20vw;
+    top: 50%;
+    transform-origin: left center;
+  }
 
-.line-right {
-  transform: rotate(35deg);
-}
+  .line-left {
+    transform: rotate(-35deg);
+  }
 
-.spotlight-label {
-  position: absolute;
-  top: 50%;
-  left: 18vw;
-  transform: translateY(-50%);
-  color: white;
-  font-size: 0.9rem;
-  z-index: 20;
+  .line-right {
+    transform: rotate(35deg);
+  }
 
-}
-
-.spotlight-titles {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.spotlight-titles > div {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 120px; 
-  overflow: hidden;
-}
-
-.spotlight-images {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 50%;
-  min-width: 300px;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-}
-
-
-.spotlight-img {
-  position: absolute;
-  width: 200px;
-  height: 150px;
-  will-change: transform;
-}
-.spotlight {
-  position: relative;
-height: 100vh; 
-  height: 100dvh;
-  overflow: hidden;
-}
+  .spotlight-label {
+    position: absolute;
+    top: 50%;
+    left: 18vw;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 0.9rem;
+    z-index: 20;
+    font-family: "NeueHaasGroteskDisplayPro45Light";
+  }
 
 
 
+  .spotlight-images {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    min-width: 300px;
+    height: 100%;
+    z-index: 1;
+    pointer-events: auto;
+  }
+
+  .spotlight-img {
+    position: absolute;
+    width: 200px;
+    height: 150px;
+    will-change: transform;
+    opacity: 0;
+      opacity: 0;
+  cursor: pointer;
+  z-index: 5; 
+  }
+
+  .spotlight {
+    position: relative;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
 }
 /* @media (max-width: 1000px) {
   h1 {

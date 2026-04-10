@@ -744,14 +744,7 @@ ScrollTrigger.create({
                           playsInline
                           preload="metadata"
                         />
-                        {/* <video
-                        src="https://cdn.prod.website-files.com/678671a66edd3849bbcac5e3%2F678a1ef8f7108323f84eecda_4990242-sd_960_540_30fps-transcode.mp4"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                      /> */}
+
                       </div>
                     </div>
                   </div>

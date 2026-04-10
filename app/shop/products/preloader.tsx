@@ -1834,8 +1834,26 @@ const PreloaderMobile: React.FC = () => {
   const [imageElements, setImageElements] = useState<HTMLDivElement[]>([]);
   const currentActiveIndexRef = useRef(0);
   const isInitializedRef = useRef(false);
+  const videoARef = useRef(null);
+const videoBRef = useRef(null);
+  const listenersRef = useRef<
+  { el: HTMLElement; type: string; handler: EventListener }[]
+>([]);
+  const router = useRouter();
+  
 
+
+  const clickStartPosRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const hasMovedRef = useRef(false);
+
+  const bgTransitionRef = useRef<gsap.core.Timeline | null>(null);
+  const isTransitioningRef = useRef(false);
+  const nextImagePreloadedRef = useRef<HTMLImageElement | null>(null);
+  const pendingTransitionRef = useRef<number | null>(null); 
+
+useEffect(() => {
   ScrollTrigger.normalizeScroll(true);
+}, []);
 
   const getBezierPosition = (t: number) => {
     const containerWidth = window.innerWidth * 0.3;
@@ -1866,20 +1884,138 @@ const PreloaderMobile: React.FC = () => {
     return (overallProgress - startTime) / config.speed;
   };
 
+  const preloadNextImage = (index: number) => {
+    const nextIndex = index + 1;
+    if (nextIndex < slidesData.length) {
+      const img = new Image();
+      img.src = slidesData[nextIndex].full;
+      img.onload = () => {
+        nextImagePreloadedRef.current = img;
+      };
+    }
+  };
+
+  const smoothTransitionBackground = (currentIndex: number, nextIndex: number) => {
+    if (!spotlightBgImgRef.current) return;
+    
+    const container = spotlightBgImgRef.current;
+    const currentImg = container.querySelector('.bg-img.current') as HTMLImageElement;
+    const nextImg = container.querySelector('.bg-img.next') as HTMLImageElement;
+    
+    if (!currentImg || !nextImg || currentIndex === nextIndex) return;
+    
+    if (isTransitioningRef.current) {
+      pendingTransitionRef.current = nextIndex;
+      return;
+    }
+    
+    console.log(`bg image from ${currentIndex} to ${nextIndex}`);
+    
+    isTransitioningRef.current = true;
+    
+    if (bgTransitionRef.current) {
+      bgTransitionRef.current.kill();
+    }
+    
+    nextImg.src = slidesData[nextIndex].full;
+    
+    gsap.set(nextImg, {
+      opacity: 0,
+      scale: 1.05,
+      filter: 'blur(8px)',
+      zIndex: 1
+    });
+    
+    gsap.set(currentImg, {
+      zIndex: 2,
+      opacity: 1,
+      scale: 1,
+      filter: 'blur(0px)'
+    });
+    
+    const tl = gsap.timeline({
+      onComplete: () => {
+        currentImg.classList.remove('current');
+        currentImg.classList.add('next');
+        nextImg.classList.remove('next');
+        nextImg.classList.add('current');
+        
+        gsap.set(currentImg, {
+          opacity: 0,
+          clearProps: 'all'
+        });
+        
+        gsap.set(nextImg, {
+          clearProps: 'all'
+        });
+        
+        isTransitioningRef.current = false;
+        
+        if (pendingTransitionRef.current !== null && pendingTransitionRef.current !== nextIndex) {
+          const pendingIndex = pendingTransitionRef.current;
+          pendingTransitionRef.current = null;
+          smoothTransitionBackground(nextIndex, pendingIndex);
+        } else {
+          pendingTransitionRef.current = null;
+          preloadNextImage(nextIndex);
+        }
+      }
+    });
+    
+    tl.to(currentImg, {
+      opacity: 0,
+      scale: 0.95,
+      filter: 'blur(12px)',
+      duration: 0.6,
+      ease: 'power2.inOut'
+    }, 0);
+    
+    tl.to(nextImg, {
+      opacity: 1,
+      scale: 1,
+      filter: 'blur(0px)',
+      duration: 0.8,
+      ease: 'power2.out'
+    }, 0.1);
+    
+    bgTransitionRef.current = tl;
+  };
+
   useEffect(() => {
     if (!titlesContainerRef.current || !imagesContainerRef.current) return;
 
     if (spotlightBgImgRef.current && spotlightBgImgInnerRef.current) {
-      gsap.set(spotlightBgImgRef.current, { scale: 0 });
+      gsap.set(spotlightBgImgRef.current, { scale: 0, opacity: 0 });
       gsap.set(spotlightBgImgInnerRef.current, { scale: 1.5 });
     }
 
-    titlesContainerRef.current.innerHTML = "";
-    imagesContainerRef.current.innerHTML = "";
+    if (introText1Ref.current && introText2Ref.current) {
+      gsap.set([introText1Ref.current, introText2Ref.current], { opacity: 0 });
+    }
+
+    if (titlesContainerElementRef.current) {
+      gsap.set(titlesContainerElementRef.current, { opacity: 0 });
+    }
+
+    gsap.set(".spotlight-lines", { opacity: 0 });
+
+
 
     const newTitleElements: HTMLHeadingElement[] = [];
     const newImageElements: HTMLDivElement[] = [];
+const titlesContainer = titlesContainerRef.current;
+const imagesContainer = imagesContainerRef.current;
 
+if (!titlesContainer || !imagesContainer) return;
+
+
+while (titlesContainer.firstChild) {
+  titlesContainer.removeChild(titlesContainer.firstChild);
+}
+
+while (imagesContainer.firstChild) {
+  imagesContainer.removeChild(imagesContainer.firstChild);
+}
     slidesData.forEach((item, index) => {
       const titleElement = document.createElement("h1");
       titleElement.dataset.index = String(index);
@@ -1898,7 +2034,94 @@ const PreloaderMobile: React.FC = () => {
 
       const imgWrapper = document.createElement("div");
       imgWrapper.className = "spotlight-img";
+      imgWrapper.style.cursor = "pointer";
+      
+// CLICK
+const handleClick: EventListener = (e) => {
+  if (hasMovedRef.current) {
+    hasMovedRef.current = false;
+    return;
+  }
 
+  const variantId = slidesData[index].variantId;
+  if (variantId) {
+    router.push(`/shop/products/${variantId}`);
+  }
+};
+
+imgWrapper.addEventListener("click", handleClick);
+listenersRef.current.push({ el: imgWrapper, type: "click", handler: handleClick });
+
+
+// TOUCH START
+const handleTouchStart: EventListener = (e) => {
+  const touchEvent = e as TouchEvent;
+
+  clickStartPosRef.current = {
+    x: touchEvent.touches[0].clientX,
+    y: touchEvent.touches[0].clientY,
+    time: Date.now(),
+  };
+
+  hasMovedRef.current = false;
+};
+
+imgWrapper.addEventListener("touchstart", handleTouchStart);
+listenersRef.current.push({ el: imgWrapper, type: "touchstart", handler: handleTouchStart });
+
+
+// TOUCH MOVE
+const handleTouchMove: EventListener = (e) => {
+  const touchEvent = e as TouchEvent;
+
+  if (!clickStartPosRef.current) return;
+
+  const deltaX = Math.abs(touchEvent.touches[0].clientX - clickStartPosRef.current.x);
+  const deltaY = Math.abs(touchEvent.touches[0].clientY - clickStartPosRef.current.y);
+
+  if (deltaX > 10 || deltaY > 10) {
+    hasMovedRef.current = true;
+  }
+};
+
+imgWrapper.addEventListener("touchmove", handleTouchMove);
+listenersRef.current.push({ el: imgWrapper, type: "touchmove", handler: handleTouchMove });
+
+
+// MOUSE DOWN
+const handleMouseDown: EventListener = (e) => {
+  const mouseEvent = e as MouseEvent;
+
+  clickStartPosRef.current = {
+    x: mouseEvent.clientX,
+    y: mouseEvent.clientY,
+    time: Date.now(),
+  };
+
+  hasMovedRef.current = false;
+};
+
+imgWrapper.addEventListener("mousedown", handleMouseDown);
+listenersRef.current.push({ el: imgWrapper, type: "mousedown", handler: handleMouseDown });
+
+
+// MOUSE MOVE
+const handleMouseMove: EventListener = (e) => {
+  const mouseEvent = e as MouseEvent;
+
+  if (!clickStartPosRef.current) return;
+
+  const deltaX = Math.abs(mouseEvent.clientX - clickStartPosRef.current.x);
+  const deltaY = Math.abs(mouseEvent.clientY - clickStartPosRef.current.y);
+
+  if (deltaX > 10 || deltaY > 10) {
+    hasMovedRef.current = true;
+  }
+};
+
+imgWrapper.addEventListener("mousemove", handleMouseMove);
+
+listenersRef.current.push({ el: imgWrapper, type: "mousemove", handler: handleMouseMove });
       const imgElement = document.createElement("img");
       imgElement.src = item.thumbnail;
 
@@ -1919,7 +2142,25 @@ const PreloaderMobile: React.FC = () => {
     setTitleElements(newTitleElements);
     setImageElements(newImageElements);
     isInitializedRef.current = true;
-  }, []);
+
+    ScrollTrigger.refresh();
+
+    setTimeout(() => {
+      if (spotlightBgImgRef.current) {
+        gsap.to(spotlightBgImgRef.current, { 
+          opacity: 1, 
+          duration: 0.2,
+          ease: "power2.out"
+        });
+      }
+    }, 150);
+      return () => {
+    listenersRef.current.forEach(({ el, type, handler }) => {
+      el.removeEventListener(type, handler);
+    });
+    listenersRef.current = [];
+  };
+  }, [router]);
 
   useEffect(() => {
     if (
@@ -1932,7 +2173,8 @@ const PreloaderMobile: React.FC = () => {
 
     const lenis = new Lenis();
     lenis.on("scroll", ScrollTrigger.update);
-    gsap.ticker.add((time: number) => lenis.raf(time * 1000));
+const tick = (time: number) => lenis.raf(time * 1000);
+gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
 
     imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
@@ -1940,14 +2182,13 @@ const PreloaderMobile: React.FC = () => {
     const scrollTrigger = ScrollTrigger.create({
       trigger: spotlightRef.current,
       start: "top top",
-      end: `+=${window.innerHeight * 10}px`,
+      end: `+=${window.innerHeight * 12}px`,
       pin: true,
       pinSpacing: true,
-      scrub: 1,
+      scrub: 1.5,
       onUpdate: (self) => {
         const progress = self.progress;
         const isMainPhase = progress > 0.25;
-        const viewportHeight = window.innerHeight;
         const lines =
           titlesContainerElementRef.current?.querySelectorAll(".line");
 
@@ -1997,7 +2238,7 @@ const PreloaderMobile: React.FC = () => {
             gsap.to(lines, {
               opacity: 1,
               duration: 0.3,
-              ease: "power2.out",
+              ease: "none",
             });
           }
 
@@ -2028,80 +2269,25 @@ const PreloaderMobile: React.FC = () => {
             opacity: revealProgress,
           });
 
-          const total = titleElements.length;
-          const rawIndex = switchProgress * (total - 1);
-          const currentIndex = Math.round(rawIndex);
-
-          if (currentImageIndexRef.current !== currentIndex) {
-            if (spotlightBgImgInnerRef.current && slidesData[currentIndex]) {
-              const container = spotlightBgImgRef.current;
-              if (!container) return;
-
-              const currentImg = container.querySelector(".bg-img.current");
-              const nextImg = container.querySelector(".bg-img.next");
-
-              if (!currentImg || !nextImg) return;
-
-              (nextImg as HTMLImageElement).src = slidesData[currentIndex].full;
-
-              gsap.set(nextImg, {
-                opacity: 1,
-                scale: 1.3,
-                zIndex: 1,
-                filter: "blur(4px)",
-              });
-
-              gsap.set(currentImg, {
-                zIndex: 2,
-                scale: 1,
-                opacity: 1,
-                filter: "blur(0px)",
-              });
-
-              const tl = gsap.timeline({
-                onComplete: () => {
-                  currentImg.classList.remove("current");
-                  currentImg.classList.add("next");
-                  nextImg.classList.remove("next");
-                  nextImg.classList.add("current");
-
-                  gsap.set(currentImg, { clearProps: "all" });
-                  gsap.set(nextImg, { clearProps: "all" });
-                },
-              });
-
-              tl.to(
-                currentImg,
-                {
-                  scale: 0.6,
-                  opacity: 0,
-                  duration: 0.9,
-                  ease: "none",
-                },
-                0,
-              );
-
-              tl.to(
-                nextImg,
-                {
-                  scale: 1,
-                  filter: "blur(0px)",
-                  duration: 0.9,
-                  ease: "none",
-                },
-                0,
-              );
-            }
-
-            currentImageIndexRef.current = currentIndex;
+          if (spotlightBgImgRef.current) {
+            const bgScale = 1 + (switchProgress * 0.05);
+            gsap.set(spotlightBgImgRef.current, { 
+              scale: bgScale,
+              ease: "none"
+            });
           }
 
-          gsap.set(spotlightBgImgRef.current, { scale: 1 });
-          gsap.set(spotlightBgImgInnerRef.current, { scale: 1 });
-
-          gsap.set([introText1Ref.current, introText2Ref.current], {
-            opacity: 0,
-          });
+          const bgImageIndex = Math.floor(switchProgress * slidesData.length);
+          const clampedBgIndex = Math.min(bgImageIndex, slidesData.length - 1);
+          
+          if (currentImageIndexRef.current !== clampedBgIndex) {
+            console.log(`BG Image should be index: ${clampedBgIndex} out of ${slidesData.length}`);
+            smoothTransitionBackground(
+              currentImageIndexRef.current, 
+              clampedBgIndex
+            );
+            currentImageIndexRef.current = clampedBgIndex;
+          }
 
           imageElements.forEach((img, index) => {
             const imageProgress = getImgProgressState(index, switchProgress);
@@ -2110,7 +2296,6 @@ const PreloaderMobile: React.FC = () => {
               gsap.set(img, { opacity: 0 });
             } else {
               const pos = getBezierPosition(imageProgress);
-
               gsap.set(img, {
                 x: pos.x - 100,
                 y: pos.y - 75,
@@ -2125,7 +2310,6 @@ const PreloaderMobile: React.FC = () => {
 
           titleElements.forEach((el, index) => {
             const baseY = index * titleHeight;
-
             gsap.set(el, {
               y: baseY - totalShift,
             });
@@ -2143,16 +2327,48 @@ const PreloaderMobile: React.FC = () => {
       },
     });
 
-    return () => {
-      scrollTrigger.kill();
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      gsap.killTweensOf("*");
-      lenis.destroy();
-    };
+return () => {
+  scrollTrigger.kill();
+
+gsap.killTweensOf(imageElements);
+gsap.killTweensOf(titleElements);
+
+  if (bgTransitionRef.current) {
+    bgTransitionRef.current.kill();
+  }
+
+  gsap.ticker.remove(tick); 
+  lenis.destroy();
+};
   }, [titleElements, imageElements]);
 
   return (
-    <section className="spotlight" ref={spotlightRef}>
+    <>
+      <section className="hero-video">
+
+                        {/* <video
+                          ref={videoARef}
+                        src="https://cdn.prod.website-files.com/678671a66edd3849bbcac5e3%2F678a1ef8f7108323f84eecda_4990242-sd_960_540_30fps-transcode.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                      /> */}
+
+  <video
+    className="video video-b"
+    ref={videoBRef}
+    src="/videos/Final_comp_2.mp4"
+    autoPlay
+    loop
+    muted
+    playsInline
+  />
+
+  </section>
+        <section className="spotlight" ref={spotlightRef}>
+
       <div className="spotlight-bg">
         <div className="spotlight-bg-img" ref={spotlightBgImgRef}>
           <img
@@ -2195,6 +2411,8 @@ const PreloaderMobile: React.FC = () => {
         </div>
       </div>
     </section>
+    </>
+
   );
 };
 
