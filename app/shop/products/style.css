@@ -359,21 +359,23 @@ main:has(.crisp-header.is--loading) {
   body {
     font-family: "NeueHaasGroteskDisplayPro45Light";
   }
-.hero-video {
-  position: relative;
+/* .hero-video {
   height: 100vh;
   padding: 20px;
   box-sizing: border-box;
+
+  border-radius: 24px;
+  overflow: hidden;
+
+  background: black;
 }
 
 .video {
-  position: absolute;
-  inset: 20px;
-  width: calc(100% - 40px);
-  height: calc(100% - 40px);
-  object-fit: cover;
-  border-radius: 24px;
-}
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+} */
 
 
   img {
@@ -388,11 +390,6 @@ main:has(.crisp-header.is--loading) {
     color: white;
   }
 
-  .spotlight p {
-    font-size: 1.5rem;
-    font-weight: 500;
-    line-height: 1;
-  }
 
 .hero-video,
 .spotlight {
@@ -573,34 +570,7 @@ main:has(.crisp-header.is--loading) {
     overflow: hidden;
   }
 }
-/* @media (max-width: 1000px) {
-  h1 {
-    font-size: 2rem;
-  }
 
-  .intro,
-  .outro {
-    padding: 2rem;
-    text-align: center;
-  }
-
-  .spotlight-titles-container {
-    clip-path: none;
-  }
-
-  .spotlight-titles-container::before,
-  .spotlight-titles-container::after {
-    display: none;
-  }
-
-  .spotlight-titles {
-    left: 0;
-  }
-
-  .spotlight-header {
-    display: none;
-  }
-} */
 .crisp-header__slider-nav-btn {
   transition: all 0.3s ease;
 }

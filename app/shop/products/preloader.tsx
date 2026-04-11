@@ -13,6 +13,8 @@ import {
   useCallback,
 } from "react";
 import * as THREE from "three";
+import { Canvas, useFrame, extend, useThree } from '@react-three/fiber';
+import { ShaderMaterial, PlaneGeometry, WebGLRenderTarget, Vector2 } from 'three';
 gsap.registerPlugin(CustomEase, SplitText, Flip, ScrollTrigger);
 import { useRouter } from "next/navigation";
 
@@ -1835,13 +1837,9 @@ const PreloaderMobile: React.FC = () => {
   const currentActiveIndexRef = useRef(0);
   const isInitializedRef = useRef(false);
   const videoARef = useRef(null);
-const videoBRef = useRef(null);
-  const listenersRef = useRef<
-  { el: HTMLElement; type: string; handler: EventListener }[]
->([]);
+  const videoBRef = useRef(null);
+  const listenersRef = useRef<{ el: HTMLElement; type: string; handler: EventListener }[]>([]);
   const router = useRouter();
-  
-
 
   const clickStartPosRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const hasMovedRef = useRef(false);
@@ -1849,11 +1847,52 @@ const videoBRef = useRef(null);
   const bgTransitionRef = useRef<gsap.core.Timeline | null>(null);
   const isTransitioningRef = useRef(false);
   const nextImagePreloadedRef = useRef<HTMLImageElement | null>(null);
-  const pendingTransitionRef = useRef<number | null>(null); 
+  const pendingTransitionRef = useRef<number | null>(null);
+  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+  const ctxRef = useRef<gsap.Context | null>(null);
 
-useEffect(() => {
-  ScrollTrigger.normalizeScroll(true);
-}, []);
+  // 🔑 AGGRESSIVE CLEANUP ON UNMOUNT
+  useEffect(() => {
+    return () => {
+      // Kill our tracked ScrollTrigger
+      if (scrollTriggerRef.current) {
+        scrollTriggerRef.current.kill(true);
+        scrollTriggerRef.current = null;
+      }
+      
+      // Kill ALL ScrollTriggers - aggressive but safe for navigation
+      ScrollTrigger.getAll().forEach(st => st.kill(true));
+      
+      // Revert GSAP context
+      if (ctxRef.current) {
+        ctxRef.current.revert();
+        ctxRef.current = null;
+      }
+      
+      // Kill background transition
+      if (bgTransitionRef.current) {
+        bgTransitionRef.current.kill();
+        bgTransitionRef.current = null;
+      }
+      
+      // Clear all event listeners
+      listenersRef.current.forEach(({ el, type, handler }) => {
+        el.removeEventListener(type, handler);
+      });
+      listenersRef.current = [];
+      
+      // Force refresh ScrollTrigger after cleanup
+      ScrollTrigger.refresh(true);
+    };
+  }, []);
+
+  useEffect(() => {
+    ScrollTrigger.normalizeScroll(true);
+    
+    return () => {
+      ScrollTrigger.normalizeScroll(false);
+    };
+  }, []);
 
   const getBezierPosition = (t: number) => {
     const containerWidth = window.innerWidth * 0.3;
@@ -1981,6 +2020,26 @@ useEffect(() => {
     bgTransitionRef.current = tl;
   };
 
+  // 🔑 SAFE NAVIGATION WITH CLEANUP
+  const handleNavigate = (variantId: number) => {
+    // Kill all ScrollTriggers before navigation
+    ScrollTrigger.getAll().forEach(st => st.kill(true));
+    
+    // Revert GSAP context
+    if (ctxRef.current) {
+      ctxRef.current.revert();
+    }
+    
+    // Kill any ongoing animations
+    gsap.globalTimeline.clear();
+    
+    // Force refresh
+    ScrollTrigger.refresh(true);
+    
+    // Navigate
+    router.push(`/shop/products/${variantId}`);
+  };
+
   useEffect(() => {
     if (!titlesContainerRef.current || !imagesContainerRef.current) return;
 
@@ -1999,23 +2058,21 @@ useEffect(() => {
 
     gsap.set(".spotlight-lines", { opacity: 0 });
 
-
-
     const newTitleElements: HTMLHeadingElement[] = [];
     const newImageElements: HTMLDivElement[] = [];
-const titlesContainer = titlesContainerRef.current;
-const imagesContainer = imagesContainerRef.current;
+    const titlesContainer = titlesContainerRef.current;
+    const imagesContainer = imagesContainerRef.current;
 
-if (!titlesContainer || !imagesContainer) return;
+    if (!titlesContainer || !imagesContainer) return;
 
+    while (titlesContainer.firstChild) {
+      titlesContainer.removeChild(titlesContainer.firstChild);
+    }
 
-while (titlesContainer.firstChild) {
-  titlesContainer.removeChild(titlesContainer.firstChild);
-}
+    while (imagesContainer.firstChild) {
+      imagesContainer.removeChild(imagesContainer.firstChild);
+    }
 
-while (imagesContainer.firstChild) {
-  imagesContainer.removeChild(imagesContainer.firstChild);
-}
     slidesData.forEach((item, index) => {
       const titleElement = document.createElement("h1");
       titleElement.dataset.index = String(index);
@@ -2036,92 +2093,69 @@ while (imagesContainer.firstChild) {
       imgWrapper.className = "spotlight-img";
       imgWrapper.style.cursor = "pointer";
       
-// CLICK
-const handleClick: EventListener = (e) => {
-  if (hasMovedRef.current) {
-    hasMovedRef.current = false;
-    return;
-  }
+      const handleClick: EventListener = (e) => {
+        if (hasMovedRef.current) {
+          hasMovedRef.current = false;
+          return;
+        }
 
-  const variantId = slidesData[index].variantId;
-  if (variantId) {
-    router.push(`/shop/products/${variantId}`);
-  }
-};
+        const variantId = slidesData[index].variantId;
+        if (variantId) {
+          handleNavigate(variantId);
+        }
+      };
 
-imgWrapper.addEventListener("click", handleClick);
-listenersRef.current.push({ el: imgWrapper, type: "click", handler: handleClick });
+      imgWrapper.addEventListener("click", handleClick);
+      listenersRef.current.push({ el: imgWrapper, type: "click", handler: handleClick });
 
+      const handleTouchStart: EventListener = (e) => {
+        const touchEvent = e as TouchEvent;
+        clickStartPosRef.current = {
+          x: touchEvent.touches[0].clientX,
+          y: touchEvent.touches[0].clientY,
+          time: Date.now(),
+        };
+        hasMovedRef.current = false;
+      };
 
-// TOUCH START
-const handleTouchStart: EventListener = (e) => {
-  const touchEvent = e as TouchEvent;
+      imgWrapper.addEventListener("touchstart", handleTouchStart);
+      listenersRef.current.push({ el: imgWrapper, type: "touchstart", handler: handleTouchStart });
 
-  clickStartPosRef.current = {
-    x: touchEvent.touches[0].clientX,
-    y: touchEvent.touches[0].clientY,
-    time: Date.now(),
-  };
+      const handleTouchMove: EventListener = (e) => {
+        const touchEvent = e as TouchEvent;
+        if (!clickStartPosRef.current) return;
+        const deltaX = Math.abs(touchEvent.touches[0].clientX - clickStartPosRef.current.x);
+        const deltaY = Math.abs(touchEvent.touches[0].clientY - clickStartPosRef.current.y);
+        if (deltaX > 10 || deltaY > 10) hasMovedRef.current = true;
+      };
 
-  hasMovedRef.current = false;
-};
+      imgWrapper.addEventListener("touchmove", handleTouchMove);
+      listenersRef.current.push({ el: imgWrapper, type: "touchmove", handler: handleTouchMove });
 
-imgWrapper.addEventListener("touchstart", handleTouchStart);
-listenersRef.current.push({ el: imgWrapper, type: "touchstart", handler: handleTouchStart });
+      const handleMouseDown: EventListener = (e) => {
+        const mouseEvent = e as MouseEvent;
+        clickStartPosRef.current = {
+          x: mouseEvent.clientX,
+          y: mouseEvent.clientY,
+          time: Date.now(),
+        };
+        hasMovedRef.current = false;
+      };
 
+      imgWrapper.addEventListener("mousedown", handleMouseDown);
+      listenersRef.current.push({ el: imgWrapper, type: "mousedown", handler: handleMouseDown });
 
-// TOUCH MOVE
-const handleTouchMove: EventListener = (e) => {
-  const touchEvent = e as TouchEvent;
+      const handleMouseMove: EventListener = (e) => {
+        const mouseEvent = e as MouseEvent;
+        if (!clickStartPosRef.current) return;
+        const deltaX = Math.abs(mouseEvent.clientX - clickStartPosRef.current.x);
+        const deltaY = Math.abs(mouseEvent.clientY - clickStartPosRef.current.y);
+        if (deltaX > 10 || deltaY > 10) hasMovedRef.current = true;
+      };
 
-  if (!clickStartPosRef.current) return;
+      imgWrapper.addEventListener("mousemove", handleMouseMove);
+      listenersRef.current.push({ el: imgWrapper, type: "mousemove", handler: handleMouseMove });
 
-  const deltaX = Math.abs(touchEvent.touches[0].clientX - clickStartPosRef.current.x);
-  const deltaY = Math.abs(touchEvent.touches[0].clientY - clickStartPosRef.current.y);
-
-  if (deltaX > 10 || deltaY > 10) {
-    hasMovedRef.current = true;
-  }
-};
-
-imgWrapper.addEventListener("touchmove", handleTouchMove);
-listenersRef.current.push({ el: imgWrapper, type: "touchmove", handler: handleTouchMove });
-
-
-// MOUSE DOWN
-const handleMouseDown: EventListener = (e) => {
-  const mouseEvent = e as MouseEvent;
-
-  clickStartPosRef.current = {
-    x: mouseEvent.clientX,
-    y: mouseEvent.clientY,
-    time: Date.now(),
-  };
-
-  hasMovedRef.current = false;
-};
-
-imgWrapper.addEventListener("mousedown", handleMouseDown);
-listenersRef.current.push({ el: imgWrapper, type: "mousedown", handler: handleMouseDown });
-
-
-// MOUSE MOVE
-const handleMouseMove: EventListener = (e) => {
-  const mouseEvent = e as MouseEvent;
-
-  if (!clickStartPosRef.current) return;
-
-  const deltaX = Math.abs(mouseEvent.clientX - clickStartPosRef.current.x);
-  const deltaY = Math.abs(mouseEvent.clientY - clickStartPosRef.current.y);
-
-  if (deltaX > 10 || deltaY > 10) {
-    hasMovedRef.current = true;
-  }
-};
-
-imgWrapper.addEventListener("mousemove", handleMouseMove);
-
-listenersRef.current.push({ el: imgWrapper, type: "mousemove", handler: handleMouseMove });
       const imgElement = document.createElement("img");
       imgElement.src = item.thumbnail;
 
@@ -2134,8 +2168,9 @@ listenersRef.current.push({ el: imgWrapper, type: "mousemove", handler: handleMo
 
     newTitleElements.forEach((el, i) => {
       gsap.set(el, {
-        y: i * titleHeight,
-        opacity: 1,
+        y: i * titleHeight + 80,
+        scale: 0.85,
+        opacity: 0,
       });
     });
 
@@ -2154,265 +2189,230 @@ listenersRef.current.push({ el: imgWrapper, type: "mousemove", handler: handleMo
         });
       }
     }, 150);
-      return () => {
-    listenersRef.current.forEach(({ el, type, handler }) => {
-      el.removeEventListener(type, handler);
-    });
-    listenersRef.current = [];
-  };
   }, [router]);
 
   useEffect(() => {
-    if (
-      !isInitializedRef.current ||
-      titleElements.length === 0 ||
-      imageElements.length === 0
-    ) {
+    if (!isInitializedRef.current || titleElements.length === 0 || imageElements.length === 0) {
       return;
     }
 
-    const lenis = new Lenis();
-    lenis.on("scroll", ScrollTrigger.update);
-const tick = (time: number) => lenis.raf(time * 1000);
-gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
+    // Clean up previous context
+    if (ctxRef.current) {
+      ctxRef.current.revert();
+    }
 
-    imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
+    const ctx = gsap.context(() => {
+      imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
 
-    const scrollTrigger = ScrollTrigger.create({
-      trigger: spotlightRef.current,
-      start: "top top",
-      end: `+=${window.innerHeight * 12}px`,
-      pin: true,
-      pinSpacing: true,
-      scrub: 1.5,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        const isMainPhase = progress > 0.25;
-        const lines =
-          titlesContainerElementRef.current?.querySelectorAll(".line");
+      const st = ScrollTrigger.create({
+        trigger: spotlightRef.current,
+        start: "top top",
+        end: `+=${window.innerHeight * 12}px`,
+        pin: true,
+        pinSpacing: true, 
+        scrub: 1.5,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          const isMainPhase = progress > 0.25;
+          const lines = titlesContainerElementRef.current?.querySelectorAll(".line");
 
-        if (!isMainPhase) {
-          gsap.set(titlesContainerElementRef.current, { opacity: 0 });
-          gsap.set(".spotlight-lines", { opacity: 0 });
-        }
-
-        if (progress <= 0.2) {
-          const p = progress / 0.2;
-          const moveDistance = window.innerWidth * 0.6;
-
-          if (lines) gsap.set(lines, { opacity: 0 });
-
-          if (introText1Ref.current) {
-            gsap.set(introText1Ref.current, {
-              x: -p * moveDistance,
-              opacity: 1,
-            });
+          if (!isMainPhase) {
+            gsap.set(titlesContainerElementRef.current, { opacity: 0 });
+            gsap.set(".spotlight-lines", { opacity: 0 });
           }
 
-          if (introText2Ref.current) {
-            gsap.set(introText2Ref.current, {
-              x: p * moveDistance,
-              opacity: 1,
-            });
-          }
+          if (progress <= 0.2) {
+            const p = progress / 0.2;
+            const moveDistance = window.innerWidth * 0.6;
 
-          if (spotlightBgImgRef.current) {
-            gsap.set(spotlightBgImgRef.current, {
-              scale: p,
-            });
-          }
+            if (lines) gsap.set(lines, { opacity: 0 });
 
-          if (spotlightBgImgInnerRef.current) {
-            gsap.set(spotlightBgImgInnerRef.current, {
-              scale: 1.5 - p * 0.5,
-            });
-          }
-
-          imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
-          return;
-        }
-
-        if (progress <= 0.25) {
-          if (lines) {
-            gsap.to(lines, {
-              opacity: 1,
-              duration: 0.3,
-              ease: "none",
-            });
-          }
-
-          gsap.set([introText1Ref.current, introText2Ref.current], {
-            opacity: 0,
-          });
-
-          gsap.set(spotlightBgImgRef.current, { scale: 1 });
-          gsap.set(spotlightBgImgInnerRef.current, { scale: 1 });
-
-          imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
-          return;
-        }
-
-        if (progress <= 0.95) {
-          const switchProgress = (progress - 0.25) / 0.7;
-          const revealProgress = gsap.utils.clamp(
-            0,
-            1,
-            (progress - 0.23) / 0.05,
-          );
-
-          gsap.set(titlesContainerElementRef.current, {
-            opacity: revealProgress,
-          });
-
-          gsap.set(".spotlight-lines", {
-            opacity: revealProgress,
-          });
-
-          if (spotlightBgImgRef.current) {
-            const bgScale = 1 + (switchProgress * 0.05);
-            gsap.set(spotlightBgImgRef.current, { 
-              scale: bgScale,
-              ease: "none"
-            });
-          }
-
-          const bgImageIndex = Math.floor(switchProgress * slidesData.length);
-          const clampedBgIndex = Math.min(bgImageIndex, slidesData.length - 1);
-          
-          if (currentImageIndexRef.current !== clampedBgIndex) {
-            console.log(`BG Image should be index: ${clampedBgIndex} out of ${slidesData.length}`);
-            smoothTransitionBackground(
-              currentImageIndexRef.current, 
-              clampedBgIndex
-            );
-            currentImageIndexRef.current = clampedBgIndex;
-          }
-
-          imageElements.forEach((img, index) => {
-            const imageProgress = getImgProgressState(index, switchProgress);
-
-            if (imageProgress < 0 || imageProgress > 1) {
-              gsap.set(img, { opacity: 0 });
-            } else {
-              const pos = getBezierPosition(imageProgress);
-              gsap.set(img, {
-                x: pos.x - 100,
-                y: pos.y - 75,
+            if (introText1Ref.current) {
+              gsap.set(introText1Ref.current, {
+                x: -p * moveDistance,
                 opacity: 1,
               });
             }
-          });
 
-          const titleHeight = titleElements[0]?.offsetHeight || 80;
-          const totalShift =
-            switchProgress * (titleElements.length - 1) * titleHeight;
+            if (introText2Ref.current) {
+              gsap.set(introText2Ref.current, {
+                x: p * moveDistance,
+                opacity: 1,
+              });
+            }
 
-          titleElements.forEach((el, index) => {
-            const baseY = index * titleHeight;
-            gsap.set(el, {
-              y: baseY - totalShift,
+            if (spotlightBgImgRef.current) {
+              gsap.set(spotlightBgImgRef.current, {
+                scale: p,
+              });
+            }
+
+            if (spotlightBgImgInnerRef.current) {
+              gsap.set(spotlightBgImgInnerRef.current, {
+                scale: 1.5 - p * 0.5,
+              });
+            }
+
+            imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
+            return;
+          }
+
+          if (progress <= 0.25) {
+            if (lines) {
+              gsap.to(lines, {
+                opacity: 1,
+                duration: 0.3,
+                ease: "none",
+              });
+            }
+
+            gsap.set([introText1Ref.current, introText2Ref.current], {
+              opacity: 0,
             });
-          });
 
-          return;
-        }
+            gsap.set(spotlightBgImgRef.current, { scale: 1 });
+            gsap.set(spotlightBgImgInnerRef.current, { scale: 1 });
 
-        if (lines) {
-          gsap.to(lines, {
-            opacity: 0,
-            duration: 0.3,
-          });
-        }
-      },
-    });
+            imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
+            return;
+          }
 
-return () => {
-  scrollTrigger.kill();
+          if (progress <= 0.95) {
+            const switchProgress = (progress - 0.25) / 0.7;
+            const revealProgress = gsap.utils.clamp(0, 1, (progress - 0.23) / 0.05);
 
-gsap.killTweensOf(imageElements);
-gsap.killTweensOf(titleElements);
+            gsap.set(titlesContainerElementRef.current, {
+              opacity: revealProgress,
+            });
 
-  if (bgTransitionRef.current) {
-    bgTransitionRef.current.kill();
-  }
+            gsap.set(".spotlight-lines", {
+              opacity: revealProgress,
+            });
 
-  gsap.ticker.remove(tick); 
-  lenis.destroy();
-};
+            if (spotlightBgImgRef.current) {
+              const bgScale = 1 + (switchProgress * 0.05);
+              gsap.set(spotlightBgImgRef.current, { 
+                scale: bgScale,
+                ease: "none"
+              });
+            }
+
+            const bgImageIndex = Math.floor(switchProgress * slidesData.length);
+            const clampedBgIndex = Math.min(bgImageIndex, slidesData.length - 1);
+            
+            if (currentImageIndexRef.current !== clampedBgIndex) {
+              console.log(`BG Image should be index: ${clampedBgIndex} out of ${slidesData.length}`);
+              smoothTransitionBackground(
+                currentImageIndexRef.current, 
+                clampedBgIndex
+              );
+              currentImageIndexRef.current = clampedBgIndex;
+            }
+
+            imageElements.forEach((img, index) => {
+              const imageProgress = getImgProgressState(index, switchProgress);
+
+              if (imageProgress < 0 || imageProgress > 1) {
+                gsap.set(img, { opacity: 0 });
+              } else {
+                const pos = getBezierPosition(imageProgress);
+                gsap.set(img, {
+                  x: pos.x - 100,
+                  y: pos.y - 75,
+                  opacity: 1,
+                });
+              }
+            });
+
+            const titleHeight = titleElements[0]?.offsetHeight || 80;
+            const totalShift = switchProgress * (titleElements.length - 1) * titleHeight;
+
+            titleElements.forEach((el, index) => {
+              if (index === clampedBgIndex) {
+                gsap.to(el, {
+                  y: index * titleHeight - totalShift,
+                  scale: 1,
+                  opacity: 1,
+                  duration: 0.8,
+                  ease: "expo.out",
+                });
+              } else {
+                gsap.to(el, {
+                  scale: 0.9,
+                  opacity: 0.4,
+                  duration: 0.6,
+                  ease: "power2.out",
+                });
+              }
+            });
+            return;
+          }
+
+          if (lines) {
+            gsap.to(lines, {
+              opacity: 0,
+              duration: 0.3,
+            });
+          }
+        },
+      });
+
+      scrollTriggerRef.current = st;
+    }, spotlightRef);
+
+    ctxRef.current = ctx;
+
+    return () => {
+      if (ctxRef.current) {
+        ctxRef.current.revert();
+      }
+    };
   }, [titleElements, imageElements]);
 
   return (
     <>
-      <section className="hero-video">
 
-                        {/* <video
-                          ref={videoARef}
-                        src="https://cdn.prod.website-files.com/678671a66edd3849bbcac5e3%2F678a1ef8f7108323f84eecda_4990242-sd_960_540_30fps-transcode.mp4"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                      /> */}
-
-  <video
-    className="video video-b"
-    ref={videoBRef}
-    src="/videos/Final_comp_2.mp4"
-    autoPlay
-    loop
-    muted
-    playsInline
-  />
-
-  </section>
-        <section className="spotlight" ref={spotlightRef}>
-
-      <div className="spotlight-bg">
-        <div className="spotlight-bg-img" ref={spotlightBgImgRef}>
-          <img
-            className="bg-img current"
-            src={slidesData[0]?.full}
-            alt=""
-            ref={spotlightBgImgInnerRef}
-          />
-          <img className="bg-img next" src={slidesData[0]?.full} alt="" />
-        </div>
-      </div>
-
-      <div className="spotlight-images" ref={imagesContainerRef}></div>
-
-      <div className="spotlight-ui">
-        <div className="spotlight-intro-text-wrapper">
-          <p className="spotlight-intro-text" ref={introText1Ref}>
-            Featured Products
-          </p>
-          <p className="spotlight-intro-text" ref={introText2Ref}>
-            — Shop Now
-          </p>
+      <section className="spotlight" ref={spotlightRef}>
+        <div className="spotlight-bg">
+          <div className="spotlight-bg-img" ref={spotlightBgImgRef}>
+            <img
+              className="bg-img current"
+              src={slidesData[0]?.full}
+              alt=""
+              ref={spotlightBgImgInnerRef}
+            />
+            <img className="bg-img next" src={slidesData[0]?.full} alt="" />
+          </div>
         </div>
 
-        <div className="spotlight-lines">
-          <div className="line line-left" />
-          <div className="line line-right" />
-          <div className="spotlight-label">Discover</div>
-        </div>
+        <div className="spotlight-images" ref={imagesContainerRef}></div>
 
-        <div
-          className="spotlight-titles-container"
-          ref={titlesContainerElementRef}
-        >
-          <div className="spotlight-mask">
-            <div className="spotlight-titles" ref={titlesRef}>
-              <div ref={titlesContainerRef}></div>
+        <div className="spotlight-ui">
+          <div className="spotlight-intro-text-wrapper">
+            <p className="spotlight-intro-text" ref={introText1Ref}>
+              Featured Products
+            </p>
+            <p className="spotlight-intro-text" ref={introText2Ref}>
+              — Shop Now
+            </p>
+          </div>
+
+          <div className="spotlight-lines">
+            <div className="line line-left" />
+            <div className="line line-right" />
+            <div className="spotlight-label">Discover</div>
+          </div>
+
+          <div className="spotlight-titles-container" ref={titlesContainerElementRef}>
+            <div className="spotlight-mask">
+              <div className="spotlight-titles" ref={titlesRef}>
+                <div ref={titlesContainerRef}></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
     </>
-
   );
 };
 
