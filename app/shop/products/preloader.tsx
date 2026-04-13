@@ -1850,38 +1850,40 @@ const PreloaderMobile: React.FC = () => {
   const pendingTransitionRef = useRef<number | null>(null);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
+  
+  // Refs for automatic animation
+  const autoAnimationCompletedRef = useRef(false);
+  const autoAnimationTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  // 🔑 AGGRESSIVE CLEANUP ON UNMOUNT
   useEffect(() => {
     return () => {
-      // Kill our tracked ScrollTrigger
       if (scrollTriggerRef.current) {
         scrollTriggerRef.current.kill(true);
         scrollTriggerRef.current = null;
       }
       
-      // Kill ALL ScrollTriggers - aggressive but safe for navigation
       ScrollTrigger.getAll().forEach(st => st.kill(true));
       
-      // Revert GSAP context
       if (ctxRef.current) {
         ctxRef.current.revert();
         ctxRef.current = null;
       }
       
-      // Kill background transition
       if (bgTransitionRef.current) {
         bgTransitionRef.current.kill();
         bgTransitionRef.current = null;
       }
       
-      // Clear all event listeners
+      if (autoAnimationTimelineRef.current) {
+        autoAnimationTimelineRef.current.kill();
+        autoAnimationTimelineRef.current = null;
+      }
+      
       listenersRef.current.forEach(({ el, type, handler }) => {
         el.removeEventListener(type, handler);
       });
       listenersRef.current = [];
       
-      // Force refresh ScrollTrigger after cleanup
       ScrollTrigger.refresh(true);
     };
   }, []);
@@ -2020,24 +2022,79 @@ const PreloaderMobile: React.FC = () => {
     bgTransitionRef.current = tl;
   };
 
-  // 🔑 SAFE NAVIGATION WITH CLEANUP
   const handleNavigate = (variantId: number) => {
-    // Kill all ScrollTriggers before navigation
     ScrollTrigger.getAll().forEach(st => st.kill(true));
-    
-    // Revert GSAP context
+
     if (ctxRef.current) {
       ctxRef.current.revert();
     }
-    
-    // Kill any ongoing animations
+
     gsap.globalTimeline.clear();
-    
-    // Force refresh
+
     ScrollTrigger.refresh(true);
     
-    // Navigate
+
     router.push(`/shop/products/${variantId}`);
+  };
+
+
+  const playAutoIntroAnimation = () => {
+    if (autoAnimationCompletedRef.current) return;
+    if (!introText1Ref.current || !introText2Ref.current || !spotlightBgImgRef.current || !spotlightBgImgInnerRef.current) return;
+
+    autoAnimationCompletedRef.current = true;
+
+    const moveDistance = window.innerWidth * 0.6;
+    const duration = 1.2;
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+
+        if (introText1Ref.current && introText2Ref.current) {
+          gsap.set(introText1Ref.current, { x: -moveDistance, opacity: 1 });
+          gsap.set(introText2Ref.current, { x: moveDistance, opacity: 1 });
+        }
+        if (spotlightBgImgRef.current) {
+          gsap.set(spotlightBgImgRef.current, { scale: 1 });
+        }
+        if (spotlightBgImgInnerRef.current) {
+          gsap.set(spotlightBgImgInnerRef.current, { scale: 1 });
+        }
+        imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
+        
+        window.dispatchEvent(new CustomEvent('introComplete'));
+      }
+    });
+
+
+    tl.to(introText1Ref.current, {
+      x: -moveDistance,
+      opacity: 1,
+      duration: duration,
+      ease: "power2.inOut"
+    }, 0);
+
+    tl.to(introText2Ref.current, {
+      x: moveDistance,
+      opacity: 1,
+      duration: duration,
+      ease: "power2.inOut"
+    }, 0);
+
+
+    tl.to(spotlightBgImgRef.current, {
+      scale: 1,
+      duration: duration,
+      ease: "power2.inOut"
+    }, 0);
+
+    tl.to(spotlightBgImgInnerRef.current, {
+      scale: 1,
+      duration: duration,
+      ease: "power2.inOut"
+    }, 0);
+
+    autoAnimationTimelineRef.current = tl;
   };
 
   useEffect(() => {
@@ -2184,10 +2241,15 @@ const PreloaderMobile: React.FC = () => {
       if (spotlightBgImgRef.current) {
         gsap.to(spotlightBgImgRef.current, { 
           opacity: 1, 
-          duration: 0.2,
-          ease: "power2.out"
+          duration: 0.7,
+          ease: "none"
         });
       }
+      
+
+      setTimeout(() => {
+        playAutoIntroAnimation();
+      }, 300);
     }, 150);
   }, [router]);
 
@@ -2196,7 +2258,6 @@ const PreloaderMobile: React.FC = () => {
       return;
     }
 
-    // Clean up previous context
     if (ctxRef.current) {
       ctxRef.current.revert();
     }
@@ -2213,57 +2274,26 @@ const PreloaderMobile: React.FC = () => {
         scrub: 1.5,
         onUpdate: (self) => {
           const progress = self.progress;
-          const isMainPhase = progress > 0.25;
           const lines = titlesContainerElementRef.current?.querySelectorAll(".line");
 
-          if (!isMainPhase) {
+
+          
+          if (!autoAnimationCompletedRef.current) {
+  
             gsap.set(titlesContainerElementRef.current, { opacity: 0 });
             gsap.set(".spotlight-lines", { opacity: 0 });
-          }
-
-          if (progress <= 0.2) {
-            const p = progress / 0.2;
-            const moveDistance = window.innerWidth * 0.6;
-
-            if (lines) gsap.set(lines, { opacity: 0 });
-
-            if (introText1Ref.current) {
-              gsap.set(introText1Ref.current, {
-                x: -p * moveDistance,
-                opacity: 1,
-              });
-            }
-
-            if (introText2Ref.current) {
-              gsap.set(introText2Ref.current, {
-                x: p * moveDistance,
-                opacity: 1,
-              });
-            }
-
-            if (spotlightBgImgRef.current) {
-              gsap.set(spotlightBgImgRef.current, {
-                scale: p,
-              });
-            }
-
-            if (spotlightBgImgInnerRef.current) {
-              gsap.set(spotlightBgImgInnerRef.current, {
-                scale: 1.5 - p * 0.5,
-              });
-            }
-
-            imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
             return;
           }
 
-          if (progress <= 0.25) {
-            if (lines) {
-              gsap.to(lines, {
-                opacity: 1,
-                duration: 0.3,
-                ease: "none",
-              });
+          const mappedProgress = 0.2 + (progress * 0.8);
+          
+
+          if (mappedProgress <= 0.3) {
+            if (lines && mappedProgress > 0.23) {
+              const lineOpacity = gsap.utils.mapRange(0.23, 0.3, 0, 1, mappedProgress);
+              gsap.set(lines, { opacity: Math.min(1, lineOpacity) });
+            } else if (lines) {
+              gsap.set(lines, { opacity: 0 });
             }
 
             gsap.set([introText1Ref.current, introText2Ref.current], {
@@ -2274,12 +2304,16 @@ const PreloaderMobile: React.FC = () => {
             gsap.set(spotlightBgImgInnerRef.current, { scale: 1 });
 
             imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
+            
+            // Hide titles until we're ready
+            gsap.set(titlesContainerElementRef.current, { opacity: 0 });
             return;
           }
 
-          if (progress <= 0.95) {
-            const switchProgress = (progress - 0.25) / 0.7;
-            const revealProgress = gsap.utils.clamp(0, 1, (progress - 0.23) / 0.05);
+          if (mappedProgress <= 0.95) {
+            const switchProgress = (mappedProgress - 0.3) / 0.65;
+            const clampedSwitchProgress = gsap.utils.clamp(0, 1, switchProgress);
+            const revealProgress = gsap.utils.clamp(0, 1, (mappedProgress - 0.28) / 0.05);
 
             gsap.set(titlesContainerElementRef.current, {
               opacity: revealProgress,
@@ -2290,14 +2324,14 @@ const PreloaderMobile: React.FC = () => {
             });
 
             if (spotlightBgImgRef.current) {
-              const bgScale = 1 + (switchProgress * 0.05);
+              const bgScale = 1 + (clampedSwitchProgress * 0.05);
               gsap.set(spotlightBgImgRef.current, { 
                 scale: bgScale,
                 ease: "none"
               });
             }
 
-            const bgImageIndex = Math.floor(switchProgress * slidesData.length);
+            const bgImageIndex = Math.floor(clampedSwitchProgress * slidesData.length);
             const clampedBgIndex = Math.min(bgImageIndex, slidesData.length - 1);
             
             if (currentImageIndexRef.current !== clampedBgIndex) {
@@ -2310,7 +2344,7 @@ const PreloaderMobile: React.FC = () => {
             }
 
             imageElements.forEach((img, index) => {
-              const imageProgress = getImgProgressState(index, switchProgress);
+              const imageProgress = getImgProgressState(index, clampedSwitchProgress);
 
               if (imageProgress < 0 || imageProgress > 1) {
                 gsap.set(img, { opacity: 0 });
@@ -2325,7 +2359,7 @@ const PreloaderMobile: React.FC = () => {
             });
 
             const titleHeight = titleElements[0]?.offsetHeight || 80;
-            const totalShift = switchProgress * (titleElements.length - 1) * titleHeight;
+            const totalShift = clampedSwitchProgress * (titleElements.length - 1) * titleHeight;
 
             titleElements.forEach((el, index) => {
               if (index === clampedBgIndex) {
@@ -2348,7 +2382,7 @@ const PreloaderMobile: React.FC = () => {
             return;
           }
 
-          if (lines) {
+          if (lines && mappedProgress > 0.95) {
             gsap.to(lines, {
               opacity: 0,
               duration: 0.3,

@@ -446,7 +446,9 @@ main:has(.crisp-header.is--loading) {
     filter: grayscale(100%) contrast(100%);
     will-change: transform;
   }
-
+.spotlight-bg-img {
+  transform-origin: center center;
+}
   .bg-img {
     position: absolute;
     inset: 0;
