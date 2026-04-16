@@ -816,12 +816,24 @@ const [scrollWrapHeight, setScrollWrapHeight] = useState("300vh");
 
   const stripSlides = useMemo(() => {
     if (!allSlides.length) return [];
+
     return [...allSlides, ...allSlides, ...allSlides];
   }, [allSlides]);
-const leftStripSlides = useMemo(() => {
-  if (!allSlides.length) return [];
-  return [null, null, ...allSlides];
-}, [allSlides]);
+
+  const leftStripSlides = useMemo(() => {
+    if (!allSlides.length) return [];
+
+    const tripleSlides = [...allSlides, ...allSlides, ...allSlides];
+    return [null, null, ...tripleSlides];
+  }, [allSlides]);
+
+
+  const rightStripSlides = useMemo(() => {
+    if (!allSlides.length) return [];
+
+    return [...allSlides, ...allSlides, ...allSlides];
+  }, [allSlides]);
+
   const centerIndex = Math.floor(slidesData.length / 2);
 
   const getStep = useCallback((track) => {
@@ -1048,7 +1060,7 @@ const measureScrub = () => {
   }
 
   const total = allSlides.length;
-  const startIndex = total; // For the middle loop
+  const startIndex = total * 2; // Start at the beginning of the third loop
 
   const focusStep = getStep(focusStripEl);
   const thumbStep = getStep(navLeftEl);
@@ -1068,7 +1080,7 @@ const measureScrub = () => {
   const focusMaskRect = focusMaskEl.getBoundingClientRect();
   const focusItemRect = focusStripEl.children[0].getBoundingClientRect();
 
-  // Focus strip starting position
+
   const focusStartX =
     (focusMaskRect.width - focusItemRect.width) * 0.5 +
     (paddingLeft - paddingRight) * 0.5 -
@@ -1076,28 +1088,24 @@ const measureScrub = () => {
 
   const leftStartX = -paddingRight;
   
-  // Right strip uses the same starting logic as before
+
   const rightStartX =
     -(startIndex + 1) * thumbStep +
     paddingRight +
     (focusMaskRect.width - focusItemRect.width) * 0.5;
 
   const focusTrackWidth = focusStripEl.scrollWidth;
-  const singleLoopWidth = focusTrackWidth / 3; // Since we tripled the array
+  const singleLoopWidth = focusTrackWidth / 3; 
   const maxFocusTravel = singleLoopWidth - focusStep;
 
   // Calculate where the right strip should stop
-  // We want it to stop at the last image of the ORIGINAL array
   // Since the strip has 3 loops, the last original image is at index: startIndex + total - 1
   const lastOriginalImageIndex = startIndex + total - 1;
-  
-  // Calculate the x position when the last original image is centered
+
   const rightStopX = rightStartX - (lastOriginalImageIndex - startIndex) * thumbStep;
-  
-  // Maximum travel for right strip (distance from start to stop position)
+
   const maxRightTravel = Math.abs(rightStartX - rightStopX);
   
-  // Calculate the progress point where right strip should stop
   const rightStopProgress = maxRightTravel / (maxFocusTravel * (thumbStep / focusStep));
 
   if (scrollWrapRef.current) {
@@ -1327,12 +1335,13 @@ useLayoutEffect(() => {
                 </div>
               </div>
 
+
               <div className="nav-layer nav-layer--right">
                 <div 
                   className="crisp-header__slider-nav crisp-header__slider-nav--right" 
                   ref={sliderNavRightRef}
                 >
-                  {stripSlides.map((slide, idx) => (
+                  {rightStripSlides.map((slide, idx) => (
                     <Link
                       key={`right-${slide.id}-${idx}`}
                       href={`/shop/products/${slide.variant?.id}`}
