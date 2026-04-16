@@ -13,8 +13,13 @@ import {
   useCallback,
 } from "react";
 import * as THREE from "three";
-import { Canvas, useFrame, extend, useThree } from '@react-three/fiber';
-import { ShaderMaterial, PlaneGeometry, WebGLRenderTarget, Vector2 } from 'three';
+import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
+import {
+  ShaderMaterial,
+  PlaneGeometry,
+  WebGLRenderTarget,
+  Vector2,
+} from "three";
 gsap.registerPlugin(CustomEase, SplitText, Flip, ScrollTrigger);
 import { useRouter } from "next/navigation";
 
@@ -780,18 +785,23 @@ const PreloaderComponent = ({ variants }) => {
     return !sessionStorage.getItem("preloaderDone");
   });
   const router = useRouter();
-  const focusStripRef = useRef(null);
   const containerRef = useRef(null);
   const headingRef = useRef(null);
   const loaderGroupsRef = useRef(null);
   const scaleUpMediaRef = useRef(null);
   const scaleDownImagesRef = useRef([]);
-  const sliderNavRef = useRef(null);
-  const splitInstanceRef = useRef(null);
   const mainGroupRef = useRef(null);
   const contentRef = useRef(null);
   const headingContainerRef = useRef(null);
-
+  const leftMaskRef = useRef(null);
+const scrollTriggerRef = useRef(null);
+const metricsRef = useRef(null);
+  const focusStripRef = useRef(null);
+  const sliderNavLeftRef = useRef(null);
+  const sliderNavRightRef = useRef(null);
+  const scrollWrapRef = useRef(null);
+const [scrollWrapHeight, setScrollWrapHeight] = useState("300vh");
+  const splitInstanceRef = useRef(null);
 
   const allSlides = useMemo(() => {
     if (!variants?.length) return [];
@@ -804,7 +814,22 @@ const PreloaderComponent = ({ variants }) => {
     });
   }, [variants]);
 
+  const stripSlides = useMemo(() => {
+    if (!allSlides.length) return [];
+    return [...allSlides, ...allSlides, ...allSlides];
+  }, [allSlides]);
+const leftStripSlides = useMemo(() => {
+  if (!allSlides.length) return [];
+  return [null, null, ...allSlides];
+}, [allSlides]);
   const centerIndex = Math.floor(slidesData.length / 2);
+
+  const getStep = useCallback((track) => {
+    if (!track?.children?.[0]) return 0;
+    const styles = getComputedStyle(track);
+    const gap = parseFloat(styles.gap) || 0;
+    return track.children[0].getBoundingClientRect().width + gap;
+  }, []);
 
   useLayoutEffect(() => {
     document.fonts.ready.then(() => {
@@ -819,13 +844,9 @@ const PreloaderComponent = ({ variants }) => {
     const heading = headingRef.current;
     const scaleUpMedia = scaleUpMediaRef.current;
     const scaleDownImages = scaleDownImagesRef.current;
-
-    const sliderNav = sliderNavRef.current;
     const mainGroup = mainGroupRef.current;
     const content = contentRef.current;
     const headingContainer = headingContainerRef.current;
-const startX = 120;
-gsap.set(sliderNav, { x: startX });
 
     const images = scaleDownImages
       .map((el) => el?.querySelector("img"))
@@ -988,150 +1009,219 @@ gsap.set(sliderNav, { x: startX });
       );
     }
 
-    if (sliderNav.length) {
-      gsap.set(sliderNav, {
-        yPercent: 120,
-        opacity: 0,
-      });
+    const navLeftEl = sliderNavLeftRef.current;
+    const navRightEl = sliderNavRightRef.current;
+    
+    if (navLeftEl && navRightEl) {
+gsap.set([navLeftEl, navRightEl], {
+  yPercent: 120,
+});
 
-      tl.to(
-        sliderNav,
-        {
-          yPercent: 0,
-          opacity: 1,
-
-          duration: 0.3,
-          ease: "none",
-          stagger: {
-            each: 0.06,
-            ease: "none",
-            from: 0,
-          },
-          force3D: true,
-        },
-        "-=0.1",
-      );
+tl.to([navLeftEl, navRightEl], {
+  yPercent: 0,
+  duration: 0.3,
+});
     }
 
     tl.call(() => container.classList.remove("is--loading"), null, "+=0.1");
-tl.call(() => {
+    tl.call(() => initScrollScrub(), null, "+=0.1");
+  };
+
+const measureScrub = () => {
   const container = containerRef.current;
   const focusStripEl = focusStripRef.current;
-  const navEl = sliderNavRef.current;
+  const navLeftEl = sliderNavLeftRef.current;
+  const navRightEl = sliderNavRightRef.current;
+  const leftMaskEl = leftMaskRef.current;
 
-  if (!container || !focusStripEl || !navEl) return;
+  if (!container || !focusStripEl || !navLeftEl || !navRightEl || !leftMaskEl) {
+    return null;
+  }
 
-  const focusItems = focusStripEl.children;
-  const total = focusItems.length;
+  if (
+    !focusStripEl.children.length ||
+    !navLeftEl.children.length ||
+    !navRightEl.children.length ||
+    !allSlides.length
+  ) {
+    return null;
+  }
 
-  if (!total) return;
+  const total = allSlides.length;
+  const startIndex = total; // For the middle loop
 
-  const focusStyles = getComputedStyle(focusStripEl);
-  const focusGap = parseFloat(focusStyles.gap) || 0;
+  const focusStep = getStep(focusStripEl);
+  const thumbStep = getStep(navLeftEl);
 
+  if (!focusStep || !thumbStep) return null;
 
-  const navItems = navEl.children;
-  const navStyles = getComputedStyle(navEl);
-  const navGap = parseFloat(navStyles.gap) || 0;
-  const navStep = navItems[0].offsetWidth + navGap;
+  const focusMaskEl = focusStripEl.parentElement;
+  if (!focusMaskEl) return null;
 
+  const focusFrameEl = focusMaskEl.parentElement;
+  if (!focusFrameEl) return null;
 
-  const moveStrip = gsap.quickTo(focusStripEl, "x", {
-    duration: 0.5,
-    ease: "power3.out",
-  });
+  const frameStyles = getComputedStyle(focusFrameEl);
+  const paddingLeft = parseFloat(frameStyles.paddingLeft) || 0;
+  const paddingRight = parseFloat(frameStyles.paddingRight) || 0;
 
-  ScrollTrigger.create({
-    trigger: container,
-    start: "top top",
-end: "+=" + (total - 1) * navStep,
-    scrub: 1.2,
+  const focusMaskRect = focusMaskEl.getBoundingClientRect();
+  const focusItemRect = focusStripEl.children[0].getBoundingClientRect();
 
-onUpdate: (self) => {
-  const progress = self.progress;
+  // Focus strip starting position
+  const focusStartX =
+    (focusMaskRect.width - focusItemRect.width) * 0.5 +
+    (paddingLeft - paddingRight) * 0.5 -
+    startIndex * focusStep;
 
-  const focusStripEl = focusStripRef.current;
-  const navEl = sliderNavRef.current;
+  const leftStartX = -paddingRight;
+  
+  // Right strip uses the same starting logic as before
+  const rightStartX =
+    -(startIndex + 1) * thumbStep +
+    paddingRight +
+    (focusMaskRect.width - focusItemRect.width) * 0.5;
 
-  if (!focusStripEl || !navEl) return;
+  const focusTrackWidth = focusStripEl.scrollWidth;
+  const singleLoopWidth = focusTrackWidth / 3; // Since we tripled the array
+  const maxFocusTravel = singleLoopWidth - focusStep;
 
+  // Calculate where the right strip should stop
+  // We want it to stop at the last image of the ORIGINAL array
+  // Since the strip has 3 loops, the last original image is at index: startIndex + total - 1
+  const lastOriginalImageIndex = startIndex + total - 1;
+  
+  // Calculate the x position when the last original image is centered
+  const rightStopX = rightStartX - (lastOriginalImageIndex - startIndex) * thumbStep;
+  
+  // Maximum travel for right strip (distance from start to stop position)
+  const maxRightTravel = Math.abs(rightStartX - rightStopX);
+  
+  // Calculate the progress point where right strip should stop
+  const rightStopProgress = maxRightTravel / (maxFocusTravel * (thumbStep / focusStep));
 
-  const focusStyles = getComputedStyle(focusStripEl);
-  const focusGap = parseFloat(focusStyles.gap) || 0;
-  const focusStep = focusStripEl.children[0].offsetWidth + focusGap;
+  if (scrollWrapRef.current) {
+    const neededHeight = Math.ceil(window.innerHeight + maxFocusTravel + 2);
+    scrollWrapRef.current.style.height = `${neededHeight}px`;
+  }
 
-  const total = focusStripEl.children.length;
-
-
-  const navStyles = getComputedStyle(navEl);
-  const navGap = parseFloat(navStyles.gap) || 0;
-  const navStep = navEl.children[0].offsetWidth + navGap;
-
-
-  const focusTotalDistance = (total - 1) * focusStep;
-  const focusDistance = progress * focusTotalDistance;
-
-
-  moveStrip(-focusDistance);
-
-  const ratio = navStep / focusStep;
-  const navDistance = focusDistance * ratio;
-
-  gsap.set(navEl, {
-    x: startX - navDistance,
-  });
-}
-  });
-});
+  return {
+    focusStripEl,
+    navLeftEl,
+    navRightEl,
+    focusStep,
+    thumbStep,
+    focusStartX,
+    leftStartX,
+    rightStartX,
+    maxFocusTravel,
+    maxRightTravel,
+    rightStopProgress,
+    rightStopX,
   };
+};
+
+const applyScrubProgress = (progress) => {
+  const m = metricsRef.current;
+  if (!m) return;
+
+  const focusTravel = progress * m.maxFocusTravel;
+  const thumbTravel = (focusTravel / m.focusStep) * m.thumbStep;
+  
+
+  let rightStripX;
+  if (progress >= m.rightStopProgress) {
+    rightStripX = m.rightStopX;
+  } else {
+    rightStripX = m.rightStartX - thumbTravel;
+  }
+
+  gsap.set(m.focusStripEl, {
+    x: m.focusStartX - focusTravel,
+  });
+
+  gsap.set(m.navLeftEl, {
+    x: m.leftStartX - thumbTravel,
+    opacity: 1,
+  });
+
+  gsap.set(m.navRightEl, {
+    x: rightStripX,
+    opacity: 1,
+  });
+};
+const initScrollScrub = () => {
+  metricsRef.current = measureScrub();
+  if (!metricsRef.current) return;
+
+  applyScrubProgress(0);
+
+  if (scrollTriggerRef.current) {
+    scrollTriggerRef.current.refresh();
+    return;
+  }
+
+  scrollTriggerRef.current = ScrollTrigger.create({
+    trigger: containerRef.current,
+    start: "top top",
+    end: () => `+=${metricsRef.current?.maxFocusTravel ?? 0}`,
+    scrub: 1.2,
+    invalidateOnRefresh: true,
+    onUpdate: (self) => {
+      applyScrubProgress(self.progress);
+    },
+    onRefreshInit: () => {
+      metricsRef.current = measureScrub();
+    },
+    onRefresh: (self) => {
+      applyScrubProgress(self.progress);
+    },
+  });
+
+  ScrollTrigger.refresh();
+};
+
+useLayoutEffect(() => {
+  let resizeRaf;
+
+  const handleResize = () => {
+    cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(() => {
+      initScrollScrub();
+    });
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+    cancelAnimationFrame(resizeRaf);
+    if (scrollTriggerRef.current) {
+      scrollTriggerRef.current.kill();
+      scrollTriggerRef.current = null;
+    }
+  };
+}, [allSlides]);
+
   const handleThumbClick = (slide) => {
     if (!slide.variant) return;
     router.push(`/shop/products/${slide.variant.id}`);
   };
+
   const addToScaleDown = (el) => {
     if (el && !scaleDownImagesRef.current.includes(el)) {
       scaleDownImagesRef.current.push(el);
     }
   };
 
-
-
   return (
     <>
-      <div style={{ height: "300vh" }}>
+<div ref={scrollWrapRef} style={{ height: scrollWrapHeight }}>
         <section
           ref={containerRef}
           data-slideshow="wrap"
           className="crisp-header is--loading is--hidden"
         >
-          {/* <div className="crisp-header__slider">
-          <div className="crisp-header__slider-list">
-         {allSlides.map((slide, index) => (
-  <div
-    key={slide.id}
-    ref={(el) => (slidesRef.current[index] = el)}
-    className="crisp-header__slider-slide"
-  >
-
-    <div
-      className="slide-content"
-      onClick={() => {
-        if (!slide.variant) return;
-        router.push(`/shop/products/${slide.variant.id}`);
-      }}
-    >
-      <h2 className="slide-title">{slide.title}</h2>
-      <p className="slide-sub">{slide.subtitle}</p>
-      <p className="slide-description">{slide.description}</p>
-      <p className="slide-text">View Product</p>
-    </div>
-  </div>
-))}
-           
-          </div>
-          <FlameTrail />
-        </div> */}
-
           <div className="crisp-loader">
             <div className="crisp-loader__wrap">
               <div className="crisp-loader__groups" ref={loaderGroupsRef}>
@@ -1183,52 +1273,81 @@ onUpdate: (self) => {
                 </h1>
               </div>
             </div>
+
             <div className="strip-row">
+
+<div className="nav-layer nav-layer--left">
+  <div className="nav-mask nav-mask--left" ref={leftMaskRef}>
+    <div
+      className="crisp-header__slider-nav crisp-header__slider-nav--left"
+      ref={sliderNavLeftRef}
+    >
+{leftStripSlides.map((slide, idx) => {
+  if (!slide) {
+    return (
+      <div
+        key={`left-empty-${idx}`}
+        className="crisp-header__slider-nav-btn is--placeholder"
+      />
+    );
+  }
+
+  return (
+    <Link
+      key={`left-${slide.id}-${idx}`}
+      href={`/shop/products/${slide.variant?.id}`}
+      className="crisp-header__slider-nav-btn"
+      onClick={() => handleThumbClick(slide)}
+    >
+      <img
+        src={slide.thumbnail}
+        alt={slide.alt}
+        className="crisp-loader__cover-img"
+      />
+    </Link>
+  );
+})}
+    </div>
+  </div>
+</div>
+
               <div className="crisp-header__focus">
                 <div className="focus-layer">
-                   <div className="focus-frame">
-                           <div className="focus-mask">
-                  <div className="focus-strip" ref={focusStripRef}>
-                    {slidesData.map((slide) => (
-                      <div key={slide.id} className="focus-item">
-                        <img src={slide.thumbnail} alt={slide.alt} />
+                  <div className="focus-frame">
+                    <div className="focus-mask">
+                      <div className="focus-strip" ref={focusStripRef}>
+                        {stripSlides.map((slide, idx) => (
+                          <div key={`focus-${slide.id}-${idx}`} className="focus-item">
+                            <img src={slide.thumbnail} alt={slide.alt} />
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
-                   </div>
-                           
+              </div>
+
+              <div className="nav-layer nav-layer--right">
+                <div 
+                  className="crisp-header__slider-nav crisp-header__slider-nav--right" 
+                  ref={sliderNavRightRef}
+                >
+                  {stripSlides.map((slide, idx) => (
+                    <Link
+                      key={`right-${slide.id}-${idx}`}
+                      href={`/shop/products/${slide.variant?.id}`}
+                      className="crisp-header__slider-nav-btn"
+                      onClick={() => handleThumbClick(slide)}
+                    >
+                      <img 
+                        src={slide.thumbnail} 
+                        alt={slide.alt} 
+                        className="crisp-loader__cover-img" 
+                      />
+                    </Link>
+                  ))}
                 </div>
-
               </div>
-              <div className="nav-layer">
-<div
-  className="crisp-header__slider-nav"
-  ref={sliderNavRef}
->
-                {allSlides.map((slide, index) => (
-                  <Link
-                      key={slide.id}
-    href={`/shop/products/${slide.variant?.id}`}
-    prefetch={true}
-                 
-
-                    data-slideshow="thumb"
-                    className="crisp-header__slider-nav-btn"
-                    onClick={() => handleThumbClick(slide)}
-                    type="button"
-                  >
-                    <img
-                      loading="eager"
-                      src={slide.thumbnail}
-                      alt={slide.alt}
-                      className="crisp-loader__cover-img"
-                    />
-                  </Link>
-                ))}
-              </div>
-              </div>
-    
             </div>
           </div>
         </section>
@@ -1236,7 +1355,6 @@ onUpdate: (self) => {
     </>
   );
 };
-
 // function PreloaderMobile() {
 //   const config = {
 //     SCROLL_SPEED: 1.75,
@@ -1822,6 +1940,9 @@ const config = {
 };
 
 const PreloaderMobile: React.FC = () => {
+  const router = useRouter();
+  const activeIndexRef = useRef(0);
+
   const spotlightRef = useRef<HTMLElement>(null);
   const titlesContainerRef = useRef<HTMLDivElement>(null);
   const imagesContainerRef = useRef<HTMLDivElement>(null);
@@ -1832,65 +1953,157 @@ const PreloaderMobile: React.FC = () => {
   const spotlightBgImgInnerRef = useRef<HTMLImageElement>(null);
   const titlesRef = useRef<HTMLDivElement>(null);
   const currentImageIndexRef = useRef(0);
-  const [titleElements, setTitleElements] = useState<HTMLHeadingElement[]>([]);
+
   const [imageElements, setImageElements] = useState<HTMLDivElement[]>([]);
-  const currentActiveIndexRef = useRef(0);
   const isInitializedRef = useRef(false);
-  const videoARef = useRef(null);
-  const videoBRef = useRef(null);
-  const listenersRef = useRef<{ el: HTMLElement; type: string; handler: EventListener }[]>([]);
-  const router = useRouter();
-
-  const clickStartPosRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const listenersRef = useRef<
+    { el: HTMLElement; type: string; handler: EventListener }[]
+  >([]);
+  const clickStartPosRef = useRef<{
+    x: number;
+    y: number;
+    time: number;
+  } | null>(null);
   const hasMovedRef = useRef(false);
-
   const bgTransitionRef = useRef<gsap.core.Timeline | null>(null);
   const isTransitioningRef = useRef(false);
   const nextImagePreloadedRef = useRef<HTMLImageElement | null>(null);
   const pendingTransitionRef = useRef<number | null>(null);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
-  
-  // Refs for automatic animation
+  const currentTitleRef = useRef<HTMLDivElement>(null);
+  const nextTitleRef = useRef<HTMLDivElement>(null);
+const isAnimatingRef = useRef(false);
   const autoAnimationCompletedRef = useRef(false);
   const autoAnimationTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  useEffect(() => {
-    return () => {
-      if (scrollTriggerRef.current) {
-        scrollTriggerRef.current.kill(true);
-        scrollTriggerRef.current = null;
+const pendingTitleTransitionRef = useRef<number | null>(null);
+
+const animateTitleChange = (nextIndex: number) => {
+  if (!currentTitleRef.current || !nextTitleRef.current) return;
+  if (activeIndexRef.current === nextIndex) return;
+  
+  const targetIndex = nextIndex;
+  
+
+  if (isAnimatingRef.current) {
+    pendingTitleTransitionRef.current = nextIndex;
+    return;
+  }
+
+  isAnimatingRef.current = true;
+
+  const currentEl = currentTitleRef.current;
+  const nextEl = nextTitleRef.current;
+  
+  if ((currentEl as any)._gsSplitText) {
+    (currentEl as any)._gsSplitText.revert();
+  }
+  if ((nextEl as any)._gsSplitText) {
+    (nextEl as any)._gsSplitText.revert();
+  }
+
+  // ONLY set the next element's text content, NOT the current one
+  nextEl.textContent = slidesData[targetIndex].title;
+
+  const currentSplit = new SplitText(currentEl, { type: "chars" });
+  const nextSplit = new SplitText(nextEl, { type: "chars" });
+
+
+  gsap.set(nextSplit.chars, { yPercent: 100, opacity: 1 });
+  gsap.set(currentSplit.chars, { yPercent: 0, opacity: 1 });
+
+  const tl = gsap.timeline({
+    onComplete: () => {
+      currentSplit.revert();
+      nextSplit.revert();
+      
+      // Clear the current element's content after animation completes
+      currentEl.textContent = "";
+      
+      // Move the next content to current position
+      currentEl.textContent = slidesData[targetIndex].title;
+      nextEl.textContent = "";
+
+      activeIndexRef.current = nextIndex;
+      isAnimatingRef.current = false;
+
+      if (pendingTitleTransitionRef.current !== null) {
+        const pending = pendingTitleTransitionRef.current;
+        pendingTitleTransitionRef.current = null;
+        animateTitleChange(pending);
       }
-      
-      ScrollTrigger.getAll().forEach(st => st.kill(true));
-      
-      if (ctxRef.current) {
-        ctxRef.current.revert();
-        ctxRef.current = null;
-      }
-      
-      if (bgTransitionRef.current) {
-        bgTransitionRef.current.kill();
-        bgTransitionRef.current = null;
-      }
-      
-      if (autoAnimationTimelineRef.current) {
-        autoAnimationTimelineRef.current.kill();
-        autoAnimationTimelineRef.current = null;
-      }
-      
-      listenersRef.current.forEach(({ el, type, handler }) => {
-        el.removeEventListener(type, handler);
-      });
-      listenersRef.current = [];
-      
-      ScrollTrigger.refresh(true);
-    };
-  }, []);
+    },
+    onInterrupt: () => {
+      if (currentSplit && !currentSplit.reverted) currentSplit.revert();
+      if (nextSplit && !nextSplit.reverted) nextSplit.revert();
+      isAnimatingRef.current = false;
+    }
+  });
+
+  tl.to(currentSplit.chars, {
+    yPercent: -100,
+    duration: 0.6,
+    ease: "expo.inOut",
+    stagger: 0.02,
+    overwrite: true
+  }, 0);
+
+
+  tl.to(nextSplit.chars, {
+    yPercent: 0,
+    duration: 0.7,
+    ease: "expo.out",
+    stagger: 0.02,
+    overwrite: true
+  }, 0.08);
+};
+useEffect(() => {
+  return () => {
+    if (currentTitleRef.current && (currentTitleRef.current as any)._gsSplitText) {
+      (currentTitleRef.current as any)._gsSplitText.revert();
+    }
+    if (nextTitleRef.current && (nextTitleRef.current as any)._gsSplitText) {
+      (nextTitleRef.current as any)._gsSplitText.revert();
+    }
+
+    pendingTitleTransitionRef.current = null;
+    
+    if (scrollTriggerRef.current) {
+      scrollTriggerRef.current.kill(true);
+      scrollTriggerRef.current = null;
+    }
+    
+    ScrollTrigger.getAll().forEach((st) => st.kill(true));
+    
+
+    if (ctxRef.current) {
+      ctxRef.current.revert();
+      ctxRef.current = null;
+    }
+    
+    if (bgTransitionRef.current) {
+      bgTransitionRef.current.kill();
+      bgTransitionRef.current = null;
+    }
+    
+    if (autoAnimationTimelineRef.current) {
+      autoAnimationTimelineRef.current.kill();
+      autoAnimationTimelineRef.current = null;
+    }
+    
+    listenersRef.current.forEach(({ el, type, handler }) => {
+      el.removeEventListener(type, handler);
+    });
+    listenersRef.current = [];
+    
+    ScrollTrigger.refresh(true);
+  };
+}, []);
 
   useEffect(() => {
     ScrollTrigger.normalizeScroll(true);
-    
+
     return () => {
       ScrollTrigger.normalizeScroll(false);
     };
@@ -1899,9 +2112,9 @@ const PreloaderMobile: React.FC = () => {
   const getBezierPosition = (t: number) => {
     const containerWidth = window.innerWidth * 0.3;
     const arcStartX = containerWidth - 220;
-    const arcStartY = -200;
-    const arcEndY = window.innerHeight + 200;
-    const arcControlPointX = arcStartX + config.arcRadius;
+    const arcStartY = -280;
+    const arcEndY = window.innerHeight + 280;
+    const arcControlPointX = arcStartX + config.arcRadius * 1.2;
     const arcControlPointY = window.innerHeight / 2;
 
     const x =
@@ -1915,16 +2128,6 @@ const PreloaderMobile: React.FC = () => {
     return { x, y };
   };
 
-  const getImgProgressState = (index: number, overallProgress: number) => {
-    const startTime = index * config.gap;
-    const endTime = startTime + config.speed;
-
-    if (overallProgress < startTime) return -1;
-    if (overallProgress > endTime) return 2;
-
-    return (overallProgress - startTime) / config.speed;
-  };
-
   const preloadNextImage = (index: number) => {
     const nextIndex = index + 1;
     if (nextIndex < slidesData.length) {
@@ -1936,63 +2139,71 @@ const PreloaderMobile: React.FC = () => {
     }
   };
 
-  const smoothTransitionBackground = (currentIndex: number, nextIndex: number) => {
+  const smoothTransitionBackground = (
+    currentIndex: number,
+    nextIndex: number,
+  ) => {
     if (!spotlightBgImgRef.current) return;
-    
+
     const container = spotlightBgImgRef.current;
-    const currentImg = container.querySelector('.bg-img.current') as HTMLImageElement;
-    const nextImg = container.querySelector('.bg-img.next') as HTMLImageElement;
-    
+    const currentImg = container.querySelector(
+      ".bg-img.current",
+    ) as HTMLImageElement;
+    const nextImg = container.querySelector(".bg-img.next") as HTMLImageElement;
+
     if (!currentImg || !nextImg || currentIndex === nextIndex) return;
-    
+
     if (isTransitioningRef.current) {
       pendingTransitionRef.current = nextIndex;
       return;
     }
-    
+
     console.log(`bg image from ${currentIndex} to ${nextIndex}`);
-    
+
     isTransitioningRef.current = true;
-    
+
     if (bgTransitionRef.current) {
       bgTransitionRef.current.kill();
     }
-    
+
     nextImg.src = slidesData[nextIndex].full;
-    
+
     gsap.set(nextImg, {
       opacity: 0,
       scale: 1.05,
-      filter: 'blur(8px)',
-      zIndex: 1
+      filter: "blur(8px)",
+      zIndex: 1,
     });
-    
+
     gsap.set(currentImg, {
       zIndex: 2,
       opacity: 1,
       scale: 1,
-      filter: 'blur(0px)'
+      filter: "blur(0px)",
     });
-    
+
     const tl = gsap.timeline({
       onComplete: () => {
-        currentImg.classList.remove('current');
-        currentImg.classList.add('next');
-        nextImg.classList.remove('next');
-        nextImg.classList.add('current');
-        
+        currentImg.classList.remove("current");
+        currentImg.classList.add("next");
+        nextImg.classList.remove("next");
+        nextImg.classList.add("current");
+
         gsap.set(currentImg, {
           opacity: 0,
-          clearProps: 'all'
+          clearProps: "all",
         });
-        
+
         gsap.set(nextImg, {
-          clearProps: 'all'
+          clearProps: "all",
         });
-        
+
         isTransitioningRef.current = false;
-        
-        if (pendingTransitionRef.current !== null && pendingTransitionRef.current !== nextIndex) {
+
+        if (
+          pendingTransitionRef.current !== null &&
+          pendingTransitionRef.current !== nextIndex
+        ) {
           const pendingIndex = pendingTransitionRef.current;
           pendingTransitionRef.current = null;
           smoothTransitionBackground(nextIndex, pendingIndex);
@@ -2000,30 +2211,38 @@ const PreloaderMobile: React.FC = () => {
           pendingTransitionRef.current = null;
           preloadNextImage(nextIndex);
         }
-      }
+      },
     });
-    
-    tl.to(currentImg, {
-      opacity: 0,
-      scale: 0.95,
-      filter: 'blur(12px)',
-      duration: 0.6,
-      ease: 'power2.inOut'
-    }, 0);
-    
-    tl.to(nextImg, {
-      opacity: 1,
-      scale: 1,
-      filter: 'blur(0px)',
-      duration: 0.8,
-      ease: 'power2.out'
-    }, 0.1);
-    
+
+    tl.to(
+      currentImg,
+      {
+        opacity: 0,
+        scale: 0.95,
+        filter: "blur(12px)",
+        duration: 0.6,
+        ease: "power2.inOut",
+      },
+      0,
+    );
+
+    tl.to(
+      nextImg,
+      {
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)",
+        duration: 0.8,
+        ease: "power2.out",
+      },
+      0.1,
+    );
+
     bgTransitionRef.current = tl;
   };
 
   const handleNavigate = (variantId: number) => {
-    ScrollTrigger.getAll().forEach(st => st.kill(true));
+    ScrollTrigger.getAll().forEach((st) => st.kill(true));
 
     if (ctxRef.current) {
       ctxRef.current.revert();
@@ -2032,15 +2251,19 @@ const PreloaderMobile: React.FC = () => {
     gsap.globalTimeline.clear();
 
     ScrollTrigger.refresh(true);
-    
 
     router.push(`/shop/products/${variantId}`);
   };
 
-
   const playAutoIntroAnimation = () => {
     if (autoAnimationCompletedRef.current) return;
-    if (!introText1Ref.current || !introText2Ref.current || !spotlightBgImgRef.current || !spotlightBgImgInnerRef.current) return;
+    if (
+      !introText1Ref.current ||
+      !introText2Ref.current ||
+      !spotlightBgImgRef.current ||
+      !spotlightBgImgInnerRef.current
+    )
+      return;
 
     autoAnimationCompletedRef.current = true;
 
@@ -2049,56 +2272,85 @@ const PreloaderMobile: React.FC = () => {
 
     const tl = gsap.timeline({
       onComplete: () => {
-
         if (introText1Ref.current && introText2Ref.current) {
           gsap.set(introText1Ref.current, { x: -moveDistance, opacity: 1 });
           gsap.set(introText2Ref.current, { x: moveDistance, opacity: 1 });
         }
+
         if (spotlightBgImgRef.current) {
           gsap.set(spotlightBgImgRef.current, { scale: 1 });
         }
+
         if (spotlightBgImgInnerRef.current) {
           gsap.set(spotlightBgImgInnerRef.current, { scale: 1 });
         }
+
         imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
-        
-        window.dispatchEvent(new CustomEvent('introComplete'));
-      }
+
+        window.dispatchEvent(new CustomEvent("introComplete"));
+      },
     });
+    
+    if (titlesContainerElementRef.current) {
+      tl.fromTo(
+        titlesContainerElementRef.current,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.6,
+          ease: "power2.out",
+        },
+        0.3,
+      );
+    }
+    
+    tl.to(
+      introText1Ref.current,
+      {
+        x: -moveDistance,
+        opacity: 1,
+        duration: duration,
+        ease: "power2.inOut",
+      },
+      0,
+    );
 
+    tl.to(
+      introText2Ref.current,
+      {
+        x: moveDistance,
+        opacity: 1,
+        duration: duration,
+        ease: "power2.inOut",
+      },
+      0,
+    );
 
-    tl.to(introText1Ref.current, {
-      x: -moveDistance,
-      opacity: 1,
-      duration: duration,
-      ease: "power2.inOut"
-    }, 0);
+    tl.to(
+      spotlightBgImgRef.current,
+      {
+        scale: 1,
+        duration: duration,
+        ease: "power2.inOut",
+      },
+      0,
+    );
 
-    tl.to(introText2Ref.current, {
-      x: moveDistance,
-      opacity: 1,
-      duration: duration,
-      ease: "power2.inOut"
-    }, 0);
-
-
-    tl.to(spotlightBgImgRef.current, {
-      scale: 1,
-      duration: duration,
-      ease: "power2.inOut"
-    }, 0);
-
-    tl.to(spotlightBgImgInnerRef.current, {
-      scale: 1,
-      duration: duration,
-      ease: "power2.inOut"
-    }, 0);
+    tl.to(
+      spotlightBgImgInnerRef.current,
+      {
+        scale: 1,
+        duration: duration,
+        ease: "power2.inOut",
+      },
+      0,
+    );
 
     autoAnimationTimelineRef.current = tl;
   };
 
   useEffect(() => {
-    if (!titlesContainerRef.current || !imagesContainerRef.current) return;
+    if (!imagesContainerRef.current) return;
 
     if (spotlightBgImgRef.current && spotlightBgImgInnerRef.current) {
       gsap.set(spotlightBgImgRef.current, { scale: 0, opacity: 0 });
@@ -2115,41 +2367,20 @@ const PreloaderMobile: React.FC = () => {
 
     gsap.set(".spotlight-lines", { opacity: 0 });
 
-    const newTitleElements: HTMLHeadingElement[] = [];
     const newImageElements: HTMLDivElement[] = [];
-    const titlesContainer = titlesContainerRef.current;
     const imagesContainer = imagesContainerRef.current;
 
-    if (!titlesContainer || !imagesContainer) return;
-
-    while (titlesContainer.firstChild) {
-      titlesContainer.removeChild(titlesContainer.firstChild);
-    }
+    if (!imagesContainer) return;
 
     while (imagesContainer.firstChild) {
       imagesContainer.removeChild(imagesContainer.firstChild);
     }
 
     slidesData.forEach((item, index) => {
-      const titleElement = document.createElement("h1");
-      titleElement.dataset.index = String(index);
-      titleElement.textContent = item.title;
-
-      titleElement.style.position = "absolute";
-      titleElement.style.width = "100%";
-      titleElement.style.margin = "0";
-      titleElement.style.display = "flex";
-      titleElement.style.alignItems = "center";
-      titleElement.style.justifyContent = "center";
-      titleElement.style.textAlign = "center";
-
-      titlesContainerRef.current?.appendChild(titleElement);
-      newTitleElements.push(titleElement);
-
       const imgWrapper = document.createElement("div");
       imgWrapper.className = "spotlight-img";
       imgWrapper.style.cursor = "pointer";
-      
+
       const handleClick: EventListener = (e) => {
         if (hasMovedRef.current) {
           hasMovedRef.current = false;
@@ -2163,7 +2394,11 @@ const PreloaderMobile: React.FC = () => {
       };
 
       imgWrapper.addEventListener("click", handleClick);
-      listenersRef.current.push({ el: imgWrapper, type: "click", handler: handleClick });
+      listenersRef.current.push({
+        el: imgWrapper,
+        type: "click",
+        handler: handleClick,
+      });
 
       const handleTouchStart: EventListener = (e) => {
         const touchEvent = e as TouchEvent;
@@ -2176,18 +2411,30 @@ const PreloaderMobile: React.FC = () => {
       };
 
       imgWrapper.addEventListener("touchstart", handleTouchStart);
-      listenersRef.current.push({ el: imgWrapper, type: "touchstart", handler: handleTouchStart });
+      listenersRef.current.push({
+        el: imgWrapper,
+        type: "touchstart",
+        handler: handleTouchStart,
+      });
 
       const handleTouchMove: EventListener = (e) => {
         const touchEvent = e as TouchEvent;
         if (!clickStartPosRef.current) return;
-        const deltaX = Math.abs(touchEvent.touches[0].clientX - clickStartPosRef.current.x);
-        const deltaY = Math.abs(touchEvent.touches[0].clientY - clickStartPosRef.current.y);
+        const deltaX = Math.abs(
+          touchEvent.touches[0].clientX - clickStartPosRef.current.x,
+        );
+        const deltaY = Math.abs(
+          touchEvent.touches[0].clientY - clickStartPosRef.current.y,
+        );
         if (deltaX > 10 || deltaY > 10) hasMovedRef.current = true;
       };
 
       imgWrapper.addEventListener("touchmove", handleTouchMove);
-      listenersRef.current.push({ el: imgWrapper, type: "touchmove", handler: handleTouchMove });
+      listenersRef.current.push({
+        el: imgWrapper,
+        type: "touchmove",
+        handler: handleTouchMove,
+      });
 
       const handleMouseDown: EventListener = (e) => {
         const mouseEvent = e as MouseEvent;
@@ -2200,18 +2447,30 @@ const PreloaderMobile: React.FC = () => {
       };
 
       imgWrapper.addEventListener("mousedown", handleMouseDown);
-      listenersRef.current.push({ el: imgWrapper, type: "mousedown", handler: handleMouseDown });
+      listenersRef.current.push({
+        el: imgWrapper,
+        type: "mousedown",
+        handler: handleMouseDown,
+      });
 
       const handleMouseMove: EventListener = (e) => {
         const mouseEvent = e as MouseEvent;
         if (!clickStartPosRef.current) return;
-        const deltaX = Math.abs(mouseEvent.clientX - clickStartPosRef.current.x);
-        const deltaY = Math.abs(mouseEvent.clientY - clickStartPosRef.current.y);
+        const deltaX = Math.abs(
+          mouseEvent.clientX - clickStartPosRef.current.x,
+        );
+        const deltaY = Math.abs(
+          mouseEvent.clientY - clickStartPosRef.current.y,
+        );
         if (deltaX > 10 || deltaY > 10) hasMovedRef.current = true;
       };
 
       imgWrapper.addEventListener("mousemove", handleMouseMove);
-      listenersRef.current.push({ el: imgWrapper, type: "mousemove", handler: handleMouseMove });
+      listenersRef.current.push({
+        el: imgWrapper,
+        type: "mousemove",
+        handler: handleMouseMove,
+      });
 
       const imgElement = document.createElement("img");
       imgElement.src = item.thumbnail;
@@ -2221,17 +2480,6 @@ const PreloaderMobile: React.FC = () => {
       newImageElements.push(imgWrapper);
     });
 
-    const titleHeight = 80;
-
-    newTitleElements.forEach((el, i) => {
-      gsap.set(el, {
-        y: i * titleHeight + 80,
-        scale: 0.85,
-        opacity: 0,
-      });
-    });
-
-    setTitleElements(newTitleElements);
     setImageElements(newImageElements);
     isInitializedRef.current = true;
 
@@ -2239,13 +2487,12 @@ const PreloaderMobile: React.FC = () => {
 
     setTimeout(() => {
       if (spotlightBgImgRef.current) {
-        gsap.to(spotlightBgImgRef.current, { 
-          opacity: 1, 
+        gsap.to(spotlightBgImgRef.current, {
+          opacity: 1,
           duration: 0.7,
-          ease: "none"
+          ease: "none",
         });
       }
-      
 
       setTimeout(() => {
         playAutoIntroAnimation();
@@ -2254,138 +2501,73 @@ const PreloaderMobile: React.FC = () => {
   }, [router]);
 
   useEffect(() => {
-    if (!isInitializedRef.current || titleElements.length === 0 || imageElements.length === 0) {
-      return;
-    }
+    if (!isInitializedRef.current || imageElements.length === 0) return;
 
-    if (ctxRef.current) {
-      ctxRef.current.revert();
-    }
+    if (ctxRef.current) ctxRef.current.revert();
 
     const ctx = gsap.context(() => {
-      imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
+      const numSlides = slidesData.length;
+      const scrollDistance = window.innerHeight * 80;
 
       const st = ScrollTrigger.create({
         trigger: spotlightRef.current,
         start: "top top",
-        end: `+=${window.innerHeight * 12}px`,
+        end: `+=${scrollDistance}`,
         pin: true,
-        pinSpacing: true, 
-        scrub: 1.5,
+        pinSpacing: true,
+        scrub: 1.3,
         onUpdate: (self) => {
-          const progress = self.progress;
-          const lines = titlesContainerElementRef.current?.querySelectorAll(".line");
-
-
-          
           if (!autoAnimationCompletedRef.current) {
-  
-            gsap.set(titlesContainerElementRef.current, { opacity: 0 });
-            gsap.set(".spotlight-lines", { opacity: 0 });
-            return;
-          }
-
-          const mappedProgress = 0.2 + (progress * 0.8);
-          
-
-          if (mappedProgress <= 0.3) {
-            if (lines && mappedProgress > 0.23) {
-              const lineOpacity = gsap.utils.mapRange(0.23, 0.3, 0, 1, mappedProgress);
-              gsap.set(lines, { opacity: Math.min(1, lineOpacity) });
-            } else if (lines) {
-              gsap.set(lines, { opacity: 0 });
-            }
-
-            gsap.set([introText1Ref.current, introText2Ref.current], {
-              opacity: 0,
-            });
-
-            gsap.set(spotlightBgImgRef.current, { scale: 1 });
-            gsap.set(spotlightBgImgInnerRef.current, { scale: 1 });
-
             imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
-            
-            // Hide titles until we're ready
-            gsap.set(titlesContainerElementRef.current, { opacity: 0 });
             return;
           }
 
-          if (mappedProgress <= 0.95) {
-            const switchProgress = (mappedProgress - 0.3) / 0.65;
-            const clampedSwitchProgress = gsap.utils.clamp(0, 1, switchProgress);
-            const revealProgress = gsap.utils.clamp(0, 1, (mappedProgress - 0.28) / 0.05);
+          const rawProgress = self.progress; // 0 → 1
+          const totalProgress = rawProgress * 12; // ← tune this (higher = faster looping)
 
-            gsap.set(titlesContainerElementRef.current, {
-              opacity: revealProgress,
-            });
+          let closestIndex = 0;
+          let closestDist = Infinity;
 
-            gsap.set(".spotlight-lines", {
-              opacity: revealProgress,
-            });
+          imageElements.forEach((img, index) => {
+            const t = (((totalProgress + index / numSlides) % 1) + 1) % 1;
+            const pos = getBezierPosition(t);
 
-            if (spotlightBgImgRef.current) {
-              const bgScale = 1 + (clampedSwitchProgress * 0.05);
-              gsap.set(spotlightBgImgRef.current, { 
-                scale: bgScale,
-                ease: "none"
-              });
+            const dist = Math.abs(t - 0.5);
+
+            if (dist < closestDist) {
+              closestDist = dist;
+              closestIndex = index;
             }
 
-            const bgImageIndex = Math.floor(clampedSwitchProgress * slidesData.length);
-            const clampedBgIndex = Math.min(bgImageIndex, slidesData.length - 1);
-            
-            if (currentImageIndexRef.current !== clampedBgIndex) {
-              console.log(`BG Image should be index: ${clampedBgIndex} out of ${slidesData.length}`);
-              smoothTransitionBackground(
-                currentImageIndexRef.current, 
-                clampedBgIndex
-              );
-              currentImageIndexRef.current = clampedBgIndex;
-            }
+            const spread = 80;
+            const offset = (t - 0.5) * spread;
 
-            imageElements.forEach((img, index) => {
-              const imageProgress = getImgProgressState(index, clampedSwitchProgress);
-
-              if (imageProgress < 0 || imageProgress > 1) {
-                gsap.set(img, { opacity: 0 });
-              } else {
-                const pos = getBezierPosition(imageProgress);
-                gsap.set(img, {
-                  x: pos.x - 100,
-                  y: pos.y - 75,
-                  opacity: 1,
-                });
-              }
+            gsap.set(img, {
+              x: pos.x - 100 + offset,
+              y: pos.y - 75,
+              opacity: 1,
             });
+          });
 
-            const titleHeight = titleElements[0]?.offsetHeight || 80;
-            const totalShift = clampedSwitchProgress * (titleElements.length - 1) * titleHeight;
-
-            titleElements.forEach((el, index) => {
-              if (index === clampedBgIndex) {
-                gsap.to(el, {
-                  y: index * titleHeight - totalShift,
-                  scale: 1,
-                  opacity: 1,
-                  duration: 0.8,
-                  ease: "expo.out",
-                });
-              } else {
-                gsap.to(el, {
-                  scale: 0.9,
-                  opacity: 0.4,
-                  duration: 0.6,
-                  ease: "power2.out",
-                });
-              }
-            });
-            return;
+          // Handle title change
+          if (activeIndexRef.current !== closestIndex) {
+            animateTitleChange(closestIndex);
           }
 
-          if (lines && mappedProgress > 0.95) {
-            gsap.to(lines, {
-              opacity: 0,
-              duration: 0.3,
+          // Handle background image transition
+          if (currentImageIndexRef.current !== closestIndex) {
+            smoothTransitionBackground(
+              currentImageIndexRef.current,
+              closestIndex,
+            );
+            currentImageIndexRef.current = closestIndex;
+          }
+
+          const lines =
+            titlesContainerElementRef.current?.querySelectorAll(".line");
+          if (lines) {
+            gsap.set(lines, {
+              opacity: rawProgress > 0.08 && rawProgress < 0.92 ? 1 : 0,
             });
           }
         },
@@ -2397,15 +2579,12 @@ const PreloaderMobile: React.FC = () => {
     ctxRef.current = ctx;
 
     return () => {
-      if (ctxRef.current) {
-        ctxRef.current.revert();
-      }
+      if (ctxRef.current) ctxRef.current.revert();
     };
-  }, [titleElements, imageElements]);
+  }, [imageElements]);
 
   return (
     <>
-
       <section className="spotlight" ref={spotlightRef}>
         <div className="spotlight-bg">
           <div className="spotlight-bg-img" ref={spotlightBgImgRef}>
@@ -2437,11 +2616,12 @@ const PreloaderMobile: React.FC = () => {
             <div className="spotlight-label">Discover</div>
           </div>
 
-          <div className="spotlight-titles-container" ref={titlesContainerElementRef}>
+          <div className="spotlight-titles-container">
             <div className="spotlight-mask">
-              <div className="spotlight-titles" ref={titlesRef}>
-                <div ref={titlesContainerRef}></div>
+              <div className="title current" ref={currentTitleRef}>
+                {slidesData[0]?.title}
               </div>
+              <div className="title next" ref={nextTitleRef}></div>
             </div>
           </div>
         </div>
