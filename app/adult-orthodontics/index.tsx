@@ -210,19 +210,20 @@ export default function AdultOrthodontics() {
   return (
     <div className="AdultOrthodontics">
       <div ref={mainSection} className="MainSection">
-        <div className="MainSection-wrapper"  style={{ backgroundColor: `var(--${sections[0].backgroundColor})`}}>
+        <div className="MainSection-wrapper" style={{ backgroundColor: `var(--${sections[0].backgroundColor})`}}>
           <div className="MainSection-header">
-            <div className="relative w-full flex justify-center items-center min-[1280px]:justify-start">
+            <SlidingText
+              text="Adult Orthodontics"
+              totalCells={8}
+              className="font-lg font-canela italic text-center min-[1280px]:text-left"
+              // className="font-lg font-canela italic translate-y-6 min-[1280px]:translate-y-0 text-center min-[1280px]:text-left"
+            />
+            {/* <div className="relative w-full flex justify-center items-center min-[1280px]:justify-start">
               <div className="relative w-full flex justify-center items-center min-[1280px]:justify-start">
                 <div className="absolute inset-0 flex justify-center items-start min-[1280px]:justify-start">
-                  <SlidingText
-                    text="Adult Orthodontics"
-                    totalCells={8}
-                    className="font-lg font-canela italic translate-y-6 min-[1280px]:translate-y-0 text-center min-[1280px]:text-left"
-                  />
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
           <div ref={itemsContainer} className="MainSection-items">
             {sections.map((section) => (
@@ -323,7 +324,7 @@ export default function AdultOrthodontics() {
                                 stroke="#ffffff80"
                                 strokeWidth="0.5"
                                 strokeLinecap="round"
-                                stroke-dasharray="2 3"
+                                strokeDasharray="2 3"
                                 vectorEffect="non-scaling-stroke"
                               />
 
@@ -368,6 +369,7 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   const innerRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [textWidth, setTextWidth] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const hasAnimated = useRef(false)
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -443,7 +445,10 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   }, [totalCells, text]);
 
   useEffect(() => {
-    if (!isReady || !containerRef.current || !innerRefs.current.length || !textWidth) return;
+    // if (!isReady || !containerRef.current || !innerRefs.current.length || !textWidth ) return;
+    if (!isReady || !containerRef.current || !innerRefs.current.length || !textWidth  || hasAnimated.current) return;
+
+    hasAnimated.current = true
 
     const offset = textWidth / totalCells;
 
@@ -526,7 +531,7 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
             }}
             style={{ 
               display: "inline-block",
-              whiteSpace: "nowrap"
+              whiteSpace: "nowrap",
             }}
           >
             {text}

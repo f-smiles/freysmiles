@@ -238,15 +238,15 @@ export default function EarlyOrthodontics() {
       <div ref={mainSection} className="MainSection">
         <div className="MainSection-wrapper" style={{ backgroundColor: `var(--${sections[0].backgroundColor})`}}>
           <div className="MainSection-header">
-            <div className="relative w-full flex justify-center items-center min-[1280px]:justify-start">
+            <SlidingText
+              text="Early Orthodontics"
+              totalCells={8}
+              className="font-lg font-canela italic text-center translate-y-6 min-[1280px]:translate-y-0 min-[1280px]:text-left"
+            />
+            {/* <div className="relative w-full flex justify-center items-center min-[1280px]:justify-start">
               <div className="absolute inset-0 flex justify-center items-start min-[1280px]:justify-start">
-                <SlidingText
-                  text="Early Orthodontics"
-                  totalCells={8}
-                  className="font-lg font-canela italic text-center translate-y-6 min-[1280px]:translate-y-0 min-[1280px]:text-left"
-                />
               </div>
-            </div>
+            </div> */}
           </div>
           <div ref={itemsContainer} className="MainSection-items">
             {sections.map((section) => (
@@ -309,6 +309,7 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   const innerRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [textWidth, setTextWidth] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const hasAnimated = useRef(false)
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -384,7 +385,10 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   }, [totalCells, text]);
 
   useEffect(() => {
-    if (!isReady || !containerRef.current || !innerRefs.current.length || !textWidth) return;
+    // if (!isReady || !containerRef.current || !innerRefs.current.length || !textWidth) return;
+    if (!isReady || !containerRef.current || !innerRefs.current.length || !textWidth  || hasAnimated.current) return;
+
+    hasAnimated.current = true
 
     const offset = textWidth / totalCells;
 
