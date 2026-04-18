@@ -152,9 +152,6 @@
   }
 }
 @media screen and (max-width: 896px) and (pointer:coarse) {
-  .MainSection-header {
-    padding-top: 32px;
-  }
   .MainSection-items {
     position: relative;
   }

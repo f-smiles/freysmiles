@@ -215,8 +215,7 @@ export default function AdultOrthodontics() {
             <SlidingText
               text="Adult Orthodontics"
               totalCells={8}
-              className="font-lg font-canela italic text-center min-[1280px]:text-left"
-              // className="font-lg font-canela italic translate-y-6 min-[1280px]:translate-y-0 text-center min-[1280px]:text-left"
+              className="font-lg font-canela italic translate-y-6 min-[1280px]:translate-y-0 text-center min-[1280px]:text-left"
             />
             {/* <div className="relative w-full flex justify-center items-center min-[1280px]:justify-start">
               <div className="relative w-full flex justify-center items-center min-[1280px]:justify-start">
