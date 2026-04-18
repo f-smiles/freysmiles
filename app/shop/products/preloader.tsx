@@ -2,9 +2,15 @@
 import Link from "next/link";
 import "./style.css";
 import { gsap } from "gsap";
-import { CustomEase, SplitText, Flip, ScrollTrigger } from "gsap/all";
-import Lenis from "@studio-freight/lenis";
 import {
+  CustomEase,
+  SplitText,
+  Flip,
+  ScrollTrigger,
+  ScrambleTextPlugin,
+} from "gsap/all";
+import Lenis from "@studio-freight/lenis";
+import React, {
   useRef,
   useEffect,
   useMemo,
@@ -20,9 +26,125 @@ import {
   WebGLRenderTarget,
   Vector2,
 } from "three";
-gsap.registerPlugin(CustomEase, SplitText, Flip, ScrollTrigger);
-import { useRouter } from "next/navigation";
+import { VFX } from "@vfx-js/core";
+import { useRouter, usePathname } from "next/navigation";
 
+gsap.registerPlugin(
+  CustomEase,
+  SplitText,
+  Flip,
+  ScrollTrigger,
+  ScrambleTextPlugin,
+);
+
+const ScrambleText = ({
+  text,
+  className,
+  scrambleOnLoad = true,
+  charsType = "default", // 'default' | 'numbers' | 'letters'
+}) => {
+  const scrambleRef = useRef(null);
+  const originalText = useRef(text);
+
+  const charSets = {
+    default: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+    numbers: "0123456789",
+    letters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  };
+
+  const EASE_EXPO = "cubic-bezier(.87, 0, .13, 1)";
+  const EASE_SMOOTH = "cubic-bezier(.76, 0, .24, 1)";
+
+  const scrambleAnimation = () => {
+    return new Promise((resolve) => {
+      const el = scrambleRef.current;
+
+      const tl = gsap.timeline({
+        onComplete: resolve,
+      });
+
+      // start dim
+      tl.set(el, {
+        color: "rgba(0,0,0,0.25)",
+      });
+
+      // 1. slower scramble
+      tl.to(
+        el,
+        {
+          duration: 1.4, // ← slower
+          scrambleText: {
+            text: originalText.current,
+            characters: charSets[charsType],
+            speed: gsap.utils.random(0.4, 0.9), // ← slower character churn
+            revealDelay: 0.2, // ← more breathing room
+          },
+          ease: EASE_EXPO,
+        },
+        0,
+      );
+
+      // 2. color ramps MORE GRADUALLY (this is the key)
+      tl.to(
+        el,
+        {
+          color: "rgba(0,0,0,1)",
+          duration: 1.1, // ← longer than before
+          ease: EASE_SMOOTH,
+        },
+        0.2,
+      );
+
+      tl.to({}, { duration: 0.4 });
+
+      tl.to(el, {
+        color: "rgba(0,0,0,0.25)",
+        duration: 1.2,
+        ease: EASE_SMOOTH,
+      });
+    });
+  };
+
+  useEffect(() => {
+    const element = scrambleRef.current;
+    if (!element) return;
+
+    let isActive = true;
+
+    const runRandomScramble = async () => {
+      while (isActive) {
+        // random delay between cycles
+        const delay = gsap.utils.random(1.2, 4.5);
+
+        await new Promise((res) => setTimeout(res, delay * 1000));
+
+        if (!isActive) return;
+
+        await scrambleAnimation();
+      }
+    };
+
+    // initial state (important so it doesn't flash)
+    gsap.set(element, {
+      textContent: originalText.current,
+    });
+
+    runRandomScramble();
+
+    return () => {
+      isActive = false;
+    };
+  }, [charsType]);
+  return (
+    <span
+      ref={scrambleRef}
+      className={`scramble-text inline-block ${className || ""}`}
+      style={{ minWidth: `${text.length}ch` }}
+    >
+      {text}
+    </span>
+  );
+};
 // CustomEase.create("hop", "0.9, 0, 0.1, 1");
 
 // const Preloader = ({ onComplete }) => {
@@ -705,7 +827,7 @@ const FlameTrail = ({ children }) => {
 
 CustomEase.create("slideshow-wipe", "0.625, 0.05, 0, 1");
 
-const slidesData = [
+const mobileSlidesData = [
   {
     variantId: 31,
     title: "Ember",
@@ -779,12 +901,274 @@ const slidesData = [
   },
 ];
 
-const PreloaderComponent = ({ variants }) => {
-  const [isLoading, setIsLoading] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return !sessionStorage.getItem("preloaderDone");
-  });
-  const router = useRouter();
+const LiquidGrid = () => {
+  const gridRange = 8;
+  const rotations = [-270, -180, -90, 0, 90, 180, 270];
+
+  const boxes = useMemo(() => {
+    const totalBoxes = gridRange * gridRange;
+    return Array.from({ length: totalBoxes }, () => ({
+      delay: Math.floor(Math.random() * 5000),
+      rotation: rotations[Math.floor(Math.random() * rotations.length)],
+    }));
+  }, [gridRange, rotations]);
+
+  return (
+    <>
+      <div
+        className="liquid-grid-container"
+        style={
+          {
+            color: "#E6007E",
+            "--grid-range": gridRange,
+            "--grid-size": "40vmin",
+          } as React.CSSProperties
+        }
+      >
+        {boxes.map((box, index) => (
+          <span
+            key={index}
+            className="liquid-grid-cell"
+            style={{
+              "--anim-delay": `-${box.delay}ms`,
+              transform: `rotate(${box.rotation}deg)`,
+            }}
+          />
+        ))}
+      </div>
+
+      <svg className="liquid-grid-svg">
+        <filter id="liquid">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
+          <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 20 -10" />
+        </filter>
+      </svg>
+    </>
+  );
+};
+const slidesData = [
+  {
+    variantId: 31,
+    title: "Ember",
+    subtitle: "Light technology",
+    full: "/images/shop/emberfull.png",
+    thumbnail: "/images/shop/embertaketwo.png",
+  },
+  {
+    variantId: 32,
+    title: "Cocofloss",
+    subtitle: "Cara Cara Orange",
+    description: "Woven Floss • Citrus",
+    full: "/images/shop/caracocomockupfull.png",
+    thumbnail: "/images/shop/caracarathumb.png",
+  },
+  {
+    variantId: 33,
+    title: "Cocofloss",
+    subtitle: "Strawberry",
+    description: "Woven Floss • Sweet Berry",
+    full: "/images/shop/strawberryfull.png",
+    thumbnail: "/images/shop/15x12cocostrawberry.png",
+  },
+  {
+    variantId: 34,
+    title: "Cocofloss",
+    subtitle: "Mint",
+    full: "/images/shop/mintflossfull.png",
+    description: "Woven Floss • Crisp Mint",
+    thumbnail: "/images/shop/mintflossfull.png",
+  },
+  {
+    variant: null,
+    title: "Gift Card",
+    subtitle: "The perfect gift",
+    description: "Digital Card • Any Amount",
+    full: "/images/shop/giftcardmockupfull.png",
+    thumbnail: "/images/giftcardmockup.png",
+  },
+  {
+    variantId: 43,
+    title: "Poladay 9.5%",
+    subtitle: "At-home whitening",
+    full: "/images/shop/poladay95.png",
+    description: "Hydrogen Peroxide Whitening",
+    thumbnail: "/images/poladaymockup.png",
+  },
+  {
+    variantId: 44,
+    title: "Poladay 35%",
+    subtitle: "Professional strength",
+    full: "/images/shop/pola35full.png",
+    description: "Carbamide Peroxide",
+    thumbnail: "/images/shop/pola35full.png",
+  },
+  {
+    variantId: 37,
+    title: "Aligner Cases",
+    subtitle: "Choose your color",
+    description: "Everyday Case • Color Options",
+    full: "/images/shop/whiteinvisscenefull.png",
+    thumbnail: "/images/shop/whiteinvisscene.png",
+  },
+  {
+    variantId: 41,
+    title: "Zima Dental Pod",
+    subtitle: "Daily Clean • Ultrasonic",
+    description: "A cleaner routine",
+    full: "/images/shop/zimawhitefull.png",
+    thumbnail: "/images/shop/zimawhitefull.png",
+  },
+  {
+    variantId: 31,
+    title: "Ember",
+    subtitle: "Light technology",
+    full: "/images/shop/emberfull.png",
+    thumbnail: "/images/shop/embertaketwo.png",
+  },
+  {
+    variantId: 32,
+    title: "Cocofloss",
+    subtitle: "Cara Cara Orange",
+    description: "Woven Floss • Citrus",
+    full: "/images/shop/caracocomockupfull.png",
+    thumbnail: "/images/shop/caracarathumb.png",
+  },
+  {
+    variantId: 33,
+    title: "Cocofloss",
+    subtitle: "Strawberry",
+    description: "Woven Floss • Sweet Berry",
+    full: "/images/shop/strawberryfull.png",
+    thumbnail: "/images/shop/15x12cocostrawberry.png",
+  },
+  {
+    variantId: 34,
+    title: "Cocofloss",
+    subtitle: "Mint",
+    full: "/images/shop/mintflossfull.png",
+    description: "Woven Floss • Crisp Mint",
+    thumbnail: "/images/shop/mintflossfull.png",
+  },
+  {
+    variant: null,
+    title: "Gift Card",
+    subtitle: "The perfect gift",
+    description: "Digital Card • Any Amount",
+    full: "/images/shop/giftcardmockupfull.png",
+    thumbnail: "/images/giftcardmockup.png",
+  },
+  {
+    variantId: 43,
+    title: "Poladay 9.5%",
+    subtitle: "At-home whitening",
+    full: "/images/shop/poladay95.png",
+    description: "Hydrogen Peroxide Whitening",
+    thumbnail: "/images/poladaymockup.png",
+  },
+  {
+    variantId: 44,
+    title: "Poladay 35%",
+    subtitle: "Professional strength",
+    full: "/images/shop/pola35full.png",
+    description: "Carbamide Peroxide",
+    thumbnail: "/images/shop/pola35full.png",
+  },
+  {
+    variantId: 37,
+    title: "Aligner Cases",
+    subtitle: "Choose your color",
+    description: "Everyday Case • Color Options",
+    full: "/images/shop/whiteinvisscenefull.png",
+    thumbnail: "/images/shop/whiteinvisscene.png",
+  },
+  {
+    variantId: 41,
+    title: "Zima Dental Pod",
+    subtitle: "Daily Clean • Ultrasonic",
+    description: "A cleaner routine",
+    full: "/images/shop/zimawhitefull.png",
+    thumbnail: "/images/shop/zimawhitefull.png",
+  },
+  {
+    variantId: 31,
+    title: "Ember",
+    subtitle: "Light technology",
+    full: "/images/shop/emberfull.png",
+    thumbnail: "/images/shop/embertaketwo.png",
+  },
+  {
+    variantId: 32,
+    title: "Cocofloss",
+    subtitle: "Cara Cara Orange",
+    description: "Woven Floss • Citrus",
+    full: "/images/shop/caracocomockupfull.png",
+    thumbnail: "/images/shop/caracarathumb.png",
+  },
+  {
+    variantId: 33,
+    title: "Cocofloss",
+    subtitle: "Strawberry",
+    description: "Woven Floss • Sweet Berry",
+    full: "/images/shop/strawberryfull.png",
+    thumbnail: "/images/shop/15x12cocostrawberry.png",
+  },
+  {
+    variantId: 34,
+    title: "Cocofloss",
+    subtitle: "Mint",
+    full: "/images/shop/mintflossfull.png",
+    description: "Woven Floss • Crisp Mint",
+    thumbnail: "/images/shop/mintflossfull.png",
+  },
+  {
+    variant: null,
+    title: "Gift Card",
+    subtitle: "The perfect gift",
+    description: "Digital Card • Any Amount",
+    full: "/images/shop/giftcardmockupfull.png",
+    thumbnail: "/images/giftcardmockup.png",
+  },
+  {
+    variantId: 43,
+    title: "Poladay 9.5%",
+    subtitle: "At-home whitening",
+    full: "/images/shop/poladay95.png",
+    description: "Hydrogen Peroxide Whitening",
+    thumbnail: "/images/poladaymockup.png",
+  },
+  {
+    variantId: 44,
+    title: "Poladay 35%",
+    subtitle: "Professional strength",
+    full: "/images/shop/pola35full.png",
+    description: "Carbamide Peroxide",
+    thumbnail: "/images/shop/pola35full.png",
+  },
+  {
+    variantId: 37,
+    title: "Aligner Cases",
+    subtitle: "Choose your color",
+    description: "Everyday Case • Color Options",
+    full: "/images/shop/whiteinvisscenefull.png",
+    thumbnail: "/images/shop/whiteinvisscene.png",
+  },
+  {
+    variantId: 41,
+    title: "Zima Dental Pod",
+    subtitle: "Daily Clean • Ultrasonic",
+    description: "A cleaner routine",
+    full: "/images/shop/zimawhitefull.png",
+    thumbnail: "/images/shop/zimawhitefull.png",
+  },
+];
+
+const CrispLoader = ({ onComplete, slidesData, variants }) => {
+
+  if (!variants?.length) {
+    console.warn(
+    );
+  }
+
   const containerRef = useRef(null);
   const headingRef = useRef(null);
   const loaderGroupsRef = useRef(null);
@@ -793,66 +1177,27 @@ const PreloaderComponent = ({ variants }) => {
   const mainGroupRef = useRef(null);
   const contentRef = useRef(null);
   const headingContainerRef = useRef(null);
-  const leftMaskRef = useRef(null);
-const scrollTriggerRef = useRef(null);
-const metricsRef = useRef(null);
-  const focusStripRef = useRef(null);
-  const sliderNavLeftRef = useRef(null);
-  const sliderNavRightRef = useRef(null);
-  const scrollWrapRef = useRef(null);
-const [scrollWrapHeight, setScrollWrapHeight] = useState("300vh");
   const splitInstanceRef = useRef(null);
 
-  const allSlides = useMemo(() => {
-    if (!variants?.length) return [];
-    return slidesData.map((slide) => {
-      const variant = variants.find((v) => v.id === slide.variantId);
-      if (!variant) {
-        console.warn("No match:", slide.variantId);
-      }
-      return { ...slide, variant };
-    });
-  }, [variants]);
+const allSlides = slidesData;
+  console.log("slides:", allSlides.length);
+  const centerIndex = Math.floor(allSlides.length / 2);
 
-  const stripSlides = useMemo(() => {
-    if (!allSlides.length) return [];
-
-    return [...allSlides, ...allSlides, ...allSlides];
-  }, [allSlides]);
-
-  const leftStripSlides = useMemo(() => {
-    if (!allSlides.length) return [];
-
-    const tripleSlides = [...allSlides, ...allSlides, ...allSlides];
-    return [null, null, ...tripleSlides];
-  }, [allSlides]);
-
-
-  const rightStripSlides = useMemo(() => {
-    if (!allSlides.length) return [];
-
-    return [...allSlides, ...allSlides, ...allSlides];
-  }, [allSlides]);
-
-  const centerIndex = Math.floor(slidesData.length / 2);
-
-  const getStep = useCallback((track) => {
-    if (!track?.children?.[0]) return 0;
-    const styles = getComputedStyle(track);
-    const gap = parseFloat(styles.gap) || 0;
-    return track.children[0].getBoundingClientRect().width + gap;
-  }, []);
+  const addToScaleDown = (el) => {
+    if (el && !scaleDownImagesRef.current.includes(el)) {
+      scaleDownImagesRef.current.push(el);
+    }
+  };
 
   useLayoutEffect(() => {
-    document.fonts.ready.then(() => {
-      initCrispLoadingAnimation();
-    });
-  }, []);
+    if (!allSlides.length) {
+      onComplete?.();
+      return;
+    }
 
-  const initCrispLoadingAnimation = () => {
     const container = containerRef.current;
     if (!container) return;
-
+    
     const heading = headingRef.current;
     const scaleUpMedia = scaleUpMediaRef.current;
     const scaleDownImages = scaleDownImagesRef.current;
@@ -883,17 +1228,18 @@ const [scrollWrapHeight, setScrollWrapHeight] = useState("300vh");
 
     const tl = gsap.timeline({
       defaults: { ease: "expo.inOut" },
-      onStart: () => container.classList.remove("is--hidden"),
+      onStart: () => {
+        if (container) container.classList.remove("is--hidden");
+      },
       onComplete: () => {
-        sessionStorage.setItem("preloaderDone", "true");
-        setIsLoading(false);
-
         if (scaleUpMedia) {
           gsap.set(scaleUpMedia, { willChange: "auto" });
         }
         images.forEach((img) => {
           gsap.set(img, { willChange: "auto" });
         });
+
+        onComplete?.();
       },
     });
 
@@ -916,7 +1262,7 @@ const [scrollWrapHeight, setScrollWrapHeight] = useState("300vh");
     if (mainGroup) gsap.set(mainGroup, { xPercent: 100 });
     if (content) gsap.set(content, { scale: 0.8, opacity: 0, yPercent: 20 });
 
-    const allLoaderImages = document.querySelectorAll(".crisp-loader__media");
+    const allLoaderImages = container.querySelectorAll(".crisp-loader__media");
     if (allLoaderImages.length) {
       gsap.set(allLoaderImages, { opacity: 1 });
     }
@@ -981,11 +1327,11 @@ const [scrollWrapHeight, setScrollWrapHeight] = useState("300vh");
           duration: 0.6,
           stagger: { each: 0.02, from: "center" },
           onStart: () => {
-            const loader = document.querySelector(".crisp-loader");
+            const loader = container.querySelector(".crisp-loader");
             if (loader) gsap.set(loader, { pointerEvents: "none" });
           },
           onComplete: () => {
-            const loader = document.querySelector(".crisp-loader");
+            const loader = container.querySelector(".crisp-loader");
             if (loader) gsap.set(loader, { display: "none" });
           },
         },
@@ -1021,303 +1367,420 @@ const [scrollWrapHeight, setScrollWrapHeight] = useState("300vh");
       );
     }
 
+    tl.call(
+      () => {
+        if (container) container.classList.remove("is--loading");
+      },
+      null,
+      "+=0.1",
+    );
+
+    return () => {
+      if (splitInstanceRef.current) {
+        splitInstanceRef.current.revert();
+      }
+    };
+  }, [onComplete, allSlides.length]);
+
+  if (!allSlides.length) return null;
+
+  return (
+    <div ref={containerRef} className="crisp-header is--loading ">
+      <div className="crisp-loader">
+        <div className="crisp-loader__wrap">
+          <div className="crisp-loader__groups" ref={loaderGroupsRef}>
+            <div
+              className="crisp-loader__group is--relative"
+              ref={mainGroupRef}
+            >
+              {allSlides.map((image, idx) => {
+                const isCenter = idx === centerIndex;
+                return (
+                  <div
+                    key={`loader-${idx}`}
+                    className={`crisp-loader__single ${isCenter ? "is--center" : ""}`}
+                  >
+                    <div
+                      className={`crisp-loader__media ${isCenter ? "is--scaling" : ""}`}
+                      ref={
+                        isCenter
+                          ? (el) => {
+                              scaleUpMediaRef.current = el;
+                            }
+                          : (el) => addToScaleDown(el)
+                      }
+                    >
+                      <img
+                        src={image.thumbnail}
+                        alt={image.alt || image.title}
+                        className={`crisp-loader__cover-img ${!isCenter ? "is--scale-down" : ""}`}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="crisp-loader__fade"></div>
+          <div className="crisp-loader__fade is--duplicate"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ShopContent = ({ isReady, variants, slidesData }) => {
+  const router = useRouter();
+  const containerRef = useRef(null);
+  const focusStripRef = useRef(null);
+  const sliderNavLeftRef = useRef(null);
+  const sliderNavRightRef = useRef(null);
+  const leftMaskRef = useRef(null);
+  const scrollTriggerRef = useRef(null);
+  const metricsRef = useRef(null);
+  const scrollWrapRef = useRef(null);
+  const contentRef = useRef(null);
+  const headingRef = useRef(null);
+
+  const allSlides = useMemo(() => {
+    if (!variants?.length || !slidesData?.length) return [];
+    return slidesData.map((slide) => {
+      const variant = variants.find((v) => v.id === slide.variantId);
+      if (!variant && slide.variantId) {
+        console.warn("No match for variantId:", slide.variantId);
+      }
+      return { ...slide, variant };
+    });
+  }, [variants, slidesData]);
+
+  // Create triple array once for all strips
+  const stripSlides = useMemo(() => {
+    if (!allSlides.length) return [];
+    return [...allSlides, ...allSlides, ...allSlides];
+  }, [allSlides]);
+
+  const leftStripSlides = useMemo(() => {
+    if (!stripSlides.length) return [];
+    return [null, null, ...stripSlides];
+  }, [stripSlides]);
+
+  const rightStripSlides = stripSlides;
+
+  const getStep = useCallback((track) => {
+    if (!track?.children?.[0]) return 0;
+    const styles = getComputedStyle(track);
+    const gap = parseFloat(styles.gap) || 0;
+    return track.children[0].getBoundingClientRect().width + gap;
+  }, []);
+
+  const measureScrub = useCallback(() => {
+    const container = containerRef.current;
+    const focusStripEl = focusStripRef.current;
     const navLeftEl = sliderNavLeftRef.current;
     const navRightEl = sliderNavRightRef.current;
-    
-    if (navLeftEl && navRightEl) {
-gsap.set([navLeftEl, navRightEl], {
-  yPercent: 120,
-});
+    const leftMaskEl = leftMaskRef.current;
 
-tl.to([navLeftEl, navRightEl], {
-  yPercent: 0,
-  duration: 0.3,
-});
+    if (
+      !container ||
+      !focusStripEl ||
+      !navLeftEl ||
+      !navRightEl ||
+      !leftMaskEl
+    ) {
+      return null;
     }
 
-    tl.call(() => container.classList.remove("is--loading"), null, "+=0.1");
-    tl.call(() => initScrollScrub(), null, "+=0.1");
-  };
+    if (
+      !focusStripEl.children.length ||
+      !navLeftEl.children.length ||
+      !navRightEl.children.length ||
+      !allSlides.length
+    ) {
+      return null;
+    }
 
-const measureScrub = () => {
-  const container = containerRef.current;
-  const focusStripEl = focusStripRef.current;
-  const navLeftEl = sliderNavLeftRef.current;
-  const navRightEl = sliderNavRightRef.current;
-  const leftMaskEl = leftMaskRef.current;
+    const total = allSlides.length;
+    const startIndex = total * 2;
 
-  if (!container || !focusStripEl || !navLeftEl || !navRightEl || !leftMaskEl) {
-    return null;
-  }
+    const focusStep = getStep(focusStripEl);
+    const thumbStep = getStep(navLeftEl);
 
-  if (
-    !focusStripEl.children.length ||
-    !navLeftEl.children.length ||
-    !navRightEl.children.length ||
-    !allSlides.length
-  ) {
-    return null;
-  }
+    if (!focusStep || !thumbStep) return null;
 
-  const total = allSlides.length;
-  const startIndex = total * 2; // Start at the beginning of the third loop
+    const focusMaskEl = focusStripEl.parentElement;
+    if (!focusMaskEl) return null;
 
-  const focusStep = getStep(focusStripEl);
-  const thumbStep = getStep(navLeftEl);
+    const focusFrameEl = focusMaskEl.parentElement;
+    if (!focusFrameEl) return null;
 
-  if (!focusStep || !thumbStep) return null;
+    const frameStyles = getComputedStyle(focusFrameEl);
+    const paddingLeft = parseFloat(frameStyles.paddingLeft) || 0;
+    const paddingRight = parseFloat(frameStyles.paddingRight) || 0;
 
-  const focusMaskEl = focusStripEl.parentElement;
-  if (!focusMaskEl) return null;
+    const focusMaskRect = focusMaskEl.getBoundingClientRect();
+    const focusItemRect = focusStripEl.children[0].getBoundingClientRect();
 
-  const focusFrameEl = focusMaskEl.parentElement;
-  if (!focusFrameEl) return null;
+    const focusStartX =
+      (focusMaskRect.width - focusItemRect.width) * 0.5 +
+      (paddingLeft - paddingRight) * 0.5 -
+      startIndex * focusStep;
 
-  const frameStyles = getComputedStyle(focusFrameEl);
-  const paddingLeft = parseFloat(frameStyles.paddingLeft) || 0;
-  const paddingRight = parseFloat(frameStyles.paddingRight) || 0;
+    const leftStartX = -paddingRight;
 
-  const focusMaskRect = focusMaskEl.getBoundingClientRect();
-  const focusItemRect = focusStripEl.children[0].getBoundingClientRect();
+    const rightStartX =
+      -(startIndex + 1) * thumbStep +
+      paddingRight +
+      (focusMaskRect.width - focusItemRect.width) * 0.5;
 
+    const focusTrackWidth = focusStripEl.scrollWidth;
+    const singleLoopWidth = focusTrackWidth / 3;
+    const maxFocusTravel = singleLoopWidth - focusStep;
 
-  const focusStartX =
-    (focusMaskRect.width - focusItemRect.width) * 0.5 +
-    (paddingLeft - paddingRight) * 0.5 -
-    startIndex * focusStep;
+    const lastOriginalImageIndex = startIndex + total - 1;
 
-  const leftStartX = -paddingRight;
-  
+    const rightStopX =
+      rightStartX - (lastOriginalImageIndex - startIndex) * thumbStep;
 
-  const rightStartX =
-    -(startIndex + 1) * thumbStep +
-    paddingRight +
-    (focusMaskRect.width - focusItemRect.width) * 0.5;
+    const maxRightTravel = Math.abs(rightStartX - rightStopX);
+    const rightStopProgress =
+      maxRightTravel / (maxFocusTravel * (thumbStep / focusStep));
 
-  const focusTrackWidth = focusStripEl.scrollWidth;
-  const singleLoopWidth = focusTrackWidth / 3; 
-  const maxFocusTravel = singleLoopWidth - focusStep;
+    if (scrollWrapRef.current) {
+      const neededHeight = Math.ceil(window.innerHeight + maxFocusTravel + 2);
+      scrollWrapRef.current.style.height = `${neededHeight}px`;
+    }
 
-  // Calculate where the right strip should stop
-  // Since the strip has 3 loops, the last original image is at index: startIndex + total - 1
-  const lastOriginalImageIndex = startIndex + total - 1;
+    return {
+      focusStripEl,
+      navLeftEl,
+      navRightEl,
+      focusStep,
+      thumbStep,
+      focusStartX,
+      leftStartX,
+      rightStartX,
+      maxFocusTravel,
+      maxRightTravel,
+      rightStopProgress,
+      rightStopX,
+    };
+  }, [allSlides, getStep]);
 
-  const rightStopX = rightStartX - (lastOriginalImageIndex - startIndex) * thumbStep;
+  const applyScrubProgress = useCallback((progress) => {
+    const m = metricsRef.current;
+    if (!m) return;
 
-  const maxRightTravel = Math.abs(rightStartX - rightStopX);
-  
-  const rightStopProgress = maxRightTravel / (maxFocusTravel * (thumbStep / focusStep));
+    const focusTravel = progress * m.maxFocusTravel;
+    const thumbTravel = (focusTravel / m.focusStep) * m.thumbStep;
 
-  if (scrollWrapRef.current) {
-    const neededHeight = Math.ceil(window.innerHeight + maxFocusTravel + 2);
-    scrollWrapRef.current.style.height = `${neededHeight}px`;
-  }
+    let rightStripX;
+    if (progress >= m.rightStopProgress) {
+      rightStripX = m.rightStopX;
+    } else {
+      rightStripX = m.rightStartX - thumbTravel;
+    }
 
-  return {
-    focusStripEl,
-    navLeftEl,
-    navRightEl,
-    focusStep,
-    thumbStep,
-    focusStartX,
-    leftStartX,
-    rightStartX,
-    maxFocusTravel,
-    maxRightTravel,
-    rightStopProgress,
-    rightStopX,
-  };
-};
-
-const applyScrubProgress = (progress) => {
-  const m = metricsRef.current;
-  if (!m) return;
-
-  const focusTravel = progress * m.maxFocusTravel;
-  const thumbTravel = (focusTravel / m.focusStep) * m.thumbStep;
-  
-
-  let rightStripX;
-  if (progress >= m.rightStopProgress) {
-    rightStripX = m.rightStopX;
-  } else {
-    rightStripX = m.rightStartX - thumbTravel;
-  }
-
-  gsap.set(m.focusStripEl, {
-    x: m.focusStartX - focusTravel,
-  });
-
-  gsap.set(m.navLeftEl, {
-    x: m.leftStartX - thumbTravel,
-    opacity: 1,
-  });
-
-  gsap.set(m.navRightEl, {
-    x: rightStripX,
-    opacity: 1,
-  });
-};
-const initScrollScrub = () => {
-  metricsRef.current = measureScrub();
-  if (!metricsRef.current) return;
-
-  applyScrubProgress(0);
-
-  if (scrollTriggerRef.current) {
-    scrollTriggerRef.current.refresh();
-    return;
-  }
-
-  scrollTriggerRef.current = ScrollTrigger.create({
-    trigger: containerRef.current,
-    start: "top top",
-    end: () => `+=${metricsRef.current?.maxFocusTravel ?? 0}`,
-    scrub: 1.2,
-    invalidateOnRefresh: true,
-    onUpdate: (self) => {
-      applyScrubProgress(self.progress);
-    },
-    onRefreshInit: () => {
-      metricsRef.current = measureScrub();
-    },
-    onRefresh: (self) => {
-      applyScrubProgress(self.progress);
-    },
-  });
-
-  ScrollTrigger.refresh();
-};
-
-useLayoutEffect(() => {
-  let resizeRaf;
-
-  const handleResize = () => {
-    cancelAnimationFrame(resizeRaf);
-    resizeRaf = requestAnimationFrame(() => {
-      initScrollScrub();
+    gsap.set(m.focusStripEl, {
+      x: m.focusStartX - focusTravel,
     });
-  };
 
-  window.addEventListener("resize", handleResize);
+    gsap.set(m.navLeftEl, {
+      x: m.leftStartX - thumbTravel,
+      opacity: 1,
+    });
 
-  return () => {
-    window.removeEventListener("resize", handleResize);
-    cancelAnimationFrame(resizeRaf);
+    gsap.set(m.navRightEl, {
+      x: rightStripX,
+      opacity: 1,
+    });
+  }, []);
+
+  const initScrollScrub = useCallback(() => {
+    if (!isReady || !allSlides.length) return;
+
+    metricsRef.current = measureScrub();
+    if (!metricsRef.current) return;
+
+    applyScrubProgress(0);
+
     if (scrollTriggerRef.current) {
-      scrollTriggerRef.current.kill();
-      scrollTriggerRef.current = null;
+      scrollTriggerRef.current.refresh();
+      return;
     }
-  };
-}, [allSlides]);
+
+    scrollTriggerRef.current = ScrollTrigger.create({
+      trigger: containerRef.current,
+      start: "top top",
+      end: () => `+=${metricsRef.current?.maxFocusTravel ?? 0}`,
+      scrub: 1.2,
+      invalidateOnRefresh: true,
+      onUpdate: (self) => {
+        applyScrubProgress(self.progress);
+
+        const ticks = document.querySelectorAll(".scroll-ticks");
+        const velocity = self.getVelocity();
+        const shift = velocity * 0.001;
+
+        ticks.forEach((el) => {
+          const current = parseFloat(el.dataset.offset || "0") + shift;
+          el.dataset.offset = current;
+          el.style.backgroundPosition = `${current}px 0px`;
+        });
+      },
+      onRefreshInit: () => {
+        metricsRef.current = measureScrub();
+      },
+      onRefresh: (self) => {
+        applyScrubProgress(self.progress);
+      },
+    });
+
+    ScrollTrigger.refresh();
+  }, [isReady, measureScrub, applyScrubProgress, allSlides.length]);
+
+  // Initialize scroll scrub when content is ready
+  useLayoutEffect(() => {
+    if (!isReady) return;
+
+    // Small delay to ensure DOM is fully painted
+    const timer = setTimeout(() => {
+      initScrollScrub();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isReady, initScrollScrub]);
+
+  // Handle resize
+  useLayoutEffect(() => {
+    if (!isReady) return;
+
+    let resizeRaf;
+
+    const handleResize = () => {
+      cancelAnimationFrame(resizeRaf);
+      resizeRaf = requestAnimationFrame(() => {
+        initScrollScrub();
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(resizeRaf);
+    };
+  }, [isReady, initScrollScrub]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTriggerRef.current) {
+        scrollTriggerRef.current.kill();
+        scrollTriggerRef.current = null;
+      }
+    };
+  }, []);
 
   const handleThumbClick = (slide) => {
     if (!slide.variant) return;
     router.push(`/shop/products/${slide.variant.id}`);
   };
 
-  const addToScaleDown = (el) => {
-    if (el && !scaleDownImagesRef.current.includes(el)) {
-      scaleDownImagesRef.current.push(el);
-    }
-  };
+  if (!isReady || !allSlides.length) return null;
 
   return (
-    <>
-<div ref={scrollWrapRef} style={{ height: scrollWrapHeight }}>
-        <section
-          ref={containerRef}
-          data-slideshow="wrap"
-          className="crisp-header is--loading is--hidden"
-        >
-          <div className="crisp-loader">
-            <div className="crisp-loader__wrap">
-              <div className="crisp-loader__groups" ref={loaderGroupsRef}>
-                <div
-                  className="crisp-loader__group is--relative"
-                  ref={mainGroupRef}
-                >
-                  {allSlides.map((image, idx) => {
-                    const isCenter = idx === centerIndex;
-                    return (
-                      <div
-                        key={`main-${idx}`}
-                        className={`crisp-loader__single ${isCenter ? "is--center" : ""}`}
-                      >
-                        <div
-                          className={`crisp-loader__media ${isCenter ? "is--scaling" : ""}`}
-                          ref={
-                            isCenter
-                              ? (el) => {
-                                  scaleUpMediaRef.current = el;
-                                }
-                              : (el) => addToScaleDown(el)
-                          }
-                        >
-                          <img
-                            src={image.thumbnail}
-                            alt={image.alt}
-                            className={`crisp-loader__cover-img ${!isCenter ? "is--scale-down" : ""}`}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="crisp-loader__fade"></div>
-              <div className="crisp-loader__fade is--duplicate"></div>
-            </div>
-          </div>
-
+    <div
+      ref={scrollWrapRef}
+      style={{
+        height: "300vh",
+        opacity: isReady ? 1 : 0,
+        pointerEvents: isReady ? "auto" : "none",
+      }}
+    >
+      <section
+        ref={containerRef}
+        data-slideshow="wrap"
+        className="crisp-header"
+      >
+        <div className="crisp-header__border-wrapper">
           <div ref={contentRef} className="crisp-header__content">
             <div className="crisp-header__center">
-              <div
-                ref={headingContainerRef}
-                className="crisp-header__heading-container"
-              >
+              <div className="vertical-copy">
+                <div className="vertical-copy__group vertical-copy__group--top">
+                  <ScrambleText
+                    text="Ember"
+                    className="vertical-copy__line is-bright"
+                  />
+                  <ScrambleText
+                    text="Cocofloss"
+                    className="vertical-copy__line is-dim"
+                  />
+                  <ScrambleText
+                    text="Whitening"
+                    className="vertical-copy__line is-bright"
+                  />
+                </div>
+
+                <div className="vertical-copy__group vertical-copy__group--bottom">
+                  <ScrambleText
+                    text="Aligners"
+                    className="vertical-copy__line is-bright"
+                  />
+                  <ScrambleText
+                    text="Zima"
+                    className="vertical-copy__line is-bright"
+                  />
+                  <ScrambleText
+                    text="Gift Cards"
+                    className="vertical-copy__line is-dim"
+                  />
+                </div>
+              </div>
+
+              <div className="crisp-header__heading-container">
                 <h1 className="crisp-header__h1" ref={headingRef}>
                   Browse our e-shop
                 </h1>
               </div>
             </div>
 
-            <div className="strip-row">
+            <div className="strip-row relative">
+              <div className="fade-left" />
 
-<div className="nav-layer nav-layer--left">
-  <div className="nav-mask nav-mask--left" ref={leftMaskRef}>
-    <div
-      className="crisp-header__slider-nav crisp-header__slider-nav--left"
-      ref={sliderNavLeftRef}
-    >
-{leftStripSlides.map((slide, idx) => {
-  if (!slide) {
-    return (
-      <div
-        key={`left-empty-${idx}`}
-        className="crisp-header__slider-nav-btn is--placeholder"
-      />
-    );
-  }
+              <div className="nav-layer nav-layer--left">
+                <div className="nav-mask nav-mask--left" ref={leftMaskRef}>
+                  <div
+                    className="crisp-header__slider-nav crisp-header__slider-nav--left"
+                    ref={sliderNavLeftRef}
+                  >
+                    {leftStripSlides.map((slide, idx) => {
+                      if (!slide) {
+                        return (
+                          <div
+                            key={`left-empty-${idx}`}
+                            className="crisp-header__slider-nav-btn is--placeholder"
+                          />
+                        );
+                      }
 
-  return (
-    <Link
-      key={`left-${slide.id}-${idx}`}
-      href={`/shop/products/${slide.variant?.id}`}
-      className="crisp-header__slider-nav-btn"
-      onClick={() => handleThumbClick(slide)}
-    >
-      <img
-        src={slide.thumbnail}
-        alt={slide.alt}
-        className="crisp-loader__cover-img"
-      />
-    </Link>
-  );
-})}
-    </div>
-  </div>
-</div>
+                      return (
+                        <Link
+                          key={`left-${slide.id}-${idx}`}
+                          href={`/shop/products/${slide.variant?.id}`}
+                          className="crisp-header__slider-nav-btn"
+                          onClick={() => handleThumbClick(slide)}
+                        >
+                          <img
+                            src={slide.thumbnail}
+                            alt={slide.alt || slide.title}
+                            className="crisp-loader__cover-img"
+                          />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
 
               <div className="crisp-header__focus">
                 <div className="focus-layer">
@@ -1325,8 +1788,14 @@ useLayoutEffect(() => {
                     <div className="focus-mask">
                       <div className="focus-strip" ref={focusStripRef}>
                         {stripSlides.map((slide, idx) => (
-                          <div key={`focus-${slide.id}-${idx}`} className="focus-item">
-                            <img src={slide.thumbnail} alt={slide.alt} />
+                          <div
+                            key={`focus-${slide.id}-${idx}`}
+                            className="focus-item"
+                          >
+                            <img
+                              src={slide.thumbnail}
+                              alt={slide.alt || slide.title}
+                            />
                           </div>
                         ))}
                       </div>
@@ -1335,35 +1804,104 @@ useLayoutEffect(() => {
                 </div>
               </div>
 
-
               <div className="nav-layer nav-layer--right">
-                <div 
-                  className="crisp-header__slider-nav crisp-header__slider-nav--right" 
-                  ref={sliderNavRightRef}
-                >
-                  {rightStripSlides.map((slide, idx) => (
-                    <Link
-                      key={`right-${slide.id}-${idx}`}
-                      href={`/shop/products/${slide.variant?.id}`}
-                      className="crisp-header__slider-nav-btn"
-                      onClick={() => handleThumbClick(slide)}
-                    >
-                      <img 
-                        src={slide.thumbnail} 
-                        alt={slide.alt} 
-                        className="crisp-loader__cover-img" 
-                      />
-                    </Link>
-                  ))}
+                <div className="nav-mask nav-mask--right">
+                  <div
+                    className="crisp-header__slider-nav crisp-header__slider-nav--right"
+                    ref={sliderNavRightRef}
+                  >
+                    {rightStripSlides.map((slide, idx) => (
+                      <Link
+                        key={`right-${slide.id}-${idx}`}
+                        href={`/shop/products/${slide.variant?.id}`}
+                        className="crisp-header__slider-nav-btn"
+                        onClick={() => handleThumbClick(slide)}
+                      >
+                        <img
+                          src={slide.thumbnail}
+                          alt={slide.alt || slide.title}
+                          className="crisp-loader__cover-img"
+                        />
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
+
+              <div className="fade-right" />
+            </div>
+
+            <div className="scroll-indicator">
+              <div className="scroll-ticks scroll-ticks--left" />
+              <div className="scroll-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 146 36"
+                  preserveAspectRatio="xMidYMid meet"
+                >
+                  <path
+                    d="M131.762 24.9557L144.632 1.17261L1.63232 1.17261L41.0214 35.1726H78.1505L91.3905 24.9557L131.762 24.9557Z"
+                    fill="#0C5EFF"
+                  />
+                </svg>
+                <span className="scroll-label">SCROLL</span>
+              </div>
+              <div className="scroll-ticks scroll-ticks--right" />
             </div>
           </div>
-        </section>
+        </div>
+      </section>
+    </div>
+  );
+};
+const PreloaderComponent = ({ children, variants }) => {
+  const pathname = usePathname();
+  const prevPathRef = useRef(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const prev = prevPathRef.current;
+
+    const isInShop = pathname.startsWith("/shop");
+    const cameFromOutside = prev && !prev.startsWith("/shop");
+
+    const firstLoad = prev === null && isInShop;
+
+    if (firstLoad || cameFromOutside) {
+      setIsLoading(true);
+    }
+
+    prevPathRef.current = pathname;
+  }, [pathname]);
+
+  const handleLoaderComplete = useCallback(() => {
+    setIsLoading(false);
+  }, []);
+
+  return (
+    <>
+      {isLoading && (
+        <CrispLoader
+          onComplete={handleLoaderComplete}
+          slidesData={slidesData}
+          variants={variants}
+        />
+      )}
+
+      <div
+        style={{
+          opacity: isLoading ? 0 : 1,
+          pointerEvents: isLoading ? "none" : "auto",
+        }}
+      >
+        {children}
       </div>
     </>
   );
 };
+export { ShopContent, slidesData };
+
 // function PreloaderMobile() {
 //   const config = {
 //     SCROLL_SPEED: 1.75,
@@ -1982,133 +2520,137 @@ const PreloaderMobile: React.FC = () => {
   const ctxRef = useRef<gsap.Context | null>(null);
   const currentTitleRef = useRef<HTMLDivElement>(null);
   const nextTitleRef = useRef<HTMLDivElement>(null);
-const isAnimatingRef = useRef(false);
+  const isAnimatingRef = useRef(false);
   const autoAnimationCompletedRef = useRef(false);
   const autoAnimationTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
-const pendingTitleTransitionRef = useRef<number | null>(null);
+  const pendingTitleTransitionRef = useRef<number | null>(null);
 
-const animateTitleChange = (nextIndex: number) => {
-  if (!currentTitleRef.current || !nextTitleRef.current) return;
-  if (activeIndexRef.current === nextIndex) return;
-  
-  const targetIndex = nextIndex;
-  
+  const animateTitleChange = (nextIndex: number) => {
+    if (!currentTitleRef.current || !nextTitleRef.current) return;
+    if (activeIndexRef.current === nextIndex) return;
 
-  if (isAnimatingRef.current) {
-    pendingTitleTransitionRef.current = nextIndex;
-    return;
-  }
+    const targetIndex = nextIndex;
 
-  isAnimatingRef.current = true;
-
-  const currentEl = currentTitleRef.current;
-  const nextEl = nextTitleRef.current;
-  
-  if ((currentEl as any)._gsSplitText) {
-    (currentEl as any)._gsSplitText.revert();
-  }
-  if ((nextEl as any)._gsSplitText) {
-    (nextEl as any)._gsSplitText.revert();
-  }
-
-  // ONLY set the next element's text content, NOT the current one
-  nextEl.textContent = slidesData[targetIndex].title;
-
-  const currentSplit = new SplitText(currentEl, { type: "chars" });
-  const nextSplit = new SplitText(nextEl, { type: "chars" });
-
-
-  gsap.set(nextSplit.chars, { yPercent: 100, opacity: 1 });
-  gsap.set(currentSplit.chars, { yPercent: 0, opacity: 1 });
-
-  const tl = gsap.timeline({
-    onComplete: () => {
-      currentSplit.revert();
-      nextSplit.revert();
-      
-      // Clear the current element's content after animation completes
-      currentEl.textContent = "";
-      
-      // Move the next content to current position
-      currentEl.textContent = slidesData[targetIndex].title;
-      nextEl.textContent = "";
-
-      activeIndexRef.current = nextIndex;
-      isAnimatingRef.current = false;
-
-      if (pendingTitleTransitionRef.current !== null) {
-        const pending = pendingTitleTransitionRef.current;
-        pendingTitleTransitionRef.current = null;
-        animateTitleChange(pending);
-      }
-    },
-    onInterrupt: () => {
-      if (currentSplit && !currentSplit.reverted) currentSplit.revert();
-      if (nextSplit && !nextSplit.reverted) nextSplit.revert();
-      isAnimatingRef.current = false;
-    }
-  });
-
-  tl.to(currentSplit.chars, {
-    yPercent: -100,
-    duration: 0.6,
-    ease: "expo.inOut",
-    stagger: 0.02,
-    overwrite: true
-  }, 0);
-
-
-  tl.to(nextSplit.chars, {
-    yPercent: 0,
-    duration: 0.7,
-    ease: "expo.out",
-    stagger: 0.02,
-    overwrite: true
-  }, 0.08);
-};
-useEffect(() => {
-  return () => {
-    if (currentTitleRef.current && (currentTitleRef.current as any)._gsSplitText) {
-      (currentTitleRef.current as any)._gsSplitText.revert();
-    }
-    if (nextTitleRef.current && (nextTitleRef.current as any)._gsSplitText) {
-      (nextTitleRef.current as any)._gsSplitText.revert();
+    if (isAnimatingRef.current) {
+      pendingTitleTransitionRef.current = nextIndex;
+      return;
     }
 
-    pendingTitleTransitionRef.current = null;
-    
-    if (scrollTriggerRef.current) {
-      scrollTriggerRef.current.kill(true);
-      scrollTriggerRef.current = null;
-    }
-    
-    ScrollTrigger.getAll().forEach((st) => st.kill(true));
-    
+    isAnimatingRef.current = true;
 
-    if (ctxRef.current) {
-      ctxRef.current.revert();
-      ctxRef.current = null;
+    const currentEl = currentTitleRef.current;
+    const nextEl = nextTitleRef.current;
+
+    if ((currentEl as any)._gsSplitText) {
+      (currentEl as any)._gsSplitText.revert();
     }
-    
-    if (bgTransitionRef.current) {
-      bgTransitionRef.current.kill();
-      bgTransitionRef.current = null;
+    if ((nextEl as any)._gsSplitText) {
+      (nextEl as any)._gsSplitText.revert();
     }
-    
-    if (autoAnimationTimelineRef.current) {
-      autoAnimationTimelineRef.current.kill();
-      autoAnimationTimelineRef.current = null;
-    }
-    
-    listenersRef.current.forEach(({ el, type, handler }) => {
-      el.removeEventListener(type, handler);
+
+    nextEl.textContent = mobileSlidesData[targetIndex].title;
+
+    const currentSplit = new SplitText(currentEl, { type: "chars" });
+    const nextSplit = new SplitText(nextEl, { type: "chars" });
+
+    gsap.set(nextSplit.chars, { yPercent: 100, opacity: 1 });
+    gsap.set(currentSplit.chars, { yPercent: 0, opacity: 1 });
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        currentSplit.revert();
+        nextSplit.revert();
+
+        currentEl.textContent = "";
+
+        currentEl.textContent = mobileSlidesData[targetIndex].title;
+        nextEl.textContent = "";
+
+        activeIndexRef.current = nextIndex;
+        isAnimatingRef.current = false;
+
+        if (pendingTitleTransitionRef.current !== null) {
+          const pending = pendingTitleTransitionRef.current;
+          pendingTitleTransitionRef.current = null;
+          animateTitleChange(pending);
+        }
+      },
+      onInterrupt: () => {
+        if (currentSplit && !currentSplit.reverted) currentSplit.revert();
+        if (nextSplit && !nextSplit.reverted) nextSplit.revert();
+        isAnimatingRef.current = false;
+      },
     });
-    listenersRef.current = [];
-    
-    ScrollTrigger.refresh(true);
+
+    tl.to(
+      currentSplit.chars,
+      {
+        yPercent: -100,
+        duration: 0.6,
+        ease: "expo.inOut",
+        stagger: 0.02,
+        overwrite: true,
+      },
+      0,
+    );
+
+    tl.to(
+      nextSplit.chars,
+      {
+        yPercent: 0,
+        duration: 0.7,
+        ease: "expo.out",
+        stagger: 0.02,
+        overwrite: true,
+      },
+      0.08,
+    );
   };
-}, []);
+  useEffect(() => {
+    return () => {
+      if (
+        currentTitleRef.current &&
+        (currentTitleRef.current as any)._gsSplitText
+      ) {
+        (currentTitleRef.current as any)._gsSplitText.revert();
+      }
+      if (nextTitleRef.current && (nextTitleRef.current as any)._gsSplitText) {
+        (nextTitleRef.current as any)._gsSplitText.revert();
+      }
+
+      pendingTitleTransitionRef.current = null;
+
+      if (scrollTriggerRef.current) {
+        scrollTriggerRef.current.kill(true);
+        scrollTriggerRef.current = null;
+      }
+
+      ScrollTrigger.getAll().forEach((st) => st.kill(true));
+
+      if (ctxRef.current) {
+        ctxRef.current.revert();
+        ctxRef.current = null;
+      }
+
+      if (bgTransitionRef.current) {
+        bgTransitionRef.current.kill();
+        bgTransitionRef.current = null;
+      }
+
+      if (autoAnimationTimelineRef.current) {
+        autoAnimationTimelineRef.current.kill();
+        autoAnimationTimelineRef.current = null;
+      }
+
+      listenersRef.current.forEach(({ el, type, handler }) => {
+        el.removeEventListener(type, handler);
+      });
+      listenersRef.current = [];
+
+      ScrollTrigger.refresh(true);
+    };
+  }, []);
 
   useEffect(() => {
     ScrollTrigger.normalizeScroll(true);
@@ -2139,9 +2681,9 @@ useEffect(() => {
 
   const preloadNextImage = (index: number) => {
     const nextIndex = index + 1;
-    if (nextIndex < slidesData.length) {
+    if (nextIndex < mobileSlidesData.length) {
       const img = new Image();
-      img.src = slidesData[nextIndex].full;
+      img.src = mobileSlidesData[nextIndex].full;
       img.onload = () => {
         nextImagePreloadedRef.current = img;
       };
@@ -2175,7 +2717,7 @@ useEffect(() => {
       bgTransitionRef.current.kill();
     }
 
-    nextImg.src = slidesData[nextIndex].full;
+    nextImg.src = mobileSlidesData[nextIndex].full;
 
     gsap.set(nextImg, {
       opacity: 0,
@@ -2299,7 +2841,7 @@ useEffect(() => {
         window.dispatchEvent(new CustomEvent("introComplete"));
       },
     });
-    
+
     if (titlesContainerElementRef.current) {
       tl.fromTo(
         titlesContainerElementRef.current,
@@ -2312,7 +2854,7 @@ useEffect(() => {
         0.3,
       );
     }
-    
+
     tl.to(
       introText1Ref.current,
       {
@@ -2385,7 +2927,7 @@ useEffect(() => {
       imagesContainer.removeChild(imagesContainer.firstChild);
     }
 
-    slidesData.forEach((item, index) => {
+    mobileSlidesData.forEach((item, index) => {
       const imgWrapper = document.createElement("div");
       imgWrapper.className = "spotlight-img";
       imgWrapper.style.cursor = "pointer";
@@ -2396,7 +2938,7 @@ useEffect(() => {
           return;
         }
 
-        const variantId = slidesData[index].variantId;
+        const variantId = mobileSlidesData[index].variantId;
         if (variantId) {
           handleNavigate(variantId);
         }
@@ -2515,7 +3057,7 @@ useEffect(() => {
     if (ctxRef.current) ctxRef.current.revert();
 
     const ctx = gsap.context(() => {
-      const numSlides = slidesData.length;
+      const numSlides = mobileSlidesData.length;
       const scrollDistance = window.innerHeight * 80;
 
       const st = ScrollTrigger.create({
@@ -2531,8 +3073,8 @@ useEffect(() => {
             return;
           }
 
-          const rawProgress = self.progress; // 0 → 1
-          const totalProgress = rawProgress * 12; // ← tune this (higher = faster looping)
+          const rawProgress = self.progress;
+          const totalProgress = rawProgress * 12;
 
           let closestIndex = 0;
           let closestDist = Infinity;
@@ -2558,12 +3100,10 @@ useEffect(() => {
             });
           });
 
-          // Handle title change
           if (activeIndexRef.current !== closestIndex) {
             animateTitleChange(closestIndex);
           }
 
-          // Handle background image transition
           if (currentImageIndexRef.current !== closestIndex) {
             smoothTransitionBackground(
               currentImageIndexRef.current,
@@ -2599,11 +3139,15 @@ useEffect(() => {
           <div className="spotlight-bg-img" ref={spotlightBgImgRef}>
             <img
               className="bg-img current"
-              src={slidesData[0]?.full}
+              src={mobileSlidesData[0]?.full}
               alt=""
               ref={spotlightBgImgInnerRef}
             />
-            <img className="bg-img next" src={slidesData[0]?.full} alt="" />
+            <img
+              className="bg-img next"
+              src={mobileSlidesData[0]?.full}
+              alt=""
+            />
           </div>
         </div>
 
@@ -2628,7 +3172,7 @@ useEffect(() => {
           <div className="spotlight-titles-container">
             <div className="spotlight-mask">
               <div className="title current" ref={currentTitleRef}>
-                {slidesData[0]?.title}
+                {mobileSlidesData[0]?.title}
               </div>
               <div className="title next" ref={nextTitleRef}></div>
             </div>

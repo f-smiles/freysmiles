@@ -10,170 +10,121 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
 const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
   const containerRef = useRef(null);
   const innerRefs = useRef([]);
-  const [textWidth, setTextWidth] = useState(0);
-  const [isReady, setIsReady] = useState(false);
+  const hasInitialized = useRef(false);
 
   useLayoutEffect(() => {
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+
     const container = containerRef.current;
-    if (!container || !innerRefs.current.length) return;
+    const inners = innerRefs.current;
 
-    const setLayout = () => {
-      const firstInner = innerRefs.current[0];
-      if (!firstInner) return;
+    if (!container || !inners.length) return;
 
+    const measureText = (sampleEl) => {
+      const temp = document.createElement("span");
+      const styles = window.getComputedStyle(sampleEl);
 
-      const tempSpan = document.createElement("span");
-      tempSpan.style.visibility = "hidden";
-      tempSpan.style.position = "absolute";
-      tempSpan.style.whiteSpace = "nowrap";
-      tempSpan.style.fontSize = window.getComputedStyle(firstInner).fontSize;
-      tempSpan.style.fontFamily = window.getComputedStyle(firstInner).fontFamily;
-      tempSpan.style.letterSpacing = window.getComputedStyle(firstInner).letterSpacing;
-      tempSpan.style.fontWeight = window.getComputedStyle(firstInner).fontWeight;
-      tempSpan.innerText = text;
+      Object.assign(temp.style, {
+        position: "absolute",
+        visibility: "hidden",
+        whiteSpace: "nowrap",
+        fontSize: styles.fontSize,
+        fontFamily: styles.fontFamily,
+        letterSpacing: styles.letterSpacing,
+        fontWeight: styles.fontWeight,
+      });
 
-      document.body.appendChild(tempSpan);
-      const measuredWidth = tempSpan.getBoundingClientRect().width;
-      document.body.removeChild(tempSpan);
+      temp.innerText = text;
+      document.body.appendChild(temp);
 
-      const textWidthWithBuffer = measuredWidth * 1.2;
-      setTextWidth(textWidthWithBuffer);
+      const width = temp.getBoundingClientRect().width;
+      document.body.removeChild(temp);
 
-      const offset = textWidthWithBuffer / totalCells;
+      return width * 1.2;
+    };
 
-      container.style.setProperty("--text-width", `${textWidthWithBuffer}px`);
+    const layout = () => {
+      const width = measureText(inners[0]);
+      const offset = width / totalCells;
+
+      container.style.setProperty("--text-width", `${width}px`);
       container.style.setProperty("--gsplits", totalCells);
       container.style.setProperty("--offset", `${offset}px`);
 
-
-      innerRefs.current.forEach((inner, i) => {
-        if (inner) {
-          gsap.set(inner, {
-            x: -i * offset,
-            position: "relative",
-            display: "inline-block",
-            willChange: "transform",
-            opacity: 0, 
-          });
-        }
-      });
-
-
-      requestAnimationFrame(() => {
-        setIsReady(true);
-      });
-    };
-
-    const initLayout = () => {
-
-      setTimeout(() => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(setLayout);
+      inners.forEach((el, i) => {
+        gsap.set(el, {
+          x: -i * offset,
+          opacity: 0,
         });
-      }, 50);
+      });
+
+      animate(width, offset);
     };
 
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(initLayout);
+    const animate = (width, offset) => {
+      gsap.killTweensOf(inners);
+
+      gsap.fromTo(
+        inners,
+        {
+          x: (i) => {
+            const base = -i * offset;
+            const jitter =
+              (i % 2 === 0 ? -1 : 1) * (width * 0.15);
+            return base + jitter;
+          },
+          opacity: 0,
+        },
+        {
+          x: (i) => -i * offset,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.03,
+          ease: "power2.out",
+          onStart: () => {
+            container.style.visibility = "visible";
+          },
+        }
+      );
+    };
+
+    const run = () => {
+      container.style.visibility = "hidden";
+      requestAnimationFrame(layout);
+    };
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(run);
     } else {
-      initLayout();
+      run();
     }
 
-    window.addEventListener("resize", () => {
-      setIsReady(false);
-      initLayout();
-    });
+    const handleResize = () => {
+      requestAnimationFrame(layout);
+    };
+
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("resize", initLayout);
+      window.removeEventListener("resize", handleResize);
     };
-  }, [totalCells, text]);
-
-  useEffect(() => {
-    if (!isReady || !containerRef.current || !innerRefs.current.length || !textWidth) return;
-
-    const offset = textWidth / totalCells;
-
-
-    gsap.killTweensOf(innerRefs.current);
-
-
-    gsap.fromTo(
-      innerRefs.current,
-      {
-        x: (i) => {
-          const targetX = -i * offset;
-          const randomOffset = (i % 2 === 0 ? -1 : 1) * (textWidth * 0.15);
-          return targetX + randomOffset;
-        },
-        opacity: 0,
-      },
-      {
-        x: (i) => -i * offset,
-        opacity: 1,
-        duration: 0.8,
-        stagger: 0.03,
-        ease: "power2.out",
-        onStart: () => {
-
-          if (containerRef.current) {
-            containerRef.current.style.visibility = "visible";
-          }
-        },
-      }
-    );
-  }, [totalCells, text, textWidth, isReady]);
-
-
-  if (!isReady) {
-    return (
-      <div 
-        ref={containerRef} 
-        className={`gtext ${className}`}
-        style={{ 
-          visibility: "hidden",
-          position: "relative",
-
-          minHeight: "2em"
-        }}
-      >
-        {Array.from({ length: totalCells }).map((_, i) => (
-          <span key={i} className="gtext__box" style={{ display: "inline-block" }}>
-            <span
-              className="gtext__box-inner"
-              ref={(el) => (innerRefs.current[i] = el)}
-              style={{ 
-                display: "inline-block",
-                whiteSpace: "nowrap",
-                visibility: "hidden"
-              }}
-            >
-              {text}
-            </span>
-          </span>
-        ))}
-      </div>
-    );
-  }
+  }, [text, totalCells]);
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className={`gtext ${className}`}
-      style={{ 
-        visibility: "visible",
-        position: "relative"
+      style={{
+        visibility: "hidden",
+        position: "relative",
       }}
     >
       {Array.from({ length: totalCells }).map((_, i) => (
-        <span key={i} className="gtext__box" style={{ display: "inline-block" }}>
+        <span key={i} className="gtext__box">
           <span
             className="gtext__box-inner"
             ref={(el) => (innerRefs.current[i] = el)}
-            style={{ 
-              display: "inline-block",
-              whiteSpace: "nowrap"
-            }}
           >
             {text}
           </span>
@@ -182,6 +133,7 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
     </div>
   );
 };
+
 export default function EarlyOrthodontics() {
   
   const mainSection = useRef(null);

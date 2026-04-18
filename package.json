@@ -50,6 +50,7 @@
     "@tiptap/starter-kit": "^2.8.0",
     "@types/bcrypt": "^5.0.2",
     "@uploadthing/react": "^7.0.2",
+    "@vfx-js/core": "^0.12.0",
     "bcrypt": "^5.1.1",
     "blotter": "^2.1.0",
     "class-variance-authority": "^0.7.1",
