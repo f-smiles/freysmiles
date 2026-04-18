@@ -258,7 +258,7 @@ export default function Index() {
                             <SelectContent>
                               <SelectGroup>
                                 <SelectLabel>Year</SelectLabel>
-                                {Array.from({ length: 40 }, (_, i) => {
+                                {Array.from({ length: 80 }, (_, i) => {
                                   const year = (2027 - i).toString()
                                   return <SelectItem key={`${i}-${year}`} value={year}>{year}</SelectItem>
                                 })}
