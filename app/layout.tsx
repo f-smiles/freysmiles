@@ -30,7 +30,6 @@ export default async function RootLayout({
           <BannerMarquee />
           {children}
         </main>
-        <div id="modal-root" />
         <Toaster />
       </body>
     </html>

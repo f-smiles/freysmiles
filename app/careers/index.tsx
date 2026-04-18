@@ -74,7 +74,7 @@ export default function Index() {
 
   return (
     <div 
-      className="relative w-full min-h-screen
+      className="relative min-h-screen h-full
                   bg-gradient-to-br from-[#4E5353] via-[#505456] to-[#3E4243]
                 text-white
                 "
@@ -84,7 +84,7 @@ export default function Index() {
       </div>
       <div className="absolute inset-0 pointer-events-none opacity-[0.05] bg-noise z-[2]" />
 
-      <div className="w-full px-12 md:px-20 pt-14 md:pt-20 mb-8 z-[3]">
+      <div className="w-full px-12 md:px-20 pt-14 md:pt-20 pb-14 z-[3]">
         <motion.h2
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
