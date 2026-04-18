@@ -1,4 +1,18 @@
 "use client";
+import {
+  Sphere,
+  OrbitControls,
+  Environment,
+  shaderMaterial,
+  useTexture,
+  OrthographicCamera,
+  Clouds,
+  Cloud,
+  CameraControls,
+  Sky as SkyImpl,
+  StatsGl,
+} from "@react-three/drei";
+import { useControls } from "leva";
 import Link from "next/link";
 import "./style.css";
 import { gsap } from "gsap";
@@ -63,33 +77,30 @@ const ScrambleText = ({
         onComplete: resolve,
       });
 
-      // start dim
       tl.set(el, {
         color: "rgba(0,0,0,0.25)",
       });
 
-      // 1. slower scramble
       tl.to(
         el,
         {
-          duration: 1.4, // ← slower
+          duration: 1.4, 
           scrambleText: {
             text: originalText.current,
             characters: charSets[charsType],
-            speed: gsap.utils.random(0.4, 0.9), // ← slower character churn
-            revealDelay: 0.2, // ← more breathing room
+            speed: gsap.utils.random(0.4, 0.9), 
+            revealDelay: 0.2, 
           },
           ease: EASE_EXPO,
         },
         0,
       );
 
-      // 2. color ramps MORE GRADUALLY (this is the key)
       tl.to(
         el,
         {
           color: "rgba(0,0,0,1)",
-          duration: 1.1, // ← longer than before
+          duration: 1.1, 
           ease: EASE_SMOOTH,
         },
         0.2,
@@ -824,7 +835,60 @@ const FlameTrail = ({ children }) => {
     </div>
   );
 };
+function Sky() {
+  const ref = useRef();
+  const cloud0 = useRef();
+  
 
+  const config = {
+    seed: 1,
+    segments: 20,
+    volume: 6,
+    opacity: 0.8,
+    fade: 10,
+    growth: 4,
+    speed: 0.1,
+  };
+  
+  const color = "white";
+  const x = 6;
+  const y = 1;
+  const z = 1;
+  
+  useFrame((state, delta) => {
+    const t = state.clock.elapsedTime;
+
+    ref.current.rotation.y = Math.cos(t * 0.1) * 0.08;
+    ref.current.rotation.x = Math.sin(t * 0.1) * 0.04;
+    cloud0.current.rotation.y -= delta * 0.1;
+  });
+  
+  return (
+    <>
+      <SkyImpl />
+      <group ref={ref}>
+        <Clouds
+          ref={cloud0}
+          {...config}
+          bounds={[x, y, z]}
+          position={[0, -6, -4]}
+          color={color}
+        >
+          <Cloud ref={cloud0} {...config} bounds={[x, y, z]} color={color} />
+          <Cloud
+            concentrate="outside"
+            growth={100}
+            color="#ffccdd"
+            opacity={1.25}
+            seed={0.3}
+            bounds={200}
+            volume={200}
+          />
+        </Clouds>
+      </group>
+    </>
+  );
+}
 CustomEase.create("slideshow-wipe", "0.625, 0.05, 0, 1");
 
 const mobileSlidesData = [
@@ -1162,6 +1226,8 @@ const slidesData = [
   },
 ];
 
+
+
 const CrispLoader = ({ onComplete, slidesData, variants }) => {
 
   if (!variants?.length) {
@@ -1197,7 +1263,7 @@ const allSlides = slidesData;
 
     const container = containerRef.current;
     if (!container) return;
-    
+
     const heading = headingRef.current;
     const scaleUpMedia = scaleUpMediaRef.current;
     const scaleDownImages = scaleDownImagesRef.current;
@@ -1671,7 +1737,6 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
     };
   }, [isReady, initScrollScrub]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (scrollTriggerRef.current) {
@@ -1704,6 +1769,125 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
       >
         <div className="crisp-header__border-wrapper">
           <div ref={contentRef} className="crisp-header__content">
+                <section className="relative flex items-end justify-end">
+                        <div
+  className="
+    relative
+    w-[18vw]
+    h-[45vh]
+    z-10
+  "
+>
+<svg 
+  style={{ 
+    position: 'absolute', 
+    top: 0, 
+    left: 0, 
+    width: '100%', 
+    height: '100%',
+    pointerEvents: 'none',
+    zIndex: 5
+  }}
+  viewBox="0 0 256 256"
+>
+  <defs>
+    <mask id="customShape">
+      <path 
+        d="M 65.025 143.01 C 70.813 165.5 88.518 183.205 111.008 188.993 L 111.008 254.018 C 53.108 246.796 7.22 200.909 0 143.01 Z M 254.016 143.01 C 246.796 200.909 200.907 246.798 143.008 254.018 L 143.008 188.993 C 165.498 183.205 183.203 165.5 188.991 143.01 Z M 127.008 111.01 C 135.845 111.01 143.008 118.173 143.008 127.01 C 143.008 135.847 135.845 143.01 127.008 143.01 C 118.171 143.01 111.008 135.847 111.008 127.01 C 111.008 118.173 118.171 111.01 127.008 111.01 Z M 111.008 65.026 C 88.518 70.814 70.813 88.52 65.025 111.01 L 0 111.01 C 7.22 53.11 53.109 7.221 111.008 0.001 Z M 143.008 0 C 200.907 7.221 246.796 53.111 254.016 111.01 L 188.991 111.01 C 183.203 88.52 165.498 70.814 143.008 65.026 Z" 
+        fill="white"
+      />
+    </mask>
+    
+
+    <path
+      id="innerCirclePath"
+      d="
+        M 120,75
+        m -47,0
+        a 47,47 0 1,1 94,0
+        a 47,47 0 1,1 -94,0
+      "
+    />
+  </defs>
+  
+  <text
+    fill="black"
+    fontSize="10"
+    letterSpacing="2"
+    fontFamily="KHTekaTrial-Light"
+  >
+    <textPath
+      href="#innerCirclePath"
+      startOffset="50%"
+      textAnchor="middle"
+    >
+     • SHOP • OUR • AMAZON • STOREFRONT •
+    </textPath>
+  </text>
+</svg>
+
+  <div
+    className="
+      absolute
+      inset-0
+      overflow-hidden
+    "
+    style={{
+      mask: "url(#customShape)",
+      WebkitMask: "url(#customShape)",
+    }}
+  >
+    <Canvas camera={{ position: [0, -10, 10], fov: 75 }}>
+      <StatsGl />
+      <Sky />
+      <ambientLight intensity={Math.PI / 1.5} />
+      <spotLight
+        position={[0, 40, 0]}
+        decay={0}
+        distance={45}
+        penumbra={1}
+        intensity={100}
+      />
+      <spotLight
+        position={[-20, 0, 10]}
+        color="purple"
+        angle={0.15}
+        decay={0}
+        penumbra={-1}
+        intensity={30}
+      />
+      <spotLight
+        position={[20, -10, 10]}
+        color="red"
+        angle={0.2}
+        decay={0}
+        penumbra={-1}
+        intensity={20}
+      />
+      <CameraControls />
+    </Canvas>
+  </div>
+
+{/* 
+  <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+    <div
+      className="
+        w-full
+        leading-none
+        max-w-[200px]
+        justify-center items-center text-center 
+      "
+    >
+      <h2 className="text-[11px] uppercase tracking-wider font-neuehaas45 mb-3">
+        Shop our Amazon storefront
+      </h2>
+      <p className="text-[14px] opacity-80 font-neuehaas45">
+        link
+      </p>
+    </div>
+  </div> */}
+</div>
+                        </section>
             <div className="crisp-header__center">
               <div className="vertical-copy">
                 <div className="vertical-copy__group vertical-copy__group--top">
@@ -1787,17 +1971,30 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
                   <div className="focus-frame">
                     <div className="focus-mask">
                       <div className="focus-strip" ref={focusStripRef}>
-                        {stripSlides.map((slide, idx) => (
-                          <div
-                            key={`focus-${slide.id}-${idx}`}
-                            className="focus-item"
-                          >
-                            <img
-                              src={slide.thumbnail}
-                              alt={slide.alt || slide.title}
-                            />
-                          </div>
-                        ))}
+                    { stripSlides.map((slide, idx) => {
+  if (!slide) {
+    return (
+      <div
+        key={`focus-empty-${idx}`}
+        className="focus-item is--placeholder"
+      />
+    );
+  }
+
+  return (
+    <Link
+      key={`focus-${slide.id}-${idx}`}
+      href={`/shop/products/${slide.variant?.id}`}
+      className="focus-item"
+      onClick={() => handleThumbClick(slide)}
+    >
+      <img
+        src={slide.thumbnail}
+        alt={slide.alt || slide.title}
+      />
+    </Link>
+  );
+})}
                       </div>
                     </div>
                   </div>

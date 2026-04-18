@@ -74,11 +74,7 @@
   width: 1vmin;
   aspect-ratio: 1;
 } */
-.crisp-loader-root {
-  position: fixed;
-  inset: 0;
-  z-index: 3000;
-}
+
 .slide-wrapper {
   position: relative;
   width: 100%;
@@ -259,7 +255,7 @@ font-family: "KHTekaTrial-Light";
   height: 100%;
   overflow: hidden;
   background-color: #FBFBFB;
-
+  /* z-index: 1000; */
 }
 
 
@@ -274,9 +270,9 @@ font-family: "KHTekaTrial-Light";
   pointer-events: none; 
   z-index: 5;
 }
-/* .crisp-header.is--loading.is--hidden {
+.crisp-header.is--loading.is--hidden {
   display: none;
-} */
+}
 
 .crisp-header.is--loading .crisp-loader {
   display: flex;
@@ -584,7 +580,7 @@ padding-left: .4em;
   height: 30vw;
   max-height: 100%; 
   z-index: 3;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .focus-layer,
