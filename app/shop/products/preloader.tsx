@@ -1518,6 +1518,26 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
       return { ...slide, variant };
     });
   }, [variants, slidesData]);
+// Add this useEffect to inspect your data
+useEffect(() => {
+  if (variants?.length && slidesData?.length) {
+    console.log("=== VARIANTS DATA ===");
+    console.log(variants);
+    
+    console.log("=== SLIDES DATA ===");
+    slidesData.forEach(slide => {
+      const variant = variants.find(v => v.id === slide.variantId);
+      console.log(`Slide: ${slide.title} (variantId: ${slide.variantId})`);
+      console.log("  - Variant found:", variant);
+      if (variant) {
+        console.log("  - Variant keys:", Object.keys(variant));
+        console.log("  - Variant images:", variant.images || variant.image || variant.thumbnail || variant.full);
+      }
+    });
+  }
+}, [variants, slidesData]);
+
+
 
   // Create triple array once for all strips
   const stripSlides = useMemo(() => {
@@ -1704,11 +1724,9 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
     ScrollTrigger.refresh();
   }, [isReady, measureScrub, applyScrubProgress, allSlides.length]);
 
-  // Initialize scroll scrub when content is ready
+
   useLayoutEffect(() => {
     if (!isReady) return;
-
-    // Small delay to ensure DOM is fully painted
     const timer = setTimeout(() => {
       initScrollScrub();
     }, 100);
@@ -1716,10 +1734,8 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
     return () => clearTimeout(timer);
   }, [isReady, initScrollScrub]);
 
-  // Handle resize
   useLayoutEffect(() => {
     if (!isReady) return;
-
     let resizeRaf;
 
     const handleResize = () => {
@@ -1746,6 +1762,20 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
     };
   }, []);
 
+
+const [hoveredId, setHoveredId] = useState(null);
+
+const getCurrentImage = (slide) => {
+  const images = slide.variant?.variantImages;
+
+  if (!images?.length) return slide.thumbnail;
+
+  if (hoveredId === slide.variantId && images[1]) {
+    return images[1].url;
+  }
+  return images[0].url;
+};
+
   const handleThumbClick = (slide) => {
     if (!slide.variant) return;
     router.push(`/shop/products/${slide.variant.id}`);
@@ -1769,23 +1799,24 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
       >
         <div className="crisp-header__border-wrapper">
           <div ref={contentRef} className="crisp-header__content">
-                <section className="relative flex items-end justify-end">
+                <section className="relative flex items-end justify-end py-2">
                         <div
   className="
     relative
     w-[18vw]
     h-[45vh]
-    z-10
+    z-10 
   "
 >
-<svg 
+  <a href="https://www.amazon.com/hz/wishlist/ls/3H5ZN3KIOODT1?ref_=wl_share" target="_blank" rel="noopener noreferrer">
+  <svg 
   style={{ 
     position: 'absolute', 
     top: 0, 
     left: 0, 
     width: '100%', 
     height: '100%',
-    pointerEvents: 'none',
+
     zIndex: 5
   }}
   viewBox="0 0 256 256"
@@ -1821,10 +1852,12 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
       startOffset="50%"
       textAnchor="middle"
     >
-     • SHOP • OUR • AMAZON • STOREFRONT •
+      SHOP • OUR • AMAZON • STOREFRONT •
     </textPath>
   </text>
 </svg>
+
+  </a>
 
   <div
     className="
@@ -1937,31 +1970,57 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
                     className="crisp-header__slider-nav crisp-header__slider-nav--left"
                     ref={sliderNavLeftRef}
                   >
-                    {leftStripSlides.map((slide, idx) => {
-                      if (!slide) {
-                        return (
-                          <div
-                            key={`left-empty-${idx}`}
-                            className="crisp-header__slider-nav-btn is--placeholder"
-                          />
-                        );
-                      }
+{leftStripSlides.map((slide, idx) => {
+  if (!slide) {
+    return (
+      <div
+        key={`left-empty-${idx}`}
+        className="crisp-header__slider-nav-btn is--placeholder"
+      />
+    );
+  }
 
-                      return (
-                        <Link
-                          key={`left-${slide.id}-${idx}`}
-                          href={`/shop/products/${slide.variant?.id}`}
-                          className="crisp-header__slider-nav-btn"
-                          onClick={() => handleThumbClick(slide)}
-                        >
-                          <img
-                            src={slide.thumbnail}
-                            alt={slide.alt || slide.title}
-                            className="crisp-loader__cover-img"
-                          />
-                        </Link>
-                      );
-                    })}
+  const images = slide.variant?.variantImages || [];
+  const base = images[0]?.url || slide.thumbnail;
+  const hover = images[1]?.url;
+  const isHovered = hoveredId === slide.variantId;
+
+  return (
+    <Link
+      key={`left-${slide.id}-${idx}`}
+      href={`/shop/products/${slide.variant?.id}`}
+className="relative w-[min(220px,20vw)] h-[min(220px,20vw)] flex-shrink-0 overflow-hidden"
+      onMouseEnter={() => setHoveredId(slide.variantId)}
+      onMouseLeave={() => setHoveredId(null)}
+    >
+
+      <div className="absolute inset-0 overflow-hidden">
+        
+        <img
+          src={base}
+          alt={slide.alt || slide.title}
+          className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+          style={{
+            opacity: isHovered ? 0 : 1,
+            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+          }}
+        />
+
+        {hover && (
+          <img
+            src={hover}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
+            style={{
+              opacity: isHovered ? 1 : 0,
+              transform: isHovered ? 'scale(1)' : 'scale(1.05)',
+            }}
+          />
+        )}
+      </div>
+    </Link>
+  );
+})}
                   </div>
                 </div>
               </div>
