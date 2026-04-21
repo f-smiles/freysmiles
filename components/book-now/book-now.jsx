@@ -8,7 +8,8 @@ import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { MoveRightIcon } from "lucide-react";
-import Logo from "@/components/logo";
+import Logo from "@/components/logo/logo";
+import HomePageLogo from "../logo/home-page-logo";
 // import { JoinOurTeam } from "./join-our-team";
 
 gsap.registerPlugin(SplitText, ScrambleTextPlugin);
@@ -99,6 +100,11 @@ export default function BookNow() {
         onClick={() => setShowScheduler(false)}
       />
 
+      {/* LOGO */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 xl:hidden z-50">
+        <HomePageLogo />
+      </div>
+
       <div className="absolute top-6 left-0 right-0 flex justify-center items-center xl:hidden z-50">
         <div
           className="
@@ -178,10 +184,6 @@ export default function BookNow() {
 
       <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none z-0">
         <div className="relative w-full h-full xl:w-auto xl:h-auto">
-          <Logo
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 fill-zinc-800 size-20 xl:hidden"
-          />
-
           <Canvas
             camera={{ position: [0, 0, 1000], fov: 75 }}
             gl={{ antialias: true, alpha: true }}
@@ -211,9 +213,9 @@ export default function BookNow() {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 items-center px-4 xl:px-12 gap-8 xl:gap-0 relative">
         <div className="flex flex-col items-center xl:items-center order-2 xl:order-1">
-          <Logo
-            className="hidden size-32 fill-zinc-800 xl:block"
-          />
+          <div className="w-[150px] h-[80px] hidden xl:block">
+            <HomePageLogo />
+          </div>
           <h1 className="text-[24px] font-neuehaas35 tracking-[.02em] xl:text-[24px] text-center xl:text-left">
             please explore our new site
           </h1>

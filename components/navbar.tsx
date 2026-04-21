@@ -1,6 +1,6 @@
 "use client"
-import Logo from './logo'
 import { usePathname } from 'next/navigation'
+import Logo from '@/components/logo/logo'
 
 export const Navbar = () => {
   let pathname = usePathname()
