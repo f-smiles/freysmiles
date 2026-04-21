@@ -173,7 +173,7 @@ function StormySkyWithLightning() {
     }
     
     if (rotatingCloudsRef.current) {
-      rotatingCloudsRef.current.rotation.y -= delta * 0.04;
+      rotatingCloudsRef.current.rotation.y -= delta * 0.05;
     }
 
     lightningCooldown.current -= delta;
@@ -253,68 +253,70 @@ function StormySkyWithLightning() {
       />
 
       <group ref={groupRef}>
-        <Clouds ref={rotatingCloudsRef}>
-          <Cloud
-            {...stormConfig}
-            seed={random.mainSeed}
-            bounds={[8, 2, 8]}
-            position={[
-              random.offsetX * 0.5,
-              -4.7 + random.offsetY,
-              -3 + random.offsetZ,
-            ]}
-            color="#dbd0d0"
-          />
-          <Cloud
-            {...stormConfig}
-            bounds={[8, 2, 8]}
-            color="#eadcdc"
-            opacity={0.98}
-          />
-          <Cloud
-            concentrate="outside"
-            growth={90}
-            color="#171717"
-            opacity={0.95}
-            seed={0.4}
-            bounds={120}
-            volume={120}
-          />
-        </Clouds>
+        <group ref={rotatingCloudsRef}>
+          <Clouds>
+            <Cloud
+              {...stormConfig}
+              seed={random.mainSeed}
+              bounds={[8, 2, 8]}
+              position={[
+                random.offsetX * 0.5,
+                -4.7 + random.offsetY,
+                -3 + random.offsetZ,
+              ]}
+              color="#dbd0d0"
+            />
+            <Cloud
+              {...stormConfig}
+              bounds={[8, 2, 8]}
+              color="#eadcdc"
+              opacity={0.98}
+            />
+            <Cloud
+              concentrate="outside"
+              growth={90}
+              color="#171717"
+              opacity={0.95}
+              seed={0.4}
+              bounds={120}
+              volume={120}
+            />
+          </Clouds>
 
-        <Clouds ref={rotatingCloudsRef}>
-          <Cloud
-            seed={random.secondarySeed}
-            segments={28}
-            volume={7}
-            opacity={0.95}
-            fade={12}
-            growth={5}
-            speed={0.08}
-            bounds={[7, 1.5, 7]}
-            position={[
-              3.5 + random.offsetX,
-              -4.2 + random.offsetY,
-              -4.5 + random.offsetZ,
-            ]}
-            color="#0d0d0d"
-          />
-        </Clouds>
+          <Clouds>
+            <Cloud
+              seed={random.secondarySeed}
+              segments={28}
+              volume={7}
+              opacity={0.95}
+              fade={12}
+              growth={5}
+              speed={0.08}
+              bounds={[7, 1.5, 7]}
+              position={[
+                3.5 + random.offsetX,
+                -4.2 + random.offsetY,
+                -4.5 + random.offsetZ,
+              ]}
+              color="#0d0d0d"
+            />
+          </Clouds>
 
-        <Clouds ref={rotatingCloudsRef}>
-          <Cloud
-            seed={random.upperSeed}
-            segments={26}
-            volume={6}
-            opacity={0.92}
-            fade={10}
-            growth={4}
-            speed={0.06}
-            bounds={[6, 1.2, 5]}
-            position={[2.5, -1.8, -5]}
-            color="#141414"
-          />
-        </Clouds>
+          <Clouds>
+            <Cloud
+              seed={random.upperSeed}
+              segments={26}
+              volume={6}
+              opacity={0.92}
+              fade={10}
+              growth={4}
+              speed={0.06}
+              bounds={[6, 1.2, 5]}
+              position={[2.5, -1.8, -5]}
+              color="#141414"
+            />
+          </Clouds>
+        </group>
       </group>
     </>
   );
