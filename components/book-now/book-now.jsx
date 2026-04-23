@@ -8,7 +8,6 @@ import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { MoveRightIcon } from "lucide-react";
-import Logo from "@/components/logo/logo";
 import HomePageLogo from "../logo/home-page-logo";
 // import { JoinOurTeam } from "./join-our-team";
 

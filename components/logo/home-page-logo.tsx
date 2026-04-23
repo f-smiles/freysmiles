@@ -3,12 +3,16 @@ import React, { useId, useMemo, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { AmbientLight, Color, DirectionalLight, Group, HemisphereLight, MathUtils, PointLight } from "three";
 import { Clouds, Cloud, CameraControls, Sky as SkyImpl, StatsGl, CloudsProps, CloudProps } from "@react-three/drei";
+import { motion } from "motion/react"
 
 export default function HomePageLogo() {
   const maskId = useId()
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ ease: "easeIn", duration: 1 }}
       className="
         relative
         w-[150px]
@@ -16,61 +20,59 @@ export default function HomePageLogo() {
         z-50
       "
     >
-      <a href="https://www.amazon.com/hz/wishlist/ls/3H5ZN3KIOODT1?ref_=wl_share" target="_blank" rel="noopener noreferrer">
-        <svg 
-          style={{ 
-            position: 'absolute', 
-            top: 0, 
-            left: 0, 
-            width: '100%', 
-            height: '100%',
-            zIndex: 5
-          }}
-          viewBox="0 0 149.835 79"
-        >
-          <defs>
-            <mask id={maskId}>
-              <path
-                d="M90.375,0h18.98c.275,0,.5,.225,.5,.5v36.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-.98c0-10.21,8.29-18.5,18.5-18.5Z"
-                fill="white"
-              />
-              <path
-                d="M112.355,0h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5V.5c0-.275,.225-.5,.5-.5Z"
-                fill="white"
-              />
-              <path
-                d="M72.375,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-18.98c0-.275,.225-.5,.5-.5Z"
-                fill="white"
-              />
-              <path
-                d="M112.355,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v.98c0,10.21-8.29,18.5-18.5,18.5h-18.98c-.275,0-.5-.225-.5-.5v-36.98c0-.275,.225-.5,.5-.5Z"
-                fill="white"
-              />
-              <path
-                d="M12.5,0h0c6.9,0,12.5,5.6,12.5,12.5v12c0,.275-.225,.5-.5,.5h-12C5.6,25,0,19.4,0,12.5H0C0,5.6,5.6,0,12.5,0Z"
-                fill="white"
-              />
-              <path
-                d="M39.685,0h15c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-27c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
-                fill="white"
-              />
-              <path
-                d="M12.5,27h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5h0c-6.9,0-12.5-5.6-12.5-12.5h0c0-6.9,5.6-12.5,12.5-12.5Z"
-                fill="white"
-              />
-              <path
-                d="M12.5,54h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5H.5c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
-                fill="white"
-              />
-              <path
-                d="M27.69,27h12c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-12c-.275,0-.5-.225-.5-.5v-24c0-.275,.225-.5,.5-.5Z"
-                fill="white"
-              />
-            </mask>
-          </defs>
-          <rect width="100%" height="100%" fill="transparent" mask={`url(#${maskId})`} />
-        </svg>
-      </a>
+      <svg 
+        style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '100%',
+          zIndex: 5
+        }}
+        viewBox="0 0 149.835 79"
+      >
+        <defs>
+          <mask id={maskId}>
+            <path
+              d="M90.375,0h18.98c.275,0,.5,.225,.5,.5v36.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-.98c0-10.21,8.29-18.5,18.5-18.5Z"
+              fill="white"
+            />
+            <path
+              d="M112.355,0h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5V.5c0-.275,.225-.5,.5-.5Z"
+              fill="white"
+            />
+            <path
+              d="M72.375,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-18.98c0-.275,.225-.5,.5-.5Z"
+              fill="white"
+            />
+            <path
+              d="M112.355,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v.98c0,10.21-8.29,18.5-18.5,18.5h-18.98c-.275,0-.5-.225-.5-.5v-36.98c0-.275,.225-.5,.5-.5Z"
+              fill="white"
+            />
+            <path
+              d="M12.5,0h0c6.9,0,12.5,5.6,12.5,12.5v12c0,.275-.225,.5-.5,.5h-12C5.6,25,0,19.4,0,12.5H0C0,5.6,5.6,0,12.5,0Z"
+              fill="white"
+            />
+            <path
+              d="M39.685,0h15c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-27c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
+              fill="white"
+            />
+            <path
+              d="M12.5,27h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5h0c-6.9,0-12.5-5.6-12.5-12.5h0c0-6.9,5.6-12.5,12.5-12.5Z"
+              fill="white"
+            />
+            <path
+              d="M12.5,54h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5H.5c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
+              fill="white"
+            />
+            <path
+              d="M27.69,27h12c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-12c-.275,0-.5-.225-.5-.5v-24c0-.275,.225-.5,.5-.5Z"
+              fill="white"
+            />
+          </mask>
+        </defs>
+        <rect width="100%" height="100%" fill="transparent" mask={`url(#${maskId})`} />
+      </svg>
 
       <div
         className="
@@ -115,7 +117,7 @@ export default function HomePageLogo() {
           <CameraControls />
         </Canvas>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
