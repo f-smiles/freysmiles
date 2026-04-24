@@ -160,6 +160,7 @@ main:has(.crisp-header.is--loading) {
 
 .scroll-label {
   position: absolute;
+  margin-top: -4px;
   inset: 0;
   display: flex;
   align-items: center;

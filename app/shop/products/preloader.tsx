@@ -113,9 +113,7 @@ const ScrambleText = ({
 
     const runRandomScramble = async () => {
       while (isActive) {
-        // random delay between cycles
         const delay = gsap.utils.random(1.2, 4.5);
-
         await new Promise((res) => setTimeout(res, delay * 1000));
 
         if (!isActive) return;
@@ -124,7 +122,6 @@ const ScrambleText = ({
       }
     };
 
-    // initial state (important so it doesn't flash)
     gsap.set(element, {
       textContent: originalText.current,
     });
