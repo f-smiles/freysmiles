@@ -1,11 +1,5 @@
 "use client";
 import {
-  Sphere,
-  OrbitControls,
-  Environment,
-  shaderMaterial,
-  useTexture,
-  OrthographicCamera,
   Clouds,
   Cloud,
   CameraControls,
@@ -34,12 +28,7 @@ import React, {
 } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
-import {
-  ShaderMaterial,
-  PlaneGeometry,
-  WebGLRenderTarget,
-  Vector2,
-} from "three";
+import { Color, MathUtils } from "three";
 import { VFX } from "@vfx-js/core";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -84,12 +73,12 @@ const ScrambleText = ({
       tl.to(
         el,
         {
-          duration: 1.4, 
+          duration: 1.4,
           scrambleText: {
             text: originalText.current,
             characters: charSets[charsType],
-            speed: gsap.utils.random(0.4, 0.9), 
-            revealDelay: 0.2, 
+            speed: gsap.utils.random(0.4, 0.9),
+            revealDelay: 0.2,
           },
           ease: EASE_EXPO,
         },
@@ -100,7 +89,7 @@ const ScrambleText = ({
         el,
         {
           color: "rgba(0,0,0,1)",
-          duration: 1.1, 
+          duration: 1.1,
           ease: EASE_SMOOTH,
         },
         0.2,
@@ -156,690 +145,10 @@ const ScrambleText = ({
     </span>
   );
 };
-// CustomEase.create("hop", "0.9, 0, 0.1, 1");
 
-// const Preloader = ({ onComplete }) => {
-//   const loaderRef = useRef(null);
-//   const svgRef = useRef(null);
-//   const counterTextRef = useRef(null);
-
-//   const animationRefs = useRef([]);
-
-//   useEffect(() => {
-//     requestAnimationFrame(() => {
-//       initializeAnimations();
-//     });
-
-//     return () => {
-//       animationRefs.current.forEach((anim) => {
-//         if (anim && anim.kill) anim.kill();
-//       });
-//       animationRefs.current = [];
-//     };
-//   }, []);
-
-//   const initializeAnimations = () => {
-//     const textPaths = document.querySelectorAll(".wheelloader svg textPath");
-//     if (textPaths.length === 0) {
-//       return;
-//     }
-
-//     const startTextLengths = Array.from(textPaths).map((tp) =>
-//       parseFloat(tp.getAttribute("textLength")),
-//     );
-
-//     const startTextOffsets = Array.from(textPaths).map((tp) =>
-//       parseFloat(tp.getAttribute("startOffset")),
-//     );
-
-//     const targetTextLengths = [3800, 3600, 3400, 3200, 3000, 3200, 2600, 2400];
-//     const orbitRadii = [775, 700, 625, 550, 475, 400, 325, 250];
-
-//     const maxOrbitRadius = orbitRadii[0];
-//     const maxAnimDuration = 1.25;
-//     const minAnimDuration = 1;
-
-//     textPaths.forEach((textPath, index) => {
-//       const animationDelay = (textPaths.length - 1 - index) * 0.1;
-//       const currentOrbitRadius = orbitRadii[index];
-
-//       const currentDuration =
-//         minAnimDuration +
-//         (currentOrbitRadius / maxOrbitRadius) *
-//           (maxAnimDuration - minAnimDuration);
-
-//       const pathLength = 2 * Math.PI * currentOrbitRadius * 3;
-//       const textLengthIncrease =
-//         targetTextLengths[index] - startTextLengths[index];
-//       const offsetAdjustment = (textLengthIncrease / 2 / pathLength) * 100;
-//       const targetOffset = startTextOffsets[index] - offsetAdjustment;
-
-//       const anim = gsap.to(textPath, {
-//         attr: {
-//           textLength: targetTextLengths[index],
-//           startOffset: targetOffset + "%",
-//         },
-//         duration: currentDuration,
-//         delay: animationDelay,
-//         ease: "power2.inOut",
-//         yoyo: true,
-//         repeat: -1,
-//         repeatDelay: 0,
-//       });
-
-//       animationRefs.current.push(anim);
-//     });
-
-//     let loaderRotation = 0;
-
-//     function animateRotation() {
-//       const spinDirection = Math.random() < 0.5 ? 1 : -1;
-//       loaderRotation += 25 * spinDirection;
-
-//       const anim = gsap.to(svgRef.current, {
-//         rotation: loaderRotation,
-//         duration: 2,
-//         ease: "power2.inOut",
-//         onComplete: animateRotation,
-//       });
-
-//       animationRefs.current.push(anim);
-//     }
-
-//     animateRotation();
-
-//     const count = { value: 0 };
-
-//     const counterAnim = gsap.to(count, {
-//       value: 100,
-//       duration: 4,
-//       delay: 1,
-//       ease: "power1.out",
-//       onUpdate: function () {
-//         if (counterTextRef.current) {
-//           counterTextRef.current.textContent = Math.floor(count.value);
-//         }
-//       },
-//       onComplete: function () {
-//         const opacityAnim = gsap.to(".counter", {
-//           opacity: 0,
-//           duration: 0.5,
-//           delay: 1,
-//         });
-//         animationRefs.current.push(opacityAnim);
-//       },
-//     });
-
-//     animationRefs.current.push(counterAnim);
-
-//     const orbitTextElements = document.querySelectorAll(".orbit-text");
-//     if (orbitTextElements.length > 0) {
-//       gsap.set(orbitTextElements, { opacity: 0 });
-
-//       const orbitTextsReversed = Array.from(orbitTextElements).reverse();
-
-//       const fadeInAnim = gsap.to(orbitTextsReversed, {
-//         opacity: 1,
-//         duration: 0.75,
-//         stagger: 0.125,
-//         ease: "power1.out",
-//       });
-
-//       animationRefs.current.push(fadeInAnim);
-
-//       const fadeOutAnim = gsap.to(orbitTextsReversed, {
-//         opacity: 0,
-//         duration: 0.75,
-//         stagger: 0.1,
-//         delay: 6,
-//         ease: "power1.out",
-//         onComplete: function () {
-//           const removeLoaderAnim = gsap.to(loaderRef.current, {
-//             opacity: 0,
-//             duration: 1,
-// onComplete: () => {
-//   requestAnimationFrame(() => {
-//     onComplete();
-//   });
-// }
-//           });
-
-//           animationRefs.current.push(removeLoaderAnim);
-//         },
-//       });
-
-//       animationRefs.current.push(fadeOutAnim);
-//     }
-//   };
-
-//   return (
-//     <>
-
-//       <div
-//         style={{
-//           position: "fixed",
-//           top: 0,
-//           left: 0,
-//           width: "100%",
-//           height: "100svh",
-//           display: "flex",
-//           justifyContent: "center",
-//           alignItems: "center",
-//     background: `
-// radial-gradient(
-//   55% 55% at 70% 35%,
-//   rgba(255, 0, 200, 0.95) 0%,
-//   rgba(255, 0, 200, 0.6) 20%,
-//   rgba(255, 0, 200, 0.25) 40%,
-//   rgba(255, 0, 200, 0.08) 60%,
-//   rgba(255, 0, 200, 0.0) 75%
-// ),
-// radial-gradient(
-//   70% 60% at 25% 65%,
-//   rgba(255, 20, 200, 0.5) 0%,
-//   rgba(255, 20, 200, 0.2) 40%,
-//   rgba(255, 20, 200, 0.0) 70%
-// ),
-// #f6f6f2
-// `,
-//           color: "#0f0f0f",
-//           willChange: "opacity",
-//           zIndex: 9999,
-//         }}
-//         className="wheelloader"
-//         ref={loaderRef}
-//       >
-
-//         <svg
-//           ref={svgRef}
-//           viewBox="-425 -425 1850 1850"
-//           xmlns="http://www.w3.org/2000/svg"
-//         >
-//           <path
-//             id="wheelloader-orbit-1"
-//             d="M 500,-275 A 775,775 0 0,1 500,1275 A 775,775 0 0,1 500,-275 A 775,775 0 0,1 500,1275 A 775,775 0 0,1 500,-275 A 775,775 0 0,1 500,1275 A 775,775 0 0,1 499.99,-275"
-//           />
-//           <path
-//             id="wheelloader-orbit-2"
-//             d="M 500,-200 A 700,700 0 0,1 500,1200 A 700,700 0 0,1 500,-200 A 700,700 0 0,1 500,1200 A 700,700 0 0,1 500,-200 A 700,700 0 0,1 500,1200 A 700,700 0 0,1 499.99,-200"
-//           />
-//           <path
-//             id="wheelloader-orbit-3"
-//             d="M 500,-125 A 625,625 0 0,1 500,1125 A 625,625 0 0,1 500,-125 A 625,625 0 0,1 500,1125 A 625,625 0 0,1 500,-125 A 625,625 0 0,1 500,1125 A 625,625 0 0,1 499.99,-125"
-//           />
-//           <path
-//             id="wheelloader-orbit-4"
-//             d="M 500,-50 A 550,550 0 0,1 500,1050 A 550,550 0 0,1 500,-50 A 550,550 0 0,1 500,1050 A 550,550 0 0,1 500,-50 A 550,550 0 0,1 500,1050 A 550,550 0 0,1 499.99,-50"
-//           />
-//           <path
-//             id="wheelloader-orbit-5"
-//             d="M 500,25 A 475,475 0 0,1 500,975 A 475,475 0 0,1 500,25 A 475,475 0 0,1 500,975 A 475,475 0 0,1 500,25 A 475,475 0 0,1 500,975 A 475,475 0 0,1 499.99,25"
-//           />
-//           <path
-//             id="wheelloader-orbit-6"
-//             d="M 500,100 A 400,400 0 0,1 500,900 A 400,400 0 0,1 500,100 A 400,400 0 0,1 500,900 A 400,400 0 0,1 500,100 A 400,400 0 0,1 500,900 A 400,400 0 0,1 499.99,100"
-//           />
-//           <path
-//             id="wheelloader-orbit-7"
-//             d="M 500,175 A 325,325 0 0,1 500,825 A 325,325 0 0,1 500,175 A 325,325 0 0,1 500,825 A 325,325 0 0,1 500,175 A 325,325 0 0,1 500,825 A 325,325 0 0,1 499.99,175"
-//           />
-//           <path
-//             id="wheelloader-orbit-8"
-//             d="M 500,250 A 250,250 0 0,1 500,750 A 250,250 0 0,1 500,250 A 250,250 0 0,1 500,750 A 250,250 0 0,1 500,250 A 250,250 0 0,1 500,750 A 250,250 0 0,1 499.99,250"
-//           />
-//           <text className="orbit-text">
-//             <textPath
-//               href="#wheelloader-orbit-1"
-//               startOffset="30%"
-//               textLength="280"
-//             >
-//               Shop
-//             </textPath>
-//           </text>
-//           <text className="orbit-text">
-//             <textPath
-//               href="#wheelloader-orbit-2"
-//               startOffset="31%"
-//               textLength="270"
-//             >
-//               Your
-//             </textPath>
-//           </text>
-//           <text className="orbit-text">
-//             <textPath
-//               href="#wheelloader-orbit-3"
-//               startOffset="33%"
-//               textLength="300"
-//             >
-//               Smile
-//             </textPath>
-//           </text>
-//           <text className="orbit-text">
-//             <textPath
-//               href="#wheelloader-orbit-4"
-//               startOffset="32%"
-//               textLength="280"
-//             >
-//               Here
-//             </textPath>
-//           </text>
-//           <text className="orbit-text">
-//             <textPath
-//               href="#wheelloader-orbit-5"
-//               startOffset="30%"
-//               textLength="250"
-//             >
-//               Buy
-//             </textPath>
-//           </text>
-//           <text className="orbit-text">
-//             <textPath
-//               href="#wheelloader-orbit-6"
-//               startOffset="31%"
-//               textLength="380"
-//             >
-//               Something
-//             </textPath>
-//           </text>
-//           <text className="orbit-text">
-//             <textPath
-//               href="#wheelloader-orbit-7"
-//               startOffset="33%"
-//               textLength="180"
-//             >
-//               Or
-//             </textPath>
-//           </text>
-//           <text className="orbit-text">
-//             <textPath
-//               href="#wheelloader-orbit-8"
-//               startOffset="32%"
-//               textLength="300"
-//             >
-//               Don't
-//             </textPath>
-//           </text>
-//         </svg>
-
-//         <div className="counter">
-//           <p className="font-canelathin" ref={counterTextRef}>
-//             0
-//           </p>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-// export default Preloader;
-
-const FlameTrail = ({ children }) => {
-  const containerRef = useRef(null);
-  const trailRef = useRef([]);
-  const isSpawningRef = useRef(false);
-  const activeTimeoutsRef = useRef([]);
-
-  const mouseState = useRef({ x: 0, y: 0, lastX: 0, lastY: 0 });
-  const flags = useRef({ isMoving: false, isCursorInContainer: false });
-  const moveTimeoutRef = useRef(null);
-
-  const config = {
-    imageLifespan: 600,
-    removalDelay: 16,
-    inDuration: 600,
-    outDuration: 1200,
-    inEasing: "cubic-bezier(.07,.5,.5,1)",
-    outEasing: "cubic-bezier(.87, 0, .13, 1)",
-    autoSpawnInterval: 5000,
-    autoSpawnImageCount: 12,
-    trailSpacing: 22,
-    staggerDelay: 45,
-    baseImageSize: 160,
-    minImageSize: 60,
-    maxImageSize: 200,
-    mouseThreshold: 40,
-    mobileBreakpoint: 768,
-  };
-
-  const images = [
-    "/images/shop/giftcardmockup.png",
-    "/images/shop/caracarathumb.png",
-    "/images/shop/caracocomockup.png",
-    "/images/shop/zimawhite.png",
-    "/images/shop/blackinviscase.png",
-    "/images/shop/15x12cocomint.png",
-    "/images/shopisopen.png",
-    "/images/shoptest1.png",
-    "/images/dentalwax4.png",
-    "/images/fscards.png",
-    "/images/shop/pinkalignercase.png",
-    "/images/shop/greenalignercase.png",
-    "/images/cardsonpalm.png",
-    "/images/shop/caraorange.png",
-  ];
-
-  let imageIndex = 0;
-  const spawnIntervalRef = useRef(null);
-  const isMobileRef = useRef(false);
-
-  const checkIsMobile = useCallback(() => {
-    return (
-      window.innerWidth <= config.mobileBreakpoint ||
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0
-    );
-  }, []);
-
-  const getRandomPosition = useCallback(() => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return { x: 0, y: 0 };
-    const padding = 60;
-    return {
-      x: rect.left + padding + Math.random() * (rect.width - padding * 2),
-      y: rect.top + padding + Math.random() * (rect.height - padding * 2),
-    };
-  }, []);
-
-  const getEdgeSafePosition = useCallback((x, y, size) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return { x, y };
-    return {
-      x: Math.max(rect.left + size / 2, Math.min(rect.right - size / 2, x)),
-      y: Math.max(rect.top + size / 2, Math.min(rect.bottom - size / 2, y)),
-    };
-  }, []);
-
-  const createImage = useCallback(
-    (
-      x,
-      y,
-      speed = 0.5,
-      customRotation = null,
-      sizeMultiplier = 1,
-      index = 0,
-      totalCount = 1,
-    ) => {
-      const imageSrc = images[imageIndex % images.length];
-      imageIndex = (imageIndex + 1) % images.length;
-
-      const progress = index / totalCount;
-      let size =
-        config.minImageSize +
-        (config.maxImageSize - config.minImageSize) * speed;
-      size = size * sizeMultiplier * (1 - progress * 0.2);
-
-      const img = document.createElement("img");
-      img.className = "trail-img";
-
-      let rot;
-      if (customRotation !== null) {
-        rot =
-          customRotation +
-          Math.sin(progress * Math.PI) * 15 +
-          (Math.random() - 0.5) * 10;
-      } else {
-        const rotFactor = 1 + speed * 3;
-        rot = (Math.random() - 0.5) * 30 * rotFactor;
-      }
-
-      img.src = imageSrc;
-      img.width = img.height = size;
-
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (!rect) return;
-
-      const safePos = getEdgeSafePosition(x, y, size);
-      const left = safePos.x - rect.left;
-      const top = safePos.y - rect.top;
-
-      img.style.cssText = `
-      position: absolute;
-      left: ${left}px;
-      top: ${top}px;
-      transform: translate(-50%, -50%) rotate(${rot}deg) scale(0);
-      transition: transform ${config.inDuration}ms ${config.inEasing};
-      width: ${size}px;
-      height: ${size}px;
-      pointer-events: none;
-      will-change: transform;
-    `;
-
-      containerRef.current.appendChild(img);
-
-      img.offsetHeight;
-      requestAnimationFrame(() => {
-        img.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(1)`;
-      });
-
-      trailRef.current.push({
-        element: img,
-        rotation: rot,
-        removeTime: Date.now() + config.imageLifespan,
-      });
-    },
-    [getEdgeSafePosition],
-  );
-
-  const createAutoFlameTrail = useCallback(() => {
-    if (isSpawningRef.current || !containerRef.current || !isMobileRef.current)
-      return;
-
-    isSpawningRef.current = true;
-    const startPos = getRandomPosition();
-    const directionAngle = Math.random() * Math.PI * 2;
-    const speed = 0.4 + Math.random() * 0.6;
-
-    for (let i = 0; i < config.autoSpawnImageCount; i++) {
-      const distance = i * config.trailSpacing;
-      const curveOffset = Math.sin(i * 0.3) * 12;
-      const perpAngle = directionAngle + Math.PI / 2;
-
-      const timeoutId = setTimeout(() => {
-        const x =
-          startPos.x +
-          Math.cos(directionAngle) * distance +
-          Math.cos(perpAngle) * curveOffset;
-        const y =
-          startPos.y +
-          Math.sin(directionAngle) * distance +
-          Math.sin(perpAngle) * curveOffset;
-        const sizeMultiplier = 1 - (i / config.autoSpawnImageCount) * 0.3;
-        const imageSpeed =
-          speed * (0.6 + (i / config.autoSpawnImageCount) * 0.4);
-        const rotation =
-          directionAngle * (180 / Math.PI) + Math.sin(i * 0.5) * 15;
-
-        createImage(
-          x,
-          y,
-          imageSpeed,
-          rotation,
-          sizeMultiplier,
-          i,
-          config.autoSpawnImageCount,
-        );
-
-        if (i === config.autoSpawnImageCount - 1) {
-          setTimeout(() => {
-            isSpawningRef.current = false;
-          }, 200);
-        }
-      }, i * config.staggerDelay);
-      activeTimeoutsRef.current.push(timeoutId);
-    }
-  }, [getRandomPosition, createImage]);
-
-  // Desktop: Cursor trail
-  const createCursorTrail = useCallback(() => {
-    if (
-      !flags.current.isCursorInContainer ||
-      !flags.current.isMoving ||
-      isMobileRef.current
-    )
-      return;
-
-    const dx = mouseState.current.x - mouseState.current.lastX;
-    const dy = mouseState.current.y - mouseState.current.lastY;
-    const distance = Math.hypot(dx, dy);
-
-    if (distance > config.mouseThreshold) {
-      const directionAngle = Math.atan2(dy, dx);
-      const speed = Math.min(distance / 50, 1);
-      const trailLength = Math.min(Math.floor(speed * 8), 5);
-
-      for (let i = 0; i < trailLength; i++) {
-        const timeoutId = setTimeout(() => {
-          const backX = mouseState.current.x - dx * (i * 0.15);
-          const backY = mouseState.current.y - dy * (i * 0.15);
-          const imageSpeed = speed * (1 - i * 0.1);
-          const rotation =
-            directionAngle * (180 / Math.PI) + (Math.random() - 0.5) * 30;
-          const sizeMultiplier = 1 - i * 0.1;
-
-          createImage(
-            backX,
-            backY,
-            imageSpeed,
-            rotation,
-            sizeMultiplier,
-            i,
-            trailLength,
-          );
-        }, i * config.staggerDelay);
-        activeTimeoutsRef.current.push(timeoutId);
-      }
-
-      mouseState.current.lastX = mouseState.current.x;
-      mouseState.current.lastY = mouseState.current.y;
-    }
-  }, [createImage]);
-
-  const removeOldImages = useCallback(() => {
-    const now = Date.now();
-    while (
-      trailRef.current.length > 0 &&
-      now >= trailRef.current[0].removeTime
-    ) {
-      const imgObj = trailRef.current.shift();
-      if (imgObj.element && imgObj.element.parentNode) {
-        imgObj.element.style.transition = `transform ${config.outDuration}ms ${config.outEasing}`;
-        imgObj.element.style.transform = `translate(-50%, -50%) rotate(${imgObj.rotation + 360}deg) scale(0)`;
-        setTimeout(() => imgObj.element.remove(), config.outDuration);
-      }
-    }
-  }, []);
-
-  const setupForDesktop = useCallback(() => {
-    if (!containerRef.current) return;
-
-    const handleMouseMove = (e) => {
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (!rect) return;
-
-      mouseState.current.x = e.clientX;
-      mouseState.current.y = e.clientY;
-      flags.current.isCursorInContainer =
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom;
-
-      if (flags.current.isCursorInContainer) {
-        flags.current.isMoving = true;
-        clearTimeout(moveTimeoutRef.current);
-        moveTimeoutRef.current = setTimeout(() => {
-          flags.current.isMoving = false;
-        }, 100);
-      }
-    };
-
-    document.addEventListener("mousemove", handleMouseMove);
-    return () => document.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  const setupForMobile = useCallback(() => {
-    if (spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
-
-    setTimeout(() => createAutoFlameTrail(), 500);
-    spawnIntervalRef.current = setInterval(
-      createAutoFlameTrail,
-      config.autoSpawnInterval,
-    );
-  }, [createAutoFlameTrail]);
-
-  const handleResize = useCallback(() => {
-    const wasMobile = isMobileRef.current;
-    const isNowMobile = checkIsMobile();
-
-    if (wasMobile !== isNowMobile) {
-      isMobileRef.current = isNowMobile;
-
-      trailRef.current.forEach((t) => t.element?.remove());
-      trailRef.current = [];
-      activeTimeoutsRef.current.forEach(clearTimeout);
-      activeTimeoutsRef.current = [];
-      isSpawningRef.current = false;
-
-      if (spawnIntervalRef.current) {
-        clearInterval(spawnIntervalRef.current);
-        spawnIntervalRef.current = null;
-      }
-
-      if (isNowMobile) {
-        setupForMobile();
-      }
-    }
-  }, [checkIsMobile, setupForMobile]);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    isMobileRef.current = checkIsMobile();
-    const cleanupDesktop = setupForDesktop();
-
-    if (isMobileRef.current) {
-      setupForMobile();
-    }
-
-    window.addEventListener("resize", handleResize);
-
-    let animationId;
-    const animate = () => {
-      if (!isMobileRef.current) {
-        createCursorTrail();
-      }
-      removeOldImages();
-      animationId = requestAnimationFrame(animate);
-    };
-    animate();
-
-    return () => {
-      cleanupDesktop();
-      window.removeEventListener("resize", handleResize);
-      if (spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
-      if (animationId) cancelAnimationFrame(animationId);
-      if (moveTimeoutRef.current) clearTimeout(moveTimeoutRef.current);
-      activeTimeoutsRef.current.forEach(clearTimeout);
-      trailRef.current.forEach((t) => t.element?.remove());
-    };
-  }, [
-    setupForDesktop,
-    setupForMobile,
-    handleResize,
-    createCursorTrail,
-    removeOldImages,
-  ]);
-
-  return (
-    <div ref={containerRef} className="flame-trail-container">
-      {children}
-    </div>
-  );
-};
 function Sky() {
   const ref = useRef();
   const cloud0 = useRef();
-  
-
   const config = {
     seed: 1,
     segments: 20,
@@ -849,12 +158,12 @@ function Sky() {
     growth: 4,
     speed: 0.1,
   };
-  
+
   const color = "white";
   const x = 6;
   const y = 1;
   const z = 1;
-  
+
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
 
@@ -862,7 +171,7 @@ function Sky() {
     ref.current.rotation.x = Math.sin(t * 0.1) * 0.04;
     cloud0.current.rotation.y -= delta * 0.1;
   });
-  
+
   return (
     <>
       <SkyImpl />
@@ -889,20 +198,21 @@ function Sky() {
     </>
   );
 }
+
 CustomEase.create("slideshow-wipe", "0.625, 0.05, 0, 1");
 
 const mobileSlidesData = [
   {
     variantId: 31,
     title: "Ember",
-    subtitle: "Light technology",
+    subtitle: "Ember",
     full: "/images/shop/emberfull.png",
     thumbnail: "/images/shop/embertaketwo.png",
   },
   {
     variantId: 32,
     title: "Cocofloss",
-    subtitle: "Cara Cara Orange",
+    subtitle: "Orange Cocofloss",
     description: "Woven Floss • Citrus",
     full: "/images/shop/caracocomockupfull.png",
     thumbnail: "/images/shop/caracarathumb.png",
@@ -910,7 +220,7 @@ const mobileSlidesData = [
   {
     variantId: 33,
     title: "Cocofloss",
-    subtitle: "Strawberry",
+    subtitle: "Strawberry Cocofloss",
     description: "Woven Floss • Sweet Berry",
     full: "/images/shop/strawberryfull.png",
     thumbnail: "/images/shop/15x12cocostrawberry.png",
@@ -918,7 +228,7 @@ const mobileSlidesData = [
   {
     variantId: 34,
     title: "Cocofloss",
-    subtitle: "Mint",
+    subtitle: "Mint Cocofloss",
     full: "/images/shop/mintflossfull.png",
     description: "Woven Floss • Crisp Mint",
     thumbnail: "/images/shop/mintflossfull.png",
@@ -926,7 +236,7 @@ const mobileSlidesData = [
   {
     variant: null,
     title: "Gift Card",
-    subtitle: "The perfect gift",
+    subtitle: "Gift Card",
     description: "Digital Card • Any Amount",
     full: "/images/shop/giftcardmockupfull.png",
     thumbnail: "/images/giftcardmockup.png",
@@ -934,7 +244,7 @@ const mobileSlidesData = [
   {
     variantId: 43,
     title: "Poladay 9.5%",
-    subtitle: "At-home whitening",
+    subtitle: "Poladay 9.5%",
     full: "/images/shop/poladay95.png",
     description: "Hydrogen Peroxide Whitening",
     thumbnail: "/images/poladaymockup.png",
@@ -942,7 +252,7 @@ const mobileSlidesData = [
   {
     variantId: 44,
     title: "Poladay 35%",
-    subtitle: "Professional strength",
+    subtitle: "Poladay 35%",
     full: "/images/shop/pola35full.png",
     description: "Carbamide Peroxide",
     thumbnail: "/images/shop/pola35full.png",
@@ -950,7 +260,7 @@ const mobileSlidesData = [
   {
     variantId: 37,
     title: "Aligner Cases",
-    subtitle: "Choose your color",
+    subtitle: "Aligner Cases",
     description: "Everyday Case • Color Options",
     full: "/images/shop/whiteinvisscenefull.png",
     thumbnail: "/images/shop/whiteinvisscene.png",
@@ -958,58 +268,13 @@ const mobileSlidesData = [
   {
     variantId: 41,
     title: "Zima Dental Pod",
-    subtitle: "Daily Clean • Ultrasonic",
+    subtitle: "Dental Pod",
     description: "A cleaner routine",
     full: "/images/shop/zimawhitefull.png",
     thumbnail: "/images/shop/zimawhitefull.png",
   },
 ];
 
-const LiquidGrid = () => {
-  const gridRange = 8;
-  const rotations = [-270, -180, -90, 0, 90, 180, 270];
-
-  const boxes = useMemo(() => {
-    const totalBoxes = gridRange * gridRange;
-    return Array.from({ length: totalBoxes }, () => ({
-      delay: Math.floor(Math.random() * 5000),
-      rotation: rotations[Math.floor(Math.random() * rotations.length)],
-    }));
-  }, [gridRange, rotations]);
-
-  return (
-    <>
-      <div
-        className="liquid-grid-container"
-        style={
-          {
-            color: "#E6007E",
-            "--grid-range": gridRange,
-            "--grid-size": "40vmin",
-          } as React.CSSProperties
-        }
-      >
-        {boxes.map((box, index) => (
-          <span
-            key={index}
-            className="liquid-grid-cell"
-            style={{
-              "--anim-delay": `-${box.delay}ms`,
-              transform: `rotate(${box.rotation}deg)`,
-            }}
-          />
-        ))}
-      </div>
-
-      <svg className="liquid-grid-svg">
-        <filter id="liquid">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
-          <feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 20 -10" />
-        </filter>
-      </svg>
-    </>
-  );
-};
 const slidesData = [
   {
     variantId: 31,
@@ -1056,7 +321,7 @@ const slidesData = [
     subtitle: "At-home whitening",
     full: "/images/shop/poladay95.png",
     description: "Hydrogen Peroxide Whitening",
-    thumbnail: "/images/poladaymockup.png",
+    thumbnail: "/images/shop/poladay95.png",
   },
   {
     variantId: 44,
@@ -1127,7 +392,7 @@ const slidesData = [
     subtitle: "At-home whitening",
     full: "/images/shop/poladay95.png",
     description: "Hydrogen Peroxide Whitening",
-    thumbnail: "/images/poladaymockup.png",
+    thumbnail: "/images/shop/poladay95.png",
   },
   {
     variantId: 44,
@@ -1198,7 +463,7 @@ const slidesData = [
     subtitle: "At-home whitening",
     full: "/images/shop/poladay95.png",
     description: "Hydrogen Peroxide Whitening",
-    thumbnail: "/images/poladaymockup.png",
+    thumbnail: "/images/shop/poladay95.png",
   },
   {
     variantId: 44,
@@ -1226,13 +491,9 @@ const slidesData = [
   },
 ];
 
-
-
 const CrispLoader = ({ onComplete, slidesData, variants }) => {
-
   if (!variants?.length) {
-    console.warn(
-    );
+    console.warn();
   }
 
   const containerRef = useRef(null);
@@ -1245,7 +506,7 @@ const CrispLoader = ({ onComplete, slidesData, variants }) => {
   const headingContainerRef = useRef(null);
   const splitInstanceRef = useRef(null);
 
-const allSlides = slidesData;
+  const allSlides = slidesData;
   console.log("slides:", allSlides.length);
   const centerIndex = Math.floor(allSlides.length / 2);
 
@@ -1507,6 +768,7 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
   const scrollWrapRef = useRef(null);
   const contentRef = useRef(null);
   const headingRef = useRef(null);
+  const [hoveredId, setHoveredId] = useState(null);
 
   const allSlides = useMemo(() => {
     if (!variants?.length || !slidesData?.length) return [];
@@ -1518,28 +780,31 @@ const ShopContent = ({ isReady, variants, slidesData }) => {
       return { ...slide, variant };
     });
   }, [variants, slidesData]);
-// Add this useEffect to inspect your data
-useEffect(() => {
-  if (variants?.length && slidesData?.length) {
-    console.log("=== VARIANTS DATA ===");
-    console.log(variants);
-    
-    console.log("=== SLIDES DATA ===");
-    slidesData.forEach(slide => {
-      const variant = variants.find(v => v.id === slide.variantId);
-      console.log(`Slide: ${slide.title} (variantId: ${slide.variantId})`);
-      console.log("  - Variant found:", variant);
-      if (variant) {
-        console.log("  - Variant keys:", Object.keys(variant));
-        console.log("  - Variant images:", variant.images || variant.image || variant.thumbnail || variant.full);
-      }
-    });
-  }
-}, [variants, slidesData]);
 
+  useEffect(() => {
+    if (variants?.length && slidesData?.length) {
+      console.log("=== VARIANTS DATA ===");
+      console.log(variants);
 
+      console.log("=== SLIDES DATA ===");
+      slidesData.forEach((slide) => {
+        const variant = variants.find((v) => v.id === slide.variantId);
+        console.log(`Slide: ${slide.title} (variantId: ${slide.variantId})`);
+        console.log("  - Variant found:", variant);
+        if (variant) {
+          console.log("  - Variant keys:", Object.keys(variant));
+          console.log(
+            "  - Variant images:",
+            variant.images ||
+              variant.image ||
+              variant.thumbnail ||
+              variant.full,
+          );
+        }
+      });
+    }
+  }, [variants, slidesData]);
 
-  // Create triple array once for all strips
   const stripSlides = useMemo(() => {
     if (!allSlides.length) return [];
     return [...allSlides, ...allSlides, ...allSlides];
@@ -1724,7 +989,6 @@ useEffect(() => {
     ScrollTrigger.refresh();
   }, [isReady, measureScrub, applyScrubProgress, allSlides.length]);
 
-
   useLayoutEffect(() => {
     if (!isReady) return;
     const timer = setTimeout(() => {
@@ -1763,18 +1027,7 @@ useEffect(() => {
   }, []);
 
 
-const [hoveredId, setHoveredId] = useState(null);
 
-const getCurrentImage = (slide) => {
-  const images = slide.variant?.variantImages;
-
-  if (!images?.length) return slide.thumbnail;
-
-  if (hoveredId === slide.variantId && images[1]) {
-    return images[1].url;
-  }
-  return images[0].url;
-};
 
   const handleThumbClick = (slide) => {
     if (!slide.variant) return;
@@ -1782,6 +1035,24 @@ const getCurrentImage = (slide) => {
   };
 
   if (!isReady || !allSlides.length) return null;
+  const textPathRef = useRef(null);
+
+  useEffect(() => {
+    if (!textPathRef.current) return;
+
+    gsap.to(textPathRef.current, {
+      attr: { startOffset: "100%" },
+      duration: 10,
+      ease: "none",
+      repeat: -1,
+      modifiers: {
+        startOffset: (value) => {
+          const num = parseFloat(value);
+          return (num % 100) + "%";
+        },
+      },
+    });
+  }, []);
 
   return (
     <div
@@ -1799,128 +1070,122 @@ const getCurrentImage = (slide) => {
       >
         <div className="crisp-header__border-wrapper">
           <div ref={contentRef} className="crisp-header__content">
-                <section className="relative flex items-end justify-end py-2">
-                        <div
-  className="
-    relative
-    w-[18vw]
-    h-[45vh]
-    z-10 
-  "
->
-  <a href="https://www.amazon.com/hz/wishlist/ls/3H5ZN3KIOODT1?ref_=wl_share" target="_blank" rel="noopener noreferrer">
-  <svg 
-  style={{ 
-    position: 'absolute', 
-    top: 0, 
-    left: 0, 
-    width: '100%', 
-    height: '100%',
+            <section className="relative flex items-end justify-end">
+              <div className="relative w-[18vw] aspect-[1/1] mt-10">
+                <a
+                  href="https://www.amazon.com/hz/wishlist/ls/3H5ZN3KIOODT1?ref_=wl_share"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg
+                    className="absolute inset-0 w-full h-full"
+                    viewBox="0 0 356 356"
+                    >
+                    <defs>
+                      <mask
+                        id="customShape"
+                        maskUnits="userSpaceOnUse"
+                        maskContentUnits="userSpaceOnUse"
+                      >
+                        <rect width="100%" height="100%" fill="black" />
+                        <g transform="translate(128 128)  translate(-128 -128)">
+                          <path
+                            d="M 65.025 143.01 C 70.813 165.5 88.518 183.205 111.008 188.993 L 111.008 254.018 C 53.108 246.796 7.22 200.909 0 143.01 Z 
+             M 254.016 143.01 C 246.796 200.909 200.907 246.798 143.008 254.018 L 143.008 188.993 C 165.498 183.205 183.203 165.5 188.991 143.01 Z 
+             M 127.008 111.01 C 135.845 111.01 143.008 118.173 143.008 127.01 C 143.008 135.847 135.845 143.01 127.008 143.01 C 118.171 143.01 111.008 135.847 111.008 127.01 C 111.008 118.173 118.171 111.01 127.008 111.01 Z 
+             M 111.008 65.026 C 88.518 70.814 70.813 88.52 65.025 111.01 L 0 111.01 C 7.22 53.11 53.109 7.221 111.008 0.001 Z 
+             M 143.008 0 C 200.907 7.221 246.796 53.111 254.016 111.01 L 188.991 111.01 C 183.203 88.52 165.498 70.814 143.008 65.026 Z"
+                            fill="white"
+                          />
+                        </g>
+                      </mask>
+                    </defs>
 
-    zIndex: 5
-  }}
-  viewBox="0 0 256 256"
->
-  <defs>
-    <mask id="customShape">
-      <path 
-        d="M 65.025 143.01 C 70.813 165.5 88.518 183.205 111.008 188.993 L 111.008 254.018 C 53.108 246.796 7.22 200.909 0 143.01 Z M 254.016 143.01 C 246.796 200.909 200.907 246.798 143.008 254.018 L 143.008 188.993 C 165.498 183.205 183.203 165.5 188.991 143.01 Z M 127.008 111.01 C 135.845 111.01 143.008 118.173 143.008 127.01 C 143.008 135.847 135.845 143.01 127.008 143.01 C 118.171 143.01 111.008 135.847 111.008 127.01 C 111.008 118.173 118.171 111.01 127.008 111.01 Z M 111.008 65.026 C 88.518 70.814 70.813 88.52 65.025 111.01 L 0 111.01 C 7.22 53.11 53.109 7.221 111.008 0.001 Z M 143.008 0 C 200.907 7.221 246.796 53.111 254.016 111.01 L 188.991 111.01 C 183.203 88.52 165.498 70.814 143.008 65.026 Z" 
-        fill="white"
-      />
-    </mask>
-    
+                    <foreignObject
+                      width="100%"
+                      height="100%"
+                      mask="url(#customShape)"
+                
+                    >
+                      <div className="w-[100vw] h-[100vh]" >
+                        <Canvas
+                          style={{ pointerEvents: "none" }}
+                          camera={{ position: [0, -10, 10], fov: 75 }}
+                        >
+                       
+                          <Sky />
+                          <ambientLight intensity={Math.PI / 1.5} />
+                          <spotLight position={[0, 40, 0]} intensity={100} />
+                          <spotLight
+                            position={[-20, 0, 10]}
+                            color="purple"
+                            intensity={30}
+                          />
+                          <spotLight
+                            position={[20, -10, 10]}
+                            color="red"
+                            intensity={20}
+                          />
+                          <CameraControls />
+                        </Canvas>
+                      </div>
+                    </foreignObject>
+                  </svg>
+      
 
-    <path
-      id="innerCirclePath"
-      d="
-        M 120,75
-        m -47,0
-        a 47,47 0 1,1 94,0
-        a 47,47 0 1,1 -94,0
-      "
-    />
-  </defs>
-  
-  <text
-    fill="black"
-    fontSize="10"
-    letterSpacing="2"
-    fontFamily="KHTekaTrial-Light"
-  >
-    <textPath
-      href="#innerCirclePath"
-      startOffset="50%"
-      textAnchor="middle"
-    >
-      SHOP • OUR • AMAZON • STOREFRONT •
-    </textPath>
-  </text>
-</svg>
-
-  </a>
-
-  <div
-    className="
-      absolute
-      inset-0
-      overflow-hidden
-    "
-    style={{
-      mask: "url(#customShape)",
-      WebkitMask: "url(#customShape)",
-    }}
-  >
-    <Canvas camera={{ position: [0, -10, 10], fov: 75 }}>
-      <StatsGl />
-      <Sky />
-      <ambientLight intensity={Math.PI / 1.5} />
-      <spotLight
-        position={[0, 40, 0]}
-        decay={0}
-        distance={45}
-        penumbra={1}
-        intensity={100}
-      />
-      <spotLight
-        position={[-20, 0, 10]}
-        color="purple"
-        angle={0.15}
-        decay={0}
-        penumbra={-1}
-        intensity={30}
-      />
-      <spotLight
-        position={[20, -10, 10]}
-        color="red"
-        angle={0.2}
-        decay={0}
-        penumbra={-1}
-        intensity={20}
-      />
-      <CameraControls />
-    </Canvas>
-  </div>
-
-{/* 
-  <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-    <div
-      className="
-        w-full
-        leading-none
-        max-w-[200px]
-        justify-center items-center text-center 
-      "
-    >
-      <h2 className="text-[11px] uppercase tracking-wider font-neuehaas45 mb-3">
-        Shop our Amazon storefront
-      </h2>
-      <p className="text-[14px] opacity-80 font-neuehaas45">
-        link
-      </p>
-    </div>
-  </div> */}
-</div>
-                        </section>
+                <div
+                  className="absolute w-[14vw] aspect-[1/1]"
+                  style={{
+                    top: "31%",
+                    left: "34%",
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                    <div className="absolute w-full h-full ">
+                      {"SHOP • OUR • AMAZON • STOREFRONT • "
+                        .split("")
+                        .map((char, index) => {
+                          const angle =
+                            (index * 360) /
+                            "SHOP • OUR • AMAZON • STOREFRONT • ".length;
+                          return (
+                            <div
+                              key={index}
+                              style={{
+                                position: "absolute",
+                                left: "50%",
+                                top: "50%",
+                                transform: `rotate(${angle}deg) translateY(-50%)`,
+                                transformOrigin: "50% 50%",
+                                animation: `spin 20s linear infinite`,
+                                animationDelay: `${-index * (20 / "SHOP • OUR • AMAZON • STOREFRONT • ".length)}s`,
+                              }}
+                            >
+                              <span className="text-[10px] tracking-[4px] font-['IBMPlexMono-Light']">
+                                {char === " " ? "\u00A0" : char}
+                              </span>
+                            </div>
+                          );
+                        })}
+                    </div>
+     
+                </div>
+   
+                <style>
+                  {`
+    @keyframes spin {
+      from {
+        transform: rotate(0deg) translateY(-36px);
+      }
+      to {
+        transform: rotate(360deg) translateY(-36px);
+      }
+    }
+  `}
+                </style>
+                       </a>
+              </div>
+            </section>
             <div className="crisp-header__center">
               <div className="vertical-copy">
                 <div className="vertical-copy__group vertical-copy__group--top">
@@ -1970,57 +1235,59 @@ const getCurrentImage = (slide) => {
                     className="crisp-header__slider-nav crisp-header__slider-nav--left"
                     ref={sliderNavLeftRef}
                   >
-{leftStripSlides.map((slide, idx) => {
-  if (!slide) {
-    return (
-      <div
-        key={`left-empty-${idx}`}
-        className="crisp-header__slider-nav-btn is--placeholder"
-      />
-    );
-  }
+                    {leftStripSlides.map((slide, idx) => {
+                      if (!slide) {
+                        return (
+                          <div
+                            key={`left-empty-${idx}`}
+                            className="crisp-header__slider-nav-btn is--placeholder"
+                          />
+                        );
+                      }
 
-  const images = slide.variant?.variantImages || [];
-  const base = images[0]?.url || slide.thumbnail;
-  const hover = images[1]?.url;
-  const isHovered = hoveredId === slide.variantId;
+                      const images = slide.variant?.variantImages || [];
+                      const base = slide.thumbnail;
+                      const hover = images[1]?.url;
+                      const isHovered = hoveredId === slide.variantId;
 
-  return (
-    <Link
-      key={`left-${slide.id}-${idx}`}
-      href={`/shop/products/${slide.variant?.id}`}
-className="relative w-[min(220px,20vw)] h-[min(220px,20vw)] flex-shrink-0 overflow-hidden"
-      onMouseEnter={() => setHoveredId(slide.variantId)}
-      onMouseLeave={() => setHoveredId(null)}
-    >
+                      return (
+                        <Link
+                          key={`left-${slide.id}-${idx}`}
+                          href={`/shop/products/${slide.variant?.id}`}
+                          className="relative w-[min(220px,20vw)] h-[min(220px,20vw)] flex-shrink-0 overflow-hidden"
+                          onMouseEnter={() => setHoveredId(slide.variantId)}
+                          onMouseLeave={() => setHoveredId(null)}
+                        >
+                          <div className="absolute inset-0 overflow-hidden">
+                            <img
+                              src={base}
+                              alt={slide.alt || slide.title}
+                              className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                              style={{
+                                opacity: isHovered ? 0 : 1,
+                                transform: isHovered
+                                  ? "scale(1.05)"
+                                  : "scale(1)",
+                              }}
+                            />
 
-      <div className="absolute inset-0 overflow-hidden">
-        
-        <img
-          src={base}
-          alt={slide.alt || slide.title}
-          className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
-          style={{
-            opacity: isHovered ? 0 : 1,
-            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-          }}
-        />
-
-        {hover && (
-          <img
-            src={hover}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
-            style={{
-              opacity: isHovered ? 1 : 0,
-              transform: isHovered ? 'scale(1)' : 'scale(1.05)',
-            }}
-          />
-        )}
-      </div>
-    </Link>
-  );
-})}
+                            {hover && (
+                              <img
+                                src={hover}
+                                alt=""
+                                className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
+                                style={{
+                                  opacity: isHovered ? 1 : 0,
+                                  transform: isHovered
+                                    ? "scale(1)"
+                                    : "scale(1.05)",
+                                }}
+                              />
+                            )}
+                          </div>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -2030,30 +1297,30 @@ className="relative w-[min(220px,20vw)] h-[min(220px,20vw)] flex-shrink-0 overfl
                   <div className="focus-frame">
                     <div className="focus-mask">
                       <div className="focus-strip" ref={focusStripRef}>
-                    { stripSlides.map((slide, idx) => {
-  if (!slide) {
-    return (
-      <div
-        key={`focus-empty-${idx}`}
-        className="focus-item is--placeholder"
-      />
-    );
-  }
+                        {stripSlides.map((slide, idx) => {
+                          if (!slide) {
+                            return (
+                              <div
+                                key={`focus-empty-${idx}`}
+                                className="focus-item is--placeholder"
+                              />
+                            );
+                          }
 
-  return (
-    <Link
-      key={`focus-${slide.id}-${idx}`}
-      href={`/shop/products/${slide.variant?.id}`}
-      className="focus-item"
-      onClick={() => handleThumbClick(slide)}
-    >
-      <img
-        src={slide.thumbnail}
-        alt={slide.alt || slide.title}
-      />
-    </Link>
-  );
-})}
+                          return (
+                            <Link
+                              key={`focus-${slide.id}-${idx}`}
+                              href={`/shop/products/${slide.variant?.id}`}
+                              className="focus-item"
+                              onClick={() => handleThumbClick(slide)}
+                            >
+                              <img
+                                src={slide.thumbnail}
+                                alt={slide.alt || slide.title}
+                              />
+                            </Link>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -2066,20 +1333,60 @@ className="relative w-[min(220px,20vw)] h-[min(220px,20vw)] flex-shrink-0 overfl
                     className="crisp-header__slider-nav crisp-header__slider-nav--right"
                     ref={sliderNavRightRef}
                   >
-                    {rightStripSlides.map((slide, idx) => (
-                      <Link
-                        key={`right-${slide.id}-${idx}`}
-                        href={`/shop/products/${slide.variant?.id}`}
-                        className="crisp-header__slider-nav-btn"
-                        onClick={() => handleThumbClick(slide)}
-                      >
-                        <img
-                          src={slide.thumbnail}
-                          alt={slide.alt || slide.title}
-                          className="crisp-loader__cover-img"
-                        />
-                      </Link>
-                    ))}
+                    {rightStripSlides.map((slide, idx) => {
+                      if (!slide) {
+                        return (
+                          <div
+                            key={`right-empty-${idx}`}
+                            className="crisp-header__slider-nav-btn is--placeholder"
+                          />
+                        );
+                      }
+
+                      const images = slide.variant?.variantImages || [];
+                      const base = slide.thumbnail;
+                      const hover = images[1]?.url;
+                      const isHovered = hoveredId === slide.variantId;
+
+                      return (
+                        <Link
+                          key={`right-${slide.id}-${idx}`}
+                          href={`/shop/products/${slide.variant?.id}`}
+                          className="relative w-[min(220px,20vw)] h-[min(220px,20vw)] flex-shrink-0 overflow-hidden"
+                          onClick={() => handleThumbClick(slide)}
+                          onMouseEnter={() => setHoveredId(slide.variantId)}
+                          onMouseLeave={() => setHoveredId(null)}
+                        >
+                          <div className="absolute inset-0 overflow-hidden">
+                            <img
+                              src={base}
+                              alt={slide.alt || slide.title}
+                              className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                              style={{
+                                opacity: isHovered ? 0 : 1,
+                                transform: isHovered
+                                  ? "scale(1.05)"
+                                  : "scale(1)",
+                              }}
+                            />
+
+                            {hover && (
+                              <img
+                                src={hover}
+                                alt=""
+                                className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
+                                style={{
+                                  opacity: isHovered ? 1 : 0,
+                                  transform: isHovered
+                                    ? "scale(1)"
+                                    : "scale(1.05)",
+                                }}
+                              />
+                            )}
+                          </div>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -2100,6 +1407,11 @@ className="relative w-[min(220px,20vw)] h-[min(220px,20vw)] flex-shrink-0 overfl
                     fill="#0C5EFF"
                   />
                 </svg>
+                {/* <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1780.66 487.5">
+  <g id="Layer_3" data-name="Layer 3">
+    <path d="M1780.66,96v229.09c0,9.55-3.79,18.7-10.54,25.45l-48.92,48.92c-6.75,6.75-15.9,10.54-25.45,10.54h-280.21c-12.73,0-24.94,5.06-33.94,14.06l-49.38,49.38c-9,9-21.21,14.06-33.94,14.06h-295.24c-12.73,0-24.94-5.06-33.94-14.06l-59.38-59.38c-9-9-21.21-14.06-33.94-14.06h-342.1c-8.86,0-17.41,3.27-24.01,9.18l-29.76,26.64c-6.6,5.91-15.15,9.18-24.01,9.18H48C21.46,445-.04,423.45,0,396.91c.21-125.59.42-197.12.63-317.23.02-12.6,5-24.71,13.87-33.67l31.41-31.76C54.93,5.13,67.22,0,80.04,0h755.19c9.99,0,19.68,3.4,27.48,9.64l22.61,18.09c9.93,7.94,22.27,12.27,34.98,12.27h804.36c30.93,0,56,25.07,56,56Z" style={{fill: "#0C5EFF"}}/>
+  </g>
+</svg> */}
                 <span className="scroll-label">SCROLL</span>
               </div>
               <div className="scroll-ticks scroll-ticks--right" />
@@ -2112,23 +1424,16 @@ className="relative w-[min(220px,20vw)] h-[min(220px,20vw)] flex-shrink-0 overfl
 };
 const PreloaderComponent = ({ children, variants }) => {
   const pathname = usePathname();
-  const prevPathRef = useRef(null);
-
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const prev = prevPathRef.current;
+    const hasLoadedShop = sessionStorage.getItem("shop_loaded_once");
+    const isInShop = pathname.startsWith("/shop/products");
 
-    const isInShop = pathname.startsWith("/shop");
-    const cameFromOutside = prev && !prev.startsWith("/shop");
-
-    const firstLoad = prev === null && isInShop;
-
-    if (firstLoad || cameFromOutside) {
+    if (isInShop && !hasLoadedShop) {
       setIsLoading(true);
+      sessionStorage.setItem("shop_loaded_once", "true");
     }
-
-    prevPathRef.current = pathname;
   }, [pathname]);
 
   const handleLoaderComplete = useCallback(() => {
@@ -2158,584 +1463,6 @@ const PreloaderComponent = ({ children, variants }) => {
 };
 export { ShopContent, slidesData };
 
-// function PreloaderMobile() {
-//   const config = {
-//     SCROLL_SPEED: 1.75,
-//     LERP_FACTOR: 0.05,
-//     MAX_VELOCITY: 150,
-//   };
-//   const router = useRouter();
-//   const [isLoading, setIsLoading] = useState(true);
-//   const stripRef = useRef(null);
-//   const itemsRef = useRef([]);
-
-//   const currentPhaseRef = useRef(0);
-//   const totalSlideCount = slidesData.length;
-//   const trackRef = useRef(null);
-//   const animationRef = useRef(null);
-
-//   const stateRef = useRef({
-//     currentX: 0,
-//     targetX: 0,
-//     slideWidth: 315,
-//     isDragging: false,
-//     startX: 0,
-//     lastX: 0,
-//     lastMouseX: 0,
-//     lastScrollTime: Date.now(),
-//     isMoving: false,
-//     velocity: 0,
-//     lastCurrentX: 0,
-//     dragDistance: 0,
-//     hasActuallyDragged: false,
-//   });
-
-//   const [slides, setSlides] = useState([]);
-
-//  const [showSlideshow, setShowSlideshow] = useState(false);
-//   const hasRunRef = useRef(false);
-
-//   useEffect(() => {
-//     if (hasRunRef.current) return;
-//     hasRunRef.current = true;
-//     runAnimation();
-//   }, []);
-
-// const runAnimation = () => {
-//   const strip = stripRef.current;
-//   const items = itemsRef.current;
-
-//   if (!strip || !items.length) return;
-
-//   const tl = gsap.timeline({
-//     defaults: { ease: "power2.out" },
-//     onComplete: () => {
-//       setIsLoading(false);
-//       sessionStorage.setItem("preloaderDone", "true");
-//     },
-//   });
-
-//   tl.fromTo(
-//     strip,
-//     { x: 50 },
-//     {
-//       x: 0,
-//       duration: 0.6,
-//       ease: "none"
-//     },
-//     0
-//   );
-
-//   gsap.set(items, {
-//     yPercent: 40,
-//     xPercent: 0,
-//     opacity: 0,
-//   });
-
-//   tl.to(
-//     items,
-//     {
-//       yPercent: 0,
-//       opacity: 1,
-//       duration: 0.6,
-//       stagger: 0.05,
-//       ease: "power2.out",
-//     },
-//     "-=0.3"
-//   );
-
-//   tl.call(() => {
-//     const state = Flip.getState(items);
-
-//     strip.classList.add("is--horizontal");
-
-//     strip.offsetHeight;
-
-//     Flip.from(state, {
-//       duration: 0.9,
-//       ease: "power3.inOut",
-//       stagger: {
-//         each: 0.05,
-//         from: "start"
-//       },
-//       absolute: true,
-//       nested: true,
-//         onComplete: () => {
-//       setShowSlideshow(true);
-//     }
-//     });
-
-//   }, null, "-=0.2");
-// };
-
-//   useEffect(() => {
-//     const initTextSplit = () => {
-//       const textElements = document.querySelectorAll(
-//         ".gliding-card-col-3 h1, .gliding-card-col-3 p",
-//       );
-
-//       textElements.forEach((element) => {
-//         const split = new SplitText(element, {
-//           type: "lines",
-//           linesClass: "gliding-card-line",
-//         });
-//         split.lines.forEach(
-//           (line) => (line.innerHTML = `<span>${line.textContent}</span>`),
-//         );
-//       });
-//     };
-
-//     initTextSplit();
-
-//     gsap.set(
-//       ".gliding-card-col-3 .gliding-card-col-content-wrapper .gliding-card-line span",
-//       { y: "0%" },
-//     );
-//     gsap.set(
-//       ".gliding-card-col-3 .gliding-card-col-content-wrapper-2 .gliding-card-line span",
-//       { y: "-125%" },
-//     );
-
-//     ScrollTrigger.create({
-//       trigger: ".gliding-card-sticky-cols",
-//       start: "top top",
-//       end: `+=${window.innerHeight * 5}px`,
-//       pin: true,
-//       pinSpacing: true,
-//     });
-
-//     ScrollTrigger.create({
-//       trigger: ".gliding-card-sticky-cols",
-//       start: "top top",
-//       end: `+=${window.innerHeight * 6}px`,
-//       onUpdate: (self) => {
-//         const progress = self.progress;
-
-//         if (progress >= 0.33 && currentPhaseRef.current === 0) {
-//           currentPhaseRef.current = 1;
-
-//           gsap.to(".gliding-card-col-1", {
-//             opacity: 0,
-//             scale: 0.75,
-//             duration: 0.75,
-//           });
-//           gsap.to(".gliding-card-col-2", { x: "0%", duration: 0.75 });
-//           gsap.to(".gliding-card-col-3", { y: "0%", duration: 0.75 });
-
-//           gsap.to(".gliding-card-col-img-1 img", {
-//             scale: 1.25,
-//             duration: 0.75,
-//           });
-//           gsap.to(".gliding-card-col-img-2", {
-//             clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-//             duration: 0.75,
-//           });
-//           gsap.to(".gliding-card-col-img-2 img", { scale: 1, duration: 0.75 });
-//         }
-
-//         if (progress >= 0.66 && currentPhaseRef.current === 1) {
-//           currentPhaseRef.current = 2;
-
-//           gsap.to(".gliding-card-col-2", {
-//             opacity: 0,
-//             scale: 0.75,
-//             duration: 0.75,
-//           });
-//           gsap.to(".gliding-card-col-3", { x: "0%", duration: 0.75 });
-//           gsap.to(".gliding-card-col-4", { y: "0%", duration: 0.75 });
-
-//           gsap.to(
-//             ".gliding-card-col-3 .gliding-card-col-content-wrapper .gliding-card-line span",
-//             {
-//               y: "-125%",
-//               duration: 0.75,
-//             },
-//           );
-//           gsap.to(
-//             ".gliding-card-col-3 .gliding-card-col-content-wrapper-2 .gliding-card-line span",
-//             {
-//               y: "0%",
-//               duration: 0.75,
-//               delay: 0.5,
-//             },
-//           );
-//         }
-
-//         if (progress < 0.33 && currentPhaseRef.current >= 1) {
-//           currentPhaseRef.current = 0;
-
-//           gsap.to(".gliding-card-col-1", {
-//             opacity: 1,
-//             scale: 1,
-//             duration: 0.75,
-//           });
-//           gsap.to(".gliding-card-col-2", { x: "100%", duration: 0.75 });
-//           gsap.to(".gliding-card-col-3", { y: "100%", duration: 0.75 });
-
-//           gsap.to(".gliding-card-col-img-1 img", { scale: 1, duration: 0.75 });
-//           gsap.to(".gliding-card-col-img-2", {
-//             clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
-//             duration: 0.75,
-//           });
-//           gsap.to(".gliding-card-col-img-2 img", {
-//             scale: 1.25,
-//             duration: 0.75,
-//           });
-//         }
-
-//         if (progress < 0.66 && currentPhaseRef.current === 2) {
-//           currentPhaseRef.current = 1;
-
-//           gsap.to(".gliding-card-col-2", {
-//             opacity: 1,
-//             scale: 1,
-//             duration: 0.75,
-//           });
-//           gsap.to(".gliding-card-col-3", { x: "100%", duration: 0.75 });
-//           gsap.to(".gliding-card-col-4", { y: "100%", duration: 0.75 });
-
-//           gsap.to(
-//             ".gliding-card-col-3 .gliding-card-col-content-wrapper .gliding-card-line span",
-//             {
-//               y: "0%",
-//               duration: 0.75,
-//               delay: 0.5,
-//             },
-//           );
-//           gsap.to(
-//             ".gliding-card-col-3 .gliding-card-col-content-wrapper-2 .gliding-card-line span",
-//             {
-//               y: "-125%",
-//               duration: 0.75,
-//             },
-//           );
-//         }
-//       },
-//     });
-
-//     return () => {
-//       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-//     };
-//   }, []);
-
-//   const createSlideElement = useCallback(
-//     (index) => {
-//       const dataIndex = index % totalSlideCount;
-//       const slideData = slidesData[dataIndex];
-
-//       return (
-// <div
-//   key={index}
-//   className="slide-container rounded-full"
-//   style={{ width: "315px", height: "450px" }}
-//   onMouseUp={(e) => {
-//     if (
-//       stateRef.current.dragDistance < 10 &&
-//       !stateRef.current.hasActuallyDragged
-//     ) {
-//       const id = slideData.variantId;
-
-//       if (!id) {
-//         console.warn("no variant", slideData);
-//         return;
-//       }
-
-//       router.push(`/shop/products/${id}`);
-//     }
-//   }}
-// >
-// <div className="slide-image">
-//   <div className="slide-image-inner">
-//     <img src={slideData.full} alt={slideData.title} />
-//   </div>
-// </div>
-//           <div className="slide-caption">
-
-//             <p className="slide-caption-title">{slideData.title}</p>
-
-//           </div>
-//         </div>
-//       );
-//     },
-//     [totalSlideCount],
-//   );
-
-//   const initializeSlides = useCallback(() => {
-//     const copies = 6;
-//     const totalSlides = totalSlideCount * copies;
-//     const newSlides = [];
-
-//     for (let i = 0; i < totalSlides; i++) {
-//       newSlides.push(createSlideElement(i));
-//     }
-
-//     const startOffset = -(totalSlideCount * 315 * 2);
-
-//     stateRef.current.currentX = startOffset;
-//     stateRef.current.targetX = startOffset;
-
-//     setSlides(newSlides);
-//   }, [createSlideElement, totalSlideCount]);
-
-//   const updateSlidePositions = useCallback(() => {
-//     if (!trackRef.current) return;
-
-//     const sequenceWidth = 315 * totalSlideCount;
-//     let newCurrentX = stateRef.current.currentX;
-//     let newTargetX = stateRef.current.targetX;
-
-//     if (newCurrentX > -sequenceWidth * 1) {
-//       newCurrentX -= sequenceWidth;
-//       newTargetX -= sequenceWidth;
-//       stateRef.current.currentX = newCurrentX;
-//       stateRef.current.targetX = newTargetX;
-//     } else if (newCurrentX < -sequenceWidth * 4) {
-//       newCurrentX += sequenceWidth;
-//       newTargetX += sequenceWidth;
-//       stateRef.current.currentX = newCurrentX;
-//       stateRef.current.targetX = newTargetX;
-//     }
-
-//     trackRef.current.style.transform = `translate3d(${stateRef.current.currentX}px, 0, 0)`;
-//   }, [totalSlideCount]);
-
-//   const updateParallax = useCallback(() => {
-//     const viewportCenter = window.innerWidth / 2;
-//     const slideElements = trackRef.current?.children;
-
-//     if (!slideElements) return;
-
-//     Array.from(slideElements).forEach((slide) => {
-//       const img = slide.querySelector("img");
-//       if (!img) return;
-
-//       const slideRect = slide.getBoundingClientRect();
-
-//       if (slideRect.right < -500 || slideRect.left > window.innerWidth + 500) {
-//         return;
-//       }
-
-//       const slideCenter = slideRect.left + slideRect.width / 2;
-//       const distanceFromCenter = slideCenter - viewportCenter;
-//       const parallaxOffset = distanceFromCenter * -0.25;
-
-//       img.style.transform = `translateX(${parallaxOffset}px) scale(2.25)`;
-//     });
-//   }, []);
-
-//   const updateMovingState = useCallback(() => {
-//     const velocity = Math.abs(
-//       stateRef.current.currentX - stateRef.current.lastCurrentX,
-//     );
-//     const isSlowEnough = velocity < 0.1;
-//     const hasBeenStillLongEnough =
-//       Date.now() - stateRef.current.lastScrollTime > 200;
-//     const isMoving =
-//       stateRef.current.hasActuallyDragged ||
-//       !isSlowEnough ||
-//       !hasBeenStillLongEnough;
-
-//     document.documentElement.style.setProperty(
-//       "--slider-moving",
-//       isMoving ? "1" : "0",
-//     );
-
-//     stateRef.current.velocity = velocity;
-//     stateRef.current.lastCurrentX = stateRef.current.currentX;
-//     stateRef.current.isMoving = isMoving;
-//   }, []);
-
-//   const animate = useCallback(() => {
-//     stateRef.current.currentX +=
-//       (stateRef.current.targetX - stateRef.current.currentX) *
-//       config.LERP_FACTOR;
-
-//     updateMovingState();
-//     updateSlidePositions();
-//     updateParallax();
-
-//     animationRef.current = requestAnimationFrame(animate);
-//   }, [updateMovingState, updateSlidePositions, updateParallax]);
-
-//   const handleWheel = useCallback((e) => {
-//     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-//       return;
-//     }
-
-//     e.preventDefault();
-//     const scrollDelta = e.deltaY * config.SCROLL_SPEED;
-//     const delta = Math.max(
-//       Math.min(scrollDelta, config.MAX_VELOCITY),
-//       -config.MAX_VELOCITY,
-//     );
-
-//     stateRef.current.targetX -= delta;
-//     stateRef.current.lastScrollTime = Date.now();
-//   }, []);
-
-//   const handleTouchStart = useCallback((e) => {
-//     stateRef.current.isDragging = true;
-//     stateRef.current.startX = e.touches[0].clientX;
-//     stateRef.current.lastX = stateRef.current.targetX;
-//     stateRef.current.dragDistance = 0;
-//     stateRef.current.hasActuallyDragged = false;
-//     stateRef.current.lastScrollTime = Date.now();
-//   }, []);
-
-//   const handleTouchMove = useCallback((e) => {
-//     if (!stateRef.current.isDragging) return;
-
-//     const deltaX = (e.touches[0].clientX - stateRef.current.startX) * 1.5;
-//     const newDragDistance = Math.abs(deltaX);
-
-//     stateRef.current.targetX = stateRef.current.lastX + deltaX;
-//     stateRef.current.dragDistance = newDragDistance;
-//     if (newDragDistance > 5) {
-//       stateRef.current.hasActuallyDragged = true;
-//     }
-//     stateRef.current.lastScrollTime = Date.now();
-//   }, []);
-
-//   const handleTouchEnd = useCallback(() => {
-//     stateRef.current.isDragging = false;
-//     setTimeout(() => {
-//       stateRef.current.hasActuallyDragged = false;
-//     }, 100);
-//   }, []);
-
-//   const handleMouseDown = useCallback((e) => {
-//     e.preventDefault();
-//     stateRef.current.isDragging = true;
-//     stateRef.current.startX = e.clientX;
-//     stateRef.current.lastMouseX = e.clientX;
-//     stateRef.current.lastX = stateRef.current.targetX;
-//     stateRef.current.dragDistance = 0;
-//     stateRef.current.hasActuallyDragged = false;
-//     stateRef.current.lastScrollTime = Date.now();
-//   }, []);
-
-//   const handleMouseMove = useCallback((e) => {
-//     if (!stateRef.current.isDragging) return;
-
-//     e.preventDefault();
-//     const deltaX = (e.clientX - stateRef.current.lastMouseX) * 2;
-//     const newDragDistance = stateRef.current.dragDistance + Math.abs(deltaX);
-
-//     stateRef.current.targetX += deltaX;
-//     stateRef.current.lastMouseX = e.clientX;
-//     stateRef.current.dragDistance = newDragDistance;
-//     if (newDragDistance > 5) {
-//       stateRef.current.hasActuallyDragged = true;
-//     }
-//     stateRef.current.lastScrollTime = Date.now();
-//   }, []);
-
-//   const handleMouseUp = useCallback(() => {
-//     stateRef.current.isDragging = false;
-//     setTimeout(() => {
-//       stateRef.current.hasActuallyDragged = false;
-//     }, 100);
-//   }, []);
-
-//   const handleResize = useCallback(() => {
-//     initializeSlides();
-//   }, [initializeSlides]);
-
-//   useEffect(() => {
-//     if (!showSlideshow) return;
-
-//     initializeSlides();
-//     animationRef.current = requestAnimationFrame(animate);
-
-//     return () => {
-//       if (animationRef.current) cancelAnimationFrame(animationRef.current);
-//     };
-//   }, [showSlideshow, initializeSlides, animate]);
-//   useEffect(() => {
-//     const slider = document.querySelector(".slider");
-//     if (!slider) return;
-
-//     slider.addEventListener("wheel", handleWheel, { passive: false });
-//     slider.addEventListener("touchstart", handleTouchStart);
-//     slider.addEventListener("touchmove", handleTouchMove);
-//     slider.addEventListener("touchend", handleTouchEnd);
-//     slider.addEventListener("mousedown", handleMouseDown);
-//     slider.addEventListener("mouseleave", handleMouseUp);
-//     slider.addEventListener("dragstart", (e) => e.preventDefault());
-
-//     window.addEventListener("resize", handleResize);
-//     window.addEventListener("mousemove", handleMouseMove);
-//     window.addEventListener("mouseup", handleMouseUp);
-
-//     return () => {
-//       slider.removeEventListener("wheel", handleWheel);
-//       slider.removeEventListener("touchstart", handleTouchStart);
-//       slider.removeEventListener("touchmove", handleTouchMove);
-//       slider.removeEventListener("touchend", handleTouchEnd);
-//       slider.removeEventListener("mousedown", handleMouseDown);
-//       slider.removeEventListener("mouseleave", handleMouseUp);
-//       slider.removeEventListener("dragstart", (e) => e.preventDefault());
-
-//       window.removeEventListener("resize", handleResize);
-//       window.removeEventListener("mousemove", handleMouseMove);
-//       window.removeEventListener("mouseup", handleMouseUp);
-//     };
-//   }, [
-//     handleWheel,
-//     handleTouchStart,
-//     handleTouchMove,
-//     handleTouchEnd,
-//     handleMouseDown,
-//     handleMouseMove,
-//     handleMouseUp,
-//     handleResize,
-//   ]);
-
-// useEffect(() => {
-//   if (!showSlideshow) return;
-
-//   requestAnimationFrame(() => {
-//     const images = trackRef.current?.querySelectorAll(".slide-image-inner");
-//     if (!images) return;
-
-//     gsap.set(images, { yPercent: 100 });
-
-//     gsap.to(images, {
-//       yPercent: 0,
-//       duration: 1.1,
-//       ease: "power3.out",
-//       stagger: {
-//         each: 0.06,
-//         from: "center",
-//       },
-//     });
-//   });
-
-// }, [showSlideshow]);
-//   return (
-//     <div className="slider">
-//       <section className="mobile-preloader">
-//         <div ref={stripRef} className="mobile-strip">
-//           {slidesData.map((slide, i) => (
-//             <div
-//               key={i}
-//               ref={(el) => (itemsRef.current[i] = el)}
-//               className="mobile-item"
-//             >
-//               <img src={slide.thumbnail} alt={slide.title} />
-//             </div>
-//           ))}
-//         </div>
-//       </section>
-//    {showSlideshow ? (
-//         <div className="slide-track" ref={trackRef}>
-//           {slides}
-//         </div>
-//       ) : null}
-//     </div>
-//   );
-// }
-
 const config = {
   gap: 0.08,
   speed: 0.3,
@@ -2745,135 +1472,85 @@ const config = {
 const PreloaderMobile: React.FC = () => {
   const router = useRouter();
   const activeIndexRef = useRef(0);
+  const currentIndexRef = useRef(0);
+  const arcProgressRef = useRef({ value: 0 });
+  const isStepAnimatingRef = useRef(false);
 
   const spotlightRef = useRef<HTMLElement>(null);
-  const titlesContainerRef = useRef<HTMLDivElement>(null);
-  const imagesContainerRef = useRef<HTMLDivElement>(null);
   const titlesContainerElementRef = useRef<HTMLDivElement>(null);
   const introText1Ref = useRef<HTMLParagraphElement>(null);
   const introText2Ref = useRef<HTMLParagraphElement>(null);
   const spotlightBgImgRef = useRef<HTMLDivElement>(null);
   const spotlightBgImgInnerRef = useRef<HTMLImageElement>(null);
-  const titlesRef = useRef<HTMLDivElement>(null);
   const currentImageIndexRef = useRef(0);
-
-  const [imageElements, setImageElements] = useState<HTMLDivElement[]>([]);
   const isInitializedRef = useRef(false);
-  const listenersRef = useRef<
-    { el: HTMLElement; type: string; handler: EventListener }[]
-  >([]);
+
   const clickStartPosRef = useRef<{
     x: number;
     y: number;
     time: number;
   } | null>(null);
+
   const hasMovedRef = useRef(false);
   const bgTransitionRef = useRef<gsap.core.Timeline | null>(null);
   const isTransitioningRef = useRef(false);
-  const nextImagePreloadedRef = useRef<HTMLImageElement | null>(null);
-  const pendingTransitionRef = useRef<number | null>(null);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
   const ctxRef = useRef<gsap.Context | null>(null);
   const currentTitleRef = useRef<HTMLDivElement>(null);
-  const nextTitleRef = useRef<HTMLDivElement>(null);
+const arcContainerRef = useRef<HTMLDivElement>(null);
+  
   const isAnimatingRef = useRef(false);
   const autoAnimationCompletedRef = useRef(false);
   const autoAnimationTimelineRef = useRef<gsap.core.Timeline | null>(null);
-
   const pendingTitleTransitionRef = useRef<number | null>(null);
+  const backgroundIndexRef = useRef(0);
 
-  const animateTitleChange = (nextIndex: number) => {
-    if (!currentTitleRef.current || !nextTitleRef.current) return;
-    if (activeIndexRef.current === nextIndex) return;
+const animateTitleChange = (nextIndex: number) => {
+  if (!currentTitleRef.current) return;
 
-    const targetIndex = nextIndex;
+  if (isAnimatingRef.current) {
+    pendingTitleTransitionRef.current = nextIndex;
+    return;
+  }
 
-    if (isAnimatingRef.current) {
-      pendingTitleTransitionRef.current = nextIndex;
-      return;
-    }
+  isAnimatingRef.current = true;
 
-    isAnimatingRef.current = true;
+  const el = currentTitleRef.current;
+  const nextTitle = mobileSlidesData[nextIndex].subtitle;
 
-    const currentEl = currentTitleRef.current;
-    const nextEl = nextTitleRef.current;
+  gsap.to(el, {
+    duration: 0.8,
+    ease: "power2.out",
+    scrambleText: {
+      text: nextTitle,
+      chars: "upperCase",
+      speed: 0.6,
+      revealDelay: 0.1,
+        tweenLength: false,
+    },
+    onComplete: () => {
+      activeIndexRef.current = nextIndex;
+      isAnimatingRef.current = false;
 
-    if ((currentEl as any)._gsSplitText) {
-      (currentEl as any)._gsSplitText.revert();
-    }
-    if ((nextEl as any)._gsSplitText) {
-      (nextEl as any)._gsSplitText.revert();
-    }
+      if (pendingTitleTransitionRef.current !== null) {
+        const pending = pendingTitleTransitionRef.current;
+        pendingTitleTransitionRef.current = null;
+        animateTitleChange(pending);
+      }
+    },
+  });
+};
 
-    nextEl.textContent = mobileSlidesData[targetIndex].title;
+    useEffect(() => {
+    ScrollTrigger.normalizeScroll(true);
 
-    const currentSplit = new SplitText(currentEl, { type: "chars" });
-    const nextSplit = new SplitText(nextEl, { type: "chars" });
-
-    gsap.set(nextSplit.chars, { yPercent: 100, opacity: 1 });
-    gsap.set(currentSplit.chars, { yPercent: 0, opacity: 1 });
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        currentSplit.revert();
-        nextSplit.revert();
-
-        currentEl.textContent = "";
-
-        currentEl.textContent = mobileSlidesData[targetIndex].title;
-        nextEl.textContent = "";
-
-        activeIndexRef.current = nextIndex;
-        isAnimatingRef.current = false;
-
-        if (pendingTitleTransitionRef.current !== null) {
-          const pending = pendingTitleTransitionRef.current;
-          pendingTitleTransitionRef.current = null;
-          animateTitleChange(pending);
-        }
-      },
-      onInterrupt: () => {
-        if (currentSplit && !currentSplit.reverted) currentSplit.revert();
-        if (nextSplit && !nextSplit.reverted) nextSplit.revert();
-        isAnimatingRef.current = false;
-      },
-    });
-
-    tl.to(
-      currentSplit.chars,
-      {
-        yPercent: -100,
-        duration: 0.6,
-        ease: "expo.inOut",
-        stagger: 0.02,
-        overwrite: true,
-      },
-      0,
-    );
-
-    tl.to(
-      nextSplit.chars,
-      {
-        yPercent: 0,
-        duration: 0.7,
-        ease: "expo.out",
-        stagger: 0.02,
-        overwrite: true,
-      },
-      0.08,
-    );
-  };
+    return () => {
+      ScrollTrigger.normalizeScroll(false);
+    };
+  }, []);
+  
   useEffect(() => {
     return () => {
-      if (
-        currentTitleRef.current &&
-        (currentTitleRef.current as any)._gsSplitText
-      ) {
-        (currentTitleRef.current as any)._gsSplitText.revert();
-      }
-      if (nextTitleRef.current && (nextTitleRef.current as any)._gsSplitText) {
-        (nextTitleRef.current as any)._gsSplitText.revert();
-      }
 
       pendingTitleTransitionRef.current = null;
 
@@ -2898,21 +1575,7 @@ const PreloaderMobile: React.FC = () => {
         autoAnimationTimelineRef.current.kill();
         autoAnimationTimelineRef.current = null;
       }
-
-      listenersRef.current.forEach(({ el, type, handler }) => {
-        el.removeEventListener(type, handler);
-      });
-      listenersRef.current = [];
-
       ScrollTrigger.refresh(true);
-    };
-  }, []);
-
-  useEffect(() => {
-    ScrollTrigger.normalizeScroll(true);
-
-    return () => {
-      ScrollTrigger.normalizeScroll(false);
     };
   }, []);
 
@@ -2935,17 +1598,6 @@ const PreloaderMobile: React.FC = () => {
     return { x, y };
   };
 
-  const preloadNextImage = (index: number) => {
-    const nextIndex = index + 1;
-    if (nextIndex < mobileSlidesData.length) {
-      const img = new Image();
-      img.src = mobileSlidesData[nextIndex].full;
-      img.onload = () => {
-        nextImagePreloadedRef.current = img;
-      };
-    }
-  };
-
   const smoothTransitionBackground = (
     currentIndex: number,
     nextIndex: number,
@@ -2961,8 +1613,7 @@ const PreloaderMobile: React.FC = () => {
     if (!currentImg || !nextImg || currentIndex === nextIndex) return;
 
     if (isTransitioningRef.current) {
-      pendingTransitionRef.current = nextIndex;
-      return;
+      bgTransitionRef.current?.kill();
     }
 
     console.log(`bg image from ${currentIndex} to ${nextIndex}`);
@@ -2972,8 +1623,7 @@ const PreloaderMobile: React.FC = () => {
     if (bgTransitionRef.current) {
       bgTransitionRef.current.kill();
     }
-
-    nextImg.src = mobileSlidesData[nextIndex].full;
+    nextImg.src = mobileSlidesData[nextIndex % mobileSlidesData.length].full;
 
     gsap.set(nextImg, {
       opacity: 0,
@@ -3006,18 +1656,7 @@ const PreloaderMobile: React.FC = () => {
         });
 
         isTransitioningRef.current = false;
-
-        if (
-          pendingTransitionRef.current !== null &&
-          pendingTransitionRef.current !== nextIndex
-        ) {
-          const pendingIndex = pendingTransitionRef.current;
-          pendingTransitionRef.current = null;
-          smoothTransitionBackground(nextIndex, pendingIndex);
-        } else {
-          pendingTransitionRef.current = null;
-          preloadNextImage(nextIndex);
-        }
+        currentImg.src = nextImg.src;
       },
     });
 
@@ -3092,8 +1731,10 @@ const PreloaderMobile: React.FC = () => {
           gsap.set(spotlightBgImgInnerRef.current, { scale: 1 });
         }
 
-        imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
-
+        imageElementsRef.current.forEach((img) =>
+          gsap.set(img, { opacity: 0 }),
+        );
+applyArcState(arcProgressRef.current.value);
         window.dispatchEvent(new CustomEvent("introComplete"));
       },
     });
@@ -3155,239 +1796,184 @@ const PreloaderMobile: React.FC = () => {
 
     autoAnimationTimelineRef.current = tl;
   };
+  const applyArcState = (progress: number) => {
+    const elements = imageElementsRef.current;
+    const numSlides = elements.length;
+    if (!numSlides) return 0;
 
-  useEffect(() => {
-    if (!imagesContainerRef.current) return;
+    let centeredIndex = 0;
+    let minDist = Infinity;
 
-    if (spotlightBgImgRef.current && spotlightBgImgInnerRef.current) {
-      gsap.set(spotlightBgImgRef.current, { scale: 0, opacity: 0 });
-      gsap.set(spotlightBgImgInnerRef.current, { scale: 1.5 });
-    }
+    elements.forEach((img, index) => {
+      const t = (((progress + index / numSlides) % 1) + 1) % 1;
+      const pos = getBezierPosition(t);
 
-    if (introText1Ref.current && introText2Ref.current) {
-      gsap.set([introText1Ref.current, introText2Ref.current], { opacity: 0 });
-    }
+      const offset = (t - 0.5) * 80;
 
-    if (titlesContainerElementRef.current) {
-      gsap.set(titlesContainerElementRef.current, { opacity: 0 });
-    }
-
-    gsap.set(".spotlight-lines", { opacity: 0 });
-
-    const newImageElements: HTMLDivElement[] = [];
-    const imagesContainer = imagesContainerRef.current;
-
-    if (!imagesContainer) return;
-
-    while (imagesContainer.firstChild) {
-      imagesContainer.removeChild(imagesContainer.firstChild);
-    }
-
-    mobileSlidesData.forEach((item, index) => {
-      const imgWrapper = document.createElement("div");
-      imgWrapper.className = "spotlight-img";
-      imgWrapper.style.cursor = "pointer";
-
-      const handleClick: EventListener = (e) => {
-        if (hasMovedRef.current) {
-          hasMovedRef.current = false;
-          return;
-        }
-
-        const variantId = mobileSlidesData[index].variantId;
-        if (variantId) {
-          handleNavigate(variantId);
-        }
-      };
-
-      imgWrapper.addEventListener("click", handleClick);
-      listenersRef.current.push({
-        el: imgWrapper,
-        type: "click",
-        handler: handleClick,
+      gsap.set(img, {
+        x: pos.x - 100 + offset,
+        y: pos.y - 75,
+        opacity: 1,
       });
 
-      const handleTouchStart: EventListener = (e) => {
-        const touchEvent = e as TouchEvent;
-        clickStartPosRef.current = {
-          x: touchEvent.touches[0].clientX,
-          y: touchEvent.touches[0].clientY,
-          time: Date.now(),
-        };
-        hasMovedRef.current = false;
-      };
+      const dist = Math.abs(t - 0.5);
 
-      imgWrapper.addEventListener("touchstart", handleTouchStart);
-      listenersRef.current.push({
-        el: imgWrapper,
-        type: "touchstart",
-        handler: handleTouchStart,
-      });
-
-      const handleTouchMove: EventListener = (e) => {
-        const touchEvent = e as TouchEvent;
-        if (!clickStartPosRef.current) return;
-        const deltaX = Math.abs(
-          touchEvent.touches[0].clientX - clickStartPosRef.current.x,
-        );
-        const deltaY = Math.abs(
-          touchEvent.touches[0].clientY - clickStartPosRef.current.y,
-        );
-        if (deltaX > 10 || deltaY > 10) hasMovedRef.current = true;
-      };
-
-      imgWrapper.addEventListener("touchmove", handleTouchMove);
-      listenersRef.current.push({
-        el: imgWrapper,
-        type: "touchmove",
-        handler: handleTouchMove,
-      });
-
-      const handleMouseDown: EventListener = (e) => {
-        const mouseEvent = e as MouseEvent;
-        clickStartPosRef.current = {
-          x: mouseEvent.clientX,
-          y: mouseEvent.clientY,
-          time: Date.now(),
-        };
-        hasMovedRef.current = false;
-      };
-
-      imgWrapper.addEventListener("mousedown", handleMouseDown);
-      listenersRef.current.push({
-        el: imgWrapper,
-        type: "mousedown",
-        handler: handleMouseDown,
-      });
-
-      const handleMouseMove: EventListener = (e) => {
-        const mouseEvent = e as MouseEvent;
-        if (!clickStartPosRef.current) return;
-        const deltaX = Math.abs(
-          mouseEvent.clientX - clickStartPosRef.current.x,
-        );
-        const deltaY = Math.abs(
-          mouseEvent.clientY - clickStartPosRef.current.y,
-        );
-        if (deltaX > 10 || deltaY > 10) hasMovedRef.current = true;
-      };
-
-      imgWrapper.addEventListener("mousemove", handleMouseMove);
-      listenersRef.current.push({
-        el: imgWrapper,
-        type: "mousemove",
-        handler: handleMouseMove,
-      });
-
-      const imgElement = document.createElement("img");
-      imgElement.src = item.thumbnail;
-
-      imgWrapper.appendChild(imgElement);
-      imagesContainerRef.current?.appendChild(imgWrapper);
-      newImageElements.push(imgWrapper);
+      if (dist < minDist) {
+        minDist = dist;
+        centeredIndex = index;
+      }
     });
 
-    setImageElements(newImageElements);
-    isInitializedRef.current = true;
+    return centeredIndex;
+  };
 
-    ScrollTrigger.refresh();
+  const syncUIToCenteredIndex = (centeredIndex: number) => {
+    const safeIndex = getSafeIndex(centeredIndex);
+    const prevIndex = backgroundIndexRef.current;
 
-    setTimeout(() => {
-      if (spotlightBgImgRef.current) {
-        gsap.to(spotlightBgImgRef.current, {
-          opacity: 1,
-          duration: 0.7,
-          ease: "none",
-        });
+    if (prevIndex === safeIndex) return;
+
+    backgroundIndexRef.current = safeIndex;
+    currentImageIndexRef.current = safeIndex;
+
+    animateTitleChange(safeIndex);
+    smoothTransitionBackground(prevIndex, safeIndex);
+  };
+
+  const getSafeIndex = (index: number) => {
+    const numSlides = mobileSlidesData.length;
+    return ((index % numSlides) + numSlides) % numSlides;
+  };
+  const transitionToIndex = (nextIndex: number) => {
+    if (isStepAnimatingRef.current) return;
+
+    const numSlides = mobileSlidesData.length;
+    const direction = nextIndex > currentIndexRef.current ? 1 : -1;
+
+    isStepAnimatingRef.current = true;
+    currentIndexRef.current = nextIndex;
+
+    gsap.to(arcProgressRef.current, {
+      value: arcProgressRef.current.value - direction / numSlides,
+      duration: 0.85,
+      ease: "power3.inOut",
+      onUpdate: () => {
+        const centeredIndex = applyArcState(arcProgressRef.current.value);
+        syncUIToCenteredIndex(centeredIndex);
+      },
+      onComplete: () => {
+        const centeredIndex = applyArcState(arcProgressRef.current.value);
+        syncUIToCenteredIndex(centeredIndex);
+        isStepAnimatingRef.current = false;
+      },
+    });
+  };
+useEffect(() => {
+  const bg = spotlightBgImgRef.current;
+  const bgInner = spotlightBgImgInnerRef.current;
+  const arc = arcContainerRef.current;
+
+  if (bg && bgInner) {
+    gsap.set(bg, { scale: 0, opacity: 0 });
+    gsap.set(bgInner, { scale: 1.5 });
+  }
+
+  if (arc) {
+    gsap.set(arc, { opacity: 0 });
+  }
+
+  if (introText1Ref.current && introText2Ref.current) {
+    gsap.set([introText1Ref.current, introText2Ref.current], { opacity: 0 });
+  }
+
+  if (titlesContainerElementRef.current) {
+    gsap.set(titlesContainerElementRef.current, { opacity: 0 });
+  }
+
+
+  requestAnimationFrame(() => {
+    const initialProgress = 0.5;
+
+    arcProgressRef.current.value = initialProgress;
+    const initialCenteredIndex = applyArcState(initialProgress);
+
+    currentIndexRef.current = initialCenteredIndex;
+    activeIndexRef.current = initialCenteredIndex;
+    backgroundIndexRef.current = initialCenteredIndex;
+
+    if (bg) {
+      const currentImg = bg.querySelector(".bg-img.current") as HTMLImageElement;
+      const nextImg = bg.querySelector(".bg-img.next") as HTMLImageElement;
+
+      if (currentImg && nextImg) {
+        currentImg.src = mobileSlidesData[initialCenteredIndex].full;
+        nextImg.src = mobileSlidesData[initialCenteredIndex].full;
       }
+    }
 
-      setTimeout(() => {
-        playAutoIntroAnimation();
-      }, 300);
-    }, 150);
-  }, [router]);
+    if (currentTitleRef.current) {
+      currentTitleRef.current.textContent =
+        mobileSlidesData[initialCenteredIndex].subtitle;
+    }
+  });
 
+  isInitializedRef.current = true;
+
+  const tl = gsap.timeline({ delay: 0.15 });
+
+  tl.to(
+    [bg, arc],
+    {
+      opacity: 1,
+      duration: 0.7,
+      ease: "none",
+    },
+    0
+  );
+
+  tl.fromTo(
+    arc,
+    { scale: 0.98 },
+    { scale: 1, duration: 0.7, ease: "none" },
+    0
+  );
+
+  tl.call(() => {
+    playAutoIntroAnimation();
+  }, [], 0.3);
+
+}, [router]);
+  let lastScrollTime = 0;
+  
   useEffect(() => {
-    if (!isInitializedRef.current || imageElements.length === 0) return;
+    if (!isInitializedRef.current || imageElementsRef.current.length === 0)
+      return;
+    if (!spotlightRef.current) return;
 
-    if (ctxRef.current) ctxRef.current.revert();
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
 
-    const ctx = gsap.context(() => {
-      const numSlides = mobileSlidesData.length;
-      const scrollDistance = window.innerHeight * 80;
+      const now = Date.now();
+      if (now - lastScrollTime < 700) return;
+      lastScrollTime = now;
 
-      const st = ScrollTrigger.create({
-        trigger: spotlightRef.current,
-        start: "top top",
-        end: `+=${scrollDistance}`,
-        pin: true,
-        pinSpacing: true,
-        scrub: 1.3,
-        onUpdate: (self) => {
-          if (!autoAnimationCompletedRef.current) {
-            imageElements.forEach((img) => gsap.set(img, { opacity: 0 }));
-            return;
-          }
+      if (isStepAnimatingRef.current) return;
 
-          const rawProgress = self.progress;
-          const totalProgress = rawProgress * 12;
+      const direction = e.deltaY > 0 ? 1 : -1;
+      transitionToIndex(currentIndexRef.current + direction);
+    };
 
-          let closestIndex = 0;
-          let closestDist = Infinity;
+    const el = spotlightRef.current;
 
-          imageElements.forEach((img, index) => {
-            const t = (((totalProgress + index / numSlides) % 1) + 1) % 1;
-            const pos = getBezierPosition(t);
-
-            const dist = Math.abs(t - 0.5);
-
-            if (dist < closestDist) {
-              closestDist = dist;
-              closestIndex = index;
-            }
-
-            const spread = 80;
-            const offset = (t - 0.5) * spread;
-
-            gsap.set(img, {
-              x: pos.x - 100 + offset,
-              y: pos.y - 75,
-              opacity: 1,
-            });
-          });
-
-          if (activeIndexRef.current !== closestIndex) {
-            animateTitleChange(closestIndex);
-          }
-
-          if (currentImageIndexRef.current !== closestIndex) {
-            smoothTransitionBackground(
-              currentImageIndexRef.current,
-              closestIndex,
-            );
-            currentImageIndexRef.current = closestIndex;
-          }
-
-          const lines =
-            titlesContainerElementRef.current?.querySelectorAll(".line");
-          if (lines) {
-            gsap.set(lines, {
-              opacity: rawProgress > 0.08 && rawProgress < 0.92 ? 1 : 0,
-            });
-          }
-        },
-      });
-
-      scrollTriggerRef.current = st;
-    }, spotlightRef);
-
-    ctxRef.current = ctx;
+    el.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
-      if (ctxRef.current) ctxRef.current.revert();
+      el.removeEventListener("wheel", handleWheel);
     };
-  }, [imageElements]);
+  }, []);
 
+  const imageElementsRef = useRef<HTMLDivElement[]>([]);
+  imageElementsRef.current = [];
   return (
     <>
       <section className="spotlight" ref={spotlightRef}>
@@ -3407,7 +1993,48 @@ const PreloaderMobile: React.FC = () => {
           </div>
         </div>
 
-        <div className="spotlight-images" ref={imagesContainerRef}></div>
+        <div className="spotlight-images" ref={arcContainerRef}>
+          {mobileSlidesData.map((item, index) => (
+            <div
+              key={index}
+              className="spotlight-img"
+              ref={(el) => {
+                if (el) imageElementsRef.current[index] = el;
+              }}
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                if (hasMovedRef.current) {
+                  hasMovedRef.current = false;
+                  return;
+                }
+
+                if (item.variantId) {
+                  handleNavigate(item.variantId);
+                }
+              }}
+              onPointerDown={(e) => {
+                clickStartPosRef.current = {
+                  x: e.clientX,
+                  y: e.clientY,
+                  time: Date.now(),
+                };
+                hasMovedRef.current = false;
+              }}
+              onPointerMove={(e) => {
+                if (!clickStartPosRef.current) return;
+
+                const dx = Math.abs(e.clientX - clickStartPosRef.current.x);
+                const dy = Math.abs(e.clientY - clickStartPosRef.current.y);
+
+                if (dx > 10 || dy > 10) {
+                  hasMovedRef.current = true;
+                }
+              }}
+            >
+              <img src={item.thumbnail} alt="" />
+            </div>
+          ))}
+        </div>
 
         <div className="spotlight-ui">
           <div className="spotlight-intro-text-wrapper">
@@ -3419,19 +2046,29 @@ const PreloaderMobile: React.FC = () => {
             </p>
           </div>
 
-          <div className="spotlight-lines">
-            <div className="line line-left" />
-            <div className="line line-right" />
-            <div className="spotlight-label">Discover</div>
-          </div>
-
           <div className="spotlight-titles-container">
-            <div className="spotlight-mask">
-              <div className="title current" ref={currentTitleRef}>
-                {mobileSlidesData[0]?.title}
+            {[1, 2, 3, 4, 5, 13, 14].map((n) => (
+              <div className="circle-wrap" key={n}>
+                <div className={`circle-${n}`} />
               </div>
-              <div className="title next" ref={nextTitleRef}></div>
+            ))}
+
+            <div className="spotlight-mask">
+
+              <div className="title current" ref={currentTitleRef}>
+                {mobileSlidesData[0]?.subtitle}
+              </div>
+              <div className="title next"  />
             </div>
+                          
+              <div className="shop-ui">
+    <div className="shop-label">SHOP</div>
+    <div className="loading-frame">
+      {[...Array(10)].map((_, index) => (
+        <div key={index} className={`dot dot-${index + 1}`} />
+      ))}
+    </div>
+  </div>
           </div>
         </div>
       </section>
@@ -3439,8 +2076,8 @@ const PreloaderMobile: React.FC = () => {
   );
 };
 
-export default function PreloaderWrapper(props) {
-  const [isMobile, setIsMobile] = useState(false);
+export default function PreloaderWrapper({ children, disablePreloader }) {
+  const [isMobile, setIsMobile] = useState(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768);
@@ -3449,9 +2086,15 @@ export default function PreloaderWrapper(props) {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  if (isMobile === null) return null;
+
   return isMobile ? (
-    <PreloaderMobile {...props} />
+    <PreloaderMobile disablePreloader={disablePreloader}>
+      {children}
+    </PreloaderMobile>
   ) : (
-    <PreloaderComponent {...props} />
+    <PreloaderComponent disablePreloader={disablePreloader}>
+      {children}
+    </PreloaderComponent>
   );
 }

@@ -86,7 +86,7 @@ if (variant) {
 
         {variant.product.description && (
           <div
-            className="[&_*]:!font-neuehaas45 [&_*]:!text-[13px]"
+            className="[&_*]:!font-neuehaas45 [&_*]:!text-[12px]"
             dangerouslySetInnerHTML={{ __html: variant.product.description }}
           />
         )}

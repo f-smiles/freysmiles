@@ -21,7 +21,239 @@ import { SplitText } from 'gsap/SplitText';
 import { AnimatePresence } from "framer-motion";
 
 gsap.registerPlugin(MorphSVGPlugin, ScrollTrigger, ScrambleTextPlugin, SplitText);
+function StormySkyWithLightning() {
+  const groupRef = useRef();
 
+  const rotatingCloudsRef = useRef();
+
+  const ambientRef = useRef();
+
+  const dirRef = useRef();
+
+  const hemiRef = useRef();
+
+  const flashRef = useRef();
+
+  const lightningIntensity = useRef(0);
+
+  const lightningCooldown = useRef(0);
+
+  const stormConfig = useMemo(
+    () => ({
+      seed: 2,
+      segments: 24,
+      volume: 8,
+      opacity: 0.95,
+      fade: 14,
+      growth: 5,
+      speed: 0.12,
+    }),
+
+    [],
+  );
+
+  const random = useMemo(() => {
+  const rand = (min, max) => min + Math.random() * (max - min);
+
+  return {
+    groupRotY: rand(0, Math.PI * 2),
+    groupRotX: rand(-0.2, 0.2),
+
+    mainSeed: Math.random() * 100,
+    secondarySeed: Math.random() * 100,
+    upperSeed: Math.random() * 100,
+
+    offsetX: rand(-1.5, 1.5),
+    offsetY: rand(-0.5, 0.5),
+    offsetZ: rand(-1, 1),
+  };
+}, []);
+
+  useFrame((state, delta) => {
+    const t = state.clock.elapsedTime;
+
+if (groupRef.current) {
+  groupRef.current.rotation.y =
+    random.groupRotY + Math.cos(t * 0.05) * 0.04;
+
+  groupRef.current.rotation.x =
+    random.groupRotX + Math.sin(t * 0.03) * 0.02;
+}
+
+    if (rotatingCloudsRef.current) {
+      rotatingCloudsRef.current.rotation.y -= delta * 0.04;
+    }
+
+
+    lightningCooldown.current -= delta;
+
+    if (lightningCooldown.current <= 0 && Math.random() < 0.015) {
+      lightningIntensity.current = 1;
+
+      lightningCooldown.current = 1.5 + Math.random() * 3.0;
+    }
+
+
+
+    lightningIntensity.current = Math.max(
+      0,
+
+      lightningIntensity.current - delta * 3.2,
+    );
+
+    const flash = lightningIntensity.current;
+
+
+    if (ambientRef.current) {
+      ambientRef.current.intensity = MathUtils.lerp(
+        ambientRef.current.intensity,
+
+        0.18 + flash * 0.35,
+
+        0.12,
+      );
+
+      ambientRef.current.color.lerp(
+        new Color(flash > 0.05 ? "#fff1d6" : "#2a221c"),
+
+        0.12,
+      );
+    }
+
+    if (hemiRef.current) {
+      hemiRef.current.intensity = MathUtils.lerp(
+        hemiRef.current.intensity,
+
+        0.55 + flash * 0.35,
+
+        0.12,
+      );
+
+      hemiRef.current.color.lerp(new Color("#ffe6bf"), 0.1);
+
+      hemiRef.current.groundColor.lerp(new Color("#120d0a"), 0.1); 
+    }
+
+    if (dirRef.current) {
+      dirRef.current.intensity = MathUtils.lerp(
+        dirRef.current.intensity,
+
+        0.3 + flash * 0.2,
+
+        0.12,
+      );
+
+      dirRef.current.color.lerp(new Color("#ffd9a3"), 0.1);
+    }
+
+
+    if (flashRef.current) {
+      flashRef.current.intensity = MathUtils.lerp(
+        flashRef.current.intensity,
+
+        flash * 10,
+
+        0.18,
+      );
+
+      flashRef.current.color.lerp(new Color("#fff5df"), 0.18);
+    }
+  });
+
+  return (
+    <>
+      <color attach="background" args={["#f2e6cf"]} />
+      <fog attach="fog" args={["#e2d4bb", 10, 32]} />
+
+
+      <ambientLight ref={ambientRef} intensity={0.18} color="#2a221c" />
+
+      <hemisphereLight ref={hemiRef} args={["#ffe6bf", "#e9c4ad", 0.55]} />
+
+      <directionalLight
+        ref={dirRef}
+        position={[-6, 8, -4]}
+        intensity={0.3}
+        color="#ffd9a3"
+      />
+
+
+      <pointLight
+        ref={flashRef}
+        position={[1, -1.5, -2]}
+        intensity={0}
+        distance={18}
+        decay={2}
+        color="#fff5df"
+      />
+
+      <group ref={groupRef}>
+
+<Clouds
+  ref={rotatingCloudsRef}
+  {...stormConfig}
+  seed={random.mainSeed}
+  bounds={[8, 2, 8]}
+  position={[
+    random.offsetX * 0.5,
+    -4.7 + random.offsetY,
+    -3 + random.offsetZ,
+  ]}
+  color="#dbd0d0"
+>
+          <Cloud
+            {...stormConfig}
+            bounds={[8, 2, 8]}
+            color="#eadcdc"
+            opacity={0.98}
+          />
+
+          <Cloud
+            concentrate="outside"
+            growth={90}
+            color="#171717"
+            opacity={0.95}
+            seed={0.4}
+            bounds={120}
+            volume={120}
+          />
+        </Clouds>
+
+
+        <Clouds
+       seed={random.secondarySeed}
+          segments={28}
+          volume={7}
+          opacity={0.95}
+          fade={12}
+          growth={5}
+          speed={0.08}
+          bounds={[7, 1.5, 7]}
+        position={[
+  3.5 + random.offsetX,
+  -4.2 + random.offsetY,
+  -4.5 + random.offsetZ,
+]}
+          color="#0d0d0d"
+        />
+
+
+        <Clouds
+       seed={random.upperSeed}
+          segments={26}
+          volume={6}
+          opacity={0.92}
+          fade={10}
+          growth={4}
+          speed={0.06}
+          bounds={[6, 1.2, 5]}
+          position={[2.5, -1.8, -5]}
+          color="#141414"
+        />
+      </group>
+    </>
+  );
+}
 
 extend({ OrbitControls, EffectComposer });
 
@@ -928,6 +1160,280 @@ const [showScheduler, setShowScheduler] = useState(false)
 </div>
 </div> */}
 
+              {/* <div
+                className="
+    relative
+    w-[18vw]
+    h-[45vh]
+    z-10 
+  "
+              >
+                <a
+                  href="https://www.amazon.com/hz/wishlist/ls/3H5ZN3KIOODT1?ref_=wl_share"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      zIndex: 5,
+                    }}
+                    viewBox="0 0 149.835 79"
+                  >
+                    <defs>
+                      <mask id="customShape">
+                        <path
+                          d="M90.375,0h18.98c.275,0,.5,.225,.5,.5v36.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-.98c0-10.21,8.29-18.5,18.5-18.5Z"
+                          fill="white"
+                        />
+                        <path
+                          d="M112.355,0h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5V.5c0-.275,.225-.5,.5-.5Z"
+                          fill="white"
+                        />
+                        <path
+                          d="M72.375,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-18.98c0-.275,.225-.5,.5-.5Z"
+                          fill="white"
+                        />
+                        <path
+                          d="M112.355,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v.98c0,10.21-8.29,18.5-18.5,18.5h-18.98c-.275,0-.5-.225-.5-.5v-36.98c0-.275,.225-.5,.5-.5Z"
+                          fill="white"
+                        />
+                        <path
+                          d="M12.5,0h0c6.9,0,12.5,5.6,12.5,12.5v12c0,.275-.225,.5-.5,.5h-12C5.6,25,0,19.4,0,12.5H0C0,5.6,5.6,0,12.5,0Z"
+                          fill="white"
+                        />
+                        <path
+                          d="M39.685,0h15c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-27c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
+                          fill="white"
+                        />
+                        <path
+                          d="M12.5,27h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5h0c-6.9,0-12.5-5.6-12.5-12.5h0c0-6.9,5.6-12.5,12.5-12.5Z"
+                          fill="white"
+                        />
+                        <path
+                          d="M12.5,54h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5H.5c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
+                          fill="white"
+                        />
+                        <path
+                          d="M27.69,27h12c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-12c-.275,0-.5-.225-.5-.5v-24c0-.275,.225-.5,.5-.5Z"
+                          fill="white"
+                        />
+                      </mask>
+                    </defs>
+                    <rect
+                      width="100%"
+                      height="100%"
+                      fill="transparent"
+                      mask="url(#customShape)"
+                    />
+                  </svg>
+                </a>
+
+                <div
+                  className="
+      absolute
+      inset-0
+      overflow-hidden
+    "
+                  style={{
+                    mask: "url(#customShape)",
+                    WebkitMask: "url(#customShape)",
+                  }}
+                >
+                  <Canvas camera={{ position: [0, -10, 10], fov: 75 }}>
+                    <StatsGl />
+                    <group position={[0, 0, 0]}>
+                      <StormySkyWithLightning />
+                      <ambientLight intensity={Math.PI / 1.5} />
+                      <spotLight
+                        position={[0, 40, 0]}
+                        decay={0}
+                        distance={45}
+                        penumbra={1}
+                        intensity={100}
+                      />
+                      <spotLight
+                        position={[-20, 0, 10]}
+                        color="purple"
+                        angle={0.15}
+                        decay={0}
+                        penumbra={-1}
+                        intensity={30}
+                      />
+                      <spotLight
+                        position={[20, -10, 10]}
+                        color="red"
+                        angle={0.2}
+                        decay={0}
+                        penumbra={-1}
+                        intensity={20}
+                      />
+                    </group>
+                    <CameraControls />
+                  </Canvas>
+                </div>
+              </div> */}
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-15 -15 329.67 188" width="1200" height="686">
+<rect x="-15" y="-15" width="329.67" height="188" fill="#000000"/>
+
+
+<g>
+<path d="M25,0h0C38.8,0,50,11.2,50,25v24c0,.55-.45,1-1,1h-24C11.2,50,0,38.8,0,25H0C0,11.2,11.2,0,25,0Z" fill="#ffffff"/>
+<path d="M25,0h0C38.8,0,50,11.2,50,25v24c0,.55-.45,1-1,1h-24C11.2,50,0,38.8,0,25H0C0,11.2,11.2,0,25,0Z" fill="none" stroke="#00eaff" stroke-width="0.6">
+<animate attributeName="stroke-opacity" values="0.35;0.9;0.35" dur="3s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M25,0h0C38.8,0,50,11.2,50,25v24c0,.55-.45,1-1,1h-24C11.2,50,0,38.8,0,25H0C0,11.2,11.2,0,25,0Z" fill="none" stroke="#00a0d8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="7 93">
+<animate attributeName="stroke-dashoffset" values="7;-93" dur="20s" begin="-1s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M25,0h0C38.8,0,50,11.2,50,25v24c0,.55-.45,1-1,1h-24C11.2,50,0,38.8,0,25H0C0,11.2,11.2,0,25,0Z" fill="none" stroke="#00eaff" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="4 96">
+<animate attributeName="stroke-dashoffset" values="3;-97" dur="20s" begin="-1s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M25,0h0C38.8,0,50,11.2,50,25v24c0,.55-.45,1-1,1h-24C11.2,50,0,38.8,0,25H0C0,11.2,11.2,0,25,0Z" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-dasharray="1.5 98.5">
+<animate attributeName="stroke-dashoffset" values="0;-100" dur="20s" begin="-1s" repeatCount="indefinite"/>
+</path>
+</g>
+
+
+<g>
+<path d="M79.37,0h30C123.17,0,134.38,11.2,134.38,25h0c0,13.8-11.2,25-25,25h-54c-.55,0-1-.45-1-1v-24C54.38,11.2,65.58,0,79.37,0Z" fill="#ffffff"/>
+<path d="M79.37,0h30C123.17,0,134.38,11.2,134.38,25h0c0,13.8-11.2,25-25,25h-54c-.55,0-1-.45-1-1v-24C54.38,11.2,65.58,0,79.37,0Z" fill="none" stroke="#00eaff" stroke-width="0.6">
+<animate attributeName="stroke-opacity" values="0.35;0.9;0.35" dur="3s" begin="-0.7s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M79.37,0h30C123.17,0,134.38,11.2,134.38,25h0c0,13.8-11.2,25-25,25h-54c-.55,0-1-.45-1-1v-24C54.38,11.2,65.58,0,79.37,0Z" fill="none" stroke="#00a0d8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="7 93">
+<animate attributeName="stroke-dashoffset" values="-7;93" dur="20s" begin="-5s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M79.37,0h30C123.17,0,134.38,11.2,134.38,25h0c0,13.8-11.2,25-25,25h-54c-.55,0-1-.45-1-1v-24C54.38,11.2,65.58,0,79.37,0Z" fill="none" stroke="#00eaff" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="4 96">
+<animate attributeName="stroke-dashoffset" values="-3;97" dur="20s" begin="-5s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M79.37,0h30C123.17,0,134.38,11.2,134.38,25h0c0,13.8-11.2,25-25,25h-54c-.55,0-1-.45-1-1v-24C54.38,11.2,65.58,0,79.37,0Z" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-dasharray="1.5 98.5">
+<animate attributeName="stroke-dashoffset" values="0;100" dur="20s" begin="-5s" repeatCount="indefinite"/>
+</path>
+</g>
+
+
+<g>
+<path d="M25,54h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25h0C11.2,104,0,92.8,0,79H0C0,65.2,11.2,54,25,54Z" fill="#ffffff"/>
+<path d="M25,54h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25h0C11.2,104,0,92.8,0,79H0C0,65.2,11.2,54,25,54Z" fill="none" stroke="#00eaff" stroke-width="0.6">
+<animate attributeName="stroke-opacity" values="0.35;0.9;0.35" dur="3s" begin="-1.4s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M25,54h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25h0C11.2,104,0,92.8,0,79H0C0,65.2,11.2,54,25,54Z" fill="none" stroke="#00a0d8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="7 93">
+<animate attributeName="stroke-dashoffset" values="7;-93" dur="20s" begin="-9s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M25,54h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25h0C11.2,104,0,92.8,0,79H0C0,65.2,11.2,54,25,54Z" fill="none" stroke="#00eaff" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="4 96">
+<animate attributeName="stroke-dashoffset" values="3;-97" dur="20s" begin="-9s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M25,54h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25h0C11.2,104,0,92.8,0,79H0C0,65.2,11.2,54,25,54Z" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-dasharray="1.5 98.5">
+<animate attributeName="stroke-dashoffset" values="0;-100" dur="20s" begin="-9s" repeatCount="indefinite"/>
+</path>
+</g>
+
+
+<g>
+<path d="M25,108h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25H1C.45,158,0,157.55,0,157v-24C0,119.2,11.2,108,25,108Z" fill="#ffffff"/>
+<path d="M25,108h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25H1C.45,158,0,157.55,0,157v-24C0,119.2,11.2,108,25,108Z" fill="none" stroke="#00eaff" stroke-width="0.6">
+<animate attributeName="stroke-opacity" values="0.35;0.9;0.35" dur="3s" begin="-2.1s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M25,108h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25H1C.45,158,0,157.55,0,157v-24C0,119.2,11.2,108,25,108Z" fill="none" stroke="#00a0d8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="7 93">
+<animate attributeName="stroke-dashoffset" values="-7;93" dur="20s" begin="-13s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M25,108h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25H1C.45,158,0,157.55,0,157v-24C0,119.2,11.2,108,25,108Z" fill="none" stroke="#00eaff" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="4 96">
+<animate attributeName="stroke-dashoffset" values="-3;97" dur="20s" begin="-13s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M25,108h24c.55,0,1,.45,1,1v24c0,13.8-11.2,25-25,25H1C.45,158,0,157.55,0,157v-24C0,119.2,11.2,108,25,108Z" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-dasharray="1.5 98.5">
+<animate attributeName="stroke-dashoffset" values="0;100" dur="20s" begin="-13s" repeatCount="indefinite"/>
+</path>
+</g>
+
+<g>
+<path d="M55.38,54h24c13.8,0,25,11.2,25,25h0c0,13.8-11.2,25-25,25h-24c-.55,0-1-.45-1-1v-48c0-.55.45-1,1-1Z" fill="#ffffff"/>
+<path d="M55.38,54h24c13.8,0,25,11.2,25,25h0c0,13.8-11.2,25-25,25h-24c-.55,0-1-.45-1-1v-48c0-.55.45-1,1-1Z" fill="none" stroke="#00eaff" stroke-width="0.6">
+<animate attributeName="stroke-opacity" values="0.35;0.9;0.35" dur="3s" begin="-0.3s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M55.38,54h24c13.8,0,25,11.2,25,25h0c0,13.8-11.2,25-25,25h-24c-.55,0-1-.45-1-1v-48c0-.55.45-1,1-1Z" fill="none" stroke="#00a0d8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="7 93">
+<animate attributeName="stroke-dashoffset" values="7;-93" dur="20s" begin="-17s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M55.38,54h24c13.8,0,25,11.2,25,25h0c0,13.8-11.2,25-25,25h-24c-.55,0-1-.45-1-1v-48c0-.55.45-1,1-1Z" fill="none" stroke="#00eaff" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="4 96">
+<animate attributeName="stroke-dashoffset" values="3;-97" dur="20s" begin="-17s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M55.38,54h24c13.8,0,25,11.2,25,25h0c0,13.8-11.2,25-25,25h-24c-.55,0-1-.45-1-1v-48c0-.55.45-1,1-1Z" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-dasharray="1.5 98.5">
+<animate attributeName="stroke-dashoffset" values="0;-100" dur="20s" begin="-17s" repeatCount="indefinite"/>
+</path>
+</g>
+
+
+<g>
+<path d="M180.75,0h37.96c.55,0,1,.45,1,1v73.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-1.96C143.75,16.58,160.33,0,180.75,0Z" fill="#ffffff"/>
+<path d="M180.75,0h37.96c.55,0,1,.45,1,1v73.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-1.96C143.75,16.58,160.33,0,180.75,0Z" fill="none" stroke="#00eaff" stroke-width="0.6">
+<animate attributeName="stroke-opacity" values="0.35;0.9;0.35" dur="3s" begin="-1.7s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M180.75,0h37.96c.55,0,1,.45,1,1v73.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-1.96C143.75,16.58,160.33,0,180.75,0Z" fill="none" stroke="#00a0d8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="7 93">
+<animate attributeName="stroke-dashoffset" values="-7;93" dur="20s" begin="-3s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M180.75,0h37.96c.55,0,1,.45,1,1v73.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-1.96C143.75,16.58,160.33,0,180.75,0Z" fill="none" stroke="#00eaff" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="4 96">
+<animate attributeName="stroke-dashoffset" values="-3;97" dur="20s" begin="-3s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M180.75,0h37.96c.55,0,1,.45,1,1v73.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-1.96C143.75,16.58,160.33,0,180.75,0Z" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-dasharray="1.5 98.5">
+<animate attributeName="stroke-dashoffset" values="0;100" dur="20s" begin="-3s" repeatCount="indefinite"/>
+</path>
+</g>
+
+
+<g>
+<path d="M224.71,0h37.96C283.09,0,299.67,16.58,299.67,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37V1C223.71.45,224.16,0,224.71,0Z" fill="#ffffff"/>
+<path d="M224.71,0h37.96C283.09,0,299.67,16.58,299.67,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37V1C223.71.45,224.16,0,224.71,0Z" fill="none" stroke="#00eaff" stroke-width="0.6">
+<animate attributeName="stroke-opacity" values="0.35;0.9;0.35" dur="3s" begin="-2.4s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M224.71,0h37.96C283.09,0,299.67,16.58,299.67,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37V1C223.71.45,224.16,0,224.71,0Z" fill="none" stroke="#00a0d8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="7 93">
+<animate attributeName="stroke-dashoffset" values="7;-93" dur="20s" begin="-7s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M224.71,0h37.96C283.09,0,299.67,16.58,299.67,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37V1C223.71.45,224.16,0,224.71,0Z" fill="none" stroke="#00eaff" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="4 96">
+<animate attributeName="stroke-dashoffset" values="3;-97" dur="20s" begin="-7s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M224.71,0h37.96C283.09,0,299.67,16.58,299.67,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37V1C223.71.45,224.16,0,224.71,0Z" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-dasharray="1.5 98.5">
+<animate attributeName="stroke-dashoffset" values="0;-100" dur="20s" begin="-7s" repeatCount="indefinite"/>
+</path>
+</g>
+
+
+<g>
+<path d="M144.75,79.96h37.96c20.42,0,37,16.58,37,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-37.96c0-.55.45-1,1-1Z" fill="#ffffff"/>
+<path d="M144.75,79.96h37.96c20.42,0,37,16.58,37,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-37.96c0-.55.45-1,1-1Z" fill="none" stroke="#00eaff" stroke-width="0.6">
+<animate attributeName="stroke-opacity" values="0.35;0.9;0.35" dur="3s" begin="-2.8s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M144.75,79.96h37.96c20.42,0,37,16.58,37,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-37.96c0-.55.45-1,1-1Z" fill="none" stroke="#00a0d8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="7 93">
+<animate attributeName="stroke-dashoffset" values="-7;93" dur="20s" begin="-11s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M144.75,79.96h37.96c20.42,0,37,16.58,37,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-37.96c0-.55.45-1,1-1Z" fill="none" stroke="#00eaff" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="4 96">
+<animate attributeName="stroke-dashoffset" values="-3;97" dur="20s" begin="-11s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M144.75,79.96h37.96c20.42,0,37,16.58,37,37v37.96c0,.55-.45,1-1,1h-37.96c-20.42,0-37-16.58-37-37v-37.96c0-.55.45-1,1-1Z" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-dasharray="1.5 98.5">
+<animate attributeName="stroke-dashoffset" values="0;100" dur="20s" begin="-11s" repeatCount="indefinite"/>
+</path>
+</g>
+
+
+<g>
+<path d="M224.71,79.96h37.96c20.42,0,37,16.58,37,37v1.96c0,20.42-16.58,37-37,37h-37.96c-.55,0-1-.45-1-1v-73.96c0-.55.45-1,1-1Z" fill="#ffffff"/>
+<path d="M224.71,79.96h37.96c20.42,0,37,16.58,37,37v1.96c0,20.42-16.58,37-37,37h-37.96c-.55,0-1-.45-1-1v-73.96c0-.55.45-1,1-1Z" fill="none" stroke="#00eaff" stroke-width="0.6">
+<animate attributeName="stroke-opacity" values="0.35;0.9;0.35" dur="3s" begin="-1.1s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M224.71,79.96h37.96c20.42,0,37,16.58,37,37v1.96c0,20.42-16.58,37-37,37h-37.96c-.55,0-1-.45-1-1v-73.96c0-.55.45-1,1-1Z" fill="none" stroke="#00a0d8" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="7 93">
+<animate attributeName="stroke-dashoffset" values="7;-93" dur="20s" begin="-15s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M224.71,79.96h37.96c20.42,0,37,16.58,37,37v1.96c0,20.42-16.58,37-37,37h-37.96c-.55,0-1-.45-1-1v-73.96c0-.55.45-1,1-1Z" fill="none" stroke="#00eaff" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="4 96">
+<animate attributeName="stroke-dashoffset" values="3;-97" dur="20s" begin="-15s" repeatCount="indefinite"/>
+</path>
+<path pathLength="100" d="M224.71,79.96h37.96c20.42,0,37,16.58,37,37v1.96c0,20.42-16.58,37-37,37h-37.96c-.55,0-1-.45-1-1v-73.96c0-.55.45-1,1-1Z" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-dasharray="1.5 98.5">
+<animate attributeName="stroke-dashoffset" values="0;-100" dur="20s" begin="-15s" repeatCount="indefinite"/>
+</path>
+</g>
+
+</svg>
 <section 
   style={{
     background: `
