@@ -104,7 +104,7 @@ export default function Index() {
               transition={{ delay: 0.5 }}
               className="space-y-8"
             >
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1">
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -246,14 +246,6 @@ export default function Index() {
                             required
                             onValueChange={field.onChange}
                             value={field.value}
-                            // className="w-full bg-transparent border border-white/20 rounded-lg 
-                            //           px-4 py-3 
-                            //           text-[12px] leading-relaxed
-                            //           text-white/85
-                            //           placeholder:text-white/35
-                            //           tracking-[0.01em]
-                            //           focus:outline-none focus:border-white/60
-                            //           transition-colors"
                           >
                             <SelectTrigger
                               className="border border-white/20 data-[placeholder]:text-white/85"
@@ -299,14 +291,6 @@ export default function Index() {
                             required
                             onValueChange={field.onChange}
                             value={field.value}
-                            // className="w-full bg-transparent border border-white/20 rounded-lg 
-                            //           px-4 py-3 
-                            //           text-[12px] leading-relaxed
-                            //           text-white/85
-                            //           placeholder:text-white/35
-                            //           tracking-[0.01em]
-                            //           focus:outline-none focus:border-white/60
-                            //           transition-colors"
                           >
                             <SelectTrigger
                               className="border border-white/20 data-[placeholder]:text-white/85"
@@ -352,14 +336,6 @@ export default function Index() {
                             required
                             onValueChange={field.onChange}
                             value={field.value}
-                            // className="w-full bg-transparent border border-white/20 rounded-lg 
-                            //           px-4 py-3 
-                            //           text-[12px] leading-relaxed
-                            //           text-white/85
-                            //           placeholder:text-white/35
-                            //           tracking-[0.01em]
-                            //           focus:outline-none focus:border-white/60
-                            //           transition-colors"
                           >
                             <SelectTrigger
                               className="border border-white/20 data-[placeholder]:text-white/85"
@@ -406,14 +382,6 @@ export default function Index() {
                             required
                             onValueChange={field.onChange}
                             value={field.value}
-                            // className="w-full bg-transparent border border-white/20 rounded-lg 
-                            //           px-4 py-3 
-                            //           text-[12px] leading-relaxed
-                            //           text-white/85
-                            //           placeholder:text-white/35
-                            //           tracking-[0.01em]
-                            //           focus:outline-none focus:border-white/60
-                            //           transition-colors"
                           >
                             <SelectTrigger
                               className="border border-white/20 data-[placeholder]:text-white/85"
@@ -497,14 +465,6 @@ export default function Index() {
                             required
                             onValueChange={field.onChange}
                             value={field.value}
-                            // className="w-full bg-transparent border border-white/20 rounded-lg 
-                            //           px-4 py-3 
-                            //           text-[12px] leading-relaxed
-                            //           text-white/85
-                            //           placeholder:text-white/35
-                            //           tracking-[0.01em]
-                            //           focus:outline-none focus:border-white/60
-                            //           transition-colors"
                           >
                             <SelectTrigger 
                               className="border border-white/20 data-[placeholder]:text-white/85"
