@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAction } from "next-safe-action/hooks"
 import { useForm } from "react-hook-form"
@@ -18,13 +18,15 @@ import { CanvasBallsAnimation } from "@/components/canvas-balls-animation"
 export default function Index() {
   const [error, setError] = useState("")
 
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const form = useForm({
     resolver: zodResolver(RequestJoinTeamSchema),
     defaultValues: {
       name: "",
       contactInfo: {
-        type: "email",
-        value: "",
+        email: "",
+        phone: "",
       },
       highSchoolGraduationYear: "",
       priorDentistryExperience: "",
@@ -42,23 +44,14 @@ export default function Index() {
     mode: "onChange",
   })
 
-  const [contactInfoSelect, setContactInfoSelect] = useState("email")
-
-  const handleContactInfoSelectChange = (val) => {
-    setContactInfoSelect(val)
-    form.setValue("contactInfo", { type: val, value: "" })
-    form.clearErrors("contactInfo")
-  }
-
-  // useEffect(() => {
-  //   console.log(contactInfoSelect)
-  // }, [contactInfoSelect])
-
   const { execute, status } = useAction(requestJoinTeam, {
     onSuccess({ data }) {
       if (data?.error) setError(data.error)
       if (data?.success) {
         form.reset()
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""
+        }
         toast.success(data.success)
       }
     },
@@ -122,13 +115,58 @@ export default function Index() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                        <FormLabel
+                          className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                          htmlFor="form-applicant-full-name"
+                        >
                           Full Name
                         </FormLabel>
                         <FormControl>
                           <Input
                             required
                             placeholder="Jane Doe"
+                            id="form-applicant-full-name"
+                            className="w-full bg-transparent border border-white/20 rounded-lg 
+                                      px-4 py-3 
+                                      text-[12px] leading-relaxed
+                                      text-white/85
+                                      placeholder:text-white/35
+                                      tracking-[0.01em]
+                                      focus:outline-none focus:border-white/60
+                                      transition-colors"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+              </div>
+
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <motion.div
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.7 }}
+                >
+                  <FormField
+                    control={form.control}
+                    name="contactInfo.email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel
+                          className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                          htmlFor="form-applicant-contact-information-email-address"
+                        >
+                          Email address
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            required
+                            placeholder="example@email.com"
+                            type="email"
+                            id="form-applicant-contact-information-email-address"                        
                             className="w-full bg-transparent border border-white/20 rounded-lg 
                                       px-4 py-3 
                                       text-[12px] leading-relaxed
@@ -149,66 +187,35 @@ export default function Index() {
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.65 }}
+                  transition={{ delay: 0.7 }}
                 >
                   <FormField
                     control={form.control}
-                    name="contactInfo"
+                    name="contactInfo.phone"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel
                           className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
-                          htmlFor="form-applicant-contact-method"
+                          htmlFor="form-applicant-contact-information-phone-number"
                         >
-                          Best way to reach you
+                          Phone Number
                         </FormLabel>
                         <FormControl>
-                          <div className="flex items-center gap-2">
-                            <Select
-                              defaultValue="email"
-                              value={contactInfoSelect}
-                              onValueChange={handleContactInfoSelectChange}
-                              // id="form-applicant-contact-method"
-                              // className="w-full bg-transparent border border-white/20 rounded-lg 
-                              //         px-4 py-3 
-                              //         text-[12px] leading-relaxed
-                              //         text-white/85
-                              //         placeholder:text-white/35
-                              //         tracking-[0.01em]
-                              //         focus:outline-none focus:border-white/60
-                              //         transition-colors"
-                            >
-                              <SelectTrigger
-                                className="w-max text-xs border border-white/20 data-[placeholder]:text-white/85"
-                                id="form-applicant-contact-method"
-                              >
-                                <SelectValue placeholder="" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectLabel>Method</SelectLabel>
-                                  <SelectItem value="email">Email</SelectItem>
-                                  <SelectItem value="phone">Phone</SelectItem>
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                            <Input
-                              required
-                              type={contactInfoSelect === "email" ? "email" : "tel"}
-                              placeholder={contactInfoSelect === "email" ? "Email address" : "Phone number"}
-                              value={field.value.value}
-                              onChange={(e) => field.onChange({
-                                type: contactInfoSelect,
-                                value: e.target.value,
-                              })}
-                              className="text-[12px] leading-relaxed
-                                        text-white/85
-                                        placeholder:text-white/35 opacity-70  
-                                        w-full bg-transparent border border-white/20 rounded-lg 
-                                        px-4 py-3 focus:outline-none focus:border-white/60
-                                        transition-colors"
-                            />
-                          </div>
+                          <Input
+                            required
+                            placeholder="5556667777"
+                            type="tel"
+                            id="form-applicant-contact-information-phone-number"
+                            className="w-full bg-transparent border border-white/20 rounded-lg 
+                                      px-4 py-3 
+                                      text-[12px] leading-relaxed
+                                      text-white/85
+                                      placeholder:text-white/35
+                                      tracking-[0.01em]
+                                      focus:outline-none focus:border-white/60
+                                      transition-colors"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -221,7 +228,7 @@ export default function Index() {
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.7 }}
+                  transition={{ delay: 0.75 }}
                 >
                   <FormField
                     control={form.control}
@@ -238,7 +245,7 @@ export default function Index() {
                           <Select
                             required
                             onValueChange={field.onChange}
-                            value={field.value?.toString()}
+                            value={field.value}
                             // className="w-full bg-transparent border border-white/20 rounded-lg 
                             //           px-4 py-3 
                             //           text-[12px] leading-relaxed
@@ -247,7 +254,6 @@ export default function Index() {
                             //           tracking-[0.01em]
                             //           focus:outline-none focus:border-white/60
                             //           transition-colors"
-                            {...field}
                           >
                             <SelectTrigger
                               className="border border-white/20 data-[placeholder]:text-white/85"
@@ -275,7 +281,7 @@ export default function Index() {
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.75 }}
+                  transition={{ delay: 0.8 }}
                 >
                   <FormField
                     control={form.control}
@@ -284,7 +290,7 @@ export default function Index() {
                       <FormItem>
                         <FormLabel
                           className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
-                          htmlFor="form-applicant-prior-experience-in-dentistry"
+                          htmlFor="form-applicant-do-you-have-prior-experience-working-in-dentistry"
                         >
                           Do you have experience working in dentistry or orthodontics?
                         </FormLabel>
@@ -301,11 +307,10 @@ export default function Index() {
                             //           tracking-[0.01em]
                             //           focus:outline-none focus:border-white/60
                             //           transition-colors"
-                            {...field}
                           >
                             <SelectTrigger
                               className="border border-white/20 data-[placeholder]:text-white/85"
-                              id="form-applicant-prior-experience-in-dentistry"
+                              id="form-applicant-do-you-have-prior-experience-working-in-dentistry"
                             >
                               <SelectValue placeholder="Select yes or no" />
                             </SelectTrigger>
@@ -329,7 +334,7 @@ export default function Index() {
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.8 }}
+                  transition={{ delay: 0.85 }}
                 >
                   <FormField
                     control={form.control}
@@ -355,7 +360,6 @@ export default function Index() {
                             //           tracking-[0.01em]
                             //           focus:outline-none focus:border-white/60
                             //           transition-colors"
-                            {...field}
                           >
                             <SelectTrigger
                               className="border border-white/20 data-[placeholder]:text-white/85"
@@ -384,7 +388,7 @@ export default function Index() {
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.85 }}
+                  transition={{ delay: 0.9 }}
                 >
                   <FormField
                     control={form.control}
@@ -410,7 +414,6 @@ export default function Index() {
                             //           tracking-[0.01em]
                             //           focus:outline-none focus:border-white/60
                             //           transition-colors"
-                            {...field}
                           >
                             <SelectTrigger
                               className="border border-white/20 data-[placeholder]:text-white/85"
@@ -440,20 +443,24 @@ export default function Index() {
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.9 }}
+                  transition={{ delay: 0.95 }}
                 >
                   <FormField
                     control={form.control}
                     name="availabilityToStart"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                        <FormLabel
+                          className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                          htmlFor="form-applicant-when-would-you-be-available-to-start"
+                        >
                           When would you be available to start?
                         </FormLabel>
                         <FormControl>
                           <Input
                             required
                             placeholder="Immediately, in 2 weeks, next month, etc..."
+                            id="form-applicant-when-would-you-be-available-to-start"
                             className="text-[12px] leading-relaxed
                                         text-white/85
                                         placeholder:text-white/35 opacity-70  
@@ -481,7 +488,7 @@ export default function Index() {
                       <FormItem>
                         <FormLabel
                           className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
-                          htmlFor="form-applicant-available-to-work-all-4-locations-allentown-bethlehem-lehighton-schnecksville"
+                          htmlFor="form-applicant-would-you-be-available-to-work-all-4-locations-allentown-bethlehem-lehighton-schnecksville"
                         >
                           {`Would you be available to work all 4 of our locations? (Allentown, Bethlehem, Lehighton, Schnecksville)`}
                         </FormLabel>
@@ -498,11 +505,10 @@ export default function Index() {
                             //           tracking-[0.01em]
                             //           focus:outline-none focus:border-white/60
                             //           transition-colors"
-                            {...field}
                           >
                             <SelectTrigger 
                               className="border border-white/20 data-[placeholder]:text-white/85"
-                              id="form-applicant-available-to-work-all-4-locations-allentown-bethlehem-lehighton-schnecksville"
+                              id="form-applicant-would-you-be-available-to-work-all-4-locations-allentown-bethlehem-lehighton-schnecksville"
                             >
                               <SelectValue placeholder="Select yes or no" />
                             </SelectTrigger>
@@ -548,6 +554,7 @@ export default function Index() {
                       </FormLabel>
                       <FormControl>
                         <Input
+                          ref={fileInputRef}
                           type="file"
                           accept=".pdf,.doc,.docx"
                           required
@@ -558,16 +565,11 @@ export default function Index() {
                                     border border-white/30 hover:border-white
                                     cursor-pointer transition-colors"
                           onChange={async (e) => {
-                            const file = e.target.files?.[0]
-                            if (file) {
-                              const arrayBuffer = await file.arrayBuffer()
-                              const base64Content = Buffer.from(arrayBuffer).toString('base64')
-                              
-                              field.onChange({
-                                filename: file.name,
-                                content: base64Content,
-                              })
-                            }
+                            let file = e.target.files[0]
+                            field.onChange({
+                              filename: file.name,
+                              content: await file.arrayBuffer(),
+                            })
                           }}
                         />
                       </FormControl>
@@ -587,12 +589,16 @@ export default function Index() {
                   name="questionResponse"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                      <FormLabel
+                        className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                        htmlFor="form-applicant-what-interests-you-about-working-with-us"
+                      >
                         What interests you about working with our practice?
                       </FormLabel>
                       <FormControl>
                         <Textarea
                           required
+                          id="form-applicant-what-interests-you-about-working-with-us"
                           className="text-[12px] leading-relaxed
                                     text-white/85
                                     placeholder:text-white/35 opacity-70 
@@ -618,11 +624,15 @@ export default function Index() {
                   name="additionalInfo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]">
+                      <FormLabel
+                        className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                        htmlFor="form-applicant-do-you-have-additional-information-you-would-like-us-to-know"
+                      >
                         Is there anything else you'd like us to know?
                       </FormLabel>
                       <FormControl>
                         <Textarea
+                          id="form-applicant-do-you-have-additional-information-you-would-like-us-to-know"
                           className="text-[12px] leading-relaxed
                                     text-white/85
                                     placeholder:text-white/35 opacity-70  

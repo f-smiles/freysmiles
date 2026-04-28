@@ -4,8 +4,8 @@ import { Html, Tailwind, Section, Row, Text, Hr, Column, } from "@react-email/co
 interface ApplicationTemplateProps {
   name: string;
   contactInfo: {
-    type: string;
-    value: string;
+    email: string;
+    phone: string;
   };
   highSchoolGraduationYear: string;
   priorDentistryExperience: string;
@@ -39,8 +39,12 @@ export default function ApplicationTemplate(props: ApplicationTemplateProps) {
             description: name,
           },
           {
-            title: "Best way to reach you",
-            description: `${contactInfo.type}: ${contactInfo.value}`,
+            title: "Email address",
+            description: `${contactInfo.email}`,
+          },
+          {
+            title: "Phone number",
+            description: `${contactInfo.phone}`,
           },
           {
             title: "High School Graduation Year",
