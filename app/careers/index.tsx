@@ -1,10 +1,11 @@
 "use client"
-import { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAction } from "next-safe-action/hooks"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { motion } from "motion/react"
+import gsap from "gsap"
 
 import { requestJoinTeam } from "@/server/actions/request-join-team"
 import { RequestJoinTeamSchema } from "@/types/request-join-team-schema"
@@ -13,12 +14,15 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { CanvasBallsAnimation } from "@/components/canvas-balls-animation"
-
+import "./style.css"
 
 export default function Index() {
   const [error, setError] = useState("")
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  const submitButtonRef = useRef<HTMLButtonElement>(null)
+  const submitButtonFiller = useRef<HTMLSpanElement>(null)
 
   const form = useForm({
     resolver: zodResolver(RequestJoinTeamSchema),
@@ -65,6 +69,74 @@ export default function Index() {
     execute(values)
   }
 
+  const getXY = (e) => {
+    if (!submitButtonRef.current) return
+    
+    const { left, top, width, height } = submitButtonRef.current.getBoundingClientRect()
+    
+    const xTransformer = gsap.utils.pipe(
+      gsap.utils.mapRange(0, width, 0, 100),
+      gsap.utils.clamp(0, 100)
+    )
+    const yTransformer = gsap.utils.pipe(
+      gsap.utils.mapRange(0, height, 0, 100),
+      gsap.utils.clamp(0, 100)
+    )
+
+    return {
+      x: xTransformer(e.clientX - left),
+      y: yTransformer(e.clientY - top)
+    }
+  }
+  
+  const handleMouseButtonEnter = (e) =>  {
+    const { x, y } = getXY(e)
+
+    const setX = (x) => {
+      gsap.quickSetter(submitButtonFiller.current, "xPercent")
+    }
+    const setY = (x) => {
+      gsap.quickSetter(submitButtonFiller.current, "yPercent")
+    }
+    setX(x)
+    setY(y)
+
+    gsap.to(submitButtonFiller.current, {
+      scale: 1,
+      duration: 0.4,
+      ease: "power2.out",
+    })
+
+    return () => gsap.killTweensOf(submitButtonFiller.current)
+  }
+  
+  const handleMouseButtonLeave = (e) => {
+    const { x, y } = getXY(e)
+
+    gsap.to(submitButtonFiller.current, {
+      xPercent: x > 90 ? x + 20 : x < 10 ? x - 20 : x,
+      yPercent: y > 90 ? y + 20 : y < 10 ? y - 20 : y,
+      scale: 0,
+      duration: 0.3,
+      ease: "power2.out",
+    })
+
+    return () => gsap.killTweensOf(submitButtonFiller.current)
+  }
+
+  const handleMouseButtonMove = (e) => {
+    const { x, y } = getXY(e)
+
+    gsap.to(submitButtonFiller.current, {
+      xPercent: x,
+      yPercent: y,
+      duration: 0.4,
+      ease: "power2"
+    })
+    
+    return () => gsap.killTweensOf(submitButtonFiller.current)
+  }
+
   return (
     <div 
       className="relative min-h-screen h-full
@@ -104,7 +176,7 @@ export default function Index() {
               transition={{ delay: 0.5 }}
               className="space-y-8"
             >
-              <div className="grid grid-cols-1">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -142,9 +214,7 @@ export default function Index() {
                     )}
                   />
                 </motion.div>
-              </div>
-
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -183,7 +253,9 @@ export default function Index() {
                     )}
                   />
                 </motion.div>
+              </div>
 
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -222,9 +294,7 @@ export default function Index() {
                     )}
                   />
                 </motion.div>
-              </div>
-
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+               
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -269,7 +339,9 @@ export default function Index() {
                     )}
                   />
                 </motion.div>
+              </div>
 
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -312,9 +384,7 @@ export default function Index() {
                     )}
                   />
                 </motion.div>
-              </div>
-
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -360,7 +430,9 @@ export default function Index() {
                     )}
                   />
                 </motion.div>
+              </div>
 
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -399,44 +471,6 @@ export default function Index() {
                               </SelectGroup>
                             </SelectContent>
                           </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </motion.div>
-              </div>
-
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <motion.div
-                  initial={{ y: 10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.95 }}
-                >
-                  <FormField
-                    control={form.control}
-                    name="availabilityToStart"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel
-                          className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
-                          htmlFor="form-applicant-when-would-you-be-available-to-start"
-                        >
-                          When would you be available to start?
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            required
-                            placeholder="Immediately, in 2 weeks, next month, etc..."
-                            id="form-applicant-when-would-you-be-available-to-start"
-                            className="text-[12px] leading-relaxed
-                                        text-white/85
-                                        placeholder:text-white/35 opacity-70  
-                                        w-full bg-transparent border border-white/20 rounded-lg 
-                                        px-4 py-3 focus:outline-none focus:border-white/60
-                                        transition-colors"
-                            {...field}
-                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -542,6 +576,42 @@ export default function Index() {
               <motion.div
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.95 }}
+              >
+                <FormField
+                  control={form.control}
+                  name="availabilityToStart"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        className="block text-sm opacity-70 mb-2 min-h-[38px] text-[#FEB44A]"
+                        htmlFor="form-applicant-when-would-you-be-available-to-start"
+                      >
+                        When would you be available to start?
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          required
+                          placeholder="Immediately, in 2 weeks, next month, etc..."
+                          id="form-applicant-when-would-you-be-available-to-start"
+                          className="text-[12px] leading-relaxed
+                                      text-white/85
+                                      placeholder:text-white/35 opacity-70  
+                                      w-full bg-transparent border border-white/20 rounded-lg 
+                                      px-4 py-3 focus:outline-none focus:border-white/60
+                                      transition-colors"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1.0 }}
               >
                 <FormField
@@ -615,13 +685,23 @@ export default function Index() {
                 className="pt-2 flex justify-end"
               >
                 <button
+                  ref={submitButtonRef}
                   type="submit"
                   disabled={status === "executing"}
-                  className="up w-max text-[13px] uppercase tracking-widest
+                  className="button__submit w-max text-[13px] uppercase tracking-widest
                           border border-white/20 rounded-lg px-10 py-5
-                          transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]]"
+                          overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]]"
+                  onMouseEnter={handleMouseButtonEnter}
+                  onMouseLeave={handleMouseButtonLeave}
+                  onMouseMove={handleMouseButtonMove}
                 >
-                  {status === "executing" ? "Submitting..." : "Submit"}
+                  <span className="button__label">
+                    {status === "executing" ? "Submitting..." : "Submit"}
+                  </span>
+                  <span
+                    className="button__filler"
+                    ref={submitButtonFiller}
+                  />
                 </button>
               </motion.div>
             </motion.div>
