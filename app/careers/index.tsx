@@ -95,7 +95,7 @@ export default function Index() {
     const setX = (x) => {
       gsap.quickSetter(submitButtonFiller.current, "xPercent")
     }
-    const setY = (x) => {
+    const setY = (y) => {
       gsap.quickSetter(submitButtonFiller.current, "yPercent")
     }
     setX(x)
