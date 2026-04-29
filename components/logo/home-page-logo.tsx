@@ -10,9 +10,9 @@ export default function HomePageLogo() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ ease: "easeIn", duration: 1 }}
+      // initial={{ opacity: 0 }}
+      // animate={{ opacity: 1 }}
+      // transition={{ ease: "easeIn", duration: 1 }}
       className="
         relative
         w-[150px]
@@ -33,40 +33,76 @@ export default function HomePageLogo() {
       >
         <defs>
           <mask id={maskId}>
-            <path
+            <motion.path
+              // top left of letter S
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ ease: "easeIn", duration: 1, delay: 2.5 }}
               d="M90.375,0h18.98c.275,0,.5,.225,.5,.5v36.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-.98c0-10.21,8.29-18.5,18.5-18.5Z"
               fill="white"
             />
-            <path
+            <motion.path
+              // top right of letter S
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ ease: "easeIn", duration: 1, delay: 2.75 }}
               d="M112.355,0h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5V.5c0-.275,.225-.5,.5-.5Z"
               fill="white"
             />
-            <path
+            <motion.path
+              // bottom left of letter S
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ ease: "easeIn", duration: 1, delay: 2.0 }}
               d="M72.375,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-18.98c0-.275,.225-.5,.5-.5Z"
               fill="white"
             />
-            <path
+            <motion.path
+              // bottom right of letter S
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ ease: "easeIn", duration: 1, delay: 2.25 }}
               d="M112.355,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v.98c0,10.21-8.29,18.5-18.5,18.5h-18.98c-.275,0-.5-.225-.5-.5v-36.98c0-.275,.225-.5,.5-.5Z"
               fill="white"
             />
-            <path
+            <motion.path
+              // top left of letter F
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ ease: "easeIn", duration: 1, delay: 0.75 }}
               d="M12.5,0h0c6.9,0,12.5,5.6,12.5,12.5v12c0,.275-.225,.5-.5,.5h-12C5.6,25,0,19.4,0,12.5H0C0,5.6,5.6,0,12.5,0Z"
               fill="white"
             />
-            <path
+            <motion.path
+              // top right of letter F
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ ease: "easeIn", duration: 1, delay: 1.0 }}
               d="M39.685,0h15c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-27c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
               fill="white"
             />
-            <path
+            <motion.path
+              // middle left of letter F
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ ease: "easeIn", duration: 1, delay: 1.25 }}
               d="M12.5,27h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5h0c-6.9,0-12.5-5.6-12.5-12.5h0c0-6.9,5.6-12.5,12.5-12.5Z"
               fill="white"
             />
-            <path
-              d="M12.5,54h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5H.5c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
+            <motion.path
+              // middle right of letter F
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ ease: "easeIn", duration: 1, delay: 1.5 }}
+              d="M27.69,27h12c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-12c-.275,0-.5-.225-.5-.5v-24c0-.275,.225-.5,.5-.5Z"
               fill="white"
             />
-            <path
-              d="M27.69,27h12c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-12c-.275,0-.5-.225-.5-.5v-24c0-.275,.225-.5,.5-.5Z"
+            <motion.path
+              // bottom left of letter F
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ ease: "easeIn", duration: 1, delay: 1.75 }}
+              d="M12.5,54h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5H.5c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
               fill="white"
             />
           </mask>
