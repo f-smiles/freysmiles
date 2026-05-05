@@ -12,13 +12,14 @@ interface ApplicationTemplateProps {
   positionOfInterest: string;
   heardFrom: string;
   availabilityToStart: string;
+  availabilityLocations: string;
   resume: any;
   questionResponse: string;
   additionalInfo: string;
 }
 
 export default function ApplicationTemplate(props: ApplicationTemplateProps) {
-  const { name, contactInfo, highSchoolGraduationYear, priorDentistryExperience, positionOfInterest, heardFrom, availabilityToStart, resume, questionResponse, additionalInfo,} = props
+  const { name, contactInfo, highSchoolGraduationYear, priorDentistryExperience, positionOfInterest, heardFrom, availabilityToStart, availabilityLocations, resume, questionResponse, additionalInfo,} = props
   
   return (
     <Html lang="en">
@@ -61,6 +62,10 @@ export default function ApplicationTemplate(props: ApplicationTemplateProps) {
           {
             title: "How did you hear about us?",
             description: heardFrom,
+          },
+          {
+            title: "Would you be available to work all 4 locations?",
+            description: availabilityLocations,
           },
           {
             title: "When would you be available to start?",
