@@ -4,21 +4,22 @@ import { Html, Tailwind, Section, Row, Text, Hr, Column, } from "@react-email/co
 interface ApplicationTemplateProps {
   name: string;
   contactInfo: {
-    type: string;
-    value: string;
+    email: string;
+    phone: string;
   };
   highSchoolGraduationYear: string;
   priorDentistryExperience: string;
   positionOfInterest: string;
   heardFrom: string;
   availabilityToStart: string;
+  availabilityLocations: string;
   resume: any;
   questionResponse: string;
   additionalInfo: string;
 }
 
 export default function ApplicationTemplate(props: ApplicationTemplateProps) {
-  const { name, contactInfo, highSchoolGraduationYear, priorDentistryExperience, positionOfInterest, heardFrom, availabilityToStart, resume, questionResponse, additionalInfo,} = props
+  const { name, contactInfo, highSchoolGraduationYear, priorDentistryExperience, positionOfInterest, heardFrom, availabilityToStart, availabilityLocations, resume, questionResponse, additionalInfo,} = props
   
   return (
     <Html lang="en">
@@ -39,8 +40,12 @@ export default function ApplicationTemplate(props: ApplicationTemplateProps) {
             description: name,
           },
           {
-            title: "Best way to reach you",
-            description: `${contactInfo.type}: ${contactInfo.value}`,
+            title: "Email address",
+            description: `${contactInfo.email}`,
+          },
+          {
+            title: "Phone number",
+            description: `${contactInfo.phone}`,
           },
           {
             title: "High School Graduation Year",
@@ -57,6 +62,10 @@ export default function ApplicationTemplate(props: ApplicationTemplateProps) {
           {
             title: "How did you hear about us?",
             description: heardFrom,
+          },
+          {
+            title: "Would you be available to work all 4 locations?",
+            description: availabilityLocations,
           },
           {
             title: "When would you be available to start?",

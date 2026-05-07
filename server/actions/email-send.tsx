@@ -10,7 +10,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export async function sendApplication(
   formData: any,
 ){
-  const { name, contactInfo, highSchoolGraduationYear, priorDentistryExperience, positionOfInterest, heardFrom, availabilityToStart, resume, questionResponse, additionalInfo } = formData
+  const { name, resume } = formData
   
   const { data, error } = await resend.emails.send({
     from: process.env.NODE_ENV === "production" ? process.env.FS_EMAIL : "onboarding@resend.dev",
@@ -20,7 +20,7 @@ export async function sendApplication(
     attachments: [
       {
         filename: resume.filename,
-        content: resume.content,
+        content: Buffer.from(resume.content).toString("base64"),
       }
     ],
   })

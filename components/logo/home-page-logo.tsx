@@ -6,118 +6,188 @@ import { Clouds, Cloud, CameraControls, Sky as SkyImpl, StatsGl, CloudsProps, Cl
 import { motion } from "motion/react"
 
 export default function HomePageLogo() {
-  const maskId = useId()
+  const clipId = useId()
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ ease: "easeIn", duration: 1 }}
-      className="
-        relative
-        w-[150px]
-        h-[80px]
-        z-50
-      "
+    <div
+      style={{
+        position: "relative",
+        width: "150px",
+        height: "80px",
+        overflow: "hidden",
+      }}
     >
-      <svg 
-        style={{ 
-          position: 'absolute', 
-          top: 0, 
-          left: 0, 
-          width: '100%', 
-          height: '100%',
-          zIndex: 5
-        }}
+      <svg
         viewBox="0 0 149.835 79"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+        }}
       >
-        <defs>
-          <mask id={maskId}>
-            <path
-              d="M90.375,0h18.98c.275,0,.5,.225,.5,.5v36.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-.98c0-10.21,8.29-18.5,18.5-18.5Z"
-              fill="white"
-            />
-            <path
-              d="M112.355,0h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5V.5c0-.275,.225-.5,.5-.5Z"
-              fill="white"
-            />
-            <path
-              d="M72.375,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-18.98c0-.275,.225-.5,.5-.5Z"
-              fill="white"
-            />
-            <path
-              d="M112.355,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v.98c0,10.21-8.29,18.5-18.5,18.5h-18.98c-.275,0-.5-.225-.5-.5v-36.98c0-.275,.225-.5,.5-.5Z"
-              fill="white"
-            />
-            <path
-              d="M12.5,0h0c6.9,0,12.5,5.6,12.5,12.5v12c0,.275-.225,.5-.5,.5h-12C5.6,25,0,19.4,0,12.5H0C0,5.6,5.6,0,12.5,0Z"
-              fill="white"
-            />
-            <path
-              d="M39.685,0h15c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-27c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
-              fill="white"
-            />
-            <path
-              d="M12.5,27h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5h0c-6.9,0-12.5-5.6-12.5-12.5h0c0-6.9,5.6-12.5,12.5-12.5Z"
-              fill="white"
-            />
-            <path
-              d="M12.5,54h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5H.5c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
-              fill="white"
-            />
-            <path
-              d="M27.69,27h12c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-12c-.275,0-.5-.225-.5-.5v-24c0-.275,.225-.5,.5-.5Z"
-              fill="white"
-            />
-          </mask>
-        </defs>
-        <rect width="100%" height="100%" fill="transparent" mask={`url(#${maskId})`} />
+        <clipPath id={clipId}>
+          <motion.path
+            // top left of letter S
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ ease: "easeIn", duration: 1, delay: 2.5, }}
+            style={{
+              transformOrigin: "center",
+              transformBox: "fill-box",
+            }}
+            id="s__top-left"
+            d="M90.375,0h18.98c.275,0,.5,.225,.5,.5v36.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-.98c0-10.21,8.29-18.5,18.5-18.5Z"
+            fill="white"
+          />
+          <motion.path
+            // top right of letter S
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ ease: "easeIn", duration: 1, delay: 2.75, }}
+            style={{
+              transformOrigin: "center",
+              transformBox: "fill-box",
+            }}
+            id="s__top-right"
+            d="M112.355,0h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5V.5c0-.275,.225-.5,.5-.5Z"
+            fill="white"
+          />
+          <motion.path
+            // bottom left of letter S
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ ease: "easeIn", duration: 1, delay: 2.0, }}
+            style={{
+              transformOrigin: "center",
+              transformBox: "fill-box",
+            }}
+            id="s__bottom-left"
+            d="M72.375,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-18.98c0-.275,.225-.5,.5-.5Z"
+            fill="white"
+          />
+          <motion.path
+            // bottom right of letter S
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ ease: "easeIn", duration: 1, delay: 2.5, }}
+            style={{
+              transformOrigin: "center",
+              transformBox: "fill-box",
+            }}
+            id="s__bottom-right"
+            d="M112.355,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v.98c0,10.21-8.29,18.5-18.5,18.5h-18.98c-.275,0-.5-.225-.5-.5v-36.98c0-.275,.225-.5,.5-.5Z"
+            fill="white"
+          />
+          <motion.path
+            // top left of letter F
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ ease: "easeIn", duration: 1, delay: 0.75, }}
+            style={{
+              transformOrigin: "center",
+              transformBox: "fill-box",
+            }}
+            id="f__top-left"
+            d="M12.5,0h0c6.9,0,12.5,5.6,12.5,12.5v12c0,.275-.225,.5-.5,.5h-12C5.6,25,0,19.4,0,12.5H0C0,5.6,5.6,0,12.5,0Z"
+            fill="white"
+          />
+          <motion.path
+            // top right of letter F
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ ease: "easeIn", duration: 1, delay: 1.0, }}
+            style={{
+              transformOrigin: "center",
+              transformBox: "fill-box",
+            }}
+            id="f__top-right"
+            d="M39.685,0h15c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-27c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
+            fill="white"
+          />
+          <motion.path
+            // middle left of letter F
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ ease: "easeIn", duration: 1, delay: 1.25, }}
+            style={{
+              transformOrigin: "center",
+              transformBox: "fill-box",
+            }}
+            id="f__middle-left"
+            d="M12.5,27h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5h0c-6.9,0-12.5-5.6-12.5-12.5h0c0-6.9,5.6-12.5,12.5-12.5Z"
+            fill="white"
+          />
+          <motion.path
+            // middle right of letter F
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ ease: "easeIn", duration: 1, delay: 1.5, }}
+            style={{
+              transformOrigin: "center",
+              transformBox: "fill-box",
+            }}
+            id="f__middle-right"
+            d="M27.69,27h12c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-12c-.275,0-.5-.225-.5-.5v-24c0-.275,.225-.5,.5-.5Z"
+            fill="white"
+          />
+          <motion.path
+            // bottom left of letter F
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ ease: "easeIn", duration: 1, delay: 1.75, }}
+            style={{
+              transformOrigin: "center",
+              transformBox: "fill-box",
+            }}
+            id="f__bottom-left"
+            d="M12.5,54h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5H.5c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
+            fill="white"
+          />
+        </clipPath>
       </svg>
 
-      <div
-        className="
-          absolute
-          inset-0
-          overflow-hidden
-        "
+      <Canvas
         style={{
-          mask: `url(#${maskId})`,
-          WebkitMask: `url(#${maskId})`,
+          width: "100%",
+          height: "100%",
+          display: "block",
+          clipPath: `url(#${clipId})`,
+          WebkitClipPath: `url(#${clipId})`,
+          pointerEvents: "none",
         }}
       >
-        <Canvas camera={{ position: [0, -10, 10], fov: 75 }}>
-          {/* <StatsGl /> */}
-          <group position={[0, 0, 0]}>
-            <StormySkyWithLightning />
-            <ambientLight intensity={Math.PI / 1.5} />
-            <spotLight
-              position={[0, 40, 0]}
-              decay={0}
-              distance={45}
-              penumbra={1}
-              intensity={100}
-            />
-            <spotLight
-              position={[-20, 0, 10]}
-              color="purple"
-              angle={0.15}
-              decay={0}
-              penumbra={-1}
-              intensity={30}
-            />
-            <spotLight
-              position={[20, -10, 10]}
-              color="red"
-              angle={0.2}
-              decay={0}
-              penumbra={-1}
-              intensity={20}
-            />
-          </group>
-          <CameraControls />
-        </Canvas>
-      </div>
-    </motion.div>
+        {/* <StatsGl /> */}
+        <group position={[0, 0, 0]}>
+          <StormySkyWithLightning />
+          <ambientLight intensity={Math.PI / 1.5} />
+          <spotLight
+            position={[0, 40, 0]}
+            decay={0}
+            distance={45}
+            penumbra={1}
+            intensity={100}
+          />
+          <spotLight
+            position={[-20, 0, 10]}
+            color="purple"
+            angle={0.15}
+            decay={0}
+            penumbra={-1}
+            intensity={30}
+          />
+          <spotLight
+            position={[20, -10, 10]}
+            color="red"
+            angle={0.2}
+            decay={0}
+            penumbra={-1}
+            intensity={20}
+          />
+        </group>
+        <CameraControls />
+      </Canvas>
+    </div>
   )
 }
 
