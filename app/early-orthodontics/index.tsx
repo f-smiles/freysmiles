@@ -4,7 +4,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
-import { useScroll } from "motion/react";
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
 
@@ -101,6 +100,8 @@ export default function EarlyOrthodontics() {
       let mm = gsap.matchMedia()
       
       mm.add("(max-width: 1279px)", () => {
+        if (!itemsContainer.current) return
+
         gsap.set(items, { clearProps: "all" })
         gsap.set(innerItems, { clearProps: "all" })
         gsap.set(mediaContainers, { clearProps: "all" })
@@ -123,6 +124,8 @@ export default function EarlyOrthodontics() {
       })
 
       mm.add("(min-width: 1280px)", () => {
+        if (!mainSection.current) return
+
         gsap.set(items, { clearProps: "all" });
         gsap.set(innerItems, { clearProps: "all" });
         gsap.set(mediaContainers, { clearProps: "all" });
@@ -259,7 +262,7 @@ export default function EarlyOrthodontics() {
                     />
                     <div className="MainSectionItem-content">
                       <div className="MainSectionItem-contentTitle">
-                        <span className="MainSectionItem-index font-neuehaas45">
+                        <span className="MainSectionItem-index">
                           {section.index}
                         </span>
                         <h3>{section.heading}</h3>
@@ -305,7 +308,7 @@ export default function EarlyOrthodontics() {
 }
 
 const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const innerRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [textWidth, setTextWidth] = useState(0);
   const [isReady, setIsReady] = useState(false);
@@ -339,7 +342,7 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
       const offset = textWidthWithBuffer / totalCells;
 
       container.style.setProperty("--text-width", `${textWidthWithBuffer}px`);
-      container.style.setProperty("--gsplits", totalCells);
+      container.style.setProperty("--gsplits", totalCells.toString());
       container.style.setProperty("--offset", `${offset}px`);
 
       innerRefs.current.forEach((inner, i) => {

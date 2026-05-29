@@ -79,21 +79,23 @@ export default function AdultOrthodontics() {
 
   useEffect(() => {
     const isTouchDevice = 'ontouchstart' in window
-
+    
     if (!isTouchDevice) {
       const items = document.querySelectorAll(".MainSection-item")
       const innerItems = document.querySelectorAll(".MainSectionItem-inner")
       const mediaContainers = document.querySelectorAll(".MainSectionItem-mediaContainer")
       const mediaContainersInner = document.querySelectorAll(".MainSectionItem-mediaContainerInner")
       const medias = document.querySelectorAll('.MainSectionItem-media')
-
+      
       medias.forEach((media) => {
         gsap.set(media, { aspectRatio: 1.3793103448275863 })
       })
-
+      
       let mm = gsap.matchMedia()
       
       mm.add("(max-width: 1279px)", () => {
+        if (!itemsContainer.current) return
+
         gsap.set(items, { clearProps: "all" })
         gsap.set(innerItems, { clearProps: "all" })
         gsap.set(mediaContainers, { clearProps: "all" })
@@ -116,6 +118,8 @@ export default function AdultOrthodontics() {
       })
 
       mm.add("(min-width: 1280px)", () => {
+        if (!mainSection.current) return
+        
         gsap.set(items, { clearProps: "all" });
         gsap.set(innerItems, { clearProps: "all" });
         gsap.set(mediaContainers, { clearProps: "all" });
@@ -364,7 +368,7 @@ export default function AdultOrthodontics() {
 }
 
 const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const innerRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [textWidth, setTextWidth] = useState(0);
   const [isReady, setIsReady] = useState(false);
@@ -398,7 +402,7 @@ const SlidingText = ({ text = "DEFAULT", totalCells = 8, className = "" }) => {
       const offset = textWidthWithBuffer / totalCells;
 
       container.style.setProperty("--text-width", `${textWidthWithBuffer}px`);
-      container.style.setProperty("--gsplits", totalCells);
+      container.style.setProperty("--gsplits", totalCells.toString());
       container.style.setProperty("--offset", `${offset}px`);
 
       innerRefs.current.forEach((inner, i) => {
