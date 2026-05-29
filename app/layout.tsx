@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import React from "react";
 import "./globals.css";
-import { BannerMarquee } from "@/components/banner-marquee";
-import { Navbar } from "@/components/navbar";
-import { Toaster } from "@/components/ui/sonner";
+import "@/public/styles/uploadthing.css";
+import App from "./app";
 
 export const metadata: Metadata = {
   title: {
@@ -18,19 +17,16 @@ export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}) {  
   return (
     <html lang="en">
       <head>
         <link rel="icon" href="./icon.svg" type="image/svg+xml" />
       </head>
       <body suppressHydrationWarning>
-        <Navbar />
-        <main>
-          <BannerMarquee />
+        <App>
           {children}
-        </main>
-        <Toaster />
+        </App>
       </body>
     </html>
   );

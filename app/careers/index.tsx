@@ -70,9 +70,9 @@ export default function Index() {
   }
 
   const getXY = (e) => {
-    if (!submitButtonRef.current) return
+    // if (!submitButtonRef.current) return
     
-    const { left, top, width, height } = submitButtonRef.current.getBoundingClientRect()
+    const { left, top, width, height } = submitButtonRef.current!.getBoundingClientRect()
     
     const xTransformer = gsap.utils.pipe(
       gsap.utils.mapRange(0, width, 0, 100),
@@ -559,11 +559,13 @@ export default function Index() {
                                     border border-white/30 hover:border-white
                                     cursor-pointer transition-colors"
                           onChange={async (e) => {
-                            let file = e.target.files[0]
-                            field.onChange({
-                              filename: file.name,
-                              content: await file.arrayBuffer(),
-                            })
+                            if (e.target.files && e.target.files.length > 0) {
+                              let file = e.target.files[0]
+                              field.onChange({
+                                filename: file.name,
+                                content: await file.arrayBuffer(),
+                              })
+                            }
                           }}
                         />
                       </FormControl>
