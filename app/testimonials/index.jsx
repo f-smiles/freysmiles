@@ -1,5 +1,5 @@
 "use client";
-
+import { easing } from "maath";
 import { Flip } from 'gsap/Flip';
 import { Renderer, Program, Color, Mesh, Triangle, Vec2 } from "ogl";
 import {
@@ -9,7 +9,7 @@ import {
   useMotionValue,
   useSpring,
   useMotionValueEvent,
-  useScroll
+  // useScroll
 } from "framer-motion";
 import Lenis from "@studio-freight/lenis";
 import {
@@ -46,7 +46,9 @@ import {
   MeshTransmissionMaterial,
   Environment,
   shaderMaterial,
-  Text
+  Text,
+  useTexture ,
+  Image, ScrollControls, useScroll, 
 } from "@react-three/drei";
 import * as THREE from "three";
 import { useControls } from "leva";
@@ -1387,9 +1389,9 @@ const TerminalPreloader = () => {
   const containerRef = useRef();
 const specialChars = "⬝";
   const lines = [
-  { id: 1, faded: "We are committed to setting the highest standard through", highlight: "Exceptional Service", top: 0 },
-  { id: 2, faded: "That commitment is supported by our use of", highlight: "State-of-the-Art Technology", top: 20 },
-  { id: 3, faded: "And strengthened by the expertise that comes from", highlight: "Unmatched Experience", top: 40 },
+  { id: 1, faded: "We are committed to setting the highest standard through", highlight: "exceptional service", top: 0 },
+  { id: 2, faded: "That commitment is supported by our use of", highlight: "state-of-the-art technology", top: 20 },
+  { id: 3, faded: "And strengthened by the expertise that comes from", highlight: "unmatched experience", top: 40 },
   ];
 
   useEffect(() => {
@@ -2253,6 +2255,11 @@ useEffect(() => {
 
 <section className="intro relative min-h-screen overflow-hidden">
   <IntroCirclesBackground />
+  <div className="absolute inset-0 z-0 pointer-events-none">
+
+    <JanusFace />
+
+  </div>
 
   <div className="relative max-w-[1400px] mx-auto w-full flex flex-col md:flex-row">
     <div className="hidden md:block md:w-1/2 min-h-screen" />
@@ -2764,7 +2771,7 @@ useLayoutEffect(() => {
  
   return (
     <>
-<FluidSimulation disabled={disableFluid} />
+{/* <FluidSimulation disabled={disableFluid} /> */}
 <List onInteractionChange={setDisableFluid} />
 
       {/* <MouseTrail
@@ -2840,6 +2847,9 @@ useLayoutEffect(() => {
   
       <div className="font-neuehaas45 absolute top-28 left-10 text-xs uppercase tracking-widest text-black/70">
  Every smile tells a story — these are some of our favorites.
+      </div>
+      <div className="w-full h-screen">
+        <App />
       </div>
 
 {/* <svg width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
@@ -3093,9 +3103,282 @@ useLayoutEffect(() => {
   );
 };
 
+
 export default Testimonials;
+class BentPlaneGeometry extends THREE.PlaneGeometry {
+  constructor(radius, ...args) {
+    super(...args)
+    let p = this.parameters
+    let hw = p.width * 0.5
+    let a = new THREE.Vector2(-hw, 0)
+    let b = new THREE.Vector2(0, radius)
+    let c = new THREE.Vector2(hw, 0)
+    let ab = new THREE.Vector2().subVectors(a, b)
+    let bc = new THREE.Vector2().subVectors(b, c)
+    let ac = new THREE.Vector2().subVectors(a, c)
+    let r = (ab.length() * bc.length() * ac.length()) / (2 * Math.abs(ab.cross(ac)))
+    let center = new THREE.Vector2(0, radius - r)
+    let baseV = new THREE.Vector2().subVectors(a, center)
+    let baseAngle = baseV.angle() - Math.PI * 0.5
+    let arc = baseAngle * 2
+    let uv = this.attributes.uv
+    let pos = this.attributes.position
+    let mainV = new THREE.Vector2()
+    for (let i = 0; i < uv.count; i++) {
+      let uvRatio = 1 - uv.getX(i)
+      let y = pos.getY(i)
+      mainV.copy(c).rotateAround(center, arc * uvRatio)
+      pos.setXYZ(i, mainV.x, y, -mainV.y)
+    }
+    pos.needsUpdate = true
+  }
+}
+
+class MeshSineMaterial extends THREE.MeshBasicMaterial {
+  constructor(parameters = {}) {
+    super(parameters)
+    this.setValues(parameters)
+    this.time = { value: 0 }
+  }
+  onBeforeCompile(shader) {
+    shader.uniforms.time = this.time
+    shader.vertexShader = `
+      uniform float time;
+      ${shader.vertexShader}
+    `
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <begin_vertex>',
+      `vec3 transformed = vec3(position.x, position.y + sin(time + uv.x * PI * 4.0) / 4.0, position.z);`
+    )
+  }
+}
+
+extend({ MeshSineMaterial, BentPlaneGeometry })
+const App = () => (
+  <Canvas camera={{ position: [0, 0, 100], fov: 15 }}>
+    <fog attach="fog" args={['#a79', 8.5, 12]} />
+    <ScrollControls pages={4} infinite>
+      <Rig rotation={[0, 0, 0.15]}>
+        <Carousel />
+      </Rig>
+      <Banner position={[0, -0.15, 0]} />
+    </ScrollControls>
+    {/* <Environment preset="dawn" background blur={0.5} /> */}
+  </Canvas>
+)
+
+function Rig(props) {
+  const ref = useRef()
+  const scroll = useScroll()
+  useFrame((state, delta) => {
+    ref.current.rotation.y = -scroll.offset * (Math.PI * 2) // Rotate contents
+    state.events.update() // Raycasts every frame rather than on pointer-move
+    easing.damp3(state.camera.position, [-state.pointer.x * 2, state.pointer.y + 1.5, 10], 0.3, delta) // Move camera
+    state.camera.lookAt(0, 0, 0) // Look at center
+  })
+  return <group ref={ref} {...props} />
+}
+
+function Carousel({ radius = 1.4 }) {
+  const visibleReviews = reviews.slice(0, 8);
+  const count = visibleReviews.length;
+
+  return visibleReviews.map((review, i) => (
+    <Card
+      key={review.name}
+      url={review.image}
+      position={[
+        Math.sin((i / count) * Math.PI * 2) * radius,
+        0,
+        Math.cos((i / count) * Math.PI * 2) * radius,
+      ]}
+      rotation={[0, Math.PI + (i / count) * Math.PI * 2, 0]}
+    />
+  ));
+}
+function Card({ url, ...props }) {
+  const ref = useRef()
+  const [hovered, hover] = useState(false)
+  const pointerOver = (e) => (e.stopPropagation(), hover(true))
+  const pointerOut = () => hover(false)
+  useFrame((state, delta) => {
+    easing.damp3(ref.current.scale, hovered ? 1.15 : 1, 0.1, delta)
+    easing.damp(ref.current.material, 'radius', hovered ? 0.25 : 0.1, 0.2, delta)
+    easing.damp(ref.current.material, 'zoom', hovered ? 1 : 1.5, 0.2, delta)
+  })
+  return (
+ <Image
+  ref={ref}
+  url={url}
+  transparent
+  side={THREE.DoubleSide}
+  onPointerOver={pointerOver}
+  onPointerOut={pointerOut}
+  {...props}
+>
+  <bentPlaneGeometry args={[0.1, 1, 1, 20, 20]} />
+</Image>
+    
+  )
+}
+
+function Banner(props) {
+  const ref = useRef()
+const texture = useTexture("/images/fslogostrip.png");
+
+texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+texture.anisotropy = 16;
+texture.minFilter = THREE.LinearFilter;
+texture.magFilter = THREE.LinearFilter;
+texture.needsUpdate = true;
+
+  const scroll = useScroll()
+  useFrame((state, delta) => {
+    ref.current.material.time.value += Math.abs(scroll.delta) * 4
+    ref.current.material.map.offset.x += delta / 2
+  })
+  return (
+    <mesh ref={ref} {...props}>
+      <cylinderGeometry args={[1.6, 1.6, 0.18, 128, 16, true]} />
+      <meshSineMaterial map={texture} map-anisotropy={16} map-repeat={[18, 1]} side={THREE.DoubleSide} toneMapped={false} />
+    </mesh>
+  )
+}
+function JanusFace() {
+  const [leftShapes, setLeftShapes] = useState([]);
+  const [rightShapes, setRightShapes] = useState([]);
+
+  const r = (from, to) => Math.random() * (to - from) + from;
+  const ri = (from, to) => ~~r(from, to);
+  const pick = (...args) => args[ri(0, args.length)];
+
+const generateText = (length = 60, rowIndex = 0) => {
+  return Array.from({ length }, (_, i) => {
+    const shouldBlink = (i + rowIndex) % 4 === 0;
+
+    return (
+      <span
+        key={i}
+        className={shouldBlink ? "symbol symbol-blink" : "symbol"}
+        style={
+          shouldBlink
+            ? {
+                "--blink-delay": `${(i * 0.09 + rowIndex * 0.17) % 4}s`,
+                "--blink-duration": `${3.5 + ((i + rowIndex) % 4) * 0.4}s`,
+              }
+            : undefined
+        }
+      >
+        {String.fromCharCode(ri(0x25a0, 0x25fc))}
+      </span>
+    );
+  });
+};
+
+  const generateBaseParagraphs = () => {
+    const paragraphs = [];
+    for (let i = 0; i < 50; i++) {
+      const offset = r(45, 95);
+      // const color = pick("#8fdcff", "#6fcfff", "#b3eaff", "#a1e4ff");
+      const color ="#fff";
+      const textLength = ri(25, 95);
+
+      paragraphs.push({
+        offset,
+        color,
+        textLength,
+        key: i,
+      });
+    }
+    return paragraphs;
+  };
+
+  const build = () => {
+    const baseData = generateBaseParagraphs();
+
+    // Left side
+    const leftParas = baseData.map((data, i) => (
+      <div
+        key={i}
+        className="text-line"
+        style={{
+          "--offset": data.offset,
+          color: data.color,
+          textAlign: "left",
+          mask: `linear-gradient(to right, #fff, transparent calc(var(--offset) * 1%))`,
+        }}
+      >
+{generateText(data.textLength, i)}
+      </div>
+    ));
 
 
+    const rightParas = baseData.map((data, i) => (
+      <div
+        key={`r${i}`}
+        className="text-line"
+        style={{
+          "--offset": data.offset,
+          color: data.color,
+          textAlign: "right",
+          mask: `linear-gradient(to left, #fff, transparent calc(var(--offset) * 1%))`,
+        }}
+      >
+{generateText(data.textLength, i)}
+      </div>
+    ));
+
+    setLeftShapes(leftParas);
+    setRightShapes(rightParas);
+  };
+
+  useEffect(() => {
+    build();
+  }, []);
+
+
+  const shapePath =
+    "0.25% 2px, 99.94% 0.27%, 99.75% 100%, 19.87% 100.03%, 0 100%, 30.61% 100.07%, 37.38% 99.82%, 44.21% 99.38%, 50.92% 99.34%, 71.39% 98.43%, 76.61% 98.79%, 82.65% 97.6%, 85.9% 95.73%, 90.12% 93.85%, 88.45% 89.91%, 87.41% 87.1%, 85.48% 85.09%, 84.96% 82.33%, 88.66% 81.41%, 90.55% 79.29%, 91.75% 77.23%, 91.23% 75.11%, 88.48% 73.75%, 90.93% 72.26%, 92.34% 70.16%, 91.59% 67.66%, 89.87% 64.91%, 87.01% 63.42%, 89.87% 62.01%, 93.04% 60.71%, 96.53% 58.57%, 97.8% 55.26%, 95.36% 53.2%, 91.46% 51.56%, 86.6% 49.21%, 83.43% 47%, 79.27% 44.12%, 77.05% 40.66%, 75.51% 37.07%, 75.49% 33.04%, 76.3% 28.93%, 75.99% 25.46%, 74.57% 22.25%, 72.88% 18.96%, 69.97% 15.51%, 66.59% 12.23%, 62.29% 9.2%, 57.33% 7.06%, 52.77% 5.2%, 46.55% 3.55%, 38.59% 1.5%, 27.73% 0.92%";
+
+  const mirrorPolygon = (poly) => {
+    return poly
+      .split(",")
+      .map((pt) => pt.trim())
+      .map((pt) => {
+        const [xRaw, y] = pt.split(/\s+/);
+        const xPercent = parseFloat(xRaw);
+        const mirroredX = (100 - xPercent).toFixed(2) + "%";
+        return `${mirroredX} ${y}`;
+      })
+      .join(", ");
+  };
+
+  const leftShapePath = mirrorPolygon(shapePath);
+
+  return (
+    <div className="janus-main" onClick={build} style={{ cursor: "pointer" }}>
+      <div className="janus-container">
+        {/* Left Face */}
+        <div className="face-container left-face">
+          <div
+            className="janus-shape left-shape"
+            style={{ shapeOutside: `polygon(${leftShapePath})` }}
+          />
+          <div className="text-container left-text">{leftShapes}</div>
+        </div>
+
+        {/* Right Face */}
+        <div className="face-container right-face">
+          <div
+            className="janus-shape right-shape"
+            style={{ shapeOutside: `polygon(${shapePath})` }}
+          />
+          <div className="text-container right-text">{rightShapes}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 const throttle = (func, limit) => {
   let inThrottle;
   return function() {
