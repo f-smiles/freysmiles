@@ -1,6 +1,6 @@
 "use client";
-import { easing } from "maath";
-import { Flip } from 'gsap/Flip';
+import { easing, geometry } from "maath";
+import { Flip } from "gsap/Flip";
 import { Renderer, Program, Color, Mesh, Triangle, Vec2 } from "ogl";
 import {
   motion,
@@ -28,7 +28,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useLayoutEffect,
-  useCallback
+  useCallback,
 } from "react";
 import {
   EffectComposer,
@@ -47,8 +47,10 @@ import {
   Environment,
   shaderMaterial,
   Text,
-  useTexture ,
-  Image, ScrollControls, useScroll, 
+  useTexture,
+  Image,
+  ScrollControls,
+  useScroll,
 } from "@react-three/drei";
 import * as THREE from "three";
 import { useControls } from "leva";
@@ -59,7 +61,6 @@ import ScrollList from "./scroll-list.jsx";
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin);
 }
-
 
 const FluidSimulation = ({ disabled }) => {
   const canvasRef = useRef(null);
@@ -109,7 +110,7 @@ const FluidSimulation = ({ disabled }) => {
       } else {
         halfFloat = gl.getExtension("OES_texture_half_float");
         supportLinearFiltering = gl.getExtension(
-          "OES_texture_half_float_linear"
+          "OES_texture_half_float_linear",
         );
       }
 
@@ -129,7 +130,7 @@ const FluidSimulation = ({ disabled }) => {
           gl,
           gl.RGBA16F,
           gl.RGBA,
-          halfFloatTexType
+          halfFloatTexType,
         );
         formatRG = getSupportedFormat(gl, gl.RG16F, gl.RG, halfFloatTexType);
         formatR = getSupportedFormat(gl, gl.R16F, gl.RED, halfFloatTexType);
@@ -185,7 +186,7 @@ const FluidSimulation = ({ disabled }) => {
         0,
         format,
         type,
-        null
+        null,
       );
 
       let fbo = gl.createFramebuffer();
@@ -195,7 +196,7 @@ const FluidSimulation = ({ disabled }) => {
         gl.COLOR_ATTACHMENT0,
         gl.TEXTURE_2D,
         texture,
-        0
+        0,
       );
 
       const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
@@ -230,13 +231,13 @@ const FluidSimulation = ({ disabled }) => {
 
         const uniformCount = gl.getProgramParameter(
           this.program,
-          gl.ACTIVE_UNIFORMS
+          gl.ACTIVE_UNIFORMS,
         );
         for (let i = 0; i < uniformCount; i++) {
           const uniformName = gl.getActiveUniform(this.program, i).name;
           this.uniforms[uniformName] = gl.getUniformLocation(
             this.program,
-            uniformName
+            uniformName,
           );
         }
       }
@@ -279,7 +280,7 @@ const FluidSimulation = ({ disabled }) => {
           vB = vUv - vec2(0.0, texelSize.y);
           gl_Position = vec4(aPosition, 0.0, 1.0);
       }
-    `
+    `,
     );
 
     const clearShader = compileShader(
@@ -295,7 +296,7 @@ const FluidSimulation = ({ disabled }) => {
       void main () {
           gl_FragColor = value * texture2D(uTexture, vUv);
       }
-    `
+    `,
     );
 
     const displayShader = compileShader(
@@ -325,7 +326,7 @@ void main() {
 
     gl_FragColor = vec4(color, alpha * 0.7);  // Slightly softer visibility
 }
-    `
+    `,
     );
 
     const splatShader = compileShader(
@@ -348,7 +349,7 @@ void main() {
           vec3 base = texture2D(uTarget, vUv).xyz;
           gl_FragColor = vec4(base + splat, 1.0);
       }
-    `
+    `,
     );
 
     const advectionManualFilteringShader = compileShader(
@@ -382,7 +383,7 @@ void main() {
           gl_FragColor = dissipation * bilerp(uSource, coord);
           gl_FragColor.a = 1.0;
       }
-    `
+    `,
     );
 
     const advectionShader = compileShader(
@@ -403,7 +404,7 @@ void main() {
           gl_FragColor = dissipation * texture2D(uSource, coord);
           gl_FragColor.a = 1.0;
       }
-    `
+    `,
     );
 
     const divergenceShader = compileShader(
@@ -436,7 +437,7 @@ void main() {
           float div = 0.5 * (R - L + T - B);
           gl_FragColor = vec4(div, 0.0, 0.0, 1.0);
       }
-    `
+    `,
     );
 
     const curlShader = compileShader(
@@ -460,7 +461,7 @@ void main() {
           float vorticity = R - L - T + B;
           gl_FragColor = vec4(vorticity, 0.0, 0.0, 1.0);
       }
-    `
+    `,
     );
 
     const vorticityShader = compileShader(
@@ -486,7 +487,7 @@ void main() {
           vec2 vel = texture2D(uVelocity, vUv).xy;
           gl_FragColor = vec4(vel + force * dt, 0.0, 1.0);
       }
-    `
+    `,
     );
 
     const pressureShader = compileShader(
@@ -518,7 +519,7 @@ void main() {
           float pressure = (L + R + B + T - divergence) * 0.25;
           gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0);
       }
-    `
+    `,
     );
 
     const gradientSubtractShader = compileShader(
@@ -549,7 +550,7 @@ void main() {
           velocity.xy -= vec2(R - L, T - B);
           gl_FragColor = vec4(velocity, 0.0, 1.0);
       }
-    `
+    `,
     );
 
     let textureWidth;
@@ -576,7 +577,7 @@ void main() {
         rgba.internalFormat,
         rgba.format,
         texType,
-        ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST
+        ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST,
       );
       velocity = createDoubleFBO(
         0,
@@ -585,7 +586,7 @@ void main() {
         rg.internalFormat,
         rg.format,
         texType,
-        ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST
+        ext.supportLinearFiltering ? gl.LINEAR : gl.NEAREST,
       );
       divergence = createFBO(
         4,
@@ -594,7 +595,7 @@ void main() {
         r.internalFormat,
         r.format,
         texType,
-        gl.NEAREST
+        gl.NEAREST,
       );
       curl = createFBO(
         5,
@@ -603,7 +604,7 @@ void main() {
         r.internalFormat,
         r.format,
         texType,
-        gl.NEAREST
+        gl.NEAREST,
       );
       pressure = createDoubleFBO(
         6,
@@ -612,7 +613,7 @@ void main() {
         r.internalFormat,
         r.format,
         texType,
-        gl.NEAREST
+        gl.NEAREST,
       );
     }
 
@@ -633,7 +634,7 @@ void main() {
         0,
         format,
         type,
-        null
+        null,
       );
 
       let fbo = gl.createFramebuffer();
@@ -643,7 +644,7 @@ void main() {
         gl.COLOR_ATTACHMENT0,
         gl.TEXTURE_2D,
         texture,
-        0
+        0,
       );
       gl.viewport(0, 0, w, h);
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -660,7 +661,7 @@ void main() {
         internalFormat,
         format,
         type,
-        param
+        param,
       );
 
       return {
@@ -683,13 +684,13 @@ void main() {
       gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]),
-        gl.STATIC_DRAW
+        gl.STATIC_DRAW,
       );
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
       gl.bufferData(
         gl.ELEMENT_ARRAY_BUFFER,
         new Uint16Array([0, 1, 2, 0, 2, 3]),
-        gl.STATIC_DRAW
+        gl.STATIC_DRAW,
       );
       gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(0);
@@ -707,7 +708,7 @@ void main() {
       baseVertexShader,
       ext.supportLinearFiltering
         ? advectionShader
-        : advectionManualFilteringShader
+        : advectionManualFilteringShader,
     );
     const divergenceProgram = new GLProgram(baseVertexShader, divergenceShader);
     const curlProgram = new GLProgram(baseVertexShader, curlShader);
@@ -715,7 +716,7 @@ void main() {
     const pressureProgram = new GLProgram(baseVertexShader, pressureShader);
     const gradienSubtractProgram = new GLProgram(
       baseVertexShader,
-      gradientSubtractShader
+      gradientSubtractShader,
     );
 
     initFramebuffers();
@@ -737,14 +738,14 @@ void main() {
       gl.uniform2f(
         advectionProgram.uniforms.texelSize,
         1.0 / textureWidth,
-        1.0 / textureHeight
+        1.0 / textureHeight,
       );
       gl.uniform1i(advectionProgram.uniforms.uVelocity, velocity.read[2]);
       gl.uniform1i(advectionProgram.uniforms.uSource, velocity.read[2]);
       gl.uniform1f(advectionProgram.uniforms.dt, dt);
       gl.uniform1f(
         advectionProgram.uniforms.dissipation,
-        config.VELOCITY_DISSIPATION
+        config.VELOCITY_DISSIPATION,
       );
       blit(velocity.write[1]);
       velocity.swap();
@@ -753,7 +754,7 @@ void main() {
       gl.uniform1i(advectionProgram.uniforms.uSource, density.read[2]);
       gl.uniform1f(
         advectionProgram.uniforms.dissipation,
-        config.DENSITY_DISSIPATION
+        config.DENSITY_DISSIPATION,
       );
       blit(density.write[1]);
       density.swap();
@@ -770,7 +771,7 @@ void main() {
       gl.uniform2f(
         curlProgram.uniforms.texelSize,
         1.0 / textureWidth,
-        1.0 / textureHeight
+        1.0 / textureHeight,
       );
       gl.uniform1i(curlProgram.uniforms.uVelocity, velocity.read[2]);
       blit(curl[1]);
@@ -779,7 +780,7 @@ void main() {
       gl.uniform2f(
         vorticityProgram.uniforms.texelSize,
         1.0 / textureWidth,
-        1.0 / textureHeight
+        1.0 / textureHeight,
       );
       gl.uniform1i(vorticityProgram.uniforms.uVelocity, velocity.read[2]);
       gl.uniform1i(vorticityProgram.uniforms.uCurl, curl[2]);
@@ -792,7 +793,7 @@ void main() {
       gl.uniform2f(
         divergenceProgram.uniforms.texelSize,
         1.0 / textureWidth,
-        1.0 / textureHeight
+        1.0 / textureHeight,
       );
       gl.uniform1i(divergenceProgram.uniforms.uVelocity, velocity.read[2]);
       blit(divergence[1]);
@@ -810,7 +811,7 @@ void main() {
       gl.uniform2f(
         pressureProgram.uniforms.texelSize,
         1.0 / textureWidth,
-        1.0 / textureHeight
+        1.0 / textureHeight,
       );
       gl.uniform1i(pressureProgram.uniforms.uDivergence, divergence[2]);
       pressureTexId = pressure.read[2];
@@ -826,7 +827,7 @@ void main() {
       gl.uniform2f(
         gradienSubtractProgram.uniforms.texelSize,
         1.0 / textureWidth,
-        1.0 / textureHeight
+        1.0 / textureHeight,
       );
       gl.uniform1i(gradienSubtractProgram.uniforms.uPressure, pressure.read[2]);
       gl.uniform1i(gradienSubtractProgram.uniforms.uVelocity, velocity.read[2]);
@@ -846,12 +847,12 @@ void main() {
       gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read[2]);
       gl.uniform1f(
         splatProgram.uniforms.aspectRatio,
-        canvas.width / canvas.height
+        canvas.width / canvas.height,
       );
       gl.uniform2f(
         splatProgram.uniforms.point,
         x / canvas.width,
-        1.0 - y / canvas.height
+        1.0 - y / canvas.height,
       );
       gl.uniform3f(splatProgram.uniforms.color, dx, -dy, 1.0);
       gl.uniform1f(splatProgram.uniforms.radius, config.SPLAT_RADIUS);
@@ -863,7 +864,7 @@ void main() {
         splatProgram.uniforms.color,
         color[0] * 0.3,
         color[1] * 0.3,
-        color[2] * 0.3
+        color[2] * 0.3,
       );
       blit(density.write[1]);
       density.swap();
@@ -1023,24 +1024,24 @@ void main() {
     };
   }, []);
 
-return (
-  <canvas
-    ref={canvasRef}
-    style={{
-      width: "100vw",
-      height: "100vh",
-      position: "fixed",
-      top: 0,
-      left: 0,
-      zIndex: 1,
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        width: "100vw",
+        height: "100vh",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        zIndex: 1,
 
-      pointerEvents: disabled ? "none" : "auto",
+        pointerEvents: disabled ? "none" : "auto",
 
-      height: "-webkit-fill-available",
-      minHeight: "-webkit-fill-available",
-    }}
-  />
-);
+        height: "-webkit-fill-available",
+        minHeight: "-webkit-fill-available",
+      }}
+    />
+  );
 };
 
 function Background() {
@@ -1057,7 +1058,7 @@ function Background() {
     });
 
     const { gl } = renderer;
-    gl.clearColor(0.93, 0.94, 0.96, 1.0); 
+    gl.clearColor(0.93, 0.94, 0.96, 1.0);
 
     const geometry = new Triangle(gl);
 
@@ -1073,7 +1074,7 @@ function Background() {
       }
     `;
 
-const fragment = `
+    const fragment = `
 precision highp float;
 
 uniform vec3 uColor1;
@@ -1320,20 +1321,22 @@ color += vec3(0.01, 0.01, 0.015) * overallSheen;
 gl_FragColor = vec4(color, 1.0);
 }
 `;
-    
+
     const program = new Program(gl, {
       vertex,
       fragment,
       uniforms: {
         uTime: { value: 0 },
         uScroll: { value: 0 },
-        uColor1: { value: new Color("#F68128") }, 
-        uColor2: { value: new Color("#AAAEC3") }, 
- uColor3: { value: new Color("#CFC8BE") },
-         uColor4: { value: new Color("#E9E4DC") },
-        
-        uResolution: { value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight) },
-      }
+        uColor1: { value: new Color("#F68128") },
+        uColor2: { value: new Color("#AAAEC3") },
+        uColor3: { value: new Color("#CFC8BE") },
+        uColor4: { value: new Color("#E9E4DC") },
+
+        uResolution: {
+          value: new Vec2(gl.canvas.offsetWidth, gl.canvas.offsetHeight),
+        },
+      },
     });
 
     const mesh = new Mesh(gl, { geometry, program });
@@ -1345,23 +1348,23 @@ gl_FragColor = vec4(color, 1.0);
       program.uniforms.uResolution.value.set(w, h);
     };
 
-let targetScroll = 0;
-let currentScroll = 0;
+    let targetScroll = 0;
+    let currentScroll = 0;
 
-const handleScroll = () => {
-  targetScroll = window.scrollY * 0.00015;
-};
+    const handleScroll = () => {
+      targetScroll = window.scrollY * 0.00015;
+    };
 
     let frameId;
-const loop = (t) => {
-  program.uniforms.uTime.value = t * 0.001;
+    const loop = (t) => {
+      program.uniforms.uTime.value = t * 0.001;
 
-  currentScroll += (targetScroll - currentScroll) * 0.06;
-  program.uniforms.uScroll.value = currentScroll;
+      currentScroll += (targetScroll - currentScroll) * 0.06;
+      program.uniforms.uScroll.value = currentScroll;
 
-  renderer.render({ scene: mesh });
-  frameId = requestAnimationFrame(loop);
-};
+      renderer.render({ scene: mesh });
+      frameId = requestAnimationFrame(loop);
+    };
     requestAnimationFrame(loop);
 
     window.addEventListener("resize", handleResize);
@@ -1385,301 +1388,346 @@ const loop = (t) => {
 }
 
 const TerminalPreloader = () => {
-  
-  const containerRef = useRef();
-const specialChars = "⬝";
   const lines = [
-  { id: 1, faded: "We are committed to setting the highest standard through", highlight: "exceptional service", top: 0 },
-  { id: 2, faded: "That commitment is supported by our use of", highlight: "state-of-the-art technology", top: 20 },
-  { id: 3, faded: "And strengthened by the expertise that comes from", highlight: "unmatched experience", top: 40 },
-  ];
 
-  useEffect(() => {
-    const terminalLines = containerRef.current.querySelectorAll('.terminal-line');
-    
+  {
 
-    gsap.set(terminalLines, { opacity: 0 });
+    id: 1,
 
-    const tl = gsap.timeline({
-      defaults: { ease: "none" }
-    });
+    text: "We are committed to setting the highest standard through exceptional service",
 
-    lines.forEach((line, index) => {
-      const lineEl = terminalLines[index];
-      if (!lineEl) return;
+    top: 0,
 
+  },
 
-      const appearTime = index * 0.3;
+  {
 
-      tl.to(
-        lineEl,
-        { opacity: 1, duration: 0.3 },
-        appearTime
+    id: 2,
+
+    text: "That commitment is supported by our use of state-of-the-art technology",
+
+    top: 20,
+
+  },
+
+  {
+
+    id: 3,
+
+    text: "And strengthened by the expertise that comes from unmatched experience",
+
+    top: 40,
+
+  },
+
+];
+
+const MAX_CELL_ITERATIONS = 30;
+
+const CELL_INTERVAL = 15;
+
+const LINE_DELAY = 180;
+  const containerRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+
+    if (!container) return;
+
+    const timeoutIds = [];
+
+    const lineElements = Array.from(
+      container.querySelectorAll(".terminal-line"),
+    );
+
+    const animatedLines = lineElements.map((lineElement) => {
+      const cellElements = Array.from(
+        lineElement.querySelectorAll(".terminal-cell"),
       );
 
-
-      if (line.faded) {
-        const fadedSpan = lineEl.querySelector('.faded');
-        tl.to(
-          fadedSpan,
-          {
-            duration: 0.8,
-            scrambleText: {
-              text: line.faded,
-              chars: specialChars,
-              revealDelay: 0,
-              speed: 0.3
-            }
-          },
-          appearTime + 0.1
-        );
-      }
-
-
-      if (line.highlight) {
-        const highlightSpan = lineEl.querySelector('.highlight');
-        tl.to(
-          highlightSpan,
-          {
-            duration: 0.8,
-            scrambleText: {
-              text: line.highlight,
-              chars: specialChars,
-              revealDelay: 0,
-              speed: 0.3
-            }
-          },
-          appearTime + (line.faded ? 0.5 : 0.1) 
-        );
-      }
-
-
-      if (index % 3 === 0 && index > 0) {
-        tl.add(() => {
-          const spans = lineEl.querySelectorAll('span');
-          spans.forEach(span => {
-            const text = span.textContent;
-            gsap.to(span, {
-              duration: 0.2,
-              scrambleText: {
-                text: text,
-                chars: specialChars,
-                speed: 0.1
-              },
-              repeat: 1,
-              yoyo: true
-            });
-          });
-        }, `+=${Math.random() * 0.5}`);
-      }
+      return cellElements.map((cellElement, position) => ({
+        element: cellElement,
+        position,
+        original: cellElement.dataset.character ?? "",
+        signal: "",
+        iterations: 0,
+        finished: false,
+      }));
     });
 
-    return () => tl.kill(); 
+    const renderCell = (cell, value) => {
+      cell.element.textContent =
+        cell.original === " " ? "\u00A0" : value || "\u00A0";
+    };
+
+    animatedLines.forEach((cells) => {
+      cells.forEach((cell) => {
+        cell.signal = "";
+        cell.iterations = 0;
+        cell.finished = false;
+
+        renderCell(cell, "");
+      });
+    });
+
+    const animateLine = (cells) => {
+      const tick = () => {
+        const previousSignals = cells.map((cell) => cell.signal);
+
+        cells.forEach((cell, index) => {
+          if (cell.finished) return;
+
+          let nextSignal = "";
+
+          if (index === 0) {
+            nextSignal = Math.random() < 0.5 ? "*" : ":";
+          } else {
+            nextSignal = previousSignals[index - 1];
+          }
+
+          cell.signal = nextSignal;
+
+          renderCell(cell, nextSignal);
+
+          if (nextSignal) {
+            cell.iterations += 1;
+          }
+
+          if (cell.iterations >= MAX_CELL_ITERATIONS) {
+            cell.finished = true;
+
+            cell.element.textContent =
+              cell.original === " "
+                ? "\u00A0"
+                : cell.original;
+          }
+        });
+
+        const allFinished = cells.every((cell) => cell.finished);
+
+        if (!allFinished) {
+          const timeoutId = window.setTimeout(
+            tick,
+            CELL_INTERVAL,
+          );
+
+          timeoutIds.push(timeoutId);
+        }
+      };
+
+      tick();
+    };
+
+    animatedLines.forEach((cells, lineIndex) => {
+      const timeoutId = window.setTimeout(() => {
+        animateLine(cells);
+      }, lineIndex * LINE_DELAY);
+
+      timeoutIds.push(timeoutId);
+    });
+
+    return () => {
+      timeoutIds.forEach((timeoutId) => {
+        window.clearTimeout(timeoutId);
+      });
+    };
   }, []);
 
   return (
-    
     <div className="terminal-preloader">
-    
-
-      <div className="terminal-container" ref={containerRef}>
+      <div
+        ref={containerRef}
+        className="terminal-container"
+      >
         {lines.map((line) => (
-          <div 
+          <div
             key={line.id}
             className="terminal-line"
             style={{ top: `${line.top}px` }}
+            aria-label={line.text}
           >
-            {line.faded && <span className="faded"></span>}
-            {line.highlight && <span className="highlight"></span>}
+            {Array.from(line.text).map(
+              (character, index) => (
+                <span
+                  key={`${line.id}-${index}`}
+                  className="terminal-cell"
+                  data-character={character}
+                  aria-hidden="true"
+                >
+                  {character === " "
+                    ? "\u00A0"
+                    : character}
+                </span>
+              ),
+            )}
           </div>
         ))}
       </div>
-
-    
     </div>
   );
 };
-
 const testimonials = [
   {
     name: "Lainie",
     image: "../images/testimonials/lainielandscape.png",
     type: "20 months",
     project: "Lainie",
-
   },
-    {
+  {
     name: "James",
     image: "../images/testimonials/Jamescontrast.png",
     type: "20 months",
     project: "Sabrinas",
-
   },
   {
     name: "Ron L.",
     image: "../images/testimonials/Ronlandscape.png",
     type: "Invisalign",
     project: "Ron L.",
-
   },
   {
     name: "Elizabeth",
     image: "../images/testimonials/elizabethmask.png",
     type: "Invisalign",
     project: "Elizabeth",
-
   },
   {
     name: "Kinzie",
     image: "../images/testimonials/kinzie.jpg",
     type: "Braces, 24 months",
     project: "Kinzie",
-
   },
   {
     name: "Kasprenski",
     image: "../images/testimonials/kasprenski.png",
     type: undefined,
     project: "Kasprenski",
-
   },
   {
     name: "Leanne",
     image: "../images/testimonials/Leannelandscape.png",
     type: "12 months",
     project: "Leanne",
-
   },
   {
     name: "Harold",
     image: "../images/testimonials/harold.png",
     type: "Invisalign",
     project: "Harold",
-
   },
   {
     name: "Abigail",
     image: "../images/testimonials/Abigailportrait.png",
     type: undefined,
     project: "Abigail",
-
   },
   {
     name: "Madi",
     image: "../images/testimonials/Madi.png",
     type: "",
     project: "Madi",
-
   },
   {
     name: "Justin",
     image: "../images/testimonials/hurlburt.png",
     type: "Invisalign, 2 years",
     project: "Justin",
-
   },
   {
     name: "Natalia",
     image: "../images/testimonials/Natalia.png",
     type: undefined,
     project: "Natalia",
-
   },
   {
     name: "Breanna",
     image: "../images/testimonials/Breanna.png",
     type: "2 years, Braces",
     project: "Breanna",
-
   },
   {
     name: "Ibis",
     image: "../images/testimonials/Ibis_Subero.jpg",
     type: undefined,
     project: "Ibis",
-
   },
   {
     name: "Natasha",
     image: "../images/testimonials/Natasha.png",
     type: undefined,
     project: "Natasha",
-
   },
   {
     name: "Alex",
     image: "../images/testimonials/Alex.png",
     type: "2 years, Braces",
     project: "Alex",
-
   },
   {
     name: "Nicolle",
     image: "../images/testimonials/Nicolle.png",
     type: "Braces",
     project: "Nilaya",
-
   },
   {
     name: "Maria A.",
     image: "../images/testimonials/Maria.png",
     type: undefined,
     project: "Maria A.",
-
   },
 ];
 
 function IntroCirclesBackground() {
   const ref = useRef(null);
 
-useLayoutEffect(() => {
-  const paths = document.querySelectorAll('.bg-lines path');
+  useLayoutEffect(() => {
+    const paths = document.querySelectorAll(".bg-lines path");
 
-  console.log('paths found:', paths.length);
+    console.log("paths found:", paths.length);
 
-  paths.forEach((path, i) => {
-    const length = path.getTotalLength();
+    paths.forEach((path, i) => {
+      const length = path.getTotalLength();
 
-    gsap.set(path, {
-      strokeDasharray: length,
-      strokeDashoffset: length,
-      opacity: 1,
+      gsap.set(path, {
+        strokeDasharray: length,
+        strokeDashoffset: length,
+        opacity: 1,
+      });
+
+      gsap.to(path, {
+        strokeDashoffset: 0,
+        duration: 2.4,
+        ease: "power1.out",
+        delay: i * 0.3,
+        scrollTrigger: {
+          trigger: path.closest("svg"),
+          start: "top 75%",
+        },
+      });
     });
+  }, []);
 
-    gsap.to(path, {
-      strokeDashoffset: 0,
-      duration: 2.4,
-      ease: 'power1.out',
-      delay: i * 0.3,
-      scrollTrigger: {
-        trigger: path.closest('svg'),
-        start: 'top 75%',
-      },
+  useLayoutEffect(() => {
+    const glowPaths = document.querySelectorAll(".bg-line.glow");
+
+    glowPaths.forEach((path, i) => {
+      const length = path.getTotalLength();
+
+      gsap.set(path, {
+        strokeDasharray: `${length * 0.15} ${length}`,
+        strokeDashoffset: 0,
+      });
+
+      gsap.to(path, {
+        strokeDashoffset: -length,
+        duration: 6 + i * 0.8,
+        ease: "none",
+        repeat: -1,
+      });
     });
-  });
-}, []);
-
-useLayoutEffect(() => {
-  const glowPaths = document.querySelectorAll('.bg-line.glow');
-
-  glowPaths.forEach((path, i) => {
-    const length = path.getTotalLength();
-
-    gsap.set(path, {
-      strokeDasharray: `${length * 0.15} ${length}`,
-      strokeDashoffset: 0,
-    });
-
-    gsap.to(path, {
-      strokeDashoffset: -length,
-      duration: 6 + i * 0.8,
-      ease: 'none',
-      repeat: -1,
-    });
-  });
-}, []);
+  }, []);
   return (
-  <div
+    <div
       ref={ref}
       aria-hidden
       className="
@@ -1690,7 +1738,7 @@ useLayoutEffect(() => {
         text-[#685AFF]
       "
     >
-  {/* <svg 
+      {/* <svg 
   className="bg-lines background background--cover background--top svg-fix is-hidden--sm-down
     -translate-x-[10%]
      translate-y-[2%]
@@ -1834,7 +1882,7 @@ className="
     </linearGradient>
   </defs>
 </svg> */}
-  
+
       {/* <svg
         className="bg-lines hidden md:block absolute top-0 left-1/2 -translate-x-1/2"
         width="1420"
@@ -1907,8 +1955,6 @@ className="
           </linearGradient>
         </defs>
       </svg> */}
-
-    
     </div>
   );
 }
@@ -1917,99 +1963,101 @@ const List = ({ onInteractionChange }) => {
   const testimonialsSectionRef = useRef(null);
   const testimonialsListRef = useRef(null);
   const testimonialPreviewRef = useRef(null);
-const lastStackedIndex = useRef(null);
+  const lastStackedIndex = useRef(null);
   const testimonialRefs = useRef([]);
   const nameRefs = useRef([]);
   const typeRefs = useRef([]);
   const nameHighlightRefs = useRef([]);
   const typeHighlightRefs = useRef([]);
-const outroRef = useRef(null);
+  const outroRef = useRef(null);
   const lastMousePosition = useRef({ x: 0, y: 0 });
   const activeTestimonial = useRef(null);
   const zCounter = useRef(1);
   const ticking = useRef(false);
   const isHovering = useRef(false);
   const lastScrollActive = useRef(null);
-  const highlighterColors = ['neon', 'pink', 'green'];
+  const highlighterColors = ["neon", "pink", "green"];
   const scrollTicking = useRef(false);
 
   const scrambleText = (idx) => {
     const scramble = {
-      characters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+      characters: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
       speed: 0.8,
       newChars: 0.3,
       revealDelay: 0,
       tweenLength: true,
-    }
-    
+    };
+
     const testimonialData = testimonials[idx];
-    
+
     if (nameRefs.current[idx]) {
       gsap.to(nameRefs.current[idx], {
         duration: 1.5,
-        ease: 'power2.out',
+        ease: "power2.out",
         scrambleText: { text: testimonialData.name, ...scramble },
       });
     }
-    
+
     if (typeRefs.current[idx] && testimonialData.type) {
       gsap.to(typeRefs.current[idx], {
         duration: 1.5,
-        ease: 'power2.out',
+        ease: "power2.out",
         scrambleText: { text: testimonialData.type, ...scramble },
       });
     }
   };
 
-const getRandomColorClass = () => {
-  const colors = highlighterColors;
-  return colors[Math.floor(Math.random() * colors.length)];
-};
+  const getRandomColorClass = () => {
+    const colors = highlighterColors;
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
 
-const highlightText = (idx, activate = true) => {
-  if (nameHighlightRefs.current[idx]) {
-    const nameEl = nameHighlightRefs.current[idx];
-    if (activate) {
-      const colorClass = getRandomColorClass();
-      nameEl.classList.add('active', colorClass);
-      nameEl.dataset.color = colorClass;
-    } else {
-      nameEl.classList.remove('active', 'neon', 'pink', 'green');
-      delete nameEl.dataset.color;
+  const highlightText = (idx, activate = true) => {
+    if (nameHighlightRefs.current[idx]) {
+      const nameEl = nameHighlightRefs.current[idx];
+      if (activate) {
+        const colorClass = getRandomColorClass();
+        nameEl.classList.add("active", colorClass);
+        nameEl.dataset.color = colorClass;
+      } else {
+        nameEl.classList.remove("active", "neon", "pink", "green");
+        delete nameEl.dataset.color;
+      }
     }
-  }
 
-  if (typeHighlightRefs.current[idx] && testimonials[idx].type) {
-    const typeEl = typeHighlightRefs.current[idx];
-    if (activate) {
-      const colorClass = nameHighlightRefs.current[idx]?.dataset.color || getRandomColorClass();
-      typeEl.classList.add('active', colorClass);
-    } else {
-      typeEl.classList.remove('active', 'neon', 'pink', 'green');
+    if (typeHighlightRefs.current[idx] && testimonials[idx].type) {
+      const typeEl = typeHighlightRefs.current[idx];
+      if (activate) {
+        const colorClass =
+          nameHighlightRefs.current[idx]?.dataset.color ||
+          getRandomColorClass();
+        typeEl.classList.add("active", colorClass);
+      } else {
+        typeEl.classList.remove("active", "neon", "pink", "green");
+      }
     }
-  }
-};
-const stackImage = (index, source = "scroll") => {
-  const container = testimonialPreviewRef.current;
-  const data = testimonials[index];
-  if (!container || !data?.image) return;
+  };
+  const stackImage = (index, source = "scroll") => {
+    const container = testimonialPreviewRef.current;
+    const data = testimonials[index];
+    if (!container || !data?.image) return;
 
-  if (lastStackedIndex.current === index) return;
+    if (lastStackedIndex.current === index) return;
 
-const mask = document.createElement("div");
-mask.className = "preview-mask";
+    const mask = document.createElement("div");
+    mask.className = "preview-mask";
 
-const img = document.createElement("img");
-img.src = data.image;
+    const img = document.createElement("img");
+    img.src = data.image;
 
-img.style.width = "100%";
-img.style.height = "100%";
-img.style.objectFit = "cover";
-img.style.transform = "scale(0)";
-img.style.transformOrigin = "center center";
-img.style.zIndex = zCounter.current++;
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover";
+    img.style.transform = "scale(0)";
+    img.style.transformOrigin = "center center";
+    img.style.zIndex = zCounter.current++;
 
-img.style.clipPath = `
+    img.style.clipPath = `
   polygon(
     16px 0%,
     calc(100% - 16px) 0%,
@@ -2031,274 +2079,252 @@ img.style.clipPath = `
     16px 16px
   )
 `;
-mask.appendChild(img);
-container.appendChild(mask);
+    mask.appendChild(img);
+    container.appendChild(mask);
 
-  gsap.to(img, {
-    scale: 1,
-    duration: 0.35,
-    ease: "power2.out",
-  });
+    gsap.to(img, {
+      scale: 1,
+      duration: 0.35,
+      ease: "power2.out",
+    });
 
+    const images = container.querySelectorAll("img");
+    if (images.length > 6) images[0].remove();
 
-  const images = container.querySelectorAll("img");
-  if (images.length > 6) images[0].remove();
+    lastStackedIndex.current = index;
+  };
+  const updatePreviewOnScroll = () => {
+    if (!isTestimonialsVisible()) return;
+    if (isHovering.current) return; // prioritize hover
 
-  lastStackedIndex.current = index;
-};
-const updatePreviewOnScroll = () => {
-  if (!isTestimonialsVisible()) return;
-  if (isHovering.current) return; // prioritize hover
+    const sectionTop = testimonialsSectionRef.current.offsetTop;
+    const centerY = window.scrollY + window.innerHeight / 2 - sectionTop;
 
-  const sectionTop = testimonialsSectionRef.current.offsetTop;
-  const centerY = window.scrollY + window.innerHeight / 2 - sectionTop;
+    let closestIndex = null;
+    let closestDistance = Infinity;
 
-  let closestIndex = null;
-  let closestDistance = Infinity;
+    rowCenters.current.forEach((rowCenter, index) => {
+      if (!rowCenter) return;
+      const distance = Math.abs(rowCenter - centerY);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
 
-  rowCenters.current.forEach((rowCenter, index) => {
-    if (!rowCenter) return;
-    const distance = Math.abs(rowCenter - centerY);
-    if (distance < closestDistance) {
-      closestDistance = distance;
-      closestIndex = index;
+    if (
+      closestIndex !== null &&
+      closestIndex !== lastScrollActive.current &&
+      closestDistance < 120
+    ) {
+      // highlight swap
+      if (lastScrollActive.current !== null) {
+        highlightText(lastScrollActive.current, false);
+      }
+      highlightText(closestIndex, true);
+
+      //  stack image on scroll index change
+      stackImage(closestIndex, "scroll");
+
+      lastScrollActive.current = closestIndex;
     }
-  });
+  };
 
-  if (
-    closestIndex !== null &&
-    closestIndex !== lastScrollActive.current &&
-    closestDistance < 120
-  ) {
-    // highlight swap
-    if (lastScrollActive.current !== null) {
-      highlightText(lastScrollActive.current, false);
-    }
-    highlightText(closestIndex, true);
-
-    //  stack image on scroll index change
-    stackImage(closestIndex, "scroll");
-
-    lastScrollActive.current = closestIndex;
-  }
-};
-  
   const mouseTicking = useRef(false);
 
-useEffect(() => {
-  const handleMouseMove = (e) => {
-    lastMousePosition.current.x = e.clientX;
-    lastMousePosition.current.y = e.clientY;
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      lastMousePosition.current.x = e.clientX;
+      lastMousePosition.current.y = e.clientY;
 
-    if (!isHovering.current) return;
+      if (!isHovering.current) return;
 
-if (!mouseTicking.current) {
-  requestAnimationFrame(() => {
-    mouseTicking.current = false;
-  });
-  mouseTicking.current = true;
-}
-  };
-
-  window.addEventListener("mousemove", handleMouseMove);
-  return () => window.removeEventListener("mousemove", handleMouseMove);
-}, []);
-useEffect(() => {
-  const onScroll = () => {
-    if (!isTestimonialsVisible()) {
-const images = testimonialPreviewRef.current?.querySelectorAll("img");
-images?.forEach((img) => {
-  gsap.killTweensOf(img);
-  gsap.to(img, {
-    scale: 0,
-    opacity: 0,
-    duration: 0.35,
-    ease: "power2.inOut",
-    onComplete: () => img.remove(),
-  });
-});
-
-lastStackedIndex.current = null;
-zCounter.current = 1;
-
-      activeTestimonial.current = null;
-      isHovering.current = false;
-      lastScrollActive.current = null;
-
-      testimonials.forEach((_, index) => {
-        highlightText(index, false);
-      });
-
-      return;
-    }
-
-if (!scrollTicking.current) {
-  requestAnimationFrame(() => {
-    updatePreviewOnScroll();
-    scrollTicking.current = false;
-  });
-  scrollTicking.current = true;
-}
-  };
-
-  window.addEventListener("scroll", onScroll, { passive: true });
-  return () => window.removeEventListener("scroll", onScroll);
-}, []);
-
-useEffect(() => {
-  testimonialRefs.current.forEach((testimonial, index) => {
-    if (!testimonial) return;
-
-const enter = () => {
-  activeTestimonial.current = index;
-  isHovering.current = true;
-
-  lastStackedIndex.current = null;
-
-  highlightText(index, true);
-  scrambleText(index);
-
-  //  stack immediately on enter
-  stackImage(index, "hover");
-};
-
-const leave = () => {
-  activeTestimonial.current = null;
-  isHovering.current = false;
-
-  highlightText(index, false);
-
-  lastStackedIndex.current = null;
-};
-    testimonial.addEventListener("mouseenter", enter);
-    testimonial.addEventListener("mouseleave", leave);
-
-    return () => {
-      testimonial.removeEventListener("mouseenter", enter);
-      testimonial.removeEventListener("mouseleave", leave);
+      if (!mouseTicking.current) {
+        requestAnimationFrame(() => {
+          mouseTicking.current = false;
+        });
+        mouseTicking.current = true;
+      }
     };
-  });
-}, []);
-  
-  const rowCenters = useRef([]);
-useEffect(() => {
-  const computeCenters = () => {
-    rowCenters.current = testimonialRefs.current.map((el) =>
-      el ? el.offsetTop + el.offsetHeight / 2 : null
-    );
-  };
 
-  computeCenters();
-  window.addEventListener("resize", computeCenters);
-  return () => window.removeEventListener("resize", computeCenters);
-}, []);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+  useEffect(() => {
+    const onScroll = () => {
+      if (!isTestimonialsVisible()) {
+        const images = testimonialPreviewRef.current?.querySelectorAll("img");
+        images?.forEach((img) => {
+          gsap.killTweensOf(img);
+          gsap.to(img, {
+            scale: 0,
+            opacity: 0,
+            duration: 0.35,
+            ease: "power2.inOut",
+            onComplete: () => img.remove(),
+          });
+        });
+
+        lastStackedIndex.current = null;
+        zCounter.current = 1;
+
+        activeTestimonial.current = null;
+        isHovering.current = false;
+        lastScrollActive.current = null;
+
+        testimonials.forEach((_, index) => {
+          highlightText(index, false);
+        });
+
+        return;
+      }
+
+      if (!scrollTicking.current) {
+        requestAnimationFrame(() => {
+          updatePreviewOnScroll();
+          scrollTicking.current = false;
+        });
+        scrollTicking.current = true;
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    testimonialRefs.current.forEach((testimonial, index) => {
+      if (!testimonial) return;
+
+      const enter = () => {
+        activeTestimonial.current = index;
+        isHovering.current = true;
+
+        lastStackedIndex.current = null;
+
+        highlightText(index, true);
+        scrambleText(index);
+
+        //  stack immediately on enter
+        stackImage(index, "hover");
+      };
+
+      const leave = () => {
+        activeTestimonial.current = null;
+        isHovering.current = false;
+
+        highlightText(index, false);
+
+        lastStackedIndex.current = null;
+      };
+      testimonial.addEventListener("mouseenter", enter);
+      testimonial.addEventListener("mouseleave", leave);
+
+      return () => {
+        testimonial.removeEventListener("mouseenter", enter);
+        testimonial.removeEventListener("mouseleave", leave);
+      };
+    });
+  }, []);
+
+  const rowCenters = useRef([]);
+  useEffect(() => {
+    const computeCenters = () => {
+      rowCenters.current = testimonialRefs.current.map((el) =>
+        el ? el.offsetTop + el.offsetHeight / 2 : null,
+      );
+    };
+
+    computeCenters();
+    window.addEventListener("resize", computeCenters);
+    return () => window.removeEventListener("resize", computeCenters);
+  }, []);
 
   const isTestimonialsVisible = () => {
     if (!testimonialsSectionRef.current) return false;
 
     const rect = testimonialsSectionRef.current.getBoundingClientRect();
 
-    return (
-      rect.bottom > 0 &&
-      rect.top < window.innerHeight
-    );
+    return rect.bottom > 0 && rect.top < window.innerHeight;
   };
   const clearPreview = () => {
-  const images = testimonialPreviewRef.current?.querySelectorAll("img");
-  images?.forEach((img) => {
-    gsap.killTweensOf(img);
-    gsap.to(img, {
-      scale: 0,
-      opacity: 0,
-      duration: 0.35,
-      ease: "power2.inOut",
-      onComplete: () => img.remove(),
+    const images = testimonialPreviewRef.current?.querySelectorAll("img");
+    images?.forEach((img) => {
+      gsap.killTweensOf(img);
+      gsap.to(img, {
+        scale: 0,
+        opacity: 0,
+        duration: 0.35,
+        ease: "power2.inOut",
+        onComplete: () => img.remove(),
+      });
     });
-  });
 
-  lastStackedIndex.current = null;
-  zCounter.current = 1;
-};
-  
+    lastStackedIndex.current = null;
+    zCounter.current = 1;
+  };
+
   useEffect(() => {
-  if (!outroRef.current) return;
+    if (!outroRef.current) return;
 
-  const trigger = ScrollTrigger.create({
-    trigger: outroRef.current,
-    start: "top center",
-    onEnter: clearPreview,
-    onEnterBack: clearPreview,
-  });
+    const trigger = ScrollTrigger.create({
+      trigger: outroRef.current,
+      start: "top center",
+      onEnter: clearPreview,
+      onEnterBack: clearPreview,
+    });
 
-  return () => trigger.kill();
-}, []);
-useEffect(() => {
-  if (!testimonialsSectionRef.current || !onInteractionChange) return;
+    return () => trigger.kill();
+  }, []);
+  useEffect(() => {
+    if (!testimonialsSectionRef.current || !onInteractionChange) return;
 
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      onInteractionChange(entry.isIntersecting);
-    },
-    {
-      threshold: 0.4,
-    }
-  );
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        onInteractionChange(entry.isIntersecting);
+      },
+      {
+        threshold: 0.4,
+      },
+    );
 
-  observer.observe(testimonialsSectionRef.current);
+    observer.observe(testimonialsSectionRef.current);
 
-  return () => observer.disconnect();
-}, [onInteractionChange]);
-
+    return () => observer.disconnect();
+  }, [onInteractionChange]);
 
   return (
     <div className="testimonialsPage">
-
-<section className="intro relative min-h-screen overflow-hidden">
-  <IntroCirclesBackground />
-  <div className="absolute inset-0 z-0 pointer-events-none">
-
-    <JanusFace />
-
-  </div>
-
-  <div className="relative max-w-[1400px] mx-auto w-full flex flex-col md:flex-row">
-    <div className="hidden md:block md:w-1/2 min-h-screen" />
-
-    <div className="w-full md:w-1/2 min-h-screen flex items-center justify-center px-6 md:px-0">
-      <div className="max-w-[1200px] w-full">
-        <div
-          className="
-            font-neuehaas45
-            leading-[1.2]
-            relative
-            text-center md:text-left
-          "
-        >
-          <TerminalPreloader />
-
+      <section className="intro relative min-h-screen overflow-hidden">
+        <IntroCirclesBackground />
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <JanusFace />
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+
+        <div className="relative max-w-[1400px] mx-auto w-full flex flex-col md:flex-row">
+          <div className="hidden md:block md:w-1/2 min-h-screen" />
+
+          <div className="w-full md:w-1/2 min-h-screen flex items-center justify-center px-6 md:px-0">
+            <div className="max-w-[1200px] w-full">
+              <div
+              >
+                <TerminalPreloader />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       <section className="testimonials" ref={testimonialsSectionRef}>
-<div className="flex flex-col items-center text-center mb-10 gap-1">
-    <div className="flex items-baseline gap-2">
+        <div className="flex flex-col items-center text-center mb-10 gap-1">
+          <div className="flex items-baseline gap-2">
+            <SlidingText text="Select Cases" effect="2" totalCells={4} />
+          </div>
 
-     <SlidingText 
-        text="Select Cases"
-        effect="2"
-        totalCells={4}
-      />
-
-
-  </div>
-        
-  <span className="text-[15px] font-canelathin opacity-60">
-    A visual archive of selected treatment outcomes
-  </span>
-</div>
-<div className="flex items-center justify-between w-full">
+          <span className="text-[15px] font-canelathin opacity-60">
+            A visual archive of selected treatment outcomes
+          </span>
+        </div>
+        <div className="flex items-center justify-between w-full">
           <span className="inline-block w-3 h-3 transition-transform duration-300 ease-in-out hover:rotate-180">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -2337,27 +2363,22 @@ useEffect(() => {
             >
               <div className="testimonial-content">
                 <div className="testimonial-name">
-                  <span 
+                  <span
                     className="highlighted-text col-left"
                     ref={(el) => (nameHighlightRefs.current[index] = el)}
                   >
-                    <h1 
-                      ref={(el) => (nameRefs.current[index] = el)}
-                    >
+                    <h1 ref={(el) => (nameRefs.current[index] = el)}>
                       {testimonial.name}
                     </h1>
                   </span>
-                  <span 
+                  <span
                     className="highlighted-text col-right"
                     ref={(el) => (typeHighlightRefs.current[index] = el)}
                   >
-                    <h1 
-                      ref={(el) => (typeRefs.current[index] = el)}
-                    >
+                    <h1 ref={(el) => (typeRefs.current[index] = el)}>
                       {testimonial.type || ""}
                     </h1>
                   </span>
-               
                 </div>
               </div>
             </div>
@@ -2365,16 +2386,12 @@ useEffect(() => {
         </div>
       </section>
 
-
-<div ref={outroRef} className="testimonials-outro-spacer" />
+      <div ref={outroRef} className="testimonials-outro-spacer" />
       <div className="testimonial-preview" ref={testimonialPreviewRef} />
     </div>
   );
 };
-const SlidingText = ({
-  text = "Select Cases",
-  totalCells = 4,
-}) => {
+const SlidingText = ({ text = "Select Cases", totalCells = 4 }) => {
   const containerRef = useRef(null);
   const innerRefs = useRef([]);
 
@@ -2390,9 +2407,9 @@ const SlidingText = ({
       container.style.setProperty("--gsplits", totalCells);
 
       const offset = textWidth / totalCells;
-      
+
       innerRefs.current.forEach((inner, i) => {
-        gsap.set(inner, { 
+        gsap.set(inner, {
           x: -i * offset,
         });
       });
@@ -2406,81 +2423,77 @@ const SlidingText = ({
     };
   }, [totalCells]);
 
-useEffect(() => {
-  const el = containerRef.current;
-  if (!el || !innerRefs.current.length) return;
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || !innerRefs.current.length) return;
 
-  const setLayout = () => {
-    const firstInner = innerRefs.current[0];
-    const textWidth = firstInner.scrollWidth;
-    
-    el.style.setProperty("--text-width", `${textWidth}px`);
-    el.style.setProperty("--gsplits", totalCells);
+    const setLayout = () => {
+      const firstInner = innerRefs.current[0];
+      const textWidth = firstInner.scrollWidth;
 
-    const offset = textWidth / totalCells;
-    
-    innerRefs.current.forEach((inner, i) => {
-      gsap.set(inner, { 
-        x: -i * offset,
-      });
-    });
-  };
+      el.style.setProperty("--text-width", `${textWidth}px`);
+      el.style.setProperty("--gsplits", totalCells);
 
-  setLayout();
-
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (!entry.isIntersecting) return;
-
-      observer.disconnect();
-      const textWidth = parseFloat(el.style.getPropertyValue("--text-width"));
       const offset = textWidth / totalCells;
 
-      gsap.fromTo(
-        innerRefs.current,
-        {
-          x: (i) => -i * offset + (i % 2 === 0 ? -40 : 40),
-          opacity: 0,
-        },
-        {
-          x: (i) => -i * offset,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.03,
-          ease: "power2.out",
-        }
-      );
-    },
-    { threshold: 0.7 }
-  );
+      innerRefs.current.forEach((inner, i) => {
+        gsap.set(inner, {
+          x: -i * offset,
+        });
+      });
+    };
 
-  gsap.set(innerRefs.current, { opacity: 0 });
-  
-  observer.observe(el);
-
-
-  const handleResize = () => {
     setLayout();
- 
-    if (!observer) {
-      gsap.set(innerRefs.current, { opacity: 0 });
-    }
-  };
 
-  window.addEventListener('resize', handleResize);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
 
-  return () => {
-    observer.disconnect();
-    window.removeEventListener('resize', handleResize);
-    gsap.killTweensOf(innerRefs.current);
-  };
-}, [totalCells]);
+        observer.disconnect();
+        const textWidth = parseFloat(el.style.getPropertyValue("--text-width"));
+        const offset = textWidth / totalCells;
+
+        gsap.fromTo(
+          innerRefs.current,
+          {
+            x: (i) => -i * offset + (i % 2 === 0 ? -40 : 40),
+            opacity: 0,
+          },
+          {
+            x: (i) => -i * offset,
+            opacity: 1,
+            duration: 0.8,
+            stagger: 0.03,
+            ease: "power2.out",
+          },
+        );
+      },
+      { threshold: 0.7 },
+    );
+
+    gsap.set(innerRefs.current, { opacity: 0 });
+
+    observer.observe(el);
+
+    const handleResize = () => {
+      setLayout();
+
+      if (!observer) {
+        gsap.set(innerRefs.current, { opacity: 0 });
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", handleResize);
+      gsap.killTweensOf(innerRefs.current);
+    };
+  }, [totalCells]);
 
   return (
-    <h3
-      ref={containerRef}
-      className="gtext font-neuehaasdisplaythin"
-    >
+    <h3 ref={containerRef} className="gtext font-neuehaasdisplaythin">
       {Array.from({ length: totalCells }).map((_, i) => (
         <span key={i} className="gtext__box">
           <span
@@ -2495,102 +2508,97 @@ useEffect(() => {
   );
 };
 
+const reviews = [
+  {
+    name: "James Pica",
+    text: "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!",
+    color: "bg-[#9482A3]",
+    image: "/images/_mesh_gradients/lightblue.png",
 
+    height: "h-[320px]",
+    width: "w-[320px]",
+  },
+  {
+    name: "Thomas StPierre",
+    text: "I had a pretty extreme case and it took some time, but FreySmiles gave me the smile I had always hoped for. Thank you!",
+    color: "bg-[#EB7104]",
+    image: "/images/_mesh_gradients/purplegrey.png",
+    height: "h-[240px]",
+    width: "w-[240px]",
+  },
+  {
+    name: "Fei Zhao",
+    text: "Our whole experience for the past 10 years of being under Dr. Gregg Frey’s care and his wonderful staff has been amazing. My son and my daughter have most beautiful smiles, and they received so many compliments on their teeth. It has made a dramatic and positive change in their lives. Dr. Frey is a perfectionist, and his treatment is second to none. I recommend Dr. Frey highly and without any reservation.",
+    color: "bg-[#80A192]",
+    image: "/images/_mesh_gradients/pantonepinkblue.png",
+    height: "h-[320px]",
+    width: "w-[320px]",
+  },
+  {
+    name: "Shelby Loucks",
+    text: "THEY ARE AMAZING!! Great staff and wonderful building. HIGHLY recommend to anyone looking for an orthodontist.",
+    color: "bg-[#A81919]",
+    image: "/images/_mesh_gradients/LilyWhite.jpg",
 
+    height: "h-[240px]",
+    width: "w-[240px]",
+  },
+  {
+    name: "Diana Gomez",
+    text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don’t have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
+    color: "bg-[#F3B700]",
+    image: "/images/_mesh_gradients/pinkwhite.png",
+    height: "h-[320px]",
+    width: "w-[320px]",
+  },
+  {
+    name: "Tracee Benton",
+    text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
+    color: "bg-[#036523]",
+    image: "/images/_mesh_gradients/purpledred.png",
+  },
+  {
+    name: "Brandi Moyer",
+    text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
+    color: "bg-[#4C90B3]",
+    image: "/images/_mesh_gradients/purpleyellow.png",
+  },
 
+  {
+    name: "Andrew Cornell",
+    text: "Over 20 years ago, I went to Dr. Frey to fix my cross bite and get braces. Since then, my smile looks substantially nicer. My entire mouth feels better as well. The benefits of orthodontics under Dr. Frey continue paying dividends.",
+    color: "bg-[#56A0FC]",
+    image: "/images/_mesh_gradients/greenwhite.png",
+  },
 
-  const reviews = [
-    {
-      name: "James Pica",
-      text: "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!",
-      color: "bg-[#9482A3]",
-      image: "/images/_mesh_gradients/lightblue.png",
+  {
+    name: "Vicki Weaver",
+    text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
+    color: "bg-[#EA9CBE]",
+    image: "/images/_mesh_gradients/blueyellowgradient.png",
+  },
 
-      height: "h-[320px]",
-      width: "w-[320px]",
-    },
-    {
-      name: "Thomas StPierre",
-      text: "I had a pretty extreme case and it took some time, but FreySmiles gave me the smile I had always hoped for. Thank you!",
-      color: "bg-[#EB7104]",
-      image: "/images/_mesh_gradients/purplegrey.png",
-      height: "h-[240px]",
-      width: "w-[240px]",
-    },
-    {
-      name: "Fei Zhao",
-      text: "Our whole experience for the past 10 years of being under Dr. Gregg Frey’s care and his wonderful staff has been amazing. My son and my daughter have most beautiful smiles, and they received so many compliments on their teeth. It has made a dramatic and positive change in their lives. Dr. Frey is a perfectionist, and his treatment is second to none. I recommend Dr. Frey highly and without any reservation.",
-      color: "bg-[#80A192]",
-      image: "/images/_mesh_gradients/pantonepinkblue.png",
-      height: "h-[320px]",
-      width: "w-[320px]",
-    },
-    {
-      name: "Shelby Loucks",
-      text: "THEY ARE AMAZING!! Great staff and wonderful building. HIGHLY recommend to anyone looking for an orthodontist.",
-      color: "bg-[#A81919]",
-      image: "/images/_mesh_gradients/LilyWhite.jpg",
+  {
+    name: "Sara Moyer",
+    text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
+    image: "/images/_mesh_gradients/turquoisegradient.png",
+    height: "h-[320px]",
+    width: "w-[320px]",
+  },
 
-      height: "h-[240px]",
-      width: "w-[240px]",
-    },
-    {
-      name: "Diana Gomez",
-      text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don’t have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
-      color: "bg-[#F3B700]",
-      image: "/images/_mesh_gradients/pinkwhite.png",
-      height: "h-[320px]",
-      width: "w-[320px]",
-    },
-    {
-      name: "Tracee Benton",
-      text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
-      color: "bg-[#036523]",
-      image: "/images/_mesh_gradients/purpledred.png",
-    },
-    {
-      name: "Brandi Moyer",
-      text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
-      color: "bg-[#4C90B3]",
-      image: "/images/_mesh_gradients/purpleyellow.png",
-    },
+  {
+    name: "Mandee Kaur",
+    image: "/images/_mesh_gradients/pinkparty.png",
+    text: "I would highly recommend FreySmiles! Excellent orthodontic care, whether it’s braces or Invisalign, Dr. Frey and his team pay attention to detail in making sure your smile is flawless! I would not trust anyone else for my daughter’s care other than FreySmiles.",
+    color: "bg-[#49ABA3]",
+  },
+];
 
-    {
-      name: "Andrew Cornell",
-      text: "Over 20 years ago, I went to Dr. Frey to fix my cross bite and get braces. Since then, my smile looks substantially nicer. My entire mouth feels better as well. The benefits of orthodontics under Dr. Frey continue paying dividends.",
-      color: "bg-[#56A0FC]",
-      image: "/images/_mesh_gradients/greenwhite.png",
-    },
-
-    {
-      name: "Vicki Weaver",
-      text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
-      color: "bg-[#EA9CBE]",
-      image: "/images/_mesh_gradients/blueyellowgradient.png",
-    },
-
-    {
-      name: "Sara Moyer",
-      text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
-      image: "/images/_mesh_gradients/turquoisegradient.png",
-      height: "h-[320px]",
-      width: "w-[320px]",
-    },
-
-    {
-      name: "Mandee Kaur",
-      image: "/images/_mesh_gradients/pinkparty.png",
-      text: "I would highly recommend FreySmiles! Excellent orthodontic care, whether it’s braces or Invisalign, Dr. Frey and his team pay attention to detail in making sure your smile is flawless! I would not trust anyone else for my daughter’s care other than FreySmiles.",
-      color: "bg-[#49ABA3]",
-    },
-  ];
-  
 const Testimonials = () => {
-
   const textRef = useRef(null);
   const bgTextColor = "#CECED3";
   const fgTextColor = "#161818";
-const [disableFluid, setDisableFluid] = useState(false);
+  const [disableFluid, setDisableFluid] = useState(false);
   useEffect(() => {
     if (!textRef.current) return;
 
@@ -2604,7 +2612,7 @@ const [disableFluid, setDisableFluid] = useState(false);
         stagger: 0.03,
         duration: 1,
         ease: "power2.out",
-      }
+      },
     );
 
     return () => split.revert();
@@ -2669,12 +2677,10 @@ const [disableFluid, setDisableFluid] = useState(false);
           },
           duration: 0.6,
           ease: "power2.out",
-        }
+        },
       );
     });
   }, []);
-
-
 
   useEffect(() => {
     const lines = gsap.utils.toArray("#smile-scroll-section .line");
@@ -2712,280 +2718,135 @@ const [disableFluid, setDisableFluid] = useState(false);
           },
           duration: 0.6,
           ease: "power2.out",
-        }
+        },
       );
     });
   }, []);
 
+  const reviewsRef = useRef(null);
 
+  const [trailEnabled, setTrailEnabled] = useState(true);
+  const testimonialRef = useRef(null);
 
-const reviewsRef = useRef(null);   
-
-
-const [trailEnabled, setTrailEnabled] = useState(true);
-const testimonialRef = useRef(null);
-
-useEffect(() => {
-  const st = ScrollTrigger.create({
-    trigger: testimonialRef.current,
-    start: "top center",
-    end: "bottom center",
-    onEnter: () => setTrailEnabled(false),
-    onLeave: () => setTrailEnabled(true),
-    onEnterBack: () => setTrailEnabled(false),
-    onLeaveBack: () => setTrailEnabled(true),
-  });
-  return () => st.kill();
-}, []);
-const [activeIndex, setActiveIndex] = useState(0);
-
-const CLIPS = ["clip-a", "clip-b"];
-
-const clipIds = useMemo(
-  () => reviews.map(() => CLIPS[Math.floor(Math.random() * CLIPS.length)]),
-  [reviews]
-);
-
-const movingBlobRef = useRef(null)
-const points = [
-  { x: 150, y: 60 },
-  { x: 210, y: 110 },
-  { x: 200, y: 190 },
-  { x: 120, y: 210 },
-  { x: 70,  y: 140 },
-  { x: 100, y: 100 },
-];
-
-useLayoutEffect(() => {
-  const tl = gsap.timeline({
-    repeat: -1,
-    defaults: { ease: 'sine.inOut', duration: 1.6 },
-  });
-
-  points.forEach((p) => {
-    tl.to(movingBlobRef.current, {
-      attr: { cx: p.x, cy: p.y },
+  useEffect(() => {
+    const st = ScrollTrigger.create({
+      trigger: testimonialRef.current,
+      start: "top center",
+      end: "bottom center",
+      onEnter: () => setTrailEnabled(false),
+      onLeave: () => setTrailEnabled(true),
+      onEnterBack: () => setTrailEnabled(false),
+      onLeaveBack: () => setTrailEnabled(true),
     });
-  });
-}, []);
- 
+    return () => st.kill();
+  }, []);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const CLIPS = ["clip-a", "clip-b"];
+
+  const clipIds = useMemo(
+    () => reviews.map(() => CLIPS[Math.floor(Math.random() * CLIPS.length)]),
+    [reviews],
+  );
+
+  const movingBlobRef = useRef(null);
+  const points = [
+    { x: 150, y: 60 },
+    { x: 210, y: 110 },
+    { x: 200, y: 190 },
+    { x: 120, y: 210 },
+    { x: 70, y: 140 },
+    { x: 100, y: 100 },
+  ];
+
+  useLayoutEffect(() => {
+    const tl = gsap.timeline({
+      repeat: -1,
+      defaults: { ease: "sine.inOut", duration: 1.6 },
+    });
+
+    points.forEach((p) => {
+      tl.to(movingBlobRef.current, {
+        attr: { cx: p.x, cy: p.y },
+      });
+    });
+  }, []);
+
   return (
     <>
-{/* <FluidSimulation disabled={disableFluid} /> */}
-<List onInteractionChange={setDisableFluid} />
+      {/* <FluidSimulation disabled={disableFluid} /> */}
+      <List onInteractionChange={setDisableFluid} />
 
-      {/* <MouseTrail
-        images={[
-          "../images/mousetrail/flame.png",
-          "../images/mousetrail/cat.png",
-          "../images/mousetrail/pixelstar.png",
-          "../images/mousetrail/avocado.png",
-          "../images/mousetrail/ghost.png",
-          "../images/mousetrail/pacman.png",
-          "../images/mousetrail/evilrobot.png",
-          "../images/mousetrail/thirdeye.png",
-          "../images/mousetrail/alientcat.png",
-          "../images/mousetrail/gotcha.png",
-          "../images/mousetrail/karaokekawaii.png",
-          "../images/mousetrail/mushroom.png",
-          "../images/mousetrail/pixelcloud.png",
-          "../images/mousetrail/pineapple.png",
-          "../images/mousetrail/pixelsun.png",
-          "../images/mousetrail/cherries.png",
-          "../images/mousetrail/watermelon.png",
-          "../images/mousetrail/dolphins.png",
-          "../images/mousetrail/jellyfish.png",
-          "../images/mousetrail/nyancat.png",
-          "../images/mousetrail/donut.png",
-          "../images/mousetrail/controller.png",
-          "../images/mousetrail/dinosaur.png",
-          "../images/mousetrail/headphones.png",
-          "../images/mousetrail/porsche.png",
-        ]}
-      /> */}
       <Background />
-      <section
-        className="z-10 relative w-full px-6 md:px-12"
-      >
 
-      </section>
       <section className="w-full py-12">
-          <section className="relative overflow-hidden mx-auto max-w-[1400px] px-10">
+        <section className="relative overflow-hidden mx-auto max-w-[1400px] ">
+          <div className="flex items-center justify-between py-10 w-full">
+            <span className="inline-block w-3 h-3 transition-transform duration-300 ease-in-out hover:rotate-180">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 13 12"
+                fill="none"
+                className="w-full h-full"
+              >
+                <path
+                  d="M0.5 6.46154V5.53846H6.03846V0H6.96154V5.53846H12.5V6.46154H6.96154V12H6.03846V6.46154H0.5Z"
+                  fill="#000"
+                />
+              </svg>
+            </span>
 
-    
-   <div className="flex items-center justify-between py-10 w-full">
-          <span className="inline-block w-3 h-3 transition-transform duration-300 ease-in-out hover:rotate-180">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 13 12"
-              fill="none"
-              className="w-full h-full"
-            >
-              <path
-                d="M0.5 6.46154V5.53846H6.03846V0H6.96154V5.53846H12.5V6.46154H6.96154V12H6.03846V6.46154H0.5Z"
-                fill="#000"
-              />
-            </svg>
-          </span>
+            <div className="flex-1 mx-2 border-b border-[#595252]/20"></div>
+            <span className="inline-block w-3 h-3 transition-transform duration-300 ease-in-out hover:rotate-180">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 13 12"
+                fill="none"
+                className="w-full h-full"
+              >
+                <path
+                  d="M0.5 6.46154V5.53846H6.03846V0H6.96154V5.53846H12.5V6.46154H6.96154V12H6.03846V6.46154H0.5Z"
+                  fill="#000"
+                />
+              </svg>
+            </span>
+          </div>
 
-          <div className="flex-1 mx-2 border-b border-[#595252]/20"></div>
-          <span className="inline-block w-3 h-3 transition-transform duration-300 ease-in-out hover:rotate-180">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 13 12"
-              fill="none"
-              className="w-full h-full"
-            >
-              <path
-                d="M0.5 6.46154V5.53846H6.03846V0H6.96154V5.53846H12.5V6.46154H6.96154V12H6.03846V6.46154H0.5Z"
-                fill="#000"
-              />
-            </svg>
-          </span>
-        </div>
+          <div className="font-neuehaas45 absolute top-28 left-10 text-xs uppercase tracking-widest text-black/70">
+            Every smile tells a story — these are some of our favorites.
+          </div>
+          <div className="w-full h-screen">
+            <App />
+          </div>
 
-  
-      <div className="font-neuehaas45 absolute top-28 left-10 text-xs uppercase tracking-widest text-black/70">
- Every smile tells a story — these are some of our favorites.
-      </div>
-      <div className="w-full h-screen">
-        <App />
-      </div>
-
-{/* <svg width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
-
-  <g transform="translate(160 160) rotate(-24) skewX(-22) scale(1.18 0.86) translate(-160 -160)">
-
-    <g transform="translate(160 160)" fill="black">
-
-
-      <g>
-        <animateTransform attributeName="transform" type="rotate"
-          from="0 0 0" to="360 0 0" dur="18s" repeatCount="indefinite" />
-        <g transform="rotate(0)">
-          <g transform="translate(120 0)">
-            <g transform="rotate(90)"><ellipse rx="44" ry="26" /></g>
-          </g>
-        </g>
-      </g>
-
-
-      <g>
-        <animateTransform attributeName="transform" type="rotate"
-          from="45 0 0" to="405 0 0" dur="18s" repeatCount="indefinite" />
-        <g transform="rotate(45)">
-          <g transform="translate(85 85)">
-            <g transform="rotate(135)"><ellipse rx="40" ry="24" /></g>
-          </g>
-        </g>
-      </g>
-
-
-      <g>
-        <animateTransform attributeName="transform" type="rotate"
-          from="90 0 0" to="450 0 0" dur="18s" repeatCount="indefinite" />
-        <g transform="rotate(90)">
-          <g transform="translate(0 120)">
-            <g transform="rotate(180)"><ellipse rx="42" ry="26" /></g>
-          </g>
-        </g>
-      </g>
-
-
-      <g>
-        <animateTransform attributeName="transform" type="rotate"
-          from="135 0 0" to="495 0 0" dur="18s" repeatCount="indefinite" />
-        <g transform="rotate(135)">
-          <g transform="translate(-85 85)">
-            <g transform="rotate(225)"><ellipse rx="40" ry="24" /></g>
-          </g>
-        </g>
-      </g>
-
-
-      <g>
-        <animateTransform attributeName="transform" type="rotate"
-          from="180 0 0" to="540 0 0" dur="18s" repeatCount="indefinite" />
-        <g transform="rotate(180)">
-          <g transform="translate(-120 0)">
-            <g transform="rotate(270)"><ellipse rx="46" ry="28" /></g>
-          </g>
-        </g>
-      </g>
-
-
-      <g>
-        <animateTransform attributeName="transform" type="rotate"
-          from="225 0 0" to="585 0 0" dur="18s" repeatCount="indefinite" />
-        <g transform="rotate(225)">
-          <g transform="translate(-85 -85)">
-            <g transform="rotate(315)"><ellipse rx="40" ry="24" /></g>
-          </g>
-        </g>
-      </g>
-
-
-      <g>
-        <animateTransform attributeName="transform" type="rotate"
-          from="270 0 0" to="630 0 0" dur="18s" repeatCount="indefinite" />
-        <g transform="rotate(270)">
-          <g transform="translate(0 -120)">
-            <g transform="rotate(360)"><ellipse rx="42" ry="26" /></g>
-          </g>
-        </g>
-      </g>
-
-
-      <g>
-        <animateTransform attributeName="transform" type="rotate"
-          from="315 0 0" to="675 0 0" dur="18s" repeatCount="indefinite" />
-        <g transform="rotate(315)">
-          <g transform="translate(85 -85)">
-            <g transform="rotate(405)"><ellipse rx="40" ry="24" /></g>
-          </g>
-        </g>
-      </g>
-
-    </g>
-  </g>
-</svg> */}
-      <div className="absolute top-24 right-10 text-xs uppercase tracking-widest text-black/70 flex flex-col items-center gap-2">
-         <div className="group
+          <div className="absolute top-24 right-10 text-xs uppercase tracking-widest text-black/70 flex flex-col items-center gap-2">
+            <div
+              className="group
                         px-12 py-6 flex items-center gap-4
-                        transition-transform duration-300 hover:scale-[1.02] cursor-pointer">
-
-          <span className="text-2xl">
-            <svg
-  xmlns="http://www.w3.org/2000/svg"
-  fill="none"
-  viewBox="0 0 24 24"
-  strokeWidth={1.5}
-  stroke="currentColor"
-  className="w-6 h-6"
->
-  <path
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    d="m16.49 12 3.75 3.75m0 0-3.75 3.75m3.75-3.75H3.74V4.499"
-  />
-</svg>
-          </span>
-
-        </div>
-      </div>
-
-      <div className="relative z-10 flex items-center justify-center min-h-[80vh]">
-    <Contents />
-      </div>
-{/* <TextSwirl /> */}
-
-    </section>
-
-
+                        transition-transform duration-300 hover:scale-[1.02] cursor-pointer"
+            >
+              <span className="text-2xl">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m16.49 12 3.75 3.75m0 0-3.75 3.75m3.75-3.75H3.74V4.499"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </section>
       </section>
 
-
-<section
+      {/* <section
   ref={reviewsRef}
   className="relative flex flex-wrap items-center justify-center min-h-screen gap-4 p-8 overflow-hidden"
 >
@@ -3005,7 +2866,7 @@ useLayoutEffect(() => {
 
   </defs>
 </svg>
-{/* <StackMotionEffect /> */}
+<StackMotionEffect />
 {reviews.map((t, i) => {
   const clipId = CLIPS[i % CLIPS.length];
 
@@ -3058,135 +2919,148 @@ useLayoutEffect(() => {
     </div>
   );
 })}
-</section>
-
-   
-      {/* <div style={{ display: "flex", height: "100vh", overflowY: "auto" }}>
-
-          <div id="right-column" className="relative w-1/2">
-            <section className="relative" style={{ marginBottom: "0vh" }}>
-              <div className="relative w-full h-full">
-                <div ref={gradient1Ref} className="gradient-container">
-                  <div className="gradient-col">
-                    <div className="h-full gradient-1"></div>
-                  </div>
-                  <div className="gradient-col">
-                    <div className="h-full gradient-2"></div>
-                  </div>
-                  <div className="gradient-col">
-                    <div className="h-full gradient-1"></div>
-                  </div>
-                  <div className="gradient-col">
-                    <div className="h-full gradient-2"></div>
-                  </div>
-                </div>
-                <div>
-                  <img
-                    ref={image1Ref}
-                    src="../images/patient25k.png"
-                    alt="patient"
-                    className="absolute top-[45%] right-[15%] w-[250px] h-auto "
-                  />
-                </div>
-              </div>
-            </section>
-
-            <div class="gradient-container-2">
-              <div class="gradient-col-2"></div>
-              <div class="gradient-col-2"></div>
-              <div class="gradient-col-2"></div>
-              <div class="gradient-col-2"></div>
-            </div>
-          </div>
-        </div> */}
+</section> */}
     </>
   );
 };
 
-
 export default Testimonials;
-class BentPlaneGeometry extends THREE.PlaneGeometry {
-  constructor(radius, ...args) {
-    super(...args)
-    let p = this.parameters
-    let hw = p.width * 0.5
-    let a = new THREE.Vector2(-hw, 0)
-    let b = new THREE.Vector2(0, radius)
-    let c = new THREE.Vector2(hw, 0)
-    let ab = new THREE.Vector2().subVectors(a, b)
-    let bc = new THREE.Vector2().subVectors(b, c)
-    let ac = new THREE.Vector2().subVectors(a, c)
-    let r = (ab.length() * bc.length() * ac.length()) / (2 * Math.abs(ab.cross(ac)))
-    let center = new THREE.Vector2(0, radius - r)
-    let baseV = new THREE.Vector2().subVectors(a, center)
-    let baseAngle = baseV.angle() - Math.PI * 0.5
-    let arc = baseAngle * 2
-    let uv = this.attributes.uv
-    let pos = this.attributes.position
-    let mainV = new THREE.Vector2()
-    for (let i = 0; i < uv.count; i++) {
-      let uvRatio = 1 - uv.getX(i)
-      let y = pos.getY(i)
-      mainV.copy(c).rotateAround(center, arc * uvRatio)
-      pos.setXYZ(i, mainV.x, y, -mainV.y)
+class BentRoundedPlaneGeometry extends geometry.RoundedPlaneGeometry {
+  constructor(
+    bend = 0.1,
+    width = 1,
+    height = 1,
+    cornerRadius = 0.12,
+    segments = 20,
+  ) {
+    super(width, height, cornerRadius, segments);
+
+    const halfWidth = width * 0.5;
+
+    const a = new THREE.Vector2(-halfWidth, 0);
+    const b = new THREE.Vector2(0, bend);
+    const c = new THREE.Vector2(halfWidth, 0);
+
+    const ab = new THREE.Vector2().subVectors(a, b);
+    const bc = new THREE.Vector2().subVectors(b, c);
+    const ac = new THREE.Vector2().subVectors(a, c);
+
+    const circleRadius =
+      (ab.length() * bc.length() * ac.length()) / (2 * Math.abs(ab.cross(ac)));
+
+    const center = new THREE.Vector2(0, bend - circleRadius);
+    const baseVector = new THREE.Vector2().subVectors(a, center);
+    const baseAngle = baseVector.angle() - Math.PI * 0.5;
+    const arc = baseAngle * 2;
+
+    const position = this.attributes.position;
+    const mainVector = new THREE.Vector2();
+
+    for (let i = 0; i < position.count; i++) {
+      const originalX = position.getX(i);
+      const originalY = position.getY(i);
+
+      const ratio = 1 - (originalX + halfWidth) / width;
+
+      mainVector.copy(c).rotateAround(center, arc * ratio);
+
+      position.setXYZ(i, mainVector.x, originalY, -mainVector.y);
     }
-    pos.needsUpdate = true
+
+    position.needsUpdate = true;
+
+    this.computeVertexNormals();
+    this.computeBoundingBox();
+    this.computeBoundingSphere();
   }
 }
-
 class MeshSineMaterial extends THREE.MeshBasicMaterial {
   constructor(parameters = {}) {
-    super(parameters)
-    this.setValues(parameters)
-    this.time = { value: 0 }
+    super(parameters);
+    this.setValues(parameters);
+    this.time = { value: 0 };
   }
   onBeforeCompile(shader) {
-    shader.uniforms.time = this.time
+    shader.uniforms.time = this.time;
     shader.vertexShader = `
       uniform float time;
       ${shader.vertexShader}
-    `
+    `;
     shader.vertexShader = shader.vertexShader.replace(
-      '#include <begin_vertex>',
-      `vec3 transformed = vec3(position.x, position.y + sin(time + uv.x * PI * 4.0) / 4.0, position.z);`
-    )
+      "#include <begin_vertex>",
+      `vec3 transformed = vec3(position.x, position.y + sin(time + uv.x * PI * 4.0) / 4.0, position.z);`,
+    );
   }
 }
 
-extend({ MeshSineMaterial, BentPlaneGeometry })
+extend({ MeshSineMaterial, BentRoundedPlaneGeometry });
 const App = () => (
-  <Canvas camera={{ position: [0, 0, 100], fov: 15 }}>
-    <fog attach="fog" args={['#a79', 8.5, 12]} />
-    <ScrollControls pages={4} infinite>
-      <Rig rotation={[0, 0, 0.15]}>
-        <Carousel />
-      </Rig>
-      <Banner position={[0, -0.15, 0]} />
-    </ScrollControls>
-    {/* <Environment preset="dawn" background blur={0.5} /> */}
-  </Canvas>
-)
+ <div className="carousel-canvas">
 
+    <Canvas camera={{ position: [0, 0, 100], fov: 15 }}>
+
+      <ScrollControls pages={2}>
+
+        <Rig rotation={[0, 0, 0.15]}>
+
+          <ResponsiveCarousel />
+
+        </Rig>
+
+        <ResponsiveBanner />
+
+      </ScrollControls>
+
+    </Canvas>
+
+  </div>
+);
 function Rig(props) {
-  const ref = useRef()
-  const scroll = useScroll()
+  const ref = useRef();
+  const scroll = useScroll();
+  const { size } = useThree();
+
   useFrame((state, delta) => {
-    ref.current.rotation.y = -scroll.offset * (Math.PI * 2) // Rotate contents
-    state.events.update() // Raycasts every frame rather than on pointer-move
-    easing.damp3(state.camera.position, [-state.pointer.x * 2, state.pointer.y + 1.5, 10], 0.3, delta) // Move camera
-    state.camera.lookAt(0, 0, 0) // Look at center
-  })
-  return <group ref={ref} {...props} />
+    if (!ref.current) return;
+
+    const isMobile = size.width < 768;
+
+    ref.current.rotation.y = -scroll.offset * Math.PI * 2;
+
+    state.events.update();
+
+    easing.damp3(
+      state.camera.position,
+      [
+        -state.pointer.x * (isMobile ? 0.5 : 2),
+        state.pointer.y * (isMobile ? 0.25 : 1) + (isMobile ? 1 : 1.5),
+        isMobile ? 12 : 10,
+      ],
+      0.3,
+      delta,
+    );
+
+    state.camera.lookAt(0, 0, 0);
+  });
+
+  return <group ref={ref} {...props} />;
 }
 
-function Carousel({ radius = 1.4 }) {
-  const visibleReviews = reviews.slice(0, 8);
-  const count = visibleReviews.length;
+function Carousel({ radius = 1.9 }) {
+  const count = reviews.length;
 
-  return visibleReviews.map((review, i) => (
+  console.log("review count:", count);
+  console.log(
+    "review names:",
+    reviews.map((review) => review.name),
+  );
+
+  return reviews.map((review, i) => (
     <Card
-      key={review.name}
+      key={`${review.name}-${i}`}
       url={review.image}
+      name={review.name}
+      text={review.text}
       position={[
         Math.sin((i / count) * Math.PI * 2) * radius,
         0,
@@ -3196,53 +3070,251 @@ function Carousel({ radius = 1.4 }) {
     />
   ));
 }
-function Card({ url, ...props }) {
-  const ref = useRef()
-  const [hovered, hover] = useState(false)
-  const pointerOver = (e) => (e.stopPropagation(), hover(true))
-  const pointerOut = () => hover(false)
-  useFrame((state, delta) => {
-    easing.damp3(ref.current.scale, hovered ? 1.15 : 1, 0.1, delta)
-    easing.damp(ref.current.material, 'radius', hovered ? 0.25 : 0.1, 0.2, delta)
-    easing.damp(ref.current.material, 'zoom', hovered ? 1 : 1.5, 0.2, delta)
-  })
+function ResponsiveCarousel() {
+  const { size } = useThree();
+
+  const isMobile = size.width < 768;
+  const isSmallMobile = size.width < 480;
+
+  const radius = isSmallMobile ? 1.45 : isMobile ? 1.6 : 1.9;
+
+  return <Carousel radius={radius} />;
+}
+
+function drawTileOverlay(ctx, width, height) {
+  ctx.save();
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.24)";
+  ctx.fillRect(0, 0, width, height);
+
+  const glow = ctx.createRadialGradient(
+    width * 0.3,
+    height * 0.2,
+    0,
+    width * 0.3,
+    height * 0.2,
+    width * 0.65,
+  );
+
+  glow.addColorStop(0, "rgba(255,255,255,0.28)");
+  glow.addColorStop(1, "rgba(255,255,255,0)");
+
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, width, height);
+
+  const tileSize = 150;
+
+  for (let y = 0; y < height; y += tileSize) {
+    for (let x = 0; x < width; x += tileSize) {
+      const even = (x / tileSize + y / tileSize) % 2 === 0;
+
+      ctx.fillStyle = even
+        ? "rgba(255,255,255,0.18)"
+        : "rgba(255,255,255,0.055)";
+
+      ctx.fillRect(x, y, tileSize, tileSize);
+    }
+  }
+
+  ctx.restore();
+}
+function useCardTexture(imageUrl, name, reviewText) {
+  const [texture, setTexture] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    let canvasTexture;
+
+    const createTexture = async () => {
+      await document.fonts.load('italic 44px "Canela"');
+      await document.fonts.load('italic 30px "Canela"');
+
+      const image = new window.Image();
+
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = () =>
+          reject(new Error(`Could not load image: ${imageUrl}`));
+
+        image.src = imageUrl;
+      });
+
+      if (cancelled) return;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 2048;
+      canvas.height = 2048;
+
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        throw new Error("Could not create canvas context");
+      }
+
+      ctx.save();
+
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+
+      ctx.save();
+      ctx.filter = "blur(64px)";
+      ctx.drawImage(image, -30, -30, canvas.width + 60, canvas.height + 60);
+      ctx.restore();
+
+      drawTileOverlay(ctx, canvas.width, canvas.height);
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      ctx.fillStyle = "#000";
+      ctx.font = 'italic 88px "Canela"';
+      ctx.fillText(name, canvas.width / 2, 360);
+
+      ctx.fillStyle = "#444";
+      ctx.font = 'italic 76px "Canela"';
+
+      drawWrappedText({
+        ctx,
+        text: reviewText,
+        x: canvas.width / 2,
+        y: 650,
+        maxWidth: 1450,
+        lineHeight: 86,
+        maxLines: 13,
+      });
+
+      ctx.restore();
+
+      canvasTexture = new THREE.CanvasTexture(canvas);
+      canvasTexture.colorSpace = THREE.SRGBColorSpace;
+      canvasTexture.anisotropy = 16;
+      canvasTexture.needsUpdate = true;
+
+      if (!cancelled) {
+        setTexture(canvasTexture);
+      }
+    };
+
+    createTexture().catch((error) => {
+      console.error(`Texture failed for "${name}"`, {
+        imageUrl,
+        error,
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      canvasTexture?.dispose();
+    };
+  }, [imageUrl, name, reviewText]);
+
+  return texture;
+}
+function drawWrappedText({ ctx, text, x, y, maxWidth, lineHeight, maxLines }) {
+  const words = text.split(/\s+/);
+  const lines = [];
+
+  let currentLine = "";
+
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+
+    const width = ctx.measureText(testLine).width;
+
+    if (width > maxWidth && currentLine) {
+      lines.push(currentLine);
+      currentLine = word;
+
+      if (lines.length === maxLines - 1) {
+        break;
+      }
+    } else {
+      currentLine = testLine;
+    }
+  }
+
+  if (currentLine && lines.length < maxLines) {
+    lines.push(currentLine);
+  }
+
+  const renderedText = lines.join(" ");
+  if (renderedText.length < text.length && lines.length) {
+    lines[lines.length - 1] =
+      `${lines[lines.length - 1].replace(/[.,;:!?]$/, "")}…`;
+  }
+
+  lines.forEach((line, index) => {
+    ctx.fillText(line, x, y + index * lineHeight);
+  });
+}
+function Card({ url, name, text, ...props }) {
+  const texture = useCardTexture(url, name, text);
+  const { size } = useThree();
+
+  if (!texture) return null;
+
+  const isMobile = size.width < 768;
+  const cardSize = isMobile ? 0.9 : 1;
+
   return (
- <Image
-  ref={ref}
-  url={url}
-  transparent
-  side={THREE.DoubleSide}
-  onPointerOver={pointerOver}
-  onPointerOut={pointerOut}
-  {...props}
->
-  <bentPlaneGeometry args={[0.1, 1, 1, 20, 20]} />
-</Image>
-    
-  )
+    <group {...props}>
+      <mesh>
+        <bentRoundedPlaneGeometry
+          args={[0.1, cardSize, cardSize, 0.12, 20]}
+        />
+
+        <meshBasicMaterial
+          map={texture}
+          transparent
+          side={THREE.DoubleSide}
+          toneMapped={false}
+        />
+      </mesh>
+    </group>
+  );
 }
 
 function Banner(props) {
-  const ref = useRef()
-const texture = useTexture("/images/fslogostrip.png");
+  const ref = useRef();
 
-texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-texture.anisotropy = 16;
-texture.minFilter = THREE.LinearFilter;
-texture.magFilter = THREE.LinearFilter;
-texture.needsUpdate = true;
+  const texture = useTexture("/images/fslogostrip.png");
 
-  const scroll = useScroll()
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.anisotropy = 16;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.needsUpdate = true;
+
+  const scroll = useScroll();
+
   useFrame((state, delta) => {
-    ref.current.material.time.value += Math.abs(scroll.delta) * 4
-    ref.current.material.map.offset.x += delta / 2
-  })
+    ref.current.material.time.value += Math.abs(scroll.delta) * 4;
+    ref.current.material.map.offset.x += delta / 2;
+  });
+
   return (
     <mesh ref={ref} {...props}>
-      <cylinderGeometry args={[1.6, 1.6, 0.18, 128, 16, true]} />
-      <meshSineMaterial map={texture} map-anisotropy={16} map-repeat={[18, 1]} side={THREE.DoubleSide} toneMapped={false} />
+      <cylinderGeometry args={[2.1, 2.1, 0.18, 128, 16, true]} />
+      <meshSineMaterial
+        map={texture}
+        map-anisotropy={16}
+        map-repeat={[18, 1]}
+        side={THREE.DoubleSide}
+        toneMapped={false}
+      />
     </mesh>
-  )
+  );
+}
+function ResponsiveBanner() {
+  const { size } = useThree();
+
+  const isMobile = size.width < 768;
+  const isSmallMobile = size.width < 480;
+
+  const scale = isSmallMobile ? 0.72 : isMobile ? 0.85 : 1;
+  const y = isMobile ? -0.1 : -0.15;
+
+  return <Banner position={[0, y, 0]} scale={scale} />;
 }
 function JanusFace() {
   const [leftShapes, setLeftShapes] = useState([]);
@@ -3252,35 +3324,35 @@ function JanusFace() {
   const ri = (from, to) => ~~r(from, to);
   const pick = (...args) => args[ri(0, args.length)];
 
-const generateText = (length = 60, rowIndex = 0) => {
-  return Array.from({ length }, (_, i) => {
-    const shouldBlink = (i + rowIndex) % 4 === 0;
+  const generateText = (length = 60, rowIndex = 0) => {
+    return Array.from({ length }, (_, i) => {
+      const shouldBlink = (i + rowIndex) % 4 === 0;
 
-    return (
-      <span
-        key={i}
-        className={shouldBlink ? "symbol symbol-blink" : "symbol"}
-        style={
-          shouldBlink
-            ? {
-                "--blink-delay": `${(i * 0.09 + rowIndex * 0.17) % 4}s`,
-                "--blink-duration": `${3.5 + ((i + rowIndex) % 4) * 0.4}s`,
-              }
-            : undefined
-        }
-      >
-        {String.fromCharCode(ri(0x25a0, 0x25fc))}
-      </span>
-    );
-  });
-};
+      return (
+        <span
+          key={i}
+          className={shouldBlink ? "symbol symbol-blink" : "symbol"}
+          style={
+            shouldBlink
+              ? {
+                  "--blink-delay": `${(i * 0.09 + rowIndex * 0.17) % 4}s`,
+                  "--blink-duration": `${3.5 + ((i + rowIndex) % 4) * 0.4}s`,
+                }
+              : undefined
+          }
+        >
+          {String.fromCharCode(ri(0x25a0, 0x25fc))}
+        </span>
+      );
+    });
+  };
 
   const generateBaseParagraphs = () => {
     const paragraphs = [];
     for (let i = 0; i < 50; i++) {
       const offset = r(45, 95);
       // const color = pick("#8fdcff", "#6fcfff", "#b3eaff", "#a1e4ff");
-      const color ="#fff";
+      const color = "#FEFFBF";
       const textLength = ri(25, 95);
 
       paragraphs.push({
@@ -3308,10 +3380,9 @@ const generateText = (length = 60, rowIndex = 0) => {
           mask: `linear-gradient(to right, #fff, transparent calc(var(--offset) * 1%))`,
         }}
       >
-{generateText(data.textLength, i)}
+        {generateText(data.textLength, i)}
       </div>
     ));
-
 
     const rightParas = baseData.map((data, i) => (
       <div
@@ -3324,7 +3395,7 @@ const generateText = (length = 60, rowIndex = 0) => {
           mask: `linear-gradient(to left, #fff, transparent calc(var(--offset) * 1%))`,
         }}
       >
-{generateText(data.textLength, i)}
+        {generateText(data.textLength, i)}
       </div>
     ));
 
@@ -3335,7 +3406,6 @@ const generateText = (length = 60, rowIndex = 0) => {
   useEffect(() => {
     build();
   }, []);
-
 
   const shapePath =
     "0.25% 2px, 99.94% 0.27%, 99.75% 100%, 19.87% 100.03%, 0 100%, 30.61% 100.07%, 37.38% 99.82%, 44.21% 99.38%, 50.92% 99.34%, 71.39% 98.43%, 76.61% 98.79%, 82.65% 97.6%, 85.9% 95.73%, 90.12% 93.85%, 88.45% 89.91%, 87.41% 87.1%, 85.48% 85.09%, 84.96% 82.33%, 88.66% 81.41%, 90.55% 79.29%, 91.75% 77.23%, 91.23% 75.11%, 88.48% 73.75%, 90.93% 72.26%, 92.34% 70.16%, 91.59% 67.66%, 89.87% 64.91%, 87.01% 63.42%, 89.87% 62.01%, 93.04% 60.71%, 96.53% 58.57%, 97.8% 55.26%, 95.36% 53.2%, 91.46% 51.56%, 86.6% 49.21%, 83.43% 47%, 79.27% 44.12%, 77.05% 40.66%, 75.51% 37.07%, 75.49% 33.04%, 76.3% 28.93%, 75.99% 25.46%, 74.57% 22.25%, 72.88% 18.96%, 69.97% 15.51%, 66.59% 12.23%, 62.29% 9.2%, 57.33% 7.06%, 52.77% 5.2%, 46.55% 3.55%, 38.59% 1.5%, 27.73% 0.92%";
@@ -3381,13 +3451,13 @@ const generateText = (length = 60, rowIndex = 0) => {
 }
 const throttle = (func, limit) => {
   let inThrottle;
-  return function() {
+  return function () {
     const args = arguments;
     const context = this;
     if (!inThrottle) {
       func.apply(context, args);
       inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
+      setTimeout(() => (inThrottle = false), limit);
     }
   };
 };
@@ -3397,108 +3467,98 @@ const StackMotionEffect = () => {
   const contentRef = useRef(null);
   const cardsRef = useRef([]);
   const tlRef = useRef(null);
-  
-  const winsizeRef = useRef({ 
-    width: typeof window !== 'undefined' ? window.innerWidth : 1200, 
-    height: typeof window !== 'undefined' ? window.innerHeight : 800 
+
+  const winsizeRef = useRef({
+    width: typeof window !== "undefined" ? window.innerWidth : 1200,
+    height: typeof window !== "undefined" ? window.innerHeight : 800,
   });
 
   const reviews = useMemo(() => {
     const repeatedReviews = [];
     while (repeatedReviews.length < 27) {
-      repeatedReviews.push(...[
-        {
-          name: "James Pica",
-          text: "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!",
-       
-          image: "/images/_mesh_gradients/lightblue.png",
-  
-        },
-        {
-          name: "Thomas StPierre",
-          text: "I had a pretty extreme case and it took some time, but FreySmiles gave me the smile I had always hoped for. Thank you!",
-    
-          image: "/images/_mesh_gradients/purplegrey.png",
-      
-        },
-        {
-          name: "Fei Zhao",
-          text: "Our whole experience for the past 10 years of being under Dr. Gregg Frey's care and his wonderful staff has been amazing. My son and my daughter have most beautiful smiles, and they received so many compliments on their teeth. It has made a dramatic and positive change in their lives. Dr. Frey is a perfectionist, and his treatment is second to none. I recommend Dr. Frey highly and without any reservation.",
-   
-          image: "/images/_mesh_gradients/pantonepinkblue.png",
-  
-        },
-        {
-          name: "Shelby Loucks",
-          text: "THEY ARE AMAZING!! Great staff and wonderful building. HIGHLY recommend to anyone looking for an orthodontist.",
-        
-          image: "/images/_mesh_gradients/LilyWhite.jpg",
-    
-        },
-        {
-          name: "Diana Gomez",
-          text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don't have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
-          
-          image: "/images/_mesh_gradients/pinkwhite.png",
-     
-        },
-        {
-          name: "Tracee Benton",
-          text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
-        
-          image: "/images/_mesh_gradients/purpledred.png",
-        
-        },
-        {
-          name: "Brandi Moyer",
-          text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
-         
-          image: "/images/_mesh_gradients/purpleyellow.png",
-        
-        },
-        {
-          name: "Andrew Cornell",
-          text: "Over 20 years ago, I went to Dr. Frey to fix my cross bite and get braces. Since then, my smile looks substantially nicer. My entire mouth feels better as well. The benefits of orthodontics under Dr. Frey continue paying dividends.",
-         
-          image: "/images/_mesh_gradients/greenwhite.png",
-         
-        },
-        {
-          name: "Vicki Weaver",
-          text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
-         
-          image: "/images/_mesh_gradients/blueyellowgradient.png",
-      
-        },
-        {
-          name: "Sara Moyer",
-          text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
-          image: "/images/_mesh_gradients/turquoisegradient.png",
-     
-        },
-        {
-          name: "Mandee Kaur",
-          image: "/images/_mesh_gradients/pinkparty.png",
-          text: "I would highly recommend FreySmiles! Excellent orthodontic care, whether it's braces or Invisalign, Dr. Frey and his team pay attention to detail in making sure your smile is flawless! I would not trust anyone else for my daughter's care other than FreySmiles.",
-    
-  
-        },
-      ]);
+      repeatedReviews.push(
+        ...[
+          {
+            name: "James Pica",
+            text: "Frey Smiles has made the whole process from start to finish incredibly pleasant and sooo easy on my kids to follow. They were able to make a miracle happen with my son's tooth that was coming in sideways. He now has a perfect smile and I couldn't be happier. My daughter is halfway through her treatment and the difference already has been great. I 100% recommend this place to anyone!!!",
+
+            image: "/images/_mesh_gradients/lightblue.png",
+          },
+          {
+            name: "Thomas StPierre",
+            text: "I had a pretty extreme case and it took some time, but FreySmiles gave me the smile I had always hoped for. Thank you!",
+
+            image: "/images/_mesh_gradients/purplegrey.png",
+          },
+          {
+            name: "Fei Zhao",
+            text: "Our whole experience for the past 10 years of being under Dr. Gregg Frey's care and his wonderful staff has been amazing. My son and my daughter have most beautiful smiles, and they received so many compliments on their teeth. It has made a dramatic and positive change in their lives. Dr. Frey is a perfectionist, and his treatment is second to none. I recommend Dr. Frey highly and without any reservation.",
+
+            image: "/images/_mesh_gradients/pantonepinkblue.png",
+          },
+          {
+            name: "Shelby Loucks",
+            text: "THEY ARE AMAZING!! Great staff and wonderful building. HIGHLY recommend to anyone looking for an orthodontist.",
+
+            image: "/images/_mesh_gradients/LilyWhite.jpg",
+          },
+          {
+            name: "Diana Gomez",
+            text: "After arriving at my sons dentist on a Friday, his dentist office now informs me that they don't have a referral. I called the Frey smiles office when they were closed and left a message. I received a call back within minutes from Dr. Frey himself who sent the referral over immediately ( on his day off!!!) how amazing! Not to mention the staff was amazing when were were there and my children felt so comfortable! Looking forward to a wonderful smile for my son!!",
+
+            image: "/images/_mesh_gradients/pinkwhite.png",
+          },
+          {
+            name: "Tracee Benton",
+            text: "Dr. Frey and his orthodontist techs are the absolute best! The team has such an attention to detail I absolutely love my new smile and my confidence has significantly grown! The whole process of using Invisalign has been phenomenal. I highly recommend Dr. Frey and his team to anyone considering orthodontic work!",
+
+            image: "/images/_mesh_gradients/purpledred.png",
+          },
+          {
+            name: "Brandi Moyer",
+            text: "My experience with Dr. Frey orthodontics has been nothing but great. The staff is all so incredibly nice and willing to help. And better yet, today I found out I may be ahead of my time line to greater aligned teeth!.",
+
+            image: "/images/_mesh_gradients/purpleyellow.png",
+          },
+          {
+            name: "Andrew Cornell",
+            text: "Over 20 years ago, I went to Dr. Frey to fix my cross bite and get braces. Since then, my smile looks substantially nicer. My entire mouth feels better as well. The benefits of orthodontics under Dr. Frey continue paying dividends.",
+
+            image: "/images/_mesh_gradients/greenwhite.png",
+          },
+          {
+            name: "Vicki Weaver",
+            text: "We have had all four of our children receive orthodontic treatment from Dr. Frey. Dr. Frey is willing to go above and beyond for his patients before, during, and after the treatment is finished. It shows in their beautiful smiles!! We highly recommend FreySmiles to all of our friends and family!",
+
+            image: "/images/_mesh_gradients/blueyellowgradient.png",
+          },
+          {
+            name: "Sara Moyer",
+            text: "We are so happy that we picked Freysmiles in Lehighton for both of our girls Invisalign treatment. Dr. Frey and all of his staff are always so friendly and great to deal with. My girls enjoy going to their appointments and love being able to see the progress their teeth have made with each tray change. We are 100% confident that we made the right choice when choosing them as our orthodontist!",
+            image: "/images/_mesh_gradients/turquoisegradient.png",
+          },
+          {
+            name: "Mandee Kaur",
+            image: "/images/_mesh_gradients/pinkparty.png",
+            text: "I would highly recommend FreySmiles! Excellent orthodontic care, whether it's braces or Invisalign, Dr. Frey and his team pay attention to detail in making sure your smile is flawless! I would not trust anyone else for my daughter's care other than FreySmiles.",
+          },
+        ],
+      );
     }
 
     return repeatedReviews.slice(0, 27);
   }, []);
 
-
   const initScrollEffect = useCallback(() => {
     if (!contentRef.current || !wrapRef.current) return;
 
-    const validCards = cardsRef.current.filter(card => card !== null);
+    const validCards = cardsRef.current.filter((card) => card !== null);
     if (validCards.length === 0) return;
 
     gsap.set(contentRef.current, {
-      transform: 'rotate3d(1, 0, 0, -25deg) rotate3d(0, 1, 0, 50deg) rotate3d(0, 0, 1, 25deg)',
-      opacity: 0
+      transform:
+        "rotate3d(1, 0, 0, -25deg) rotate3d(0, 1, 0, 50deg) rotate3d(0, 0, 1, 25deg)",
+      opacity: 0,
     });
 
     if (tlRef.current) {
@@ -3506,105 +3566,117 @@ const StackMotionEffect = () => {
       tlRef.current = null;
     }
 
-    tlRef.current = gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: {
-        trigger: wrapRef.current,
-    start: 'top bottom-=20%',
-    end: '+=150%',
-        scrub: .4,
-        onEnter: () => gsap.set(contentRef.current, { opacity: 1 }),
-        onEnterBack: () => gsap.set(contentRef.current, { opacity: 1 }),
-        onLeave: () => gsap.set(contentRef.current, { opacity: 0 }),
-        onLeaveBack: () => gsap.set(contentRef.current, { opacity: 0 }),
-      },
-    })
-    .fromTo(validCards, {
-      z: (pos) => -2.65 * winsizeRef.current.width - pos * 0.03 * winsizeRef.current.width,
-    }, {
-      z: (pos) => 1.4 * winsizeRef.current.width + (validCards.length - pos - 1) * 0.03 * winsizeRef.current.width,
-    }, 0)
-    .fromTo(validCards, {
-      rotationZ: -220,
-    }, {
-      rotationY: -30,
-      rotationZ: 120,
-      stagger: 0.005,
-    }, 0);
+    tlRef.current = gsap
+      .timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: wrapRef.current,
+          start: "top bottom-=20%",
+          end: "+=150%",
+          scrub: 0.4,
+          onEnter: () => gsap.set(contentRef.current, { opacity: 1 }),
+          onEnterBack: () => gsap.set(contentRef.current, { opacity: 1 }),
+          onLeave: () => gsap.set(contentRef.current, { opacity: 0 }),
+          onLeaveBack: () => gsap.set(contentRef.current, { opacity: 0 }),
+        },
+      })
+      .fromTo(
+        validCards,
+        {
+          z: (pos) =>
+            -2.65 * winsizeRef.current.width -
+            pos * 0.03 * winsizeRef.current.width,
+        },
+        {
+          z: (pos) =>
+            1.4 * winsizeRef.current.width +
+            (validCards.length - pos - 1) * 0.03 * winsizeRef.current.width,
+        },
+        0,
+      )
+      .fromTo(
+        validCards,
+        {
+          rotationZ: -220,
+        },
+        {
+          rotationY: -30,
+          rotationZ: 120,
+          stagger: 0.005,
+        },
+        0,
+      );
   }, []);
-
 
   const setCardRef = useCallback((el, index) => {
     cardsRef.current[index] = el;
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const handleResize = throttle(() => {
-      winsizeRef.current = { 
-        width: window.innerWidth, 
-        height: window.innerHeight 
+      winsizeRef.current = {
+        width: window.innerWidth,
+        height: window.innerHeight,
       };
       initScrollEffect();
     }, 100);
 
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener("resize", handleResize);
 
-    setTimeout(initScrollEffect, 100); 
-    
+    setTimeout(initScrollEffect, 100);
+
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       if (tlRef.current) {
         tlRef.current.kill();
         tlRef.current = null;
       }
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, [initScrollEffect]);
 
   return (
     <>
-    <svg width="0" height="0" aria-hidden style={{ position: "absolute" }}>
-  <defs>
-    <clipPath id="clip-a" clipPathUnits="objectBoundingBox">
-      <path d="M0.9979787,0.04976303l0,0.9004739c0,0.02617536,-0.02121801,0.04739336,-0.04739336,0.04739336l-0.3909621,0c-0.01231754,0,-0.02415166,-0.004796209,-0.03299289,-0.01336967l-0.0577346,-0.05598341c-0.008841232,-0.008575829,-0.02067536,-0.01336967,-0.03299052,-0.01336967l-0.2123436,0c-0.01231754,0,-0.02415166,0.004793839,-0.03299289,0.01336967l-0.0577346,0.05598341c-0.008841232,0.00857346,-0.02067536,0.01336967,-0.03299289,0.01336967l-0.04972986,0c-0.02617536,0,-0.04739336,-0.02121801,-0.04739336,-0.04739336l0,-0.9004739c0,-0.02617536,0.02121801,-0.04739336,0.04739336,-0.04739336l0.9004739,0c0.02617536,0,0.04739336,0.02121801,0.04739336,0.04739336z"/>
-    </clipPath>
+      <svg width="0" height="0" aria-hidden style={{ position: "absolute" }}>
+        <defs>
+          <clipPath id="clip-a" clipPathUnits="objectBoundingBox">
+            <path d="M0.9979787,0.04976303l0,0.9004739c0,0.02617536,-0.02121801,0.04739336,-0.04739336,0.04739336l-0.3909621,0c-0.01231754,0,-0.02415166,-0.004796209,-0.03299289,-0.01336967l-0.0577346,-0.05598341c-0.008841232,-0.008575829,-0.02067536,-0.01336967,-0.03299052,-0.01336967l-0.2123436,0c-0.01231754,0,-0.02415166,0.004793839,-0.03299289,0.01336967l-0.0577346,0.05598341c-0.008841232,0.00857346,-0.02067536,0.01336967,-0.03299289,0.01336967l-0.04972986,0c-0.02617536,0,-0.04739336,-0.02121801,-0.04739336,-0.04739336l0,-0.9004739c0,-0.02617536,0.02121801,-0.04739336,0.04739336,-0.04739336l0.9004739,0c0.02617536,0,0.04739336,0.02121801,0.04739336,0.04739336z" />
+          </clipPath>
 
-    <clipPath id="clip-b" clipPathUnits="objectBoundingBox">
-      <path d="M0.002,0.95V0.05C0.002,0.025,0.025,0.002,0.05,0.002h0.39c0.012,0,0.024,0.0048,0.033,0.0134l0.058,0.056c0.009,0.009,0.021,0.013,0.033,0.013h0.212c0.012,0,0.024,-0.0048,0.033,-0.013l0.058,-0.056c0.009,-0.0086,0.021,-0.0134,0.033,-0.0134h0.05c0.025,0,0.047,0.021,0.047,0.047V0.95c0,0.025,-0.021,0.047,-0.047,0.047H0.05C0.025,0.997,0.002,0.975,0.002,0.95z"/>
-    </clipPath>
-  </defs>
-</svg>
+          <clipPath id="clip-b" clipPathUnits="objectBoundingBox">
+            <path d="M0.002,0.95V0.05C0.002,0.025,0.025,0.002,0.05,0.002h0.39c0.012,0,0.024,0.0048,0.033,0.0134l0.058,0.056c0.009,0.009,0.021,0.013,0.033,0.013h0.212c0.012,0,0.024,-0.0048,0.033,-0.013l0.058,-0.056c0.009,-0.0086,0.021,-0.0134,0.033,-0.0134h0.05c0.025,0,0.047,0.021,0.047,0.047V0.95c0,0.025,-0.021,0.047,-0.047,0.047H0.05C0.025,0.997,0.002,0.975,0.002,0.95z" />
+          </clipPath>
+        </defs>
+      </svg>
       <div className="sme-wrap">
         <div ref={wrapRef} className="sme-wrap__inner">
           <div ref={contentRef} className="sme-content sme-content--1">
-          {reviews.map((review, index) => (
-<div
-  key={`sme-review-${index}`}
-  ref={(el) => setCardRef(el, index)}
-  className="sme-card"
->
-  <div
-    className={`sme-card__img relative ${index % 2 === 0 ? "clip-a" : "clip-b"}`}
-    style={{
-      backgroundImage: `url(${review.image})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }}
-  >
-    <div className="absolute inset-0 z-10 pointer-events-none tile-overlay" />
-  </div>
-</div>
-))}
+            {reviews.map((review, index) => (
+              <div
+                key={`sme-review-${index}`}
+                ref={(el) => setCardRef(el, index)}
+                className="sme-card"
+              >
+                <div
+                  className={`sme-card__img relative ${index % 2 === 0 ? "clip-a" : "clip-b"}`}
+                  style={{
+                    backgroundImage: `url(${review.image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                >
+                  <div className="absolute inset-0 z-10 pointer-events-none tile-overlay" />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
     </>
   );
 };
-
 
 const TextSwirl = () => {
   const containerRef = useRef(null);
@@ -3629,9 +3701,7 @@ const TextSwirl = () => {
     "Angie Lub",
     "Lauren Muniz",
     "Arthur Wines",
-    "Ethan Ball"
-
-
+    "Ethan Ball",
   ];
 
   useEffect(() => {
@@ -3641,67 +3711,72 @@ const TextSwirl = () => {
       setTimeout(initAnimations, 100);
     };
 
-    window.addEventListener('resize', handleResize);
-    
+    window.addEventListener("resize", handleResize);
+
     return () => {
-      window.removeEventListener('resize', handleResize);
-      ScrollTrigger.getAll().forEach(st => st.kill());
+      window.removeEventListener("resize", handleResize);
+      ScrollTrigger.getAll().forEach((st) => st.kill());
     };
   }, []);
-const initAnimations = () => {
-  gsap.set(elementsRef.current, {
-    clearProps: 'transform,opacity,margin,marginLeft,marginTop', 
-  });
-
-  elementsRef.current.forEach((el) => {
-    if (!el) return;
-
-    const originalClass = 'pos-3';
-    const targetClass = el.dataset.altPos || 'pos-8';
-    const flipEase = 'expo.inOut';
-
-    el.classList.add(targetClass);
-    el.classList.remove(originalClass);
-
-
-    const flipState = Flip.getState(el, {
-      props: 'opacity,margin,margin-left,margin-top,transform', 
-      simple: true
+  const initAnimations = () => {
+    gsap.set(elementsRef.current, {
+      clearProps: "transform,opacity,margin,marginLeft,marginTop",
     });
 
-    el.classList.add(originalClass);
-    el.classList.remove(targetClass);
+    elementsRef.current.forEach((el) => {
+      if (!el) return;
 
-    Flip.to(flipState, {
-      ease: flipEase,
-      scrollTrigger: {
-        trigger: el,
-        start: 'clamp(bottom bottom-=10%)',
-        end: 'clamp(center center)',
-        scrub: true,
-      },
-    });
+      const originalClass = "pos-3";
+      const targetClass = el.dataset.altPos || "pos-8";
+      const flipEase = "expo.inOut";
 
-    Flip.from(flipState, {
-      ease: flipEase,
-      scrollTrigger: {
-        trigger: el,
-        start: 'clamp(center center)',
-        end: 'clamp(top top)',
-        scrub: true,
-      },
+      el.classList.add(targetClass);
+      el.classList.remove(originalClass);
+
+      const flipState = Flip.getState(el, {
+        props: "opacity,margin,margin-left,margin-top,transform",
+        simple: true,
+      });
+
+      el.classList.add(originalClass);
+      el.classList.remove(targetClass);
+
+      Flip.to(flipState, {
+        ease: flipEase,
+        scrollTrigger: {
+          trigger: el,
+          start: "clamp(bottom bottom-=10%)",
+          end: "clamp(center center)",
+          scrub: true,
+        },
+      });
+
+      Flip.from(flipState, {
+        ease: flipEase,
+        scrollTrigger: {
+          trigger: el,
+          start: "clamp(center center)",
+          end: "clamp(top top)",
+          scrub: true,
+        },
+      });
     });
-  });
-};
+  };
 
   return (
     <div className="apptext text-black">
-
-      <div className="flex-col" style={{  display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily:"NeueHaasGroteskDisplayPro45Light" }}>
-                <h1 className="text-[18px] mb-2">Scroll to see some of our patients</h1>
-<div className="text-[16px]">Meet the smiles behind the hype</div>
+      <div
+        className="flex-col"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "NeueHaasGroteskDisplayPro45Light",
+        }}
+      >
+        <h1 className="text-[18px] mb-2">Scroll to see some of our patients</h1>
+        <div className="text-[16px]">Meet the smiles behind the hype</div>
       </div>
-
 
       <div className="grouptwo" ref={containerRef}>
         {textItems.map((text, index) => (
@@ -3709,84 +3784,17 @@ const initAnimations = () => {
             key={index}
             className="el pos-3"
             data-alt-pos="pos-8"
-            ref={el => elementsRef.current[index] = el}
+            ref={(el) => (elementsRef.current[index] = el)}
           >
             {text}
           </div>
         ))}
       </div>
 
-
-      <div style={{ height: '50vh' }}></div>
+      <div style={{ height: "50vh" }}></div>
     </div>
   );
 };
-
-
-class MousePointer {
-  constructor() {
-    this.x = window.innerWidth * 0.5;
-    this.y = window.innerHeight * 0.5;
-    this.normal = { x: 0, y: 0 };
-    this.isDown = false;
-
-    this._setupListeners();
-  }
-
-  _setupListeners() {
-    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-    const target = document.querySelector(".l-canvas") || window;
-
-    if (isTouch) {
-      target.addEventListener("touchstart", (e) => this._handleStart(e));
-      target.addEventListener("touchend", () => this._handleEnd());
-      target.addEventListener("touchmove", (e) => this._handleMove(e), {
-        passive: false,
-      });
-    } else {
-      window.addEventListener("mousedown", (e) => this._handleStart(e));
-      window.addEventListener("mouseup", () => this._handleEnd());
-      window.addEventListener("mousemove", (e) => this._handleMove(e));
-    }
-  }
-
-  _handleStart(e) {
-    this.isDown = true;
-    this._updatePosition(e);
-  }
-
-  _handleEnd() {
-    this.isDown = false;
-  }
-
-  _handleMove(e) {
-    this._updatePosition(e);
-  }
-
-  _updatePosition(e) {
-    const pos = this._getEventPosition(e);
-    this.x = pos.x;
-    this.y = pos.y;
-
-    this.normal.x = this.x / window.innerWidth;
-    this.normal.y = this.y / window.innerHeight;
-  }
-
-  _getEventPosition(e) {
-    if (e.touches) {
-      return {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY,
-      };
-    }
-    return {
-      x: e.clientX,
-      y: e.clientY,
-    };
-  }
-}
-
-const mousePointer = new MousePointer();
 
 const map = (num, toMin, toMax, fromMin, fromMax) => {
   if (num <= fromMin) return toMin;
