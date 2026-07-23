@@ -1071,7 +1071,7 @@ function Background() {
       }
     `;
 
-    const fragment = /* glsl */ `
+    const fragment = `
   precision mediump float;
 
   uniform float uTime;
@@ -1755,8 +1755,6 @@ const List = ({ onInteractionChange }) => {
 
         highlightText(index, true);
         scrambleText(index);
-
-        //  stack immediately on enter
         stackImage(index, "hover");
       };
 
