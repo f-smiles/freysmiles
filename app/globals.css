@@ -6129,7 +6129,18 @@ body,
 
 @media (max-width: 768px) {
   .terminal-line {
-    font-size: 12px;
+    top: 0 !important;
+    width: calc(100vw - 48px);
+    flex-wrap: wrap;
+    white-space: normal;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .terminal-word {
+    display: inline-flex;
+    white-space: nowrap;
+
   }
 
   .terminal-cell {
@@ -6390,11 +6401,36 @@ body,
 .testimonialsPage .testimonial-name {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr auto;  
+  grid-template-columns: 1fr 1fr auto;
   align-items: center;
   height: 100%;
   padding: 0 18px;
   gap: 20px;
+}
+
+.testimonialsPage .col-left {
+  justify-self: center;
+  transform: translateX(-80px);
+}
+.testimonialsPage .col-left {
+  justify-self: center;
+  transform: translateX(-80px);
+}
+
+@media (max-width: 768px) {
+  .testimonialsPage .col-left {
+    justify-self: start;
+    transform: none;
+    padding-left: 10px;
+  }
+
+  .testimonialsPage .testimonial-name {
+    padding: 0 10px;
+    gap: 12px;
+  }
+}
+.testimonialsPage .col-right {
+  justify-self: start;
 }
 
 .testimonialsPage .testimonial-preview {
@@ -6402,13 +6438,13 @@ body,
 top: 55%;
   right: 15px;
   width: clamp(240px, 28vw, 340px);
-  aspect-ratio: 4 / 5; /* portrait editorial */
+  aspect-ratio: 4 / 5; 
   z-index: 2;
 }
 @media (min-width: 1024px) {
   .testimonialsPage .testimonial-preview {
     width: clamp(340px, 28vw, 480px);
-    aspect-ratio: 5 / 3; /* wide editorial */
+    aspect-ratio: 5 / 3; 
   }
 }
 
@@ -6567,8 +6603,10 @@ top: 55%;
   display: flex;
   align-items: center;
   justify-content: center;
+
   width: 100%;
   height: 100vh;
+
   overflow: hidden;
   cursor: pointer;
 }
@@ -6578,7 +6616,6 @@ top: 55%;
   align-items: center;
   justify-content: center;
 
-  /* Two 600px faces */
   width: 1200px;
   height: 600px;
   flex: 0 0 1200px;
@@ -6589,9 +6626,11 @@ top: 55%;
 
 .face-container {
   position: relative;
+
   width: 600px;
   height: 600px;
   flex: 0 0 600px;
+
   overflow: hidden;
 }
 
@@ -6617,33 +6656,6 @@ top: 55%;
   float: right;
 }
 
-/*
-Do not redefine .text-line or .symbol here.
-That preserves their existing font size, character spacing,
-and generated line lengths.
-*/
-
-@media (max-width: 1024px) {
-  .janus-container {
-    transform: scale(0.7);
-  }
-}
-
-@media (max-width: 768px) {
-  .janus-main {
-    height: 100svh;
-  }
-
-  .janus-container {
-    transform: scale(0.5);
-  }
-}
-
-@media (max-width: 480px) {
-  .janus-container {
-    transform: scale(0.32);
-  }
-}
 .text-container {
   width: 100%;
   height: 100%;
@@ -6654,10 +6666,10 @@ and generated line lengths.
   word-break: break-all;
   line-height: 1.1;
   font-size: 10px;
-  color: #F0FFF3;
+  color: #f0fff3;
+
   --offset: 50;
 }
-
 
 .symbol {
   display: inline-block;
@@ -6681,6 +6693,34 @@ and generated line lengths.
 
   90% {
     opacity: 1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .janus-container {
+    transform: scale(0.7);
+  }
+}
+
+@media (max-width: 768px) {
+  .janus-main {
+    height: 100svh;
+  }
+
+  .janus-container {
+    transform: scale(0.7);
+  }
+
+
+}
+
+@media (max-width: 480px) {
+   .face-container {
+    width: 340px;
+    flex: 0 0 340px;
+  }
+  .janus-container {
+    transform: scale(0.6);
   }
 }
 
@@ -7298,7 +7338,7 @@ font-size: clamp(1.125rem, 2.025vw, 2.25rem);
 
   --text-width: 100px;
   --gsplits: 4;
-  --gsize: 1rem;
+  --gsize: 1.4em;
 
   font-size: var(--gsize);
 
