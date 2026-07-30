@@ -1337,10 +1337,7 @@ const TerminalPreloader = () => {
       const wordCharacters = Array.from(word);
 
       const renderedWord = (
-        <span
-          key={`${line.id}-word-${wordIndex}`}
-          className="terminal-word"
-        >
+        <span key={`${line.id}-word-${wordIndex}`} className="terminal-word">
           {wordCharacters.map((character) => {
             const position = characterPosition;
             characterPosition += 1;
@@ -1648,7 +1645,7 @@ const List = ({ onInteractionChange }) => {
   };
   const updatePreviewOnScroll = () => {
     if (!isTestimonialsVisible()) return;
-    if (isHovering.current) return; 
+    if (isHovering.current) return;
 
     const sectionTop = testimonialsSectionRef.current.offsetTop;
     const centerY = window.scrollY + window.innerHeight / 2 - sectionTop;
@@ -2234,7 +2231,7 @@ function ResponsiveCamera() {
     const isSmallMobile = size.width < 480;
     const isMobile = size.width < 768;
 
-camera.fov = isSmallMobile ? 16 : isMobile ? 16 : 15;
+    camera.fov = isSmallMobile ? 16 : isMobile ? 16 : 15;
     camera.updateProjectionMatrix();
   }, [camera, size.width]);
 
@@ -2383,64 +2380,48 @@ function useCardTexture(imageUrl, name, reviewText) {
       ctx.scale(-1, 1);
 
       ctx.save();
-      
-const isMobile = window.innerWidth < 768;
 
-ctx.save();
+      const isMobile = window.innerWidth < 768;
 
-ctx.filter = isMobile
-  ? "blur(32px)"
-  : "blur(64px)";
+      ctx.save();
 
-ctx.drawImage(
-  image,
-  -30,
-  -30,
-  canvas.width + 60,
-  canvas.height + 60
-);
+      ctx.filter = isMobile ? "blur(32px)" : "blur(64px)";
 
-ctx.restore();
+      ctx.drawImage(image, -30, -30, canvas.width + 60, canvas.height + 60);
 
-drawTileOverlay(ctx, canvas.width, canvas.height);
+      ctx.restore();
 
-ctx.textAlign = "center";
-ctx.textBaseline = "middle";
+      drawTileOverlay(ctx, canvas.width, canvas.height);
 
-ctx.fillStyle = "#000";
-ctx.font = isMobile
-  ? 'italic 98px "Canela"'
-  : 'italic 88px "Canela"';
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
 
-ctx.fillText(
-  name,
-  canvas.width / 2,
-  isMobile ? 380 : 360
-);
+      ctx.fillStyle = "#000";
+      ctx.font = isMobile ? 'italic 98px "Canela"' : 'italic 88px "Canela"';
 
-ctx.fillStyle = "#000";
-ctx.font = isMobile
-  ? 'italic 84px "Canela"'
-  : 'italic 88px "Canela"';
+      ctx.fillText(name, canvas.width / 2, isMobile ? 380 : 360);
 
-drawWrappedText({
-  ctx,
-  text: reviewText,
-  x: canvas.width / 2,
-  y: isMobile ? 690 : 650,
-  maxWidth: isMobile ? 1550 : 1450,
-  lineHeight: isMobile ? 94 : 86,
-  maxLines: 13,
-});
+      ctx.fillStyle = "#000";
+      ctx.font = isMobile ? 'italic 84px "Canela"' : 'italic 88px "Canela"';
 
-canvasTexture = new THREE.CanvasTexture(canvas);
-canvasTexture.colorSpace = THREE.SRGBColorSpace;
-canvasTexture.anisotropy = 16;
-canvasTexture.needsUpdate = true;
+      drawWrappedText({
+        ctx,
+        text: reviewText,
+        x: canvas.width / 2,
+        y: isMobile ? 690 : 650,
+        maxWidth: isMobile ? 1550 : 1450,
+        lineHeight: isMobile ? 94 : 86,
+        maxLines: 13,
+      });
 
-if (!cancelled) {
-  setTexture(canvasTexture);
-}
+      canvasTexture = new THREE.CanvasTexture(canvas);
+      canvasTexture.colorSpace = THREE.SRGBColorSpace;
+      canvasTexture.anisotropy = 16;
+      canvasTexture.needsUpdate = true;
+
+      if (!cancelled) {
+        setTexture(canvasTexture);
+      }
     };
 
     createTexture().catch((error) => {
@@ -2561,11 +2542,7 @@ function ResponsiveBanner() {
   const isMobile = size.width < 768;
   const isSmallMobile = size.width < 480;
 
-  const carouselRadius = isSmallMobile
-    ? 1.85
-    : isMobile
-      ? 1.95
-      : 1.9;
+  const carouselRadius = isSmallMobile ? 1.85 : isMobile ? 1.95 : 1.9;
 
   const bannerRadius = carouselRadius + 0.2;
 
@@ -2587,33 +2564,51 @@ function JanusFace() {
   const ri = (from, to) => ~~r(from, to);
   const pick = (...args) => args[ri(0, args.length)];
 
-const generateText = (length = 60, rowIndex = 0, isMobile = false) => {
-  return Array.from({ length }, (_, i) => {
-    const shouldBlink =
-      !isMobile && (i + rowIndex) % 4 === 0;
+  const symbols = [
+    "□",
+    "▢",
+    "▭",
+    "▯",
 
-    return (
-      <span
-        key={i}
-        className={shouldBlink ? "symbol symbol-blink" : "symbol"}
-        style={
-          shouldBlink
-            ? {
-                "--blink-delay": `${
-                  (i * 0.09 + rowIndex * 0.17) % 4
-                }s`,
-                "--blink-duration": `${
-                  3.5 + ((i + rowIndex) % 4) * 0.4
-                }s`,
-              }
-            : undefined
-        }
-      >
-        {String.fromCharCode(ri(0x25a0, 0x25fc))}
-      </span>
-    );
-  });
-};
+    "○",
+    "◯",
+    "◌",
+
+    "△",
+    "▽",
+    "▷",
+    "◁",
+
+    "◇",
+    "◊",
+
+    "◅",
+    "▻",
+  ];
+
+  const generateText = (length = 60, rowIndex = 0, isMobile = false) => {
+    return Array.from({ length }, (_, i) => {
+      const shouldBlink = !isMobile && (i + rowIndex) % 4 === 0;
+
+      return (
+        <span
+          key={i}
+          className={shouldBlink ? "symbol symbol-blink" : "symbol"}
+          style={
+            shouldBlink
+              ? {
+                  "--blink-delay": `${(i * 0.09 + rowIndex * 0.17) % 4}s`,
+
+                  "--blink-duration": `${3.5 + ((i + rowIndex) % 4) * 0.4}s`,
+                }
+              : undefined
+          }
+        >
+          {pick(...symbols)}
+        </span>
+      );
+    });
+  };
   const generateBaseParagraphs = (isMobile = false) => {
     const paragraphs = [];
 
@@ -2929,8 +2924,6 @@ const Testimonials = () => {
           <div className="w-full h-screen">
             <CarouselComponent />
           </div>
-
-
         </section>
       </section>
     </>
@@ -2938,5 +2931,3 @@ const Testimonials = () => {
 };
 
 export default Testimonials;
-
-
