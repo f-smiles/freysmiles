@@ -1236,96 +1236,141 @@ const TerminalPreloader = () => {
 
     if (!container) return;
 
-    const timeoutIds = [];
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     const lineElements = Array.from(
       container.querySelectorAll(".terminal-line"),
     );
 
-    const animatedLines = lineElements.map((lineElement) => {
+    const animatedLines = lineElements.map((lineElement, lineIndex) => {
       const cellElements = Array.from(
         lineElement.querySelectorAll(".terminal-cell"),
       );
 
-      return cellElements.map((cellElement) => ({
-        element: cellElement,
-        original: cellElement.dataset.character ?? "",
-        signal: "",
-        iterations: 0,
+      return {
+        startDelay: lineIndex * LINE_DELAY,
+        lastTick: 0,
         finished: false,
-      }));
+
+        cells: cellElements.map((element) => ({
+          element,
+          original: element.dataset.character ?? "",
+          signal: "",
+          displayedValue: null,
+          iterations: 0,
+          finished: false,
+        })),
+      };
     });
 
     const renderCell = (cell, value) => {
-      if (cell.original === " ") {
-        cell.element.textContent = " ";
-        return;
-      }
+      const displayedValue =
+        cell.original === " " ? " " : value || "\u00A0";
 
-      cell.element.textContent = value || "\u00A0";
+      // Avoid rewriting the DOM when the value hasn't changed.
+      if (cell.displayedValue === displayedValue) return;
+
+      cell.element.textContent = displayedValue;
+      cell.displayedValue = displayedValue;
     };
 
-    animatedLines.forEach((cells) => {
+    const finishCell = (cell) => {
+      cell.finished = true;
+      cell.signal = cell.original;
+      renderCell(cell, cell.original);
+    };
+
+    // Immediately display the final text for reduced-motion users.
+    if (reduceMotion) {
+      animatedLines.forEach(({ cells }) => {
+        cells.forEach(finishCell);
+      });
+
+      return;
+    }
+
+    // Clear all characters before starting.
+    animatedLines.forEach(({ cells }) => {
       cells.forEach((cell) => {
         cell.signal = "";
         cell.iterations = 0;
         cell.finished = false;
-
         renderCell(cell, "");
       });
     });
 
-    const animateLine = (cells) => {
-      const tick = () => {
-        const previousSignals = cells.map((cell) => cell.signal);
+    let frameId = null;
+    let startTime = null;
+    let cancelled = false;
 
-        cells.forEach((cell, index) => {
-          if (cell.finished) return;
+    const updateLine = (line, time) => {
+      const previousSignals = line.cells.map((cell) => cell.signal);
 
-          const nextSignal =
-            index === 0
-              ? Math.random() < 0.5
-                ? "*"
-                : ":"
-              : previousSignals[index - 1];
+      line.cells.forEach((cell, index) => {
+        if (cell.finished) return;
 
-          cell.signal = nextSignal;
+        const nextSignal =
+          index === 0
+            ? Math.random() < 0.5
+              ? "*"
+              : ":"
+            : previousSignals[index - 1];
 
-          renderCell(cell, nextSignal);
+        cell.signal = nextSignal;
+        renderCell(cell, nextSignal);
 
-          if (nextSignal) {
-            cell.iterations += 1;
-          }
-
-          if (cell.iterations >= MAX_CELL_ITERATIONS) {
-            cell.finished = true;
-            cell.element.textContent = cell.original;
-          }
-        });
-
-        const allFinished = cells.every((cell) => cell.finished);
-
-        if (!allFinished) {
-          const timeoutId = window.setTimeout(tick, CELL_INTERVAL);
-          timeoutIds.push(timeoutId);
+        if (nextSignal) {
+          cell.iterations += 1;
         }
-      };
 
-      tick();
+        if (cell.iterations >= MAX_CELL_ITERATIONS) {
+          finishCell(cell);
+        }
+      });
+
+      line.finished = line.cells.every((cell) => cell.finished);
+      line.lastTick = time;
     };
 
-    animatedLines.forEach((cells, lineIndex) => {
-      const timeoutId = window.setTimeout(() => {
-        animateLine(cells);
-      }, lineIndex * LINE_DELAY);
+    const animate = (time) => {
+      if (cancelled) return;
 
-      timeoutIds.push(timeoutId);
-    });
+      if (startTime === null) {
+        startTime = time;
+      }
+
+      const elapsed = time - startTime;
+
+      animatedLines.forEach((line) => {
+        if (line.finished || elapsed < line.startDelay) return;
+
+        if (
+          line.lastTick === 0 ||
+          time - line.lastTick >= CELL_INTERVAL
+        ) {
+          updateLine(line, time);
+        }
+      });
+
+      const allLinesFinished = animatedLines.every(
+        (line) => line.finished,
+      );
+
+      if (!allLinesFinished) {
+        frameId = requestAnimationFrame(animate);
+      }
+    };
+
+    frameId = requestAnimationFrame(animate);
 
     return () => {
-      timeoutIds.forEach((timeoutId) => {
-        window.clearTimeout(timeoutId);
-      });
+      cancelled = true;
+
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+      }
     };
   }, [isMobile]);
 
@@ -1337,7 +1382,10 @@ const TerminalPreloader = () => {
       const wordCharacters = Array.from(word);
 
       const renderedWord = (
-        <span key={`${line.id}-word-${wordIndex}`} className="terminal-word">
+        <span
+          key={`${line.id}-word-${wordIndex}`}
+          className="terminal-word"
+        >
           {wordCharacters.map((character) => {
             const position = characterPosition;
             characterPosition += 1;
@@ -1368,10 +1416,10 @@ const TerminalPreloader = () => {
           {renderedWord}
 
           <span
+            key={`${line.id}-${spacePosition}`}
             className="terminal-cell terminal-space"
             data-character=" "
             aria-hidden="true"
-            key={`${line.id}-${spacePosition}`}
           >
             {" "}
           </span>
@@ -1420,7 +1468,7 @@ const testimonials = [
   {
     name: "Elizabeth",
     image: "../images/testimonials/elizabethmask.png",
-    type: "Invisalign",
+    type: "Invisalign, Braces",
     project: "Elizabeth",
   },
   {
@@ -1480,7 +1528,7 @@ const testimonials = [
   {
     name: "Ibis",
     image: "../images/testimonials/Ibis_Subero.jpg",
-    type: undefined,
+    type: "12 months, Invisalign",
     project: "Ibis",
   },
   {
@@ -1498,7 +1546,7 @@ const testimonials = [
   {
     name: "Nicolle",
     image: "../images/testimonials/Nicolle.png",
-    type: "Braces",
+    type: "Invisalign",
     project: "Nilaya",
   },
   {
@@ -1643,8 +1691,22 @@ const List = ({ onInteractionChange }) => {
 
     lastStackedIndex.current = index;
   };
+  const isTestimonialsListActive = () => {
+  const list = testimonialsListRef.current;
+  if (!list) return false;
+
+  const rect = list.getBoundingClientRect();
+
+  const activeTop = window.innerHeight * 0.75;
+  const activeBottom = window.innerHeight * 0.25;
+
+  return rect.top < activeTop && rect.bottom > activeBottom;
+};
   const updatePreviewOnScroll = () => {
-    if (!isTestimonialsVisible()) return;
+  if (!isTestimonialsListActive()) {
+    clearPreview();
+    return;
+  }
     if (isHovering.current) return;
 
     const sectionTop = testimonialsSectionRef.current.offsetTop;
@@ -1793,35 +1855,46 @@ const List = ({ onInteractionChange }) => {
 
     return rect.bottom > 0 && rect.top < window.innerHeight;
   };
-  const clearPreview = () => {
-    const images = testimonialPreviewRef.current?.querySelectorAll("img");
-    images?.forEach((img) => {
-      gsap.killTweensOf(img);
-      gsap.to(img, {
-        scale: 0,
-        opacity: 0,
-        duration: 0.35,
-        ease: "power2.inOut",
-        onComplete: () => img.remove(),
-      });
+const clearPreview = () => {
+  const images =
+    testimonialPreviewRef.current?.querySelectorAll("img");
+
+  images?.forEach((img) => {
+    gsap.killTweensOf(img);
+
+    gsap.to(img, {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.18,
+      ease: "power2.in",
+      overwrite: true,
+      onComplete: () => img.remove(),
     });
+  });
 
-    lastStackedIndex.current = null;
-    zCounter.current = 1;
-  };
+  lastStackedIndex.current = null;
+  lastScrollActive.current = null;
+  zCounter.current = 1;
+};
 
-  useEffect(() => {
-    if (!outroRef.current) return;
+useEffect(() => {
+  const list = testimonialsListRef.current;
+  if (!list) return;
 
-    const trigger = ScrollTrigger.create({
-      trigger: outroRef.current,
-      start: "top center",
-      onEnter: clearPreview,
-      onEnterBack: clearPreview,
-    });
+  const trigger = ScrollTrigger.create({
+    trigger: list,
+    start: "top 75%",
+    end: "bottom 25%",
 
-    return () => trigger.kill();
-  }, []);
+    onLeave: clearPreview,
+    onLeaveBack: clearPreview,
+
+    onEnter: updatePreviewOnScroll,
+    onEnterBack: updatePreviewOnScroll,
+  });
+
+  return () => trigger.kill();
+}, []);
   useEffect(() => {
     if (!testimonialsSectionRef.current || !onInteractionChange) return;
 
