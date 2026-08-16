@@ -5,12 +5,12 @@
 
 
 @font-face {
-  font-family: "NeueHaas35";
+  font-family: "NeueHaasDisplay35";
   src: url("/fonts/NeueHaasGrotesk35Thin.woff2") format("woff2");
   font-display: swap;
 }
 @font-face {
-  font-family: "NeueHaas45";
+  font-family: "NeueHaasDisplay45";
   src: url("/fonts/NeueHaasGrotesk45Light.woff2") format("woff2");
   font-display: swap;
 }
@@ -29,13 +29,13 @@
   font-display: swap;
 }
 @font-face {
-	font-family: 'IBMPlexMonoThin';
+	font-family: 'IBMPlexMono-Thin';
 	src: url("/fonts/IBMPlexMonoThin.ttf") format("truetype");
 	font-style: normal;
   font-display: swap;
 }
 @font-face {
-	font-family: 'IBMPlexMonoExtraLight';
+	font-family: 'IBMPlexMono-Light';
 	src: url("/fonts/IBMPlexMonoExtraLight.ttf") format("truetype");
 	font-style: normal;
   font-display: swap;
@@ -100,6 +100,404 @@ body {
   filter: contrast(120%) brightness(110%);
 }
 
+.BookNow-button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 10rem;
+  border: none;
+  background-color: transparent;
+  color: #000;
+  position: relative;
+  overflow: hidden;
+  color: #000;
+}
+.BookNow-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rem;
+  height: 2rem;
+  background-color: #FF33CC;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  animation: button-spotlight 3s infinite;
+  animation-timing-function: linear;
+  z-index: -20;
+}
+.BookNow-button::after {
+  content: "";
+  position: absolute;
+  top: 2%;
+  left: 1%;
+  width: 98%;
+  height: 96%;
+  background-color: #fff;
+  border-radius: 10rem;
+  z-index: -10;
+}
+@keyframes button-spotlight {
+  0% {
+    top: 0%;
+    left: 0%;
+  }
+  25% {
+    top: 0%;
+    left: 100%;
+  }
+  50% {
+    top: 100%;
+    left: 100%;
+  }
+  75% {
+    top: 100%;
+    left: 0%;
+  }
+  100% {
+    top: 0%;
+    left: 0%;
+  }
+}
+
+.TestimonialsBookNow-banner {
+  position: relative;
+  margin: 0 auto;
+  padding: 3rem;
+  border-radius: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3rem;
+  transition: box-shadow 300ms cubic-bezier(0.23, 1, 0.32, 1), filter 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 15px 25px -4px rgba(0, 0, 0, 0.5),
+              inset 0 -3px 4px -1px rgba(0, 0, 0, 0.2),
+              0 -10px 15px -1px rgba(255, 255, 255, 0.6),
+              inset 0 3px 4px -1px rgba(255, 255, 255, 0.2),
+              inset 0 0 5px 1px rgba(255, 255, 255, 0.8),
+              inset 0 20px 30px 0 rgba(255, 255, 255, 0.2);
+  z-index: 100;
+}
+.TestimonialsBookNow-banner:hover {
+  filter: blur(0.5px);
+  box-shadow: 0 12px 25px -4px rgba(0, 0, 0, 0.4),
+              inset 0 -8px 30px 1px rgba(255, 255, 255, 0.9),
+              0 -10px 15px -1px rgba(255, 255, 255, 0.6),
+              inset 0 8px 25px 0 rgba(0, 0, 0, 0.4),
+              inset 0 0 10px 1px rgba(255, 255, 255, 0.6);
+}
+.TestimonialsBookNow-banner:hover .TestimonialsBookNow-banner__logo path {
+  filter: drop-shadow(1.5px 1.5px 1px rgba(255, 255, 255, 0.9))
+          drop-shadow(-1.5px -1.5px 1px rgba(0, 0, 0, 0.2));
+}
+.TestimonialsBookNow-banner button {
+  color: #090909;
+  margin: 0;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+  z-index: 999;
+}
+.TestimonialsBookNow-banner button:active {
+  background: #e8e8e8;
+  cursor: pointer;
+  border: 1px solid #e8e8e8;
+  transition: all 0.2s;
+  color: #666;
+  box-shadow: inset 4px 4px 12px #c5c5c5, inset -4px -4px 12px #ffffff;
+}
+@media screen and (max-width: 768px) {
+  .TestimonialsBookNow-banner {
+    flex-direction: column;
+    padding: 2rem;
+    gap: 3rem;
+    width: 90%;
+    margin: 0 auto;
+  }
+  .TestimonialsBookNow-banner h2 {
+    width: 100%;
+    text-align: center;
+  }
+  .TestimonialsBookNow-banner svg {
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* .TestimonialsBookNow-banner__logo {
+  width: auto;
+  height: 25%;
+} */
+/* .TestimonialsBookNow-banner__logo > path {
+  filter: blur(0.5px);
+  box-shadow: 0 12px 25px -4px rgba(0, 0, 0, 0.4),
+              inset 0 -8px 30px 1px rgba(255, 255, 255, 0.9),
+              0 -10px 15px -1px rgba(255, 255, 255, 0.6),
+              inset 0 8px 25px 0 rgba(0, 0, 0, 0.4),
+              inset 0 0 10px 1px rgba(255, 255, 255, 0.6);
+} */
+
+/* .home-page-logo {
+  clip-path: polygon(-50% 0%, 0% 0%, -50% 100%, -100% 100%);
+} */
+
+/* 
+*
+*   TESTIMONIALS PAGE START   *
+*
+*/
+
+.testimonialsPage img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  will-change: transform;
+    object-position: center center;
+}
+
+.testimonialsPage h1 {
+  font-family: "NeueHaasGroteskDisplayPro45Light", monospace;
+  font-optical-sizing: auto;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  line-height: 0.9;
+  position: relative;
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+.testimonialsPage .highlighted-text {
+  position: relative;
+  display: inline-block;
+  color: #000;
+  padding: 2px 0;
+}
+
+.testimonialsPage .highlighted-text.col-left::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: 4px;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease-out;
+  border-radius: 2px;
+}
+
+.testimonialsPage .highlighted-text.col-right::after {
+  content: '';
+  position: absolute;
+  left: 4px; 
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left; 
+  transition: transform 0.3s ease-out;
+  border-radius: 2px;
+}
+
+.testimonialsPage .highlighted-text.active::after {
+  transform: scaleX(1);
+}
+
+.testimonialsPage .highlighted-text.neon::after {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 255, 0.2) 0%,
+    rgba(0, 255, 255, 0.6) 50%,
+    rgba(0, 255, 255, 0.2) 100%
+  );
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.testimonialsPage .highlighted-text.pink::after {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 255, 0.2) 0%,
+    rgba(255, 0, 255, 0.6) 50%,
+    rgba(255, 0, 255, 0.2) 100%
+  );
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+}
+
+.testimonialsPage .highlighted-text.green::after {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 0, 0.2) 0%,
+    rgba(0, 255, 0, 0.6) 50%,
+    rgba(0, 255, 0, 0.2) 100%
+  );
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.testimonialsPage section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.testimonialsPage .testimonials {
+  min-height: 100vh;
+  height: max-content;
+}
+
+.testimonialsPage .testimonials p {
+  padding: 5px 20px;
+}
+
+.testimonialsPage .testimonial {
+  position: relative;
+  height: 60px;
+  overflow: hidden;
+  cursor: pointer;
+
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  border-bottom: .5px solid rgba(89, 82, 82, 0.2);
+}
+
+.testimonialsPage .testimonial-content {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.testimonialsPage .testimonial-name {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;  
+  align-items: center;
+  height: 100%;
+  padding: 0 18px;
+  gap: 20px;
+}
+
+.testimonialsPage .testimonial-preview {
+  position: fixed;
+top: 55%;
+  right: 15px;
+  width: clamp(240px, 28vw, 340px);
+  aspect-ratio: 4 / 5; /* portrait editorial */
+  z-index: 2;
+}
+@media (min-width: 1024px) {
+  .testimonialsPage .testimonial-preview {
+    width: clamp(340px, 28vw, 480px);
+    aspect-ratio: 5 / 3; /* wide editorial */
+  }
+}
+
+.testimonialsPage .testimonial-name .col-left {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.testimonialsPage .testimonial-name .col-right {
+  text-align: left;  
+  opacity: 0.7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.testimonialsPage .testimonial-name .col-arrow {
+  margin-left: 20px;
+  font-size: 18px;
+  opacity: 0.6;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  flex-shrink: 0;
+}
+
+
+.testimonialsPage .testimonial-name {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+}
+
+.grouptwo {
+  display: flex;
+  flex-direction: column;
+  font-family: "NeueHaasGroteskDisplayPro45Light";
+  padding-top: 30vh;
+  padding-bottom: 30vh;
+}
+
+.el {
+  white-space: nowrap;
+  filter: blur(0px);
+  opacity: 0.6;
+  font-size: 14px; 
+  line-height: 1.2;
+  letter-spacing: 0.02em; 
+}
+.pos-3 {
+  margin-left: 70vw;
+}
+
+.pos-8 {
+  margin-left: 25vw;
+  transform: translateY(50px);  
+  opacity: 1;
+  /* filter: blur(2px); */
+}
+
+.preview-mask {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+
+  clip-path: polygon(
+    0% 0%,        /* top-left */
+    88% 0%,       /* before top-right cut */
+    100% 12%,     /* top-right cut */
+    100% 100%,    /* bottom-right */
+    12% 100%,     /* before bottom-left cut */
+    0% 88%        /* bottom-left cut */
+  );
+}
+
+/* 
+*   TESTIMONIALS PAGE END   *
+*/
+
+
+.gtext {
+  display: grid;
+  white-space: nowrap;
+  width: max-content;
+
+  --text-width: 100px;
+  --gsplits: 4;
+  --gsize: 1rem;
+
+  font-size: var(--gsize);
+
+  grid-template-columns: repeat(
+    var(--gsplits),
+    calc(var(--text-width) / var(--gsplits))
+  );
+}
+
+.gtext__box {
+  overflow: hidden;
+  position: relative;
+  will-change: transform;
+  margin-right: -0.5px; 
+}
+
+.gtext__box-inner {
+  padding-right: 0.2em;
+  width: max-content;
+  position: relative;
+  display: block;
+  will-change: transform;
+}
+
 
 @layer base {
   :root {
@@ -131,6 +529,7 @@ body {
     --font-xs: 14px;
     --font-xxs: 11px;
     --font-lg: 32px;
+
   }
   .dark {
     --background: 240 10% 3.9%;
