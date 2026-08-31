@@ -1184,25 +1184,26 @@ function Background() {
 }
 
 const TerminalPreloader = () => {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(null);
   const containerRef = useRef(null);
 
-  useLayoutEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
+useLayoutEffect(() => {
+  const mediaQuery = window.matchMedia("(max-width: 768px)");
 
-    const updateViewport = () => {
-      setIsMobile(mediaQuery.matches);
-    };
+  const updateViewport = () => {
+    setIsMobile(mediaQuery.matches);
+  };
 
-    updateViewport();
-    mediaQuery.addEventListener("change", updateViewport);
+  updateViewport();
 
-    return () => {
-      mediaQuery.removeEventListener("change", updateViewport);
-    };
-  }, []);
+  mediaQuery.addEventListener("change", updateViewport);
 
-  const lines = isMobile
+  return () => {
+    mediaQuery.removeEventListener("change", updateViewport);
+  };
+}, []); 
+
+const lines = isMobile
     ? [
         {
           id: "mobile",
@@ -1229,59 +1230,67 @@ const TerminalPreloader = () => {
       ];
 
   const MAX_CELL_ITERATIONS = 30;
-  const CELL_INTERVAL = 15;
+  const CELL_INTERVAL = 20;
   const LINE_DELAY = 180;
 
-  useLayoutEffect(() => {
-    const container = containerRef.current;
+useLayoutEffect(() => {
+  if (isMobile === null) return;
 
-    if (!container) return;
+  const container = containerRef.current;
+  if (!container) return;
 
-    const timeoutIds = [];
+  let frameId;
+  let startTimeout;
+  let cancelled = false;
 
-    const lineElements = Array.from(
-      container.querySelectorAll(".terminal-line"),
-    );
+  const cellElements = Array.from(
+    container.querySelectorAll(".terminal-cell")
+  );
 
-    const animatedLines = lineElements.map((lineElement) => {
-      const cellElements = Array.from(
-        lineElement.querySelectorAll(".terminal-cell"),
-      );
+  const cells = cellElements.map((cellElement) => ({
+    element: cellElement,
+    original: cellElement.dataset.character ?? "",
+    signal: "",
+    iterations: 0,
+    finished: false,
+  }));
 
-      return cellElements.map((cellElement) => ({
-        element: cellElement,
-        original: cellElement.dataset.character ?? "",
-        signal: "",
-        iterations: 0,
-        finished: false,
-      }));
-    });
+  const renderCell = (cell, value) => {
+    if (cell.original === " ") {
+      cell.element.textContent = " ";
+      return;
+    }
 
-    const renderCell = (cell, value) => {
-      if (cell.original === " ") {
-        cell.element.textContent = " ";
-        return;
-      }
+    cell.element.textContent = value || "\u00A0";
+  };
 
-      cell.element.textContent = value || "\u00A0";
-    };
 
-    animatedLines.forEach((cells) => {
-      cells.forEach((cell) => {
-        cell.signal = "";
-        cell.iterations = 0;
-        cell.finished = false;
+  cells.forEach((cell) => {
+    cell.signal = "";
+    cell.iterations = 0;
+    cell.finished = false;
+    renderCell(cell, "");
+  });
 
-        renderCell(cell, "");
-      });
-    });
+  const previousSignals = new Array(cells.length);
 
-    const animateLine = (cells) => {
-      const tick = () => {
-        const previousSignals = cells.map((cell) => cell.signal);
+  const startAnimation = () => {
+    if (cancelled) return;
 
-        cells.forEach((cell, index) => {
-          if (cell.finished) return;
+    let lastStepTime = performance.now();
+
+    const tick = (now) => {
+      if (cancelled) return;
+
+      if (now - lastStepTime >= CELL_INTERVAL) {
+        lastStepTime = now;
+
+        for (let i = 0; i < cells.length; i++) {
+          previousSignals[i] = cells[i].signal;
+        }
+
+        for (let index = 0; index < cells.length; index++) {
+          const cell = cells[index];
 
           const nextSignal =
             index === 0
@@ -1291,6 +1300,8 @@ const TerminalPreloader = () => {
               : previousSignals[index - 1];
 
           cell.signal = nextSignal;
+
+          if (cell.finished) continue;
 
           renderCell(cell, nextSignal);
 
@@ -1302,33 +1313,30 @@ const TerminalPreloader = () => {
             cell.finished = true;
             cell.element.textContent = cell.original;
           }
-        });
-
-        const allFinished = cells.every((cell) => cell.finished);
-
-        if (!allFinished) {
-          const timeoutId = window.setTimeout(tick, CELL_INTERVAL);
-          timeoutIds.push(timeoutId);
         }
-      };
+      }
 
-      tick();
+      const allFinished = cells.every((cell) => cell.finished);
+
+      if (!allFinished) {
+        frameId = requestAnimationFrame(tick);
+      }
     };
 
-    animatedLines.forEach((cells, lineIndex) => {
-      const timeoutId = window.setTimeout(() => {
-        animateLine(cells);
-      }, lineIndex * LINE_DELAY);
+    frameId = requestAnimationFrame(tick);
+  };
 
-      timeoutIds.push(timeoutId);
-    });
+  startTimeout = window.setTimeout(startAnimation, 700);
 
-    return () => {
-      timeoutIds.forEach((timeoutId) => {
-        window.clearTimeout(timeoutId);
-      });
-    };
-  }, [isMobile]);
+  return () => {
+    cancelled = true;
+    window.clearTimeout(startTimeout);
+
+    if (frameId) {
+      cancelAnimationFrame(frameId);
+    }
+  };
+}, [isMobile]);
 
   const renderLine = (line) => {
     const words = line.text.split(" ");
@@ -1383,7 +1391,13 @@ const TerminalPreloader = () => {
       );
     });
   };
-
+if (isMobile === null) {
+  return (
+    <div className="terminal-preloader">
+      <div className="terminal-container" />
+    </div>
+  );
+}
   return (
     <div className="terminal-preloader">
       <div ref={containerRef} className="terminal-container">
@@ -1889,11 +1903,11 @@ useEffect(() => {
       </section>
       <section className="testimonials" ref={testimonialsSectionRef}>
         <div className="flex flex-col items-center text-center mb-10 gap-1">
-          <div className="flex items-baseline gap-2">
-            <SlidingText text="Select Cases" effect="2" totalCells={4} />
+          <div className="flex font-neuehaas35 text-[22px] gap-2 text-[#e30ad8]">
+Select Cases
           </div>
 
-          <span className="text-[18px] font-canelathin opacity-60">
+          <span className="text-[18px] font-canela text-[#e30ad8] opacity-60">
             A visual archive of selected treatment outcomes
           </span>
         </div>
@@ -1962,123 +1976,6 @@ useEffect(() => {
       <div ref={outroRef} className="testimonials-outro-spacer" />
       <div className="testimonial-preview" ref={testimonialPreviewRef} />
     </div>
-  );
-};
-
-const SlidingText = ({ text = "Select Cases", totalCells = 4 }) => {
-  const containerRef = useRef(null);
-  const innerRefs = useRef([]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !innerRefs.current.length) return;
-
-    const setLayout = () => {
-      const firstInner = innerRefs.current[0];
-      const textWidth = firstInner.scrollWidth;
-
-      container.style.setProperty("--text-width", `${textWidth}px`);
-      container.style.setProperty("--gsplits", totalCells);
-
-      const offset = textWidth / totalCells;
-
-      innerRefs.current.forEach((inner, i) => {
-        gsap.set(inner, {
-          x: -i * offset,
-        });
-      });
-    };
-
-    setLayout();
-    window.addEventListener("resize", setLayout);
-
-    return () => {
-      window.removeEventListener("resize", setLayout);
-    };
-  }, [totalCells]);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el || !innerRefs.current.length) return;
-
-    const setLayout = () => {
-      const firstInner = innerRefs.current[0];
-      const textWidth = firstInner.scrollWidth;
-
-      el.style.setProperty("--text-width", `${textWidth}px`);
-      el.style.setProperty("--gsplits", totalCells);
-
-      const offset = textWidth / totalCells;
-
-      innerRefs.current.forEach((inner, i) => {
-        gsap.set(inner, {
-          x: -i * offset,
-        });
-      });
-    };
-
-    setLayout();
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-
-        observer.disconnect();
-        const textWidth = parseFloat(el.style.getPropertyValue("--text-width"));
-        const offset = textWidth / totalCells;
-
-        gsap.fromTo(
-          innerRefs.current,
-          {
-            x: (i) => -i * offset + (i % 2 === 0 ? -40 : 40),
-            opacity: 0,
-          },
-          {
-            x: (i) => -i * offset,
-            opacity: 1,
-            duration: 0.8,
-            stagger: 0.03,
-            ease: "power2.out",
-          },
-        );
-      },
-      { threshold: 0.7 },
-    );
-
-    gsap.set(innerRefs.current, { opacity: 0 });
-
-    observer.observe(el);
-
-    const handleResize = () => {
-      setLayout();
-
-      if (!observer) {
-        gsap.set(innerRefs.current, { opacity: 0 });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", handleResize);
-      gsap.killTweensOf(innerRefs.current);
-    };
-  }, [totalCells]);
-
-  return (
-    <h3 ref={containerRef} className="gtext font-neuehaasdisplaythin">
-      {Array.from({ length: totalCells }).map((_, i) => (
-        <span key={i} className="gtext__box">
-          <span
-            className="gtext__box-inner"
-            ref={(el) => (innerRefs.current[i] = el)}
-          >
-            {text}
-          </span>
-        </span>
-      ))}
-    </h3>
   );
 };
 
@@ -2282,16 +2179,25 @@ function Rig(props) {
 
     state.events.update();
 
-    easing.damp3(
-      state.camera.position,
-      [
-        -state.pointer.x * (isMobile ? 0.5 : 2),
-        state.pointer.y * (isMobile ? 0.25 : 1) + (isMobile ? 1 : 1.5),
-        isMobile ? 12 : 10,
-      ],
-      0.3,
-      delta,
-    );
+    if (isMobile) {
+      easing.damp3(
+        state.camera.position,
+        [0, 1, 12],
+        0.3,
+        delta,
+      );
+    } else {
+      easing.damp3(
+        state.camera.position,
+        [
+          -state.pointer.x * 2,
+          state.pointer.y + 1.5,
+          10,
+        ],
+        0.3,
+        delta,
+      );
+    }
 
     state.camera.lookAt(0, 0, 0);
   });
@@ -2648,28 +2554,29 @@ function JanusFace() {
       );
     });
   };
-  const generateBaseParagraphs = (isMobile = false) => {
-    const paragraphs = [];
+const generateBaseParagraphs = (isMobile = false) => {
+  const paragraphs = [];
 
-    const rowCount = 50;
+  const rowCount = 50;
 
-    for (let i = 0; i < rowCount; i++) {
-      const offset = r(45, 95);
-      const color = "#f3e7db";
+  for (let i = 0; i < rowCount; i++) {
+    const offset = r(45, 95);
+const t = i / (rowCount - 1);
+const shade = Math.round(175 + t * 80);
+const color = `rgb(${shade}, ${shade}, ${shade})`;
 
-      const textLength = isMobile ? ri(18, 34) : ri(25, 95);
+    const textLength = isMobile ? ri(18, 34) : ri(25, 95);
 
-      paragraphs.push({
-        offset,
-        color,
-        textLength,
-        key: i,
-      });
-    }
+    paragraphs.push({
+      offset,
+      color,
+      textLength,
+      key: i,
+    });
+  }
 
-    return paragraphs;
-  };
-
+  return paragraphs;
+};
   const build = () => {
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
@@ -2857,48 +2764,7 @@ const Testimonials = () => {
     return () => split.revert();
   }, []);
 
-  const gradient1Ref = useRef(null);
-  const image1Ref = useRef(null);
-  const text1Ref = useRef(null);
 
-  useEffect(() => {
-    if (!gradient1Ref.current || !image1Ref.current) return;
-
-    gsap.to(".gradient-col", {
-      y: "-20%",
-      ease: "none",
-      scrollTrigger: {
-        trigger: gradient1Ref.current,
-        scroller: "#right-column",
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 4,
-      },
-    });
-
-    gsap.to(image1Ref.current, {
-      y: "-60%",
-      ease: "none",
-      scrollTrigger: {
-        trigger: image1Ref.current,
-        scroller: "#right-column",
-        start: "top 70%",
-        end: "bottom top",
-        scrub: 1,
-      },
-    });
-    gsap.to(text1Ref.current, {
-      y: "-60%",
-      ease: "none",
-      scrollTrigger: {
-        trigger: image1Ref.current,
-        scroller: "#right-column",
-        start: "top 70%",
-        end: "bottom top",
-        scrub: 1,
-      },
-    });
-  }, []);
 
   const listRefs = useRef([]);
 
@@ -2963,53 +2829,56 @@ const Testimonials = () => {
     });
   }, []);
 
-  const movingBlobRef = useRef(null);
 
-  const points = [
-    { x: 150, y: 60 },
-    { x: 210, y: 110 },
-    { x: 200, y: 190 },
-    { x: 120, y: 210 },
-    { x: 70, y: 140 },
-    { x: 100, y: 100 },
-  ];
 
-  useLayoutEffect(() => {
-    const tl = gsap.timeline({
-      repeat: -1,
-      defaults: { ease: "sine.inOut", duration: 1.6 },
-    });
+useLayoutEffect(() => {
+  if (!cardsRef.current || !bannerRef.current) return;
 
-    points.forEach((p) => {
-      tl.to(movingBlobRef.current, {
-        attr: { cx: p.x, cy: p.y },
-      });
-    });
-  }, []);
+  const ctx = gsap.context(() => {
+  gsap.set(cardsRef.current, {
+  scale: 1,
+  x: 0,
+  y: 0,
+  transformOrigin: "50% 50%",
+});
 
-  useEffect(() => {
+gsap.set(bannerRef.current, {
+  scale: 0.65,
+  x: 0,
+  y: 0,
+  opacity: 0,
+  transformOrigin: "50% 50%",
+});
+
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: cardsRef.current,
-        start: "bottom bottom",
-        end: "bottom top",
-        scrub: true,
-      }
-    })
+        trigger: cardsRef.current.parentElement,
+        start: "top top",
+        end: "+=100%",
+        scrub: 0.8,
+        pin: true,
+      },
+    });
 
     tl.to(cardsRef.current, {
-      scale: 0.6,
+      scale: 0.65,
+      opacity: 0,
       ease: "none",
-    })
+    });
 
-    gsap.set(bannerRef.current, { scale: 0.6 })
-    tl.to(bannerRef.current, {
-      scale: 1,
-      ease: "none",
-    }, "<")
+    tl.to(
+      bannerRef.current,
+      {
+        scale: 1,
+        opacity: 1,
+        ease: "none",
+      },
+      "<0.15",
+    );
+  });
 
-    return () => tl.kill()
-  }, [])
+  return () => ctx.revert();
+}, []);
 
   return (
     <>
@@ -3054,125 +2923,46 @@ const Testimonials = () => {
           <div className="font-neuehaas45 absolute top-28 left-10 text-xs uppercase tracking-widest text-black/70">
             Every smile tells a story — these are some of our favorites.
           </div>
-          <div ref={cardsRef} className="w-full h-screen">
-            <CarouselComponent />
-          </div>
+
         </section>
-        
-        <div ref={bannerRef} className="TestimonialsBookNow-banner container" style={{ transform: 'scale(0.6)' }}>
-          {/* <motion.button
-            className="BookNow-banner__button group"
-            onClick={() => setShowScheduler(true)}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 1.8, type: "tween", damping: 10, stiffness: 100 }}
-          >
-            <span className="rounded-full bg-black p-1 text-xs transition-colors duration-300 group-hover:bg-white">
-              <ArrowRightIcon className="size-0 transition-all duration-300 group-hover:size-4 group-hover:text-black" />
-            </span>
-            <span className="font-ibmplex-extralight uppercase">Book Now</span>
-          </motion.button> */}
-          <h2 className="font-canela italic text-5xl text-zinc-800">Let's Get Moving.</h2>
-          <button
-            className="TestimonialsBookNow-banner button font-ibmplex-extralight tracking-wide uppercase"
-            onClick={() => setShowScheduler(!showScheduler)}
-          >
-            <ScrambleText text="Schedule Your Visit" />
-          </button>
-          <svg
-            className="hidden max-h-64 opacity-60 TestimonialsBookNow-banner__logo"
-            viewBox="0 0 149.835 79"
-          >
-            <defs>
-              <filter id="neumorphism" x="-10%" y="-10%" width="120%" height="120%">
-                {/* Light shadow (top-left) */}
-                <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blur1" />
-                <feOffset in="blur1" dx="-1" dy="-1" result="offset1" />
-                <feFlood floodColor="#ffffff" floodOpacity="0.9" result="color1" />
-                <feComposite in="color1" in2="offset1" operator="in" result="shadow1" />
 
-                {/* Dark shadow (bottom-right) */}
-                <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="blur2" />
-                <feOffset in="blur2" dx="1" dy="1" result="offset2" />
-                <feFlood floodColor="#000000" floodOpacity="0.15" result="color2" />
-                <feComposite in="color2" in2="offset2" operator="in" result="shadow2" />
-
-                {/* Layer: light shadow → dark shadow → original graphic */}
-                <feMerge>
-                  <feMergeNode in="shadow1" />
-                  <feMergeNode in="shadow2" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-
-            <path
-              id="s__top-left"
-              d="M90.375,0h18.98c.275,0,.5,.225,.5,.5v36.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-.98c0-10.21,8.29-18.5,18.5-18.5Z"
-              fill="#ffffff"
-              fillOpacity={0.8}
-              filter="url(#neumorphism)"
-            />
-            <path
-              id="s__top-right"
-              d="M112.355,0h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5V.5c0-.275,.225-.5,.5-.5Z"
-              fill="#ffffff"
-              fillOpacity={0.8}
-              filter="url(#neumorphism)"
-            />
-            <path
-              id="s__bottom-left"
-              d="M72.375,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v18.98c0,.275-.225,.5-.5,.5h-18.98c-10.21,0-18.5-8.29-18.5-18.5v-18.98c0-.275,.225-.5,.5-.5Z"
-              fill="#ffffff"
-              fillOpacity={0.8}
-              filter="url(#neumorphism)"
-            />
-            <path
-              id="s__bottom-right"
-              d="M112.355,39.98h18.98c10.21,0,18.5,8.29,18.5,18.5v.98c0,10.21-8.29,18.5-18.5,18.5h-18.98c-.275,0-.5-.225-.5-.5v-36.98c0-.275,.225-.5,.5-.5Z"
-              fill="#ffffff"
-              fillOpacity={0.8}
-              filter="url(#neumorphism)"
-            />
-            <path
-              id="f__top-left"
-              d="M12.5,0h0c6.9,0,12.5,5.6,12.5,12.5v12c0,.275-.225,.5-.5,.5h-12C5.6,25,0,19.4,0,12.5H0C0,5.6,5.6,0,12.5,0Z"
-              fill="#ffffff"
-              fillOpacity={0.8}
-              filter="url(#neumorphism)"
-            />
-            <path
-              id="f__top-right"
-              d="M39.685,0h15c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-27c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
-              fill="#ffffff"
-              fillOpacity={0.8}
-              filter="url(#neumorphism)"
-            />
-            <path
-              id="f__middle-left"
-              d="M12.5,27h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5h0c-6.9,0-12.5-5.6-12.5-12.5h0c0-6.9,5.6-12.5,12.5-12.5Z"
-              fill="#ffffff"
-              fillOpacity={0.8}
-              filter="url(#neumorphism)"
-            />
-            <path
-              id="f__middle-right"
-              d="M27.69,27h12c6.9,0,12.5,5.6,12.5,12.5h0c0,6.9-5.6,12.5-12.5,12.5h-12c-.275,0-.5-.225-.5-.5v-24c0-.275,.225-.5,.5-.5Z"
-              fill="#ffffff"
-              fillOpacity={0.8}
-              filter="url(#neumorphism)"
-            />
-            <path
-              id="f__bottom-left"
-              d="M12.5,54h12c.275,0,.5,.225,.5,.5v12c0,6.9-5.6,12.5-12.5,12.5H.5c-.275,0-.5-.225-.5-.5v-12c0-6.9,5.6-12.5,12.5-12.5Z"
-              fill="#ffffff"
-              fillOpacity={0.8}
-              filter="url(#neumorphism)"
-            />
-          </svg>
-        </div>
       </section>
+<section className="relative w-full h-screen overflow-hidden">
+  <div
+    ref={cardsRef}
+    className="
+      absolute inset-0
+      w-full h-full
+      flex items-center justify-center
+    
+    "
+  >
+    <CarouselComponent />
+  </div>
 
+  <div
+    ref={bannerRef}
+    className="
+      absolute inset-0
+      w-full h-full
+      flex items-center justify-center
+      pointer-events-none
+    "
+  >
+    <div className="TestimonialsBookNow-banner container pointer-events-auto">
+      <h2 className="font-canela italic text-5xl text-zinc-800">
+        Let's Get Moving.
+      </h2>
+
+      <button
+        className="TestimonialsBookNow-banner button font-ibmplex-extralight tracking-wide uppercase"
+        onClick={() => setShowScheduler(true)}
+      >
+        <ScrambleText text="Schedule Your Visit" />
+      </button>
+    </div>
+  </div>
+</section>
       {/* Scheduler Panel */}
       <div
         className={`

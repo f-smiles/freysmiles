@@ -9,7 +9,7 @@ module.exports = {
   theme: {
   	extend: {
 			fontFamily: {
-				'neuehaas35':['NeueHaas35', 'sans-serif'],
+				'neuehaas35':['NeueHaasDisplay35', 'sans-serif'],
 				'neuehaas45': ['NeueHaas45', 'sans-serif'],
 				'canela': ['CanelaThin', 'serif'],
 				'ibmplex-thin': ['IBMPlexMonoThin', 'monospace'],

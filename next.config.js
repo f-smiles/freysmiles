@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: ['192.168.1.190'],
+
   images: {
     remotePatterns: [
       {
@@ -8,12 +10,6 @@ const nextConfig = {
         port: '',
         pathname: '/links/**',
       },
-      // {
-      //   protocol: 'https',
-      //   hostname: 'i.ibb.co',
-      //   port: '',
-      //   pathname: '/**',
-      // },
       {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
@@ -24,6 +20,7 @@ const nextConfig = {
       },
     ],
   },
+
   turbopack: {
     root: __dirname,
   },
