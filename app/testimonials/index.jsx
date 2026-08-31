@@ -2208,12 +2208,6 @@ function Rig(props) {
 function Carousel({ radius = 1.9 }) {
   const count = reviews.length;
 
-  console.log("review count:", count);
-  console.log(
-    "review names:",
-    reviews.map((review) => review.name),
-  );
-
   return reviews.map((review, i) => (
     <Card
       key={`${review.name}-${i}`}
@@ -2833,7 +2827,8 @@ const Testimonials = () => {
 
 useLayoutEffect(() => {
   if (!cardsRef.current || !bannerRef.current) return;
-
+ gsap.set(cardsRef.current, { clearProps: "all" });
+  gsap.set(bannerRef.current, { clearProps: "all" });
   const ctx = gsap.context(() => {
   gsap.set(cardsRef.current, {
   scale: 1,
@@ -2847,6 +2842,7 @@ gsap.set(bannerRef.current, {
   x: 0,
   y: 0,
   opacity: 0,
+  
   transformOrigin: "50% 50%",
 });
 
@@ -2861,10 +2857,12 @@ gsap.set(bannerRef.current, {
     });
 
     tl.to(cardsRef.current, {
-      scale: 0.65,
+      // scale: 0.8,
       opacity: 0,
       ease: "none",
-    });
+
+        transformOrigin: "50% 50%",
+    },  );
 
     tl.to(
       bannerRef.current,
@@ -2872,9 +2870,11 @@ gsap.set(bannerRef.current, {
         scale: 1,
         opacity: 1,
         ease: "none",
+        transformOrigin: "50% 50%",
       },
       "<0.15",
     );
+
   });
 
   return () => ctx.revert();
@@ -2931,7 +2931,7 @@ gsap.set(bannerRef.current, {
   <div
     ref={cardsRef}
     className="
-      absolute inset-0
+      absolute inset-0 m-auto
       w-full h-full
       flex items-center justify-center
     
